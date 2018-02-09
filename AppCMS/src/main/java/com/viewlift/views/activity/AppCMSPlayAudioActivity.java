@@ -46,6 +46,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     private String audioData = "";
     private CastServiceProvider castProvider;
     ContentDatum currentAudio;
+    public static boolean isDownloading = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +122,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
+            isDownloading=true;
             audioDownload(downloadAudio, currentAudio);
             appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
                     0, null, false, false, null);
@@ -307,7 +310,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                imageButton.setOnClickListener(addClickListener);
+//                imageButton.setOnClickListener(addClickListener);
+                if (isDownloading) {
+                    isDownloading = false;
+                    addClickListener.onClick(imageButton);
+                }
             }
         }
 

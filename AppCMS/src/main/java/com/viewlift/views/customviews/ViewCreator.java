@@ -74,7 +74,6 @@ import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -1504,15 +1503,15 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "playlist.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else {
-                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }
-//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "music_hub.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(2);
+//                } else {
+//                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//                }
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             } catch (Exception e) {
 

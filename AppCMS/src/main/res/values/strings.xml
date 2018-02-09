@@ -312,6 +312,9 @@
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
+    <string name="app_cms_login_and_subscription_audio_required_title">Premium Content</string>
+    <string name="app_cms_login_and_subscription_audio_required_message">You need to have a valid subscription to access this content.</string>
+
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
@@ -535,7 +538,7 @@
     <string name="pop_dialog_facebook">Facebook</string>
     <string name="pop_dialog_instagram">Instagram</string>
     <string name="dialog_close_button">Close</string>
-    <string name="app_template_type">sports_template</string>
+    <string name="app_template_type">Entertainment</string>
 
     <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
 

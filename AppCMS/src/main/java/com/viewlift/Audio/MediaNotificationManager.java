@@ -280,7 +280,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
                 art = BitmapFactory.decodeResource(mService.getResources(),
-                        R.drawable.logo);
+                        R.mipmap.app_logo);
             }
         }
 
@@ -302,7 +302,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         .setMediaSession(mSessionToken))
                 .setDeleteIntent(mStopIntent)
                 .setColor(mNotificationColor)
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.mipmap.app_logo)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(createContentIntent(description))
