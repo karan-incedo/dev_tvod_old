@@ -89,7 +89,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            true);
+                            false);
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
@@ -172,7 +172,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            true);
+                            false);
                 }
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
