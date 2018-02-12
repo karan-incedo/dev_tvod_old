@@ -90,6 +90,7 @@
     <string name="app_cms_page_button_switch_key">switchToSdCard</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
@@ -170,6 +171,7 @@
     <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
     <string name="app_cms_page_banner_module_key">AC Banner 01</string>
     <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
+    <string name="app_cms_page_bannerAd_module_key">AC BannerAd 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_photo_tray_module_key">PH Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
