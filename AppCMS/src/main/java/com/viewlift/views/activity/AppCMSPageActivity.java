@@ -702,60 +702,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         shouldSendCloseOthersAction = false;
 
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
-                        if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
-                            GraphRequest request = GraphRequest.newMeRequest(
-                                    AppCMSPageActivity.this.accessToken,
-                                    (user, response) -> {
-                                        String username = null;
-                                        String email = null;
-                                        try {
-                                            username = user.getString("name");
-                                            email = user.getString("email");
-                                        } catch (JSONException | NullPointerException e) {
-                                            //Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
-                                        }
-
-                                        if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                            handleCloseAction(false);
-                                        }
-                                        appCMSPresenter.setFacebookAccessToken(
-                                                AppCMSPageActivity.this.accessToken.getToken(),
-                                                AppCMSPageActivity.this.accessToken.getUserId(),
-                                                username,
-                                                email,
-                                                false,
-                                                true);
-                                    });
-                            Bundle parameters = new Bundle();
-                            parameters.putString("fields", "id,name,email");
-                            request.setParameters(parameters);
-                            request.executeAsync();
-                        }
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        // App code
-//                        Log.e(TAG, "Facebook login was cancelled");
-                        loaderWaitingFor3rdPartyLogin = false;
-                        pageLoading(false);
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        // App code
-//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
-                        loaderWaitingFor3rdPartyLogin = false;
-                        pageLoading(false);
-                    }
-                });
-
         appCMSPresenter.sendCloseOthersAction(null, false, false);
 
 //        Log.d(TAG, "onCreate()");
@@ -1039,6 +985,63 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!libsThreadExecuted) {
             new Thread(() -> {
+                UAirship.takeOff(getApplication());
+                FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                callbackManager = CallbackManager.Factory.create();
+                LoginManager.getInstance().registerCallback(callbackManager,
+                        new FacebookCallback<LoginResult>() {
+                            @Override
+                            public void onSuccess(LoginResult loginResult) {
+                                AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
+                                if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
+                                    GraphRequest request = GraphRequest.newMeRequest(
+                                            AppCMSPageActivity.this.accessToken,
+                                            (user, response) -> {
+                                                String username = null;
+                                                String email = null;
+                                                try {
+                                                    username = user.getString("name");
+                                                    email = user.getString("email");
+                                                } catch (JSONException | NullPointerException e) {
+                                                    //Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                                }
+
+                                                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                                    handleCloseAction(false);
+                                                }
+                                                appCMSPresenter.setFacebookAccessToken(
+                                                        AppCMSPageActivity.this.accessToken.getToken(),
+                                                        AppCMSPageActivity.this.accessToken.getUserId(),
+                                                        username,
+                                                        email,
+                                                        false,
+                                                        true);
+                                            });
+                                    Bundle parameters = new Bundle();
+                                    parameters.putString("fields", "id,name,email");
+                                    request.setParameters(parameters);
+                                    request.executeAsync();
+                                }
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                // App code
+//                        Log.e(TAG, "Facebook login was cancelled");
+                                loaderWaitingFor3rdPartyLogin = false;
+                                pageLoading(false);
+                            }
+
+                            @Override
+                            public void onError(FacebookException exception) {
+                                // App code
+//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                                loaderWaitingFor3rdPartyLogin = false;
+                                pageLoading(false);
+                            }
+                        });
+
                 Fabric.with(getApplication(), new Crashlytics());
                 Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
                         getString(R.string.app_cms_apptentive_signature_key));
