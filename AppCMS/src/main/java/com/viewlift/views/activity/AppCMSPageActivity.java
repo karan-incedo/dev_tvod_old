@@ -1121,33 +1121,35 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.checkForExistingSubscription(false);
 
-        appCMSPresenter.refreshPages(shouldRefresh -> {
-            if (appCMSPresenter.isAppBelowMinVersion()) {
-                appCMSPresenter.launchUpgradeAppActivity();
-            } else {
-                if (appCMSPresenter.isAppUpgradeAvailable()) {
-                    newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    newVersionAvailableTextView.setText("");
-                    newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
-                            getString(R.string.app_cms_app_version),
-                            appCMSPresenter.getGooglePlayAppStoreVersion()));
-                    newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
-                    newVersionUpgradeAvailable.requestLayout();
+        if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
+            appCMSPresenter.refreshPages(shouldRefresh -> {
+                if (appCMSPresenter.isAppBelowMinVersion()) {
+                    appCMSPresenter.launchUpgradeAppActivity();
                 } else {
-                    newVersionUpgradeAvailable.setVisibility(View.GONE);
-                    newVersionUpgradeAvailable.requestLayout();
-                }
-                if (shouldRefresh) {
-                    refreshPageData();
-                } else {
-                    if (!appCMSBinderStack.isEmpty() &&
-                            appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
-                            appCMSBinderMap.get(appCMSBinderStack.peek()).getAppCMSPageAPI() != null) {
-                        pageLoading(false);
+                    if (appCMSPresenter.isAppUpgradeAvailable()) {
+                        newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        newVersionAvailableTextView.setText("");
+                        newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                                getString(R.string.app_cms_app_version),
+                                appCMSPresenter.getGooglePlayAppStoreVersion()));
+                        newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                        newVersionUpgradeAvailable.requestLayout();
+                    } else {
+                        newVersionUpgradeAvailable.setVisibility(View.GONE);
+                        newVersionUpgradeAvailable.requestLayout();
+                    }
+                    if (shouldRefresh) {
+                        refreshPageData();
+                    } else {
+                        if (!appCMSBinderStack.isEmpty() &&
+                                appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
+                                appCMSBinderMap.get(appCMSBinderStack.peek()).getAppCMSPageAPI() != null) {
+                            pageLoading(false);
+                        }
                     }
                 }
-            }
-        }, true, 0, 0);
+            }, true, 0, 0);
+        }
 
         try {
             if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
