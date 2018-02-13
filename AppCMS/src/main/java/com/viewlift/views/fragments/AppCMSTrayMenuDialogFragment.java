@@ -83,8 +83,10 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
             downloadBtn.setActivated(false);
             downloadBtn.setOnClickListener(null);
         }
-        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getTextColor()));
+
+        if (!appCMSPresenter.isDownloadable()){
+            downloadBtn.setVisibility(View.GONE);
+        }
 
         addToWatchList.setOnClickListener(this);
 
@@ -94,6 +96,7 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         gd.setColor(appCMSPresenter.getGeneralBackgroundColor()); // Changes this drawbale to use a single color instead of a gradient
         gd.setStroke(5, appCMSPresenter.getGeneralTextColor());
 
+        closeBtn.setTextColor(appCMSPresenter.getGeneralTextColor());
         closeBtn.setBackground(gd);
         closeBtn.setOnClickListener(this);
     }

@@ -338,8 +338,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mobileinput_key),
                 AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
-                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
 
@@ -361,8 +359,6 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
-                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_summary_text_key),
@@ -512,6 +508,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_setting_module),
                 AppCMSUIKeyType.PAGE_SETTINGS_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
+                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
