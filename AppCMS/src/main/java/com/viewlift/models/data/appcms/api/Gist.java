@@ -106,6 +106,10 @@ public class Gist implements Serializable {
     @Expose
     String readTime;
 
+    @SerializedName("summaryText")
+    @Expose
+    String summaryText;
+
     String downloadStatus;
     /**
      * This is to store the url of the downloaded file
@@ -321,6 +325,15 @@ public class Gist implements Serializable {
 
     public void setReadTime(String readTime) {
         this.readTime = readTime;
+    }
+
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
     }
 
 }
