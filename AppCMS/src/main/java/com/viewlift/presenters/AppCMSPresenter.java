@@ -8742,11 +8742,38 @@ public class AppCMSPresenter {
             return upgradesAvailable;
         }
 
-        if (useCCAvenue()) {
-            return "COMPLETED".equals(getSubscriptionStatus());
+        boolean canUpgrade = true;
+        if (useCCAvenue() || "ccavenue".equalsIgnoreCase(getActiveSubscriptionProcessor())) {
+            canUpgrade = "COMPLETED".equals(getSubscriptionStatus());
         }
-        List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
-        return availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty();
+        if (canUpgrade) {
+            List<SubscriptionPlan> availablePlans = availablePlans();
+
+            List<SubscriptionPlan> availableUpgradesForUser = new ArrayList<>();
+            if (availablePlans != null) {
+                for (SubscriptionPlan subscriptionPlan : availablePlans) {
+                    String activeSubscriptionPriceStr = getActiveSubscriptionPrice();
+                    double activeSubscriptionPrice = 0.0;
+                    try {
+                        activeSubscriptionPrice = Double.valueOf(activeSubscriptionPriceStr);
+                    } catch (Exception e) {
+
+                    }
+                    String activeSubscriptionSku = getActiveSubscriptionSku();
+                    if (TextUtils.isEmpty(activeSubscriptionSku)) {
+                        activeSubscriptionSku = "";
+                    }
+                    if (subscriptionPlan != null &&
+                            activeSubscriptionPrice < subscriptionPlan.getSubscriptionPrice() &&
+                            !activeSubscriptionSku.equalsIgnoreCase(subscriptionPlan.getSku())) {
+                        availableUpgradesForUser.add(subscriptionPlan);
+                    }
+                }
+            }
+
+            return !availableUpgradesForUser.isEmpty();
+        }
+        return false;
     }
 
     public boolean isActionFacebook(String action) {
@@ -8853,7 +8880,7 @@ public class AppCMSPresenter {
                                             if (contentDatum.getPlanDetails() != null &&
                                                     !contentDatum.getPlanDetails().isEmpty() &&
                                                     contentDatum.getPlanDetails().get(0) != null) {
-                                                subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
+                                                subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
                                             }
                                             subscriptionPlan.setPlanName(contentDatum.getName());
                                             createSubscriptionPlan(subscriptionPlan);
