@@ -11219,16 +11219,17 @@ public class AppCMSPresenter {
                         currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
                     action = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
                 }
-
-                launchVideoPlayer(binder.getContentData(),
-                        binder.getRelateVideoIds() != null &&
-                                currentlyPlayingIndex < binder.getRelateVideoIds().size() ?
-                                binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex()) :
-                                binder.getContentData().getGist().getId(),
-                        currentlyPlayingIndex,
-                        binder.getRelateVideoIds(),
-                        watchedTime / 1000L,
-                        action);
+                if (0 <= binder.getCurrentPlayingVideoIndex()) {
+                    launchVideoPlayer(binder.getContentData(),
+                            binder.getRelateVideoIds() != null &&
+                                    currentlyPlayingIndex < binder.getRelateVideoIds().size() ?
+                                    binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex()) :
+                                    binder.getContentData().getGist().getId(),
+                            currentlyPlayingIndex,
+                            binder.getRelateVideoIds(),
+                            watchedTime / 1000L,
+                            action);
+                }
             } else {
                 launchTVVideoPlayer(binder.getContentData(),
                         currentlyPlayingIndex,
