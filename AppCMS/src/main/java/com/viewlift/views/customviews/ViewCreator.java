@@ -40,7 +40,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -2629,6 +2633,25 @@ public class ViewCreator {
                 }
                 break;
 
+            case PAGE_ADS_KEY:
+                //todo need to work for managing Subscribed User case scanerio
+                componentViewResult.componentView = new AdView(context);
+                ((AdView)componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                if (moduleAPI!=null &&
+                        moduleAPI.getMetadataMap()!=null &&
+                        moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
+
+                    LinkedTreeMap<String,String> admap= (LinkedTreeMap<String,String>)moduleAPI.getMetadataMap();
+                    //((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
+                    //((AdView) componentViewResult.componentView).setActivated(true);
+                    //((AdView) componentViewResult.componentView).setAdUnitId("35495321/MSE_Web_Leaderboard ");
+                    ((AdView) componentViewResult.componentView).setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    ((AdView) componentViewResult.componentView).loadAd(adRequest);
+
+                }
+
+                break;
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
                 boolean resizeText = false;
@@ -3607,6 +3630,7 @@ public class ViewCreator {
 
             default:
                 if (moduleAPI != null && component.getComponents() != null &&
+                        pageView != null &&
                         !component.getComponents().isEmpty()) {
                     componentViewResult.componentView = createModuleView(context,
                             component,
@@ -3647,7 +3671,9 @@ public class ViewCreator {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
                 if (module.getId().equals(moduleAPI.getId()) &&
-                        (moduleAPI.getContentData() !=null || moduleAPI.getRawText()!=null)) {
+                        (moduleAPI.getContentData() !=null ||
+                                moduleAPI.getMetadataMap()!=null ||
+                                moduleAPI.getRawText()!=null)) {
                     return moduleAPI;
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&

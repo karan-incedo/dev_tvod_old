@@ -95,7 +95,7 @@ public class NavBarItemView extends LinearLayout {
     public void select(boolean hasFocus, AppCMSPageActivity.NavTabTag navigationTabBar) {
 
         this.hasFocus = hasFocus;
-        int color = appCMSPresenter.getGeneralTextColor();
+        int color = appCMSPresenter.getNavBarItemDefaultColor();
 
         if (hasFocus) {
             color = highlightColor;

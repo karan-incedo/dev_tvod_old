@@ -6877,6 +6877,13 @@ public class AppCMSPresenter {
         }
         return 0;
     }
+    public int getNavBarItemDefaultColor()
+    {
+        if(currentActivity!=null ){
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+        return 0;
+    }
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }

@@ -427,7 +427,9 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) &&
+                                childViewWidth>0 &&
+                                childViewHeight>0 ) {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
@@ -499,6 +501,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(2);
