@@ -155,6 +155,7 @@
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
     <string name="app_cms_page_article_title_key">articleTitle</string>
+    <string name="app_cms_page_article_feed_bottom_text_key">articleFeedBottomText</string>
     <string name="app_cms_page_article_description_key">articleDescription</string>
     <string name="app_cms_page_emailtextfield2_key">email label</string>
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
@@ -262,6 +263,9 @@
     <string name="app_cms_page_api_show_title_key">showTitle</string>
     <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
     <string name="app_cms_page_api_description_key">description</string>
+    <string name="app_cms_page_thumbnail_description_key">thumbnailDescription</string>
+    <string name="app_cms_page_api_summary_text_key">summaryText</string>
+    <string name="app_cms_page_thumbnail_read_more_text_key">readMore</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
