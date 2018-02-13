@@ -11316,10 +11316,7 @@ public class AppCMSPresenter {
     }
 
     public void getRelatedMedia(String filmIds, final Action1<AppCMSVideoDetail> action1) {
-        if (currentActivity == null) {
-            currentActivity = getCurrentActivity();
-        }
-        String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+        String url = currentContext.getString(R.string.app_cms_video_detail_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmIds,
                 appCMSSite.getGist().getSiteInternalName());
