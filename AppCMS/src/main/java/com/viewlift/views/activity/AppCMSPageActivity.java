@@ -683,8 +683,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         registerReceiver(notifyUpdateListsReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
-        registerReceiver(refreshPageDataReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
         registerReceiver(networkConnectedReceiver,
@@ -702,7 +700,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         shouldSendCloseOthersAction = false;
 
-        appCMSPresenter.sendCloseOthersAction(null, false, false);
+//        appCMSPresenter.sendCloseOthersAction(null, false, false);
 
 //        Log.d(TAG, "onCreate()");
     }
@@ -1097,6 +1095,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
 
         try {
+            registerReceiver(refreshPageDataReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
             registerReceiver(presenterCloseActionReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
             registerReceiver(enterFullScreenReceiver,
@@ -1245,6 +1245,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelCustomToast();
 
         try {
+            unregisterReceiver(refreshPageDataReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
             unregisterReceiver(enterFullScreenReceiver);
             unregisterReceiver(exitFullScreenReceiver);
@@ -1328,7 +1329,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
-        unregisterReceiver(refreshPageDataReceiver);
         unregisterReceiver(processDeeplinkReceiver);
         unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(appCMSAirshipReceiver);

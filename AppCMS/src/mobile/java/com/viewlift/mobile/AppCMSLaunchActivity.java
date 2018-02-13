@@ -51,6 +51,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (getApplication() instanceof AppCMSApplication) {
             appCMSPresenterComponent =
                     ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent.appCMSPresenter().resetLaunched();
         }
 
         handleIntent(getIntent());
@@ -154,6 +155,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Log.w(TAG, "Resuming launch activity");
+
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         appStartWithNetworkConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
@@ -166,8 +169,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (appCMSPresenterComponent != null) {
             try {
                 if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
+                    Log.w(TAG, "Sending close others action");
                     appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
                 } else {
+                    Log.w(TAG, "Retrieving main.json");
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,

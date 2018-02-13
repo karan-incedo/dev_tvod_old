@@ -580,8 +580,8 @@ public class AppCMSPresenter {
 
     private boolean loginDialogPopupOpen;
 
-    private boolean processedUIModules;
-    private boolean processedUIPages;
+    private volatile boolean processedUIModules;
+    private volatile boolean processedUIPages;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -5059,6 +5059,10 @@ public class AppCMSPresenter {
     public void checkForExistingSubscription(boolean showErrorDialogIfSubscriptionExists) {
         //Log.d(TAG, "Checking for existing Google Play subscription");
 
+        if (!isNetworkConnected()) {
+            return;
+        }
+
         if (!isUserSubscribed()) {
             setActiveSubscriptionPrice(null);
             setActiveSubscriptionId(null);
@@ -6607,9 +6611,7 @@ public class AppCMSPresenter {
                     downloadsAvailableForApp()) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
-            }
-
-            if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) &&
+            } else if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) &&
                     networkConnected &&
                     !getPlayingVideo()) {
                 sendCloseOthersAction(null, true, true);
@@ -7291,6 +7293,8 @@ public class AppCMSPresenter {
                               final Uri searchQuery,
                               final PlatformType platformType,
                               boolean bustCache) {
+        Log.w(TAG, "Attempting to retrieve main.json");
+
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
@@ -9825,6 +9829,7 @@ public class AppCMSPresenter {
     }
 
     public void launchBlankPage() {
+        Log.w(TAG, "Launching blank page");
         if (currentActivity != null) {
             if (!(currentActivity instanceof AppCMSPageActivity)) {
                 Bundle args = getPageActivityBundle(currentActivity,
@@ -9924,7 +9929,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSSite(final PlatformType platformType) {
-        //Log.d(TAG, "Attempting to retrieve site.json");
+        Log.w(TAG, "Attempting to retrieve site.json");
         if (currentActivity != null) {
             //Log.d(TAG, "Retrieving site.json");
             String url = currentActivity.getString(R.string.app_cms_site_api_url,
@@ -10184,8 +10189,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(int tryCount) {
-        //Log.d(TAG, "Attempting to retrieve android.json");
-        //Log.d(TAG, "Retrieving android.json");
+        Log.w(TAG, "Attempting to retrieve android.json");
 
         try {
             GetAppCMSAndroidUIAsyncTask.Params params =
@@ -10216,8 +10220,10 @@ public class AppCMSPresenter {
                         queueMetaPages(appCMSAndroidUI.getMetaPages());
                         //Log.d(TAG, "Processing meta pages queue");
 
+                        launchBlankPage();
+
                         getAppCMSModules(appCMSAndroidUI,
-                                true,
+                                false,
                                 false,
                                 (appCMSAndroidModules) -> {
                                     //Log.d(TAG, "Received module list");
@@ -10225,8 +10231,6 @@ public class AppCMSPresenter {
                                     this.processedUIModules = true;
                                     if (processedUIModules && processedUIPages) {
                                         finalizeLaunch(tryCount);
-                                    } else {
-                                        launchBlankPage();
                                     }
                                 });
 
@@ -10236,8 +10240,6 @@ public class AppCMSPresenter {
                                     this.processedUIPages = true;
                                     if (processedUIModules && processedUIPages) {
                                         finalizeLaunch(tryCount);
-                                    } else {
-                                        launchBlankPage();
                                     }
                                 });
                     }
@@ -10253,6 +10255,7 @@ public class AppCMSPresenter {
     }
 
     private void finalizeLaunch(int tryCount) {
+        Log.w(TAG, "Finalizing launch");
         if (!isNetworkConnected()) {
             openDownloadScreenForNetworkError(true,
                     () -> getAppCMSAndroid(tryCount));
@@ -10335,6 +10338,7 @@ public class AppCMSPresenter {
                                   boolean forceLoadFromNetwork,
                                   boolean bustCache,
                                   Action1<AppCMSAndroidModules> readyAction) {
+        Log.w(TAG, "Attempting to retrieve modules.json");
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
                     appCMSAndroidUI.getVersion(),
@@ -10522,7 +10526,7 @@ public class AppCMSPresenter {
     private void processMetaPagesList(final boolean loadFromFile,
                                       List<MetaPage> metaPageList,
                                       final Action0 onPagesFinishedAction) {
-
+        Log.w(TAG, "Attempting to retrieve Page UI json");
         if (currentActivity != null) {
             GetAppCMSPageUIAsyncTask getAppCMSPageUIAsyncTask =
                     new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null);

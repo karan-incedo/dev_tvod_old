@@ -85,29 +85,32 @@ public class AppCMSMainUICall {
             }
 
             final AppCMSMain mainfromNetwork = main;
-            new Thread(() -> {
-                AppCMSMain mainInStorage = null;
-                String filename = getResourceFilename(appCMSMainUrlSb.toString());
-                try {
-                    mainInStorage = readMainFromFile(filename);
-                } catch (Exception exception) {
-                    Log.w(TAG, "Previous version of main.json file is not in storage");
-                }
+            AppCMSMain mainInStorage = null;
+            String filename = getResourceFilename(appCMSMainUrlSb.toString());
+            try {
+                mainInStorage = readMainFromFile(filename);
+            } catch (Exception exception) {
+                Log.w(TAG, "Previous version of main.json file is not in storage");
+            }
 
-                if (mainfromNetwork != null && mainInStorage != null) {
-                    Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
-                    mainfromNetwork.setLoadFromFile(mainfromNetwork.getVersion().equals(mainInStorage.getVersion()));
-                }
+            if (mainfromNetwork != null && mainInStorage != null) {
+                Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
+                mainfromNetwork.setLoadFromFile(mainfromNetwork.getVersion().equals(mainInStorage.getVersion()));
+            }
 
-                if (mainfromNetwork != null) {
-                    Log.d(TAG, "Read main.json version: " + mainfromNetwork.getVersion());
-                }
+            if (mainfromNetwork != null) {
+                Log.d(TAG, "Read main.json version: " + mainfromNetwork.getVersion());
+            }
+            if (main != null) {
                 try {
-                    writeMainToFile(filename, mainfromNetwork);
+                    main = writeMainToFile(filename, mainfromNetwork);
                 } catch (Exception e) {
 
                 }
-            });
+            } else if (mainInStorage != null) {
+                main = mainInStorage;
+                main.setLoadFromFile(true);
+            }
         } catch (Exception e) {
             Log.e(TAG, "A serious error has occurred: " + e.getMessage());
         }
