@@ -1195,7 +1195,7 @@ public class ViewCreator {
                     module = appCMSPageUI1.getModuleList().get(5);
                 }  else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "article_details.json"),
+                            loadJsonFromAssets(context, "photo_galery.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else {

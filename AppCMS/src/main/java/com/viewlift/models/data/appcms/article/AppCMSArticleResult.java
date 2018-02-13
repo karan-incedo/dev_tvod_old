@@ -25,7 +25,7 @@ public class AppCMSArticleResult {
 
     @SerializedName("id")
     @Expose
-    String id;
+    public String id;
 
     @SerializedName("gist")
     @Expose
@@ -80,5 +80,9 @@ public class AppCMSArticleResult {
         appCMSPageAPI.setModules(moduleList);
 
         return appCMSPageAPI;
+    }
+
+    public String getId() {
+        return id;
     }
 }
