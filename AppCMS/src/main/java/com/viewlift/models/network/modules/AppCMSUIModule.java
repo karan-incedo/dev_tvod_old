@@ -739,7 +739,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_history_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
 
@@ -749,7 +749,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_watchlist_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_startfreetrial_key),
