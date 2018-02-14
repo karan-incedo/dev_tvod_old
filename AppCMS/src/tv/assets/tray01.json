@@ -1,5 +1,5 @@
 {
-  "id": "eeeaf583-f6f3-4a19-ac3e-ed403f8d4c1d",
+  "id": "036c0c78-5355-4ccd-838a-a88b122c9b6c",
   "settings": {
     "loop": false,
     "columns": {
@@ -8,29 +8,30 @@
       "mobile": 3,
       "ott": 6
     },
-    "thumbnailType": "landscape",
-    "infoHover": false
+    "thumbnailType": "portrait",
+    "infoHover": true
   },
   "view": "AC Tray 01",
   "type": "AC Tray 01",
-  "blockName": "tray02",
+  "blockName": "tray01",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 260
+      "height": 470
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 14
+          "fontSize": 18
         }
       },
       "fontFamily": "OpenSans",
       "textAlignment": "left",
+      "textCase": "caps",
       "type": "label",
       "textColor": "#008EE0",
       "fontWeight": "Semibold",
@@ -39,8 +40,8 @@
     {
       "layout": {
         "ftv": {
-          "width": 350,
-          "height": 250
+          "width": 260,
+          "height": 470
         }
       },
       "trayClickAction": "lectureDetailPage",
@@ -49,9 +50,9 @@
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 0,
-              "width": 350,
-              "height": 197
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
             }
           },
           "type": "image",
@@ -60,8 +61,20 @@
         {
           "layout": {
             "ftv": {
+              "padding": 6,
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
+            }
+          },
+          "type": "image",
+          "key": "badgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
               "leftMargin": 0,
-              "topMargin": 202,
+              "topMargin": 395,
               "rightMargin": 0,
               "fontSize": 11,
               "height": 40
@@ -73,20 +86,6 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "thumbnailTitle"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "padding": 10,
-              "yAxis": 183,
-              "xAxis": 0,
-              "height": 8
-            }
-          },
-          "progressColor": "008EE0",
-          "unprogressColor": "0A151C",
-          "type": "progressView",
-          "key": "progressView"
         }
       ],
       "type": "collectionGrid",

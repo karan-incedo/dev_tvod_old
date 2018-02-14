@@ -5,7 +5,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,11 +22,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.views.customviews.CustomTypefaceSpan;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -152,6 +157,19 @@ public class CardPresenter extends Presenter {
                             case PAGE_THUMBNAIL_IMAGE_KEY:
                                 Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                if (itemWidth > itemHeight) {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.video_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                            .into(imageView);
+                                } else {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.poster_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
+                                            .into(imageView);
+                                }
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
 
                                         Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
@@ -182,20 +200,6 @@ public class CardPresenter extends Presenter {
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                                if (itemWidth > itemHeight) {
-                                    Glide.with(mContext)
-                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.video_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
-                                            .into(imageView);
-                                } else {
-                                    Glide.with(mContext)
-                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.poster_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
-                                            .into(imageView);
-                                }
-
                                 //Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
                                 parentLayout.addView(imageView);
                                 break;
@@ -203,23 +207,37 @@ public class CardPresenter extends Presenter {
                             case PAGE_BEDGE_IMAGE_KEY:
                                 if (null != contentData.getGist().getBadgeImages() &&
                                         null != contentData.getGist().getBadgeImages().get_16x9()) {
-                                    Integer bedgeitemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                                    Integer bedgeitemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
-                                    FrameLayout.LayoutParams bedgeParams = new FrameLayout.LayoutParams(
-                                            Utils.getViewXAxisAsPerScreen(mContext, bedgeitemWidth),
-                                            Utils.getViewYAxisAsPerScreen(mContext, bedgeitemHeight));
+                                    Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                    Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
 
-                                    bedgeParams.setMargins(
+                                    String imageUrl;
+                                    if (badgeItemWidth > badgeItemHeight) {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_16x9() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    } else {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_3x4() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    }
+                                    Glide.with(mContext)
+                                            .load(imageUrl)
+                                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .into(imageView);
+
+                                    FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
+                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
+                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
+
+                                    badgeParams.setMargins(
                                             Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
                                             Integer.valueOf(component.getLayout().getTv().getTopMargin()),
                                             0,
                                             0);
 
-                                    imageView.setLayoutParams(bedgeParams);
-
-                                    Glide.with(mContext)
-                                            .load(contentData.getGist().getBadgeImages().get_16x9() + "?impolicy=resize&w=" + bedgeitemWidth + "&h=" + bedgeitemHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .into(imageView);
+                                    imageView.setLayoutParams(badgeParams);
                                     parentLayout.addView(imageView);
                                 }
                                 break;
@@ -258,13 +276,37 @@ public class CardPresenter extends Presenter {
                             }
                             tvTitle.setText(stringBuilder);
                             tvTitle.setTextSize(component.getFontSize());
-                        } else {
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY)) {
+                            Integer height = component.getLayout().getTv().getHeight() != null
+                                    ? Integer.valueOf(component.getLayout().getTv().getHeight())
+                                    : 0;
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
-                                    Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                                    Utils.getViewYAxisAsPerScreen(mContext, height));
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+
+                            int episodeNumber = getEpisodeNumber(contentData,
+                                    contentData.getGist().getId());
+                            String text = contentData.getGist().getTitle();
+                            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
+                            spannableStringBuilder.append(" ").append(text);
+                            Typeface font = Typeface.createFromAsset(mContext.getResources().getAssets(), "fonts/OpenSans-ExtraBold.ttf");
+                            spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                            tvTitle.setText(spannableStringBuilder);
+                        } else {
+                            Integer height = component.getLayout().getTv().getHeight() != null
+                                    ? Integer.valueOf(component.getLayout().getTv().getHeight())
+                                    : 0;
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
                         }
+                        tvTitle.setSingleLine(true);
+                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                        tvTitle.setSelected(true);
 
                         if (component.getLayout().getTv().getTopMargin() != null)
                             layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));
@@ -358,5 +400,22 @@ public class CardPresenter extends Presenter {
         }
         return face;
     }
+    private int getEpisodeNumber(ContentDatum mainContentData, String id) {
+        int returnVal = 0;
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = episodeNumber + 1;
+                        break;
+                    }
+                }
+                if (returnVal > 0) break;
+            }
+        }
 
+        return returnVal;
+    }
 }

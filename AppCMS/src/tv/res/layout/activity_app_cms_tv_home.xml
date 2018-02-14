@@ -63,17 +63,17 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/shadow_view">
+                android:layout_marginBottom="@dimen/logo_margin">
+
                 <ImageView
                     android:id="@+id/footer_logo"
-                    android:layout_width="@dimen/footer_logo_width"
-                    android:layout_height="@dimen/footer_logo_height"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/logo"
-                    android:layout_marginRight="@dimen/footer_logo_margin_right"
-                    android:layout_gravity="right"/>
+                    android:background="@drawable/app_logo"
+                    android:layout_marginRight="@dimen/logo_margin"
+                    />
 
 
                 <ImageView
@@ -132,7 +132,7 @@
                 android:layout_height="200dp"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/footer_gradient_image"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
         </RelativeLayout>
 

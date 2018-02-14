@@ -210,6 +210,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
 
+        } else {
+            if (ccToggleButton != null) {
+                ccToggleButton.setVisibility(GONE);
+            }
         }
 
     }
@@ -368,6 +372,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 getContext().getString(R.string.app_cms_user_agent));
 
         ccToggleButton = playerView.findViewById(R.id.ccButton);
+
+        if (ccToggleButton != null) {
+            if (appCMSPresenter != null && appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
+                ccToggleButton.setVisibility(GONE);
+            }
+        }
+
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -419,12 +430,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     public void applyTimeBarColor(int timeBarColor) {
-        timeBar.applyPlayedColor(timeBarColor);
+       /* timeBar.applyPlayedColor(timeBarColor);
         timeBar.applyScrubberColor(timeBarColor);
         timeBar.applyUnplayedColor(timeBarColor);
         timeBar.applyBufferedColor(timeBarColor);
         timeBar.applyAdMarkerColor(timeBarColor);
-        timeBar.applyPlayedAdMarkerColor(timeBarColor);
+        timeBar.applyPlayedAdMarkerColor(timeBarColor);*/
     }
 
     public void setVideoTitle(String title, int textColor) {
@@ -1238,5 +1249,4 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public boolean fullScreenModeEnabled() {
         return fullScreenMode;
     }
-
 }

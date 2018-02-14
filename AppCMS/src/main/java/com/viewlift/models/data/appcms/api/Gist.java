@@ -98,6 +98,10 @@ public class Gist implements Serializable {
     @Expose
     String kisweEventId;
 
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
     String downloadStatus;
     /**
      * This is to store the url of the downloaded file
@@ -297,5 +301,13 @@ public class Gist implements Serializable {
 
     public void setKisweEventId(String kisweEventId) {
         this.kisweEventId = kisweEventId;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }

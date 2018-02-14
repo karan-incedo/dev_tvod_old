@@ -3,6 +3,7 @@ package com.viewlift.tv.views.fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -12,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -188,14 +188,11 @@ public class ClearDialogFragment extends AbsDialogFragment {
         }
 
         /*Set click listener*/
-        negativeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null != onNegativeButtonClicked) {
-                    onNegativeButtonClicked.call("");
-                }
-                dismiss();
+        negativeButton.setOnClickListener(v -> {
+            if(null != onNegativeButtonClicked) {
+                onNegativeButtonClicked.call("");
             }
+            dismiss();
         });
 
 
@@ -205,6 +202,10 @@ public class ClearDialogFragment extends AbsDialogFragment {
             }
             dismiss();
         });
+
+        positiveButton.setOnFocusChangeListener((v, hasFocus) ->
+                isFocusOnPositiveButton = hasFocus
+        );
 
 
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -247,10 +248,14 @@ public class ClearDialogFragment extends AbsDialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (isFocusOnPositiveButton) {
-            positiveButton.requestFocus();
-        } else {
-            negativeButton.requestFocus();
-        }
+        new Handler().postDelayed(() -> {
+            if (isVisible() && isAdded()) {
+                if (isFocusOnPositiveButton) {
+                    positiveButton.requestFocus();
+                } else {
+                    negativeButton.requestFocus();
+                }
+            }
+        }, 500);
     }
 }

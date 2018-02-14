@@ -145,7 +145,7 @@ public class AppCmsSearchFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (lastSearchedString.equals(editable.toString())) {
+                if (lastSearchedString.trim().equals(editable.toString().trim())) {
                     return;
                 }
                 if (editable.toString().trim().length() >= 3){

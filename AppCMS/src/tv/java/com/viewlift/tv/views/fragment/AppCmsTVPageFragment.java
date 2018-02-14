@@ -20,6 +20,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.AppCMSTVTrayAdapter;
@@ -31,7 +32,7 @@ import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,6 +47,7 @@ public class AppCmsTVPageFragment extends Fragment {
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
     public String mPageId;
+    private View focusableView;
 
     public static AppCmsTVPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCmsTVPageFragment appCmsTVPageFragment = new AppCmsTVPageFragment();
@@ -116,12 +118,50 @@ public class AppCmsTVPageFragment extends Fragment {
     }
 
 
+    public void refreshPage(){
+        if(null != appCmsViewComponent){
+            appCmsViewComponent.tvviewCreator().refreshPageView(
+                    tvPageView,
+                    mAppCMSBinder.getAppCMSPageUI(),
+                    mAppCMSBinder.getAppCMSPageAPI(),
+                    mAppCMSBinder.getJsonValueKeyMap(),
+                    appCMSPresenter,
+                    Arrays.asList(getResources().getStringArray(R.array.app_cms_modules_to_ignore_tv)
+            ));
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        requestFocus();
-        if (null != appCMSPresenter)
-            appCMSPresenter.sendStopLoadingPageAction(false,null);
+//        requestFocus();
+
+        try {
+            if(focusableView != null) {
+                focusableView.requestFocus();
+            } else {
+                requestFocus();
+            }
+        } catch (Exception e) {
+        }
+
+        if (null != appCMSPresenter) {
+            appCMSPresenter.sendStopLoadingPageAction(false, null);
+            if (appCMSPresenter.isUserLoggedIn()
+                    && mAppCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
+                updateAdapterData(mAppCMSBinder);
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null
+                && getActivity().getCurrentFocus() != null
+                && getActivity().getCurrentFocus().getId() != R.id.nav_item_layout) {
+            focusableView = getActivity().getCurrentFocus();
+        }
     }
 
     @Override
@@ -136,35 +176,32 @@ public class AppCmsTVPageFragment extends Fragment {
     }
 
     public void requestFocus() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (null != tvPageView) {
-                    ViewGroup ChildContaineer = (ViewGroup) (tvPageView.getChildrenContainer());
-                    int childcount = 0;
-                    if (null != ChildContaineer) {
-                        childcount = ChildContaineer.getChildCount();
-                    }
-                    for (int i = 0; i < childcount; i++) {
-                        if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
-                            TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
-                            ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
-                            int moduleChild = moduleChildContaineer.getChildCount();
+        new Handler().postDelayed(() -> {
+            if (null != tvPageView) {
+                ViewGroup ChildContaineer = tvPageView.getChildrenContainer();
+                int childcount = 0;
+                if (null != ChildContaineer) {
+                    childcount = ChildContaineer.getChildCount();
+                }
+                for (int i = 0; i < childcount; i++) {
+                    if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
+                        TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
+                        ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
+                        int moduleChild = moduleChildContaineer.getChildCount();
 
-                            for (int j = 0; j < moduleChild; j++) {
-                                View view = moduleChildContaineer.getChildAt(j);
-                                if (null != view) {
-                                    System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
-                                    if (null != view.getTag() &&
-                                            view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
-                                        ((FrameLayout) view).getChildAt(0).requestFocus();
-                                        break;
-                                    } else if (view.isFocusable()) {
-                                        view.requestFocus();
-                                        break;
-                                    } else {
-                                        view.clearFocus();
-                                    }
+                        for (int j = 0; j < moduleChild; j++) {
+                            View view = moduleChildContaineer.getChildAt(j);
+                            if (null != view) {
+                                System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
+                                if (null != view.getTag() &&
+                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
+                                    ((FrameLayout) view).getChildAt(0).requestFocus();
+                                    break;
+                                } else if (view.isFocusable()) {
+                                    view.requestFocus();
+                                    break;
+                                } else {
+                                    view.clearFocus();
                                 }
                             }
                         }
@@ -188,7 +225,8 @@ public class AppCmsTVPageFragment extends Fragment {
                             for (int i1 = 0; i1 < contentData.size(); i1++) {
                                 ContentDatum contentDatum = contentData.get(i1);
                                 for (int j = 0; j < listRow.getAdapter().size(); j++) {
-                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
+                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId() != null
+                                            && ((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
                                         BrowseFragmentRowData rowData = (BrowseFragmentRowData) listRow.getAdapter().get(j);
                                         rowData.contentData = module.getContentData().get(i1);
                                         totalNumber++;
@@ -242,7 +280,12 @@ public class AppCmsTVPageFragment extends Fragment {
                         && tvModuleView.getChildrenContainer().getChildAt(i) instanceof RecyclerView) {
                     RecyclerView recyclerView = (RecyclerView) tvModuleView.getChildrenContainer().getChildAt(i);
                     ((AppCMSTVTrayAdapter) recyclerView.getAdapter()).setContentData(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData());
-
+                    if(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData().size() == 0){
+                        View view = tvModuleView.findViewById(R.id.appcms_removeall);
+                        if(null != view){
+                            view.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -253,7 +296,9 @@ public class AppCmsTVPageFragment extends Fragment {
     public void updateSeasonData(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
 
         try {
-            if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+            if (null != appCmsViewComponent.tvviewCreator()
+                    && null != appCmsViewComponent.tvviewCreator().mRowsAdapter
+                    && appCMSSwitchSeasonBinder.getSelectedSeasonIndex() != SwitchSeasonsDialogFragment.getSelectedSeasonIndex()) {
 
                 ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(0);
                 ArrayObjectAdapter  arrayObjectAdapter = (ArrayObjectAdapter) listRow.getAdapter();
@@ -266,12 +311,12 @@ public class AppCmsTVPageFragment extends Fragment {
                 ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                 List<ContentDatum> episodes = appCMSSwitchSeasonBinder.getSeasonList().get(appCMSSwitchSeasonBinder.getSelectedSeasonIndex()).getEpisodes();
                 for (int i = 0; i < episodes.size(); i++) {
-                    List<String> relatedVids = new ArrayList<>();
-                    for (int j = i + 1; j < episodes.size(); j++) {
-                        ContentDatum contentDatum = episodes.get(j);
-                        relatedVids.add(contentDatum.getGist().getId());
-                    }
+                    List<String> relatedVids = Utils.getRelatedVideosInShow(
+                            appCMSSwitchSeasonBinder.getSeasonList(),
+                            appCMSSwitchSeasonBinder.getSelectedSeasonIndex(),
+                            i);
                     ContentDatum contentDatum = episodes.get(i);
+                    contentDatum.setSeason(appCMSSwitchSeasonBinder.getSeasonList());
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                     rowData.contentData = contentDatum;
                     rowData.relatedVideoIds = relatedVids;
