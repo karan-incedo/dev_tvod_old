@@ -95,6 +95,8 @@
     <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
+    <string name="app_cms_page_list_key">list</string>
+    <string name="app_cms_page_list_module_key">AC List 01</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
 

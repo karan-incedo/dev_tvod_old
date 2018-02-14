@@ -28,6 +28,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -49,6 +50,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
@@ -1177,6 +1179,87 @@ public class ViewCreator {
         return componentViewResult;
     }
 
+    private void createCompoundTopModule(Context context,
+                                         List<ModuleList> modulesList,
+                                         AppCMSPageAPI appCMSPageAPI,
+                                         AppCMSAndroidModules appCMSAndroidModules,
+                                         PageView pageView,
+                                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                         AppCMSPresenter appCMSPresenter,
+                                         List<String> modulesToIgnore){
+        List<ModuleView> topViewList=new ArrayList<>();
+        float moduleMobileHeight=0f;
+
+        for (ModuleList moduleInfo : modulesList) {
+
+            ModuleList module = null;
+            try {
+                if (moduleInfo.getSettings() != null &&
+                        moduleInfo.getSettings().isHidden()) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+
+                    if (moduleInfo.getBlockName().contains("carousel01")){
+                        module = appCMSPageUI1.getModuleList().get(7);
+                    } else if (moduleInfo.getBlockName().contains("list01") ) {
+                        module = appCMSPageUI1.getModuleList().get(8);
+                    }
+                }
+                //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+             if (module!=null && moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
+
+
+            Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+
+            if (moduleAPI!=null) {
+                View childView = createModuleView(context, module, moduleAPI,
+                        appCMSAndroidModules,
+                        pageView,
+                        jsonValueKeyMap,
+                        appCMSPresenter);
+                if (childView != null && childView instanceof ModuleView) {
+                    moduleMobileHeight=module.getLayout().getMobile().getHeight()+moduleMobileHeight;
+                    topViewList.add((ModuleView) childView);
+                }
+            }
+             }
+        } //End of for (ModuleList moduleInfo : modulesList)
+
+        for (ModuleView moduleView:topViewList){
+            try {
+                System.out.println(moduleView.getModule().getBlockName() + " ============= " + moduleView.getLayout().getMobile().getHeight());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("============Done on loop ======"+topViewList.size());
+        if (topViewList.size()>0){
+            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "article_hub.json"),
+                    AppCMSPageUI.class);
+            ModuleList moduleTop= appCMSPageUI1.getModuleList().get(9);
+            moduleTop.getLayout().getMobile().setHeight(moduleMobileHeight);
+            ModuleView moduleView= new CompoundTopModule(context,
+                                                    moduleTop,
+                                                    jsonValueKeyMap,
+                                                    appCMSPresenter,
+                                                    topViewList);
+            pageView.addModuleViewWithModuleId("CompoundTopModule", moduleView);
+        }
+
+
+    }
+
     private void createPageView(Context context,
                                 AppCMSPageUI appCMSPageUI,
                                 AppCMSPageAPI appCMSPageAPI,
@@ -1189,7 +1272,9 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
+        boolean isTopModuleCreated=false;
         for (ModuleList moduleInfo : modulesList) {
+
             ModuleList module = null;
             try {
                 if (moduleInfo.getBlockName().contains("articleTray01")) {
@@ -1197,17 +1282,51 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                }  else if (moduleInfo.getBlockName().contains("articleDetail01")) {
+                } else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_details.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("articleFeed01")) {
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else {
+                }/* else if (moduleInfo.getBlockName().contains("carousel01") &&
+                            moduleInfo.getSettings()!=null &&
+                            moduleInfo.getSettings().isHidden()) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(7);
+                }else if (moduleInfo.getBlockName().contains("list01") &&
+                            moduleInfo.getSettings()!=null &&
+                            moduleInfo.getSettings().isHidden()) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(8);
+                }*/
+                else if(moduleInfo.getSettings()!=null &&
+                        moduleInfo.getSettings().isHidden()) {
+                    /**
+                     * 1. write  process to add all views in one module
+                     *
+                     */
+                    if (isTopModuleCreated){
+                        continue;
+                    }else{
+                        createCompoundTopModule(context,
+                                modulesList,
+                                appCMSPageAPI,
+                                appCMSAndroidModules,
+                                pageView,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                modulesToIgnore);
+                        isTopModuleCreated=true;
+                    }
+                }else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
                 //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
@@ -1306,7 +1425,9 @@ public class ViewCreator {
                 boolean modulesHasHiddenComponent = false;
 
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
-                pageView.addModuleViewWithModuleId(module.getId(), moduleView);
+                if(module.getSettings()!=null && !module.getSettings().isHidden()) {
+                    pageView.addModuleViewWithModuleId(module.getId(), moduleView);
+                }
                 if (module.getComponents() != null) {
                     if (moduleAPI != null) {
                         updateUserHistory(appCMSPresenter,
@@ -1708,7 +1829,7 @@ public class ViewCreator {
                     }
                 }
                 break;
-
+            case PAGE_LIST_VIEW_KEY:
             case PAGE_COLLECTIONGRID_KEY:
 
                 if (moduleType == null) {
@@ -1727,7 +1848,44 @@ public class ViewCreator {
 
                     AppCMSViewAdapter appCMSViewAdapter;
 
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                    /*if (componentKey == AppCMSUIKeyType.PAGE_LIST_VIEW_KEY) {
+
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.VERTICAL,
+                                        false));
+
+
+                       *//* ViewGroup.LayoutParams params=((RecyclerView) componentViewResult.componentView).getLayoutParams();
+                        //params.height=moduleAPI.getContentData().size()*50;
+                        params.height=100;
+                        ((RecyclerView) componentViewResult.componentView).setLayoutParams(params);*//*
+
+
+                        AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType,
+                                appCMSAndroidModules);
+
+
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                        if (pageView != null) {
+                            pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                    .adapter(appCMSUserWatHisDowAdapter)
+                                    .listview((RecyclerView) componentViewResult.componentView)
+                                    .id(moduleId + component.getKey())
+                                    .build());
+                        }
+                    }else*/ if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
 
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
@@ -1810,6 +1968,7 @@ public class ViewCreator {
                         AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY ||
+                                parentViewType == AppCMSUIKeyType.PAGE_LIST_MODULE_KEY ||
                             parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
                             int numCols = 1;
                             if (settings != null && settings.getColumns() != null) {
@@ -1968,7 +2127,6 @@ public class ViewCreator {
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                 }
                 break;
-
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
@@ -2688,6 +2846,7 @@ public class ViewCreator {
                 }
 
                 break;
+
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
                 boolean resizeText = false;
