@@ -423,14 +423,17 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() != null) {
+                        if(!(childViewWidth > 0)){
+                            childViewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+                        }else if(!(childViewHeight > 0)){
+                            childViewHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+                        }
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getImageGist().get_16x9(),
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) &&
-                                childViewWidth>0 &&
-                                childViewHeight>0 ) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)

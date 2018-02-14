@@ -1359,19 +1359,16 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 355,
                   "height": 200
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 1000,
                   "height": 200
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 700,
                   "height": 200
                 }
               },
@@ -1383,7 +1380,6 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 355,
                   "height": 200
                 },
                 "tabletLandscape": {

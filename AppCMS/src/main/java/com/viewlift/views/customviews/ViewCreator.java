@@ -2501,7 +2501,6 @@ public class ViewCreator {
 
                     case PAGE_ARTICLE_PREVIOUS_BUTTON_KEY:
                         componentViewResult.addToPageView = true;
-
                         FrameLayout.LayoutParams paramsPreviousButton =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -2509,15 +2508,25 @@ public class ViewCreator {
                         paramsPreviousButton.gravity = Gravity.BOTTOM | Gravity.LEFT;
                         componentViewResult.componentView.setLayoutParams(paramsPreviousButton);
                         componentViewResult.componentView.setPadding(20,0,20,0);
-
+                        componentViewResult.componentView.setId(R.id.article_prev_button);
+                        ((Button)componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        if(appCMSPresenter.getCurrentArticleIndex() <= 0) {
+                            componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        }else{
+                            componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        }
                         componentViewResult.componentView.setOnClickListener(v -> {
-
-                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null) {
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                                pageView.findViewById(R.id.article_next_button).setAlpha(1.0f);
+                                pageView.findViewById(R.id.article_next_button).setEnabled(true);
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
-                                if(currentIndex > 0) {
-                                    currentIndex--;
+                                currentIndex = currentIndex - 1;
+                                if(currentIndex >= 0) {
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                                    ((Activity) context).onBackPressed();
+                                    appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                }else{
+                                    componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+
                                 }
                             }
                         });
@@ -2534,14 +2543,35 @@ public class ViewCreator {
                         paramsNextButton.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         componentViewResult.componentView.setLayoutParams(paramsNextButton);
                         componentViewResult.componentView.setPadding(30,0,30,0);
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > appCMSPresenter.getCurrentArticleIndex()) {
-                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                        componentViewResult.componentView.setId(R.id.article_next_button);
+                        ((Button)componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((Button)componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        if (moduleAPI !=null &&
+                                moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails() !=null &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() !=null ) {
+
+
+                            List<String> articleIDs = moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds();
+                            articleIDs.add(0,moduleAPI.getContentData().get(0).getGist().getId());
+                            appCMSPresenter.setRelatedArticleIds(articleIDs);
+                            componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
-                                currentIndex++;
-                                appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                            }
-                        });
+                                if (appCMSPresenter.getRelatedArticleIds() != null &&
+                                        currentIndex<appCMSPresenter.getRelatedArticleIds().size()-1) {
+
+                                    currentIndex = currentIndex + 1;
+                                    appCMSPresenter.setCurrentArticleIndex(currentIndex);
+                                    appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                    pageView.findViewById(R.id.article_prev_button).setEnabled(true);
+                                    pageView.findViewById(R.id.article_prev_button).setAlpha(1.0f);
+                                } else if (currentIndex==appCMSPresenter.getRelatedArticleIds().size()){
+                                    v.setBackgroundColor(Color.parseColor("#c8c8c8"));
+
+                                }
+                            });
+                        }
                         break;
 
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:

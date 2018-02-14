@@ -588,6 +588,7 @@ public class AppCMSPresenter {
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
     private int currentArticleIndex;
+    private List<String> relatedArticleIds;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -12636,6 +12637,12 @@ public class AppCMSPresenter {
         this.currentArticleIndex = currentArticleIndex;
     }
 
+    public void setRelatedArticleIds(List<String> ids){
+        this.relatedArticleIds=ids;
+    }
+    public List<String> getRelatedArticleIds(){
+        return this.relatedArticleIds;
+    }
 
     public void navigateToArticlePage(String articleId, String pageTitle,
                                        boolean launchActivity) {
@@ -12665,19 +12672,19 @@ public class AppCMSPresenter {
                                         + BaseView.isLandscape(currentActivity));
 
                                 AppCMSPageAPI pageAPI=null;
-                                if (appCMSArticleResult != null) {
-                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(this.pageId);
-                                }
+                                //if (appCMSArticleResult != null) {
+                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(articlePage.getPageId());
+                                //}
 
                                 navigationPageData.put(this.pageId, pageAPI);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             pageAPI,
-                                            this.pageId,
+                                            articlePage.getPageId(),
                                             this.pageTitle,
                                             this.pagePath,
-                                            pageIdToPageNameMap.get(this.pageId),
+                                            pageIdToPageNameMap.get(articlePage.getPageId()),
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
@@ -12695,6 +12702,9 @@ public class AppCMSPresenter {
                                     }
 
 
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                        .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            }else{
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
