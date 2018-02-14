@@ -14,8 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.viewlift.AppCMSApplication;
@@ -42,7 +40,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             return;
         }
         setContentView(R.layout.activity_launch_tv);
-        Log.d("TVSplashActivity" , "DeviceDetail = "+getDeviceDetail());
+//        Log.d("TVSplashActivity" , "DeviceDetail = "+getDeviceDetail());
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();

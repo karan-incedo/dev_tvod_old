@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import io.fabric.sdk.android.Fabric;
 import rx.functions.Action1;
 
 /**
@@ -103,7 +105,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-
+        new Thread(() -> Fabric.with(getApplication(), new Crashlytics())).run();
         //Settings The Firebase Analytics for TV
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
         if (mFireBaseAnalytics != null && appCMSPresenter != null) {

@@ -157,6 +157,19 @@ public class CardPresenter extends Presenter {
                             case PAGE_THUMBNAIL_IMAGE_KEY:
                                 Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                if (itemWidth > itemHeight) {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.video_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                            .into(imageView);
+                                } else {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.poster_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
+                                            .into(imageView);
+                                }
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
 
                                         Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
@@ -187,20 +200,6 @@ public class CardPresenter extends Presenter {
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                                if (itemWidth > itemHeight) {
-                                    Glide.with(mContext)
-                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.video_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
-                                            .into(imageView);
-                                } else {
-                                    Glide.with(mContext)
-                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.poster_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
-                                            .into(imageView);
-                                }
-
                                 //Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
                                 parentLayout.addView(imageView);
                                 break;
@@ -210,17 +209,6 @@ public class CardPresenter extends Presenter {
                                         null != contentData.getGist().getBadgeImages().get_16x9()) {
                                     Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                     Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
-                                    FrameLayout.LayoutParams bedgeParams = new FrameLayout.LayoutParams(
-                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
-                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
-
-                                    bedgeParams.setMargins(
-                                            Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
-                                            Integer.valueOf(component.getLayout().getTv().getTopMargin()),
-                                            0,
-                                            0);
-
-                                    imageView.setLayoutParams(bedgeParams);
 
                                     String imageUrl;
                                     if (badgeItemWidth > badgeItemHeight) {
@@ -238,6 +226,18 @@ public class CardPresenter extends Presenter {
                                             .load(imageUrl)
                                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                             .into(imageView);
+
+                                    FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
+                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
+                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
+
+                                    badgeParams.setMargins(
+                                            Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
+                                            Integer.valueOf(component.getLayout().getTv().getTopMargin()),
+                                            0,
+                                            0);
+
+                                    imageView.setLayoutParams(badgeParams);
                                     parentLayout.addView(imageView);
                                 }
                                 break;

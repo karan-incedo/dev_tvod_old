@@ -49,6 +49,10 @@ public class AppCMSMain implements Serializable {
     @Expose
     String serviceType;
 
+    @SerializedName("apiBaseUrlCached")
+    @Expose
+    String apiBaseUrlCached;
+
     @SerializedName("domainName")
     @Expose
     String domainName;
@@ -93,6 +97,10 @@ public class AppCMSMain implements Serializable {
     @Expose
     AppVersions appVersions;
 
+    @SerializedName("companyName")
+    @Expose
+    String companyName;
+
     boolean loadFromFile;
 
     public String getFireTv() {
@@ -125,6 +133,10 @@ public class AppCMSMain implements Serializable {
     @SerializedName("paymentProviders")
     @Expose
     PaymentProviders paymentProviders;
+
+    @SerializedName("taxProviders")
+    @Expose
+    TaxProviders taxProviders;
 
     public CustomerService getCustomerService() {
         return customerService;
@@ -360,5 +372,21 @@ public class AppCMSMain implements Serializable {
 
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
+    }
+
+    public String getApiBaseUrlCached() {
+        return apiBaseUrlCached;
+    }
+
+    public void setApiBaseUrlCached(String apiBaseUrlCached) {
+        this.apiBaseUrlCached = apiBaseUrlCached;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 }
