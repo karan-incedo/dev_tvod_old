@@ -4180,6 +4180,9 @@ public class AppCMSPresenter {
                             Observable.just(appCMSDeleteHistoryResult)
                                     .onErrorResumeNext(throwable -> Observable.empty())
                                     .subscribe(resultAction1);
+                            if (userHistoryData.containsKey(filmId)) {
+                                userHistoryData.remove(filmId);
+                            }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting history: " + e.getMessage());
                         } finally {
@@ -4560,6 +4563,7 @@ public class AppCMSPresenter {
                             Observable.just(appCMSDeleteHistoryResult)
                                     .onErrorResumeNext(throwable -> Observable.empty())
                                     .subscribe(resultAction1);
+                            userHistoryData.clear();
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting all history items: " + e.getMessage());
                         }
