@@ -527,6 +527,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_bannerAd_module_key),
                 AppCMSUIKeyType.PAGE_BANNER_AD_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mediumRectangleAd_module_key),
+                AppCMSUIKeyType.PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_photo_tray_module_key),
                 AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY);
 
