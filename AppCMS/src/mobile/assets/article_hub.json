@@ -1632,9 +1632,9 @@
         "infoHover": false,
         "isHidden": true
       },
-      "view": "AC Carousel 01",
-      "type": "AC Carousel 01",
-      "blockName": "carousel01",
+      "view": "AC EventCarousel 01",
+      "type": "AC EventCarousel 01",
+      "blockName": "eventCarousel01",
       "layout": {
         "mobile": {
           "yAxis": 0,
