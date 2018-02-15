@@ -50,7 +50,11 @@ public class HeaderView extends TVBaseView {
         float viewWidth = Utils.getViewHeight(mContext ,mComponent.getLayout() ,DEFAULT_WIDTH );
         LayoutParams layoutParams= new LayoutParams((int)viewWidth , (int)viewHeight);
         setLayoutParams(layoutParams);
-        setBackgroundColor(ContextCompat.getColor(mContext , R.color.video_detail_header));
+        int color = Color.TRANSPARENT;
+        if (mComponent.getBackgroundColor() != null) {
+            color = Color.parseColor(mComponent.getBackgroundColor());
+        }
+        setBackgroundColor(color);
     }
 
     @Override
@@ -122,20 +126,24 @@ public class HeaderView extends TVBaseView {
                 switch (componentKey) {
                     case PAGE_VIDEO_TITLE_KEY:
                     case PAGE_SHOW_TITLE_KEY:
-                        if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {
-                            ((TextView) componentView).setText(mModuleData.getContentData().get(0).getGist().getTitle());
-                            if (component.getNumberOfLines() != 0) {
-                                ((TextView) componentView).setMaxLines(component.getNumberOfLines());
+                        if(null != mModuleData && null != mModuleData.getContentData() && mModuleData.getContentData().size() > 0) {
+                            if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {
+                                ((TextView) componentView).setText(mModuleData.getContentData().get(0).getGist().getTitle());
+                                if (component.getNumberOfLines() != 0) {
+                                    ((TextView) componentView).setMaxLines(component.getNumberOfLines());
+                                }
+                                ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
                             }
-                            ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
                         }
                         break;
 
                     case PAGE_VIDEO_SUBTITLE_KEY:
+                        if(null != mModuleData && null != mModuleData.getContentData() && mModuleData.getContentData().size() > 0)
                         setVideoViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
                         break;
 
                     case PAGE_SHOW_SUBTITLE_KEY:
+                        if(null != mModuleData && null != mModuleData.getContentData() && mModuleData.getContentData().size() > 0)
                         setShowViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
                         break;
                 }

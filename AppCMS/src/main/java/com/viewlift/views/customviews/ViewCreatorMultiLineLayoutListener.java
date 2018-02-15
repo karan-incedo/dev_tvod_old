@@ -17,9 +17,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.viewlift.presenters.AppCMSPresenter;
-
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 /**
  * Created by viewlift on 6/7/17.

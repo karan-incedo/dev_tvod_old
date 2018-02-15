@@ -508,7 +508,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                         appCmsPresenter.openSearch(primary.getPageId(), primary.getTitle());
                         Utils.pageLoading(false, getActivity());
-                        navigationVisibilityListener.showNavigation(false);
+                        //navigationVisibilityListener.showNavigation(false);
                     }
 
                     /*Settings*/
@@ -565,7 +565,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     /*Watchlist*/
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showNavigation(false);
+                            //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToWatchlistPage(
                                     primary.getPageId(),
@@ -605,7 +605,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     /*History*/
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showNavigation(false);
+                            //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToHistoryPage(
                                     primary.getPageId(),
@@ -649,7 +649,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                 true,
                                 false,
                                 false);
-                        navigationVisibilityListener.showNavigation(false);
+                       // navigationVisibilityListener.showNavigation(false);
                     }
 
                 }, 500);

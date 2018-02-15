@@ -1,8 +1,16 @@
 {
-  "id": "596730f6-c016-4cb8-b73e-96edda509f56",
-  "settings": {},
-  "view": "AC Watchlist 02",
-  "type": "AC Watchlist 02",
+  "id": "b3214a4e-adaf-4c88-b9d3-f6b83be5d76a",
+  "settings": {
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    }
+  },
+  "view": "AC Watchlist 01",
+  "type": "AC Watchlist 01",
+  "blockName": "watchlist01",
   "layout": {
     "ftv": {
       "yAxis": 0,
@@ -15,50 +23,42 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 35,
-          "xAxis": 1585,
-          "width": 270,
-          "fontSize": 13,
-          "height": 70
+          "yAxis": 28,
+          "xAxis": 96,
+          "width": 255,
+          "fontSize": 12,
+          "height": 60
         }
       },
-      "borderColor": "ffffff",
-      "fontFamily": "Lato",
+      "borderColor": "#ffffff",
+      "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "clearWatchlist",
       "text": "CLEAR WATCHLIST",
       "type": "button",
-      "textColor": "ffffff",
-      "fontWeight": "Bold",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
       "key": "removeAll"
     },
-    /*{
+    {
       "layout": {
         "ftv": {
-          "width": 1920,
-          "height": 10
+          "yAxis": 111,
+          "leftMargin": 95,
+          "rightMargin": 4.9,
+          "fontSize": 20,
+          "height": 55
         }
       },
-      "backgroundColor": "#cf0a2c",
-      "type": "label"
-    }, */{
-      "layout": {
-        "ftv": {
-          "yAxis": 37,
-          "fontSize": 24,
-          "height": 57
-        }
-      },
-      "fontFamily": "Lato",
+      "fontFamily": "OpenSans",
       "numberOfLines": 1,
-      "textAlignment": "center_horizontal",
+      "textAlignment": "left",
       "letterSpacing": 4.5,
-      "text": "Watchlist",
+      "text": "WATCHLIST",
       "type": "label",
-      "fontWeight": "Regular",
-      "textColor": "ffffff",
+      "fontWeight": "Semibold",
       "key": "pageTitle"
-    },/*
+    },
     {
       "layout": {
         "ftv": {
@@ -70,7 +70,7 @@
       },
       "backgroundColor": "#808080",
       "type": "separatorView"
-    },*/
+    },
     {
       "layout": {
         "ftv": {
@@ -78,9 +78,10 @@
           "leftMargin": 4.9,
           "yAxis": 183,
           "rightMargin": 2.67,
-          "itemHeight": 275,
-          "itemWidth": 1676,
-          "height": 800
+          "itemHeight": 118,
+          "itemWidth": 1730,
+          "height": 757,
+          "padding" : 150
         }
       },
       "components": [
@@ -90,14 +91,14 @@
               "leftMargin": 95,
               "yAxis": 0,
               "xAxis": 0,
-              "width": 380,
-              "height": 214
+              "width": 210,
+              "height": 118
             }
           },
           "type": "image",
           "key": "thumbnailImage"
         },
-        /*{
+        {
           "layout": {
             "ftv": {
               "yAxis": 35,
@@ -108,53 +109,35 @@
           },
           "type": "button",
           "key": "playImage"
-        },*/
+        },
         {
           "layout": {
             "ftv": {
-              "leftMargin": 550,
-              "fontSize": 16,
-              "width" : 850
+              "leftMargin": 325,
+              "fontSize": 12.5
             }
           },
-          "numberOfLines": 1,
-          "fontFamily": "Lato",
+          "fontFamily": "OpenSans",
           "textAlignment": "left",
           "type": "label",
           "textColor": "#ffffff",
-          "fontWeight": "Heavy",
+          "fontWeight": "SemiBold",
           "key": "titleLabel"
         },
         {
           "layout": {
             "ftv": {
-              "topMargin": 45,
-              "leftMargin": 550,
-              "fontSize": 11,
-              "width": 718
+              "leftMargin": 325,
+              "topMargin": 35,
+              "width": 730,
+              "fontSize": 11.5,
+              "height": 74
             }
           },
-          "fontFamily": "Lato",
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#ffffff",
-          "fontWeight": "Bold",
-          "key": "subtitleLabel"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "topMargin": 80,
-              "leftMargin": 550,
-              "width": 1246,
-              "fontSize": 14
-            }
-          },
-          "fontFamily": "Lato",
-          "numberOfLines": 3,
+          "fontFamily": "OpenSans",
+          "numberOfLines": 2,
           "textAlignment": "left",
           "lineHeight": 36,
-          "fontWeight": "Regular",
           "type": "label",
           "textColor": "#ffffff",
           "key": "descriptionLabel"
@@ -162,50 +145,23 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 1435,
-              "topMargin" : 15,
-              "width": 50,
-              "height": 50
-            }
-          },
-          "type": "image",
-          "key": "teamIcon"
-        }/*,
-        {
-          "layout": {
-            "ftv": {
-              "leftMargin": 1585,
-              "topMargin" : 26,
-              "width": 215,
-              "height": 45
-            }
-          },
-          "borderColor" : "c70018",
-          "fillColor" : "cb0022",
-          "type": "starRating",
-          "key": "starRating"
-        }*/
-        /*,
-        {
-          "layout": {
-            "ftv": {
-              "topMargin": 30,
               "leftMargin": 1615,
+              "topMargin": 30,
               "width": 210,
               "fontSize": 12,
               "height": 60
             }
           },
-          "borderColor": "66ffffff",
+          "borderColor": "#ffffff",
           "fontFamily": "OpenSans",
           "borderWidth": 4,
           "action": "deleteItem",
           "text": "REMOVE",
           "type": "button",
-          "textColor": "ffffff",
+          "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "deleteItemButton"
-        }*/
+        }
       ],
       "itemClickAction": "lectureDetailPage",
       "type": "tableView",

@@ -8,6 +8,7 @@
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>
 
     <dimen name="browse_fragment_margin_left">-10dp</dimen>
+    <dimen name="browse_fragment_show_season_margin_left">3.5dp</dimen>
     <dimen name="grid_browse_fragment_margin_left">30dp</dimen>
     <dimen name="grid_browse_fragment_margin_top">-150dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
@@ -38,6 +39,7 @@
     <dimen name="footer_logo_margin_bottom">14dp</dimen>
     <dimen name="footer_info_icon_margin_bottom">25dp</dimen>
     <dimen name="footer_info_icon_margin_right">45dp</dimen>
+    <dimen name="logo_margin">15dp</dimen>
 
     <dimen name="splash_logo_animation_right_margin">20dp</dimen>
     <dimen name="splash_logo_animation_bottom_margin">20dp</dimen>

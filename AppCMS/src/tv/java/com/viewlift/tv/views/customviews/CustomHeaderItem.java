@@ -17,6 +17,7 @@ public class CustomHeaderItem extends HeaderItem {
 
     private boolean mIsCarousal;
 
+    private String itemSpacing;
     public boolean ismIsLivePlayer() {
         return mIsLivePlayer;
     }
@@ -119,6 +120,14 @@ public class CustomHeaderItem extends HeaderItem {
 
     public boolean ismIsCarousal() {
         return mIsCarousal;
+    }
+
+    public String getItemSpacing() {
+        return itemSpacing;
+    }
+
+    public void setItemSpacing(String itemSpacing) {
+        this.itemSpacing = itemSpacing;
     }
 
     public CustomHeaderItem(Context context , long id , String name){

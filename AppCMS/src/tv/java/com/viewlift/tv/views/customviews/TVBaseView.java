@@ -55,12 +55,20 @@ public abstract class TVBaseView extends FrameLayout {
 
 
     static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int episodes = 0;
-        for (Season_ season : data.getSeason()) {
-            episodes += season.getEpisodes().size();
+        int number = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        if(data.getSeason() != null && data.getSeason().size() > 1){
+            number = data.getSeason().size();
+            stringBuilder.append(context.getResources().getString(R.string.seasons, number));
+        } else {
+            for (Season_ season : data.getSeason()) {
+                number += season.getEpisodes().size();
+            }
+            stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
         }
-        ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.episodes, episodes, episodes));
-        view.setAlpha(0.6f);
+        stringBuilder.append(" | ");
+         stringBuilder.append(data.getGist().getPrimaryCategory().getTitle() != null ? data.getGist().getPrimaryCategory().getTitle().toUpperCase() : "");
+        ((TextView) view).setText(stringBuilder);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
 
@@ -89,18 +97,18 @@ public abstract class TVBaseView extends FrameLayout {
         if (minutes == 1) {
             infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
         } else if (minutes > 1 && minutes < 10) {
-            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append("0").append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         } else if (minutes >= 10) {
-            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         }
 
-        if (seconds == 1) {
+        /*if (seconds == 1) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
         } else if (seconds > 1 && seconds < 10) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         } else if (seconds >= 10) {
             infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
-        }
+        }*/
 
         if (!TextUtils.isEmpty(year)) {
             infoText.append(context.getString(R.string.text_separator));
@@ -113,7 +121,6 @@ public abstract class TVBaseView extends FrameLayout {
         }
 
         ((TextView) view).setText(infoText.toString());
-         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
@@ -283,7 +290,7 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_VIDEO_TITLE_KEY:
                   //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
 //                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
-                  //  }
+                    //  }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
@@ -310,6 +317,12 @@ public abstract class TVBaseView extends FrameLayout {
         }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
             viewHeight = DEVICE_HEIGHT;
             viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else if (componentType.equals(AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY)) {
+            Integer padding = Integer.valueOf(
+                    childComponent.getLayout().getTv().getPadding() != null
+                            ? childComponent.getLayout().getTv().getPadding()
+                            : "0");
+            view.setPadding(0, 0, 0, padding);
         }
 
         if (useWidthOfScreen) {

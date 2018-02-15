@@ -244,7 +244,7 @@ afterEvaluate {
 }
 
 
-configurations.tvCompile {
+configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         def requested = details.requested
         if (requested.group == 'com.android.support') {
