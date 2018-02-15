@@ -1858,7 +1858,7 @@ public class ViewCreator {
 
                     AppCMSViewAdapter appCMSViewAdapter;
 
-                    /*if (componentKey == AppCMSUIKeyType.PAGE_LIST_VIEW_KEY) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_LIST_VIEW_KEY) {
 
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
@@ -1866,10 +1866,10 @@ public class ViewCreator {
                                         false));
 
 
-                       *//* ViewGroup.LayoutParams params=((RecyclerView) componentViewResult.componentView).getLayoutParams();
+                       //* ViewGroup.LayoutParams params=((RecyclerView) componentViewResult.componentView).getLayoutParams();
                         //params.height=moduleAPI.getContentData().size()*50;
-                        params.height=100;
-                        ((RecyclerView) componentViewResult.componentView).setLayoutParams(params);*//*
+//                        params.height=100;
+//                        ((RecyclerView) componentViewResult.componentView).setLayoutParams(params);*//*
 
 
                         AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
@@ -1895,7 +1895,7 @@ public class ViewCreator {
                                     .id(moduleId + component.getKey())
                                     .build());
                         }
-                    }else*/ if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                    }else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
 
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
