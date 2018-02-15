@@ -264,6 +264,7 @@ public class ViewCreator {
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY)) {
                 createModule = false;
@@ -1200,10 +1201,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
 
-                    if (moduleInfo.getBlockName().contains("carousel01")){
+                    if (moduleInfo.getBlockName().contains("eventCarousel01")){
                         module = appCMSPageUI1.getModuleList().get(7);
                     } else if (moduleInfo.getBlockName().contains("list01") ) {
                         module = appCMSPageUI1.getModuleList().get(8);
+                    }else if (moduleInfo.getBlockName().contains("mediumRectangleAd01") ) {
+                        module = appCMSPageUI1.getModuleList().get(10);
                     }
                 }
                 //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
@@ -1295,7 +1298,12 @@ public class ViewCreator {
                 }/* else if (moduleInfo.getBlockName().contains("carousel01") &&
                             moduleInfo.getSettings()!=null &&
                             moduleInfo.getSettings().isHidden()) {
+                    Aelse if (moduleInfo.getBlockName().equalsIgnoreCase("mediumRectangleAd01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(10);
+                }ppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(7);
@@ -1348,6 +1356,7 @@ public class ViewCreator {
 
             if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
                 createModule = false;
@@ -1356,6 +1365,7 @@ public class ViewCreator {
             if (createModule) {
                 if (appCMSPageAPI != null && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
                 }
 
@@ -2829,8 +2839,17 @@ public class ViewCreator {
 
             case PAGE_ADS_KEY:
                 //todo need to work for managing Subscribed User case scanerio
+
                 componentViewResult.componentView = new AdView(context);
-                ((AdView)componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                switch (jsonValueKeyMap.get(viewType)){
+                    case PAGE_BANNER_AD_MODULE_KEY:
+                        ((AdView)componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                        break;
+                    case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
+                        ((AdView)componentViewResult.componentView).setAdSize(AdSize.MEDIUM_RECTANGLE);
+                        break;
+                }
+
                 if (moduleAPI!=null &&
                         moduleAPI.getMetadataMap()!=null &&
                         moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {

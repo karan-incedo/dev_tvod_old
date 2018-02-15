@@ -509,6 +509,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_module_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_event_carousel_module_key),
+                AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_module_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY);
 
@@ -523,6 +526,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_bannerAd_module_key),
                 AppCMSUIKeyType.PAGE_BANNER_AD_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mediumRectangleAd_module_key),
+                AppCMSUIKeyType.PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_photo_tray_module_key),
                 AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY);

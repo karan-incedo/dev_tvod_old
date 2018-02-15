@@ -1632,9 +1632,9 @@
         "infoHover": false,
         "isHidden": true
       },
-      "view": "AC Carousel 01",
-      "type": "AC Carousel 01",
-      "blockName": "carousel01",
+      "view": "AC EventCarousel 01",
+      "type": "AC EventCarousel 01",
+      "blockName": "eventCarousel01",
       "layout": {
         "mobile": {
           "yAxis": 0,
@@ -1884,13 +1884,13 @@
           "yAxis": 0,
           "leftMargin": 70.5,
           "rightMargin": 0,
-          "height": 150
+          "height": 134
         },
         "tabletPortrait": {
           "leftMargin": 0,
           "topMargin": 60.45,
           "rightMargin": 40.36,
-          "height": 250
+          "height": 100
         }
       },
       "components": [
@@ -1978,7 +1978,6 @@
               "numberOfLines": 2,
               "type": "label",
               "textColor": "#000000",
-              "backgroundColor": "#FF0000",
               "fontWeight": "Semibold",
               "key": "thumbnailTitle"
             }
@@ -1987,7 +1986,6 @@
           "type": "list",
           "supportPagination": false,
           "key": "list",
-          "backgroundColor": "#FF0000",
           "cornerRadius": 0
         }
       ]
@@ -2006,7 +2004,7 @@
           "leftMargin": 0,
           "topMargin": 0,
           "rightMargin": 0,
-          "height": 422
+          "height": 672
         },
         "tabletLandscape": {
           "yAxis": 0,
@@ -2018,7 +2016,7 @@
           "leftMargin": 0,
           "topMargin": 60.45,
           "rightMargin": 40.36,
-          "height": 299
+          "height": 350
         }
       },
       "components": []
@@ -2031,8 +2029,58 @@
       "view": "AC MediumRectangleAd 01",
       "type": "AC MediumRectangleAd 01",
       "blockName": "mediumRectangleAd01",
-      "layout": {},
-      "components": []
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            }
+          },
+          "type": "adView",
+          "key": "adView"
+        }
+      ]
     },
     {
       "id": "eaf0d45d-f0d8-4ce9-9889-62413139c8b9",
