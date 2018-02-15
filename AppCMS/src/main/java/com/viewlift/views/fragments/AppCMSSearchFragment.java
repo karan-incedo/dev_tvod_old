@@ -110,7 +110,7 @@ public class AppCMSSearchFragment extends DialogFragment {
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
-                String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
+                String[] searchHintResult = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_DATA)).split(",");
                 appCMSPresenter.searchSuggestionClick(searchHintResult);
                 return true;
             }

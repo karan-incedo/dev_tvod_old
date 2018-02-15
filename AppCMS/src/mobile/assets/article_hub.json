@@ -1650,7 +1650,6 @@
           "rightMargin": 0,
           "height": 384,
           "width": 683
-
         },
         "tabletPortrait": {
           "yAxis": 0,
@@ -1904,27 +1903,56 @@
               "height": 40
             },
             "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
+
+              "leftMargin": 50,
               "rightMargin": 0.97,
+              "topMargin": 2,
               "fontSize": 16,
-              "height": 40
+              "height": 40,
+              "width":120
             },
             "tabletPortrait": {
-              "yAxis": 0,
-              "leftMargin": 1.3,
+
+              "leftMargin": 40,
               "rightMargin": 1.3,
               "fontSize": 16,
-              "height": 40
+              "height": 40,
+              "width":120
             }
           },
           "fontFamily": "OpenSans",
           "numberOfLines": 1,
-          "textAlignment": "center",
+          "textAlignment": "left",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#707070",
           "fontWeight": "Regular",
           "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 5.4,
+              "rightMargin": 0,
+              "height": 1
+            },
+            "tabletLandscape": {
+              "leftMargin": 50,
+              "topMargin": 12,
+              "rightMargin": 0,
+              "height": 1,
+              "width": 120
+            },
+            "tabletPortrait": {
+              "leftMargin": 43,
+              "topMargin": 17,
+              "rightMargin": 0,
+              "height": 1,
+              "width": 120
+            }
+          },
+          "backgroundColor": "CF0A2C",
+          "type": "separatorView"
         },
         {
           "layout": {
@@ -1932,19 +1960,20 @@
               "gridHeight": 38,
               "trayPadding": 5,
               "leftMargin": 2.67
-
             },
             "tabletLandscape": {
               "gridHeight": 38,
-              "trayPadding": 5,
+              "trayPadding": 1,
               "leftMargin": 0,
-              "gridWidth": 195
+              "gridWidth": 195,
+              "topMargin": 10
             },
             "tabletPortrait": {
               "gridHeight": 38,
-              "trayPadding": 2,
+              "trayPadding": 1,
               "leftMargin": 0,
-              "gridWidth": 195
+              "gridWidth": 195,
+              "topMargin": 10
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -1952,22 +1981,19 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 0,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11
                 },
                 "tabletLandscape": {
-                  "yAxis": 0,
-                  "leftMargin": 0,
+                  "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11
                 },
                 "tabletPortrait": {
-                  "yAxis": 0,
-                  "leftMargin": 0,
+                  "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11
@@ -1980,13 +2006,37 @@
               "textColor": "#000000",
               "fontWeight": "Semibold",
               "key": "thumbnailTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 5.4,
+                  "rightMargin": 0,
+                  "height": 1
+                },
+                "tabletLandscape": {
+                  "leftMargin": 2,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "width": 4,
+                  "height": 30
+                },
+                "tabletPortrait": {
+                  "leftMargin": 2,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "width": 4,
+                  "height": 30
+                }
+              },
+              "backgroundColor": "#706C72",
+              "type": "separatorView"
             }
           ],
-          "isHorizontalScroll": false,
           "type": "list",
-          "supportPagination": false,
           "key": "list",
-          "cornerRadius": 0
+          "backgroundColor": "#FF0000"
         }
       ]
     },
