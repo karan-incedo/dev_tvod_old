@@ -47,8 +47,6 @@ public class ContentDatum implements Serializable {
     @Expose
     Gist gist;
 
-    List<String> relatedArticleIds;
-
 //    ArticleGist articleGist;
 //
 //    public ArticleGist getArticleGist() {
@@ -311,13 +309,6 @@ public class ContentDatum implements Serializable {
         this.planDetails = planDetails;
     }
 
-    public List<String> getRelatedArticleIds() {
-        return relatedArticleIds;
-    }
-
-    public void setRelatedArticleIds(List<String> relatedArticleIds) {
-        this.relatedArticleIds = relatedArticleIds;
-    }
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();

@@ -152,7 +152,10 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
+                component!=null &&
+                component.getSettings()!=null &&
+                !component.getSettings().isHidden()) {
             childrenContainer = new LinearLayout(getContext());
             ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams childContainerLayoutParams =
@@ -202,10 +205,13 @@ public class CollectionGridItemView extends BaseView {
         }
         childItems.add(itemContainer);
 
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
+                component!=null &&
+                component.getSettings()!=null &&
+                !component.getSettings().isHidden()) {
             if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
                 ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
-            } else {
+            }else {
                 ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
             }
         } else {
@@ -423,14 +429,17 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() != null) {
+                        if(!(childViewWidth > 0)){
+                            childViewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+                        }else if(!(childViewHeight > 0)){
+                            childViewHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+                        }
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getImageGist().get_16x9(),
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) &&
-                                childViewWidth>0 &&
-                                childViewHeight>0 ) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)

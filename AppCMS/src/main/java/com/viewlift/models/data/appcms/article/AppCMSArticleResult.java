@@ -70,7 +70,7 @@ public class AppCMSArticleResult {
         contentDatum.setContentDetails(this.contentDetails);
         contentDatum.setCategories(this.categories);
         contentDatum.setTags(this.tags);
-        contentDatum.setRelatedArticleIds(this.relatedArticleIds);
+        //contentDatum.setRelatedArticleIds(this.relatedArticleIds);
         data.add(contentDatum);
 
         module.setContentData(data);
