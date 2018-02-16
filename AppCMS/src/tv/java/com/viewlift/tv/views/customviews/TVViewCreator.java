@@ -244,24 +244,8 @@ public class TVViewCreator {
             } else {
                 isCaurosel = false;
             }
-
-            if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))) {
-             //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
-            }
-
-
-            if (module.getView().equalsIgnoreCase("AC ContinueWatching 01")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
-//                isGrid = true;
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray01")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray01.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray04")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray02")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            if (module.getView().equalsIgnoreCase("AC Grid 01")) {
+                isGrid = true;
             }
 
             for (Component component : module.getComponents()) {
@@ -478,7 +462,7 @@ public class TVViewCreator {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                             Integer.valueOf(component.getLayout().getTv().getHeight() != null ? component.getLayout().getTv().getHeight() : "0"),
                             Integer.valueOf(component.getLayout().getTv().getWidth() != null ? component.getLayout().getTv().getWidth() : "0"),
-                            component.getTrayBackground(),
+                            component,
                             jsonValueKeyMap
                     );
 

@@ -10794,8 +10794,8 @@ public class AppCMSPresenter {
                                                 Module module = modules.get(i);
                                                 AppCMSUIKeyType moduleType = getJsonValueKeyMap().get(module.getModuleType());
                                                 if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
-                                                    if (module.getContentData() != null &&
-                                                            !module.getContentData().isEmpty()) {
+                                                   /* if (module.getContentData() != null &&
+                                                            !module.getContentData().isEmpty())*/ if(module != null && module.getId() != null){
                                                         int finalI = i;
                                                         isHistoryUpdate = true;
                                                         getHistoryData(appCMSHistoryResult -> {
