@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -168,6 +169,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(view, unselectedColor);
             }
         }
+        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         return new ViewHolder(view);
     }
 
@@ -447,6 +450,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(0);
                                     appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    return;
+                                }
+                                //PHOTOGALLERY
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().contains("PHOTOGALLERY")) {
+                                    //appCMSPresenter.setCurrentArticleIndex(0);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(data.getGist().getId(), data.getGist().getTitle(), false);
                                     return;
                                 }
 

@@ -61,6 +61,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -560,6 +561,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        //Todo chnge it with dynamic add approach
+        MobileAds.initialize(this,
+                "ca-app-pub-3940256099942544~3347511713");
         //noinspection ConstantConditions
         if (inAppBillingService == null && inAppBillingServiceConn != null) {
             Intent serviceIntent =

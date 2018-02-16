@@ -125,6 +125,7 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
+import com.viewlift.models.data.appcms.photogallery.AppCMSPhotoGalleryResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
@@ -182,6 +183,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPhotoGalleryCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
@@ -436,6 +438,7 @@ public class AppCMSPresenter {
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
     private final AppCMSArticleCall appCMSArticleCall;
+    private final AppCMSPhotoGalleryCall appCMSPhotoGalleryCall;
     //private final AppCMSCCAvenueCall appCMSCCAvenueCall;
     //private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
     private final String FIREBASE_SCREEN_SIGN_OUT = "sign_out";
@@ -532,6 +535,7 @@ public class AppCMSPresenter {
     private MetaPage privacyPolicyPage;
     private MetaPage tosPage;
     private MetaPage articlePage;
+    private MetaPage photoGalleryPage;
     private PlatformType platformType;
     private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -683,6 +687,7 @@ public class AppCMSPresenter {
 
     @Inject
     public AppCMSPresenter(Gson gson, AppCMSArticleCall appCMSArticleCall,
+                           AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                            AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
@@ -755,6 +760,7 @@ public class AppCMSPresenter {
 
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSArticleCall = appCMSArticleCall;
+        this.appCMSPhotoGalleryCall = appCMSPhotoGalleryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
         this.appCMSBeaconCall = appCMSBeaconCall;
@@ -5818,7 +5824,6 @@ public class AppCMSPresenter {
 
     /**
      * Get the total remaining free time of the user.
-     *
      * @return total remaining time in milli seconds
      */
     public long getUserFreePlayTimePreference() {
@@ -5831,7 +5836,6 @@ public class AppCMSPresenter {
 
     /**
      * Set the total remaining free time of the user.
-     *
      * @param userFreePlayTime in milli seconds
      */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
@@ -6846,44 +6850,48 @@ public class AppCMSPresenter {
         }).execute();
     }
 
-    public int getBrandPrimaryCtaColor() {
-        if (getAppCMSMain() != null &&
-                getAppCMSMain().getBrand() != null &&
-                getAppCMSMain().getBrand().getCta() != null &&
-                getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null
+    public int getBrandPrimaryCtaColor(){
+        if (getAppCMSMain()!=null &&
+                getAppCMSMain().getBrand() !=null &&
+                getAppCMSMain().getBrand().getCta() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
                 ) {
             return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-        } else if (currentActivity != null) {
+        }else if (currentActivity !=null ){
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
-
     public int getGeneralBackgroundColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getGeneral() != null &&
                 getAppCMSMain().getBrand().getGeneral().getTextColor() != null) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-        } else if (currentActivity != null) {
+        }else if (currentActivity !=null ){
             return ContextCompat.getColor(currentActivity, R.color.backgroundColor);
         }
         return 0;
     }
-
-    public int getGeneralTextColor() {
+    public int getGeneralTextColor(){
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getGeneral() != null &&
-                getAppCMSMain().getBrand().getGeneral().getTextColor() != null) {
+                getAppCMSMain().getBrand().getGeneral().getTextColor() != null  ) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getTextColor());
-        } else if (currentActivity != null) {
+        }else if (currentActivity !=null ){
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
-
+    public int getNavBarItemDefaultColor()
+    {
+        if(currentActivity!=null ){
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+        return 0;
+    }
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
@@ -8770,7 +8778,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
                                             getPlayerLruCache().evictAll();
-                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
+                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -8786,7 +8794,7 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        } else if (getLaunchType() == LaunchType.HOME) {
+                                        }  else if (getLaunchType() == LaunchType.HOME) {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
@@ -8859,7 +8867,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(updateSubscription);
                                 getPlayerLruCache().evictAll();
 
-                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
+                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9028,7 +9036,7 @@ public class AppCMSPresenter {
         this.currentContext = context;
     }
 
-    public Bundle getPageActivityBundle(Activity activity,
+    private Bundle getPageActivityBundle(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
@@ -9732,7 +9740,7 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     } else {
-                                                        if (homePage != null) {
+                                                        if(homePage != null) {
                                                             boolean launchSuccess = navigateToPage(homePage.getPageId(),
                                                                     homePage.getPageName(),
                                                                     homePage.getPageUI(),
@@ -9867,6 +9875,12 @@ public class AppCMSPresenter {
             if (articlePageIndex >= 0) {
                 articlePage = metaPageList.get(articlePageIndex);
                 new SoftReference<Object>(articlePage, referenceQueue);
+            }
+
+            int photoGalleryPageIndex = getPhotoGalleryPage(metaPageList);
+            if(photoGalleryPageIndex >= 0){
+                photoGalleryPage = metaPageList.get(photoGalleryPageIndex);
+                new SoftReference<Object>(photoGalleryPage, referenceQueue);
             }
 
             int pageToQueueIndex = -1;
@@ -10072,6 +10086,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getPhotoGalleryPage(List<MetaPage> metaPageList){
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY) {
                 return i;
             }
         }
@@ -10566,7 +10590,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-        // sendCloseOthersAction(null, true, false);
+       // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -10724,7 +10748,7 @@ public class AppCMSPresenter {
                                     && !contentDatum.getStreamingInfo().getIsLiveStream();
 
                             adsUrl = getAdsUrl(pagePath);
-                            if (adsUrl == null) {
+                            if(adsUrl == null) {
                                 requestAds = false;
                             }
                             String backgroundColor = appCMSMain.getBrand()
@@ -10963,17 +10987,16 @@ public class AppCMSPresenter {
 
     public TemplateType getTemplateType() {
         String templateName = appCMSMain.getTemplateName();
-        if ("Entertainment".equalsIgnoreCase(templateName)) {
+        if ("Entertainment".equalsIgnoreCase(templateName)){
             return TemplateType.ENTERTAINMENT;
-        } else if ("Education".equalsIgnoreCase(templateName)) {
+        } else if ("Education".equalsIgnoreCase(templateName)){
             return TemplateType.EDUCATION;
-        } else if ("LIVE".equalsIgnoreCase(templateName)) {
+        } else if ("LIVE".equalsIgnoreCase(templateName)){
             return TemplateType.LIVE;
-        } else /*if (templateName.equalsIgnoreCase("Sports"))*/ {
+        } else /*if (templateName.equalsIgnoreCase("Sports"))*/{
             return TemplateType.SPORTS;
         }
     }
-
     public boolean isRemovableSDCardAvailable() {
         return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
@@ -12556,11 +12579,9 @@ public class AppCMSPresenter {
                 now.getTime(),
                 appCMSMain.getSite());
     }
-
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
-
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -12574,20 +12595,19 @@ public class AppCMSPresenter {
             isFullScreenVisible = true;
         }
     }
-
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
-                if (videoPlayerViewParent != null) {
+                 if (videoPlayerViewParent != null) {
                     relativeLayoutFull.removeView(tvVideoPlayerView);
                     if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
                         ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
                     }
-                    tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-                    videoPlayerViewParent.addView(tvVideoPlayerView);
+                        tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                     videoPlayerViewParent.addView(tvVideoPlayerView);
                 }
-                tvVideoPlayerView = null;
-                videoPlayerViewParent = null;
+                tvVideoPlayerView =null;
+                videoPlayerViewParent=null;
 
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
                 rootView.postDelayed(() -> {
@@ -12616,9 +12636,73 @@ public class AppCMSPresenter {
         this.currentArticleIndex = currentArticleIndex;
     }
 
+    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,
+                                           boolean launchActivity){
+        if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
+            AppCMSPageUI appCMSPageUI = navigationPages.get(photoGalleryPage.getPageId());
+            getPhotoGalleryPageContent(appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    photoGalleryId, new AppCMSArticlePhotoGalleryAPIAction(true,
+                            false,
+                            false,
+                            appCMSPageUI,
+                            photoGalleryId,
+                            photoGalleryId,
+                            pageTitle,
+                            photoGalleryId,
+                            launchActivity, null) {
+                        @Override
+                        public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
+                            if(appCMSPhotoGalleryResult != null){
+                                cancelInternalEvents();
+                                pushActionInternalEvents(photoGalleryPage.getPageId()
+                                        + BaseView.isLandscape(currentActivity));
+
+                                AppCMSPageAPI pageAPI=null;
+                                if (appCMSPhotoGalleryResult != null) {
+                                    pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
+                                }
+
+                                navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
+                                Bundle args = getPageActivityBundle(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        photoGalleryPage.getPageId(),
+                                        this.pageTitle,
+                                        this.pagePath,
+                                        pageIdToPageNameMap.get(photoGalleryPage.getPageId()),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        null,
+                                        ExtraScreenType.NONE);
+                                if (args != null) {
+                                    Intent pageIntent =
+                                            new Intent(AppCMSPresenter
+                                                    .PRESENTER_NAVIGATE_ACTION);
+                                    pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(pageIntent);
+                                }
+
+
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                        .PRESENTER_STOP_PAGE_LOADING_ACTION));
+
+                            }
+                        }
+                    });
+
+        }
+    }
+
 
     public void navigateToArticlePage(String articleId, String pageTitle,
-                                      boolean launchActivity) {
+                                       boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12644,14 +12728,13 @@ public class AppCMSPresenter {
                                 pushActionInternalEvents(this.pageId
                                         + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI = null;
+                                AppCMSPageAPI pageAPI=null;
                                 if (appCMSArticleResult != null) {
                                     pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(this.pageId);
                                 }
-                                //this.pageId+ BaseView.isLandscape(this)
 
-                                //((AppCMSPageFragment)getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()+ BaseView.isLandscape(this)))
                                 navigationPageData.put(this.pageId, pageAPI);
+
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             pageAPI,
@@ -12673,9 +12756,9 @@ public class AppCMSPresenter {
                                         pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                                 args);
                                         currentActivity.sendBroadcast(pageIntent);
-                                       /* AppCMSBinder binder = (AppCMSBinder) args.getBinder("app_cms_binder_key");
-                                        ((AppCMSPageActivity)currentActivity).updateCurrentFragmentTag(binder);*/
                                     }
+
+
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
@@ -12685,10 +12768,39 @@ public class AppCMSPresenter {
         }
     }
 
+    private void getPhotoGalleryPageContent(final String apiBaseUrl,
+                                            final String siteId,
+                                            String pageId,
+                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction){
+        if (currentActivity != null) {
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        getRefreshToken());
+
+                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                    try {
+                        appCMSPhotoGalleryCall.call(
+                                currentActivity.getString(R.string.app_cms_photogallery_api_url,
+                                        apiBaseUrl,
+                                        pageId,
+                                        siteId
+                                ),
+                                photoGalleryAPIAction);
+
+                    } catch (IOException e) {
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
     private void getArticlePageContent(final String apiBaseUrl,
-                                       final String siteId,
-                                       String pageId,
-                                       final AppCMSArticleAPIAction articleAPIAction) {
+                                        final String siteId,
+                                        String pageId,
+                                        final AppCMSArticleAPIAction articleAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -12714,7 +12826,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public abstract static class AppCMSArticleAPIAction implements Action1<AppCMSArticleResult> {
+    private abstract static class AppCMSArticleAPIAction implements Action1<AppCMSArticleResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
         final boolean navbarPresent;
@@ -12726,7 +12838,41 @@ public class AppCMSPresenter {
         final boolean launchActivity;
         final Uri searchQuery;
 
-        public AppCMSArticleAPIAction(boolean appbarPresent,
+        AppCMSArticleAPIAction(boolean appbarPresent,
+                                boolean fullscreenEnabled,
+                                boolean navbarPresent,
+                                AppCMSPageUI appCMSPageUI,
+                                String action,
+                                String pageId,
+                                String pageTitle,
+                                String pagePath,
+                                boolean launchActivity,
+                                Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
+
+    private abstract static class AppCMSArticlePhotoGalleryAPIAction implements Action1<AppCMSPhotoGalleryResult>{
+        final boolean appbarPresent;
+        final boolean fullscreenEnabled;
+        final boolean navbarPresent;
+        final AppCMSPageUI appCMSPageUI;
+        final String action;
+        final String pageId;
+        final String pageTitle;
+        final String pagePath;
+        final boolean launchActivity;
+        final Uri searchQuery;
+        AppCMSArticlePhotoGalleryAPIAction(boolean appbarPresent,
                                boolean fullscreenEnabled,
                                boolean navbarPresent,
                                AppCMSPageUI appCMSPageUI,
@@ -12748,5 +12894,6 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+
 
 }

@@ -32,7 +32,9 @@ public class ContentDetails implements Serializable {
 
     @SerializedName("author")
     @Expose
-    Object author;
+    AuthorData author;
+
+
 
     @SerializedName("relatedVideoIds")
     @Expose
@@ -117,11 +119,11 @@ public class ContentDetails implements Serializable {
         this.geoRestriction = geoRestriction;
     }
 
-    public Object getAuthor() {
+    public AuthorData getAuthor() {
         return author;
     }
 
-    public void setAuthor(Object author) {
+    public void setAuthor(AuthorData author) {
         this.author = author;
     }
 

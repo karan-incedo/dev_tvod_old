@@ -16,6 +16,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -427,7 +428,9 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) &&
+                                childViewWidth>0 &&
+                                childViewHeight>0 ) {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
@@ -435,6 +438,14 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
                     bringToFront = false;
+                }else if(componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY){
+
+                    String imageUrl = data.getGist().getVideoImageUrl();
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.mipmap.app_logo)
+                           // .override(childViewWidth, childViewHeight)
+                            .into((ImageView) view);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -497,9 +508,32 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY || componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        if(componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY){
+                            ((TextView) view).setGravity(Gravity.RIGHT);
+                            ((TextView) view).setText(getSubstring(data.getGist().getTitle(),19));
+                        }else{
+                            ((TextView) view).setText(data.getGist().getTitle());
+                        }
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getGist().getDescription());
+
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_READ_MORE_KEY) {
+                        ((TextView) view).setText("READ MORE");
+                    }
+                    else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(2);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -520,6 +554,13 @@ public class CollectionGridItemView extends BaseView {
                                     childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
                         }
+                    }else if (componentKey == AppCMSUIKeyType.PAGE_API_SUMMARY_TEXT_KEY&& !TextUtils.isEmpty(data.getGist().getSummaryText())) {
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getGist().getSummaryText());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getDownloadedFileSize(data.getGist().getId()));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY) {
@@ -590,6 +631,11 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
                         ((TextView) view).setText(data.getGist().getDescription());
                         try {
                             ViewTreeObserver titleTextVto = view.getViewTreeObserver();
@@ -821,6 +867,15 @@ public class CollectionGridItemView extends BaseView {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    public String getSubstring(String value, int maxLength){
+        if(!TextUtils.isEmpty(value)){
+            if(value.length() >= maxLength){
+                return value.substring(0, maxLength)+ "...";
+            }
+        }
+        return value;
     }
 
 }

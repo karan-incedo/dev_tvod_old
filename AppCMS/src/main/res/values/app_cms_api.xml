@@ -71,6 +71,8 @@
 
     <string name="app_cms_article_api_url">%1$s/content/article?id=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -90,6 +92,7 @@
     <string name="app_cms_page_button_switch_key">switchToSdCard</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
@@ -115,6 +118,7 @@
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
@@ -154,6 +158,7 @@
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
     <string name="app_cms_page_article_title_key">articleTitle</string>
+    <string name="app_cms_page_article_feed_bottom_text_key">articleFeedBottomText</string>
     <string name="app_cms_page_article_description_key">articleDescription</string>
     <string name="app_cms_page_emailtextfield2_key">email label</string>
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
@@ -170,8 +175,9 @@
     <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
     <string name="app_cms_page_banner_module_key">AC Banner 01</string>
     <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
+    <string name="app_cms_page_bannerAd_module_key">AC BannerAd 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
-    <string name="app_cms_photo_tray_module_key">PH Tray 01</string>
+    <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_article_feed_module_key">AC ArticleFeed 01</string>
@@ -212,6 +218,17 @@
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
+
+    <!--PHOTO_GALLERY-TAG-->
+    <string name="app_cms_page_photogallery_title">photoTitle</string>
+    <string name="app_cms_page_photogallery_authName">trayAuthName</string>
+    <string name="app_cms_page_photogallery_date">trayDate</string>
+    <string name="app_cms_page_photogallery_Nophotos">trayPhotoCount</string>
+    <string name="app_cms_page_photogallery_subTitle">traySubTitle</string>
+    <string name="app_cms_page_photogallery_imgCount">trayImgCount</string>
+    <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
+    <string name="app_cms_page_photogallery_preButton">previousButtonPG</string>
+    <string name="app_cms_page_photogallery_nextButton">nextButtonPG</string>
 
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
@@ -260,6 +277,9 @@
     <string name="app_cms_page_api_show_title_key">showTitle</string>
     <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
     <string name="app_cms_page_api_description_key">description</string>
+    <string name="app_cms_page_thumbnail_description_key">thumbnailDescription</string>
+    <string name="app_cms_page_api_summary_text_key">summaryText</string>
+    <string name="app_cms_page_thumbnail_read_more_text_key">readMore</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
@@ -285,7 +305,8 @@
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
     <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
-    <string name="app_cms_page_photo_gallery_02_key">AC PhotoGallery 02</string>
+    <string name="app_cms_page_photo_gallery_02_key">AC PhotoGallery 01</string>
+    <string name="app_cms_page_photo_gallery_grid_key">photoGalleryGrid</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_team_page_tag">Teams</string>
@@ -311,6 +332,7 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
+    <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
