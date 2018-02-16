@@ -71,6 +71,8 @@
 
     <string name="app_cms_article_api_url">%1$s/content/article?id=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -118,6 +120,7 @@
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
@@ -178,7 +181,7 @@
     <string name="app_cms_page_bannerAd_module_key">AC BannerAd 01</string>
     <string name="app_cms_page_mediumRectangleAd_module_key">AC MediumRectangleAd 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
-    <string name="app_cms_photo_tray_module_key">PH Tray 01</string>
+    <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_article_feed_module_key">AC ArticleFeed 01</string>
@@ -219,6 +222,17 @@
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
+
+    <!--PHOTO_GALLERY-TAG-->
+    <string name="app_cms_page_photogallery_title">photoTitle</string>
+    <string name="app_cms_page_photogallery_authName">trayAuthName</string>
+    <string name="app_cms_page_photogallery_date">trayDate</string>
+    <string name="app_cms_page_photogallery_Nophotos">trayPhotoCount</string>
+    <string name="app_cms_page_photogallery_subTitle">traySubTitle</string>
+    <string name="app_cms_page_photogallery_imgCount">trayImgCount</string>
+    <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
+    <string name="app_cms_page_photogallery_preButton">previousButtonPG</string>
+    <string name="app_cms_page_photogallery_nextButton">nextButtonPG</string>
 
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
@@ -283,6 +297,7 @@
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
     <string name="app_cms_action_purchase_plan">purchasePlan</string>
 
+
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
@@ -294,6 +309,8 @@
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
     <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
+    <string name="app_cms_page_photo_gallery_02_key">AC PhotoGallery 01</string>
+    <string name="app_cms_page_photo_gallery_grid_key">photoGalleryGrid</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_team_page_tag">Teams</string>
@@ -319,6 +336,7 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
+    <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>

@@ -179,6 +179,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 return new ViewHolder(emptyView);
             }
         }
+
         return new ViewHolder(view);
     }
 
