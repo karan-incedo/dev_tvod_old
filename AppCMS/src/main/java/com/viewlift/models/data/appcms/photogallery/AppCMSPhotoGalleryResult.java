@@ -1,4 +1,4 @@
-package com.viewlift.models.data.appcms.article;
+package com.viewlift.models.data.appcms.photogallery;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -9,19 +9,18 @@ import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.PhotoGalleryData;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.Tag;
-import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by vinay.singh on 1/24/2018.
+ * Created by ram.kailash on 2/14/2018.
  */
 
-@UseStag
-public class AppCMSArticleResult {
+public class AppCMSPhotoGalleryResult {
 
     @SerializedName("id")
     @Expose
@@ -54,9 +53,69 @@ public class AppCMSArticleResult {
     @Expose
     StreamingInfo streamingInfo;
 
-    @SerializedName("relatedArticleIds")
-    @Expose
-    List<String> relatedArticleIds;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Gist getGist() {
+        return gist;
+    }
+
+    public void setGist(Gist gist) {
+        this.gist = gist;
+    }
+
+    public ContentDetails getContentDetails() {
+        return contentDetails;
+    }
+
+    public void setContentDetails(ContentDetails contentDetails) {
+        this.contentDetails = contentDetails;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public List<CreditBlock> getCreditBlocks() {
+        return creditBlocks;
+    }
+
+    public void setCreditBlocks(List<CreditBlock> creditBlocks) {
+        this.creditBlocks = creditBlocks;
+    }
+
+    public StreamingInfo getStreamingInfo() {
+        return streamingInfo;
+    }
+
+    public void setStreamingInfo(StreamingInfo streamingInfo) {
+        this.streamingInfo = streamingInfo;
+    }
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -70,9 +129,17 @@ public class AppCMSArticleResult {
         contentDatum.setContentDetails(this.contentDetails);
         contentDatum.setCategories(this.categories);
         contentDatum.setTags(this.tags);
-        //contentDatum.setRelatedArticleIds(this.relatedArticleIds);
         data.add(contentDatum);
-
+        if (getStreamingInfo() != null) {
+            for(PhotoGalleryData p:getStreamingInfo().getPhotogalleryAssets()){
+                Gist gist=new Gist();
+                gist.setId(p.getId());
+                gist.setVideoImageUrl(p.getInfo().getUrl());
+                ContentDatum cd=new ContentDatum();
+                cd.setGist(gist);
+                data.add(cd);
+            }
+        }
         module.setContentData(data);
         appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
@@ -80,9 +147,5 @@ public class AppCMSArticleResult {
         appCMSPageAPI.setModules(moduleList);
 
         return appCMSPageAPI;
-    }
-
-    public String getId() {
-        return id;
     }
 }

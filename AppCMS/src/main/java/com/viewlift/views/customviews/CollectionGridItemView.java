@@ -447,6 +447,14 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
                     bringToFront = false;
+                }else if(componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY){
+
+                    String imageUrl = data.getGist().getVideoImageUrl();
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.mipmap.app_logo)
+                           // .override(childViewWidth, childViewHeight)
+                            .into((ImageView) view);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
