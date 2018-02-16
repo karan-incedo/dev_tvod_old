@@ -72,6 +72,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.mobile.pushnotif.AppCMSAirshipReceiver;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -502,6 +503,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.showNoNetworkConnectivityToast();
                     } else {
                         appCMSPresenter.setShowNetworkConnectivity(false);
+                    }
+
+                    if (isConnected) {
+                        setCastingInstance();
+                    } else {
+                        CastHelper.getInstance(getApplicationContext()).disconnectChromecastOnLogout();
                     }
                 }
                 if (activeNetwork != null) {
