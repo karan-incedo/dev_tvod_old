@@ -177,6 +177,7 @@ public class CollectionGridItemView extends BaseView {
             detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
             childrenContainer.addView(detailsChildView);
         } else {
+
             childrenContainer = new CardView(getContext());
             CardView.LayoutParams childContainerLayoutParams =
                     new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -189,6 +190,7 @@ public class CollectionGridItemView extends BaseView {
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
+
         }
         addView(childrenContainer);
         return childrenContainer;
