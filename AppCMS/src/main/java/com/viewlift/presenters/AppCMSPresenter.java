@@ -5859,10 +5859,16 @@ public class AppCMSPresenter {
 
                 //Firebase Event when contact us screen is opened.
             } else {
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
                 MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                                 if (appCMSPageUIResult != null) {
                                     navigationPages.put(pageId, appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
@@ -10419,6 +10425,10 @@ public class AppCMSPresenter {
                                     },
                                     loadFromFile,
                                     false);
+
+                            if (launchPageFinal == homePage) {
+                                cacheHomePage();
+                            }
                         } else {
                             processMetaPagesList(loadFromFile,
                                     appCMSAndroidUI.getMetaPages(),
@@ -10621,87 +10631,6 @@ public class AppCMSPresenter {
                 }
             }
 
-//            int loginPageIndex = getSigninPage(metaPageList);
-//            if (loginPageIndex >= 0) {
-//                loginPage = metaPageList.get(loginPageIndex);
-//                new SoftReference<Object>(loginPage, referenceQueue);
-//            }
-
-//            int downloadQualitysIndex = getDownloadQualityPage(metaPageList);
-//            if (downloadQualitysIndex >= 0) {
-//                downloadQualityPage = metaPageList.get(downloadQualitysIndex);
-//                new SoftReference<Object>(downloadQualityPage, referenceQueue);
-//            }
-
-//            int downloadPageIndex = getDownloadPage(metaPageList);
-//            if (downloadPageIndex >= 0) {
-//                downloadPage = metaPageList.get(downloadPageIndex);
-//                new SoftReference<Object>(downloadPage, referenceQueue);
-//            }
-
-//            int homePageIndex = getHomePage(metaPageList);
-//            if (homePageIndex >= 0) {
-//                homePage = metaPageList.get(homePageIndex);
-//
-//                if (homePage != null) {
-//                    new SoftReference<Object>(homePage, referenceQueue);
-//                }
-//            }
-
-//            int moviesPageIndex = getMoviesPage(metaPageList);
-//            if (moviesPageIndex >= 0) {
-//                moviesPage = metaPageList.get(moviesPageIndex);
-//
-//                if (moviesPage != null) {
-//                    new SoftReference<Object>(moviesPage, referenceQueue);
-//                }
-//            }
-
-//            int showsPageIndex = getShowsPage(metaPageList);
-//            if (showsPageIndex >= 0) {
-//                showsPage = metaPageList.get(showsPageIndex);
-//
-//                if (showsPage != null) {
-//                    new SoftReference<Object>(showsPage, referenceQueue);
-//                }
-//            }
-
-//            int subscriptionPageIndex = getSubscriptionPage(metaPageList);
-//            if (subscriptionPageIndex >= 0) {
-//                subscriptionPage = metaPageList.get(subscriptionPageIndex);
-//
-//                if (subscriptionPage != null) {
-//                    new SoftReference<Object>(subscriptionPage, referenceQueue);
-//                }
-//            }
-
-//            int splashScreenIndex = getSplashPage(metaPageList);
-//            if (splashScreenIndex >= 0) {
-//                splashPage = metaPageList.get(splashScreenIndex);
-//
-//                if (splashPage != null) {
-//                    new SoftReference<Object>(splashPage, referenceQueue);
-//                }
-//            }
-
-//            int historyIndex = getHistoryPage(metaPageList);
-//            if (historyIndex >= 0) {
-//                historyPage = metaPageList.get(historyIndex);
-//
-//                if (historyPage != null) {
-//                    new SoftReference<Object>(historyPage, referenceQueue);
-//                }
-//            }
-
-//            int watchlistIndex = getWatchlistPage(metaPageList);
-//            if (watchlistIndex >= 0) {
-//                watchlistPage = metaPageList.get(watchlistIndex);
-//
-//                if (watchlistPage != null) {
-//                    new SoftReference<Object>(watchlistPage, referenceQueue);
-//                }
-//            }
-
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn()) {
                 launchType = LaunchType.LOGIN_AND_SIGNUP;
@@ -10790,9 +10719,6 @@ public class AppCMSPresenter {
                 if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {
                     setDownloadPageId(metaPage.getPageId());
                 }
-
-//                pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
-//                pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
                 String url = metaPage.getPageUI();
 
