@@ -3415,8 +3415,8 @@ public class ViewCreator {
                         String selectedImgUrl = "";
                         ImageView selectedImg = (ImageView) componentViewResult.componentView;
                         if(moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null){
-                            if(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() > 0 && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getInfo() != null){
-                                selectedImgUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getInfo().getSecureUrl();
+                            if(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() > 0 && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getUrl() != null){
+                                selectedImgUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getSecureUrl();
                             }
                         }
                         Glide.with(selectedImg.getContext()).load(selectedImgUrl).placeholder(R.mipmap.app_logo).into(selectedImg);
