@@ -684,6 +684,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
+        registerReceiver(refreshPageDataReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
         registerReceiver(wifiConnectedReceiver,
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
         registerReceiver(downloadReceiver,
@@ -1102,8 +1104,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
 
         try {
-            registerReceiver(refreshPageDataReceiver,
-                    new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
             registerReceiver(presenterCloseActionReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
             registerReceiver(enterFullScreenReceiver,
@@ -1252,7 +1252,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelCustomToast();
 
         try {
-            unregisterReceiver(refreshPageDataReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
             unregisterReceiver(enterFullScreenReceiver);
             unregisterReceiver(exitFullScreenReceiver);
@@ -1338,6 +1337,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(notifyUpdateListsReceiver);
         unregisterReceiver(processDeeplinkReceiver);
         unregisterReceiver(networkConnectedReceiver);
+        unregisterReceiver(refreshPageDataReceiver);
         unregisterReceiver(appCMSAirshipReceiver);
 
         if (inAppBillingServiceConn != null) {
