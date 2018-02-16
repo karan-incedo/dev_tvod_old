@@ -476,6 +476,19 @@ public class CollectionGridItemView extends BaseView {
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                         ((ImageButton) view).setImageResource(R.drawable.ic_downloaded);
                         view.setOnClickListener(null);
+                    } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
+                        appCMSPresenter.updateDownloadingStatus(
+                                data.getGist().getId(),
+                                (ImageButton) view,
+                                appCMSPresenter,
+                                new ViewCreator.UpdateDownloadImageIconAction(
+                                        (ImageButton) view,
+                                        appCMSPresenter,
+                                        data,
+                                        appCMSPresenter.getLoggedInUser()),
+                                appCMSPresenter.getLoggedInUser(),
+                                false);
+                        view.setOnClickListener(null);
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
