@@ -315,7 +315,7 @@
               "leftMargin": 8.0,
               "rightMargin": 5.0,
               "width": 170,
-              "yAxis": 325,
+              "yAxis": 343,
               "xAxis": 0.0,
               "height": 30
             },
@@ -344,7 +344,7 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 325.0,
+              "yAxis": 343.0,
               "xAxis": 180.0,
               "width": 170,
               "rightMargin": 8,
@@ -377,7 +377,7 @@
               "gridHeight" : 158,
               "leftMargin": 11.67,
               "trayPadding": 5,
-              "topMargin": 57.0,
+              "topMargin": 59.0,
               "gridColumns": 3,
               "gridWidth" : 0
             },
@@ -403,14 +403,14 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 90,
-                  "height": 90
+                  "width": 100,
+                  "height": 75
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 110,
-                  "height": 110
+                  "width": 120,
+                  "height": 105
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
