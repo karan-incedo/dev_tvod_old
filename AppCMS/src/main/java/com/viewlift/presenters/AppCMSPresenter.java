@@ -4832,25 +4832,51 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
-            if (!binder.isOffline()) {
-                launchMobileAutoplayActivity(pageId, pageTitle, url, binder, action1, appCMSPageUI);
-            } else {
-                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
-                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+            if (appCMSPageUI == null) {
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(pageId, appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
 
-                if (pageAPI != null) {
-                    launchAutoplayActivity(currentActivity,
-                            appCMSPageUI,
-                            pageAPI,
-                            pageId,
-                            pageTitle,
-                            pageIdToPageNameMap.get(pageId),
+                                    navigateToAutoplayPage(pageId, pageTitle, url, binder, action1);
+                                }
+                            },
                             loadFromFile,
-                            false,
-                            true,
-                            false,
-                            false,
-                            binder, action1);
+                            false);
+                }
+            } else {
+                if (!binder.isOffline()) {
+                    launchMobileAutoplayActivity(pageId, pageTitle, url, binder, action1, appCMSPageUI);
+                } else {
+                    AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
+                            currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+
+                    if (pageAPI != null) {
+                        launchAutoplayActivity(currentActivity,
+                                appCMSPageUI,
+                                pageAPI,
+                                pageId,
+                                pageTitle,
+                                pageIdToPageNameMap.get(pageId),
+                                loadFromFile,
+                                false,
+                                true,
+                                false,
+                                false,
+                                binder, action1);
+                    }
                 }
             }
         }
