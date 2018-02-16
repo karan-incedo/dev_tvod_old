@@ -27,6 +27,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -1878,6 +1879,31 @@ public class ViewCreator {
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                        RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                                int action = e.getAction();
+                                switch (action) {
+                                    case MotionEvent.ACTION_MOVE:
+                                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+                                        break;
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                            }
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                            }
+                        };
+
+                        ((RecyclerView) componentViewResult.componentView).addOnItemTouchListener(mScrollTouchListener);
+
                         if (pageView != null) {
                             pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                     .adapter(appCMSUserWatHisDowAdapter)
@@ -1989,9 +2015,9 @@ public class ViewCreator {
                                 viewType,
                                 appCMSAndroidModules);
 
-                        ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5,15));
+                        ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
                         appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
-                           ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
+                            ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
                             Glide.with(imageView.getContext()).load(url).placeholder(R.mipmap.app_logo).into(imageView);
                         });
 
@@ -2000,6 +2026,30 @@ public class ViewCreator {
                         }
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                        RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                                int action = e.getAction();
+                                switch (action) {
+                                    case MotionEvent.ACTION_MOVE:
+                                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+                                        break;
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                            }
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                            }
+                        };
+
+                        ((RecyclerView) componentViewResult.componentView).addOnItemTouchListener(mScrollTouchListener);
                         if (pageView != null) {
                             pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                     .adapter(appCMSViewAdapter)
@@ -2318,7 +2368,7 @@ public class ViewCreator {
                     ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                     ((Button) componentViewResult.componentView).setTag(0);
                     ((Button) componentViewResult.componentView).setOnClickListener(v -> {
-                       // moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get();
+                        // moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get();
                     });
                 }
 
@@ -2957,7 +3007,7 @@ public class ViewCreator {
                     String tagsName = "";
                     if (moduleAPI.getContentData().get(0).getTags() != null && moduleAPI.getContentData().get(0).getTags().size() > 0) {
                         for (Tag tag : moduleAPI.getContentData().get(0).getTags())
-                            tags.append(" "+tag.getTitle() + " |");
+                            tags.append(" " + tag.getTitle() + " |");
                         tagsName = tags.length() > 0 ? tags.substring(0, tags.length() - 1) : "";
                     }
                     ((TextView) componentViewResult.componentView).setText("TAGGED :" + tagsName);
