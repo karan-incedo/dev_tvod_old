@@ -1623,23 +1623,22 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 211
+          "height": 221
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 384,
-          "width": 683
+          "height": 384
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 299,
-          "width": 532
+          "height": 315
+
         }
       },
       "components": [
@@ -1914,13 +1913,16 @@
         {
           "layout": {
             "mobile": {
+              "yAxis": 62,
               "leftMargin": 0,
+
               "topMargin": 8,
               "rightMargin": 0,
               "height": 1,
               "width": 120
             },
             "tabletLandscape": {
+              "yAxis": 42,
               "leftMargin": 50,
               "topMargin": 12,
               "rightMargin": 0,
@@ -1928,6 +1930,7 @@
               "width": 120
             },
             "tabletPortrait": {
+              "yAxis": 42,
               "leftMargin": 43,
               "topMargin": 18,
               "rightMargin": 0,
@@ -2052,7 +2055,7 @@
           "leftMargin": 0,
           "topMargin": 60.45,
           "rightMargin": 40.36,
-          "height": 350
+          "height": 315
         }
       },
       "components": []
