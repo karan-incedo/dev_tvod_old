@@ -1,13 +1,27 @@
 package com.viewlift.models.data.appcms.api;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
+
 /**
  * Created by ram.kailash on 2/14/2018.
  */
-
+@UseStag
 public class AuthorData {
 
     private String site;
-    private String name;
+    @SerializedName("id")
+    @Expose
+    String id;
+
+    @SerializedName("publishDate")
+    @Expose
+    Long publishDate;
+
+    @SerializedName("name")
+    @Expose
+    String name;
 
     public String getSite() {
         return site;
@@ -15,6 +29,14 @@ public class AuthorData {
 
     public void setSite(String site) {
         this.site = site;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Long getPublishDate() {
+        return publishDate;
     }
 
     public String getName() {
