@@ -37,7 +37,7 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 380
+          "height": 0
         },
         "tabletPortrait": {
           "yAxis": 0,
@@ -59,10 +59,10 @@
             },
             "tabletLandscape": {
               "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 24,
-              "height": 35
+              "leftMargin": 11.67,
+              "rightMargin": 2.67,
+              "fontSize": 28,
+              "height": 50
             },
             "tabletPortrait": {
               "yAxis": 0,
@@ -90,11 +90,12 @@
               "height": 24
             },
             "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 16,
-              "height": 35
+              "width": 160,
+              "yAxis": 50,
+              "leftMargin": 11.67,
+              "rightMargin": 2.67,
+              "fontSize": 20,
+              "height": 50
             },
             "tabletPortrait": {
               "width": 160,
@@ -123,11 +124,11 @@
               "height": 24
             },
             "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 24,
-              "height": 33
+              "width": 120,
+              "xAxis": 170,
+              "yAxis": 50,
+              "fontSize": 20,
+              "height": 50
             },
             "tabletPortrait": {
               "width": 120,
@@ -155,14 +156,14 @@
               "height": 24
             },
             "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 24,
-              "height": 33
+              "xAxis": 300,
+              "width": 0,
+              "yAxis": 50,
+              "fontSize": 20,
+              "height": 50
             },
             "tabletPortrait": {
-              "xAxis": 285,
+              "xAxis": 300,
               "width": 0,
               "yAxis": 50,
               "fontSize": 20,
@@ -186,18 +187,19 @@
               "height": 24
             },
             "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 24,
-              "height": 33
+              "yAxis": 100,
+              "width": 0,
+              "leftMargin": 11.67,
+              "rightMargin": 1.3,
+              "fontSize": 18,
+              "height": 50
             },
             "tabletPortrait": {
               "yAxis": 100,
               "width": 0,
               "leftMargin": 11.67,
               "rightMargin": 1.3,
-              "fontSize": 20,
+              "fontSize": 18,
               "height": 50
             }
           },
@@ -219,17 +221,18 @@
               "width": 180
             },
             "tabletLandscape": {
-              "yAxis": 32,
-              "leftMargin": 0.68,
-              "rightMargin": 0.68,
-              "height": 1
-            },
-            "tabletPortrait": {
-              "yAxis": 140,
+              "yAxis": 150,
               "leftMargin": 11.73,
               "rightMargin": 1.73,
               "height": 1,
-              "width": 180
+              "width": 380
+            },
+            "tabletPortrait": {
+              "yAxis": 150,
+              "leftMargin": 11.73,
+              "rightMargin": 1.73,
+              "height": 1,
+              "width": 380
             }
           },
           "backgroundColor": "#808080",
@@ -239,24 +242,28 @@
           "layout": {
             "mobile": {
               "width": 0,
-              "yAxis": 100,
-              "height": 273,
+              "yAxis": 110,
+              "height": 235,
               "leftMargin": 0,
               "topMargin": 0,
               "rightMargin": 0,
               "bottomMargin": 0
             },
             "tabletLandscape": {
-              "leftMargin": 0,
+              "width": 600,
+              "yAxis": 170,
+              "height": 320,
+              "leftMargin": 11.67,
               "topMargin": 0,
-              "rightMargin": 33.5,
+              "rightMargin": 0,
               "bottomMargin": 0
             },
             "tabletPortrait": {
+              "width": 0,
               "yAxis": 170,
+              "height": 350,
               "leftMargin": 0,
               "topMargin": 0,
-              "height": 230,
               "rightMargin": 0,
               "bottomMargin": 0
             }
@@ -276,11 +283,13 @@
               "width": 60
             },
             "tabletLandscape": {
-              "leftMargin": 66.5,
+              "yAxis": 170,
+              "leftMargin": 11.67,
               "rightMargin": 0,
-              "bottomMargin": 63.19,
-              "fontSize": 10,
-              "height": 14
+              "bottomMargin": 0,
+              "width": 120,
+              "fontSize": 15,
+              "height": 35
             },
             "tabletPortrait": {
               "yAxis": 170,
@@ -296,7 +305,8 @@
           "numberOfLines": 1,
           "textAlignment": "center",
           "type": "label",
-          "textColor": "#ffffff",
+          "backgroundColor": "000000",
+          "textColor": "ffffff",
           "key": "trayImgCount"
         },
         {
@@ -305,25 +315,23 @@
               "leftMargin": 8.0,
               "rightMargin": 5.0,
               "width": 170,
-              "yAxis": 322,
+              "yAxis": 325,
               "xAxis": 0.0,
               "height": 30
             },
             "tabletLandscape": {
-              "topMargin": 1.82,
-              "rightMargin": 0.98,
-              "width": 24,
-              "yAxis": 33.5,
-              "xAxis": 0,
-              "height": 24
+              "width": 80,
+              "yAxis": 455,
+              "xAxis": 11.67,
+              "height": 35
             },
             "tabletPortrait": {
-              "topMargin": 1.37,
-              "rightMargin": 1.3,
-              "width": 24,
-              "yAxis": 33.5,
-              "xAxis": 0,
-              "height": 24
+              "leftMargin": 8.0,
+              "rightMargin": 5.0,
+              "width": 360,
+              "yAxis": 520,
+              "xAxis": 0.0,
+              "height": 40
             }
           },
           "backgroundColor": "008EE0",
@@ -336,23 +344,24 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 322.0,
+              "yAxis": 325.0,
               "xAxis": 180.0,
               "width": 170,
               "rightMargin": 8,
               "height": 30
             },
             "tabletLandscape": {
-              "topMargin": 1.82,
-              "rightMargin": 0.98,
-              "width": 150,
-              "height": 24
+              "width": 80,
+              "yAxis": 455,
+              "xAxis": 530.0,
+              "height": 35
             },
             "tabletPortrait": {
-              "topMargin": 1.37,
-              "rightMargin": 1.3,
-              "width": 24,
-              "height": 24
+              "width": 360,
+              "yAxis": 520,
+              "xAxis": 180.0,
+              "rightMargin": 10,
+              "height": 40
             }
           },
           "backgroundColor": "008EE0",
@@ -367,24 +376,21 @@
             "mobile": {
               "gridHeight" : 158,
               "trayPadding": 5,
-              "topMargin": 55.0,
+              "topMargin": 57.0,
               "gridColumns": 3,
               "gridWidth" : 0
             },
             "tabletLandscape": {
-              "gridHeight": 329.5,
-              "trayPadding": 10,
-              "leftMargin": 0.98,
-              "yAxis": 43,
-              "rightMargin": 0.98,
-              "bottomMargin": 0,
-              "gridWidth": 497,
-              "gridColumns": 6
+              "gridHeight" : 200,
+              "trayPadding": 5,
+              "topMargin": 68.0,
+              "gridColumns": 3,
+              "gridWidth" : 0
             },
             "tabletPortrait": {
-              "gridHeight" : 158,
+              "gridHeight" : 200,
               "trayPadding": 5,
-              "topMargin": 55.0,
+              "topMargin": 58.0,
               "gridColumns": 3,
               "gridWidth" : 0
             }
@@ -396,20 +402,20 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 0,
-                  "height": 0
+                  "width": 90,
+                  "height": 90
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 497,
-                  "height": 279.5
+                  "width": 110,
+                  "height": 110
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 0,
-                  "height": 0
+                  "height": 110
                 }
               },
               "type": "image",

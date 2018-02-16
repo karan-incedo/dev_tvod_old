@@ -177,6 +177,7 @@ public class CollectionGridItemView extends BaseView {
             detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
             childrenContainer.addView(detailsChildView);
         } else {
+
             childrenContainer = new CardView(getContext());
             CardView.LayoutParams childContainerLayoutParams =
                     new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -189,6 +190,7 @@ public class CollectionGridItemView extends BaseView {
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
+
         }
         addView(childrenContainer);
         return childrenContainer;
@@ -450,11 +452,13 @@ public class CollectionGridItemView extends BaseView {
                 }else if(componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY){
 
                     String imageUrl = data.getGist().getVideoImageUrl();
+                    ImageView imageView = (ImageView)view;
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     Glide.with(context)
                             .load(imageUrl)
                             .placeholder(R.mipmap.app_logo)
                            // .override(childViewWidth, childViewHeight)
-                            .into((ImageView) view);
+                            .into(imageView);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
