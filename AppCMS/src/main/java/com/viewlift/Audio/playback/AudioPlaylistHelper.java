@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
@@ -118,6 +119,11 @@ public class AudioPlaylistHelper {
     }
 
     public void autoPlayNextItemFromPLaylist(IPlaybackCall callBackPlaylistHelper) {
+
+        if (!appCmsPresenter.isNetworkConnected()) {
+            Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            return;
+        }
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
@@ -132,6 +138,7 @@ public class AudioPlaylistHelper {
 
     // play audio on click on item so set index position as per sequence of
     public void playAudioOnClickItem(String mediaId, long currentPosition) {
+        appCmsPresenter.setAudioReload(false);
         getAudioDetails(mediaId, currentPosition, true);
     }
 
@@ -160,6 +167,11 @@ public class AudioPlaylistHelper {
     }
 
     public void skipToPreviousItem(IPlaybackCall callBackPlaylistHelper) {
+
+        if (!appCmsPresenter.isNetworkConnected()) {
+            Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist - 1) && indexAudioFromPlaylist - 1 >= 0) {
             indexAudioFromPlaylist--;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);

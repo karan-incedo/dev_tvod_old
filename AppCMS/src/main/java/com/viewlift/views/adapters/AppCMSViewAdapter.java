@@ -439,7 +439,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
                                     appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                                             .PRESENTER_PAGE_LOADING_ACTION));
-                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(),0);
+                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
                                     return;
                                 }
 

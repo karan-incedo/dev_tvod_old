@@ -365,6 +365,8 @@
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
     <string name="app_cms_cached_page_api_url">https://release-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
     <string name="app_cms_cached_page_api_url_with_user_id">https://release-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
+    <!--<string name="app_cms_cached_page_api_url">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>-->
+    <!--<string name="app_cms_cached_page_api_url_with_user_id">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>-->
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>

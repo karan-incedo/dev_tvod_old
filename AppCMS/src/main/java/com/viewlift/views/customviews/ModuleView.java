@@ -48,8 +48,6 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
             initializeComponentHasViewList(module.getComponents().size());
         }
         setPadding(0, 0, 0, 0);
-
-        setFocusableInTouchMode(true);
     }
 
     @Override

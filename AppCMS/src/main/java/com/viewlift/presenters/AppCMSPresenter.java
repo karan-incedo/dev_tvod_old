@@ -398,6 +398,8 @@ public class AppCMSPresenter {
     private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
     private static final String IS_HOME_STARTED = "is_home_started";
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
+    private static final String IS_AUDIO_RELOAD = "is_audio_reload";
+    private static final String IS_AUDIO_RELOAD_PREF = "is_audio_reload_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -713,6 +715,7 @@ public class AppCMSPresenter {
     private boolean isTeamPAgeVisible = false;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
     private final AppCMSAudioDetailCall appCMSAudioDetailCall;
+    private boolean isAudioPlayerOpen;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -1526,6 +1529,7 @@ public class AppCMSPresenter {
                 }
                 result = true;
                 boolean isTrailer = actionType == AppCMSActionType.WATCH_TRAILER;
+
                 if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) &&
                         contentDatum != null &&
@@ -1557,7 +1561,6 @@ public class AppCMSPresenter {
                             entitlementActive = false;
                         }
                     }
-
                     if (entitlementActive) {
                         entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
@@ -1959,6 +1962,7 @@ public class AppCMSPresenter {
                     }
                 }
             }
+
         }
         return result;
     }
@@ -2228,24 +2232,24 @@ public class AppCMSPresenter {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
+        viewGroup.setEnabled(isEnabled);
+        viewGroup.setClickable(isEnabled);
         viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View view = viewGroup.getChildAt(i);
-            if (view instanceof ViewGroup) {
-                if (view instanceof RecyclerView) {
-                    ((RecyclerView) view).setLayoutFrozen(!isEnabled);
-                    if (((RecyclerView) view).getAdapter() instanceof AppCMSBaseAdapter) {
-                        AppCMSBaseAdapter appCMSViewAdapter =
-                                (AppCMSBaseAdapter) ((RecyclerView) view).getAdapter();
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                if (viewGroup.getChildAt(i) instanceof RecyclerView) {
+                    ((RecyclerView) viewGroup.getChildAt(i)).setLayoutFrozen(!isEnabled);
+                    if (((RecyclerView) viewGroup.getChildAt(i)).getAdapter() instanceof AppCMSViewAdapter) {
+                        AppCMSViewAdapter appCMSViewAdapter =
+                                (AppCMSViewAdapter) ((RecyclerView) viewGroup.getChildAt(i)).getAdapter();
                         appCMSViewAdapter.setClickable(isEnabled);
                     }
+                } else {
+                    setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
                 }
-                setAllChildrenEnabled(isEnabled, (ViewGroup) view);
             } else {
-                if (view instanceof Button || view instanceof ImageButton) {
-                    view.setEnabled(isEnabled);
-                    view.setClickable(isEnabled);
-                }
+                viewGroup.getChildAt(i).setEnabled(isEnabled);
+                viewGroup.getChildAt(i).setClickable(isEnabled);
             }
         }
     }
@@ -3054,6 +3058,41 @@ public class AppCMSPresenter {
         }
     }
 
+    public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
+        if (isNetworkConnected()) {
+            cancelInternalEvents();
+            showLoadingDialog(true);
+            try {
+                getPageAPILruCache().evictAll();
+            } catch (Exception e) {
+                //
+            }
+            getUserData((userIdentity) -> {
+                try {
+                    setLoggedInUser(userIdentity.getUserId());
+                    setLoggedInUserEmail(userIdentity.getEmail());
+                    setLoggedInUserName(userIdentity.getName());
+                    setIsUserSubscribed(userIdentity.isSubscribed());
+                } catch (Exception e) {
+                    //
+                }
+
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
+                    if (currentActivity != null && sendRefreshPageDataAction) {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                    }
+                    if (onRefreshFinished != null) {
+                        onRefreshFinished.call();
+                    }
+                });
+            });
+        } else {
+            if (onRefreshFinished != null) {
+                onRefreshFinished.call();
+            }
+        }
+    }
+
     public void clearPageViewCache() {
         try {
             getPageViewLruCache().evictAll();
@@ -3088,7 +3127,17 @@ public class AppCMSPresenter {
                     }
                     if (onRefreshFinished != null) {
                         onRefreshFinished.call();
+                        if (getAudioPlayerOpen() && AudioServiceHelper.getAudioInstance().isAudioPlaying()) {
+                            Intent fullScreenIntent = new Intent(currentActivity, AppCMSPlayAudioActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                            Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            currentActivity.startActivity(fullScreenIntent);
+
+                        }
+
                     }
+                    setAudioPlayerOpen(false);
+
                 });
             });
         } else {
@@ -3377,8 +3426,8 @@ public class AppCMSPresenter {
      * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
 
-    public void editDownload(final ContentDatum contentDatum,
-                             final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+    synchronized public void editDownload(final ContentDatum contentDatum,
+                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
 
@@ -3399,6 +3448,7 @@ public class AppCMSPresenter {
                 downloadQueueItem.contentDatum = contentDatum;
                 downloadQueueItem.resultAction1 = resultAction1;
                 downloadQueueItem.isDownloadedFromOther = isVideoDownloadedByOtherUser(contentDatum.getGist().getId());
+
                 downloadQueueThread.addToQueue(downloadQueueItem);
                 if (!downloadQueueThread.running()) {
                     downloadQueueThread.start();
@@ -3425,7 +3475,7 @@ public class AppCMSPresenter {
                 file_size = ((file_size / 1000) / 1000);
 
             } catch (Exception e) {
-                //Log.e(TAG, "Error trying to download: " + e.getMessage());
+                Log.e(TAG, "Error trying to download: " + e.getMessage());
             }
             if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
@@ -4078,6 +4128,8 @@ public class AppCMSPresenter {
 
             updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
         } catch (Exception e) {
+            System.out.println("download start faile upload status-");
+
             Log.e(TAG, "Error updating download status: " + e.getMessage());
         }
     }
@@ -7522,7 +7574,7 @@ public class AppCMSPresenter {
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                         if (!loadFromFile) {
-                            clearPageAPIData(() -> {
+                            refreshAPIData(() -> {
                                         getAppCMSSite(platformType);
                                     },
                                     false);
@@ -7780,19 +7832,19 @@ public class AppCMSPresenter {
 
                     if (isSportsTemplate()) {
 
-                            message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
-                            if (subscriptionFlowContent != null &&
-                                    subscriptionFlowContent.getOverlayMessage() != null &&
-                                    !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
-                                message = subscriptionFlowContent.getOverlayMessage();
-                            }
+                        message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+                        if (subscriptionFlowContent != null &&
+                                subscriptionFlowContent.getOverlayMessage() != null &&
+                                !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
+                            message = subscriptionFlowContent.getOverlayMessage();
+                        }
 
                     }
                     //Set Firebase User Property when user is not logged in and unsubscribed
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ) {
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO) {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_message);
 
@@ -8007,6 +8059,8 @@ public class AppCMSPresenter {
                                 //if user press back key without doing login subscription ,clear saved data
                                 setEntitlementPendingVideoData(null);
                             }
+                            setAudioPlayerOpen(false);
+
                         }
                         return true;
                     });
@@ -8426,6 +8480,7 @@ public class AppCMSPresenter {
             return null;
         }
     }
+
     //TODO: to be removed in signed apk
     void printBeacon(ArrayList<BeaconRequest> beaconRequestList) {
         for (int i = 0; i < beaconRequestList.size(); i++) {
@@ -8622,6 +8677,7 @@ public class AppCMSPresenter {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(new Date(System.currentTimeMillis()));
     }
+
     public void searchSuggestionClick(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
@@ -8667,6 +8723,7 @@ public class AppCMSPresenter {
 //                    action);
         }
     }
+
     private String getEnvironment() {
         String environment = "unknown";
         if (appCMSMain.getApiBaseUrl().contains("prod")) {
@@ -9538,7 +9595,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
                                             getPlayerLruCache().evictAll();
-                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9554,7 +9611,7 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        }  else if (getLaunchType() == LaunchType.HOME) {
+                                        } else if (getLaunchType() == LaunchType.HOME) {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
@@ -9577,6 +9634,13 @@ public class AppCMSPresenter {
                     }
 //                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }, true);
+                // if user comes from audio player screen and audio is currently playing than redirect to audioplayer screen
+//                if(getAudioPlayerOpen() && AudioServiceHelper.getAudioInstance().isAudioPlaying()){
+//                    Intent fullScreenIntent = new Intent(currentActivity, AppCMSPlayAudioActivity.class)
+//                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+//                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    currentActivity.startActivity(fullScreenIntent);
+//                }
             } else {
                 clearPageAPIData(() -> {
                 }, false);
@@ -9627,7 +9691,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(updateSubscription);
                                 getPlayerLruCache().evictAll();
 
-                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9672,11 +9736,15 @@ public class AppCMSPresenter {
                         }
                     }
                 }
+                // if user comes from audio player screen and audio is currently playing than redirect to audioplayer screen
                 if (platformType.equals(PlatformType.ANDROID)) {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }
             }
         }
+
+
+//        setAudioPlayerOpen(false);
     }
 
     private void refreshIdentity(final String refreshToken, final Action0 onReadyAction) {
@@ -12177,7 +12245,6 @@ public class AppCMSPresenter {
     }
 
 
-
     @SuppressWarnings("unused")
     public NavigationUser getLoginNavigation() {
         for (NavigationUser navigationUser : getNavigation().getNavigationUser()) {
@@ -13503,6 +13570,29 @@ public class AppCMSPresenter {
             return sharedPrefs.getBoolean(IS_HOME_STARTED, false);
         }
         return false;
+    }
+
+    public void setAudioReload(boolean isReload) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            sharedPrefs.edit().putBoolean(IS_AUDIO_RELOAD, isReload).commit();
+        }
+    }
+
+    public boolean getAudioReload() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            return sharedPrefs.getBoolean(IS_AUDIO_RELOAD, false);
+        }
+        return false;
+    }
+
+    public void setAudioPlayerOpen(boolean isAudioPlayer) {
+        isAudioPlayerOpen = isAudioPlayer;
+    }
+
+    public boolean getAudioPlayerOpen() {
+        return isAudioPlayerOpen;
     }
 
 }

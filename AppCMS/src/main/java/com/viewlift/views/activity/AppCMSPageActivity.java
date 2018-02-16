@@ -821,6 +821,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             return;
         }
         appCMSPresenter.setEntitlementPendingVideoData(null);
+        appCMSPresenter.setAudioPlayerOpen(false);
         if (!handlingClose && !isPageLoading()) {
             if (appCMSPresenter.isAddOnFragmentVisible()) {
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {

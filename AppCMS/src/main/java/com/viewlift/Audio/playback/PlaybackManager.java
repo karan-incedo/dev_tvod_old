@@ -264,7 +264,7 @@ public class PlaybackManager implements Playback.Callback {
 
 
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mPlayback.getCurrentId());
-            if (mediaHasChanged) {
+            if (mediaHasChanged || AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload()) {
                 long currentPosition = 0;
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
