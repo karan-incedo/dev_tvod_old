@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.List;
 
 @UseStag
 public class StreamingInfo implements Serializable {
@@ -28,6 +29,17 @@ public class StreamingInfo implements Serializable {
     @SerializedName("cuePoints")
     @Expose
     String cuePoints;
+
+    @SerializedName("photogalleryAssets")
+    List<PhotoGalleryData> photogalleryAssets;
+
+    public List<PhotoGalleryData> getPhotogalleryAssets() {
+        return photogalleryAssets;
+    }
+
+    public void setPhotogalleryAssets(List<PhotoGalleryData> photogalleryAssets) {
+        this.photogalleryAssets = photogalleryAssets;
+    }
 
     public boolean getIsLiveStream() {
         return isLiveStream;

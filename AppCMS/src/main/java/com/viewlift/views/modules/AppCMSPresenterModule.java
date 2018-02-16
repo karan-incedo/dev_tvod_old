@@ -19,6 +19,7 @@ import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPhotoGalleryCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
@@ -61,6 +62,7 @@ public class AppCMSPresenterModule {
     @Provides
     @Singleton
     public AppCMSPresenter providesAppCMSPresenter(Gson gson,AppCMSArticleCall appCMSArticleCall,
+                                                   AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                                                    AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
@@ -110,6 +112,7 @@ public class AppCMSPresenterModule {
 
                                                    ReferenceQueue<Object> referenceQueue) {
         return new AppCMSPresenter(gson,appCMSArticleCall,
+                appCMSPhotoGalleryCall,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,
