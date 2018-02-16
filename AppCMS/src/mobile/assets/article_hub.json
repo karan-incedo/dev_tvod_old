@@ -1346,10 +1346,10 @@
             "tabletPortrait": {
               "gridHeight": 465,
               "trayPadding": 10,
-              "leftMargin": 1.3,
               "yAxis": 40,
-              "rightMargin": 1.3,
-              "bottomMargin": 0
+              "bottomMargin": 0,
+              "gridWidth": 370,
+              "xAxis":190
             }
           },
           "trayClickAction": "articleDetailPage",
@@ -1369,35 +1369,14 @@
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "height": 200
+                  "height": 200,
+                  "width":380
                 }
               },
               "type": "image",
               "key": "thumbnailImage"
             },
-            {
-              "layout": {
-                "mobile": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "height": 200
-                },
-                "tabletLandscape": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 1000,
-                  "height": 200
-                },
-                "tabletPortrait": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 700,
-                  "height": 200
-                }
-              },
-              "type": "image",
-              "key": "thumbnailBadgeImage"
-            },
+
             {
               "layout": {
                 "mobile": {
@@ -1419,7 +1398,7 @@
                   "height": 265
                 }
               },
-              "backgroundColor": "#C7C7C7",
+              "backgroundColor": "#D8D8D8",
               "type": "separatorView",
               "key": "separatorView"
             },
@@ -1451,7 +1430,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 3,
-              "textColor": "#ffffff",
+              "textColor": "#000000",
               "fontWeight": "Semibold",
               "key": "thumbnailTitle"
             },
@@ -1483,7 +1462,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 2,
-              "textColor": "#000000",
+              "textColor": "#707070",
               "fontWeight": "Italic",
               "key": "thumbnailDescription"
             },
@@ -1514,7 +1493,7 @@
                   "height": 1
                 }
               },
-              "backgroundColor": "CF0A2C",
+              "backgroundColor": "#000000",
               "type": "separatorView",
               "key": "separatorView"
             },
@@ -1546,7 +1525,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 2,
-              "textColor": "#000000",
+              "textColor": "#ffffff",
               "fontWeight": "Italic",
               "key": "summaryText"
             },
@@ -1567,7 +1546,7 @@
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "yAxis": 405,
+                  "yAxis": 435,
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15,
@@ -1604,14 +1583,15 @@
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 20
+                  "height": 20,
+                  "width":40
                 }
               },
               "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 1,
-              "textColor": "#000000",
+              "textColor": "#8C8C8C",
               "key": "articleFeedBottomText"
             }
           ],
@@ -1909,7 +1889,7 @@
               "topMargin": 2,
               "fontSize": 16,
               "height": 40,
-              "width":120
+              "width":150
             },
             "tabletPortrait": {
 
@@ -1917,7 +1897,7 @@
               "rightMargin": 1.3,
               "fontSize": 16,
               "height": 40,
-              "width":120
+              "width":150
             }
           },
           "fontFamily": "OpenSans",
@@ -1945,7 +1925,7 @@
             },
             "tabletPortrait": {
               "leftMargin": 43,
-              "topMargin": 17,
+              "topMargin": 18,
               "rightMargin": 0,
               "height": 1,
               "width": 120
@@ -1973,7 +1953,7 @@
               "trayPadding": 1,
               "leftMargin": 0,
               "gridWidth": 195,
-              "topMargin": 10
+              "topMargin": 15
             }
           },
           "trayClickAction": "lectureDetailPage",
