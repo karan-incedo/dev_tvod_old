@@ -1341,7 +1341,9 @@
               "leftMargin": 0.98,
               "yAxis": 40,
               "rightMargin": 0.98,
-              "bottomMargin": 0
+              "bottomMargin": 0,
+              "gridWidth": 370,
+              "xAxis":300
             },
             "tabletPortrait": {
               "gridHeight": 465,
@@ -1364,7 +1366,8 @@
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "height": 200
+                  "height": 200,
+                  "width":380
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
@@ -1532,14 +1535,14 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 405,
+                  "yAxis": 435,
                   "leftMargin": 12,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 405,
+                  "yAxis": 435,
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15,
@@ -1566,25 +1569,24 @@
               "layout": {
                 "mobile": {
                   "yAxis": 435,
-                  "leftMargin": 10,
+                  "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletLandscape": {
                   "yAxis": 435,
-                  "leftMargin": 10,
+                  "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletPortrait": {
                   "yAxis": 435,
-                  "leftMargin": 10,
+                  "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 20,
-                  "width":40
+                  "height": 20
                 }
               },
               "fontFamily": "OpenSans",
@@ -1876,11 +1878,12 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 2,
+
               "leftMargin": 2.67,
               "rightMargin": 2.67,
               "fontSize": 14,
-              "height": 40
+              "height": 40,
+              "width":150
             },
             "tabletLandscape": {
 
@@ -1912,9 +1915,10 @@
           "layout": {
             "mobile": {
               "leftMargin": 0,
-              "topMargin": 5.4,
+              "topMargin": 8,
               "rightMargin": 0,
-              "height": 1
+              "height": 1,
+              "width": 120
             },
             "tabletLandscape": {
               "leftMargin": 50,
@@ -1939,7 +1943,8 @@
             "mobile": {
               "gridHeight": 38,
               "trayPadding": 5,
-              "leftMargin": 2.67
+              "leftMargin": 2.67,
+              "topMargin": 10
             },
             "tabletLandscape": {
               "gridHeight": 38,
@@ -1961,7 +1966,7 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 0,
+                  "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11
@@ -1991,9 +1996,10 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 0,
-                  "topMargin": 5.4,
+                  "topMargin": 0,
                   "rightMargin": 0,
-                  "height": 1
+                  "width": 4,
+                  "height": 30
                 },
                 "tabletLandscape": {
                   "leftMargin": 2,
