@@ -97,6 +97,8 @@
     <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
+    <string name="app_cms_page_list_key">list</string>
+    <string name="app_cms_page_list_module_key">AC List 01</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
 
@@ -172,10 +174,12 @@
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
+    <string name="app_cms_page_event_carousel_module_key">AC EventCarousel 01</string>
     <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
     <string name="app_cms_page_banner_module_key">AC Banner 01</string>
     <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
     <string name="app_cms_page_bannerAd_module_key">AC BannerAd 01</string>
+    <string name="app_cms_page_mediumRectangleAd_module_key">AC MediumRectangleAd 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>

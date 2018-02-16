@@ -851,7 +851,10 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isLandscape(getContext()) || !isTablet(getContext())) {
+                    if ((isLandscape(getContext()) || !isTablet(getContext())) &&
+                            childComponent!=null &&
+                            childComponent.getSettings()!=null &&
+                            !childComponent.getSettings().isHidden()) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else {
@@ -867,7 +870,10 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isTablet(getContext())) {
+                    if (isTablet(getContext()) &&
+                            childComponent!=null &&
+                            childComponent.getSettings()!=null &&
+                            !childComponent.getSettings().isHidden()) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 9;
                         } else {

@@ -717,13 +717,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void setToolItemsUIColor(){
-        int fillColor = appCMSPresenter.getGeneralTextColor();
+        int fillColor = appCMSPresenter.getBrandPrimaryCtaColor();
 
-        mMediaRouteButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-        mMediaRouteButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
-        mMediaRouteButton.getBackground().setTint(fillColor);
-        mMediaRouteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-
+        //Changing color of SVG image
+        mMediaRouteButton.setColorFilter(fillColor,PorterDuff.Mode.SRC_IN);
+        
         mProfileTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         mProfileTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
 
@@ -2334,7 +2332,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.VISIBLE);
         } else {
             ll_media_route_button.setVisibility(View.GONE);
-
         }
 
     }

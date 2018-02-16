@@ -156,7 +156,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 true,
                 this.componentViewType,
                 false,
-                false,viewTypeKey);
+                false, viewTypeKey);
 
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
@@ -329,7 +329,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         emptyList = true;
                                         sendEvent(hideRemoveAllButtonEvent);
                                         notifyDataSetChanged();
-                                        updateData(mRecyclerView,adapterData);
+                                        updateData(mRecyclerView, adapterData);
                                     }
                                 }),
                 null);
@@ -384,7 +384,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 @Override
                 public void click(CollectionGridItemView collectionGridItemView,
                                   Component childComponent,
-                                  ContentDatum data,int clickPosition) {
+                                  ContentDatum data, int clickPosition) {
                     if (isClickable) {
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -411,6 +411,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
+                            /*navigate to article detail page*/
+                            if (data.getGist() != null && data.getGist().getMediaType() != null
+                                    && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                                appCMSPresenter.setCurrentArticleIndex(-1);
+                                appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                return;
+                            }
 
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
@@ -425,7 +432,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             if (adapterData.size() == 0) {
                                                 emptyList = true;
                                                 sendEvent(hideRemoveAllButtonEvent);
-                                                updateData(mRecyclerView,adapterData);
+                                                updateData(mRecyclerView, adapterData);
                                             }
                                             notifyDataSetChanged();
                                         }, false);
@@ -439,7 +446,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             if (adapterData.size() == 0) {
                                                 emptyList = true;
                                                 sendEvent(hideRemoveAllButtonEvent);
-                                                updateData(mRecyclerView,adapterData);
+                                                updateData(mRecyclerView, adapterData);
                                             }
                                             notifyDataSetChanged();
                                         }, false);

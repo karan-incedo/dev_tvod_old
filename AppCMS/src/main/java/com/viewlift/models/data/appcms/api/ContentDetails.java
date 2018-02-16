@@ -79,6 +79,8 @@ public class ContentDetails implements Serializable {
     @Expose
     String status;
 
+    List<String> relatedArticleIds;
+
     public boolean getAutoGenerateRelated() {
         return autoGenerateRelated;
     }
@@ -217,6 +219,14 @@ public class ContentDetails implements Serializable {
 
     public boolean isAutoGenerateRelated() {
         return autoGenerateRelated;
+    }
+
+    public List<String> getRelatedArticleIds() {
+        return relatedArticleIds;
+    }
+
+    public void setRelatedArticleIds(List<String> relatedArticleIds) {
+        this.relatedArticleIds = relatedArticleIds;
     }
 
 

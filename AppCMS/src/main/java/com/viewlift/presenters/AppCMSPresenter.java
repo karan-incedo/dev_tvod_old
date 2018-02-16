@@ -593,6 +593,7 @@ public class AppCMSPresenter {
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
     private int currentArticleIndex;
+    private List<String> relatedArticleIds;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -2612,7 +2613,7 @@ public class AppCMSPresenter {
                 //Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
         }
-        // setSelectedSubscriptionPlan(false);
+       // setSelectedSubscriptionPlan(false);
     }
 
     @SuppressWarnings("unused")
@@ -4872,7 +4873,7 @@ public class AppCMSPresenter {
 //                        + getActiveSubscriptionSku());
             }
         }
-        //  setSelectedSubscriptionPlan(false);
+      //  setSelectedSubscriptionPlan(false);
     }
 
     private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
@@ -5016,8 +5017,7 @@ public class AppCMSPresenter {
 
     /**
      * this dialog is use for showing a message with OK button in case of TV.
-     *
-     * @param message
+     *  @param message
      * @param headerTitle
      * @param shouldNavigateToLogin
      */
@@ -6850,6 +6850,16 @@ public class AppCMSPresenter {
         }).execute();
     }
 
+    public boolean isDownloadable(){
+        if(getAppCMSMain() !=null &&
+                getAppCMSMain().getFeatures() !=null  &&
+                getAppCMSMain().isDownloadable() &&
+                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+            return true;
+        }
+        return false;
+    }
+
     public int getBrandPrimaryCtaColor(){
         if (getAppCMSMain()!=null &&
                 getAppCMSMain().getBrand() !=null &&
@@ -6863,11 +6873,25 @@ public class AppCMSPresenter {
         }
         return 0;
     }
+    public int getBrandPrimaryCtaTextColor(){
+
+        if (getAppCMSMain()!=null &&
+                getAppCMSMain().getBrand() !=null &&
+                getAppCMSMain().getBrand().getCta() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() !=null
+                ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
+        }else if (currentActivity !=null ){
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+        return 0;
+    }
     public int getGeneralBackgroundColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getGeneral() != null &&
-                getAppCMSMain().getBrand().getGeneral().getTextColor() != null) {
+                getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
         }else if (currentActivity !=null ){
             return ContextCompat.getColor(currentActivity, R.color.backgroundColor);
@@ -12700,6 +12724,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void setRelatedArticleIds(List<String> ids){
+        this.relatedArticleIds=ids;
+    }
+    public List<String> getRelatedArticleIds(){
+        return this.relatedArticleIds;
+    }
 
     public void navigateToArticlePage(String articleId, String pageTitle,
                                        boolean launchActivity) {
@@ -12729,19 +12759,19 @@ public class AppCMSPresenter {
                                         + BaseView.isLandscape(currentActivity));
 
                                 AppCMSPageAPI pageAPI=null;
-                                if (appCMSArticleResult != null) {
-                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(this.pageId);
-                                }
+                                //if (appCMSArticleResult != null) {
+                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(articlePage.getPageId());
+                                //}
 
                                 navigationPageData.put(this.pageId, pageAPI);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             pageAPI,
-                                            this.pageId,
+                                            articlePage.getPageId(),
                                             this.pageTitle,
                                             this.pagePath,
-                                            pageIdToPageNameMap.get(this.pageId),
+                                            pageIdToPageNameMap.get(articlePage.getPageId()),
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
@@ -12759,6 +12789,9 @@ public class AppCMSPresenter {
                                     }
 
 
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                        .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            }else{
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
