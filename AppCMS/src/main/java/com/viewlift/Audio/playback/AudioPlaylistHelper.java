@@ -110,12 +110,12 @@ public class AudioPlaylistHelper {
     }
 
     public void undoShufflePlaylist() {
-        copyOfAudioPlaylistID.clear();
         currentAudioPlaylist.addAll(copyOfAudioPlaylistID);
-
         //reset current Media Id
-        if (getCurrentMediaId() != null)
+        if (getCurrentMediaId() != null) {
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(getCurrentMediaId());
+        }
+        copyOfAudioPlaylistID.clear();
     }
 
     public void autoPlayNextItemFromPLaylist(IPlaybackCall callBackPlaylistHelper) {

@@ -4126,7 +4126,7 @@ public class AppCMSPresenter {
 
             downloadProgressTimerList.add(downloadTimerTask);
 
-            updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+            updateDownloadIconTimer.schedule(downloadTimerTask, 1000, 4000);
         } catch (Exception e) {
             System.out.println("download start faile upload status-");
 
@@ -9823,9 +9823,15 @@ public class AppCMSPresenter {
             showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
                     downloadResultActionAfterPermissionGranted);
         } else {
-            editDownload(downloadContentDatumAfterPermissionGranted,
-                    downloadResultActionAfterPermissionGranted,
-                    true);
+            try {
+                editDownload(downloadContentDatumAfterPermissionGranted,
+                        downloadResultActionAfterPermissionGranted,
+                        true);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

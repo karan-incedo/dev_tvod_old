@@ -399,7 +399,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             NotificationChannel notificationChannel =
                     new NotificationChannel(CHANNEL_ID,
                             mService.getString(R.string.notification_channel),
-                            NotificationManager.IMPORTANCE_HIGH);
+                            NotificationManager.IMPORTANCE_DEFAULT);
 
             notificationChannel.setDescription(
                     mService.getString(R.string.notification_channel_description));
