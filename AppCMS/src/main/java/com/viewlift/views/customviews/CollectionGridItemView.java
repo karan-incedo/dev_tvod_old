@@ -452,11 +452,13 @@ public class CollectionGridItemView extends BaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
 
                     String imageUrl = data.getGist().getVideoImageUrl();
+                    ImageView imageView = (ImageView)view;
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     Glide.with(context)
                             .load(imageUrl)
                             .placeholder(R.mipmap.app_logo)
-                            // .override(childViewWidth, childViewHeight)
-                            .into((ImageView) view);
+                           // .override(childViewWidth, childViewHeight)
+                            .into(imageView);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
