@@ -253,12 +253,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSBinderMap = new HashMap<>();
 
         initPageActivity();
-        if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false) ) {
+        if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
             if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
                 startActivity(new Intent(this, AppCMSLaunchActivity.class));
                 finish();
-            }else{
+            } else {
                 Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                 Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -821,6 +821,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             return;
         }
         appCMSPresenter.setEntitlementPendingVideoData(null);
+        appCMSPresenter.setAudioPlayerOpen(false);
         if (!handlingClose && !isPageLoading()) {
             if (appCMSPresenter.isAddOnFragmentVisible()) {
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {
@@ -1013,12 +1014,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(deeplinkUri)) {
                     pendingDeeplinkUri = Uri.parse(deeplinkUri);
                 }
-                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false) ) {
+                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
                     if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
                         startActivity(new Intent(this, AppCMSLaunchActivity.class));
                         finish();
-                    }else{
+                    } else {
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -2311,12 +2312,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSTabNavContainer.removeAllViews();
 
             //add separator view
-            if (tabBarModule.isTabSeparator()) {
-                View sepratorView = new View(this);
-                sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
-                sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
-                appCMSTabNavContainer.addView(sepratorView);
-            }
+//            if (tabBarModule.isTabSeparator()) {
+//                View sepratorView = new View(this);
+//                sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
+//                sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
+//                appCMSTabNavContainer.addView(sepratorView);
+//            }
 
             //add navigation item parent view
             appCMSTabNavContainerItems = new LinearLayout(this);

@@ -53,6 +53,12 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_cmsplay_audio);
         ButterKnife.bind(this);
+        if (appCMSPresenter == null) {
+            appCMSPresenter = ((AppCMSApplication) getApplication())
+                    .getAppCMSPresenterComponent()
+                    .appCMSPresenter();
+        }
+
 
         casting.setOnClickListener(this);
         addToPlaylist.setOnClickListener(this);
@@ -60,10 +66,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         shareAudio.setOnClickListener(this);
         launchAudioPlayer();
         setCasting();
-
-
-
-
     }
 
     private void setCasting() {
@@ -78,13 +80,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("on destroy audio player");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        if (appCMSPresenter == null) {
-            appCMSPresenter = ((AppCMSApplication) getApplication())
-                    .getAppCMSPresenterComponent()
-                    .appCMSPresenter();
-        }
 
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
@@ -233,15 +236,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                         appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                 } else {
+                    appCMSPresenter.setAudioPlayerOpen(true);
                     if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
+                                        System.out.println("After login action");
 
                                     });
                                 });
                     } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
 

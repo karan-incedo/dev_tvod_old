@@ -14,7 +14,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
@@ -36,38 +35,42 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final String title;
     private final String fullText;
     private final boolean forceMaxLines;
-    private final int moreForegroundColor;
-    private final boolean useItalics;
+    private final int moreBackgroundColor;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
                                               String title,
                                               String fullText,
                                               AppCMSPresenter appCMSPresenter,
                                               boolean forceMaxLines,
-                                              int moreForegroundColor,
-                                              boolean useItalics) {
+                                              int moreBackgroundColor) {
         this.textView = textView;
         this.title = title;
         this.fullText = fullText;
         this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
-        this.moreForegroundColor = moreForegroundColor;
-        this.useItalics = useItalics;
+        this.moreBackgroundColor = moreBackgroundColor;
     }
 
     @Override
     public void onGlobalLayout() {
-        int linesCompletelyVisible = textView.getHeight() /
+        int linesCompletelyVisible = (textView.getHeight() -
+                textView.getPaddingTop() -
+                textView.getPaddingBottom()) /
                 textView.getLineHeight();
-        if (textView.getLineCount() < linesCompletelyVisible) {
-            linesCompletelyVisible = textView.getLineCount();
-        }
-        if (!forceMaxLines && textView.getLayout() != null) {
-            int lineEnd = textView.getLayout().getLineVisibleEnd(linesCompletelyVisible - 1) -
-                    EXTRA_TRUNC_CHARS;
-            if (0 <= lineEnd &&
-                    lineEnd < fullText.length() &&
+        if (!forceMaxLines) {
+            Rect bounds = new Rect();
+            Paint textPaint = textView.getPaint();
+            textPaint.getTextBounds(textView.getText().toString(),
+                    0,
+                    textView.getText().length(),
+                    bounds);
+            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()) {
+                linesCompletelyVisible--;
+            }
+            if (linesCompletelyVisible < textView.getLineCount() &&
+                    textView.getLayout() != null &&
                     appCMSPresenter != null) {
+                int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - EXTRA_TRUNC_CHARS;
                 if (0 < lineEnd) {
                     SpannableString spannableTextWithMore =
                             new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
@@ -85,7 +88,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                                 ds.setColor(ContextCompat.getColor(textView.getContext() , android.R.color.white));
                             } else {
                                 super.updateDrawState(ds);
-                                ds.setColor(moreForegroundColor);
+                                ds.setColor(moreBackgroundColor);
                             }
                         }
                     };
@@ -93,14 +96,6 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                             spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
                             spannableTextWithMore.length(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    if (useItalics) {
-                        TypefaceSpan typefaceSpan = new ItalicTypefaceSpan("sans-serif");
-                        spannableTextWithMore.setSpan(typefaceSpan,
-                                spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
-                                spannableTextWithMore.length(),
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    }
-
                     textView.setText(spannableTextWithMore);
                     textView.setMovementMethod(LinkMovementMethod.getInstance());
                 }
@@ -136,30 +131,5 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             wordToSpan.setSpan(new ForegroundColorSpan(textColor), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         textView.setText(wordToSpan);
-    }
-
-    private static class ItalicTypefaceSpan extends TypefaceSpan {
-        private Typeface italicTypeface;
-
-        public ItalicTypefaceSpan(String family) {
-            super(family);
-            italicTypeface = Typeface.create(family, Typeface.ITALIC);
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            applyItalicTypeface(ds);
-            super.updateDrawState(ds);
-        }
-
-        @Override
-        public void updateMeasureState(TextPaint paint) {
-            applyItalicTypeface(paint);
-            super.updateMeasureState(paint);
-        }
-
-        private void applyItalicTypeface(TextPaint paint) {
-            paint.setTypeface(italicTypeface);
-        }
     }
 }
