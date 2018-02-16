@@ -3277,60 +3277,85 @@ public class AppCMSPresenter {
                         contentDatum,
                         resultAction1);
             } else {
-                AppCMSPageAPI apiData = new AppCMSPageAPI();
-                List<Module> moduleList = new ArrayList<>();
-                Module module = new Module();
-
-                getUserDownloadQualityPref();
-
-                List<ContentDatum> contentData = new ArrayList<>();
-                ContentDatum contentDatumLocal = new ContentDatum();
-                StreamingInfo streamingInfo = new StreamingInfo();
-                VideoAssets videoAssets = new VideoAssets();
-                List<Mpeg> mpegs = new ArrayList<>();
-
-                String[] renditionValueArray = currentContext.getResources()
-                        .getStringArray(R.array.app_cms_download_quality_array);
-                for (String renditionValue : renditionValueArray) {
-                    Mpeg mpeg = new Mpeg();
-                    mpeg.setRenditionValue(renditionValue);
-                    mpegs.add(mpeg);
-                }
-
-                videoAssets.setMpeg(mpegs);
-                videoAssets.setType("videoAssets");
-
-                streamingInfo.setVideoAssets(videoAssets);
-                contentDatumLocal.setStreamingInfo(streamingInfo);
-
-                contentData.add(contentDatumLocal);
-                module.setContentData(contentData);
-
-                moduleList.add(module);
-                apiData.setModules(moduleList);
-
-                launchDownloadQualityActivity(currentActivity,
-                        navigationPages.get(downloadQualityPage.getPageId()),
-                        apiData,
-                        downloadQualityPage.getPageId(),
-                        downloadQualityPage.getPageName(),
-                        pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
-                        loadFromFile,
-                        false,
-                        true,
-                        false,
-                        false,
-                        getAppCMSDownloadQualityBinder(currentActivity,
-                                navigationPages.get(downloadQualityPage.getPageId()),
-                                apiData,
-                                downloadQualityPage.getPageId(),
-                                downloadQualityPage.getPageName(),
-                                downloadQualityPage.getPageName(),
+                if (navigationPages.get(downloadQualityPage.getPageId()) == null) {
+                    Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                    pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(pageLoadingActionIntent);
+                    MetaPage metaPage = pageIdToMetaPageMap.get(downloadQualityPage.getPageId());
+                    if (metaPage != null) {
+                        getAppCMSPage(metaPage.getPageUI(),
+                                appCMSPageUIResult -> {
+                                    Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                    stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                    currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+                                    if (appCMSPageUIResult != null) {
+                                        navigationPages.put(downloadQualityPage.getPageId(), appCMSPageUIResult);
+                                        String action = pageNameToActionMap.get(metaPage.getPageName());
+                                        if (action != null && actionToPageMap.containsKey(action)) {
+                                            actionToPageMap.put(action, appCMSPageUIResult);
+                                        }
+                                        showDownloadQualityScreen(contentDatum, resultAction1);
+                                    }
+                                },
                                 loadFromFile,
-                                true,
-                                true,
-                                false,
-                                contentDatum, resultAction1));
+                                false);
+                    }
+                } else {
+                    AppCMSPageAPI apiData = new AppCMSPageAPI();
+                    List<Module> moduleList = new ArrayList<>();
+                    Module module = new Module();
+
+                    getUserDownloadQualityPref();
+
+                    List<ContentDatum> contentData = new ArrayList<>();
+                    ContentDatum contentDatumLocal = new ContentDatum();
+                    StreamingInfo streamingInfo = new StreamingInfo();
+                    VideoAssets videoAssets = new VideoAssets();
+                    List<Mpeg> mpegs = new ArrayList<>();
+
+                    String[] renditionValueArray = currentContext.getResources()
+                            .getStringArray(R.array.app_cms_download_quality_array);
+                    for (String renditionValue : renditionValueArray) {
+                        Mpeg mpeg = new Mpeg();
+                        mpeg.setRenditionValue(renditionValue);
+                        mpegs.add(mpeg);
+                    }
+
+                    videoAssets.setMpeg(mpegs);
+                    videoAssets.setType("videoAssets");
+
+                    streamingInfo.setVideoAssets(videoAssets);
+                    contentDatumLocal.setStreamingInfo(streamingInfo);
+
+                    contentData.add(contentDatumLocal);
+                    module.setContentData(contentData);
+
+                    moduleList.add(module);
+                    apiData.setModules(moduleList);
+
+                    launchDownloadQualityActivity(currentActivity,
+                            navigationPages.get(downloadQualityPage.getPageId()),
+                            apiData,
+                            downloadQualityPage.getPageId(),
+                            downloadQualityPage.getPageName(),
+                            pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
+                            loadFromFile,
+                            false,
+                            true,
+                            false,
+                            false,
+                            getAppCMSDownloadQualityBinder(currentActivity,
+                                    navigationPages.get(downloadQualityPage.getPageId()),
+                                    apiData,
+                                    downloadQualityPage.getPageId(),
+                                    downloadQualityPage.getPageName(),
+                                    downloadQualityPage.getPageName(),
+                                    loadFromFile,
+                                    true,
+                                    true,
+                                    false,
+                                    contentDatum, resultAction1));
+                }
             }
         } catch (Exception e) {
             //Log.e(TAG, "Failed to display Download Quality Screen");
