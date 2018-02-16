@@ -3411,8 +3411,15 @@ public class ViewCreator {
                 switch (componentKey) {
 
                     case PAGE_PHOTO_GALLERY_SELECTED_IMAGE:
+
+                        String selectedImgUrl = "";
                         ImageView selectedImg = (ImageView) componentViewResult.componentView;
-                        Glide.with(selectedImg.getContext()).load(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getInfo().getSecureUrl()).into(selectedImg);
+                        if(moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null){
+                            if(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() > 0 && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getInfo() != null){
+                                selectedImgUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getInfo().getSecureUrl();
+                            }
+                        }
+                        Glide.with(selectedImg.getContext()).load(selectedImgUrl).placeholder(R.mipmap.app_logo).into(selectedImg);
                         break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&

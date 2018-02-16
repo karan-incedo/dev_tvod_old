@@ -134,7 +134,7 @@ public class AppCMSPhotoGalleryResult {
             for(PhotoGalleryData p:getStreamingInfo().getPhotogalleryAssets()){
                 Gist gist=new Gist();
                 gist.setId(p.getId());
-                gist.setVideoImageUrl(p.getInfo().getUrl());
+                gist.setVideoImageUrl(p.getInfo() != null ? p.getInfo().getUrl() : "");
                 ContentDatum cd=new ContentDatum();
                 cd.setGist(gist);
                 data.add(cd);
