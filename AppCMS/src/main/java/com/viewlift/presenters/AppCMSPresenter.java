@@ -12732,7 +12732,7 @@ public class AppCMSPresenter {
     }
 
     public void navigateToArticlePage(String articleId, String pageTitle,
-                                       boolean launchActivity) {
+                                      boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12758,40 +12758,39 @@ public class AppCMSPresenter {
                                 pushActionInternalEvents(this.pageId
                                         + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI=null;
-                                //if (appCMSArticleResult != null) {
+                                AppCMSPageAPI pageAPI = null;
+                                if (appCMSArticleResult != null) {
                                     pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(articlePage.getPageId());
-                                //}
-
-                                navigationPageData.put(this.pageId, pageAPI);
-
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
-                                            pageAPI,
-                                            articlePage.getPageId(),
-                                            this.pageTitle,
-                                            this.pagePath,
-                                            pageIdToPageNameMap.get(articlePage.getPageId()),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            false,
-                                            null,
-                                            ExtraScreenType.NONE);
-                                    if (args != null) {
-                                        Intent pageIntent =
-                                                new Intent(AppCMSPresenter
-                                                        .PRESENTER_NAVIGATE_ACTION);
-                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                args);
-                                        currentActivity.sendBroadcast(pageIntent);
+                                    if (getCurrentArticleIndex() == -1) {
+                                        setRelatedArticleIds(pageAPI.getModules().get(0).getContentData().get(0).getContentDetails().getRelatedArticleIds());
                                     }
-
-
+                                }
+                                navigationPageData.put(this.pageId, pageAPI);
+                                Bundle args = getPageActivityBundle(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        articlePage.getPageId(),
+                                        this.pageTitle,
+                                        this.pagePath,
+                                        pageIdToPageNameMap.get(articlePage.getPageId()),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        null,
+                                        ExtraScreenType.NONE);
+                                if (args != null) {
+                                    Intent pageIntent =
+                                            new Intent(AppCMSPresenter
+                                                    .PRESENTER_NAVIGATE_ACTION);
+                                    pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(pageIntent);
+                                }
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
-                            }else{
+                            } else {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
