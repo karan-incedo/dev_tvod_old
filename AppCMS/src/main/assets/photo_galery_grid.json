@@ -375,6 +375,7 @@
           "layout": {
             "mobile": {
               "gridHeight" : 158,
+              "leftMargin": 11.67,
               "trayPadding": 5,
               "topMargin": 57.0,
               "gridColumns": 3,
