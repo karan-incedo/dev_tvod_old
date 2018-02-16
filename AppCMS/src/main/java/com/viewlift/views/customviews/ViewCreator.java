@@ -1305,7 +1305,22 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else {
+                } else if(moduleInfo.getSettings()!=null &&
+                        moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
+                    if (isTopModuleCreated){
+                        continue;
+                    }else{
+                        createCompoundTopModule(context,
+                                modulesList,
+                                appCMSPageAPI,
+                                appCMSAndroidModules,
+                                pageView,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                modulesToIgnore);
+                        isTopModuleCreated=true;
+                    }
+                }else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
                 //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
