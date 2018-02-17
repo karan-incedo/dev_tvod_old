@@ -310,7 +310,7 @@ public class CardPresenter extends Presenter {
                             case PAGE_THUMBNAIL_IMAGE_KEY:
                                 Integer itemWidth = Integer.valueOf(childComponentAndView.component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(childComponentAndView.component.getLayout().getTv().getHeight());
-                                imageView.setBackground(null);
+                             //   imageView.setBackground(null);
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -352,7 +352,7 @@ public class CardPresenter extends Presenter {
                                                     "&w=" + badgeItemWidth +
                                                     "&h=" + badgeItemHeight;
                                         }
-                                        imageView.setBackground(null);
+                                  //      imageView.setBackground(null);
                                         Glide.with(mContext)
                                                 .load(imageUrl)
                                                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -369,7 +369,7 @@ public class CardPresenter extends Presenter {
 
                     case PAGE_LABEL_KEY:
                         TextView tvTitle = (TextView) childComponentAndView.childView;
-                        tvTitle.setText(mContext.getResources().getString(R.string.blank_string));
+                        //tvTitle.setText(mContext.getResources().getString(R.string.blank_string));
                         if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY)) {
                             StringBuilder stringBuilder = new StringBuilder();
                             if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata() != null) {
