@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -93,7 +95,17 @@ public class CustomWebView extends WebView {
 
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
         this.getSettings().setUseWideViewPort(true);
-        this.getSettings().setDefaultFontSize(30);
+        this.getSettings().setLoadWithOverviewMode(true);
+
+        this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        this.getSettings().setBuiltInZoomControls(true);
+        setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            // Hide the zoom controls for HONEYCOMB+
+            this.getSettings().setDisplayZoomControls(false);
+        }
+
+       // this.getSettings().setDefaultFontSize(30);
         this.addJavascriptInterface(this, "MyApp");
         this.setWebViewClient(new WebViewClient() {
             @Override

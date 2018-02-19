@@ -4500,8 +4500,10 @@ public class ViewCreator {
         } else if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null) {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
             //webView.setHorizontalScrollBarEnabled(true);
-            //html = "<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webView.loadURL(context, appCMSPresenter, webViewUrl, key);
+
+
         }
         return webView;
     }
