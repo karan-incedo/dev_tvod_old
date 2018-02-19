@@ -2501,7 +2501,6 @@ public class ViewCreator {
 
                     case PAGE_ARTICLE_PREVIOUS_BUTTON_KEY:
                         componentViewResult.addToPageView = true;
-
                         FrameLayout.LayoutParams paramsPreviousButton =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -2509,15 +2508,20 @@ public class ViewCreator {
                         paramsPreviousButton.gravity = Gravity.BOTTOM | Gravity.LEFT;
                         componentViewResult.componentView.setLayoutParams(paramsPreviousButton);
                         componentViewResult.componentView.setPadding(20,0,20,0);
-
+                        componentViewResult.componentView.setId(R.id.article_prev_button);
+                        if(appCMSPresenter.getCurrentArticleIndex() <= 0) {
+                            componentViewResult.componentView.setAlpha(0.5f);
+                        }
                         componentViewResult.componentView.setOnClickListener(v -> {
-
-                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null) {
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                                pageView.findViewById(R.id.article_next_button).setAlpha(1.0f);
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
-                                if(currentIndex > 0) {
-                                    currentIndex--;
+                                currentIndex = currentIndex - 1;
+                                if(currentIndex >= 0) {
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                                    ((Activity) context).onBackPressed();
+                                    appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                }else{
+                                    componentViewResult.componentView.setAlpha(0.5f);
                                 }
                             }
                         });
@@ -2534,12 +2538,16 @@ public class ViewCreator {
                         paramsNextButton.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         componentViewResult.componentView.setLayoutParams(paramsNextButton);
                         componentViewResult.componentView.setPadding(30,0,30,0);
+                        componentViewResult.componentView.setId(R.id.article_next_button);
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > appCMSPresenter.getCurrentArticleIndex()) {
-                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds().size() - 1 > appCMSPresenter.getCurrentArticleIndex()) {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
-                                currentIndex++;
+                                currentIndex = currentIndex+1;
                                 appCMSPresenter.setCurrentArticleIndex(currentIndex);
+                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                pageView.findViewById(R.id.article_prev_button).setAlpha(1.0f);
+                            }else{
+                               v.setAlpha(0.5f);
                             }
                         });
                         break;

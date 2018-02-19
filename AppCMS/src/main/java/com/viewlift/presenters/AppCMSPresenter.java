@@ -12641,19 +12641,19 @@ public class AppCMSPresenter {
                                         + BaseView.isLandscape(currentActivity));
 
                                 AppCMSPageAPI pageAPI=null;
-                                if (appCMSArticleResult != null) {
-                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(this.pageId);
-                                }
+                                //if (appCMSArticleResult != null) {
+                                    pageAPI = appCMSArticleResult.convertToAppCMSPageAPI(articlePage.getPageId());
+                                //}
 
                                 navigationPageData.put(this.pageId, pageAPI);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             pageAPI,
-                                            this.pageId,
+                                            articlePage.getPageId(),
                                             this.pageTitle,
                                             this.pagePath,
-                                            pageIdToPageNameMap.get(this.pageId),
+                                            pageIdToPageNameMap.get(articlePage.getPageId()),
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
@@ -12671,6 +12671,9 @@ public class AppCMSPresenter {
                                     }
 
 
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                        .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            }else{
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
