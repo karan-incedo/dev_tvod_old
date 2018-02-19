@@ -2934,8 +2934,7 @@ public class ViewCreator {
                             ContextCompat.getColor(context, android.R.color.transparent));
                     if (componentViewResult.componentView instanceof Button) {
                         ((Button) componentViewResult.componentView)
-                                .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                                        .getBrand().getCta().getPrimary().getBackgroundColor()));
+                                .setTextColor(appCMSPresenter.getGeneralTextColor());
                         //.getGeneral().getBlockTitleColor()));
                     }
                 }
