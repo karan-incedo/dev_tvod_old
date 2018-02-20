@@ -151,46 +151,29 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private IPhotoGallerySelectListener iPhotoGallerySelectListener;
 
-    public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener){
-        this.iPhotoGallerySelectListener  = iPhotoGallerySelectListener;
+    public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener) {
+        this.iPhotoGallerySelectListener = iPhotoGallerySelectListener;
     }
 
     public PhotoGalleryNextPreviousListener setPhotoGalleryImageSelectionListener(PhotoGalleryNextPreviousListener listener) {
         listener = new PhotoGalleryNextPreviousListener() {
-            Button prevButton, nxtButton;
 
             @Override
             public void previousPhoto(Button previousButton) {
-                prevButton = previousButton;
 
                 if (getSelectedPosition() == 0) {
                     return;
                 }
-                if (getSelectedPosition() == adapterData.size() - 1) {
-                    nxtButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                }
-                prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                 selectedPosition--;
-                if (getSelectedPosition() == 0) {
-                    prevButton.setBackgroundColor(Color.parseColor("#c8c8c8"));
-                }
                 iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
             }
 
             @Override
             public void nextPhoto(Button nextButton) {
-                nxtButton = nextButton;
                 if (getSelectedPosition() == adapterData.size() - 1) {
                     return;
                 }
-                if (getSelectedPosition() == 0) {
-                    prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                }
-                nxtButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                 selectedPosition++;
-                if (getSelectedPosition() == adapterData.size() - 1) {
-                    nxtButton.setBackgroundColor(Color.parseColor("#c8c8c8"));
-                }
                 iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
             }
         };
@@ -479,19 +462,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
-            } else if(viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
-                onClickHandler =new CollectionGridItemView.OnClickHandler() {
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView, Component childComponent,
                                       ContentDatum data, int clickPosition) {
                         selectedPosition = clickPosition;
                         iPhotoGallerySelectListener.selectedImageData(data.getGist().getVideoImageUrl());
                     }
+
                     @Override
-                    public void play(Component childComponent, ContentDatum data) {}
+                    public void play(Component childComponent, ContentDatum data) {
+                    }
                 };
 
-            }else {
+            } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
