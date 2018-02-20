@@ -1846,13 +1846,6 @@ public class ViewCreator {
                                         LinearLayoutManager.VERTICAL,
                                         false));
 
-
-                        //* ViewGroup.LayoutParams params=((RecyclerView) componentViewResult.componentView).getLayoutParams();
-                        //params.height=moduleAPI.getContentData().size()*50;
-//                        params.height=100;
-//                        ((RecyclerView) componentViewResult.componentView).setLayoutParams(params);*//*
-
-
                         AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
@@ -1981,6 +1974,7 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_GRID_KEY) {
+
                         LinearLayoutManager layoutManager = null;
                         if (BaseView.isTablet(context)) {
                             layoutManager = BaseView.isLandscape(context) ?
@@ -1990,6 +1984,7 @@ public class ViewCreator {
                             layoutManager = new GridLayoutManager(context, 3,
                                     GridLayoutManager.VERTICAL, false);
                         }
+
                         ((RecyclerView) componentViewResult.componentView).setLayoutManager(layoutManager);
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
                                 this,
@@ -2002,7 +1997,7 @@ public class ViewCreator {
                                 moduleAPI,
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                                viewType,
+                                context.getResources().getString(R.string.app_cms_photo_tray_module_key),
                                 appCMSAndroidModules);
 
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
