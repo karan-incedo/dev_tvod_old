@@ -26,6 +26,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
+import com.viewlift.views.customviews.PhotoGalleryNextPreviousListener;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -111,8 +112,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
-        if(this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
-           // adapterData.remove(0);
+        if (this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+            /*remove data from 1st position since it contains photogallery details*/
+            if (adapterData.get(0).getStreamingInfo() != null) {
+                adapterData.remove(0);
+            }
+            selectedPosition = 0;
         }
 
         this.defaultWidth = defaultWidth;
@@ -148,6 +153,54 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener){
         this.iPhotoGallerySelectListener  = iPhotoGallerySelectListener;
+    }
+
+    public PhotoGalleryNextPreviousListener setPhotoGalleryImageSelectionListener(PhotoGalleryNextPreviousListener listener) {
+        listener = new PhotoGalleryNextPreviousListener() {
+            Button prevButton, nxtButton;
+
+            @Override
+            public void previousPhoto(Button previousButton) {
+                prevButton = previousButton;
+
+                if (getSelectedPosition() == 0) {
+                    return;
+                }
+                if (getSelectedPosition() == adapterData.size() - 1) {
+                    nxtButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                }
+                prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                selectedPosition--;
+                if (getSelectedPosition() == 0) {
+                    prevButton.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                }
+                iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
+            }
+
+            @Override
+            public void nextPhoto(Button nextButton) {
+                nxtButton = nextButton;
+                if (getSelectedPosition() == adapterData.size() - 1) {
+                    return;
+                }
+                if (getSelectedPosition() == 0) {
+                    prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                }
+                nxtButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                selectedPosition++;
+                if (getSelectedPosition() == adapterData.size() - 1) {
+                    nxtButton.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                }
+                iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
+            }
+        };
+
+
+        return listener;
+    }
+
+    public static int getSelectedPosition() {
+        return selectedPosition;
     }
 
     @Override
@@ -429,7 +482,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             } else if(viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
                 onClickHandler =new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data, int clickPosition) {
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent,
+                                      ContentDatum data, int clickPosition) {
+                        selectedPosition = clickPosition;
                         iPhotoGallerySelectListener.selectedImageData(data.getGist().getVideoImageUrl());
                     }
                     @Override

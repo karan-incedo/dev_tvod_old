@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -131,11 +132,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setQueryHint(getString(R.string.search));
         //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
+        TextView searchText = (TextView) appCMSSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        appCMSPresenter.setCursorDrawableColor((EditText) searchText);
+
         appCMSSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

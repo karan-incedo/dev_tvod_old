@@ -201,8 +201,8 @@ public class LoginModule extends ModuleView {
                                 if (appCMSPresenter.isAppSVOD()) {
                                     if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
                                         //appCMSPresenter.sendCloseOthersAction(null,
-                                                //true,
-                                                //false);
+                                        //true,
+                                        //false);
                                         appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
 
                                     } else {
@@ -375,6 +375,7 @@ public class LoginModule extends ModuleView {
                                 case PAGE_EMAILTEXTFIELD_KEY:
                                 case PAGE_EMAILTEXTFIELD2_KEY:
                                     emailInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
+                                    appCMSPresenter.setCursorDrawableColor(emailInputViews[childIndex]);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visibleEmailInputView = emailInputViews[1];
                                     }
@@ -389,6 +390,7 @@ public class LoginModule extends ModuleView {
                                             .setImeOptions(EditorInfo.IME_ACTION_SEND | EditorInfo.IME_ACTION_GO);
                                     passwordInputViews[childIndex]
                                             .setTransformationMethod(PasswordTransformationMethod.getInstance());
+                                    appCMSPresenter.setCursorDrawableColor(passwordInputViews[childIndex]);
 
                                     passwordInputViews[childIndex].setOnEditorActionListener((v, actionId, event) -> {
                                         boolean isImeActionSent = false;

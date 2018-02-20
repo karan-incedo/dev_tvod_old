@@ -30,7 +30,7 @@
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
 
-    <string name="search_films">Search films</string>
+    <string name="search">Search</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
