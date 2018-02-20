@@ -308,6 +308,7 @@ public class CollectionGridItemView extends BaseView {
                                         .centerCrop()
                                         .into((ImageView) view);
                             }
+
                         } catch (Exception e) {
                             //
                         }
@@ -447,6 +448,11 @@ public class CollectionGridItemView extends BaseView {
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                         }
+                    }else if (data.getGist().getImageGist() != null &&
+                            data.getGist().getImageGist().get_16x9() == null){
+
+                            view.setVisibility(GONE);
+
                     }
                     bringToFront = false;
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
@@ -802,6 +808,17 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(childComponent.getText());
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
+                    }
+                }
+                if (view instanceof  TextView){
+                    if (childComponent !=null &&
+                            childComponent.getTextColor() !=null &&
+                            TextUtils.isEmpty(childComponent.getTextColor())){
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
+                    }else
+                    {
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {

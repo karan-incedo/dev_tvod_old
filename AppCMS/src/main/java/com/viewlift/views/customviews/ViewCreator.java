@@ -2319,12 +2319,16 @@ public class ViewCreator {
                 if (appCMSPresenter.isActionFacebook(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.facebookBlue));
+                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
+
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     if (appCMSPresenter.getAppCMSMain().getSocialMedia() != null &&
                             appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus() != null &&
                             appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         applyBorderToComponent(context, componentViewResult.componentView, component,
                                 ContextCompat.getColor(context, R.color.googleRed));
+                        ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
+
                     } else if (appCMSPresenter.getAppCMSMain().getSocialMedia() == null ||
                             appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus() == null ||
                             !appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
@@ -2357,14 +2361,14 @@ public class ViewCreator {
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_PRE_BUTTON_KEY) {
-                    ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
-                    ((Button) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+                    ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                     ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY) {
-                    ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
-                    ((Button) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+                    ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                     ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                     ((Button) componentViewResult.componentView).setTag(0);
                     ((Button) componentViewResult.componentView).setOnClickListener(v -> {
@@ -2717,6 +2721,8 @@ public class ViewCreator {
                     case PAGE_FORGOTPASSWORD_KEY:
                         componentViewResult.componentView.setBackgroundColor(
                                 ContextCompat.getColor(context, android.R.color.transparent));
+                        ((Button) componentViewResult.componentView)
+                                .setTextColor(appCMSPresenter.getGeneralTextColor());
                         break;
 
                     case PAGE_REMOVEALL_KEY:
@@ -2934,8 +2940,7 @@ public class ViewCreator {
                             ContextCompat.getColor(context, android.R.color.transparent));
                     if (componentViewResult.componentView instanceof Button) {
                         ((Button) componentViewResult.componentView)
-                                .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                                        .getBrand().getCta().getPrimary().getBackgroundColor()));
+                                .setTextColor(appCMSPresenter.getGeneralTextColor());
                         //.getGeneral().getBlockTitleColor()));
                     }
                 }
@@ -4500,8 +4505,10 @@ public class ViewCreator {
         } else if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null) {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
             //webView.setHorizontalScrollBarEnabled(true);
-            //html = "<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webView.loadURL(context, appCMSPresenter, webViewUrl, key);
+
+
         }
         return webView;
     }
