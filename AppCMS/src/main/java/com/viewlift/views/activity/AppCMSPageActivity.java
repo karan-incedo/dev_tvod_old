@@ -843,7 +843,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            isDownloadPageOpen = appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId());
+            isDownloadPageOpen = appCMSBinder != null && appCMSBinder.getPageId() != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId());
         }
 
         try {
