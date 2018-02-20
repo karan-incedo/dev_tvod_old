@@ -14,12 +14,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.photogallery.IPhotoGallerySelectListener;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
@@ -398,7 +396,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);
-                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null);
                                     return;
                                 }
                             }
@@ -498,7 +496,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);
-                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null);
                                     return;
                                 }
                                 //PHOTOGALLERY

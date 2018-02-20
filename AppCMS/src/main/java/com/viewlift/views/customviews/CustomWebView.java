@@ -17,7 +17,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -71,22 +70,21 @@ public class CustomWebView extends WebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                super.shouldOverrideUrlLoading(view, url);
-                return false;
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                mContext.startActivity(browserIntent);
+                return true;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
-                view.requestLayout();
-                //appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
+                appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                //appCMSPresenter.clearWebViewCache();
+                appCMSPresenter.clearWebViewCache();
             }
         });
 
