@@ -4382,7 +4382,7 @@ public class AppCMSPresenter {
                                     navigateToDownloadPage(pageId, pageTitle, url, launchActivity);
                                 }
                             },
-                            loadFromFile,
+                            !isNetworkConnected(),
                             false);
                 }
             } else {
@@ -7488,6 +7488,7 @@ public class AppCMSPresenter {
                 .context(currentActivity)
                 .siteId(siteId)
                 .bustCache(bustCache)
+                .networkDisconnected(!isNetworkConnected())
                 .build();
 
         try {
@@ -8038,7 +8039,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
+    public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
             if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
@@ -9467,23 +9468,37 @@ public class AppCMSPresenter {
             populateFilmsInUserWatchlist();
 
             // Download the Download Page UI if it hasn't been download already
-            String downloadPageId = getDownloadPageId();
-            AppCMSPageUI appCMSPageUI = navigationPages.get(downloadPageId);
-            if (appCMSPageUI == null) {
-                MetaPage downloadMetaPage = pageIdToMetaPageMap.get(downloadPageId);
-                if (downloadMetaPage != null) {
-                    getAppCMSPage(downloadMetaPage.getPageUI(),
-                            appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
-                                    navigationPages.put(downloadMetaPage.getPageId(), appCMSPageUIResult);
-                                    String action = pageNameToActionMap.get(downloadMetaPage.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUIResult);
+            if (downloadsAvailableForApp()) {
+                String downloadPageId = getDownloadPageId();
+                if (TextUtils.isEmpty(downloadPageId) &&
+                        appCMSAndroid != null &&
+                        appCMSAndroid.getMetaPages() != null &&
+                        !appCMSAndroid.getMetaPages().isEmpty()) {
+                    for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {
+                            setDownloadPageId(metaPage.getPageId());
+                            downloadPageId = metaPage.getPageId();
+                        }
+                    }
+                }
+
+                AppCMSPageUI appCMSPageUI = navigationPages.get(downloadPageId);
+                if (appCMSPageUI == null) {
+                    MetaPage downloadMetaPage = pageIdToMetaPageMap.get(downloadPageId);
+                    if (downloadMetaPage != null) {
+                        getAppCMSPage(downloadMetaPage.getPageUI(),
+                                appCMSPageUIResult -> {
+                                    if (appCMSPageUIResult != null) {
+                                        navigationPages.put(downloadMetaPage.getPageId(), appCMSPageUIResult);
+                                        String action = pageNameToActionMap.get(downloadMetaPage.getPageName());
+                                        if (action != null && actionToPageMap.containsKey(action)) {
+                                            actionToPageMap.put(action, appCMSPageUIResult);
+                                        }
                                     }
-                                }
-                            },
-                            loadFromFile,
-                            false);
+                                },
+                                loadFromFile,
+                                false);
+                    }
                 }
             }
 
@@ -10202,7 +10217,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
                             launchErrorActivity(platformType);
                         }
-                    }).execute(url);
+                    }).execute(url, !isNetworkConnected());
         } else {
             launchBlankPage();
         }

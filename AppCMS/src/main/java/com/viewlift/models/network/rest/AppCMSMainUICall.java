@@ -58,7 +58,11 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount, boolean bustCache) {
+    public AppCMSMain call(Context context,
+                           String siteId,
+                           int tryCount,
+                           boolean bustCache,
+                           boolean networkDisconnected) {
         Date now = new Date();
         StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
@@ -71,20 +75,22 @@ public class AppCMSMainUICall {
         try {
             //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            try {
+            if (!networkDisconnected) {
+                try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
-                long start = System.currentTimeMillis();
-                Log.d(TAG, "Start main.json request: " + start);
-                main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
-                long end = System.currentTimeMillis();
-                Log.d(TAG, "End main.json request: " + end);
-                Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
-                Log.d(TAG, "Total Time main.json request: " + (end - start));
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                    long start = System.currentTimeMillis();
+                    Log.d(TAG, "Start main.json request: " + start);
+                    main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
+                    long end = System.currentTimeMillis();
+                    Log.d(TAG, "End main.json request: " + end);
+                    Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
+                    Log.d(TAG, "Total Time main.json request: " + (end - start));
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                }
             }
 
-            final AppCMSMain mainfromNetwork = main;
+            final AppCMSMain mainFromNetwork = main;
             AppCMSMain mainInStorage = null;
             String filename = getResourceFilename(appCMSMainUrlSb.toString());
             try {
@@ -93,17 +99,17 @@ public class AppCMSMainUICall {
                 Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
-            if (mainfromNetwork != null && mainInStorage != null) {
+            if (mainFromNetwork != null && mainInStorage != null) {
                 Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
-                mainfromNetwork.setLoadFromFile(mainfromNetwork.getVersion().equals(mainInStorage.getVersion()));
+                mainFromNetwork.setLoadFromFile(mainFromNetwork.getVersion().equals(mainInStorage.getVersion()));
             }
 
-            if (mainfromNetwork != null) {
-                Log.d(TAG, "Read main.json version: " + mainfromNetwork.getVersion());
+            if (mainFromNetwork != null) {
+                Log.d(TAG, "Read main.json version: " + mainFromNetwork.getVersion());
             }
             if (main != null) {
                 try {
-                    main = writeMainToFile(filename, mainfromNetwork);
+                    main = writeMainToFile(filename, mainFromNetwork);
                 } catch (Exception e) {
 
                 }
@@ -116,7 +122,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1, bustCache);
+            return call(context, siteId, tryCount + 1, bustCache, networkDisconnected);
         }
 
         return main;
