@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -15,7 +17,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -69,22 +70,21 @@ public class CustomWebView extends WebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                super.shouldOverrideUrlLoading(view, url);
-                return false;
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                mContext.startActivity(browserIntent);
+                return true;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
-                view.requestLayout();
-                //appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
+                appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                //appCMSPresenter.clearWebViewCache();
+                appCMSPresenter.clearWebViewCache();
             }
         });
 
@@ -93,7 +93,17 @@ public class CustomWebView extends WebView {
 
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
         this.getSettings().setUseWideViewPort(true);
-        this.getSettings().setDefaultFontSize(30);
+        this.getSettings().setLoadWithOverviewMode(true);
+
+        this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        this.getSettings().setBuiltInZoomControls(true);
+        setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            // Hide the zoom controls for HONEYCOMB+
+            this.getSettings().setDisplayZoomControls(false);
+        }
+
+       // this.getSettings().setDefaultFontSize(30);
         this.addJavascriptInterface(this, "MyApp");
         this.setWebViewClient(new WebViewClient() {
             @Override
