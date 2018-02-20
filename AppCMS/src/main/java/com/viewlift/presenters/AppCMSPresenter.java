@@ -9466,6 +9466,27 @@ public class AppCMSPresenter {
 
             populateFilmsInUserWatchlist();
 
+            // Download the Download Page UI if it hasn't been download already
+            String downloadPageId = getDownloadPageId();
+            AppCMSPageUI appCMSPageUI = navigationPages.get(downloadPageId);
+            if (appCMSPageUI == null) {
+                MetaPage downloadMetaPage = pageIdToMetaPageMap.get(downloadPageId);
+                if (downloadMetaPage != null) {
+                    getAppCMSPage(downloadMetaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(downloadMetaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(downloadMetaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            }
+
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
