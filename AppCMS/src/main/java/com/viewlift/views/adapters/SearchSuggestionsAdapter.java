@@ -50,18 +50,25 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ButterKnife.bind(this, view);
 
-        filmTitle.setText(cursor.getString(1));
-        int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
+        filmTitle.setText(cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
+        int runtimeAsInteger = Integer.valueOf(cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_DURATION)));
 
         if (runtimeAsInteger > 0 && runtimeAsInteger < 2) {
-            runtime.setText(new StringBuilder().append(cursor.getString(2))
+            runtime.setText(new StringBuilder().append(cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_DURATION)))
                     .append(" ")
                     .append(context.getString(R.string.minute_for_runtime)).toString());
         } else {
-            runtime.setText(new StringBuilder().append(cursor.getString(2))
+            runtime.setText(new StringBuilder().append(cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_DURATION)))
                     .append(" ")
                     .append(context.getString(R.string.minutes_for_runtime)).toString());
         }
+        String[] searchHintResult = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_DATA)).split(",");
+        String mediaType = searchHintResult[4];
+        String contentType = searchHintResult[5];
+        if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            runtime.setText("");
+        }
+
     }
 
     @Override

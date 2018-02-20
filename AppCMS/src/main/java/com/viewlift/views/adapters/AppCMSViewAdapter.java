@@ -12,12 +12,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
+import com.viewlift.models.data.appcms.photogallery.IPhotoGallerySelectListener;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -110,6 +113,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
+        if(this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
+           // adapterData.remove(0);
+        }
+
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
@@ -139,6 +146,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         //sortPlan(); as per MSEAN-1434
     }
 
+    private IPhotoGallerySelectListener iPhotoGallerySelectListener;
+
+    public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener){
+        this.iPhotoGallerySelectListener  = iPhotoGallerySelectListener;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
@@ -156,7 +169,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 true,
                 this.componentViewType,
                 false,
-                useRoundedCorners(),this.viewTypeKey);
+                useRoundedCorners(), this.viewTypeKey);
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
             applyBgColorToChildren(view, selectedColor);
@@ -168,6 +181,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(view, unselectedColor);
             }
         }
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY
+                ) {
+            view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+
+
         return new ViewHolder(view);
     }
 
@@ -332,9 +351,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
                                       int clickPosition) {
-                        if(appCMSPresenter.isSelectedSubscriptionPlan()){
+                        if (appCMSPresenter.isSelectedSubscriptionPlan()) {
                             selectedPosition = clickPosition;
-                        }else{
+                        } else {
                             appCMSPresenter.setSelectedSubscriptionPlan(true);
                         }
                         for (int i = 0; i < planItemView.length; i++) {
@@ -369,12 +388,35 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                    @Override
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent, ContentDatum data, int clickPosition) {
+                        if (childComponent != null && childComponent.getKey() != null) {
+                            if (jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_THUMBNAIL_READ_MORE_KEY) {
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                                    appCMSPresenter.setCurrentArticleIndex(-1);
+                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+
+                    }
+                };
+
             } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,int clickPosition) {
+                                      ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -386,12 +428,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
-            } else {
+            } else if(viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
+                onClickHandler =new CollectionGridItemView.OnClickHandler() {
+                    @Override
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data, int clickPosition) {
+                        iPhotoGallerySelectListener.selectedImageData(data.getGist().getVideoImageUrl());
+                    }
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {}
+                };
+
+            }else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,int clickPosition) {
+                                      ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -440,13 +492,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
-                                    action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
+                                    action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                 }
 
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);
                                     appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    return;
+                                }
+                                //PHOTOGALLERY
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().contains("PHOTOGALLERY")) {
+                                    //appCMSPresenter.setCurrentArticleIndex(0);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(data.getGist().getId(), data.getGist().getTitle(), false);
                                     return;
                                 }
 
@@ -523,7 +582,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data,position));
+                    component, data, position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||

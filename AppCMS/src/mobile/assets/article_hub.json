@@ -1336,20 +1336,22 @@
               "bottomMargin": 0
             },
             "tabletLandscape": {
-              "gridHeight": 465,
+              "gridHeight": 500,
               "trayPadding": 10,
               "leftMargin": 0.98,
               "yAxis": 40,
               "rightMargin": 0.98,
-              "bottomMargin": 0
+              "bottomMargin": 0,
+              "gridWidth": 460,
+              "xAxis": 300
             },
             "tabletPortrait": {
-              "gridHeight": 465,
+              "gridHeight": 500,
               "trayPadding": 10,
-              "leftMargin": 1.3,
               "yAxis": 40,
-              "rightMargin": 1.3,
-              "bottomMargin": 0
+              "bottomMargin": 0,
+              "gridWidth": 460,
+              "xAxis": 190
             }
           },
           "trayClickAction": "articleDetailPage",
@@ -1364,12 +1366,14 @@
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "height": 200
+                  "height": 350,
+                  "width": 450
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "height": 200
+                  "height": 350,
+                  "width": 450
                 }
               },
               "type": "image",
@@ -1378,48 +1382,22 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "height": 200
-                },
-                "tabletLandscape": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 1000,
-                  "height": 200
-                },
-                "tabletPortrait": {
-                  "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 700,
-                  "height": 200
-                }
-              },
-              "type": "image",
-              "key": "thumbnailBadgeImage"
-            },
-            {
-              "layout": {
-                "mobile": {
                   "yAxis": 200,
                   "xAxis": 0,
-                  "fontSize": 12,
                   "height": 265
                 },
                 "tabletLandscape": {
-                  "yAxis": 200,
+                  "yAxis": 290,
                   "xAxis": 0,
-                  "fontSize": 12,
-                  "height": 265
+                  "height": 500
                 },
                 "tabletPortrait": {
-                  "yAxis": 200,
+                  "yAxis": 290,
                   "xAxis": 0,
-                  "fontSize": 12,
-                  "height": 265
+                  "height": 500
                 }
               },
-              "backgroundColor": "#C7C7C7",
+              "backgroundColor": "#D8D8D8",
               "type": "separatorView",
               "key": "separatorView"
             },
@@ -1433,14 +1411,14 @@
                   "height": 90
                 },
                 "tabletLandscape": {
-                  "yAxis": 210,
+                  "yAxis": 290,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 20,
                   "height": 90
                 },
                 "tabletPortrait": {
-                  "yAxis": 210,
+                  "yAxis": 290,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 20,
@@ -1451,7 +1429,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 3,
-              "textColor": "#ffffff",
+              "textColor": "#000000",
               "fontWeight": "Semibold",
               "key": "thumbnailTitle"
             },
@@ -1465,14 +1443,14 @@
                   "height": 40
                 },
                 "tabletLandscape": {
-                  "yAxis": 295,
+                  "yAxis": 325,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 40
                 },
                 "tabletPortrait": {
-                  "yAxis": 295,
+                  "yAxis": 325,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
@@ -1483,7 +1461,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 2,
-              "textColor": "#000000",
+              "textColor": "#707070",
               "fontWeight": "Italic",
               "key": "thumbnailDescription"
             },
@@ -1498,7 +1476,7 @@
                   "height": 1
                 },
                 "tabletLandscape": {
-                  "yAxis": 345,
+                  "yAxis": 370,
                   "xAxis": 0,
                   "leftMargin": 10,
                   "width": 90,
@@ -1506,7 +1484,7 @@
                   "height": 1
                 },
                 "tabletPortrait": {
-                  "yAxis": 345,
+                  "yAxis": 370,
                   "xAxis": 0,
                   "leftMargin": 10,
                   "width": 90,
@@ -1514,7 +1492,7 @@
                   "height": 1
                 }
               },
-              "backgroundColor": "CF0A2C",
+              "backgroundColor": "#000000",
               "type": "separatorView",
               "key": "separatorView"
             },
@@ -1528,14 +1506,14 @@
                   "height": 40
                 },
                 "tabletLandscape": {
-                  "yAxis": 355,
+                  "yAxis": 390,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 40
                 },
                 "tabletPortrait": {
-                  "yAxis": 355,
+                  "yAxis": 390,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
@@ -1546,28 +1524,28 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 2,
-              "textColor": "#000000",
+              "textColor": "#ffffff",
               "fontWeight": "Italic",
               "key": "summaryText"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 405,
+                  "yAxis": 435,
                   "leftMargin": 12,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 405,
+                  "yAxis": 470,
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "yAxis": 405,
+                  "yAxis": 470,
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15,
@@ -1587,22 +1565,22 @@
               "layout": {
                 "mobile": {
                   "yAxis": 435,
-                  "leftMargin": 10,
+                  "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 435,
-                  "leftMargin": 10,
+                  "yAxis": 470,
+                  "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "yAxis": 435,
-                  "leftMargin": 10,
-                  "rightMargin": 0,
+                  "yAxis": 470,
+                  "leftMargin": 100,
+                  "rightMargin": 20,
                   "fontSize": 15,
                   "height": 20
                 }
@@ -1611,7 +1589,7 @@
               "textAlignment": "left",
               "type": "label",
               "numberOfLines": 1,
-              "textColor": "#000000",
+              "textColor": "#8C8C8C",
               "key": "articleFeedBottomText"
             }
           ],
@@ -1620,6 +1598,516 @@
           "supportPagination": false,
           "key": "collectionGrid",
           "cornerRadius": 0
+        }
+      ]
+    },
+    {
+      "id": "e46f5167-ada6-4784-914a-1ac1c036479f",
+      "settings": {
+        "loop": true,
+        "columns": {},
+        "thumbnailType": "landscape",
+        "infoHover": false,
+        "isHidden": true
+      },
+      "view": "AC EventCarousel 01",
+      "type": "AC EventCarousel 01",
+      "blockName": "eventCarousel01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 211
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 384,
+          "width": 683
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 299,
+          "width": 532
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 211
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 384,
+              "width": 683
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 299,
+              "width": 532
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 20.85,
+                  "fontSize": 18,
+                  "height": 24
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 22.69,
+                  "fontSize": 23,
+                  "height": 32
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 22.69,
+                  "fontSize": 23,
+                  "height": 32
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Bold",
+              "key": "carouselTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 13.74,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 19.68,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 19.68,
+                  "fontSize": 10,
+                  "height": 14
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "key": "carouselInfo"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselBadgeImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "isVerticallyCentered": true,
+                  "bottomMargin": 47.39,
+                  "width": 44,
+                  "height": 50
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                }
+              },
+              "isVisibleForTablet": false,
+              "action": "watchVideo",
+              "isVisibleForPhone": true,
+              "type": "button",
+              "key": "playImage"
+            }
+          ],
+          "type": "carousel",
+          "key": "carousel"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 7.11,
+              "height": 8
+            },
+            "tabletLandscape": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 4.96,
+              "height": 8
+            },
+            "tabletPortrait": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 3.56,
+              "height": 8
+            }
+          },
+          "unSelectedColor": "FFFFFF",
+          "selectedColor": "008EE0",
+          "type": "pageControl"
+        }
+      ]
+    },
+    {
+      "id": "75d1ef57-72e9-46e8-876d-80313183d628",
+      "settings": {
+        "columns": {
+          "tablet": 1,
+          "desktop": 1,
+          "mobile": 1,
+          "ott": 1
+        },
+        "isHidden": true
+      },
+      "view": "AC List 01",
+      "type": "AC List 01",
+      "blockName": "list01",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 52.22,
+          "rightMargin": 0,
+          "height": 211
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 70.5,
+          "rightMargin": 0,
+          "height": 134
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 60.45,
+          "rightMargin": 40.36,
+          "height": 100
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 2.67,
+              "rightMargin": 2.67,
+              "fontSize": 14,
+              "height": 40,
+              "width": 150
+            },
+            "tabletLandscape": {
+              "leftMargin": 50,
+              "rightMargin": 0.97,
+              "topMargin": 2,
+              "fontSize": 16,
+              "height": 40,
+              "width": 150
+            },
+            "tabletPortrait": {
+              "leftMargin": 40,
+              "rightMargin": 1.3,
+              "fontSize": 16,
+              "height": 40,
+              "width": 150
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#707070",
+          "fontWeight": "Regular",
+          "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 8,
+              "rightMargin": 0,
+              "height": 1,
+              "width": 120
+            },
+            "tabletLandscape": {
+              "leftMargin": 50,
+              "topMargin": 12,
+              "rightMargin": 0,
+              "height": 1,
+              "width": 120
+            },
+            "tabletPortrait": {
+              "leftMargin": 43,
+              "topMargin": 18,
+              "rightMargin": 0,
+              "height": 1,
+              "width": 120
+            }
+          },
+          "backgroundColor": "CF0A2C",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 38,
+              "trayPadding": 5,
+              "leftMargin": 2.67,
+              "topMargin": 10
+            },
+            "tabletLandscape": {
+              "gridHeight": 38,
+              "trayPadding": 1,
+              "leftMargin": 0,
+              "gridWidth": 195,
+              "topMargin": 10
+            },
+            "tabletPortrait": {
+              "gridHeight": 38,
+              "trayPadding": 1,
+              "leftMargin": 0,
+              "gridWidth": 195,
+              "topMargin": 15
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 10,
+                  "rightMargin": 0,
+                  "bottomMargin": 0,
+                  "fontSize": 11
+                },
+                "tabletLandscape": {
+                  "leftMargin": 10,
+                  "rightMargin": 0,
+                  "bottomMargin": 0,
+                  "fontSize": 11
+                },
+                "tabletPortrait": {
+                  "leftMargin": 10,
+                  "rightMargin": 0,
+                  "bottomMargin": 0,
+                  "fontSize": 11
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "numberOfLines": 2,
+              "type": "label",
+              "textColor": "#000000",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "width": 4,
+                  "height": 30
+                },
+                "tabletLandscape": {
+                  "leftMargin": 2,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "width": 4,
+                  "height": 30
+                },
+                "tabletPortrait": {
+                  "leftMargin": 2,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "width": 4,
+                  "height": 30
+                }
+              },
+              "backgroundColor": "#706C72",
+              "type": "separatorView"
+            }
+          ],
+          "type": "list",
+          "key": "list",
+          "backgroundColor": "#FF0000"
+        }
+      ]
+    },
+    {
+      "id": "abcd-topCompoundModule-ABCD-topCompoundModule",
+      "settings": {
+        "columns": {},
+        "isHidden": true
+      },
+      "view": "AC topCompoundModule 01",
+      "type": "AC topCompoundModule 01",
+      "blockName": "topCompoundModule",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "height": 672
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 70.5,
+          "rightMargin": 0,
+          "height": 384
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 60.45,
+          "rightMargin": 40.36,
+          "height": 350
+        }
+      },
+      "components": []
+    },
+    {
+      "id": "14c96cd4-8263-4bb2-9d7b-567827f0454c",
+      "settings": {
+        "isHidden": true
+      },
+      "view": "AC MediumRectangleAd 01",
+      "type": "AC MediumRectangleAd 01",
+      "blockName": "mediumRectangleAd01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 250,
+          "width": 300
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0
+            }
+          },
+          "type": "adView",
+          "key": "adView"
         }
       ]
     },
