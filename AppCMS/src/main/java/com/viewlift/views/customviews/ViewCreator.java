@@ -109,7 +109,7 @@ public class ViewCreator {
 
     private CastServiceProvider castProvider;
     private boolean isCastConnected;
-
+    PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -2006,6 +2006,9 @@ public class ViewCreator {
                                 appCMSAndroidModules);
 
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
+                        if (photoGalleryNextPreviousListener == null) {
+                            photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
+                        }
                         appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
                             ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
                             Glide.with(imageView.getContext()).load(url).placeholder(R.mipmap.app_logo).into(imageView);
@@ -2350,23 +2353,33 @@ public class ViewCreator {
                     }
                 }
 
-                if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_PRE_BUTTON_KEY) {
-                    ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                    ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                }
-
-                if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY) {
-                    ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                    ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                    ((Button) componentViewResult.componentView).setTag(0);
-                    ((Button) componentViewResult.componentView).setOnClickListener(v -> {
-                        // moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get();
-                    });
-                }
-
                 switch (componentKey) {
+                    case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
+                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        ((Button) componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (photoGalleryNextPreviousListener != null) {
+                                    photoGalleryNextPreviousListener.previousPhoto(((Button) view));
+                                }
+                            }
+                        });
+                        break;
+                    case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
+                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        ((Button) componentViewResult.componentView).setTag(0);
+
+                        ((Button) componentViewResult.componentView).setOnClickListener(v -> {
+                            if (photoGalleryNextPreviousListener != null) {
+                                photoGalleryNextPreviousListener.nextPhoto(((Button) v));
+                            }
+                        });
+                        break;
                     case PAGE_BUTTON_SWITCH_KEY:
                         if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);

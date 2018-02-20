@@ -1440,21 +1440,21 @@
                   "leftMargin": 5,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 },
                 "tabletLandscape": {
                   "yAxis": 325,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 },
                 "tabletPortrait": {
                   "yAxis": 325,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 }
               },
               "fontFamily": "OpenSans",
@@ -1503,21 +1503,21 @@
                   "leftMargin": 5,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 },
                 "tabletLandscape": {
                   "yAxis": 390,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 },
                 "tabletPortrait": {
                   "yAxis": 390,
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 40
+                  "height": 47
                 }
               },
               "fontFamily": "OpenSans",
@@ -1557,8 +1557,8 @@
               "type": "label",
               "numberOfLines": 1,
               "textColor": "#000000",
-              "fontWeight": "Italic",
-              "text": "Read More",
+              "fontWeight": "Bold",
+              "text": "READ MORE",
               "key": "readMore"
             },
             {
@@ -1568,21 +1568,21 @@
                   "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 20
+                  "height": 22
                 },
                 "tabletLandscape": {
                   "yAxis": 470,
                   "leftMargin": 100,
                   "rightMargin": 0,
                   "fontSize": 15,
-                  "height": 20
+                  "height": 22
                 },
                 "tabletPortrait": {
                   "yAxis": 470,
                   "leftMargin": 100,
                   "rightMargin": 20,
                   "fontSize": 15,
-                  "height": 20
+                  "height": 22
                 }
               },
               "fontFamily": "OpenSans",
