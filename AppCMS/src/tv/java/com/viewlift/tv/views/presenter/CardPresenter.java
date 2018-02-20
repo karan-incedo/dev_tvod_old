@@ -310,7 +310,7 @@ public class CardPresenter extends Presenter {
                             case PAGE_THUMBNAIL_IMAGE_KEY:
                                 Integer itemWidth = Integer.valueOf(childComponentAndView.component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(childComponentAndView.component.getLayout().getTv().getHeight());
-                                imageView.setBackground(null);
+                               // imageView.setBackground(null);
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
