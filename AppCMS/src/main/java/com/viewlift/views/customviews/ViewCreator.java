@@ -2358,7 +2358,6 @@ public class ViewCreator {
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                         ((Button) componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -2372,8 +2371,6 @@ public class ViewCreator {
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                        ((Button) componentViewResult.componentView).setTag(0);
-
                         ((Button) componentViewResult.componentView).setOnClickListener(v -> {
                             if (photoGalleryNextPreviousListener != null) {
                                 photoGalleryNextPreviousListener.nextPhoto(((Button) v));
