@@ -11415,7 +11415,7 @@ public class AppCMSPresenter {
         //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
-            navigateToArticlePage(gistId, title, false);
+            navigateToArticlePage(gistId, title, false, null);
             return;
         }
 
@@ -12729,8 +12729,10 @@ public class AppCMSPresenter {
         return this.relatedArticleIds;
     }
 
-    public void navigateToArticlePage(String articleId, String pageTitle,
-                                      boolean launchActivity) {
+    public void navigateToArticlePage(String articleId,
+                                      String pageTitle,
+                                      boolean launchActivity,
+                                      Action1<Object> callback) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12791,6 +12793,11 @@ public class AppCMSPresenter {
                             } else {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Toast.makeText(currentActivity, "Failed to get article data",
+                                        Toast.LENGTH_SHORT).show();
+                                if (callback != null) {
+                                    callback.call(null);
+                                }
                             }
                         }
                     });

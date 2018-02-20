@@ -1,12 +1,10 @@
 package com.viewlift.views.customviews;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -25,18 +23,15 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -53,7 +48,6 @@ import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
@@ -62,7 +56,6 @@ import com.viewlift.models.data.appcms.api.Tag;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
-import com.viewlift.models.data.appcms.photogallery.IPhotoGallerySelectListener;
 import com.viewlift.models.data.appcms.photogallery.PhotoGalleryGridInsetDecoration;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
@@ -93,10 +86,7 @@ import net.nightwhistler.htmlspanner.style.Style;
 
 import org.htmlcleaner.TagNode;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -2773,17 +2763,18 @@ public class ViewCreator {
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
                         paramsPreviousButton.setMargins(20, 0, 0, 20);
                         paramsPreviousButton.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                        componentViewResult.componentView.setLayoutParams(paramsPreviousButton);
-                        componentViewResult.componentView.setPadding(20, 0, 20, 0);
-                        componentViewResult.componentView.setId(R.id.article_prev_button);
-                        ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        View previousButtonView = componentViewResult.componentView;
+                        previousButtonView.setLayoutParams(paramsPreviousButton);
+                        previousButtonView.setPadding(20, 0, 20, 0);
+                        previousButtonView.setId(R.id.article_prev_button);
+                        ((Button) previousButtonView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                         if (appCMSPresenter.getCurrentArticleIndex() < 0) {
-                            componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                            previousButtonView.setBackgroundColor(Color.parseColor("#c8c8c8"));
                         } else {
-                            componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                            previousButtonView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         }
-                        componentViewResult.componentView.setOnClickListener(v -> {
+                        previousButtonView.setOnClickListener(v -> {
 
 
                             if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
@@ -2794,10 +2785,19 @@ public class ViewCreator {
 
                                 }
                                 appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                                if (currentIndex == -1) {
-                                    currentIndex = 0;
-                                }
-                                appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                appCMSPresenter.navigateToArticlePage(
+                                        appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        false,
+                                        o -> {
+                                            if (appCMSPresenter.getCurrentArticleIndex() < 0) {
+                                                previousButtonView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                                previousButtonView.setEnabled(false);
+                                            } else {
+                                                previousButtonView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                                previousButtonView.setEnabled(true);
+                                            }
+                                        });
                             }
                         });
 
@@ -2827,18 +2827,28 @@ public class ViewCreator {
                                 ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                                 ((Button) componentViewResult.componentView).setEnabled(false);
                             }
-                            if (appCMSPresenter.getCurrentArticleIndex() == -1) {
-                                articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
-                                appCMSPresenter.setRelatedArticleIds(articleIDs);
-                            }
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                int currentIndex = appCMSPresenter.getCurrentArticleIndex();
+                               int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 if (appCMSPresenter.getRelatedArticleIds() != null &&
                                         currentIndex < appCMSPresenter.getRelatedArticleIds().size() - 2) {
                                     currentIndex = currentIndex + 1;
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
                                     appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(), false);
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(), false,
+                                            o -> {
+                                                if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
+                                                    ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                                    ((Button) componentViewResult.componentView).setEnabled(false);
+                                                }
+
+                                                if (appCMSPresenter.getCurrentArticleIndex() > -1) {
+                                                    View prevButton = appCMSPresenter.getCurrentActivity().findViewById(R.id.article_prev_button);
+                                                    if (prevButton != null) {
+                                                        prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                                        prevButton.setEnabled(true);
+                                                    }
+                                                }
+                                            });
 
                                 }
 
