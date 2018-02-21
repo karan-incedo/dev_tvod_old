@@ -735,6 +735,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 inAppBillingService = IInAppBillingService.Stub.asInterface(service);
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setInAppBillingService(inAppBillingService);
+                    if (appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isAppSVOD()) {
+                        appCMSPresenter.checkForExistingSubscription(false);
+                    }
                 }
             }
         };
@@ -1116,8 +1119,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.setCurrentActivity(this);
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
-
-        appCMSPresenter.checkForExistingSubscription(false);
 
         if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
