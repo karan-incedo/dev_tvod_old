@@ -155,7 +155,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public void stopPlayback(boolean notifyListeners) {
-        mCurrentMediaId=null;
+        mCurrentMediaId = null;
 
         if (mRemoteMediaClient != null) {
             mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
@@ -622,6 +622,11 @@ public class AudioCastPlayback implements Playback {
         audioData.getGist().setCastingConnected(true);
         audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconPing.setContentDatum(audioData);
+    }
+
+    @Override
+    public void relaodAudioItem() {
+
     }
 
     void setBeaconBufferValues() {

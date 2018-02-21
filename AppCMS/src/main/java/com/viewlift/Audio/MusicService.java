@@ -20,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -89,10 +91,14 @@ public class MusicService extends MediaBrowserServiceCompat implements
     LocalPlayback localPlayback;
     AudioCastPlayback castPlayback;
     Playback playback;
+    ConnectivityManager connectivityManager;
+    BroadcastReceiver networkConnectedReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
         // create localPlayback instance for playing audio on local device
         localPlayback = LocalPlayback.getInstance(MusicService.this, callBackPlaybackListener);
 
@@ -112,13 +118,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
         }
 
 
-
         // Start a new MediaSession
         mSession = new MediaSessionCompat(this, "MusicService");
 
         // create mPlaybackManager instance to manage audio between different services
         mPlaybackManager = new PlaybackManager(this,
-                playback, getApplicationContext(), callBackPlaybackListener,mSession);
+                playback, getApplicationContext(), callBackPlaybackListener, mSession);
 
         setSessionToken(mSession.getSessionToken());
         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
@@ -144,7 +149,24 @@ public class MusicService extends MediaBrowserServiceCompat implements
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         registerReceiver(serviceReceiver, intentFilter);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
 
+                if(isConnected){
+                    mPlaybackManager.getPlayback().relaodAudioItem();
+                }
+            }
+        };
+        try {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        } catch (Exception e) {
+            //
+        }
     }
 
     LocalPlayback.MetadataUpdateListener callBackPlaybackListener = new LocalPlayback.MetadataUpdateListener() {
@@ -222,6 +244,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
         LocalPlayback.localPlaybackInstance = null;
         AudioCastPlayback.castPlaybackInstance = null;
         unregisterReceiver(serviceReceiver);
+        unregisterReceiver(networkConnectedReceiver);
+
     }
 
     @Override
@@ -271,6 +295,15 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onPlaybackStop() {
         mSession.setActive(false);
+        // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
+        // potentially stopping the service.
+        mDelayedStopHandler.removeCallbacksAndMessages(null);
+        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+        stopForeground(true);
+    }
+
+    @Override
+    public void onPlaybackPause() {
         // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
         // potentially stopping the service.
         mDelayedStopHandler.removeCallbacksAndMessages(null);

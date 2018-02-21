@@ -373,6 +373,8 @@ dependencies {
     compile project(path: ':exoplayer-extension-vp9')
     compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
     compile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

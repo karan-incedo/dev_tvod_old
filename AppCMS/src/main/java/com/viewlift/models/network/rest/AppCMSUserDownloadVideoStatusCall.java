@@ -107,6 +107,8 @@ public class AppCMSUserDownloadVideoStatusCall {
             }
             else{
                 if (null != downloadVideoRealm ) { // fix of SVFA-1856
+                    Log.e(TAG, "Error trying to download:4 " );
+
                     statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
                     Observable.just(statusResponse).subscribe(readyAction1);
                     return;
