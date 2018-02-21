@@ -3,13 +3,16 @@ package com.viewlift.views.customviews;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -134,11 +137,15 @@ public class CustomWebView extends WebView {
 
     @JavascriptInterface
     public void resize(final float height) {
-        context.runOnUiThread(() -> webView.setLayoutParams(
-                new FrameLayout.LayoutParams(
-                        getResources().getDisplayMetrics().widthPixels,
-                        webView.getLayoutParams().height
-                )
-        ));
+        context.runOnUiThread(() -> {
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    getResources().getDisplayMetrics().widthPixels,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            params.bottomMargin = (int) (50 * (metrics.densityDpi / 160f));
+            webView.setLayoutParams(params);
+        });
     }
 }
