@@ -520,6 +520,7 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                         ((TextView) view).setMaxLines(1);
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getSeason() != null && 0 < data.getSeason().size()) {
