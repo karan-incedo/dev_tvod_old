@@ -841,7 +841,7 @@ public class AppCMSPresenter {
     }
 
     /*does not let user enter space in editText*/
-    public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
+    public void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
         /* To restrict Space Bar in Keyboard */
         InputFilter filter = (source, start, end, dest, dstart, dend) -> {
             for (int i = start; i < end; i++) {
@@ -2614,7 +2614,7 @@ public class AppCMSPresenter {
                 //Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
         }
-       // setSelectedSubscriptionPlan(false);
+        // setSelectedSubscriptionPlan(false);
     }
 
     @SuppressWarnings("unused")
@@ -4874,7 +4874,7 @@ public class AppCMSPresenter {
 //                        + getActiveSubscriptionSku());
             }
         }
-      //  setSelectedSubscriptionPlan(false);
+        //  setSelectedSubscriptionPlan(false);
     }
 
     private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
@@ -5018,7 +5018,8 @@ public class AppCMSPresenter {
 
     /**
      * this dialog is use for showing a message with OK button in case of TV.
-     *  @param message
+     *
+     * @param message
      * @param headerTitle
      * @param shouldNavigateToLogin
      */
@@ -5825,6 +5826,7 @@ public class AppCMSPresenter {
 
     /**
      * Get the total remaining free time of the user.
+     *
      * @return total remaining time in milli seconds
      */
     public long getUserFreePlayTimePreference() {
@@ -5837,6 +5839,7 @@ public class AppCMSPresenter {
 
     /**
      * Set the total remaining free time of the user.
+     *
      * @param userFreePlayTime in milli seconds
      */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
@@ -6851,72 +6854,76 @@ public class AppCMSPresenter {
         }).execute();
     }
 
-    public boolean isDownloadable(){
-        if(getAppCMSMain() !=null &&
-                getAppCMSMain().getFeatures() !=null  &&
+    public boolean isDownloadable() {
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
                 getAppCMSMain().isDownloadable() &&
-                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+                getAppCMSMain().getFeatures().isMobileAppDownloads()) {
             return true;
         }
         return false;
     }
 
-    public int getBrandPrimaryCtaColor(){
-        if (getAppCMSMain()!=null &&
-                getAppCMSMain().getBrand() !=null &&
-                getAppCMSMain().getBrand().getCta() !=null &&
-                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
-                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
+    public int getBrandPrimaryCtaColor() {
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getCta() != null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null
                 ) {
             return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-        }else if (currentActivity !=null ){
+        } else if (currentActivity != null) {
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
-    public int getBrandPrimaryCtaTextColor(){
 
-        if (getAppCMSMain()!=null &&
-                getAppCMSMain().getBrand() !=null &&
-                getAppCMSMain().getBrand().getCta() !=null &&
-                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
-                getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() !=null
+    public int getBrandPrimaryCtaTextColor() {
+
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getCta() != null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null
                 ) {
             return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
-        }else if (currentActivity !=null ){
+        } else if (currentActivity != null) {
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
+
     public int getGeneralBackgroundColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getGeneral() != null &&
                 getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-        }else if (currentActivity !=null ){
+        } else if (currentActivity != null) {
             return ContextCompat.getColor(currentActivity, R.color.backgroundColor);
         }
         return 0;
     }
-    public int getGeneralTextColor(){
+
+    public int getGeneralTextColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getGeneral() != null &&
-                getAppCMSMain().getBrand().getGeneral().getTextColor() != null  ) {
+                getAppCMSMain().getBrand().getGeneral().getTextColor() != null) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getTextColor());
-        }else if (currentActivity !=null ){
+        } else if (currentActivity != null) {
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
-    public int getNavBarItemDefaultColor()
-    {
-        if(currentActivity!=null ){
+
+    public int getNavBarItemDefaultColor() {
+        if (currentActivity != null) {
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
         return 0;
     }
+
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
@@ -8803,7 +8810,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
                                             getPlayerLruCache().evictAll();
-                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -8819,7 +8826,7 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        }  else if (getLaunchType() == LaunchType.HOME) {
+                                        } else if (getLaunchType() == LaunchType.HOME) {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
@@ -8892,7 +8899,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(updateSubscription);
                                 getPlayerLruCache().evictAll();
 
-                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9765,7 +9772,7 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     } else {
-                                                        if(homePage != null) {
+                                                        if (homePage != null) {
                                                             boolean launchSuccess = navigateToPage(homePage.getPageId(),
                                                                     homePage.getPageName(),
                                                                     homePage.getPageUI(),
@@ -9903,7 +9910,7 @@ public class AppCMSPresenter {
             }
 
             int photoGalleryPageIndex = getPhotoGalleryPage(metaPageList);
-            if(photoGalleryPageIndex >= 0){
+            if (photoGalleryPageIndex >= 0) {
                 photoGalleryPage = metaPageList.get(photoGalleryPageIndex);
                 new SoftReference<Object>(photoGalleryPage, referenceQueue);
             }
@@ -10117,7 +10124,7 @@ public class AppCMSPresenter {
         return -1;
     }
 
-    private int getPhotoGalleryPage(List<MetaPage> metaPageList){
+    private int getPhotoGalleryPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY) {
@@ -10615,7 +10622,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-       // sendCloseOthersAction(null, true, false);
+        // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -10773,7 +10780,7 @@ public class AppCMSPresenter {
                                     && !contentDatum.getStreamingInfo().getIsLiveStream();
 
                             adsUrl = getAdsUrl(pagePath);
-                            if(adsUrl == null) {
+                            if (adsUrl == null) {
                                 requestAds = false;
                             }
                             String backgroundColor = appCMSMain.getBrand()
@@ -11012,16 +11019,17 @@ public class AppCMSPresenter {
 
     public TemplateType getTemplateType() {
         String templateName = appCMSMain.getTemplateName();
-        if ("Entertainment".equalsIgnoreCase(templateName)){
+        if ("Entertainment".equalsIgnoreCase(templateName)) {
             return TemplateType.ENTERTAINMENT;
-        } else if ("Education".equalsIgnoreCase(templateName)){
+        } else if ("Education".equalsIgnoreCase(templateName)) {
             return TemplateType.EDUCATION;
-        } else if ("LIVE".equalsIgnoreCase(templateName)){
+        } else if ("LIVE".equalsIgnoreCase(templateName)) {
             return TemplateType.LIVE;
-        } else /*if (templateName.equalsIgnoreCase("Sports"))*/{
+        } else /*if (templateName.equalsIgnoreCase("Sports"))*/ {
             return TemplateType.SPORTS;
         }
     }
+
     public boolean isRemovableSDCardAvailable() {
         return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
@@ -12604,9 +12612,11 @@ public class AppCMSPresenter {
                 now.getTime(),
                 appCMSMain.getSite());
     }
+
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
+
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -12620,19 +12630,20 @@ public class AppCMSPresenter {
             isFullScreenVisible = true;
         }
     }
+
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
-                 if (videoPlayerViewParent != null) {
+                if (videoPlayerViewParent != null) {
                     relativeLayoutFull.removeView(tvVideoPlayerView);
                     if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
                         ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
                     }
-                        tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-                     videoPlayerViewParent.addView(tvVideoPlayerView);
+                    tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                    videoPlayerViewParent.addView(tvVideoPlayerView);
                 }
-                tvVideoPlayerView =null;
-                videoPlayerViewParent=null;
+                tvVideoPlayerView = null;
+                videoPlayerViewParent = null;
 
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
                 rootView.postDelayed(() -> {
@@ -12662,7 +12673,7 @@ public class AppCMSPresenter {
     }
 
     public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,
-                                           boolean launchActivity){
+                                           boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
@@ -12680,12 +12691,12 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
-                            if(appCMSPhotoGalleryResult != null){
+                            if (appCMSPhotoGalleryResult != null) {
                                 cancelInternalEvents();
                                 pushActionInternalEvents(photoGalleryPage.getPageId()
                                         + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI=null;
+                                AppCMSPageAPI pageAPI = null;
                                 if (appCMSPhotoGalleryResult != null) {
                                     pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
                                 }
@@ -12725,10 +12736,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setRelatedArticleIds(List<String> ids){
-        this.relatedArticleIds=ids;
+    public void setRelatedArticleIds(List<String> ids) {
+        this.relatedArticleIds = ids;
     }
-    public List<String> getRelatedArticleIds(){
+
+    public List<String> getRelatedArticleIds() {
         return this.relatedArticleIds;
     }
 
@@ -12811,7 +12823,7 @@ public class AppCMSPresenter {
     private void getPhotoGalleryPageContent(final String apiBaseUrl,
                                             final String siteId,
                                             String pageId,
-                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction){
+                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -12838,9 +12850,9 @@ public class AppCMSPresenter {
     }
 
     private void getArticlePageContent(final String apiBaseUrl,
-                                        final String siteId,
-                                        String pageId,
-                                        final AppCMSArticleAPIAction articleAPIAction) {
+                                       final String siteId,
+                                       String pageId,
+                                       final AppCMSArticleAPIAction articleAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -12879,15 +12891,15 @@ public class AppCMSPresenter {
         final Uri searchQuery;
 
         AppCMSArticleAPIAction(boolean appbarPresent,
-                                boolean fullscreenEnabled,
-                                boolean navbarPresent,
-                                AppCMSPageUI appCMSPageUI,
-                                String action,
-                                String pageId,
-                                String pageTitle,
-                                String pagePath,
-                                boolean launchActivity,
-                                Uri searchQuery) {
+                               boolean fullscreenEnabled,
+                               boolean navbarPresent,
+                               AppCMSPageUI appCMSPageUI,
+                               String action,
+                               String pageId,
+                               String pageTitle,
+                               String pagePath,
+                               boolean launchActivity,
+                               Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;
@@ -12901,7 +12913,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private abstract static class AppCMSArticlePhotoGalleryAPIAction implements Action1<AppCMSPhotoGalleryResult>{
+    private abstract static class AppCMSArticlePhotoGalleryAPIAction implements Action1<AppCMSPhotoGalleryResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
         final boolean navbarPresent;
@@ -12912,16 +12924,17 @@ public class AppCMSPresenter {
         final String pagePath;
         final boolean launchActivity;
         final Uri searchQuery;
+
         AppCMSArticlePhotoGalleryAPIAction(boolean appbarPresent,
-                               boolean fullscreenEnabled,
-                               boolean navbarPresent,
-                               AppCMSPageUI appCMSPageUI,
-                               String action,
-                               String pageId,
-                               String pageTitle,
-                               String pagePath,
-                               boolean launchActivity,
-                               Uri searchQuery) {
+                                           boolean fullscreenEnabled,
+                                           boolean navbarPresent,
+                                           AppCMSPageUI appCMSPageUI,
+                                           String action,
+                                           String pageId,
+                                           String pageTitle,
+                                           String pagePath,
+                                           boolean launchActivity,
+                                           Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;
