@@ -594,7 +594,9 @@ public class AppCMSPresenter {
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
     private int currentArticleIndex;
+    private int currentPhotoGalleryIndex;
     private List<String> relatedArticleIds;
+    private List<String> relatedPhotoGalleryIds;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -12661,7 +12663,22 @@ public class AppCMSPresenter {
         this.currentArticleIndex = currentArticleIndex;
     }
 
-    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,
+    public int getCurrentPhotoGalleryIndex() {
+        return currentPhotoGalleryIndex;
+    }
+
+    public void setCurrentPhotoGalleryIndex(int currentPhotoGalleryIndex) {
+        this.currentPhotoGalleryIndex = currentPhotoGalleryIndex;
+    }
+
+    public void setRelatedPhotoGalleryIds(List<String> ids){
+        this.relatedPhotoGalleryIds=ids;
+    }
+    public List<String> getRelatedPhotoGalleryIds(){
+        return this.relatedPhotoGalleryIds;
+    }
+
+    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,List<ContentDatum> relatedPhotoGallery,
                                            boolean launchActivity){
         if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12688,6 +12705,13 @@ public class AppCMSPresenter {
                                 AppCMSPageAPI pageAPI=null;
                                 if (appCMSPhotoGalleryResult != null) {
                                     pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
+                                    if (relatedPhotoGallery != null && relatedPhotoGallery.size() > 0) {
+                                        List<String> relatedPhotoGalleryIds = new ArrayList<>();
+                                        for(int index = 0 ; index< relatedPhotoGallery.size() ; index++) {
+                                            relatedPhotoGalleryIds.add(relatedPhotoGallery.get(index).getGist().getId());
+                                        }
+                                        setRelatedPhotoGalleryIds(relatedPhotoGalleryIds);
+                                    }
                                 }
 
                                 navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
