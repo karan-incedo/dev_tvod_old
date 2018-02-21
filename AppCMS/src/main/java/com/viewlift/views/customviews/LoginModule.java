@@ -267,7 +267,8 @@ public class LoginModule extends ModuleView {
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
             childViews[childIndex].setVisibility(VISIBLE);
-            buttonSelectors[childIndex].setAlpha(1.0f);
+//            buttonSelectors[childIndex].setAlpha(1.0f);
+            setAlphaTextColorForSelector(buttonSelectors[childIndex], 200);
             applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
             visibleEmailInputView = emailInputViews[childIndex];
             visiblePasswordInputView = passwordInputViews[childIndex];
@@ -284,7 +285,8 @@ public class LoginModule extends ModuleView {
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
             childViews[childIndex].setVisibility(GONE);
-            buttonSelectors[childIndex].setAlpha(0.6f);
+//            buttonSelectors[childIndex].setAlpha(0.6f);
+            setAlphaTextColorForSelector(buttonSelectors[childIndex], 100);
             applyUnderlineToComponent(underlineViews[childIndex], bgColor);
         }
     }
@@ -416,7 +418,7 @@ public class LoginModule extends ModuleView {
                                         return isImeActionSent;
                                     });
 
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
+                                    appCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
@@ -444,5 +446,14 @@ public class LoginModule extends ModuleView {
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
         underline.setColor(transparentColor);
+    }
+
+    void setAlphaTextColorForSelector(Button button, int alpha) {
+        String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+        int color = Color.parseColor(textColor);
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = (color >> 0) & 0xFF;
+        button.setTextColor(Color.argb(alpha, r, g, b));
     }
 }

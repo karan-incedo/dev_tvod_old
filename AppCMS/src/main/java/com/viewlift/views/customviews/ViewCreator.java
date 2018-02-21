@@ -2277,6 +2277,8 @@ public class ViewCreator {
                         16);
                 long deselectedColor = component.getUnSelectedColor() != null ?
                         Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
+                 selectedColor =component.getSelectedColor() != null ?
+                        Long.valueOf(component.getSelectedColor(), 16) : 0L;
 
                 deselectedColor = adjustColor1(deselectedColor, selectedColor);
                 componentViewResult.componentView = new DotSelectorView(context,
@@ -4608,9 +4610,7 @@ public class ViewCreator {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
             //webView.setHorizontalScrollBarEnabled(true);
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-            webView.loadUrl(webViewUrl);
-
-
+            webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;
     }
