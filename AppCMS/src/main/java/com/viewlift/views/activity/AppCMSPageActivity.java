@@ -507,8 +507,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                     if (isConnected) {
                         setCastingInstance();
+                        castDisabled = false;
                     } else {
                         CastHelper.getInstance(getApplicationContext()).disconnectChromecastOnLogout();
+                        castDisabled = true;
                     }
                 }
                 if (activeNetwork != null) {
@@ -924,11 +926,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void inflateCastMiniController() {
-        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
-                ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
             try {
                 LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
-                castDisabled = false;
+                if (appCMSPresenter.isNetworkConnected()) {
+                    castDisabled = false;
+                }
             } catch (Exception e) {
                 castDisabled = true;
             }
