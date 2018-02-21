@@ -92,6 +92,7 @@ public class CustomWebView extends WebView {
     }
 
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
+        context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
         this.getSettings().setLoadWithOverviewMode(true);
 
@@ -117,6 +118,7 @@ public class CustomWebView extends WebView {
                 super.onPageFinished(view, url);
                 view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
                 view.requestLayout();
+                context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }
 
             @Override
