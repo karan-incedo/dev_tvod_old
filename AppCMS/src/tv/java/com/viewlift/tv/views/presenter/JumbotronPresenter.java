@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
+import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -64,8 +65,12 @@ public class JumbotronPresenter extends CardPresenter {
         createComponent(componentList , cardView , contentData);
     }
 
+    @Override
+    public void onUnbindViewHolder(ViewHolder viewHolder) {
 
-    public void createComponent(List<Component> componentList , ViewGroup parentLayout ,ContentDatum contentData ){
+    }
+
+    public void createComponent(List<Component> componentList , ViewGroup parentLayout , ContentDatum contentData ){
         if(null != componentList && componentList.size() > 0) {
             for (Component component : componentList) {
                 AppCMSUIKeyType componentType = mAppCMSPresenter.getJsonValueKeyMap().get(component.getType());

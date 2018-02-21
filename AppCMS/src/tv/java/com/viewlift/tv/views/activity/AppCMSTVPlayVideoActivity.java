@@ -151,13 +151,22 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                     if (userIdentity.isSubscribed()) {
                                         appCMSPlayVideoFragment.resumeVideo();
                                     } else {
+
+                                        String dialogMessage = getString(R.string.unsubscribe_text);
+                                        if (appCMSPresenter.getAppCMSAndroid() != null
+                                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null) {
+                                            if (appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                                                dialogMessage = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                                            }
+                                        }
+
                                         ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 AppCMSTVPlayVideoActivity.this,
                                                 appCMSPresenter,
                                                 getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
                                                 getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
                                                 getString(R.string.subscription_required),
-                                                getString(R.string.unsubscribe_text),
+                                                dialogMessage,
                                                 getString(android.R.string.cancel),
                                                 getString(R.string.blank_string),
                                                 14
