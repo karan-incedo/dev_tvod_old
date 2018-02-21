@@ -143,7 +143,7 @@ public class ArticleFeedModule extends LinearLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 int horizontalMargine = (int) BaseView.getHorizontalMargin(context, childComponent.getLayout());
                 LinearLayout.LayoutParams viewLp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                viewLp.setMargins(horizontalMargine, 15, horizontalMargine, 15);
+                viewLp.setMargins(horizontalMargine, 5, horizontalMargine, 5);
 
                 switch (componentType) {
                     case PAGE_LABEL_KEY:
@@ -190,7 +190,7 @@ public class ArticleFeedModule extends LinearLayout {
 
                     case PAGE_SEPARATOR_VIEW_KEY:
 
-                        LayoutParams lpSeparator = new LayoutParams(viewWidth, 5);
+                        LayoutParams lpSeparator = new LayoutParams(viewWidth, 3);
                         lpSeparator.setMargins(horizontalMargine, 5, horizontalMargine, 5);
                         separatorView.setLayoutParams(lpSeparator);
                         separatorView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
