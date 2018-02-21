@@ -26,6 +26,8 @@
     <item name="seek_bar_parent" type="id"/>
     <item name="article_prev_button" type="id">article_prev_button</item>
     <item name="article_next_button" type="id">article_next_button</item>
+    <item name="photo_gallery_prev_label" type="id">photo_gallery_prev_label</item>
+    <item name="photo_gallery_next_label" type="id">photo_gallery_next_label</item>
     <item name="photo_gallery_selectedImage" type="id">selectedImageView</item>
 
 
