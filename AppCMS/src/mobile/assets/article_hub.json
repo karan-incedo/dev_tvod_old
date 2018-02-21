@@ -1422,21 +1422,21 @@
                   "yAxis": 0,
                   "leftMargin": 15,
                   "rightMargin": 0,
-                  "fontSize": 15,
+                  "fontSize": 14,
                   "height": 40
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 25,
+                  "fontSize": 18,
                   "height": 80
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 25,
+                  "fontSize": 18,
                   "height": 80
                 }
               },
@@ -1485,19 +1485,19 @@
                   "yAxis": 0,
                   "leftMargin": 15,
                   "rightMargin": 0,
-                  "fontSize": 15
+                  "fontSize": 16
                 },
                 "tabletLandscape": {
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 25
+                  "fontSize": 20
 
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 25
+                  "fontSize": 20
 
                 }
               },
@@ -1521,14 +1521,14 @@
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 20
+                  "fontSize": 22
 
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
-                  "fontSize": 20
+                  "fontSize": 22
 
                 }
               },
@@ -1554,14 +1554,14 @@
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 20
+                  "fontSize": 18
 
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 20
+                  "fontSize": 18
 
                 }
               },
@@ -1615,8 +1615,7 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 299,
-          "width": 532
+          "height": 432
         }
       },
       "components": [
@@ -1642,8 +1641,8 @@
               "leftMargin": 0,
               "xAxis": 0,
               "rightMargin": 0,
-              "height": 299,
-              "width": 532
+              "height": 432
+
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -1811,8 +1810,8 @@
               "height": 8
             }
           },
-          "unSelectedColor": "FFFFFF",
-          "selectedColor": "008EE0",
+          "unSelectedColor": "8A8A8A",
+          "selectedColor": "FFFFFF",
           "type": "pageControl"
         }
       ]
@@ -1848,7 +1847,7 @@
           "leftMargin": 0,
           "topMargin": 60.45,
           "rightMargin": 40.36,
-          "height": 100
+          "height": 250
         }
       },
       "components": [
@@ -2026,7 +2025,7 @@
           "leftMargin": 0,
           "topMargin": 60.45,
           "rightMargin": 40.36,
-          "height": 350
+          "height": 700
         }
       },
       "components": []

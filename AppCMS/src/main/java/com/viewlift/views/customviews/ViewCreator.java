@@ -2277,6 +2277,8 @@ public class ViewCreator {
                         16);
                 long deselectedColor = component.getUnSelectedColor() != null ?
                         Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
+                 selectedColor =component.getSelectedColor() != null ?
+                        Long.valueOf(component.getSelectedColor(), 16) : 0L;
 
                 deselectedColor = adjustColor1(deselectedColor, selectedColor);
                 componentViewResult.componentView = new DotSelectorView(context,
@@ -3036,19 +3038,24 @@ public class ViewCreator {
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
-
-                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
-                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_NoPHOTOS_TXT_KEY) {
-                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
+                    }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY) {
@@ -3065,10 +3072,12 @@ public class ViewCreator {
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY) {
-                    ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
+                    if(moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
+                        ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
 //                    ((TextView)componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
-                    ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                    }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
@@ -4551,9 +4560,7 @@ public class ViewCreator {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
             //webView.setHorizontalScrollBarEnabled(true);
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-            webView.loadUrl(webViewUrl);
-
-
+            webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;
     }
