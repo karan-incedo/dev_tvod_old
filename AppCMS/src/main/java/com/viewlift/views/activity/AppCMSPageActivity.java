@@ -993,6 +993,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!libsThreadExecuted) {
             new Thread(() -> {
                 UAirship.takeOff(getApplication());
+                UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+                Fabric.with(getApplication(), new Crashlytics());
+                Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
+                        getString(R.string.app_cms_apptentive_signature_key));
+                AndroidThreeTen.init(this);
+                AppsFlyerLib.getInstance().startTracking(getApplication());
                 FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 callbackManager = CallbackManager.Factory.create();
@@ -1049,23 +1055,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             }
                         });
 
-                Fabric.with(getApplication(), new Crashlytics());
-                Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
-                        getString(R.string.app_cms_apptentive_signature_key));
-
-                AndroidThreeTen.init(this);
-
                 accessToken = AccessToken.getCurrentAccessToken();
-
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
-                }
-
-                UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-
-                AppsFlyerLib.getInstance().startTracking(getApplication());
-
-                appCMSPresenter.initializeAppCMSAnalytics();
 
                 //noinspection ConstantConditions
                 if (inAppBillingService == null && inAppBillingServiceConn != null) {
@@ -1076,18 +1066,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 if (appCMSPresenter != null) {
+                    appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
+                    appCMSPresenter.initializeAppCMSAnalytics();
                     appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
-                }
-
-                FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-                if (mFireBaseAnalytics != null && appCMSPresenter != null) {
-                    appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+                    FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+                    if (mFireBaseAnalytics != null && appCMSPresenter != null) {
+                        appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+                    }
                 }
 
                 inflateCastMiniController();
-
-                appCMSPresenter.cacheMoviesPage();
-                appCMSPresenter.cacheShowsPage();
             }).run();
             libsThreadExecuted = true;
         }

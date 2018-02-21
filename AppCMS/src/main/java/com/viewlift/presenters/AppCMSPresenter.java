@@ -9522,6 +9522,9 @@ public class AppCMSPresenter {
                 }
             }
 
+            cacheMoviesPage();
+            cacheShowsPage();
+
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
