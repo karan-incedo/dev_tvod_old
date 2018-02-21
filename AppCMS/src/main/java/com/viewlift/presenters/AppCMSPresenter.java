@@ -10771,6 +10771,27 @@ public class AppCMSPresenter {
 
     public void cacheMoviesPage() {
         if (moviesPage != null && appCMSMain != null && appCMSSite != null) {
+            String pageId = moviesPage.getPageId();
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            }
+
             String baseUrl = appCMSMain.getApiBaseUrl();
             String endPoint = moviesPage.getPageAPI();
             String siteId = appCMSSite.getGist().getSiteInternalName();
@@ -10793,6 +10814,27 @@ public class AppCMSPresenter {
 
     public void cacheShowsPage() {
         if (showsPage != null && appCMSMain != null && appCMSSite != null) {
+            String pageId = showsPage.getPageId();
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            }
+
             String baseUrl = appCMSMain.getApiBaseUrl();
             String endPoint = showsPage.getPageAPI();
             String siteId = appCMSSite.getGist().getSiteInternalName();

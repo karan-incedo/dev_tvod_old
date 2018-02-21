@@ -1085,6 +1085,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 inflateCastMiniController();
+
+                appCMSPresenter.cacheMoviesPage();
+                appCMSPresenter.cacheShowsPage();
             }).run();
             libsThreadExecuted = true;
         }
