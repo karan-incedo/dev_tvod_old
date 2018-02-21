@@ -745,8 +745,9 @@ public final class LocalPlayback implements Playback {
 
     }
 
-    private void relaodAudioItem() {
-        if (appCMSPresenter.isNetworkConnected()) {
+    @Override
+    public void relaodAudioItem() {
+        if (appCMSPresenter!=null && appCMSPresenter.isNetworkConnected()) {
             isNetworkConnected = true;
             if(mExoPlayer!=null) {
                 long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();

@@ -32,6 +32,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -271,6 +272,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
             }
         }
+
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
             itemView.bindChild(itemView.getContext(),
                     itemView.getChild(i),
@@ -279,6 +281,18 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     onClickHandler,
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+        }
+
+        updatePlaylistAllStatus();
+//        if (pageView.findChildViewById(R.id.playlist_download_id) != null && isAllVideoDownloaded) {
+//            (playlistDownloadBtn).setImageResource(R.drawable.ic_downloaded);
+//
+//        }
+    }
+
+    private void updatePlaylistAllStatus() {
+        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id) != null && appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+            ((ImageButton) appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id)).setImageResource(R.drawable.ic_downloaded);
         }
     }
 
@@ -385,17 +399,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     }
                 }
             }
-        }
-//        downloadPlaylist();
-    }
-
-    public class DownladListData {
-        ContentDatum id;
-        ImageButton imgButton;
-
-        DownladListData(ContentDatum id, ImageButton imgButton) {
-            this.id = id;
-            this.imgButton = imgButton;
         }
     }
 
@@ -599,6 +602,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             this.imageButton = imageButton;
         }
 
+    }
+
+    public interface IUpdateState {
+        public void updateState();
     }
 }
 

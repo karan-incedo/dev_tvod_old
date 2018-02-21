@@ -65,6 +65,7 @@ public interface Playback {
      */
     boolean isPlaying();
 
+    void relaodAudioItem();
     /**
      * @return pos if currently playing an item
      */

@@ -1168,7 +1168,12 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
+                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "playlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "music_hub.json"),
                             AppCMSPageUI.class);
@@ -2194,9 +2199,15 @@ public class ViewCreator {
                         });
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
+
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
                         ((ImageButton) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setId(R.id.playlist_download_id);
+
+                        if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
+                        }
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -2215,7 +2226,10 @@ public class ViewCreator {
                                                 });
                                             });
                                 } else {
-                                    appCMSPlaylistAdapter.startDownloadPlaylist();
+                                    if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+                                        appCMSPlaylistAdapter.startDownloadPlaylist();
+
+                                    }
                                 }
                             }
                         });
@@ -2736,6 +2750,8 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
+                    textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.START);
 

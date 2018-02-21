@@ -150,7 +150,6 @@ public class AudioPlaylistHelper {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
         appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, null);
-
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
@@ -197,8 +196,18 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getDescription() != null)
                 album = appCMSAudioDetailResult.getGist().getDescription();
 
-            if (appCMSAudioDetailResult.getGist().getImageGist() != null && appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null)
-                iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+            if (appCMSAudioDetailResult.getGist().getImageGist() != null) {
+                if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_3x4() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_3x4();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_4x3() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_4x3();
+                }
+
+            }
 
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
@@ -206,6 +215,16 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getRuntime() != 0)
                 runTime = appCMSAudioDetailResult.getGist().getRuntime() * 1000;
 
+        }
+        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)
+        {
+            for(int i=0;i<appCMSAudioDetailResult.getCreditBlocks().size();i++){
+                if(appCMSAudioDetailResult.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")){
+                    if(appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits()!=null && appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().size()>0 && appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().get(0).getTitle()!=null){
+                        artist = appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().get(0).getTitle();
+                    }
+                }
+            }
         }
 
         if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)

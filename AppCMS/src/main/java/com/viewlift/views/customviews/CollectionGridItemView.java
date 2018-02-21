@@ -288,7 +288,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .override(childViewWidth, childViewHeight)
@@ -313,7 +313,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .override(childViewWidth, childViewHeight)
@@ -342,7 +342,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImageWithLinearGradient((ImageView) view,
                                     imageUrl,
                                     imageWidth,
-                                    imageHeight)) {
+                                    imageHeight) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -417,7 +417,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
@@ -431,8 +431,8 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                            Glide.with(context)
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
+                            Glide.with(context.getApplicationContext())
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
@@ -507,11 +507,24 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getSeason() != null && 0 < data.getSeason().size()) {
+                        String artist = "";
+                        if (data.getGist().getMediaType()!=null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
+                            for (int i = 0; i < data.getCreditBlocks().size(); i++) {
+                                if (data.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")) {
+                                    if (data.getCreditBlocks().get(i).getCredits() != null && data.getCreditBlocks().get(i).getCredits().size() > 0 && data.getCreditBlocks().get(i).getCredits().get(0).getTitle() != null) {
+                                        artist = data.getCreditBlocks().get(i).getCredits().get(0).getTitle();
+                                        break;
+                                    }
+                                }
+                            }
+                            ((TextView) view).setText(artist);
+                        }
+                        else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
@@ -560,6 +573,8 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
                         if (data.getGist() != null && data.getGist().getDescription() != null)
                             ((TextView) view).setText(data.getGist().getDescription());
+                        ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
                         try {

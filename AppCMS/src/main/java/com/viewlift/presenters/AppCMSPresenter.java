@@ -226,6 +226,7 @@ import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
@@ -4126,7 +4127,7 @@ public class AppCMSPresenter {
 
             downloadProgressTimerList.add(downloadTimerTask);
 
-            updateDownloadIconTimer.schedule(downloadTimerTask, 1000, 4000);
+            updateDownloadIconTimer.schedule(downloadTimerTask, 1000, 2000);
         } catch (Exception e) {
             System.out.println("download start faile upload status-");
 
@@ -4816,11 +4817,12 @@ public class AppCMSPresenter {
                         getRefreshToken());
                 appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
                     try {
+                        int tryCount = 0;
                         appCMSAudioDetailCall.call(
                                 currentContext.getString(R.string.app_cms_audio_detail_api_url,
                                         apiBaseUrl,
                                         siteId,
-                                        pageId),
+                                        pageId), tryCount,
                                 audiDetail);
                     } catch (IOException e) {
                     }
@@ -6799,7 +6801,7 @@ public class AppCMSPresenter {
     }
 
     public void showNoNetworkConnectivityToast() {
-        if (currentContext != null) {
+        if (currentContext != null && currentActivity!=null) {
             displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
         }
     }
@@ -13105,6 +13107,7 @@ public class AppCMSPresenter {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+
                     //Log.e(TAG, "Error while running download queue: " + e.getMessage());
                 }
             }
@@ -13583,6 +13586,31 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
             sharedPrefs.edit().putBoolean(IS_AUDIO_RELOAD, isReload).commit();
         }
+    }
+
+    boolean isLastStatePlaying = true;
+
+    public void setLastAudioPlayState(boolean isReload) {
+        isLastStatePlaying = isReload;
+    }
+
+    public boolean getLastAudioPlayState(boolean isReload) {
+        return isLastStatePlaying;
+    }
+
+    public boolean isAllPlaylistAudioDownloaded(List<ContentDatum> contentData) {
+        boolean isPlaylistDownloaded = true;
+        if (contentData != null) {
+            for (int i = 0; i < contentData.size(); i++) {
+                if (contentData.get(i).getGist() != null &&
+                        contentData.get(i).getGist().getMediaType() != null
+                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase()) && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
+                    isPlaylistDownloaded = false;
+                    break;
+                }
+            }
+        }
+        return isPlaylistDownloaded;
     }
 
     public boolean getAudioReload() {
