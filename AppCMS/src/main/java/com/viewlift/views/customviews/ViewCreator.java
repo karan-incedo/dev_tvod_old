@@ -74,6 +74,7 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
@@ -2124,7 +2125,30 @@ public class ViewCreator {
                                             .build());
                                 }
                             }
-                        } else {
+                        } else if(parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
+                            AppCMSArticleFeedViewAdapter appCMSArticleFeedViewAdapter = new AppCMSArticleFeedViewAdapter(context,
+                                    this,
+                                    appCMSPresenter,
+                                    settings,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    jsonValueKeyMap,
+                                    moduleAPI,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    viewType,
+                                    appCMSAndroidModules);
+                            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSArticleFeedViewAdapter);
+                            //((RecyclerView) componentViewResult.componentView).setBackgroundColor(Color.GREEN);
+                            if (pageView != null) {
+                                pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                        .adapter(appCMSArticleFeedViewAdapter)
+                                        .listview((RecyclerView) componentViewResult.componentView)
+                                        .id(moduleId + component.getKey())
+                                        .build());
+                            }
+                        }else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
                                     this,
                                     appCMSPresenter,
@@ -2792,7 +2816,12 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(v -> {
 
 
-                            if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                            if (moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null &&
+                                    appCMSPresenter.getRelatedArticleIds() !=null) {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 currentIndex = currentIndex - 1;
                                 if (currentIndex < -1) {
@@ -2826,7 +2855,8 @@ public class ViewCreator {
                                 moduleAPI.getContentData() != null &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null &&
+                                appCMSPresenter.getRelatedArticleIds() !=null) {
 
                             List<String> articleIDs = appCMSPresenter.getRelatedArticleIds();
                             if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
