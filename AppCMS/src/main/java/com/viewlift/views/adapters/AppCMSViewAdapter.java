@@ -8,11 +8,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -26,6 +28,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
+import com.viewlift.views.customviews.PhotoGalleryNextPreviousListener;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -111,8 +114,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
-        if(this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
-           // adapterData.remove(0);
+        if (this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+            /*remove data from 1st position since it contains photogallery details*/
+            if (adapterData.get(0).getStreamingInfo() != null) {
+                adapterData.remove(0);
+            }
+            selectedPosition = 0;
         }
 
         this.defaultWidth = defaultWidth;
@@ -146,8 +153,39 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private IPhotoGallerySelectListener iPhotoGallerySelectListener;
 
-    public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener){
-        this.iPhotoGallerySelectListener  = iPhotoGallerySelectListener;
+    public void setPhotoGalleryImageSelectionListener(IPhotoGallerySelectListener iPhotoGallerySelectListener) {
+        this.iPhotoGallerySelectListener = iPhotoGallerySelectListener;
+    }
+
+    public PhotoGalleryNextPreviousListener setPhotoGalleryImageSelectionListener(PhotoGalleryNextPreviousListener listener) {
+        listener = new PhotoGalleryNextPreviousListener() {
+
+            @Override
+            public void previousPhoto(Button previousButton) {
+
+                if (getSelectedPosition() == 0) {
+                    return;
+                }
+                selectedPosition--;
+                iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
+            }
+
+            @Override
+            public void nextPhoto(Button nextButton) {
+                if (getSelectedPosition() == adapterData.size() - 1) {
+                    return;
+                }
+                selectedPosition++;
+                iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
+            }
+        };
+
+
+        return listener;
+    }
+
+    public static int getSelectedPosition() {
+        return selectedPosition;
     }
 
     @Override
@@ -179,8 +217,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(view, unselectedColor);
             }
         }
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY
-                ) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
             view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
@@ -259,7 +296,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     ((TextView) holder.componentView.getChild(i)).setText("");
                 }
             }
-            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY || viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
                 planItemView[position] = holder.componentView;
             }
             bindView(holder.componentView, adapterData.get(position), position);
@@ -286,7 +323,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
         }
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
             int selectableIndex = -1;
             for (int i = 0; i < adapterData.size(); i++) {
                 if (holder.componentView.isSelectable()) {
@@ -300,7 +338,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
             if (selectableIndex == position) {
                 if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                        viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY
+                        || viewTypeKey != AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
                     holder.componentView.setSelectable(true);
                     holder.componentView.performClick();
                 }
@@ -309,9 +348,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
 
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
+                    viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
                 holder.componentView.setSelectable(true);
             }
+
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+                setBorder(planItemView[0], selectedColor);
+            }
+
         }
     }
 
@@ -426,17 +471,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
-            } else if(viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY){
-                onClickHandler =new CollectionGridItemView.OnClickHandler() {
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data, int clickPosition) {
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent,
+                                      ContentDatum data, int clickPosition) {
+                        selectedPosition = clickPosition;
                         iPhotoGallerySelectListener.selectedImageData(data.getGist().getVideoImageUrl());
+                        //selectViewPlan(planItemView[clickPosition], null);
+                        for (int i = 0; i < planItemView.length; i++) {
+                            if (planItemView[i] != null) {
+                                if (clickPosition == i) {
+                                    setBorder(planItemView[i], selectedColor);
+                                } else {
+                                    setBorder(planItemView[i], ContextCompat.getColor(mContext, android.R.color.white));
+                                }
+                            }
+                        }
                     }
+
                     @Override
-                    public void play(Component childComponent, ContentDatum data) {}
+                    public void play(Component childComponent, ContentDatum data) {
+                    }
                 };
 
-            }else {
+            } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
@@ -584,7 +643,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY
+                || viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
             //
         } else {
             itemView.setOnTouchListener((View v, MotionEvent event) -> {
@@ -795,8 +855,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                            int color) {
         GradientDrawable planBorder = new GradientDrawable();
         planBorder.setShape(GradientDrawable.RECTANGLE);
-        planBorder.setStroke(1, color);
+        planBorder.setStroke(5, color);
         planBorder.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.transparent));
+        itemView.setPadding(2,2,2,2);
         itemView.setBackground(planBorder);
     }
 
@@ -831,12 +892,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         Collections.reverse(adapterData);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder{
         CollectionGridItemView componentView;
-
         public ViewHolder(View itemView) {
             super(itemView);
             this.componentView = (CollectionGridItemView) itemView;
         }
     }
+
+
 }

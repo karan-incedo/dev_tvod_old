@@ -308,6 +308,7 @@ public class CollectionGridItemView extends BaseView {
                                         .centerCrop()
                                         .into((ImageView) view);
                             }
+
                         } catch (Exception e) {
                             //
                         }
@@ -451,6 +452,11 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
                         }
+                    }else if (data.getGist().getImageGist() != null &&
+                            data.getGist().getImageGist().get_16x9() == null){
+
+                            view.setVisibility(GONE);
+
                     }
                     bringToFront = false;
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {

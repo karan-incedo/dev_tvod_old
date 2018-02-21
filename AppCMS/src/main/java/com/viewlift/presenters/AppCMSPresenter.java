@@ -18,10 +18,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -243,6 +245,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -12932,5 +12935,25 @@ public class AppCMSPresenter {
         }
     }
 
+    public void setCursorDrawableColor(EditText editText) {
+        try {
+            Field fCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+            fCursorDrawableRes.setAccessible(true);
+            int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
+            Field fEditor = TextView.class.getDeclaredField("mEditor");
+            fEditor.setAccessible(true);
+            Object editor = fEditor.get(editText);
+            Class<?> clazz = editor.getClass();
+            Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
+            fCursorDrawable.setAccessible(true);
+            Drawable[] drawables = new Drawable[2];
+            drawables[0] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
+            drawables[1] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
+            drawables[0].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
+            drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
+            fCursorDrawable.set(editor, drawables);
+        } catch (Throwable ignored) {
+        }
+    }
 
 }
