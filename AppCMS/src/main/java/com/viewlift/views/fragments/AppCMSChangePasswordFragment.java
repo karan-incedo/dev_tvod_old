@@ -77,9 +77,12 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
 //        newPasswordInputLayout.addView(view);
 //        confirmPasswordInputLayout.addView(view);
 
-        AppCMSPresenter.noSpaceInEditTextFilter(oldPasswordInput, getActivity());
-        AppCMSPresenter.noSpaceInEditTextFilter(newPasswordInput, getActivity());
-        AppCMSPresenter.noSpaceInEditTextFilter(confirmPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(oldPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(newPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(confirmPasswordInput, getActivity());
+        appCMSPresenter.setCursorDrawableColor(oldPasswordInput);
+        appCMSPresenter.setCursorDrawableColor(newPasswordInput);
+        appCMSPresenter.setCursorDrawableColor(confirmPasswordInput);
 
         oldPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);
         newPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);
