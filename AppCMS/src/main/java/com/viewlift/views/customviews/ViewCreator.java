@@ -4551,9 +4551,7 @@ public class ViewCreator {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
             //webView.setHorizontalScrollBarEnabled(true);
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-            webView.loadUrl(webViewUrl);
-
-
+            webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;
     }

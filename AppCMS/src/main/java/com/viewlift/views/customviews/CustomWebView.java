@@ -132,11 +132,11 @@ public class CustomWebView extends WebView {
 
     @JavascriptInterface
     public void resize(final float height) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                webView.setLayoutParams(new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, (int) (height * getResources().getDisplayMetrics().density)));
-            }
-        });
+        context.runOnUiThread(() -> webView.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        getResources().getDisplayMetrics().widthPixels,
+                        webView.getLayoutParams().height
+                )
+        ));
     }
 }
