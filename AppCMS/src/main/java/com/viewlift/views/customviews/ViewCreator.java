@@ -1575,10 +1575,8 @@ public class ViewCreator {
                         viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
-                            (moduleAPI.getContentData() == null ||
-                            moduleAPI.getContentData().isEmpty()) &&
-                            appCMSPresenter.getAllUserHistory() != null &&
-                            !appCMSPresenter.getAllUserHistory().isEmpty()) {
+                            (appCMSPresenter.getAllUserHistory() != null &&
+                            !appCMSPresenter.getAllUserHistory().isEmpty())) {
                         moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
                     }
                 }
