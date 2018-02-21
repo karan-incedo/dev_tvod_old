@@ -115,13 +115,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
-            /*remove data from 1st position since it contains photogallery details*/
+           /*remove data from 1st position since it contains photogallery details*/
             if (adapterData.get(0).getStreamingInfo() != null) {
-                adapterData.remove(0);
+                List<ContentDatum> data = new ArrayList<>();
+                data.addAll(moduleAPI.getContentData());
+                data.remove(0);
+                adapterData = data;
             }
             selectedPosition = 0;
         }
-
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
