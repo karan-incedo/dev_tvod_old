@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -49,8 +50,7 @@ public class CompoundTopModule extends ModuleView {
             }
 
         } catch (Exception e) {
-            System.out.println("=======" + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
@@ -60,6 +60,13 @@ public class CompoundTopModule extends ModuleView {
 
         for (ModuleView moduleView : moduleViewList) {
 
+            if (jsonValueKeyMap.get(moduleView.getModule().getType())==AppCMSUIKeyType.PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY){
+                LinearLayout linearLayout=new LinearLayout(mContext);
+                linearLayout.setGravity(Gravity.CENTER);
+                linearLayout.addView(moduleView);
+                topComponent.addView(linearLayout);
+                continue;
+            }
             topComponent.addView(moduleView);
         }
 
@@ -73,8 +80,7 @@ public class CompoundTopModule extends ModuleView {
 
         LinearLayout layoutHeadline =new LinearLayout(mContext);
 
-        LinearLayout.LayoutParams crosualLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams topHeadlineLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams crosualLP, topHeadlineLP;
 
         if (isLandscape(mContext)){
             topComponent.setWeightSum(100);
@@ -123,6 +129,6 @@ public class CompoundTopModule extends ModuleView {
         }
         topComponent.addView(layoutHeadline);
         parent.addView(topComponent);
-        setBackgroundColor(Color.LTGRAY);
+        setBackgroundColor(Color.GRAY);
     }
 }
