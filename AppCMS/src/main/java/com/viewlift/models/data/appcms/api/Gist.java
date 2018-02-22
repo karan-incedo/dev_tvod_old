@@ -10,6 +10,8 @@ import java.io.Serializable;
 @UseStag
 public class Gist implements Serializable {
 
+    boolean selectedPosition;
+
     @SerializedName("id")
     @Expose
     String id;
@@ -334,6 +336,14 @@ public class Gist implements Serializable {
 
     public void setSummaryText(String summaryText) {
         this.summaryText = summaryText;
+    }
+
+    public boolean isSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(boolean selectedPosition) {
+        this.selectedPosition = selectedPosition;
     }
 
 }

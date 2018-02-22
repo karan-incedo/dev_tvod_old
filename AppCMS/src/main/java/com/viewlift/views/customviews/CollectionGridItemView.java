@@ -444,10 +444,12 @@ public class CollectionGridItemView extends BaseView {
 
                         if (context instanceof Activity && !((Activity) context).isFinishing()) {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                ImageView imageView = (ImageView)view;
+                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .override(childViewWidth, childViewHeight)
-                                        .into((ImageView) view);
+                                        .into(imageView);
                             }
                         } else {
                             Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
@@ -466,7 +468,7 @@ public class CollectionGridItemView extends BaseView {
                     imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     Glide.with(context)
                             .load(imageUrl)
-                            .placeholder(R.mipmap.app_logo)
+                            .placeholder(R.drawable.img_placeholder)
                            // .override(childViewWidth, childViewHeight)
                             .into(imageView);
                 }
