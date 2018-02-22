@@ -111,6 +111,7 @@ public class ViewCreator {
     private CastServiceProvider castProvider;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
+
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -2003,7 +2004,7 @@ public class ViewCreator {
 
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
                         /*if (photoGalleryNextPreviousListener == null) {*/
-                            photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
+                        photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
                         //}
                         appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
                             ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
@@ -2113,7 +2114,7 @@ public class ViewCreator {
                                             .build());
                                 }
                             }
-                        } else if(parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
+                        } else if (parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
                             AppCMSArticleFeedViewAdapter appCMSArticleFeedViewAdapter = new AppCMSArticleFeedViewAdapter(context,
                                     this,
                                     appCMSPresenter,
@@ -2136,7 +2137,7 @@ public class ViewCreator {
                                         .id(moduleId + component.getKey())
                                         .build());
                             }
-                        }else {
+                        } else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
                                     this,
                                     appCMSPresenter,
@@ -2277,7 +2278,7 @@ public class ViewCreator {
                         16);
                 long deselectedColor = component.getUnSelectedColor() != null ?
                         Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
-                 selectedColor =component.getSelectedColor() != null ?
+                selectedColor = component.getSelectedColor() != null ?
                         Long.valueOf(component.getSelectedColor(), 16) : 0L;
 
                 deselectedColor = adjustColor1(deselectedColor, selectedColor);
@@ -2375,6 +2376,9 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
+                    case PAGE_BRAND_IMAGE_KEY:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.logo_icon));
+                        break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
@@ -2704,6 +2708,7 @@ public class ViewCreator {
 
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
+                        shareDrawable.setTint(appCMSPresenter.getGeneralTextColor());
                         componentViewResult.componentView.setBackground(shareDrawable);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -2820,7 +2825,7 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                     moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null &&
-                                    appCMSPresenter.getRelatedArticleIds() !=null) {
+                                    appCMSPresenter.getRelatedArticleIds() != null) {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 currentIndex = currentIndex - 1;
                                 if (currentIndex < -1) {
@@ -2864,7 +2869,7 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null &&
-                                appCMSPresenter.getRelatedArticleIds() !=null) {
+                                appCMSPresenter.getRelatedArticleIds() != null) {
 
                             List<String> articleIDs = appCMSPresenter.getRelatedArticleIds();
                             if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
@@ -2872,7 +2877,7 @@ public class ViewCreator {
                                 ((Button) componentViewResult.componentView).setEnabled(false);
                             }
                             componentViewResult.componentView.setOnClickListener(v -> {
-                               int currentIndex = appCMSPresenter.getCurrentArticleIndex();
+                                int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 if (appCMSPresenter.getRelatedArticleIds() != null &&
                                         currentIndex < appCMSPresenter.getRelatedArticleIds().size() - 2) {
                                     currentIndex = currentIndex + 1;
@@ -3039,21 +3044,21 @@ public class ViewCreator {
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
-                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
-                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_NoPHOTOS_TXT_KEY) {
-                    if(moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
@@ -3073,7 +3078,7 @@ public class ViewCreator {
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY) {
-                    if(moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
+                    if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
                         ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
 //                    ((TextView)componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
                         ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
@@ -3523,22 +3528,22 @@ public class ViewCreator {
                                     currentIndex--;
                                     appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
                                     appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
-                                            null,null, false);
+                                            null, null, false);
 
                                 }
                             });
                             break;
 
-                       case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
+                        case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
                             componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
 
-                           if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size()-1) {
-                               ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
-                               ((TextView) componentViewResult.componentView).setEnabled(false);
-                           }
+                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
+                                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                ((TextView) componentViewResult.componentView).setEnabled(false);
+                            }
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
                                 if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
@@ -3546,7 +3551,7 @@ public class ViewCreator {
                                     currentIndex = currentIndex + 1;
                                     appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
                                     appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
-                                            null,null, false);
+                                            null, null, false);
                                 }
 
                             });
@@ -3666,6 +3671,7 @@ public class ViewCreator {
                             componentViewResult.useWidthOfScreen = false;
                         }
                         break;
+
 
                     case PAGE_BADGE_IMAGE_KEY:
                         //
@@ -3820,6 +3826,12 @@ public class ViewCreator {
                 }
                 break;
 
+            case PAGE_SEPARATOR_VIEW_TOOLBAR_KEY:
+                componentViewResult.componentView = new View(context);
+                componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context,android.R.drawable.dialog_holo_light_frame));
+                componentViewResult.componentView.
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                break;
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);

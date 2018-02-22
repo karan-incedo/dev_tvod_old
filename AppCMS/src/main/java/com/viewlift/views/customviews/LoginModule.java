@@ -183,9 +183,11 @@ public class LoginModule extends ModuleView {
                     } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                             (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
                                     launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                    launchType == AppCMSPresenter.LaunchType.SIGNUP)) {
                         if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                             buttonSelectors[1] = new Button(getContext());
                             LinearLayout.LayoutParams signupSelectorLayoutParams =
                                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -255,7 +257,8 @@ public class LoginModule extends ModuleView {
             if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                 selectChild(0);
                 unselectChild(1);
-            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                    launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                 selectChild(1);
                 unselectChild(0);
             }
