@@ -2003,12 +2003,21 @@ public class ViewCreator {
                                 appCMSAndroidModules);
 
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
-                        /*if (photoGalleryNextPreviousListener == null) {*/
                         photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
-                        //}
-                        appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
+
+                        appCMSViewAdapter.setPhotoGalleryImageSelectionListener((url, selectedPosition) -> {
                             ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
-                            Glide.with(imageView.getContext()).load(url).placeholder(R.mipmap.app_logo).into(imageView);
+                            Glide.with(imageView.getContext()).load(url).placeholder(R.drawable.img_placeholder).into(imageView);
+                            int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
+                            String position = (selectedPosition+1) + "/" +  photoGallerySize;
+                            if (selectedPosition == 0) {
+                                enablePhotoGalleryButtons(false,true,pageView,appCMSPresenter,position);
+                            } else if (selectedPosition > 0 && selectedPosition < photoGallerySize - 1) {
+                                enablePhotoGalleryButtons(true,true,pageView,appCMSPresenter,position);
+                            } else {
+                                enablePhotoGalleryButtons(true,false,pageView,appCMSPresenter,position);
+                            }
+
                         });
 
                         if (!BaseView.isTablet(context)) {
@@ -2380,24 +2389,37 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.logo_icon));
                         break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        ((Button) componentViewResult.componentView).setEnabled(false);
+
                         ((Button) componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (photoGalleryNextPreviousListener != null) {
+                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                    ;
+                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(true);
                                     photoGalleryNextPreviousListener.previousPhoto(((Button) view));
                                 }
                             }
                         });
                         break;
                     case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.photo_gallery_next_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        if(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() == null || moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() == 0) {
+                            ((Button) componentViewResult.componentView).setEnabled(false);
+                            ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        }
                         ((Button) componentViewResult.componentView).setOnClickListener(v -> {
                             if (photoGalleryNextPreviousListener != null) {
+                                enablePhotoGalleryButtons(true,true,pageView,appCMSPresenter,"1");
                                 photoGalleryNextPreviousListener.nextPhoto(((Button) v));
                             }
                         });
@@ -3045,14 +3067,15 @@ public class ViewCreator {
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
+                        ((TextView) componentViewResult.componentView).setText("By " + moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName() + " |");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
+
+                        ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd") + " |");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
                 }
@@ -3075,15 +3098,6 @@ public class ViewCreator {
                     }
                     ((TextView) componentViewResult.componentView).setText("TAGGED :" + tagsName);
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
-                }
-
-                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY) {
-                    if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
-                        ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
-//                    ((TextView)componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
-                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
-                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                    }
                 }
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
@@ -3222,6 +3236,15 @@ public class ViewCreator {
                             }
                             break;
 
+                        case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
+
+                            if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
+                                ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
+                                ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                            }
+                            break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
@@ -3625,7 +3648,7 @@ public class ViewCreator {
                                 selectedImgUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().get(0).getSecureUrl();
                             }
                         }
-                        Glide.with(selectedImg.getContext()).load(selectedImgUrl).placeholder(R.mipmap.app_logo).into(selectedImg);
+                        Glide.with(selectedImg.getContext()).load(selectedImgUrl).placeholder(R.drawable.img_placeholder).into(selectedImg);
                         break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -4601,8 +4624,6 @@ public class ViewCreator {
 
     public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
         CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context, appCmsPresenter);
-
-
         if (videoId != null) {
             videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
             appCmsPresenter.setVideoPlayerViewCache(key, videoPlayerView);
@@ -4620,11 +4641,24 @@ public class ViewCreator {
             webView.loadURLData(context, appCMSPresenter, html, key);
         } else if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null) {
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
-            //webView.setHorizontalScrollBarEnabled(true);
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;
+    }
+
+    private void enablePhotoGalleryButtons(Boolean prevButton, boolean nextButton, PageView pageView , AppCMSPresenter appCMSPresenter,String position){
+        if((Button) pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(nextButton);
+        }
+        if((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setEnabled(prevButton);
+        }
+        if((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
+            ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count)).setText(""+position);
+        }
     }
 
 

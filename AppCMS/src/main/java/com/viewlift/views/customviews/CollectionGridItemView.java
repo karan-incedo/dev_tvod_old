@@ -471,7 +471,7 @@ public class CollectionGridItemView extends BaseView {
                     imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     Glide.with(context)
                             .load(imageUrl)
-                            .placeholder(R.mipmap.app_logo)
+                            .placeholder(R.drawable.img_placeholder)
                            // .override(childViewWidth, childViewHeight)
                             .into(imageView);
                     ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
