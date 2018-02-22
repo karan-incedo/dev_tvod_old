@@ -2385,6 +2385,9 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
+                    case PAGE_BRAND_IMAGE_KEY:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.logo_icon));
+                        break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
@@ -2727,6 +2730,7 @@ public class ViewCreator {
 
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
+                        shareDrawable.setTint(appCMSPresenter.getGeneralTextColor());
                         componentViewResult.componentView.setBackground(shareDrawable);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -3691,6 +3695,7 @@ public class ViewCreator {
                         }
                         break;
 
+
                     case PAGE_BADGE_IMAGE_KEY:
                         //
                         break;
@@ -3844,6 +3849,12 @@ public class ViewCreator {
                 }
                 break;
 
+            case PAGE_SEPARATOR_VIEW_TOOLBAR_KEY:
+                componentViewResult.componentView = new View(context);
+                componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context,android.R.drawable.dialog_holo_light_frame));
+                componentViewResult.componentView.
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                break;
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
