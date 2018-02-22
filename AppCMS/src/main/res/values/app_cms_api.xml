@@ -236,7 +236,7 @@
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
     <string name="app_cms_page_history_title">History</string>
-    <string name="app_cms_page_watchlist_title">WatchList</string>
+    <string name="app_cms_page_watchlist_title">Watchlist</string>
     <string name="app_cms_page_download_title">My Downloads</string>
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
