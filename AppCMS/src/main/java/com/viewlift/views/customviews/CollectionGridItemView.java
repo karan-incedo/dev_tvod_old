@@ -307,6 +307,7 @@ public class CollectionGridItemView extends BaseView {
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop()
                                         .into((ImageView) view);
+                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
 
                         } catch (Exception e) {
@@ -330,6 +331,7 @@ public class CollectionGridItemView extends BaseView {
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop()
                                         .into((ImageView) view);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (Exception e) {
                             //
@@ -410,6 +412,7 @@ public class CollectionGridItemView extends BaseView {
                                             }
                                         })
                                         .into((ImageView) view);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
@@ -429,6 +432,7 @@ public class CollectionGridItemView extends BaseView {
                                     .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() != null) {
@@ -448,6 +452,7 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .override(childViewWidth, childViewHeight)
                                         .into((ImageView) view);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } else {
                             Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
@@ -469,6 +474,7 @@ public class CollectionGridItemView extends BaseView {
                             .placeholder(R.mipmap.app_logo)
                            // .override(childViewWidth, childViewHeight)
                             .into(imageView);
+                    ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
