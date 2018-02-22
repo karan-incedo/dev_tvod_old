@@ -410,13 +410,13 @@
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 120,
-                  "height": 105
+                  "height": 90
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 0,
-                  "height": 110
+                  "width": 120,
+                  "height": 90
                 }
               },
               "type": "image",

@@ -1992,7 +1992,7 @@ public class ViewCreator {
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5,15));
                         appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
                            ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
-                            Glide.with(imageView.getContext()).load(url).placeholder(R.mipmap.app_logo).into(imageView);
+                            Glide.with(imageView.getContext()).load(url).placeholder(R.drawable.img_placeholder).into(imageView);
                         });
 
                         if (!BaseView.isTablet(context)) {
