@@ -818,7 +818,8 @@ public class CollectionGridItemView extends BaseView {
                 if (view instanceof  TextView){
                     if (childComponent !=null &&
                             childComponent.getTextColor() !=null &&
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
+                            (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY )&&
                             !TextUtils.isEmpty(childComponent.getTextColor())){
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));

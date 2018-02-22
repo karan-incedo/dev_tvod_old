@@ -1445,7 +1445,7 @@
               "type": "label",
               "numberOfLines": 2,
               "textColor": "#707070",
-              "fontWeight": "Italic",
+              "fontWeight": "Normal",
               "key": "thumbnailDescription"
             },
             {
@@ -1537,7 +1537,7 @@
               "type": "label",
               "numberOfLines": 1,
               "textColor": "#000000",
-              "fontWeight": "Italic",
+              "fontWeight": "Normal",
               "text": "READ MORE",
               "key": "readMore"
             },
