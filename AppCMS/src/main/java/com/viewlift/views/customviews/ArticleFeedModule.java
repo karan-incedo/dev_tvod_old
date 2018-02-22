@@ -376,7 +376,29 @@ public class ArticleFeedModule extends LinearLayout {
                 default:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
             }
-            textView.setTypeface(face);
+            int fontStyle=0;
+            if (component!= null && component.getFontWeight()!=null ) {
+                switch (component.getFontWeight()) {
+                    case "Italic":
+                        fontStyle = Typeface.ITALIC;
+                        break;
+                    case "Bold":
+                    case "Semibold":
+                        fontStyle = Typeface.BOLD;
+                        break;
+                    case "Bold-Italic":
+                        fontStyle = Typeface.BOLD_ITALIC;
+                    case "Normal":
+                        fontStyle = Typeface.NORMAL;
+                        break;
+                    default:
+                        fontStyle = 0;
+                        break;
+                }
+            }
+
+
+            textView.setTypeface(face,fontStyle);
 
 
         }
