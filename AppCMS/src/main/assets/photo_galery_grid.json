@@ -312,25 +312,25 @@
         {
           "layout": {
             "mobile": {
-              "leftMargin": 8.0,
-              "rightMargin": 5.0,
+              "leftMargin": 8,
+              "rightMargin": 5,
               "width": 170,
               "yAxis": 343,
-              "xAxis": 0.0,
+              "xAxis": 0,
               "height": 30
             },
             "tabletLandscape": {
               "width": 80,
-              "yAxis": 455,
+              "yAxis": 490,
               "xAxis": 11.67,
               "height": 35
             },
             "tabletPortrait": {
-              "leftMargin": 8.0,
-              "rightMargin": 5.0,
+              "leftMargin": 20,
+              "rightMargin": 5,
               "width": 360,
               "yAxis": 520,
-              "xAxis": 0.0,
+              "xAxis": 0,
               "height": 40
             }
           },
@@ -344,23 +344,23 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 343.0,
-              "xAxis": 180.0,
+              "yAxis": 343,
+              "xAxis": 180,
               "width": 170,
               "rightMargin": 8,
               "height": 30
             },
             "tabletLandscape": {
               "width": 80,
-              "yAxis": 455,
-              "xAxis": 530.0,
+              "yAxis": 490,
+              "xAxis": 531.5,
               "height": 35
             },
             "tabletPortrait": {
               "width": 360,
               "yAxis": 520,
-              "xAxis": 180.0,
-              "rightMargin": 10,
+              "xAxis": 180,
+              "rightMargin": 20,
               "height": 40
             }
           },
@@ -374,57 +374,153 @@
         {
           "layout": {
             "mobile": {
-              "gridHeight" : 158,
-              "leftMargin": 11.67,
-              "trayPadding": 5,
-              "topMargin": 59.0,
-              "gridColumns": 3,
-              "gridWidth" : 0
+              "xAxis": 0,
+              "yAxis": 400,
+              "height": 144,
+              "width": 375
             },
             "tabletLandscape": {
-              "gridHeight" : 200,
-              "trayPadding": 5,
-              "topMargin": 68.0,
-              "gridColumns": 3,
-              "gridWidth" : 0
+              "xAxis": 0,
+              "yAxis": 545,
+              "height": 67,
+              "width": 660
             },
             "tabletPortrait": {
-              "gridHeight" : 200,
-              "trayPadding": 5,
-              "topMargin": 58.0,
-              "gridColumns": 3,
-              "gridWidth" : 0
+              "xAxis": 0,
+              "yAxis": 616,
+              "height": 215,
+              "width": 768
             }
           },
-          "trayClickAction": "",
           "components": [
             {
               "layout": {
                 "mobile": {
                   "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 100,
-                  "height": 75
+                  "xAxis": 5,
+                  "height": 144,
+                  "width": 361,
+                  "gridHeight": 67,
+                  "trayPadding": 0,
+                  "gridColumns": 3,
+                  "gridWidth": 116
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 120,
-                  "height": 90
+                  "xAxis": 10,
+                  "width": 608,
+                  "height": 67,
+                  "gridHeight": 67,
+                  "gridWidth": 116,
+                  "trayPadding": 5,
+                  "gridColumns": 3
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
-                  "xAxis": 0,
-                  "width": 120,
-                  "height": 90
+                  "xAxis": 19,
+                  "width": 730,
+                  "height": 215,
+                  "gridHeight": 67,
+                  "gridWidth": 116,
+                  "trayPadding": 0,
+                  "gridColumns": 3
                 }
               },
-              "type": "image",
-              "key": "photogalleryImage"
+              "trayClickAction": "selectPhoto",
+              "components": [
+                {
+                  "layout": {
+                    "mobile": {
+                      "yAxis": 0,
+                      "xAxis": 0,
+                      "width": 116,
+                      "height": 67
+                    },
+                    "tabletLandscape": {
+                      "yAxis": 0,
+                      "xAxis": 0,
+                      "width": 116,
+                      "height": 67
+                    },
+                    "tabletPortrait": {
+                      "yAxis": 0,
+                      "xAxis": 0,
+                      "width": 116,
+                      "height": 67
+                    }
+                  },
+                  "type": "image",
+                  "key": "photogalleryImage"
+                }
+              ],
+              "type": "collectionGrid",
+              "key": "photoGalleryGrid"
             }
           ],
-          "type": "collectionGrid",
-          "key": "photoGalleryGrid"
+          "type": "AC PhotoGalleryGrid 01",
+          "key": "AC PhotoGalleryGrid 01"
+        },{
+          "layout": {
+            "mobile": {
+              "yAxis": 560,
+              "xAxis": 0,
+              "width": 170,
+              "rightMargin": 5,
+              "height": 30
+            },
+            "tabletLandscape": {
+              "width": 160,
+              "yAxis": 630,
+              "xAxis": 455,
+              "height": 35
+            },
+            "tabletPortrait": {
+              "width": 170,
+              "yAxis": 845,
+              "xAxis": 0,
+              "rightMargin": 20,
+              "height": 50
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "right",
+          "textColor": "000000",
+          "action": "nextGallery",
+          "fontWeight": "Semibold",
+          "type": "label",
+          "text": "NEXT GALLERY",
+          "key": "nextGallery"
+        },{
+          "layout": {
+            "mobile": {
+              "yAxis": 560,
+              "xAxis": 0,
+              "width": 170,
+              "leftMargin": 5,
+              "height": 30
+            },
+            "tabletLandscape": {
+              "width": 160,
+              "yAxis": 630,
+              "xAxis": 10,
+              "height": 35
+            },
+            "tabletPortrait": {
+              "width": 360,
+              "yAxis": 845,
+              "xAxis": 0,
+              "leftMargin": 20,
+              "height": 50
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "textColor": "000000",
+          "action": "nextGallery",
+          "fontWeight": "Semibold",
+          "type": "label",
+          "text": "PREV GALLERY",
+          "key": "prevGallery"
         }
       ]
     },

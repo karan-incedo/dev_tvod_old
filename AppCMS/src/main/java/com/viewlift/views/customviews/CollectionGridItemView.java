@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,6 +17,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -46,7 +47,6 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -308,6 +308,7 @@ public class CollectionGridItemView extends BaseView {
                                         .centerCrop()
                                         .into((ImageView) view);
                             }
+
                         } catch (Exception e) {
                             //
                         }
@@ -441,12 +442,21 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .into((ImageView) view);
+                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .into((ImageView) view);
+                            }
+                        } else {
+                            Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
                         }
+                    }else if (data.getGist().getImageGist() != null &&
+                            data.getGist().getImageGist().get_16x9() == null){
+
+                            view.setVisibility(GONE);
+
                     }
                     bringToFront = false;
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
@@ -514,6 +524,7 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                         ((TextView) view).setMaxLines(1);
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getSeason() != null && 0 < data.getSeason().size()) {
@@ -802,6 +813,18 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(childComponent.getText());
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
+                    }
+                }
+                if (view instanceof  TextView){
+                    if (childComponent !=null &&
+                            childComponent.getTextColor() !=null &&
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
+                            !TextUtils.isEmpty(childComponent.getTextColor())){
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
+                    }else
+                    {
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {

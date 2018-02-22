@@ -233,7 +233,8 @@
     <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
     <string name="app_cms_page_photogallery_preButton">previousButtonPG</string>
     <string name="app_cms_page_photogallery_nextButton">nextButtonPG</string>
-
+    <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
+    <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
     <string name="app_cms_page_download_title">My Downloads</string>
@@ -311,6 +312,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
     <string name="app_cms_page_photo_gallery_02_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_photo_gallery_grid_key">photoGalleryGrid</string>
+    <string name="app_cms_page_photo_gallery_grid_01_key">AC PhotoGalleryGrid 01</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_team_page_tag">Teams</string>

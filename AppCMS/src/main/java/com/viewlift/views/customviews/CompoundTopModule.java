@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -67,22 +68,29 @@ public class CompoundTopModule extends ModuleView {
 
     private void addComponentTab(final ViewGroup parent) {
         LinearLayout topComponent = new LinearLayout(mContext);
-        topComponent.setWeightSum(100);
+        topComponent.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+        LinearLayout layoutHeadline =new LinearLayout(mContext);
 
         LinearLayout.LayoutParams crosualLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams topHeadlineLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         if (isLandscape(mContext)){
+            topComponent.setWeightSum(100);
+            crosualLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+            topHeadlineLP = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
             crosualLP.weight = 70;
             topHeadlineLP.weight = 30;
+            layoutHeadline.setOrientation(LinearLayout.VERTICAL);
+            topComponent.setOrientation(LinearLayout.HORIZONTAL);
         }else {
-            crosualLP.weight = 60;
-            topHeadlineLP.weight = 40;
-        }
-        LinearLayout layoutHeadline =new LinearLayout(mContext);
+            crosualLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            topHeadlineLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutHeadline.setOrientation(LinearLayout.HORIZONTAL);
+            topComponent.setOrientation(LinearLayout.VERTICAL);
 
-        topComponent.setOrientation(LinearLayout.HORIZONTAL);
-        layoutHeadline.setOrientation(LinearLayout.VERTICAL);
+        }
 
         layoutHeadline.setLayoutParams(topHeadlineLP);
 
@@ -90,19 +98,31 @@ public class CompoundTopModule extends ModuleView {
         for (ModuleView moduleView : moduleViewList) {
             switch (jsonValueKeyMap.get(moduleView.getModule().getType())) {
                 case PAGE_EVENT_CAROUSEL_MODULE_KEY:
-                    moduleView.setLayoutParams(crosualLP);
-                    topComponent.addView(moduleView);
+                    topComponent.addView(moduleView,crosualLP);
                     break;
                 case PAGE_LIST_MODULE_KEY:
-                    layoutHeadline.addView(moduleView);
+                    if (isLandscape(mContext)) {
+                        layoutHeadline.addView(moduleView);
+                    }else{
+                        LinearLayout.LayoutParams lp= new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                        lp.weight=50;
+                        layoutHeadline.addView(moduleView,lp);
+                    }
                     break;
                 case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
-                    layoutHeadline.addView(moduleView);
+                    if (isLandscape(mContext)) {
+                        layoutHeadline.addView(moduleView);
+                    }else{
+                        LinearLayout.LayoutParams lp= new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                        lp.weight=50;
+                        layoutHeadline.addView(moduleView,lp);
+                    }
                     break;
             }
 
         }
         topComponent.addView(layoutHeadline);
         parent.addView(topComponent);
+        setBackgroundColor(Color.LTGRAY);
     }
 }

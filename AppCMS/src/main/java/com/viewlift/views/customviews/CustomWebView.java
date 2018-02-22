@@ -3,11 +3,16 @@ package com.viewlift.views.customviews;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -15,7 +20,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -69,22 +73,21 @@ public class CustomWebView extends WebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                super.shouldOverrideUrlLoading(view, url);
-                return false;
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                mContext.startActivity(browserIntent);
+                return true;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
-                view.requestLayout();
-                //appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
+                appCMSPresenter.setWebViewCache(cacheKey, (CustomWebView) view);
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                //appCMSPresenter.clearWebViewCache();
+                appCMSPresenter.clearWebViewCache();
             }
         });
 
@@ -92,8 +95,19 @@ public class CustomWebView extends WebView {
     }
 
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
+        context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
-        this.getSettings().setDefaultFontSize(30);
+        this.getSettings().setLoadWithOverviewMode(true);
+
+        this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        this.getSettings().setBuiltInZoomControls(true);
+        setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            // Hide the zoom controls for HONEYCOMB+
+            this.getSettings().setDisplayZoomControls(false);
+        }
+
+       // this.getSettings().setDefaultFontSize(30);
         this.addJavascriptInterface(this, "MyApp");
         this.setWebViewClient(new WebViewClient() {
             @Override
@@ -107,6 +121,7 @@ public class CustomWebView extends WebView {
                 super.onPageFinished(view, url);
                 view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
                 view.requestLayout();
+                context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }
 
             @Override
@@ -122,11 +137,15 @@ public class CustomWebView extends WebView {
 
     @JavascriptInterface
     public void resize(final float height) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                webView.setLayoutParams(new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels, (int) (height * getResources().getDisplayMetrics().density)));
-            }
+        context.runOnUiThread(() -> {
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    getResources().getDisplayMetrics().widthPixels,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            params.bottomMargin = (int) (50 * (metrics.densityDpi / 160f));
+            webView.setLayoutParams(params);
         });
     }
 }

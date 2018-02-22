@@ -164,7 +164,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
-            emptyView.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
+            String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+            emptyView.setTextColor(Color.parseColor(textColor));
             emptyView.setTextSize(24f);
             if (viewTypeKey == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                 emptyView.setText(mContext.getString(R.string.empty_history_list_message));
@@ -419,7 +420,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (data.getGist() != null && data.getGist().getMediaType() != null
                                     && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                 appCMSPresenter.setCurrentArticleIndex(-1);
-                                appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null);
                                 return;
                             }
 

@@ -42,8 +42,9 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
                 .appCMSPresenter();
 
         int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-       int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        int buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+        int buttonTextColor = appCMSPresenter.getBrandPrimaryCtaTextColor();
+        int textColor = appCMSPresenter.getGeneralTextColor();
 
         Bundle args = getArguments();
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
@@ -53,6 +54,7 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
                 .getBrand().getGeneral().getTextColor()));
 
         final EditText appCMSResetPasswordEmailInput = (EditText) view.findViewById(R.id.app_cms_reset_password_email_input);
+        appCMSPresenter.setCursorDrawableColor(appCMSResetPasswordEmailInput);
         if (!TextUtils.isEmpty(email)) {
             appCMSResetPasswordEmailInput.setText(email);
         }
@@ -76,7 +78,7 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
                         false);
             }
         });
-        appCMSSubmitResetPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
+        appCMSSubmitResetPasswordButton.setTextColor(buttonTextColor);
         appCMSSubmitResetPasswordButton.setBackgroundColor(buttonColor);
 
         setBgColor(bgColor, view);

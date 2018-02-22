@@ -3,7 +3,6 @@ package com.viewlift.views.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -99,7 +98,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             }
             if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
                     && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
-                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false);
+                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false, null);
                 return;
             }
             String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
@@ -156,7 +155,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageWidth,
                     imageHeight);
             Glide.with(viewHolder.view.getContext())
-
                     .load(imageUrl)
                     .asBitmap()
                     .listener(new RequestListener<String, Bitmap>() {
@@ -186,6 +184,14 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     })
                     .into(viewHolder.filmThumbnail);
 
+        }
+        if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            if (appCMSPresenter.getIsMoreOptionsAvailable()) {
+                applySportsStyleDefault(viewHolder, createEmptyBitmap());
+            }
+            viewHolder.gridOptions.setVisibility(View.GONE);
         }
         viewHolder.gridOptions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -276,7 +282,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.action = action;
     }
 
-    public  class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         FrameLayout parentLayout;
         ImageView filmThumbnail;
