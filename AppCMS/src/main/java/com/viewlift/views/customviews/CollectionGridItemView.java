@@ -538,6 +538,11 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
+                        if (TextUtils.isEmpty(((TextView) view).getText().toString())) {
+                            view.setVisibility(INVISIBLE);
+                        } else {
+                            view.setVisibility(VISIBLE);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY || componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
                         if (childComponent.getNumberOfLines() != 0) {
                             ((TextView) view).setSingleLine(false);
