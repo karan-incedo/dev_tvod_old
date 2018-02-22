@@ -153,8 +153,8 @@ public class CollectionGridItemView extends BaseView {
     @Override
     protected ViewGroup createChildrenContainer() {
         if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
-                component!=null &&
-                component.getSettings()!=null &&
+                component != null &&
+                component.getSettings() != null &&
                 !component.getSettings().isHidden()) {
             childrenContainer = new LinearLayout(getContext());
             ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
@@ -208,12 +208,12 @@ public class CollectionGridItemView extends BaseView {
         childItems.add(itemContainer);
 
         if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
-                component!=null &&
-                component.getSettings()!=null &&
+                component != null &&
+                component.getSettings() != null &&
                 !component.getSettings().isHidden()) {
             if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
                 ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
-            }else {
+            } else {
                 ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
             }
         } else {
@@ -431,9 +431,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() != null) {
-                        if(!(childViewWidth > 0)){
+                        if (!(childViewWidth > 0)) {
                             childViewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-                        }else if(!(childViewHeight > 0)){
+                        } else if (!(childViewHeight > 0)) {
                             childViewHeight = getContext().getResources().getDisplayMetrics().heightPixels;
                         }
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -449,7 +449,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
                     bringToFront = false;
-                }else if(componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY){
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
 
                     String imageUrl = data.getGist().getVideoImageUrl();
                     ImageView imageView = (ImageView)view;
@@ -527,13 +527,23 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         }
-                        if(componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY){
+                        if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
                             ((TextView) view).setGravity(Gravity.RIGHT);
-                            ((TextView) view).setText(getSubstring(data.getGist().getTitle(),19));
-                        }else{
+                            StringBuffer publishDate = new StringBuffer();
+                            if (data.getContentDetails().getAuthor().getPublishDate() != null) {
+                                publishDate.append("|");
+                                publishDate.append(data.getContentDetails().getAuthor().getPublishDate().toString());
+                            }
+                            ((TextView) view).setText(data.getContentDetails().getAuthor().getName() + publishDate.toString());
+                        } else {
                             ((TextView) view).setText(data.getGist().getTitle());
                         }
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
                         if (childComponent.getNumberOfLines() != 0) {
@@ -542,11 +552,19 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         }
                         ((TextView) view).setText(data.getGist().getDescription());
-
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_READ_MORE_KEY) {
-                        ((TextView) view).setText("READ MORE");
-                    }
-                    else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
+                        ((TextView) view).setText(childComponent.getText());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(2);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -567,7 +585,7 @@ public class CollectionGridItemView extends BaseView {
                                     childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
                         }
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_API_SUMMARY_TEXT_KEY&& !TextUtils.isEmpty(data.getGist().getSummaryText())) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_SUMMARY_TEXT_KEY && !TextUtils.isEmpty(data.getGist().getSummaryText())) {
                         if (childComponent.getNumberOfLines() != 0) {
                             ((TextView) view).setSingleLine(false);
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
@@ -599,10 +617,10 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = null;
-                        if(data.getGist().getPublishDate() != null) {
-                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        if (data.getGist().getPublishDate() != null) {
+                            thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
                         }
-                        if(data.getGist() != null && data.getGist().getReadTime() != null) {
+                        if (data.getGist() != null && data.getGist().getReadTime() != null) {
                             StringBuilder readTimeText = new StringBuilder()
                                     .append(data.getGist().getReadTime())
                                     .append(" ")
@@ -610,12 +628,12 @@ public class CollectionGridItemView extends BaseView {
                                     .append(" ")
                                     .append("|");
 
-                            if(thumbInfo != null) {
+                            if (thumbInfo != null) {
                                 readTimeText.append(" ")
-                                .append(thumbInfo);
+                                        .append(thumbInfo);
                             }
                             ((TextView) view).setText(readTimeText);
-                        }else{
+                        } else {
                             ((TextView) view).setText(thumbInfo);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
@@ -882,10 +900,10 @@ public class CollectionGridItemView extends BaseView {
         return color;
     }
 
-    public String getSubstring(String value, int maxLength){
-        if(!TextUtils.isEmpty(value)){
-            if(value.length() >= maxLength){
-                return value.substring(0, maxLength)+ "...";
+    public String getSubstring(String value, int maxLength) {
+        if (!TextUtils.isEmpty(value)) {
+            if (value.length() >= maxLength) {
+                return value.substring(0, maxLength) + "...";
             }
         }
         return value;

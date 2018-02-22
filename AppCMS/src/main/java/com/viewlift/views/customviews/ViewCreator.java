@@ -2727,24 +2727,27 @@ public class ViewCreator {
                         componentViewResult.componentView.setPadding(20, 0, 20, 0);
                         componentViewResult.componentView.setId(R.id.article_prev_button);
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        if (appCMSPresenter.getCurrentArticleIndex() <= 0) {
+
+                        if (appCMSPresenter.getCurrentArticleIndex() < 0) {
                             componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
                         } else {
                             componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         }
                         componentViewResult.componentView.setOnClickListener(v -> {
+
+
                             if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
-                                pageView.findViewById(R.id.article_next_button).setAlpha(1.0f);
-                                pageView.findViewById(R.id.article_next_button).setEnabled(true);
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 currentIndex = currentIndex - 1;
-                                if (currentIndex >= 0) {
-                                    appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                                    appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
-                                } else {
-                                    componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                if (currentIndex < -1) {
+                                    return;
 
                                 }
+                                appCMSPresenter.setCurrentArticleIndex(currentIndex);
+                                if (currentIndex == -1) {
+                                    currentIndex = 0;
+                                }
+                                appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
                             }
                         });
 
@@ -2769,24 +2772,26 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
 
-
-                            List<String> articleIDs = moduleAPI.getContentData().get(0).getContentDetails().getRelatedArticleIds();
-                            articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
-                            appCMSPresenter.setRelatedArticleIds(articleIDs);
+                            List<String> articleIDs = appCMSPresenter.getRelatedArticleIds();
+                            if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
+                                ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                ((Button) componentViewResult.componentView).setEnabled(false);
+                            }
+                            if (appCMSPresenter.getCurrentArticleIndex() == -1) {
+                                articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
+                                appCMSPresenter.setRelatedArticleIds(articleIDs);
+                            }
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 if (appCMSPresenter.getRelatedArticleIds() != null &&
-                                        currentIndex < appCMSPresenter.getRelatedArticleIds().size() - 1) {
-
+                                        currentIndex < appCMSPresenter.getRelatedArticleIds().size() - 2) {
                                     currentIndex = currentIndex + 1;
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
-                                    appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
-                                    pageView.findViewById(R.id.article_prev_button).setEnabled(true);
-                                    pageView.findViewById(R.id.article_prev_button).setAlpha(1.0f);
-                                } else if (currentIndex == appCMSPresenter.getRelatedArticleIds().size()) {
-                                    v.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                    appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(), false);
 
                                 }
+
                             });
                         }
                         break;
