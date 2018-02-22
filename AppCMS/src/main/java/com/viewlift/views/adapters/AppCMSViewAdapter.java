@@ -177,6 +177,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (getSelectedPosition() == adapterData.size() - 1) {
                     return;
                 }
+                if(adapterData.size() == 0){
+                    return;
+                }
                 selectedPosition++;
                 iPhotoGallerySelectListener.selectedImageData(adapterData.get(selectedPosition).getGist().getVideoImageUrl());
             }
@@ -563,8 +566,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 //PHOTOGALLERY
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().contains("PHOTOGALLERY")) {
-                                    //appCMSPresenter.setCurrentArticleIndex(0);
-                                    appCMSPresenter.navigateToPhotoGalleryPage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    appCMSPresenter.setCurrentPhotoGalleryIndex(clickPosition);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(data.getGist().getId(), data.getGist().getTitle(),adapterData, false);
                                     return;
                                 }
 
