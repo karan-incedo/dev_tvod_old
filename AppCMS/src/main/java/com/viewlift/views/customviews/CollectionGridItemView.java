@@ -524,7 +524,7 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                         ((TextView) view).setMaxLines(1);
-                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getSeason() != null && 0 < data.getSeason().size()) {
@@ -818,7 +818,9 @@ public class CollectionGridItemView extends BaseView {
                 if (view instanceof  TextView){
                     if (childComponent !=null &&
                             childComponent.getTextColor() !=null &&
-                            TextUtils.isEmpty(childComponent.getTextColor())){
+                            (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY )&&
+                            !TextUtils.isEmpty(childComponent.getTextColor())){
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
                     }else

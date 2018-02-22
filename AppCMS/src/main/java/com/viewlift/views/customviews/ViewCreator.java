@@ -2002,9 +2002,9 @@ public class ViewCreator {
                                 appCMSAndroidModules);
 
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
-                        if (photoGalleryNextPreviousListener == null) {
+                        /*if (photoGalleryNextPreviousListener == null) {*/
                             photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
-                        }
+                        //}
                         appCMSViewAdapter.setPhotoGalleryImageSelectionListener(url -> {
                             ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
                             Glide.with(imageView.getContext()).load(url).placeholder(R.mipmap.app_logo).into(imageView);
@@ -2277,6 +2277,8 @@ public class ViewCreator {
                         16);
                 long deselectedColor = component.getUnSelectedColor() != null ?
                         Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
+                 selectedColor =component.getSelectedColor() != null ?
+                        Long.valueOf(component.getSelectedColor(), 16) : 0L;
 
                 deselectedColor = adjustColor1(deselectedColor, selectedColor);
                 componentViewResult.componentView = new DotSelectorView(context,
@@ -2396,6 +2398,7 @@ public class ViewCreator {
                             }
                         });
                         break;
+
                     case PAGE_BUTTON_SWITCH_KEY:
                         if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
@@ -3498,6 +3501,55 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
+                            break;
+
+                        case PAGE_PHOTOGALLERY_PREV_GALLERY_LABEL_KEY:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            componentViewResult.componentView.setId(R.id.photo_gallery_prev_label);
+
+                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
+                                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                            } else {
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                            }
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
+                                if (currentIndex == 0) {
+                                    return;
+                                }
+                                if (appCMSPresenter.getRelatedPhotoGalleryIds() != null) {
+                                    currentIndex--;
+                                    appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
+                                            null,null, false);
+
+                                }
+                            });
+                            break;
+
+                       case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
+
+                           if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size()-1) {
+                               ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                               ((TextView) componentViewResult.componentView).setEnabled(false);
+                           }
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
+                                if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
+                                        currentIndex < appCMSPresenter.getRelatedPhotoGalleryIds().size()) {
+                                    currentIndex = currentIndex + 1;
+                                    appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
+                                            null,null, false);
+                                }
+
+                            });
                             break;
 
                         default:
