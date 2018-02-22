@@ -633,10 +633,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                         if (data.getGist() != null && data.getGist().getReadTime() != null) {
                             StringBuilder readTimeText = new StringBuilder()
-                                    .append(data.getGist().getReadTime())
-                                    .append(" ")
+                                    .append(data.getGist().getReadTime().trim())
                                     .append(context.getString(R.string.mins_abbreviation))
-                                    .append(" ")
+                                    .append(" read ")
                                     .append("|");
 
                             if (thumbInfo != null) {
@@ -819,7 +818,8 @@ public class CollectionGridItemView extends BaseView {
                     if (childComponent !=null &&
                             childComponent.getTextColor() !=null &&
                             (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY )&&
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO )&&
                             !TextUtils.isEmpty(childComponent.getTextColor())){
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
