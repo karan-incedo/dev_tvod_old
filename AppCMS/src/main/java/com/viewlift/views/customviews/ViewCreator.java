@@ -215,7 +215,7 @@ public class ViewCreator {
         }
 
         ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
+//        view.setAlpha(0.6f);
     }
 
 

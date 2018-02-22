@@ -1652,25 +1652,26 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 20.85,
+                  "topMargin": 290,
                   "fontSize": 18,
-                  "height": 24
+                  "height": 14
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 22.69,
+                  "bottomMargin": 1,
                   "fontSize": 23,
                   "height": 32
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 22.69,
+                  "bottomMargin": 1,
                   "fontSize": 23,
                   "height": 32
                 }
               },
+              "backgroundColor" : "#80000000",
               "fontFamily": "OpenSans",
               "numberOfLines": 1,
               "textAlignment": "center",
@@ -1684,30 +1685,32 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 13.74,
+//                  "bottomMargin": 13.74,
+                  "topMargin": 305.5,
                   "fontSize": 10,
-                  "height": 14
+                  "height": 12
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 19.68,
+                  "bottomMargin": 23,
                   "fontSize": 10,
                   "height": 14
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 19.68,
+                  "bottomMargin": 24,
                   "fontSize": 10,
                   "height": 14
                 }
               },
+              "backgroundColor" : "#80000000",
               "fontFamily": "OpenSans",
               "numberOfLines": 1,
               "textAlignment": "center",
               "type": "label",
-              "textColor": "#ffffff",
+              "textColor": "#90ffffff",
               "key": "carouselInfo"
             },
             {
