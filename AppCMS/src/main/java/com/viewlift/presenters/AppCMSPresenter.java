@@ -3188,18 +3188,20 @@ public class AppCMSPresenter {
 //            return;
 //        }
 //        mLastClickTime = SystemClock.elapsedRealtime();
-        LayoutInflater inflater = currentActivity.getLayoutInflater();
-        View layout = inflater.inflate(R.layout.custom_toast_layout,
-                (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
+        if (currentActivity != null) {
+            LayoutInflater inflater = currentActivity.getLayoutInflater();
+            View layout = inflater.inflate(R.layout.custom_toast_layout,
+                    currentActivity.findViewById(R.id.custom_toast_layout_root));
 
-        TextView customToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
-        customToastMessage.setText(toastMessage);
+            TextView customToastMessage = layout.findViewById(R.id.custom_toast_message);
+            customToastMessage.setText(toastMessage);
 
-        customToast = new Toast(currentActivity.getApplicationContext());
-        customToast.setDuration(Toast.LENGTH_SHORT);
-        customToast.setView(layout);
-        customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
-        customToast.show();
+            customToast = new Toast(currentActivity.getApplicationContext());
+            customToast.setDuration(Toast.LENGTH_SHORT);
+            customToast.setView(layout);
+            customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
+            customToast.show();
+        }
     }
 
     public void cancelCustomToast() {
