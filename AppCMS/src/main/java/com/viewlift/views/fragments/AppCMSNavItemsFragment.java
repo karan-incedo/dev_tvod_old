@@ -92,7 +92,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             navItemsList.setAdapter(appCMSNavItemsAdapter);
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
-            } else {
+            }else{
                 appCMSPresenter.unrestrictPortraitOnly();
             }
 
@@ -182,7 +182,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         super.onDestroyView();
         if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
-        } else {
+        }else{
             appCMSPresenter.restrictPortraitOnly();
 
         }

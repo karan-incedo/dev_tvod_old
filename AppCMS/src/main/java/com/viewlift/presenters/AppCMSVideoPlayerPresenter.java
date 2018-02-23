@@ -349,6 +349,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                 mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
     }
 
+
     private void initEntitlementCheckTask() {
         if (appCMSPresenter.isAppSVOD() &&
                 !isTrailer &&

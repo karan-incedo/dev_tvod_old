@@ -18,7 +18,21 @@ public class CustomerService implements Serializable {
 
     @SerializedName("phoneNumber")
     @Expose
+    String phoneNumber;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @SerializedName("phone")
+    @Expose
     String phone;
+
+
 
     @SerializedName("address")
     @Expose
@@ -32,12 +46,12 @@ public class CustomerService implements Serializable {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNumber(String phone) {
+        this.phoneNumber = phone;
     }
 
     public String getAddress() {

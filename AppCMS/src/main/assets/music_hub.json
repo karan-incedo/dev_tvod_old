@@ -251,7 +251,8 @@
           "mobile": 3,
           "ott": 6
         },
-        "thumbnailType": "landscape"
+        "thumbnailType": "portrait",
+        "infoHover": true
       },
       "view": "AC Tray 01",
       "type": "AC Tray 01",
@@ -261,21 +262,21 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 223
+          "height": 231
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 340
+          "height": 350
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 340
+          "height": 300
         }
       },
       "components": [
@@ -338,31 +339,28 @@
         {
           "layout": {
             "mobile": {
-              "gridHeight": 204,
-              "trayPadding": 5,
+              "gridHeight": 201,
+              "trayPadding": 7,
               "leftMargin": 2.67,
-              "yAxis": 30,
-              "rightMargin": 2.67,
+              "topMargin": 13.45,
               "bottomMargin": 0,
               "gridWidth": 111
             },
             "tabletLandscape": {
-              "gridHeight": 308,
+              "gridHeight": 319,
               "trayPadding": 10,
               "leftMargin": 0.98,
-              "yAxis": 38,
-              "rightMargin": 0.98,
+              "topMargin": 13.67,
               "bottomMargin": 0,
-              "gridWidth": 159
+              "gridWidth": 140
             },
             "tabletPortrait": {
-              "gridHeight": 308,
+              "gridHeight": 269,
               "trayPadding": 10,
               "leftMargin": 1.3,
-              "yAxis": 38,
-              "rightMargin": 1.3,
+              "topMargin": 13.67,
               "bottomMargin": 0,
-              "gridWidth": 154
+              "gridWidth": 140
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -372,20 +370,20 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 111,
+                  "width": 123,
                   "height": 164
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 154,
-                  "height": 240
+                  "width": 156,
+                  "height": 236
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 154,
-                  "height": 240
+                  "width": 162,
+                  "height": 221
                 }
               },
               "type": "image",
@@ -396,20 +394,20 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 111,
+                  "width": 123,
                   "height": 164
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 154,
-                  "height": 240
+                  "width": 156,
+                  "height": 236
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 154,
-                  "height": 240
+                  "width": 162,
+                  "height": 221
                 }
               },
               "type": "image",
@@ -422,13 +420,17 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 11,
-                  "height": 20
+                  "thumbnailWidth": 123,
+                  "thumbnailHeight": 164,
+                  "height": 19
                 },
                 "tabletLandscape": {
                   "yAxis": 242,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
+                  "thumbnailWidth": 156,
+                  "thumbnailHeight": 236,
                   "height": 28
                 },
                 "tabletPortrait": {
@@ -436,7 +438,9 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
-                  "height": 19
+                  "thumbnailWidth": 162,
+                  "thumbnailHeight": 221,
+                  "height": 23
                 }
               },
               "fontFamily": "OpenSans",

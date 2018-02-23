@@ -51,7 +51,7 @@
             android:background="@android:color/transparent"/>
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/exo_controller_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,7 +104,6 @@
                 android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
                 android:background="@drawable/cc_toggle_selector"
                 android:checked="false"
-                android:visibility="gone"
                 android:textOff=""
                 android:textOn="" />
 
@@ -142,7 +141,7 @@
                 android:id="@id/exo_progress"
                 android:layout_width="0dp"
                 android:layout_height="26dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@id/exo_duration"
@@ -156,6 +155,6 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>
