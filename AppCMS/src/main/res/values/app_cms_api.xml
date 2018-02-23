@@ -363,6 +363,9 @@
     <!-- AppCMS Get Current Subscription API -->
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
+    <!-- AppCMS Validate Google Play Subscription API -->
+    <string name="app_cms_google_play_subscription_validation_api_url">%1$s/subscription/android/validate_android_receipt?site=%2$s</string>
+
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
