@@ -6,5 +6,5 @@ package com.viewlift.models.data.appcms.photogallery;
 
 public interface IPhotoGallerySelectListener {
 
-    void selectedImageData(String url);
+    void selectedImageData(String url,int selectedPosition);
 }

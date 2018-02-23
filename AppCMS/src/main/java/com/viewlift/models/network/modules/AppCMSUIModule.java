@@ -243,6 +243,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_separator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_separator_toolbar_key),
+                AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_TOOLBAR_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
                 AppCMSUIKeyType.PAGE_SEGMENTED_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_castview_key),
@@ -280,6 +282,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_badge_image_key),
                 AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_brand_image_key),
+                AppCMSUIKeyType.PAGE_BRAND_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_description_key),

@@ -20,6 +20,8 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +49,7 @@ public class ArticleFeedModule extends LinearLayout {
 
     private ImageView imageViewPoster;
     private TextView titleText, subTitleText, publisherName, summeryText, readMore;
-    private RelativeLayout bottomControll;
+    private LinearLayout bottomControll;
     private View separatorView;
     int textColor = 0;
 
@@ -90,7 +92,8 @@ public class ArticleFeedModule extends LinearLayout {
 
         int bgColor = Color.DKGRAY;
 
-        bottomControll = new RelativeLayout(context);
+        bottomControll = new LinearLayout(context);
+        bottomControll.setWeightSum(2);
 
         imageViewPoster = new ImageView(context);
 
@@ -105,9 +108,8 @@ public class ArticleFeedModule extends LinearLayout {
 
         separatorView = new View(context);
 
-        RelativeLayout.LayoutParams lpReadMore = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lpReadMore.addRule(RelativeLayout.CENTER_VERTICAL);
-        lpReadMore.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        LinearLayout.LayoutParams lpBottom = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpBottom.weight=1;
 
         RelativeLayout.LayoutParams lpPublisherName = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lpPublisherName.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -149,10 +151,14 @@ public class ArticleFeedModule extends LinearLayout {
                     case PAGE_LABEL_KEY:
                         switch (componentKey) {
                             case PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY:
-                                lpPublisherName.setMargins(horizontalMargine, horizontalMargine, horizontalMargine, horizontalMargine);
+                                //lpPublisherName.setMargins(horizontalMargine, horizontalMargine, horizontalMargine, horizontalMargine);
+                                publisherName.setPadding(0, horizontalMargine, horizontalMargine, horizontalMargine);
                                 publisherName.setTextSize(fontSize);
                                 publisherName.setTextColor(Color.parseColor(childComponent.getTextColor()));
                                 setTypeFace(context, jsonValueKeyMap, childComponent, publisherName);
+                                publisherName.setMaxLines(1);
+                                publisherName.setSingleLine(true);
+                                publisherName.setEllipsize(TextUtils.TruncateAt.END);
                                 break;
                             case PAGE_THUMBNAIL_TITLE_KEY:
                                 titleText.setLayoutParams(viewLp);
@@ -177,7 +183,8 @@ public class ArticleFeedModule extends LinearLayout {
                                 setTypeFace(context, jsonValueKeyMap, childComponent, summeryText);
                                 break;
                             case PAGE_THUMBNAIL_READ_MORE_KEY:
-                                lpReadMore.setMargins(horizontalMargine, horizontalMargine, horizontalMargine, horizontalMargine);
+                                //lpReadMore.setMargins(horizontalMargine, horizontalMargine, horizontalMargine, horizontalMargine);
+                                readMore.setPadding(horizontalMargine,horizontalMargine,0,horizontalMargine);
                                 readMore.setText(childComponent.getText());
                                 readMore.setTextSize(fontSize);
                                 readMore.setTextColor(textColor);
@@ -203,9 +210,10 @@ public class ArticleFeedModule extends LinearLayout {
         }
 
         publisherName.setGravity(Gravity.RIGHT);
+        readMore.setGravity(Gravity.LEFT);
 
-        bottomControll.addView(readMore, lpReadMore);
-        bottomControll.addView(publisherName, lpPublisherName);
+        bottomControll.addView(readMore, lpBottom);
+        bottomControll.addView(publisherName, lpBottom);
 
         rootView.setLayoutParams(layoutParams);
         rootView.setOrientation(VERTICAL);
@@ -376,7 +384,29 @@ public class ArticleFeedModule extends LinearLayout {
                 default:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
             }
-            textView.setTypeface(face);
+            int fontStyle=0;
+            if (component!= null && component.getFontWeight()!=null ) {
+                switch (component.getFontWeight()) {
+                    case "Italic":
+                        fontStyle = Typeface.ITALIC;
+                        break;
+                    case "Bold":
+                    case "Semibold":
+                        fontStyle = Typeface.BOLD;
+                        break;
+                    case "Bold-Italic":
+                        fontStyle = Typeface.BOLD_ITALIC;
+                    case "Normal":
+                        fontStyle = Typeface.NORMAL;
+                        break;
+                    default:
+                        fontStyle = 0;
+                        break;
+                }
+            }
+
+
+            textView.setTypeface(face,fontStyle);
 
 
         }

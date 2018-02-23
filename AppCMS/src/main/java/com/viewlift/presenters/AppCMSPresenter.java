@@ -84,10 +84,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
+//import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+//import com.kiswe.kmsdkcorekit.reports.Report;
+//import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+//import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -671,7 +671,7 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+    /*private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
         public void handleReport(Report report) {
 
@@ -685,7 +685,7 @@ public class AppCMSPresenter {
 
             Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
         }
-    };
+    };*/
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
 
@@ -11649,6 +11649,13 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
+        if (currentActivity != null) {
+            Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
+            launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
+            launchVideoPlayerBroadcast.putExtra("KISWE_USERNAME", isUserLoggedIn() ? getLoggedInUserEmail() : "guest");
+            currentActivity.sendBroadcast(launchVideoPlayerBroadcast);
+        }
+       /*
         KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
@@ -11656,7 +11663,7 @@ public class AppCMSPresenter {
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
 
         mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
     }
 
     public void showEmptySearchToast() {
@@ -12102,7 +12109,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
+        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME, SIGNUP
     }
 
     public enum PlatformType {
@@ -12696,15 +12703,16 @@ public class AppCMSPresenter {
         this.currentPhotoGalleryIndex = currentPhotoGalleryIndex;
     }
 
-    public void setRelatedPhotoGalleryIds(List<String> ids){
-        this.relatedPhotoGalleryIds=ids;
+    public void setRelatedPhotoGalleryIds(List<String> ids) {
+        this.relatedPhotoGalleryIds = ids;
     }
-    public List<String> getRelatedPhotoGalleryIds(){
+
+    public List<String> getRelatedPhotoGalleryIds() {
         return this.relatedPhotoGalleryIds;
     }
 
-    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,List<ContentDatum> relatedPhotoGallery,
-                                           boolean launchActivity){
+    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle, List<ContentDatum> relatedPhotoGallery,
+                                           boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
@@ -12722,17 +12730,17 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
-                            if(appCMSPhotoGalleryResult != null){
+                            if (appCMSPhotoGalleryResult != null) {
                                 cancelInternalEvents();
                                 pushActionInternalEvents(photoGalleryPage.getPageId()
                                         + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI=null;
+                                AppCMSPageAPI pageAPI = null;
                                 if (appCMSPhotoGalleryResult != null) {
                                     pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
                                     if (relatedPhotoGallery != null && relatedPhotoGallery.size() > 0) {
                                         List<String> relatedPhotoGalleryIds = new ArrayList<>();
-                                        for(int index = 0 ; index< relatedPhotoGallery.size() ; index++) {
+                                        for (int index = 0; index < relatedPhotoGallery.size(); index++) {
                                             relatedPhotoGalleryIds.add(relatedPhotoGallery.get(index).getGist().getId());
                                         }
                                         setRelatedPhotoGalleryIds(relatedPhotoGalleryIds);
@@ -12774,10 +12782,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setRelatedArticleIds(List<String> ids){
-        this.relatedArticleIds=ids;
+    public void setRelatedArticleIds(List<String> ids) {
+        this.relatedArticleIds = ids;
     }
-    public List<String> getRelatedArticleIds(){
+
+    public List<String> getRelatedArticleIds() {
         return this.relatedArticleIds;
     }
 
@@ -12793,7 +12802,7 @@ public class AppCMSPresenter {
 
             getArticlePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    articleId, new AppCMSArticleAPIAction(true,
+                    articleId, new AppCMSArticleAPIAction(false,
                             false,
                             false,
                             appCMSPageUI,
@@ -12859,7 +12868,7 @@ public class AppCMSPresenter {
     private void getPhotoGalleryPageContent(final String apiBaseUrl,
                                             final String siteId,
                                             String pageId,
-                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction){
+                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
