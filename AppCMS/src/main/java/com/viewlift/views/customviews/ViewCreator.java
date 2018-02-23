@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -93,6 +94,7 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
+import static com.urbanairship.UAirship.getPackageName;
 import static com.viewlift.Utils.loadJsonFromAssets;
 
 /*
@@ -3075,8 +3077,8 @@ public class ViewCreator {
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY) {
                     if(moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
                         ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
-//                    ((TextView)componentViewResult.componentView).setBackgroundColor(Color.parseColor("#000000"));
-                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        ((TextView)componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+//                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getGeneralTextColor());
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
                     }
                 }
@@ -3534,7 +3536,8 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
                             componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
-
+                           ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
+                           ((TextView)componentViewResult.componentView).setGravity(Gravity.CENTER);
                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size()-1) {
                                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                ((TextView) componentViewResult.componentView).setEnabled(false);
