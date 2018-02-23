@@ -7222,6 +7222,11 @@ public class AppCMSPresenter {
                     message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
                     positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
                 }
+                if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
+                    title = currentActivity.getString(R.string.no_data_received);
+                    message = currentActivity.getString(R.string.there_is_a_problem_loading_data);
+                    positiveButtonText = currentActivity.getString(R.string.ok);
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
@@ -7313,6 +7318,14 @@ public class AppCMSPresenter {
                                 dialog.dismiss();
                             });
                 } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
+                                dialog.dismiss();
+                            });
+                } else if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
                     builder.setPositiveButton(positiveButtonText,
                             (dialog, which) -> {
                                 if (onCloseAction != null) {
@@ -12140,7 +12153,8 @@ public class AppCMSPresenter {
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
-        SIGN_OUT
+        SIGN_OUT,
+        ARTICLE_API_RESPONSE_ERROR
     }
 
     public enum RETRY_TYPE {
@@ -12831,8 +12845,7 @@ public class AppCMSPresenter {
                             } else {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                Toast.makeText(currentActivity, "Failed to get article data",
-                                        Toast.LENGTH_SHORT).show();
+                                showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 if (callback != null) {
                                     callback.call(null);
                                 }

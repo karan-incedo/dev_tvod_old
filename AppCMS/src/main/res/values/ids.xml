@@ -29,8 +29,7 @@
     <item name="photo_gallery_prev_label" type="id">photo_gallery_prev_label</item>
     <item name="photo_gallery_next_label" type="id">photo_gallery_next_label</item>
     <item name="photo_gallery_selectedImage" type="id">selectedImageView</item>
-
-
+    <item name="article_web_view" type="id">article_web_view</item>
 
 
 </resources>
