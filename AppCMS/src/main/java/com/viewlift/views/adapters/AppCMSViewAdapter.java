@@ -126,6 +126,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 adapterData = data;
             }
             selectedPosition = 0;
+            preGist = adapterData.get(0).getGist();
         }
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
