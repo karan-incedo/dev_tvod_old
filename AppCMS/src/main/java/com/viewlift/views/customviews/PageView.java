@@ -1,16 +1,13 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -179,7 +176,32 @@ public class PageView extends BaseView {
         ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
+
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
+
+        // NOTE: The following is an implementation of lazy loading for individual tray elements
+//        childrenContainer.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+//            int firstVisibleIndex =
+//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findFirstVisibleItemPosition();
+//            int lastVisibleIndex =
+//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findLastVisibleItemPosition();
+//
+//            List<String> modulesToDisplay = appCMSPageViewAdapter.getViewIdList(firstVisibleIndex, lastVisibleIndex);
+//            appCMSPresenter.getPagesContent(modulesToDisplay,
+//                    appCMSPageAPI -> {
+//                        if (appCMSPageAPI != null) {
+//                            try {
+//                                int numResultModules = appCMSPageAPI.getModules().size();
+//                                for (int i = 0; i < numResultModules; i++) {
+//                                    Module module = appCMSPageAPI.getModules().get(i);
+//                                    updateDataList(module.getContentData(), module.getId());
+//                                }
+//                            } catch (Exception e) {
+//
+//                            }
+//                        }
+//                    });
+//        });
 
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
@@ -188,9 +210,9 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            appCMSPresenter.setMiniPLayerVisibility(true);
-            appCMSPresenter.refreshAPIData(() -> {
-                        mainView.setRefreshing(false);
+            appCMSPresenter.clearPageAPIData(() -> {
+                appCMSPresenter.setMiniPLayerVisibility(true);
+                mainView.setRefreshing(false);
             },
                     true);
         });
@@ -257,7 +279,7 @@ public class PageView extends BaseView {
     }
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyDataSetChanged();
+            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
     public View findChildViewById(int id) {

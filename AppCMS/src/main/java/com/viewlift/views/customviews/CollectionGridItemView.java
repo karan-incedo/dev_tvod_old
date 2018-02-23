@@ -42,8 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -275,7 +277,37 @@ public class CollectionGridItemView extends BaseView {
                         childViewWidth = (16 * childViewHeight) / 9;
                     }
 
-                    if (childViewHeight > childViewWidth &&
+                    if(data.getGist().getContentType()!=null && data.getGist().getContentType().equalsIgnoreCase("AUDIO")){
+                        String url="";
+                        if (data.getGist().getImageGist() != null) {
+                            if (data.getGist().getImageGist().get_1x1() != null) {
+                                url = data.getGist().getImageGist().get_1x1();
+                            } else if (data.getGist().getImageGist().get_3x4() != null) {
+                                url = data.getGist().getImageGist().get_3x4();
+                            } else if (data.getGist().getImageGist().get_16x9() != null) {
+                                url = data.getGist().getImageGist().get_16x9();
+                            } else if (data.getGist().getImageGist().get_4x3() != null) {
+                                url = data.getGist().getImageGist().get_4x3();
+                            }
+
+                        }
+                        try {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    url,
+                                    childViewWidth,
+                                    childViewHeight);
+                            System.out.println("Image Url-"+imageUrl);
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .into((ImageView) view);
+                            }
+                        } catch (Exception e) {
+                            //
+                        }
+                    }
+                   else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
@@ -411,7 +443,9 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getBadgeImages().get_3x4(),
                                 childViewWidth,
@@ -508,7 +542,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         String artist = "";
-                        if (data.getGist().getMediaType()!=null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
                             for (int i = 0; i < data.getCreditBlocks().size(); i++) {
                                 if (data.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")) {
                                     if (data.getCreditBlocks().get(i).getCredits() != null && data.getCreditBlocks().get(i).getCredits().size() > 0 && data.getCreditBlocks().get(i).getCredits().get(0).getTitle() != null) {
@@ -518,8 +552,7 @@ public class CollectionGridItemView extends BaseView {
                                 }
                             }
                             ((TextView) view).setText(artist);
-                        }
-                        else if (data.getSeason() != null && 0 < data.getSeason().size()) {
+                        } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
@@ -564,15 +597,27 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                        if (data.getGist() != null && data.getGist().getDescription() != null) {
-                            ((TextView) view).setSingleLine(false);
-                            ((TextView) view).setMaxLines(2);
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) view).setText(data.getGist().getDescription());
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(2);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setText(data.getGist().getDescription());
+
+                        try {
+                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
+                                            data.getGist().getTitle(),
+                                            data.getGist().getDescription(),
+                                            appCMSPresenter,
+                                            true,
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            false);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                        } catch (Exception e) {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
-                        if (data.getGist() != null && data.getGist().getDescription() != null)
-                            ((TextView) view).setText(data.getGist().getDescription());
+                        String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+                        ((TextView) view).setText(artist);
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
@@ -585,7 +630,8 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
 

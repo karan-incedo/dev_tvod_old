@@ -685,6 +685,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 videoPlayerView,
                 mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
 
+
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);
 

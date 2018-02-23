@@ -42,7 +42,7 @@ public class AudioPlaylistHelper {
         return appCmsPresenter;
     }
 
-    private AppCMSPresenter appCmsPresenter;
+    private static AppCMSPresenter appCmsPresenter;
     Context context;
     AppCMSPlaylistResult appCMSPlaylistResult;
     AppCMSPlaylistResult currentPlaylistData;
@@ -188,8 +188,10 @@ public class AudioPlaylistHelper {
     public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
-        String album = "Unknown", iconUrl = "", artist = "Unknown", source = "", param_link = "", album_year = "Unknown";
+        String artist = "";
+        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown";
         long runTime = 240 * 1000;
+
         if (appCMSAudioDetailResult.getGist() != null) {
             title = appCMSAudioDetailResult.getGist().getTitle();
 
@@ -215,27 +217,17 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getRuntime() != 0)
                 runTime = appCMSAudioDetailResult.getGist().getRuntime() * 1000;
 
-        }
-        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)
-        {
-            for(int i=0;i<appCMSAudioDetailResult.getCreditBlocks().size();i++){
-                if(appCMSAudioDetailResult.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")){
-                    if(appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits()!=null && appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().size()>0 && appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().get(0).getTitle()!=null){
-                        artist = appCMSAudioDetailResult.getCreditBlocks().get(i).getCredits().get(0).getTitle();
-                    }
-                }
-            }
-        }
 
-        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)
-            artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle();
+            if (appCMSAudioDetailResult.getGist().getYear() != null)
+                album_year = appCMSAudioDetailResult.getGist().getYear();
+
+        }
+        artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
 
         if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
                 && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
             source = appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl();
 
-
-        source = source;//"http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
         String genre = "";
         int trackNumber = 0;
         int totalTrackCount = 0;

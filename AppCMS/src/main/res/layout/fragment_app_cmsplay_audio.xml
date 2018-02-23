@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:singleLine="true"
+                android:maxLines="2"
                 android:text=""
                 android:textColor="@android:color/darker_gray"
                 android:textSize="20sp" />

@@ -124,13 +124,13 @@ public class NavigationPrimary implements Serializable {
         this.platforms = platforms;
     }
 
-    public ContentDatum convertToContentDatum(NavigationPrimary navigationPrimary){
+    public ContentDatum convertToContentDatum(){
         ContentDatum contentDatum = new ContentDatum();
         Gist gist = new Gist();
-        gist.setId(navigationPrimary.getPageId());
-        gist.setVideoImageUrl(navigationPrimary.getIcon());
-        gist.setTitle(navigationPrimary.getTitle());
-        gist.setPermalink(navigationPrimary.getUrl());
+        gist.setId(this.getPageId());
+        gist.setVideoImageUrl(this.getIcon());
+        gist.setTitle(this.getTitle());
+        gist.setPermalink(this.getUrl());
         contentDatum.setGist(gist);
        return contentDatum;
     }

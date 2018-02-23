@@ -416,7 +416,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             if (!binder.isOffline()) {
                 if (!binder.isTrailer()
                         && relateVideoIds != null
-                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                     appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
                         @Override

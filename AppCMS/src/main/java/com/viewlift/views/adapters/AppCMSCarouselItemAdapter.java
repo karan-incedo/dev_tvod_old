@@ -340,7 +340,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
 
     public void updateCarousel(int index, boolean fromEvent) {
         synchronized (listView) {
-            index = calculateUpdateIndex(index);
+//            index = calculateUpdateIndex(index);
             setUpdatedIndex(index);
             try {
                 listView.smoothScrollToPosition(updatedIndex);
@@ -348,7 +348,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 //Log.e(TAG, "Error scrolling to position: " + updatedIndex);
             }
             if (!fromEvent) {
-                sendEvent(new InternalEvent<Object>(index));
+                sendEvent(new InternalEvent<Object>(updatedIndex));
             }
         }
     }

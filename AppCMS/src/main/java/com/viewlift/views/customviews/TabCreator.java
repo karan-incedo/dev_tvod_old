@@ -40,26 +40,26 @@ public class TabCreator {
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
 //                            e.getMessage());
-            highlightColor = ContextCompat.getColor(context, R.color.colorAccent);
-        }
-
-        String tabIcon = tabItem.getIcon();
-        if (tabIcon != null) {
-            tabIcon = tabIcon.replace("-", "_");
-        }
-        navBarItemView.setImage(tabIcon);
-        navBarItemView.setHighlightColor(highlightColor);
-        navBarItemView.setLabel(tabItem.getTitle());
-        navBarItemView.setOnClickListener(v -> {
-            if (onClickHandler.getSelectedNavItem() == navBarItemView) {
-                return;
+                highlightColor = ContextCompat.getColor(context, R.color.colorAccent);
             }
 
-            appCMSPresenter.showMainFragmentView(true);
-            onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
-                    tabItem.getPageId(),
-                    tabItem.getTitle());
-        });
+            String tabIcon = tabItem.getIcon();
+            if (tabIcon != null) {
+                tabIcon = tabIcon.replace("-", "_");
+            }
+            navBarItemView.setImage(tabIcon);
+            navBarItemView.setHighlightColor(highlightColor);
+            navBarItemView.setLabel(tabItem.getTitle());
+            navBarItemView.setOnClickListener(v -> {
+                if (onClickHandler.getSelectedNavItem() == navBarItemView) {
+                    return;
+                }
+
+                appCMSPresenter.showMainFragmentView(true);
+                onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
+                        tabItem.getPageId(),
+                        tabItem.getTitle());
+            });
 
             navBarItemView.setTag(tabItem.getPageId());
             if (navBarItemView.getParent() == null) {

@@ -232,19 +232,19 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletLandscape": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletPortrait": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 }
