@@ -305,7 +305,7 @@
           "numberOfLines": 1,
           "textAlignment": "center",
           "type": "label",
-          "backgroundColor":"000000",
+          "backgroundColor": "000000",
           "textColor": "000000",
           "key": "trayImgCount"
         },
@@ -398,7 +398,7 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "rightMargin":12,
+                  "rightMargin": 12,
                   "height": 144,
                   "width": 361,
                   "gridHeight": 67,
@@ -460,7 +460,32 @@
           ],
           "type": "AC PhotoGalleryGrid 01",
           "key": "AC PhotoGalleryGrid 01"
-        },{
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "height": 0
+            },
+            "tabletLandscape": {
+              "yAxis": 170,
+              "xAxis": 679,
+              "width": 300,
+              "height": 250
+            },
+            "tabletPortrait": {
+              "yAxis": 150,
+              "xAxis": 1024,
+              "width": 0,
+              "height": 0
+            }
+          },
+          "type": "adView",
+          "key": "adView"
+        },
+        {
           "layout": {
             "mobile": {
               "yAxis": 560,
@@ -491,7 +516,8 @@
           "type": "label",
           "text": "NEXT GALLERY",
           "key": "nextGallery"
-        },{
+        },
+        {
           "layout": {
             "mobile": {
               "yAxis": 560,
