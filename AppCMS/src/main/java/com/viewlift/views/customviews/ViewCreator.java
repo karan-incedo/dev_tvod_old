@@ -2394,9 +2394,6 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
-                    case PAGE_BRAND_IMAGE_KEY:
-                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.logo_icon));
-                        break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
@@ -2886,7 +2883,16 @@ public class ViewCreator {
                         });
 
                         break;
-
+                    case PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY:
+                        componentViewResult.addToPageView = true;
+                        int viewHeight = (int) BaseView.getViewHeight(context, component.getLayout(), FrameLayout.LayoutParams.WRAP_CONTENT);
+                        FrameLayout.LayoutParams bottomBg =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                        viewHeight);
+                        bottomBg.gravity = Gravity.BOTTOM;
+                        componentViewResult.componentView.setLayoutParams(bottomBg);
+                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        break;
                     case PAGE_ARTICLE_NEXT_BUTTON_KEY:
                         componentViewResult.addToPageView = true;
 
@@ -3867,12 +3873,6 @@ public class ViewCreator {
                 }
                 break;
 
-            case PAGE_SEPARATOR_VIEW_TOOLBAR_KEY:
-                componentViewResult.componentView = new View(context);
-                componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context,android.R.drawable.dialog_holo_light_frame));
-                componentViewResult.componentView.
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                break;
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
