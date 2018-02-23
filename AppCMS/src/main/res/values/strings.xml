@@ -471,6 +471,11 @@
     <string name="app_cms_play_lecture_text">Play</string>
     <string name="app_cms_resume_lecture_text">Resume</string>
     <string name="app_cms_percent_complete_text">%1$d\%% Complete</string>
+
+    <!-- Apptentive Messages -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
+    <string name="app_cms_apptentive_login_event_name">Login</string>
+
 </resources>
 
 

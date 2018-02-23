@@ -40,6 +40,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -118,16 +119,11 @@ public class CollectionGridItemView extends BaseView {
 
         FrameLayout.LayoutParams layoutParams;
         int paddingHorizontal = 0;
-        int paddingVertical = 0;
         if (component.getStyles() != null) {
             paddingHorizontal = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
-            paddingVertical = (int) convertVerticalValue(getContext(), component.getStyles().getPadding());
-            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
             paddingHorizontal = (int) convertHorizontalValue(getContext(), trayPadding);
-            paddingVertical = (int) convertVerticalValue(getContext(), trayPadding);
-            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         }
         int horizontalMargin = paddingHorizontal;
         int verticalMargin = 0;
@@ -289,9 +285,12 @@ public class CollectionGridItemView extends BaseView {
                                         defaultHeight));
                     }
 
-                    if (childViewWidth < 0 &&
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
-                        childViewWidth = (16 * childViewHeight) / 9;
+                    if (0 < childViewWidth && 0 < childViewHeight) {
+                        if (childViewWidth < childViewHeight) {
+                            childViewHeight = (int) ((float) childViewWidth * 4.0f / 3.0f);
+                        } else {
+                            childViewHeight = (int) ((float) childViewWidth * 9.0f / 16.0f);
+                        }
                     }
 
                     if (childViewHeight > childViewWidth &&
@@ -311,6 +310,7 @@ public class CollectionGridItemView extends BaseView {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -333,9 +333,9 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight);
-                                requestOptions.fitCenter();
-
+                                        .override(childViewWidth, childViewHeight)
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -350,7 +350,7 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                childViewWidth,
+                                deviceWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
@@ -370,7 +370,8 @@ public class CollectionGridItemView extends BaseView {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .transform(gradientTransform)
                                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                        .override(childViewWidth, childViewHeight);
+                                        .override(imageWidth, imageHeight);
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -397,6 +398,7 @@ public class CollectionGridItemView extends BaseView {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -413,6 +415,7 @@ public class CollectionGridItemView extends BaseView {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)

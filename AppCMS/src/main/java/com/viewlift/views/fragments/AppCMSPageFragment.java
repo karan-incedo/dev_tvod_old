@@ -362,7 +362,7 @@ public class AppCMSPageFragment extends Fragment {
         viewCreator.setIgnoreBinderUpdate(true);
         List<String> modulesToIgnore = getModulesToIgnore();
 
-        if (viewCreator != null && modulesToIgnore != null) {
+        if (modulesToIgnore != null) {
             boolean updatePage = false;
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
@@ -404,17 +404,13 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.setOnScrollChangeListener(new PageView.OnScrollChangeListener() {
                         @Override
                         public void onScroll(int dx, int dy) {
-                            if (appCMSBinder != null) {
-                                appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
-                                appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
-                            }
+                            appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
+                            appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
                         }
 
                         @Override
                         public void setCurrentPosition(int position) {
-                            if (appCMSBinder != null) {
-                                appCMSBinder.setCurrentScrollPosition(position);
-                            }
+                            appCMSBinder.setCurrentScrollPosition(position);
                         }
                     });
 
@@ -430,7 +426,9 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.getViewTreeObserver().addOnGlobalLayoutListener(onScrollGlobalLayoutListener);
                 }
 
-                pageViewGroup.requestLayout();
+                if (pageViewGroup != null) {
+                    pageViewGroup.requestLayout();
+                }
             } catch (Exception e) {
                 //
             }

@@ -6,7 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 def final hostNameSuffix = "*.hoichoi.tv"
 
-def final appVersionName = "2.1.81"
+def final appVersionName = "2.1.95"
 
 buildscript {
     repositories {
@@ -36,17 +36,17 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 212
+        targetSdkVersion 26
+        versionCode 226
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 27
+        renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -55,15 +55,15 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 27
-            targetSdkVersion 27
+            compileSdkVersion 26
+            targetSdkVersion 26
             aaptOptions {
                 cruncherEnabled = false
             }
         }
         tv {
             minSdkVersion 21
-            compileSdkVersion 27
+            compileSdkVersion 26
             versionCode 3010031
             versionName "1.2.1"
             dimension = "green"
@@ -143,6 +143,9 @@ android {
 
     dexOptions {
         javaMaxHeapSize "4g"
+    }
+    configurations.all {
+        resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
 }
 

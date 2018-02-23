@@ -1584,10 +1584,8 @@ public class ViewCreator {
                         viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
-                            (moduleAPI.getContentData() == null ||
-                            moduleAPI.getContentData().isEmpty()) &&
-                            appCMSPresenter.getAllUserHistory() != null &&
-                            !appCMSPresenter.getAllUserHistory().isEmpty()) {
+                            (appCMSPresenter.getAllUserHistory() != null &&
+                            !appCMSPresenter.getAllUserHistory().isEmpty())) {
                         moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
                     }
                 }
@@ -3500,11 +3498,17 @@ public class ViewCreator {
                             case PAGE_VIDEO_SUBTITLE_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
-                                        moduleAPI.getContentData().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getSeason() != null) {
+                                        moduleAPI.getContentData().get(0) != null) {
 
-                                    setViewWithShowSubtitle(context, moduleAPI.getContentData().get(0),
-                                            componentViewResult.componentView, false);
+                                    if (moduleAPI.getContentData().get(0).getGist() != null &&
+                                            !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) &&
+                                            moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.app_cms_video_content_type))) {
+                                        setViewWithSubtitle(context, moduleAPI.getContentData().get(0),
+                                                componentViewResult.componentView);
+                                    } else if (moduleAPI.getContentData().get(0).getSeason() != null) {
+                                        setViewWithShowSubtitle(context, moduleAPI.getContentData().get(0),
+                                                componentViewResult.componentView, false);
+                                    }
                                 }
                                 break;
 
@@ -3950,7 +3954,11 @@ public class ViewCreator {
                             }
                         }
 
-                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
+                            ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
+                        } else {
+                            ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        }
                         break;
                 }
                 break;

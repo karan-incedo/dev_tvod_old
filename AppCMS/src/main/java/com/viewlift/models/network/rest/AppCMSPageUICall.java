@@ -65,7 +65,7 @@ public class AppCMSPageUICall {
                 appCMSPageUI = readPageFromFile(filename);
                 appCMSPageUI.setLoadedFromNetwork(false);
             } catch (Exception e) {
-                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
                 try {
                     if (bustCache) {
                         StringBuilder urlWithCacheBuster = new StringBuilder(url);
@@ -89,7 +89,18 @@ public class AppCMSPageUICall {
             } else {
                 appCMSPageUI = loadFromNetwork(url, filename);
             }
+
+            if (appCMSPageUI == null) {
+                try {
+                    appCMSPageUI = readPageFromFile(filename);
+                    appCMSPageUI.setLoadedFromNetwork(false);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                }
+            }
         }
+
+
         return appCMSPageUI;
     }
 

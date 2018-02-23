@@ -98,17 +98,6 @@ public class AppCMSUIModule {
     private final Cache cache;
     private final AssetManager assetManager;
 
-    private final String loggedInStatusGroup;
-    private final String loggedInStatusTag;
-    private final String loggedOutStatusTag;
-    private final String subscriptionStatusGroup;
-    private final String subscribedTag;
-    private final String subscriptionAboutToExpireTag;
-    private final String subscriptionEndDateGroup;
-    private final String subscriptionPlanGroup;
-    private final String unsubscribedTag;
-    private final int daysBeforeSubscriptionEndForNotification;
-
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
         this.storageDirectory = context.getFilesDir();
@@ -143,17 +132,6 @@ public class AppCMSUIModule {
         cache = new Cache(context.getCacheDir(), cacheSize);
 
         this.assetManager = context.getAssets();
-
-        this.loggedInStatusGroup =  context.getString(R.string.ua_user_logged_in_status_group);
-        this.loggedInStatusTag = context.getString(R.string.ua_user_logged_in_tag);
-        this.loggedOutStatusTag = context.getString(R.string.ua_user_logged_out_tag);
-        this.subscriptionStatusGroup = context.getString(R.string.ua_user_subscription_status_group);
-        this.subscribedTag = context.getString(R.string.ua_user_subscribed_tag);
-        this.subscriptionAboutToExpireTag = context.getString(R.string.ua_user_subscription_about_expire_tag);
-        this.unsubscribedTag = context.getString(R.string.ua_user_unsubscribed_tag);
-        this.subscriptionEndDateGroup = "";
-        this.subscriptionPlanGroup = "";
-        this.daysBeforeSubscriptionEndForNotification = context.getResources().getInteger(R.integer.ua_days_before_subscription_end_notification_tag);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -768,7 +746,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_history_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
 
@@ -778,7 +756,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_watchlist_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_startfreetrial_key),
@@ -1001,12 +979,6 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public UANamedUserEventRest providesUANamedUserEventRest(Retrofit retrofit) {
-        return retrofit.create(UANamedUserEventRest.class);
-    }
-
-    @Provides
-    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -1164,13 +1136,6 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public UANamedUserEventCall providesUANamedUserEventCall(UANamedUserEventRest uaNamedUserEventRest,
-                                                             Gson gson) {
-        return new UANamedUserEventCall(uaNamedUserEventRest, gson);
-    }
-
-    @Provides
-    @Singleton
     public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }
@@ -1197,20 +1162,5 @@ public class AppCMSUIModule {
     @Singleton
     public Map<String, AppCMSActionType> providesActionToActionTypeMap() {
         return actionToActionTypeMap;
-    }
-
-    @Provides
-    @Singleton
-    public UrbanAirshipEventPresenter providesUrbanAirshipEventPresenter() {
-        return new UrbanAirshipEventPresenter(loggedInStatusGroup,
-                loggedInStatusTag,
-                loggedOutStatusTag,
-                subscriptionStatusGroup,
-                subscribedTag,
-                subscriptionAboutToExpireTag,
-                unsubscribedTag,
-                subscriptionEndDateGroup,
-                subscriptionPlanGroup,
-                daysBeforeSubscriptionEndForNotification);
     }
 }
