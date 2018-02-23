@@ -84,10 +84,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
+//import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+//import com.kiswe.kmsdkcorekit.reports.Report;
+//import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+//import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -671,7 +671,7 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+    /*private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
         public void handleReport(Report report) {
 
@@ -685,7 +685,7 @@ public class AppCMSPresenter {
 
             Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
         }
-    };
+    };*/
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
 
@@ -11636,6 +11636,13 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
+        if (currentActivity != null) {
+            Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
+            launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
+            launchVideoPlayerBroadcast.putExtra("KISWE_USERNAME", isUserLoggedIn() ? getLoggedInUserEmail() : "guest");
+            currentActivity.sendBroadcast(launchVideoPlayerBroadcast);
+        }
+       /*
         KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
@@ -11643,7 +11650,7 @@ public class AppCMSPresenter {
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
 
         mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
     }
 
     public void showEmptySearchToast() {
