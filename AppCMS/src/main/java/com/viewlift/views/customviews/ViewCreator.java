@@ -1463,7 +1463,7 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-            try {
+            try {// TODO To Be remove post development finish
 //                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
 //                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
 //                            loadJsonFromAssets(context, "playlist.json"),
