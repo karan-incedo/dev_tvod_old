@@ -274,7 +274,7 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 120,
+              "yAxis": 110,
               "leftMargin": 0,
               "rightMargin": 0,
               "bottomMargin": 0,
@@ -305,8 +305,8 @@
           "numberOfLines": 1,
           "textAlignment": "center",
           "type": "label",
-          "backgroundColor": "000000",
-          "textColor": "ffffff",
+          "backgroundColor":"000000",
+          "textColor": "000000",
           "key": "trayImgCount"
         },
         {
@@ -315,7 +315,7 @@
               "leftMargin": 8,
               "rightMargin": 5,
               "width": 170,
-              "yAxis": 343,
+              "yAxis": 344.5,
               "xAxis": 0,
               "height": 30
             },
@@ -344,7 +344,7 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 343,
+              "yAxis": 344.5,
               "xAxis": 180,
               "width": 170,
               "rightMargin": 8,
@@ -397,7 +397,8 @@
               "layout": {
                 "mobile": {
                   "yAxis": 0,
-                  "xAxis": 5,
+                  "xAxis": 0,
+                  "rightMargin":12,
                   "height": 144,
                   "width": 361,
                   "gridHeight": 67,
