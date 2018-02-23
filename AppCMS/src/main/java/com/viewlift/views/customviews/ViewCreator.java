@@ -2248,6 +2248,7 @@ public class ViewCreator {
                 } else {
                     articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
+                    articleWebView.setId(R.id.article_web_view);
                 }
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
@@ -2876,6 +2877,10 @@ public class ViewCreator {
                                                 previousButtonView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                                                 previousButtonView.setEnabled(true);
                                             }
+                                            CustomWebView customWebView = pageView.findViewById(R.id.article_web_view);
+                                            if (customWebView != null) {
+                                                customWebView.loadUrl("about:blank");
+                                            }
                                         });
                             }
                         });
@@ -2927,6 +2932,10 @@ public class ViewCreator {
                                                         prevButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                                                         prevButton.setEnabled(true);
                                                     }
+                                                }
+                                                CustomWebView customWebView = pageView.findViewById(R.id.article_web_view);
+                                                if (customWebView != null) {
+                                                    customWebView.loadUrl("about:blank");
                                                 }
                                             });
 

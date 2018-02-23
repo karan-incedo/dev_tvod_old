@@ -576,7 +576,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     @Override
     public void receiveEvent(InternalEvent<?> event) {
         adapterData.clear();
-        notifyDataSetChanged();
+        if (adapterData.size() == 0) {
+            emptyList = true;
+            sendEvent(hideRemoveAllButtonEvent);
+            updateData(mRecyclerView, adapterData);
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
