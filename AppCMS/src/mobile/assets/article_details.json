@@ -68,16 +68,16 @@
         {
           "layout": {
             "mobile": {
-              "height": 40
+              "height": 52
             },
             "tabletLandscape": {
-              "height": 250
+              "height": 70
             },
             "tabletPortrait": {
-              "height": 440
+              "height": 70
             }
           },
-          "backgroundColor": "#01ad4f",
+          "backgroundColor": "#ffffff",
           "type": "button",
           "key": "articleBottomButtonBackground"
         },
@@ -147,23 +147,6 @@
           "fontWeight": "Semibold",
           "key": "nextButton"
         }
-//      ,
-//        {
-//          "layout": {
-//            "mobile": {
-//              "height": 40
-//            },
-//            "tabletLandscape": {
-//              "height": 40
-//            },
-//            "tabletPortrait": {
-//              "height": 40
-//            }
-//          },
-//          "backgroundColor": "#ffffff",
-//          "type": "separatorView",
-//          "key":"articleBottomButtonBackground"
-//        }
       ]
     },
     {

@@ -12810,7 +12810,7 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName(),
                     articleId, new AppCMSArticleAPIAction(true,
                             false,
-                            false,
+                            true,
                             appCMSPageUI,
                             articleId,
                             articleId,
