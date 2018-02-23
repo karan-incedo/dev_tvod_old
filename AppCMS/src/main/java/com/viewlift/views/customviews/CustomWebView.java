@@ -1,7 +1,10 @@
 package com.viewlift.views.customviews;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -74,7 +77,7 @@ public class CustomWebView extends WebView {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                mContext.startActivity(browserIntent);
+                context.startActivity(browserIntent);
                 return true;
             }
 
@@ -112,8 +115,9 @@ public class CustomWebView extends WebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                super.shouldOverrideUrlLoading(view, url);
-                return false;
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                context.startActivity(browserIntent);
+                return true;
             }
 
             @Override
@@ -133,6 +137,38 @@ public class CustomWebView extends WebView {
         });
 
         this.loadUrl(loadingURL);
+    }
+
+    public void showAlert(Context context, String url) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        // set title
+        alertDialogBuilder.setTitle( "Open Link");
+
+        // set dialog message
+        AlertDialog dialog =alertDialogBuilder
+                .setMessage( "Open Link outside?" )
+                .setCancelable(false)
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("YES",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                        context.startActivity(browserIntent);
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        dialog.show();
+
     }
 
     @JavascriptInterface

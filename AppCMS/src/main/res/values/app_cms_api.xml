@@ -110,6 +110,7 @@
 
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
+    <string name="app_cms_page_separator_toolbar_key">toolbarView</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
     <string name="app_cms_page_video_detail_player_key">videodetail_player</string>
     <string name="app_cms_page_castview_key">castView</string>
@@ -123,6 +124,7 @@
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
+    <string name="app_cms_page_brand_image_key">brandImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_center_horizontal_key">center_horizontal</string>
@@ -236,7 +238,7 @@
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
     <string name="app_cms_page_history_title">History</string>
-    <string name="app_cms_page_watchlist_title">WatchList</string>
+    <string name="app_cms_page_watchlist_title">Watchlist</string>
     <string name="app_cms_page_download_title">My Downloads</string>
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>

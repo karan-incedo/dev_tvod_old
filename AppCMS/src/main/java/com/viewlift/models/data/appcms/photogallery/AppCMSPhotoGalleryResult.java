@@ -131,9 +131,11 @@ public class AppCMSPhotoGalleryResult {
         contentDatum.setTags(this.tags);
         data.add(contentDatum);
         if (getStreamingInfo() != null) {
-            for(PhotoGalleryData p:getStreamingInfo().getPhotogalleryAssets()){
+            for(int i = 0; i < getStreamingInfo().getPhotogalleryAssets().size(); i++){
+                PhotoGalleryData p = getStreamingInfo().getPhotogalleryAssets().get(i);
                 Gist gist=new Gist();
                 gist.setId(p.getId());
+                gist.setSelectedPosition(i == 0 ? true : false);
                 gist.setVideoImageUrl(p.getUrl() != null ? p.getUrl() : "");
                 ContentDatum cd=new ContentDatum();
                 cd.setGist(gist);

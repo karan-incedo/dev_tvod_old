@@ -44,26 +44,126 @@
           "layout": {
             "mobile": {
               "yAxis": 0,
+              "height": 57
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "height": 57
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "height": 57
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "toolbarView",
+          "key": "toolbarView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 18,
+              "xAxis": 340,
+              "width": 27,
+              "height": 27
+            },
+            "tabletLandscape": {
+              "yAxis": 18,
+              "xAxis": 993,
+              "width": 27,
+              "height": 27
+            },
+            "tabletPortrait": {
+              "yAxis": 18,
+              "xAxis": 735,
+              "width": 27,
+              "height": 27
+            }
+          },
+          "action": "close",
+          "type": "button",
+          "key": "closeButton"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 18,
+              "xAxis": 306,
+              "width": 25,
+              "height": 25
+            },
+            "tabletLandscape": {
+              "yAxis": 18,
+              "xAxis": 952,
+              "width": 26,
+              "height": 26
+            },
+            "tabletPortrait": {
+              "yAxis": 18,
+              "xAxis": 687,
+              "width": 26,
+              "height": 26
+            }
+          },
+          "action": "share",
+          "type": "button",
+          "key": "shareButton"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 5,
+              "xAxis": 125,
+              "width": 120,
+              "topMargin": 0,
+              "height": 50
+            },
+            "tabletLandscape": {
+              "yAxis": 5,
+              "xAxis":450,
+              "width":120,
+              "topMargin": 0,
+              "height": 50
+            },
+            "tabletPortrait": {
+              "yAxis": 5,
+              "xAxis":320,
+              "width":120,
+              "topMargin": 0,
+              "height": 50
+            }
+          },
+          "type": "button",
+          "key": "brandImage"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
               "leftMargin": 0,
               "rightMargin": 0,
-              "height": 0
+              "height": 0,
+              "topMargin": 9.59
             },
             "tabletLandscape": {
               "yAxis": 0,
               "xAxis": 0,
               "width": 0,
-              "height": 0
+              "height": 0,
+              "topMargin": 6.5
             },
             "tabletPortrait": {
               "yAxis": 0,
               "xAxis": 0,
               "width": 0,
-              "height": 0
+              "height": 0,
+              "topMargin": 6
             }
           },
           "type": "webView",
           "key": "webView"
-        },{
+        },
+        {
           "layout": {
             "mobile": {
               "isVerticallyCentered": false,
@@ -95,7 +195,8 @@
           "textColor": "ffffff",
           "fontWeight": "Semibold",
           "key": "previousButton"
-        },{
+        },
+        {
           "layout": {
             "mobile": {
               "isVerticallyCentered": false,

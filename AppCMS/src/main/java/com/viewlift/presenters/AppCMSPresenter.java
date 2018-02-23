@@ -12089,7 +12089,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
+        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME, SIGNUP
     }
 
     public enum PlatformType {
@@ -12682,15 +12682,16 @@ public class AppCMSPresenter {
         this.currentPhotoGalleryIndex = currentPhotoGalleryIndex;
     }
 
-    public void setRelatedPhotoGalleryIds(List<String> ids){
-        this.relatedPhotoGalleryIds=ids;
+    public void setRelatedPhotoGalleryIds(List<String> ids) {
+        this.relatedPhotoGalleryIds = ids;
     }
-    public List<String> getRelatedPhotoGalleryIds(){
+
+    public List<String> getRelatedPhotoGalleryIds() {
         return this.relatedPhotoGalleryIds;
     }
 
-    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle,List<ContentDatum> relatedPhotoGallery,
-                                           boolean launchActivity){
+    public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle, List<ContentDatum> relatedPhotoGallery,
+                                           boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
@@ -12708,17 +12709,17 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
-                            if(appCMSPhotoGalleryResult != null){
+                            if (appCMSPhotoGalleryResult != null) {
                                 cancelInternalEvents();
                                 pushActionInternalEvents(photoGalleryPage.getPageId()
                                         + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI=null;
+                                AppCMSPageAPI pageAPI = null;
                                 if (appCMSPhotoGalleryResult != null) {
                                     pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
                                     if (relatedPhotoGallery != null && relatedPhotoGallery.size() > 0) {
                                         List<String> relatedPhotoGalleryIds = new ArrayList<>();
-                                        for(int index = 0 ; index< relatedPhotoGallery.size() ; index++) {
+                                        for (int index = 0; index < relatedPhotoGallery.size(); index++) {
                                             relatedPhotoGalleryIds.add(relatedPhotoGallery.get(index).getGist().getId());
                                         }
                                         setRelatedPhotoGalleryIds(relatedPhotoGalleryIds);
@@ -12760,10 +12761,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setRelatedArticleIds(List<String> ids){
-        this.relatedArticleIds=ids;
+    public void setRelatedArticleIds(List<String> ids) {
+        this.relatedArticleIds = ids;
     }
-    public List<String> getRelatedArticleIds(){
+
+    public List<String> getRelatedArticleIds() {
         return this.relatedArticleIds;
     }
 
@@ -12779,7 +12781,7 @@ public class AppCMSPresenter {
 
             getArticlePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    articleId, new AppCMSArticleAPIAction(true,
+                    articleId, new AppCMSArticleAPIAction(false,
                             false,
                             false,
                             appCMSPageUI,
@@ -12846,7 +12848,7 @@ public class AppCMSPresenter {
     private void getPhotoGalleryPageContent(final String apiBaseUrl,
                                             final String siteId,
                                             String pageId,
-                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction){
+                                            final AppCMSArticlePhotoGalleryAPIAction photoGalleryAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
