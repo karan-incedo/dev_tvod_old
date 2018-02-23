@@ -6937,9 +6937,7 @@ public class AppCMSPresenter {
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
-                // NOTE: Replaced with Utils.getProperty()
-                //setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
-                setAppsFlyerKey(Utils.getProperty("AppsFlyerDevKey", currentContext));
+                return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
             }
@@ -7005,6 +7003,14 @@ public class AppCMSPresenter {
         if (pageId != null &&
                 !TextUtils.isEmpty(pageId) &&
                 pageId.contains(currentActivity.getString(R.string.app_cms_search_page_tag))) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isArticlePage(String pageId) {
+        if (pageId != null && articlePage != null && articlePage.getPageId() != null &&
+                pageId.equalsIgnoreCase(articlePage.getPageId())) {
             return true;
         }
         return false;
@@ -12721,7 +12727,7 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName(),
                     photoGalleryId, new AppCMSArticlePhotoGalleryAPIAction(true,
                             false,
-                            false,
+                            true,
                             appCMSPageUI,
                             photoGalleryId,
                             photoGalleryId,
@@ -12802,7 +12808,7 @@ public class AppCMSPresenter {
 
             getArticlePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    articleId, new AppCMSArticleAPIAction(false,
+                    articleId, new AppCMSArticleAPIAction(true,
                             false,
                             false,
                             appCMSPageUI,

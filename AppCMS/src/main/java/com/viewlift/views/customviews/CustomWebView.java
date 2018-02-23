@@ -180,7 +180,7 @@ public class CustomWebView extends WebView {
             );
             Resources resources = context.getResources();
             DisplayMetrics metrics = resources.getDisplayMetrics();
-            params.bottomMargin = (int) (50 * (metrics.densityDpi / 160f));
+            params.bottomMargin = (int) (55 * (metrics.densityDpi / 160f));
             webView.setLayoutParams(params);
         });
     }
