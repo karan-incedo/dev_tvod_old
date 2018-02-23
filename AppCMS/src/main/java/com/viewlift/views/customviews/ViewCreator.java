@@ -2011,7 +2011,8 @@ public class ViewCreator {
                             ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
                             Glide.with(imageView.getContext()).load(url).placeholder(R.drawable.img_placeholder).into(imageView);
                             int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
-                            String position = (selectedPosition+1) + "/" +  photoGallerySize;
+
+                            String position = photoGallerySize == 0 ? "0/0" : (selectedPosition+1) + "/" +  photoGallerySize;
 
 //
                             if((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
@@ -2833,7 +2834,7 @@ public class ViewCreator {
                         FrameLayout.LayoutParams paramsPreviousButton =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsPreviousButton.setMargins(20, 0, 0, 20);
+                        paramsPreviousButton.setMargins(20, 0, 0, 0);
                         paramsPreviousButton.gravity = Gravity.BOTTOM | Gravity.LEFT;
                         View previousButtonView = componentViewResult.componentView;
                         previousButtonView.setLayoutParams(paramsPreviousButton);
@@ -2899,7 +2900,7 @@ public class ViewCreator {
                         FrameLayout.LayoutParams paramsNextButton =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsNextButton.setMargins(0, 0, 20, 20);
+                        paramsNextButton.setMargins(0, 0, 20, 0);
                         paramsNextButton.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         componentViewResult.componentView.setLayoutParams(paramsNextButton);
                         componentViewResult.componentView.setPadding(30, 0, 30, 0);
@@ -3261,7 +3262,9 @@ public class ViewCreator {
                             if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
                                 ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
                                 ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                ((TextView) componentViewResult.componentView).setText("1/" + moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size());
+                                int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
+                                String position = photoGallerySize == 0 ? "0/0" : 1 + "/" +  photoGallerySize;
+                                ((TextView) componentViewResult.componentView).setText(position);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
                             }
                             break;
