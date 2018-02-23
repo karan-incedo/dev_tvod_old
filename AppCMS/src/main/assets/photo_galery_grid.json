@@ -465,22 +465,22 @@
             "mobile": {
               "yAxis": 560,
               "xAxis": 0,
-              "width": 170,
+              "width": 121,
               "rightMargin": 5,
-              "height": 30
+              "height": 19
             },
             "tabletLandscape": {
               "width": 160,
               "yAxis": 630,
               "xAxis": 455,
-              "height": 35
+              "height": 22
             },
             "tabletPortrait": {
-              "width": 170,
-              "yAxis": 845,
+              "width": 160,
+              "yAxis": 850,
               "xAxis": 0,
               "rightMargin": 20,
-              "height": 50
+              "height": 22
             }
           },
           "fontFamily": "OpenSans",
@@ -496,22 +496,22 @@
             "mobile": {
               "yAxis": 560,
               "xAxis": 0,
-              "width": 170,
+              "width": 121,
               "leftMargin": 5,
-              "height": 30
+              "height": 19
             },
             "tabletLandscape": {
               "width": 160,
               "yAxis": 630,
               "xAxis": 10,
-              "height": 35
+              "height": 22
             },
             "tabletPortrait": {
-              "width": 360,
-              "yAxis": 845,
+              "width": 160,
+              "yAxis": 850,
               "xAxis": 0,
               "leftMargin": 20,
-              "height": 50
+              "height": 22
             }
           },
           "fontFamily": "OpenSans",

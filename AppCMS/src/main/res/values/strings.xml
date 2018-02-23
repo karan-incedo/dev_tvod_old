@@ -323,6 +323,8 @@
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
     <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
+    <string name="no_data_received">No response received</string>
+    <string name="there_is_a_problem_loading_data">There is a problem loading data</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
 

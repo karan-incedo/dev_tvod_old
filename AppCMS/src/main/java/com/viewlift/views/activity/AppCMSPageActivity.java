@@ -561,9 +561,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
-        //Todo chnge it with dynamic add approach
-        MobileAds.initialize(this,
-                "ca-app-pub-3940256099942544~3347511713");
         //noinspection ConstantConditions
         if (inAppBillingService == null && inAppBillingServiceConn != null) {
             Intent serviceIntent =

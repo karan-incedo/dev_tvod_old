@@ -84,10 +84,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
+//import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+//import com.kiswe.kmsdkcorekit.reports.Report;
+//import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+//import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -671,7 +671,7 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+    /*private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
         public void handleReport(Report report) {
 
@@ -685,7 +685,7 @@ public class AppCMSPresenter {
 
             Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
         }
-    };
+    };*/
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
 
@@ -7222,6 +7222,11 @@ public class AppCMSPresenter {
                     message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
                     positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
                 }
+                if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
+                    title = currentActivity.getString(R.string.no_data_received);
+                    message = currentActivity.getString(R.string.there_is_a_problem_loading_data);
+                    positiveButtonText = currentActivity.getString(R.string.ok);
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
@@ -7313,6 +7318,14 @@ public class AppCMSPresenter {
                                 dialog.dismiss();
                             });
                 } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
+                                dialog.dismiss();
+                            });
+                } else if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
                     builder.setPositiveButton(positiveButtonText,
                             (dialog, which) -> {
                                 if (onCloseAction != null) {
@@ -11636,6 +11649,13 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
+        if (currentActivity != null) {
+            Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
+            launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
+            launchVideoPlayerBroadcast.putExtra("KISWE_USERNAME", isUserLoggedIn() ? getLoggedInUserEmail() : "guest");
+            currentActivity.sendBroadcast(launchVideoPlayerBroadcast);
+        }
+       /*
         KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
@@ -11643,7 +11663,7 @@ public class AppCMSPresenter {
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
 
         mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
     }
 
     public void showEmptySearchToast() {
@@ -12140,7 +12160,8 @@ public class AppCMSPresenter {
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
-        SIGN_OUT
+        SIGN_OUT,
+        ARTICLE_API_RESPONSE_ERROR
     }
 
     public enum RETRY_TYPE {
@@ -12833,8 +12854,7 @@ public class AppCMSPresenter {
                             } else {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                Toast.makeText(currentActivity, "Failed to get article data",
-                                        Toast.LENGTH_SHORT).show();
+                                showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 if (callback != null) {
                                     callback.call(null);
                                 }
