@@ -32,6 +32,7 @@
     <item name="photo_gallery_next_label" type="id">photo_gallery_next_label</item>
     <item name="photo_gallery_selectedImage" type="id">selectedImageView</item>
     <item name="photo_gallery_image_count" type="id">photoGalleryImageCount</item>
+    <item name="photo_gallery_grid_recyclerview" type="id">photoGalleryGridRecyclerView</item>
 
 
 
