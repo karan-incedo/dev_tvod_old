@@ -42,6 +42,7 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
 import com.viewlift.R;
@@ -3045,15 +3046,11 @@ public class ViewCreator {
                 if (moduleAPI != null &&
                         moduleAPI.getMetadataMap() != null &&
                         moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
-
                     LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
-                    //((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
-                    //((AdView) componentViewResult.componentView).setActivated(true);
-                    //((AdView) componentViewResult.componentView).setAdUnitId("35495321/MSE_Web_Leaderboard ");
-                    ((AdView) componentViewResult.componentView).setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                    MobileAds.initialize(context, admap.get("adTag"));
+                    ((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
                     AdRequest adRequest = new AdRequest.Builder().build();
                     ((AdView) componentViewResult.componentView).loadAd(adRequest);
-
                 }
 
                 break;
