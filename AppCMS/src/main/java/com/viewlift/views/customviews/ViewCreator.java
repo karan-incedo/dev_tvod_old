@@ -1296,7 +1296,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else if (moduleInfo.getBlockName().contains("photoGallery01")) {
+                } else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
@@ -2002,6 +2002,7 @@ public class ViewCreator {
                                 context.getResources().getString(R.string.app_cms_photo_tray_module_key),
                                 appCMSAndroidModules);
 
+                        ((RecyclerView) componentViewResult.componentView).setId(R.id.photo_gallery_grid_recyclerview);
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
                         photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
 
@@ -2010,6 +2011,12 @@ public class ViewCreator {
                             Glide.with(imageView.getContext()).load(url).placeholder(R.drawable.img_placeholder).into(imageView);
                             int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                             String position = (selectedPosition+1) + "/" +  photoGallerySize;
+
+//
+                            if((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
+                                ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview)).scrollToPosition(selectedPosition);
+                            }
+
                             if (selectedPosition == 0) {
                                 enablePhotoGalleryButtons(false,true,pageView,appCMSPresenter,position);
                             } else if (selectedPosition > 0 && selectedPosition < photoGallerySize - 1) {
@@ -2421,6 +2428,7 @@ public class ViewCreator {
                             if (photoGalleryNextPreviousListener != null) {
                                 enablePhotoGalleryButtons(true,true,pageView,appCMSPresenter,"1");
                                 photoGalleryNextPreviousListener.nextPhoto(((Button) v));
+
                             }
                         });
                         break;
@@ -3539,8 +3547,10 @@ public class ViewCreator {
 
                             if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
                                 ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_disable, 0, 0, 0);
                             } else {
                                 ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow, 0, 0, 0);
                             }
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -3562,9 +3572,11 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
                             componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
+                            ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
 
                             if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
                                 ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
                                 ((TextView) componentViewResult.componentView).setEnabled(false);
                             }
                             componentViewResult.componentView.setOnClickListener(v -> {
