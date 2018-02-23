@@ -276,6 +276,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
+            findViewById(R.id.black_shadow).setVisibility(View.INVISIBLE);
 
         } else {
             findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
@@ -284,6 +285,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.VISIBLE);
+            findViewById(R.id.black_shadow).setVisibility(View.VISIBLE);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
