@@ -168,6 +168,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     ImageButton newVersionAvailableCloseButton;
     @BindView(R.id.app_cms_search_button)
     ImageButton mSearchTopButton;
+    @BindView(R.id.app_cms_share_button)
+    ImageButton mShareTopButton;
     @BindView(R.id.app_cms_profile_btn)
     ImageButton mProfileTopButton;
     @BindView(R.id.app_cms_toolbar)
@@ -624,6 +626,36 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
         );
 
+        mShareTopButton.setOnClickListener(v -> {
+                    AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+                    if (appCMSMain != null &&
+                            updatedAppCMSBinder != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI() != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules() != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0) != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData() != null &&
+                            !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().isEmpty() &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0) != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist() != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getTitle() != null &&
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink() != null) {
+                        StringBuilder filmUrl = new StringBuilder();
+                        filmUrl.append(appCMSMain.getDomainName());
+                        filmUrl.append(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink());
+                        String[] extraData = new String[1];
+                        extraData[0] = filmUrl.toString();
+                        appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink(),
+                                getString(R.string.app_cms_action_share_key),
+                                updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getTitle(),
+                                extraData,
+                                updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0),
+                                false,
+                                0,
+                                null);
+                    }
+                }
+        );
+
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mProfileTopButton.setOnClickListener(v -> {
                     if (appCMSPresenter.isUserLoggedIn()) {
@@ -713,22 +745,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return false;
     }
 
-    public void setToolItemsUIColor(){
+    public void setToolItemsUIColor() {
         int fillColor = appCMSPresenter.getBrandPrimaryCtaColor();
 
         //Changing color of SVG image
-        mMediaRouteButton.setColorFilter(fillColor,PorterDuff.Mode.SRC_IN);
-        
+        mMediaRouteButton.setColorFilter(fillColor, PorterDuff.Mode.SRC_IN);
+
         mProfileTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         mProfileTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
 
         mSearchTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         mSearchTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
 
+        mShareTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+        mShareTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+
         closeButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         closeButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
 
     }
+
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
@@ -1671,6 +1707,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 closeButton.setVisibility(View.VISIBLE);
             }
+
             if (appCMSBinder.getNavigation().getRight() != null) {
                 if (appCMSPresenter.isPageSearch(appCMSBinder.getPageId())) {
                     mSearchTopButton.setVisibility(View.GONE);
@@ -1678,6 +1715,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     mSearchTopButton.setVisibility(View.VISIBLE);
                 }
             } else {
+                mSearchTopButton.setVisibility(View.GONE);
+            }
+            if (appCMSPresenter.isArticlePage(appCMSBinder.getPageId()) ||
+                    appCMSPresenter.isPageAVideoPage(appCMSBinder.getPageName())) {
+                mShareTopButton.setVisibility(View.VISIBLE);
+                mSearchTopButton.setVisibility(View.VISIBLE);
+            } else {
+                mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
             }
 //            setMediaRouterButtonVisibility(pageId);
@@ -2652,6 +2697,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
     }
+
 
 
 }
