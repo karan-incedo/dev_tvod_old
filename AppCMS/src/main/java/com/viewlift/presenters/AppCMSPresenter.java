@@ -12700,7 +12700,7 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName(),
                     photoGalleryId, new AppCMSArticlePhotoGalleryAPIAction(true,
                             false,
-                            false,
+                            true,
                             appCMSPageUI,
                             photoGalleryId,
                             photoGalleryId,
