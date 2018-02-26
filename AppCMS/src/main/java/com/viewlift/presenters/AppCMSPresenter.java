@@ -87,10 +87,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -700,21 +696,6 @@ public class AppCMSPresenter {
     private boolean forceLoad;
 
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
-        @Override
-        public void handleReport(Report report) {
-
-            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
-                return;
-            }
-
-            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
-            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
-            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
-
-            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
-        }
-    };
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
@@ -12596,14 +12577,13 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-        KMSDKCoreKit.initialize(currentActivity);
-        KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
-                .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
-                .setLogLevel(KMSDKCoreKit.DEBUG);
-        mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        if (currentActivity != null) {
+            Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
+            launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
+            launchVideoPlayerBroadcast.putExtra("KISWE_USERNAME", isUserLoggedIn() ? getLoggedInUserEmail() : "guest");
+            currentActivity.sendBroadcast(launchVideoPlayerBroadcast);
+        }
 
-        mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
     public void showEmptySearchToast() {
