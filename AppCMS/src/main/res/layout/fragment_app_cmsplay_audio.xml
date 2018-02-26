@@ -234,6 +234,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/audio_speaker" />
+
+            <SeekBar
+                android:id="@+id/seek_volume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:max="100"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progress="50"
+                android:progressDrawable="@drawable/seekbar_style"
+                android:thumb="@drawable/volume_seekbar_thumb_style" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
     <ProgressBar

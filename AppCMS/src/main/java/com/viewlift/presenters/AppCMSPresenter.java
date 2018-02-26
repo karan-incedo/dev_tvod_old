@@ -3882,6 +3882,8 @@ public class AppCMSPresenter {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
+            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
                     contentDatum.getGist().getId());
@@ -8005,7 +8007,9 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                                 }
                             });
-                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
                     builder.setPositiveButton(R.string.app_cms_login_button_text,
                             (dialog, which) -> {
                                 try {
@@ -8090,7 +8094,8 @@ public class AppCMSPresenter {
                             });
                 }
 
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
                     builder.setOnKeyListener((arg0, keyCode, event) -> {
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             if (onCloseAction != null) {
@@ -13743,7 +13748,8 @@ public class AppCMSPresenter {
             for (int i = 0; i < contentData.size(); i++) {
                 if (contentData.get(i).getGist() != null &&
                         contentData.get(i).getGist().getMediaType() != null
-                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase()) && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
+                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())
+                        && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
                     isPlaylistDownloaded = false;
                     break;
                 }
