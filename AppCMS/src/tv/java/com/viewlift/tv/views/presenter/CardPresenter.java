@@ -86,18 +86,6 @@ public class CardPresenter extends Presenter {
         }
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
-
-        /*frameLayout.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-                if(keyCode == KeyEvent.KEYCODE_DPAD_UP
-                        && keyEvent.getAction() == KeyEvent.ACTION_UP){
-//                    frameLayout.clearFocus();
-                }
-                return false;
-            }
-        });*/
-
         return new ViewHolder(frameLayout);
     }
 
@@ -132,14 +120,6 @@ public class CardPresenter extends Presenter {
             }
             return false;
         });
-
-        /*cardView.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && rowData.rowNumber == 0) {
-                consumeUpKeyEvent = true;
-            } else {
-                consumeUpKeyEvent = false;
-            }
-        });*/
     }
 
     @Override
@@ -191,9 +171,11 @@ public class CardPresenter extends Presenter {
 
                                 imageView.setLayoutParams(parms);
                                 if (null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02"))
+                                        || blockName.equalsIgnoreCase("tray02")
                                         || blockName.equalsIgnoreCase("grid01")
-                                        || blockName.equalsIgnoreCase("continueWatching01")) {
+                                        || blockName.equalsIgnoreCase("showDetail01")
+                                        || blockName.equalsIgnoreCase("tray04")
+                                        || blockName.equalsIgnoreCase("continuewatching01"))) {
                                     imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());

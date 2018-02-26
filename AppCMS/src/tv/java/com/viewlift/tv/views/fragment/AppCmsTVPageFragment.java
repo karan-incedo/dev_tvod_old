@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
@@ -25,8 +27,11 @@ import com.viewlift.tv.views.customviews.CustomHeaderItem;
 import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
+import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -242,6 +247,61 @@ public class AppCmsTVPageFragment extends Fragment {
             }
         } catch (Exception e) {
 
+        }
+    }
+
+    public void updateSeasonData(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
+
+        try {
+            if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+
+                ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(0);
+                ArrayObjectAdapter  arrayObjectAdapter = (ArrayObjectAdapter) listRow.getAdapter();
+                CardPresenter trayCardPresenter = (CardPresenter) arrayObjectAdapter.getPresenter(0);
+                List<Component> uiComponentList = ((BrowseFragmentRowData) arrayObjectAdapter.get(0)).uiComponentList;
+                String blockName = ((BrowseFragmentRowData) arrayObjectAdapter.get(0)).blockName;
+                String action = ((BrowseFragmentRowData) arrayObjectAdapter.get(0)).action;
+                arrayObjectAdapter.clear();
+
+                ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                List<ContentDatum> episodes = appCMSSwitchSeasonBinder.getSeasonList().get(appCMSSwitchSeasonBinder.getSelectedSeasonIndex()).getEpisodes();
+                for (int i = 0; i < episodes.size(); i++) {
+                    List<String> relatedVids = new ArrayList<>();
+                    for (int j = i + 1; j < episodes.size(); j++) {
+                        ContentDatum contentDatum = episodes.get(j);
+                        relatedVids.add(contentDatum.getGist().getId());
+                    }
+                    ContentDatum contentDatum = episodes.get(i);
+                    BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                    rowData.contentData = contentDatum;
+                    rowData.relatedVideoIds = relatedVids;
+                    rowData.uiComponentList = uiComponentList;
+                    rowData.action = action;
+                    rowData.blockName = blockName;
+                    rowData.rowNumber = appCMSSwitchSeasonBinder.getTrayIndex();
+                    traylistRowAdapter.add(rowData);
+                }
+                CustomHeaderItem customHeaderItem = (CustomHeaderItem) listRow.getHeaderItem();
+                CustomHeaderItem header = new CustomHeaderItem(appCMSPresenter.getCurrentActivity(), 0, "Season " + (appCMSSwitchSeasonBinder.getSelectedSeasonIndex() + 1));
+                header.setFontFamily(customHeaderItem.getFontFamily());
+                header.setFontSize(customHeaderItem.getFontSize());
+                header.setFontWeight(customHeaderItem.getFontWeight());
+                header.setmBackGroundColor(customHeaderItem.getmBackGroundColor());
+                header.setmIsCarousal(customHeaderItem.ismIsCarousal());
+                header.setmIsLivePlayer(customHeaderItem.ismIsLivePlayer());
+                header.setmListRowHeight(customHeaderItem.getmListRowHeight());
+                header.setmListRowLeftMargin(customHeaderItem.getmListRowLeftMargin());
+                header.setmListRowRightMargin(customHeaderItem.getmListRowRightMargin());
+                header.setmListRowWidth(customHeaderItem.getmListRowWidth());
+                header.setmModuleId(customHeaderItem.getmModuleId());
+                header.setContentDescription(customHeaderItem.getContentDescription());
+                header.setDescription(customHeaderItem.getDescription());
+                appCmsViewComponent.tvviewCreator().mRowsAdapter.remove(appCmsViewComponent.tvviewCreator().mRowsAdapter.get(0));
+                appCmsViewComponent.tvviewCreator().mRowsAdapter.add(new ListRow(header, traylistRowAdapter));
+                appCmsViewComponent.tvviewCreator().mRowsAdapter.notifyArrayItemRangeChanged(0, 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

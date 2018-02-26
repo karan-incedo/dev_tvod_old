@@ -52,6 +52,7 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -462,7 +463,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
-            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+            videoPlayerTitleView.setTextColor(Color.parseColor(ViewCreator.getColorWithOpacity(getContext(),
+                    fontColor,
+                    0xff)));
         }
 
         sendFirebaseAnalyticsEvents(title);
@@ -672,8 +675,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 isTrailer,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId,
-                onUpdateContentDatumEvent.getCurrentContentDatum());
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
 
         beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -681,8 +683,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 permaLink,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId,
-                onUpdateContentDatumEvent.getCurrentContentDatum());
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
+
 
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);
@@ -1117,27 +1119,51 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onRefreshTokenCallback() {
-        //Log.d(TAG, "Calling refresh token callback");
-        if (onUpdateContentDatumEvent != null) {
-            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId(), updatedContentDatum -> {
+        if (onUpdateContentDatumEvent != null &&
+                onUpdateContentDatumEvent.getCurrentContentDatum() != null &&
+                onUpdateContentDatumEvent.getCurrentContentDatum().getGist() != null) {
+            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum()
+                    .getGist()
+                    .getId(),
+                    updatedContentDatum -> {
                 onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                 appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                     if (videoPlayerView != null && appCMSSignedURLResult != null) {
                         boolean foundMatchingMpeg = false;
-                        if (!TextUtils.isEmpty(hlsUrl) &&
-                                hlsUrl.contains("mp4")) {
+                        if (!TextUtils.isEmpty(hlsUrl) && hlsUrl.contains("mp4")) {
                             if (updatedContentDatum != null &&
                                     updatedContentDatum.getStreamingInfo() != null &&
                                     updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
-                                    updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
-                                    !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
-                                updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
-                                for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
+                                    updatedContentDatum.getStreamingInfo()
+                                            .getVideoAssets()
+                                            .getMpeg() != null &&
+                                    !updatedContentDatum.getStreamingInfo()
+                                            .getVideoAssets()
+                                            .getMpeg()
+                                            .isEmpty()) {
+                                updatedContentDatum.getGist()
+                                        .setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                                for (int i = 0;
+                                     i < updatedContentDatum.getStreamingInfo()
+                                        .getVideoAssets()
+                                        .getMpeg()
+                                        .size() &&
+                                        !foundMatchingMpeg;
+                                     i++) {
                                     int queryIndex = hlsUrl.indexOf("?");
                                     if (0 <= queryIndex) {
-                                        if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
+                                        if (updatedContentDatum.getStreamingInfo()
+                                                .getVideoAssets()
+                                                .getMpeg()
+                                                .get(0)
+                                                .getUrl()
+                                                .contains(hlsUrl.substring(0, queryIndex))) {
                                             foundMatchingMpeg = true;
-                                            hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                                            hlsUrl = updatedContentDatum.getStreamingInfo()
+                                                    .getVideoAssets()
+                                                    .getMpeg()
+                                                    .get(0)
+                                                    .getUrl();
                                         }
                                     }
                                 }
@@ -1148,10 +1174,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 appCMSSignedURLResult.getSignature(),
                                 appCMSSignedURLResult.getKeyPairId());
 
-                        if (foundMatchingMpeg) {
+                        if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
                             videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-                            videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
+                                    !TextUtils.isEmpty(closedCaptionUrl) ?
+                                            Uri.parse(closedCaptionUrl) : null);
+                            videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
+                                    .getWatchedTime() * 1000L);
                         }
                     }
                 });
@@ -1273,6 +1301,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
+    // TODO: 11/30/17 Replace countdown timer with value coming from Template Builder.
     private void startCountdown() {
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override

@@ -39,13 +39,27 @@ public class AppCMSAudioDetailCall {
 
     @WorkerThread
     public void call(String url,
-                     final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
+                     int tryCount, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
         try {
             appCMSAudioDetailRest.get(url).enqueue(new Callback<AppCMSAudioDetailResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSAudioDetailResult> call,
                                        @NonNull Response<AppCMSAudioDetailResult> response) {
-                    Observable.just(response.body()).subscribe(audioDetailResultAction);
+                    if (audioDetailResultAction != null && response.body()!=null) {
+                        System.out.println("retry audio details success");
+
+                        Observable.just(response.body()).subscribe(audioDetailResultAction);
+                    }else{
+                        System.out.println("retry audio details fail tryCount-"+tryCount);
+                    }
+                    if (audioDetailResultAction == null && tryCount == 0) {
+                        System.out.println("retry audio details fail");
+                        try {
+                            call(url, tryCount + 1, audioDetailResultAction);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override

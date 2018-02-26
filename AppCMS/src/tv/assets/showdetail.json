@@ -1,0 +1,321 @@
+{
+  "id": "8c230e4b-4c82-4e1d-bb43-93b2e029fd1a",
+  "settings": {},
+  "view": "AC ShowDetail 01",
+  "type": "AC ShowDetail 01",
+  "blockName": "showDetail01",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height" : 630
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 138
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 95,
+              "fontSize": 26,
+              "height": 73
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "center_vertical",
+          "opacity": 1,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Bold",
+          "key": "showTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "topMargin": 7,
+              "rightMargin": 89,
+              "width": 590,
+              "gravity": "center",
+              "fontSize": 13,
+              "height": 36
+            }
+          },
+          "gravity": "center",
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "right",
+          "opacity": 0.5,
+          "type": "label",
+          "textColor": "#ffffff",
+          "key": "showSubTitle"
+        }
+      ],
+      "textAlignment": "left",
+      "type": "headerView",
+      "key": "showDetailHeader"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 138,
+          "height": 390,
+          "width": 1920
+        }
+      },
+      "type": "label",
+      "backgroundColor": "#800a151c"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1220,
+          "topMargin": 138,
+          "rightMargin": 0,
+          "height": 390,
+          "width": 700
+        }
+      },
+      "type": "image",
+      "key": "videoThumbnailImage"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 50,
+          "yAxis": 138,
+          "rightMargin": 0,
+          "height": 390
+        }
+      },
+      "type": "image",
+      "key": "badgeImage"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 95,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "watchVideo",
+      "text": "WATCH NOW",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "showStartWatching"
+    },
+   /* {
+      "layout": {
+        "ftv": {
+          "leftMargin": 365,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "addToWatchlist",
+      "text": "ADD TO WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "addToWatchlist"
+    },*/
+    {
+      "layout": {
+        "ftv": {
+          /*"leftMargin": 635,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250*/
+          "leftMargin": 365,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "selectSeasons",
+      "text": "SWITCH SEASONS",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "switchSeasons"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 635,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250
+          /*"leftMargin": 905,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250*/
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "watchTrailer",
+      "text": "WATCH TRAILER",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "watchShowTrailer"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "fontSizeKey": 11,
+          "yAxis": 409,
+          "xAxis": 95,
+          "width": 1000,
+          "height": 120,
+          "fontSizeValue": 5
+        }
+      },
+      "fontFamilyKey": "OpenSans-Extrabold",
+      "fontFamilyValue": "OpenSans",
+      "type": "castView",
+      "textColor": "#ffffff",
+      "key": "castView"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 188,
+          "xAxis": 95,
+          "width": 768,
+          "fontSize": 11,
+          "height": 180
+        }
+      },
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "showDescriptionText"
+    },
+    {
+      "id": "bd769581-5e30-4d46-a422-bc962c31d3bd",
+      "settings": {
+        "loop": true,
+        "columns": {
+          "tablet": 4,
+          "desktop": 6,
+          "mobile": 3,
+          "ott": 6
+        },
+        "thumbnailType": "portrait",
+        "infoHover": true
+      },
+      "view": "AC Tray 01",
+      "type": "AC Tray 01",
+      "blockName": "tray01",
+      "layout": {
+        "ftv": {
+          "padding": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 270
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "fontSize": 18
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#008EE0",
+          "fontWeight": "Semibold",
+          "key": "trayTitle"
+        },{
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 60,
+              "rightMargin": 4.8,
+              "height": 2
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "width": 260,
+              "height": 270
+            }
+          },
+          "trayClickAction": "watchVideo",
+          "components": [
+           {
+              "layout": {
+                "ftv": {
+                  "padding": 6,
+                  "topMargin": 20,
+                  "width": 255,
+                  "height": 143
+                }
+              },
+              "type": "image",
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "ftv": {
+                  "leftMargin": 0,
+                  "topMargin": 167,
+                  "rightMargin": 0,
+                  "fontSize": 12,
+                  "height": 40
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            }
+          ],
+          "type": "collectionGrid",
+          "key": "collectionGrid"
+        }
+      ]
+    }
+  ]
+}

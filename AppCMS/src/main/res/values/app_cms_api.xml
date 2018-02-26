@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS StreamingInfo API -->
@@ -61,7 +60,9 @@
 
     <!-- AppCMS Shows Status API-->
     <!--<string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>-->
-    <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true</string>
+    <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true&amp;includeWatchHistory=%5$b</string>
+
+    <string name="app_cms_pages_api_url">%1$s/pages?site=%2$s&amp;modules=%3$s</string>
 
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
@@ -83,6 +84,7 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
         <item>AC WebFrame 01</item>
+        <item>AC Footer 02</item>
         <item>AC Banner 01</item>
     </string-array>
 
@@ -118,10 +120,12 @@
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_season_tray_title_key">seasonTrayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_episode_thumbnail_title_key">episodeThumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_center_horizontal_key">center_horizontal</string>
     <string name="app_cms_page_text_alignment_center_vertical_key">center_vertical</string>
@@ -229,9 +233,11 @@
     <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_start_watching_button_key">startWatching</string>
+    <string name="app_cms_page_show_start_watching_button_key">showStartWatching</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
+    <string name="app_cms_page_show_title_key">showTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
@@ -242,7 +248,9 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_show_watchTrailer_key">watchShowTrailer</string>
     <string name="app_cms_start_watching_key">startWatching</string>
+    <string name="app_cms_switch_seasons_key">switchSeasons</string>
     <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>
@@ -252,6 +260,8 @@
     <string name="app_cms_page_autoplay_module_key_01">AC AutoPlay 01</string>
     <string name="app_cms_page_autoplay_module_key_02">AC AutoPlay 02</string>
     <string name="app_cms_page_autoplay_module_key_03">AC AutoPlay 03</string>
+    <string name="app_cms_page_autoplay_landscape_module_key_01">AC AutoPlayLandscape 01</string>
+    <string name="app_cms_page_autoplay_portrait_module_key_01">AC AutoPlayPortrait 01</string>
 
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
@@ -357,8 +367,8 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_cached_page_api_url">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
-    <string name="app_cms_cached_page_api_url_with_user_id">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s</string>
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
@@ -407,19 +417,17 @@
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
-    <string name="app_cms_menu_icon_name">menu_</string>
+    <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
-    <string name="app_cms_home_icon_name">home_page_</string>
-    <string name="app_cms_shows_icon_name">shows_</string>
+    <string name="app_cms_home_icon_name">icon-home</string>
     <string name="app_cms_team_icon_name">teams_</string>
-
     <string name="app_cms_home_label">Home</string>
-    <string name="app_cms_movies_icon_name">categories_page_categories</string>
+    <string name="app_cms_movies_icon_name">icon-movies</string>
     <string name="app_cms_movies_label">Movies</string>
-    <string name="app_cms_search_icon_name">search_</string>
+    <string name="app_cms_search_icon_name">icon-search</string>
     <string name="app_cms_search_label">Search</string>
-
+    <string name="app_cms_shows_icon_name">icon-shows</string>
     <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
@@ -447,6 +455,7 @@
     <string name="app_cms_autoplay_play_button_key">playButtonAutoplay</string>
     <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
+    <string name="app_cms_autoplay_countdown_cancelled_label_key">countdownCancelledLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>
@@ -466,6 +475,7 @@
     <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
     <string name="app_cms_autoplay_rotating_loader_view">rotatingLoaderView</string>
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
+    <string name="app_cms_settings_subscription_end_date_label">subscriptionEndDateLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
 
@@ -517,6 +527,7 @@
     <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
 
      <string name="icon_image_key">iconImage</string>
+     <string name="icon_label_key">iconLabel</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
 
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
@@ -547,7 +558,7 @@
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
     <string name="plan_type_day">Month</string>
 
-    <string name="app_cms_page_download_size_key">videoSize</string>
+    <string name="app_cms_page_download_size_key">downloadDuration</string>
     <string name="app_cms_page_download_duration_key">downloadDuration</string>
     <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
@@ -573,5 +584,7 @@
     <string name="app_cms_download_audio_action">downloadAudio</string>
     <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
     <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
+    <!-- AppCMS Apptentive Events -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
 
 </resources>

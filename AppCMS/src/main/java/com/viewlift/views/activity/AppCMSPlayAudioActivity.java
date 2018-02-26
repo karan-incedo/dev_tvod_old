@@ -46,11 +46,19 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     private String audioData = "";
     private CastServiceProvider castProvider;
     ContentDatum currentAudio;
+    public static boolean isDownloading = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_cmsplay_audio);
         ButterKnife.bind(this);
+        if (appCMSPresenter == null) {
+            appCMSPresenter = ((AppCMSApplication) getApplication())
+                    .getAppCMSPresenterComponent()
+                    .appCMSPresenter();
+        }
+
 
         casting.setOnClickListener(this);
         addToPlaylist.setOnClickListener(this);
@@ -58,10 +66,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         shareAudio.setOnClickListener(this);
         launchAudioPlayer();
         setCasting();
-
-
-
-
     }
 
     private void setCasting() {
@@ -76,13 +80,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("on destroy audio player");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        if (appCMSPresenter == null) {
-            appCMSPresenter = ((AppCMSApplication) getApplication())
-                    .getAppCMSPresenterComponent()
-                    .appCMSPresenter();
-        }
 
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
@@ -120,6 +125,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
+            isDownloading=true;
             audioDownload(downloadAudio, currentAudio);
             appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
                     0, null, false, false, null);
@@ -230,15 +236,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                         appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                 } else {
+                    appCMSPresenter.setAudioPlayerOpen(true);
                     if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
+                                        System.out.println("After login action");
 
                                     });
                                 });
                     } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
 
@@ -283,7 +291,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
                     case STATUS_SUCCESSFUL:
                         appCMSPresenter.setDownloadInProgress(false);
-                        appCMSPresenter.cancelDownloadIconTimerTask();
+                        appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.notifyDownloadHasCompleted();
@@ -307,7 +315,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                imageButton.setOnClickListener(addClickListener);
+//                imageButton.setOnClickListener(addClickListener);
+                if (isDownloading) {
+                    isDownloading = false;
+                    addClickListener.onClick(imageButton);
+                }
             }
         }
 

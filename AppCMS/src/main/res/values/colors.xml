@@ -1,8 +1,8 @@
 <resources>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#cf0a2c</color>
-    <color name="backgroundColor">#F81004</color>
+    <color name="colorAccent">#f4181c</color>
+    <color name="backgroundColor">#000000</color>
     <color name="colorNavBarText">#FFFFFF</color>
     <color name="facebookBlue">#3b5998</color>
     <color name="googleRed">#c04b4c</color>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
+    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
     <!-- x-api-key -->
     <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
@@ -24,7 +24,7 @@
     <string name="chromecast_receiver_app_id">3D49630B</string>
 
     <!-- flag to use HLS or not -->
-    <bool name="use_hls">true</bool>
+    <bool name="use_hls">false</bool>
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
@@ -54,7 +54,6 @@
     <string name="app_cms_cached_api_user_token">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaXRlIjoiaG9pY2hvaXR2IiwiaWQiOiI0Njg0YjJiZjc2YzQyZWZkMzJiODQ1OWFmZmY1Zjg1YWQ1YTE5ZTE2Y2I2MzhmZTFhYmE3NGIyNDYxNzVjMTlkIiwidXNlcklkIjoiNDY4NGIyYmY3NmM0MmVmZDMyYjg0NTlhZmZmNWY4NWFkNWExOWUxNmNiNjM4ZmUxYWJhNzRiMjQ2MTc1YzE5ZCIsImlwYWRkcmVzcyI6IjI2MDA6MTcwMDoxOTYwOjMzYjA6MTA2MTo4YmI4OmNhODpiNzQwIiwiaXBhZGRyZXNzZXMiOiIyNjAwOjE3MDA6MTk2MDozM2IwOjEwNjE6OGJiODpjYTg6Yjc0MCwgMzQuMjAzLjE4OC4xNjMsIDU0LjI0MC4xNDQuNjUiLCJ1c2VybmFtZSI6ImFub255bW91cyIsImNvdW50cnlDb2RlIjoiVVMiLCJwcm92aWRlciI6InZpZXdsaWZ0IiwiaWF0IjoxNTExMjMwOTQwLCJleHAiOjE1NDI3NjY5NDB9.0eeLtDZtzgPqM2zJA6JzVrvfZ5mmY1yKaV2Wr_Of9V4</string>
 
     <string name="KISWE_PLAYER_API_KEY">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJLaXN3ZSIsInN1YiI6MTM5MDk5LCJleHAiOiIyMDMwLTAzLTE0VDAwOjAwOjAwLjAwMFoifQ.ZAvxOdEAW-h7JtCOy6JJTL78EqRxu8Y5LYKLMv7-fh4</string>
-
 
 
 </resources>

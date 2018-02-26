@@ -31,6 +31,8 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
+import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -729,5 +731,14 @@ public class Utils {
         timeInString.append(Long.toString(seconds));
 //        }
         return timeInString.toString();
+    }
+
+    public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder, AppCMSPresenter appCMSPresenter) {
+        android.app.FragmentTransaction ft =
+                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
+                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
+        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
     }
 }

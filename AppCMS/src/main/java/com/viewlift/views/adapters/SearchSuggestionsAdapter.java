@@ -53,14 +53,18 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         filmTitle.setText(cursor.getString(1));
         int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
 
-        if (runtimeAsInteger > 0 && runtimeAsInteger < 2) {
+        if (runtimeAsInteger / 60 < 1) {
             runtime.setText(new StringBuilder().append(cursor.getString(2))
                     .append(" ")
-                    .append(context.getString(R.string.minute_for_runtime)).toString());
+                    .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
+        } else if (runtimeAsInteger / 60 < 2) {
+            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minute_abbreviation)).toString());
         } else {
-            runtime.setText(new StringBuilder().append(cursor.getString(2))
+            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
                     .append(" ")
-                    .append(context.getString(R.string.minutes_for_runtime)).toString());
+                    .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
         }
     }
 

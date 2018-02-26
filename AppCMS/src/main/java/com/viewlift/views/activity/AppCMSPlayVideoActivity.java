@@ -139,8 +139,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 binder.getContentData().getContentDetails() != null &&
                                 binder.getContentData().getContentDetails().getTrailers() != null &&
                                 !binder.getContentData().getContentDetails().getTrailers().isEmpty() &&
-                                binder.getContentData().getContentDetails().getTrailers().get(0) != null)
+                                binder.getContentData().getContentDetails().getTrailers().get(0) != null) {
                             id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
+                        } else if (binder.getContentData().getShowDetails() != null &&
+                                binder.getContentData().getShowDetails().getTrailers() != null &&
+                                !binder.getContentData().getShowDetails().getTrailers().isEmpty() &&
+                                binder.getContentData().getShowDetails().getTrailers().get(0) != null &&
+                                binder.getContentData().getShowDetails().getTrailers().get(0).getId() != null) {
+                            id = binder.getContentData().getShowDetails().getTrailers().get(0).getId();
+                        }
                     }
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
@@ -409,7 +416,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             if (!binder.isOffline()) {
                 if (!binder.isTrailer()
                         && relateVideoIds != null
-                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                     appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
                         @Override
@@ -421,7 +428,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
-                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
                         @Override
                         public void call(Object o) {

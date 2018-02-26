@@ -22,21 +22,21 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 0
+          "height": 667
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 0
+          "height": 768
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 0
+          "height": 1024
         }
       },
       "components": [
@@ -100,7 +100,7 @@
           "numberOfLines": 1,
           "textAlignment": "left",
           "type": "label",
-          "textColor": "#ffffff",
+          "textColor": "#bdbdbd",
           "key": "playlistSubTitle"
         },
         {
@@ -213,15 +213,17 @@
             },
             "tabletLandscape": {
               "gridHeight": 92,
-              "yAxis": 65,
               "leftMargin": 0,
-              "rightMargin": 0
+              "topMargin": 6.5,
+              "rightMargin": 0,
+              "bottomMargin": 7.81
             },
             "tabletPortrait": {
               "gridHeight": 92,
-              "yAxis": 65,
               "leftMargin": 0,
-              "rightMargin": 0
+              "topMargin": 6,
+              "rightMargin": 0,
+              "bottomMargin": 5.86
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -230,19 +232,19 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletLandscape": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletPortrait": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 }
@@ -314,26 +316,26 @@
               "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
-              "textColor": "#ffffff",
+              "textColor": "#bdbdbd",
               "key": "audioArtistName"
             },
             {
               "layout": {
                 "mobile": {
                   "topMargin": 4,
-                  "rightMargin": 39,
+                  "rightMargin": 50,
                   "width": 20,
                   "height": 20
                 },
                 "tabletLandscape": {
                   "topMargin": 5,
-                  "xAxis": 965,
+                  "xAxis": 935,
                   "width": 20,
                   "height": 20
                 },
                 "tabletPortrait": {
                   "topMargin": 3,
-                  "rightMargin": 40,
+                  "rightMargin": 60,
                   "width": 20,
                   "height": 20
                 }

@@ -1,5 +1,6 @@
 package com.viewlift.models.network.rest;
 
+import android.content.Context;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,18 +13,17 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 /**
@@ -54,12 +54,37 @@ public class AppCMSPageAPICall {
         this.headersMap = new HashMap<>();
     }
 
+    public AppCMSPageAPI callWithModules(String url,
+                                         String authToken) {
+        AppCMSPageAPI appCMSPageAPI = null;
+
+        try {
+            headersMap.clear();
+            if (!TextUtils.isEmpty(apiKey)) {
+                headersMap.put("x-api-key", apiKey);
+            }
+            if (!TextUtils.isEmpty(authToken)) {
+                headersMap.put("Authorization", authToken);
+            }
+            Response<ResponseBody> response = appCMSPageAPIRest.get(url, headersMap).execute();
+            if (response != null && response.body() != null) {
+                appCMSPageAPI = gson.fromJson(response.body().string(), AppCMSPageAPI.class);
+            }
+        } catch (Exception e) {
+
+        }
+
+        return appCMSPageAPI;
+    }
+
     @WorkerThread
-    public AppCMSPageAPI call(String urlWithContent,
+    public AppCMSPageAPI call(Context context,
+                              String urlWithContent,
                               String authToken,
                               String pageId,
                               boolean loadFromFile,
-                              int tryCount) throws IOException {
+                              int tryCount,
+                              List<String> modules) throws IOException {
         //Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
@@ -82,31 +107,56 @@ public class AppCMSPageAPICall {
                     headersMap.put("Authorization", authToken);
                 }
                 //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
-                Response<JsonElement> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+                Response<ResponseBody> response = null;
+
+                if (modules != null && !modules.isEmpty()) {
+                    StringBuilder urlithContentAndModules = new StringBuilder(urlWithContent);
+                    urlithContentAndModules.append("&modules=");
+                    int numModules = modules.size();
+                    for (int i = 0; i < numModules; i++) {
+                        urlithContentAndModules.append(modules.get(i));
+                    }
+
+                    response = appCMSPageAPIRest.get(urlithContentAndModules.toString(), headersMap).execute();
+                } else {
+                    long start = System.currentTimeMillis();
+
+                    Log.d(TAG, "Start Page API request: " + start);
+
+                    response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+
+                    long end = System.currentTimeMillis();
+                    Log.d(TAG, "End Page API request: " + end);
+                    Log.d(TAG, "Page API URL: " + urlWithContent);
+                    Log.d(TAG, "Total Time Page API request: " + (end - start));
+                }
+
                 if (response != null && response.body() != null) {
-                    appCMSPageAPI = gson.fromJson(response.body(), AppCMSPageAPI.class);
+                    appCMSPageAPI = gson.fromJson(response.body().string(), AppCMSPageAPI.class);
                 }
 
                 if (!response.isSuccessful()) {
-                    //Log.e(TAG, "Response error: " + response.errorBody().string());
+                    Log.e(TAG, "Response error: " + response.errorBody().string());
                 }
 
-                if (filename != null) {
+                if (filename != null && (modules == null || modules.isEmpty())) {
                     appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
                 }
             } catch (JsonSyntaxException e) {
-                //Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
+                Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
             } catch (Exception e) {
-                //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+                Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
             }
         }
 
         if (appCMSPageAPI == null && tryCount == 0) {
-            return call(urlWithContent,
+            return call(context,
+                    urlWithContent,
                     authToken,
                     pageId,
                     loadFromFile,
-                    tryCount + 1);
+                    tryCount + 1,
+                    modules);
         }
 
         return appCMSPageAPI;

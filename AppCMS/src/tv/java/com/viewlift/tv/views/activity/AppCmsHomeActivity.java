@@ -48,6 +48,7 @@ import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
@@ -236,6 +237,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.UPDATE_SUBSCRIPTION)) {
                     updateSubscriptionStrip();
+                } else if (intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
+                    AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
+                    AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getFragmentManager().findFragmentById(R.id.home_placeholder);
+                    parentFragment.updateSeasonData(appCMSSwitchSeasonBinder);
                 }
             }
         };
@@ -374,6 +379,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
+        registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
     }
 
     @Override

@@ -2,6 +2,7 @@
 <resources>
     <item name="countdown_id" type="id">countdown_id</item>
     <item name="autoplay_play_button" type="id">autoplay_play_button</item>
+    <item name="autoplay_cancel_button" type="id">autoplay_cancel_button</item>
 
     <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
 
@@ -24,6 +25,8 @@
     <item name="exo_media_controller" type="id"/>
     <item name="exo_controller_container" type="id"/>
     <item name="seek_bar_parent" type="id"/>
+    <item name="playlist_download_id" type="id">playlist_download_id</item>
+
 
 
 

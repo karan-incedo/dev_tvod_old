@@ -104,13 +104,24 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         }
                     }
                 } else {
-                    if (binder.getContentData().getContentDetails() != null
-                            && binder.getContentData().getContentDetails().getTrailers() != null
-                            && binder.getContentData().getContentDetails().getTrailers().get(0) != null
-                            && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
-                        title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
-                        VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
-                        videoUrl = getVideoUrl(videoAssets);
+                    if (binder.getContentData().getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                        if (binder.getContentData().getShowDetails() != null
+                                && binder.getContentData().getShowDetails().getTrailers() != null
+                                && binder.getContentData().getShowDetails().getTrailers().get(0) != null
+                                && binder.getContentData().getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            title = binder.getContentData().getShowDetails().getTrailers().get(0).getTitle();
+                            VideoAssets videoAssets = binder.getContentData().getShowDetails().getTrailers().get(0).getVideoAssets();
+                            videoUrl = getVideoUrl(videoAssets);
+                        }
+                    } else {
+                        if (binder.getContentData().getContentDetails() != null
+                                && binder.getContentData().getContentDetails().getTrailers() != null
+                                && binder.getContentData().getContentDetails().getTrailers().get(0) != null
+                                && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
+                            VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
+                            videoUrl = getVideoUrl(videoAssets);
+                        }
                     }
                 }
                 String permaLink = gist.getPermalink();

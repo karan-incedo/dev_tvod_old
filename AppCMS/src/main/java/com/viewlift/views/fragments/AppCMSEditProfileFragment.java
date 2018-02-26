@@ -9,10 +9,13 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +24,6 @@ import android.widget.Toast;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.regex.Pattern;
@@ -56,8 +58,6 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     @BindView(R.id.app_cms_edit_profile_email_text)
     TextView appCMSEditProfileEmailText;
 
-    private String regex = "[a-zA-Z\\s]+";
-
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
                                                         String email) {
@@ -90,22 +90,26 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                 .getPrimary().getBackgroundColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getTextColor());
+        int transparentColor = getResources().getColor(R.color.transparentColor);
 
         Bundle args = getArguments();
         String username = args.getString(getContext().getString(R.string.app_cms_edit_profile_username_key));
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
         titleTextView.setTextColor(textColor);
-        appCMSEditProfileNameText.setTextColor(textColor);
-        appCMSEditProfileEmailText.setTextColor(textColor);
-
         titleTextView.setTypeface(appCMSPresenter.getBoldTypeFace());
-        appCMSEditProfileNameText.setTypeface(appCMSPresenter.getBoldTypeFace());
-        appCMSEditProfileEmailText.setTypeface(appCMSPresenter.getBoldTypeFace());
 
+        appCMSEditProfileNameText.setTextColor(textColor);
+        appCMSEditProfileNameText.setTypeface(appCMSPresenter.getBoldTypeFace());
+        appCMSEditProfileNameText.setBackgroundColor(transparentColor);
+
+        appCMSEditProfileEmailText.setTextColor(textColor);
+        appCMSEditProfileEmailText.setTypeface(appCMSPresenter.getBoldTypeFace());
+        appCMSEditProfileEmailText.setBackgroundColor(transparentColor);
+
+        appCMSEditProfileNameInput.setTextColor(textColor);
         if (!TextUtils.isEmpty(username)) {
             appCMSEditProfileNameInput.setText(username);
-            appCMSEditProfileNameInput.setTextColor(textColor);
         }
 
         if (!TextUtils.isEmpty(email)) {
@@ -122,10 +126,12 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
             TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
             TextInputEditText password = new TextInputEditText(view.getContext());
+            password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
             textInputLayout.addView(password);
             textInputLayout.setPasswordVisibilityToggleEnabled(true);
-            password.setTransformationMethod(new AsteriskPasswordTransformation());
+            password.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(textInputLayout);
@@ -140,6 +146,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                                 appCMSEditProfileEmailInput.getText().toString(),
                                 password.getText().toString(),
                                 userIdentity -> {
+                                    //
                                 });
                     });
 
@@ -170,6 +177,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     }
 
     private boolean doesValidNameExist(String input) {
+        String regex = "[a-zA-Z\\s]+";
         return !TextUtils.isEmpty(input) && Pattern.matches(regex, input);
     }
 }

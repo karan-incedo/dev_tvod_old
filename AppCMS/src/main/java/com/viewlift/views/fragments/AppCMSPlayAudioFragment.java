@@ -104,7 +104,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     ProgressBar progressBarPlayPause;
 
 
-
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     private final Handler mHandler = new Handler();
@@ -231,6 +230,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         getActivity().registerReceiver(mMessageReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION));
+        setPlaylistVisibility();
         return rootView;
     }
 
@@ -334,6 +334,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
     }
 
+
+    private void setPlaylistVisibility() {
+        if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() == null) {
+            playlist.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 getActivity(), token);
@@ -424,7 +431,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         mCurrentArtUrl = artUrl;
 
 
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             Glide.with(getActivity())
                     .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .placeholder(R.drawable.logo)
@@ -439,8 +446,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
         trackName.setText(metaData.getDescription().getTitle());
         artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        String albumInfo=metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR)+" | "+metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
-        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        String albumInfo = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + " | " + metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
         trackYear.setText(albumInfo);
 
         fetchImageAsync(metaData.getDescription());

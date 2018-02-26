@@ -5,6 +5,7 @@ package com.viewlift.models.network.modules;
  */
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,6 +98,7 @@ public class AppCMSUIModule {
     private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
+    private final AssetManager assetManager;
 
     public AppCMSUIModule(Context context) {
 
@@ -135,6 +137,8 @@ public class AppCMSUIModule {
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
         int cacheSize = 10 * 1024 * 1024; // 10 MB
         cache = new Cache(context.getCacheDir(), cacheSize);
+
+        this.assetManager = context.getAssets();
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -249,6 +253,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_season_tray_title_key),
+                AppCMSUIKeyType.PAGE_TRAY_SEASON_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_date_and_image_key),
@@ -257,6 +264,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_episode_thumbnail_title_key),
+                AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_center_key),
                 AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_center_horizontal_key),
@@ -524,6 +533,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_start_watching_button_key),
                 AppCMSUIKeyType.PAGE_START_WATCHING_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_start_watching_button_key),
+                AppCMSUIKeyType.PAGE_SHOW_START_WATCHING_BUTTON_KEY);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY);
@@ -538,7 +550,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_video_subtitle_key),
-                AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
+                AppCMSUIKeyType.PAGE_SHOW_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_close_key),
@@ -557,6 +569,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchTrailer_key),
                 AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_show_watchTrailer_key),
+                AppCMSUIKeyType.PAGE_SHOW_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
@@ -564,7 +578,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
-                AppCMSUIKeyType.PAGE_API_TITLE);
+                AppCMSUIKeyType.PAGE_SHOW_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_switch_seasons_key),
+                AppCMSUIKeyType.PAGE_SHOW_SWITCH_SEASONS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
@@ -579,6 +595,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key_03),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_landscape_module_key_01),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_portrait_module_key_01),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
@@ -595,7 +616,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_movie_title_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.icon_image_key),AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_movie_image_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.icon_image_key), AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.icon_label_key), AppCMSUIKeyType.PAGE_ICON_LABEL_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_subheading_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY);
@@ -623,6 +648,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_playing_in_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_countdown_cancelled_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_COUNTDOWN_CANCELLED_LABEL_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);
@@ -671,6 +699,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_duration_label),
                 AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_end_date_label),
+                AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_manage_subscription_button_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY);
@@ -908,6 +939,12 @@ public class AppCMSUIModule {
                 AppCMSActionType.DELETE_SINGLE_DOWNLOAD_ITEM);
     }
 
+
+    @Provides
+    @Singleton
+    public AssetManager providesAssetManager() {
+        return assetManager;
+    }
 
     @Provides
     @Singleton
@@ -1259,9 +1296,13 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
+    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(AssetManager assetManager,
+                                                                   Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
-        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
+        return new AppCMSAndroidModuleCall(assetManager,
+                gson,
+                appCMSAndroidModuleRest,
+                storageDirectory);
     }
 
     @Provides

@@ -63,7 +63,8 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/footer_logo_margin_bottom">
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/shadow_view">
                 <ImageView
                     android:id="@+id/footer_logo"
                     android:layout_width="@dimen/footer_logo_width"
@@ -112,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
-                android:background="@drawable/mse_top_logo"
+                android:background="@drawable/app_logo"
                 android:layout_marginTop="@dimen/footer_info_icon_margin_bottom"
                 android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
                 />

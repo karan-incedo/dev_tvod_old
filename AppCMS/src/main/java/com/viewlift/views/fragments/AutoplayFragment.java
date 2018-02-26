@@ -128,6 +128,15 @@ public class AutoplayFragment extends Fragment {
                     }
                 });
             }
+
+            Button cancelButton = (Button) pageView.findChildViewById(R.id.autoplay_cancel_button);
+
+            if (cancelButton != null) {
+                cancelButton.setOnClickListener(v -> {
+                    fragmentInteractionListener.cancelCountdown();
+                });
+            }
+
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0)
                         .setBackgroundColor(Color.parseColor(
@@ -310,5 +319,6 @@ public class AutoplayFragment extends Fragment {
 
     public interface FragmentInteractionListener {
         void onCountdownFinished();
+        void cancelCountdown();
     }
 }

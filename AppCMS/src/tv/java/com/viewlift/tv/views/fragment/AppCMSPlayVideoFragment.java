@@ -225,6 +225,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer() {
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getActivity());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         if (!TextUtils.isEmpty(hlsUrl)) {
@@ -246,8 +247,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
 
         long playDifference = runtime - watchedTime;//((watchedTime*100)/runTime);
-        long playTimePercentage = ((watchedTime * 100) / runtime);
-
+        long playTimePercentage = 0;
+        if (runtime != 0) {
+            playTimePercentage = ((watchedTime * 100) / runtime);
+        }
         // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
         if (isTrailer || (playTimePercentage >= 98 && playDifference <= 30)) {
             videoPlayTime = 0;

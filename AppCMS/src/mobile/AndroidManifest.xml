@@ -85,17 +85,33 @@
                     android:pathPrefix="/videos"
                     android:scheme="http" />
                 <data
-                    android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/videos"
-                    android:scheme="https" />
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title" />
                 <data
-                    android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/films/title"
-                    android:scheme="http" />
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title" />
                 <data
-                    android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/films/title"
-                    android:scheme="https" />
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title/" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title/" />
             </intent-filter>
         </activity>
 

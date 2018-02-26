@@ -44,8 +44,8 @@ public class GetAppCMSPageUIAsyncTask {
 
     public static class Params {
         String url;
-        long timeStamp;
         boolean loadFromFile;
+        boolean bustCache;
         MetaPage metaPage;
 
         public static class Builder {
@@ -60,13 +60,13 @@ public class GetAppCMSPageUIAsyncTask {
                 return this;
             }
 
-            public Builder timeStamp(long timeStamp) {
-                params.timeStamp = timeStamp;
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
                 return this;
             }
 
-            public Builder loadFromFile(boolean loadFromFile) {
-                params.loadFromFile = loadFromFile;
+            public Builder bustCache(boolean bustCache) {
+                params.bustCache = bustCache;
                 return this;
             }
 
@@ -93,7 +93,9 @@ public class GetAppCMSPageUIAsyncTask {
                         try {
                             MetaPageUI metaPageUI = new MetaPageUI();
                             metaPageUI.setMetaPage(params.metaPage);
-                            metaPageUI.setAppCMSPageUI(call.call(params.url, params.timeStamp, params.loadFromFile));
+                            metaPageUI.setAppCMSPageUI(call.call(params.url,
+                                    params.bustCache,
+                                    params.loadFromFile));
                             return metaPageUI;
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
@@ -111,7 +113,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> {
                         try {
-                            return call.call(params.url, params.timeStamp, params.loadFromFile);
+                            return call.call(params.url, params.bustCache, params.loadFromFile);
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }

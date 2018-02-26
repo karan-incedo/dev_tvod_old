@@ -14,7 +14,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -49,7 +48,6 @@ import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
@@ -168,7 +166,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         //appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         mFullScreenButton = createFullScreenToggleButton();
-        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+        ((LinearLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
         createPreviewMessageView();
         touchToCastOverlay();
@@ -196,8 +194,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 isTrailer,
                 parentScreenName,
                 this,
-                mStreamId,
-                onUpdatedContentDatum);
+                mStreamId,onUpdatedContentDatum);
 
         beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -205,8 +202,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 permaLink,
                 parentScreenName,
                 this,
-                mStreamId,
-                onUpdatedContentDatum);
+                mStreamId,onUpdatedContentDatum);
+
     }
 
     public void setVideoId(String videoId) {
@@ -642,6 +639,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
+
                         }
                     }
                 }
@@ -916,7 +914,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         View layout = li.inflate(R.layout.custom_video_player_top_bar, null, false);
         mediaButton = (ImageButton) layout.findViewById(R.id.media_route_button);
         app_cms_video_player_done_button = (ImageButton) layout.findViewById(R.id.app_cms_video_player_done_button);
-        app_cms_video_player_title_view = (TextView) layout.findViewById(R.id.app_cms_video_player_title_view);
+        app_cms_video_player_title_view = (TextView) layout.findViewById(R.id.app_cms_mini_video_player_title_view);
         app_cms_video_player_done_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -220,7 +220,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
-            openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
+        openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
 //        }
 //        openUI.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT );
         return PendingIntent.getActivity(mService.getApplicationContext(), REQUEST_CODE, openUI,
@@ -280,7 +280,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
                 art = BitmapFactory.decodeResource(mService.getResources(),
-                        R.drawable.logo);
+                        R.mipmap.app_logo);
             }
         }
 
@@ -302,7 +302,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         .setMediaSession(mSessionToken))
                 .setDeleteIntent(mStopIntent)
                 .setColor(mNotificationColor)
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.mipmap.app_logo)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(createContentIntent(description))
@@ -399,7 +399,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             NotificationChannel notificationChannel =
                     new NotificationChannel(CHANNEL_ID,
                             mService.getString(R.string.notification_channel),
-                            NotificationManager.IMPORTANCE_HIGH);
+                            NotificationManager.IMPORTANCE_LOW);
 
             notificationChannel.setDescription(
                     mService.getString(R.string.notification_channel_description));

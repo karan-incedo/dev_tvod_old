@@ -89,6 +89,16 @@ public class Mobile implements Serializable {
     @Expose
     boolean isHorizontalScroll;
 
+    @SerializedName("thumbnailWidth")
+    @Expose
+    int thumbnailWidth;
+
+    @SerializedName("thumbnailHeight")
+    @Expose
+    int thumbnailHeight;
+
+    private float savedWidth;
+
     public boolean isHorizontalScroll() {
         return isHorizontalScroll;
     }
@@ -271,5 +281,29 @@ public class Mobile implements Serializable {
 
     public void setMaximumWidth(float maximumWidth) {
         this.maximumWidth = maximumWidth;
+    }
+
+    public float getSavedWidth() {
+        return savedWidth;
+    }
+
+    public void setSavedWidth(float savedWidth) {
+        this.savedWidth = savedWidth;
+    }
+
+    public int getThumbnailWidth() {
+        return thumbnailWidth;
+    }
+
+    public void setThumbnailWidth(int thumbnailWidth) {
+        this.thumbnailWidth = thumbnailWidth;
+    }
+
+    public int getThumbnailHeight() {
+        return thumbnailHeight;
+    }
+
+    public void setThumbnailHeight(int thumbnailHeight) {
+        this.thumbnailHeight = thumbnailHeight;
     }
 }

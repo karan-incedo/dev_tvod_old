@@ -105,12 +105,15 @@
     <dimen name="app_cms_dialog_close_button_margin_top">20dp</dimen>
     <dimen name="app_cms_dialog__margin">20dp</dimen>
     <dimen name="app_cms_dialog_list_divider_height">5dp</dimen>
+    <dimen name="streaming_quality_view_margin">8dp</dimen>
     <dimen name="streaming_quality_view_padding">8dp</dimen>
-    <dimen name="chromecast_default_width">28dp</dimen>
-    <dimen name="chromecast_default_height">28dp</dimen>
+    <dimen name="chromecast_default_width">36dp</dimen>
+    <dimen name="chromecast_default_height">36dp</dimen>
+    <dimen name="chromecast_default_margin_end">0dp</dimen>
     <dimen name="chromecast_default_padding_end">4dp</dimen>
     <dimen name="chromecast_default_padding_top">4dp</dimen>
 
+    <dimen name="chromecast_toolbar_padding">8dp</dimen>
 
     <dimen name="app_cms_audio_play_width">40dp</dimen>
     <dimen name="app_cms_audio_play_height">50dp</dimen>

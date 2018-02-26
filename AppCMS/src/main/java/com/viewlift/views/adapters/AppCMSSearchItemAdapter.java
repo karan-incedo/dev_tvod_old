@@ -111,7 +111,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
                 appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                         .PRESENTER_PAGE_LOADING_ACTION));
-                AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSSearchResults.get(adapterPosition).getGist().getId(),0);
+                AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSSearchResults.get(adapterPosition).getGist().getId(), 0);
                 return;
             }
              /*Get playlist data and open playlist page*/
@@ -149,7 +149,20 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
 
-        if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+       if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                appCMSSearchResults.get(adapterPosition).getGist().getPosterImageUrl() != null &&
+
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getPosterImageUrl())) {
+
+            final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
+                    appCMSSearchResults.get(adapterPosition).getGist().getPosterImageUrl(),
+                    imageWidth,
+                    imageHeight);
+
+            Glide.with(viewHolder.view.getContext())
+                    .load(imageUrl)
+                    .into(viewHolder.filmThumbnail);
+        } else if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage() != null &&
 
                 !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
@@ -204,7 +217,29 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     })
                     .into(viewHolder.filmThumbnail);
 
-        }
+        }else   if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+               appCMSSearchResults.get(adapterPosition).getGist().getImageGist() != null
+               ) {
+
+           String url="";
+           if(appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_16x9()!=null){
+               url=appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_16x9();
+           }else if(appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_3x4()!=null){
+               url=appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_3x4();
+           }else if(appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_1x1()!=null){
+               url=appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_1x1();
+           }else if(appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_4x3()!=null){
+               url=appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_4x3();
+           }
+           final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
+                   url,
+                   imageWidth,
+                   imageHeight);
+
+           Glide.with(viewHolder.view.getContext())
+                   .load(imageUrl)
+                   .into(viewHolder.filmThumbnail);
+       }
         viewHolder.gridOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

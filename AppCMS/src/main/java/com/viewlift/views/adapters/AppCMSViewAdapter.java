@@ -19,6 +19,7 @@ import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -434,11 +435,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                     List<String> audioPlaylistId = new ArrayList<String>();
                                     audioPlaylistId.add(data.getGist().getId());
+                                    AudioPlaylistHelper.getInstance().setCurrentPlaylistId(data.getGist().getId());
                                     AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
                                     AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
                                     appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                                             .PRESENTER_PAGE_LOADING_ACTION));
-                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(),0);
+                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
                                     return;
                                 }
 
@@ -713,10 +715,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    public boolean isClickable() {
-        return isClickable;
-    }
-
+    @Override
     public void setClickable(boolean clickable) {
         isClickable = clickable;
     }

@@ -52,6 +52,7 @@ android {
     def packageName
     def customApplicationId
     def hostName
+    def final hostNameSuffix
     def appVersionCode
     def appVersionName
     //def minsdkversion
@@ -67,6 +68,7 @@ android {
         packageName = versionProps['AppPackageName'].toString()
         customApplicationId = versionProps['AppName'].toString()
         hostName = versionProps['HostName'].toString()
+        hostNameSuffix = versionProps['HostNameSuffix'].toString()
         appVersionCode = versionProps['AppVersionCode'].toInteger()
         appVersionName = versionProps['AppVersionName'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
@@ -169,6 +171,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -181,6 +184,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -367,7 +371,10 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
+    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
     compile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

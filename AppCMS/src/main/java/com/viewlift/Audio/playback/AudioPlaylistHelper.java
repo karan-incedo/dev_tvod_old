@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
@@ -41,7 +42,7 @@ public class AudioPlaylistHelper {
         return appCmsPresenter;
     }
 
-    private AppCMSPresenter appCmsPresenter;
+    private static AppCMSPresenter appCmsPresenter;
     Context context;
     AppCMSPlaylistResult appCMSPlaylistResult;
     AppCMSPlaylistResult currentPlaylistData;
@@ -109,19 +110,24 @@ public class AudioPlaylistHelper {
     }
 
     public void undoShufflePlaylist() {
-        copyOfAudioPlaylistID.clear();
         currentAudioPlaylist.addAll(copyOfAudioPlaylistID);
-
         //reset current Media Id
-        if (getCurrentMediaId() != null)
+        if (getCurrentMediaId() != null) {
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(getCurrentMediaId());
+        }
+        copyOfAudioPlaylistID.clear();
     }
 
     public void autoPlayNextItemFromPLaylist(IPlaybackCall callBackPlaylistHelper) {
+
+        if (!appCmsPresenter.isNetworkConnected()) {
+            Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            return;
+        }
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
         }
     }
 
@@ -132,6 +138,7 @@ public class AudioPlaylistHelper {
 
     // play audio on click on item so set index position as per sequence of
     public void playAudioOnClickItem(String mediaId, long currentPosition) {
+        appCmsPresenter.setAudioReload(false);
         getAudioDetails(mediaId, currentPosition, true);
     }
 
@@ -142,8 +149,7 @@ public class AudioPlaylistHelper {
     private void getAudioDetails(String mediaId, long currentPosition, boolean isPlayerScreenOpen) {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true,null);
-
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, null);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
@@ -153,13 +159,18 @@ public class AudioPlaylistHelper {
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void skipToPreviousItem(IPlaybackCall callBackPlaylistHelper) {
+
+        if (!appCmsPresenter.isNetworkConnected()) {
+            Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist - 1) && indexAudioFromPlaylist - 1 >= 0) {
             indexAudioFromPlaylist--;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
@@ -168,7 +179,7 @@ public class AudioPlaylistHelper {
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
         }
@@ -177,16 +188,28 @@ public class AudioPlaylistHelper {
     public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
-        String album = "Unknown", iconUrl = "", artist = "Unknown", source = "", param_link = "", album_year = "Unknown";
+        String artist = "";
+        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown";
         long runTime = 240 * 1000;
+
         if (appCMSAudioDetailResult.getGist() != null) {
             title = appCMSAudioDetailResult.getGist().getTitle();
 
             if (appCMSAudioDetailResult.getGist().getDescription() != null)
                 album = appCMSAudioDetailResult.getGist().getDescription();
 
-            if (appCMSAudioDetailResult.getGist().getImageGist() != null && appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null)
-                iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+            if (appCMSAudioDetailResult.getGist().getImageGist() != null) {
+                if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_3x4() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_3x4();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_4x3() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_4x3();
+                }
+
+            }
 
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
@@ -194,17 +217,17 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getRuntime() != 0)
                 runTime = appCMSAudioDetailResult.getGist().getRuntime() * 1000;
 
-        }
 
-        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)
-            artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle();
+            if (appCMSAudioDetailResult.getGist().getYear() != null)
+                album_year = appCMSAudioDetailResult.getGist().getYear();
+
+        }
+        artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
 
         if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
                 && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
             source = appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl();
 
-
-        source = source;//"http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
         String genre = "";
         int trackNumber = 0;
         int totalTrackCount = 0;
@@ -247,7 +270,7 @@ public class AudioPlaylistHelper {
     }
 
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item, long mCurrentPlayerPosition) {
-        if (item.isPlayable() && appCmsPresenter.getCurrentActivity()!=null) {
+        if (item.isPlayable() && appCmsPresenter.getCurrentActivity() != null) {
             Bundle bundle = new Bundle();
             bundle.putLong("CURRENT_POSITION", mCurrentPlayerPosition);
             MediaControllerCompat.getMediaController(mAct).getTransportControls()

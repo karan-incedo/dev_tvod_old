@@ -17,7 +17,11 @@
 package com.viewlift.Audio.playback;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -57,6 +61,7 @@ public class PlaybackManager implements Playback.Callback {
     private MediaRouter mMediaRouter;
     private static boolean isCastConnected = false;
     MediaSessionCompat msession;
+
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
                            Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener, MediaSessionCompat mSession) {
@@ -109,7 +114,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePauseRequest() {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
-            mServiceCallback.onPlaybackStop();
+            mServiceCallback.onPlaybackPause();
         }
     }
 
@@ -124,7 +129,7 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
-        if(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData()!=null && AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist()!=null ){
+        if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null && AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist() != null) {
             AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().setAudioPlaying(false);
         }
         AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
@@ -264,7 +269,7 @@ public class PlaybackManager implements Playback.Callback {
 
 
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mPlayback.getCurrentId());
-            if (mediaHasChanged) {
+            if (mediaHasChanged || AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload()) {
                 long currentPosition = 0;
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
@@ -385,6 +390,7 @@ public class PlaybackManager implements Playback.Callback {
         void onNotificationRequired();
 
         void onPlaybackStop();
+        void onPlaybackPause();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
     }

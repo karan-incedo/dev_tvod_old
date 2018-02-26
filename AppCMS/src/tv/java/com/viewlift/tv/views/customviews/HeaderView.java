@@ -121,6 +121,7 @@ public class HeaderView extends TVBaseView {
                 }
                 switch (componentKey) {
                     case PAGE_VIDEO_TITLE_KEY:
+                    case PAGE_SHOW_TITLE_KEY:
                         if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {
                             ((TextView) componentView).setText(mModuleData.getContentData().get(0).getGist().getTitle());
                             if (component.getNumberOfLines() != 0) {
@@ -131,7 +132,11 @@ public class HeaderView extends TVBaseView {
                         break;
 
                     case PAGE_VIDEO_SUBTITLE_KEY:
-                        setViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
+                        setVideoViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
+                        break;
+
+                    case PAGE_SHOW_SUBTITLE_KEY:
+                        setShowViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
                         break;
                 }
         }

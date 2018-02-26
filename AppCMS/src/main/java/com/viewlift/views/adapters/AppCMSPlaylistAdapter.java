@@ -32,6 +32,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -73,6 +74,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     RecyclerView mRecyclerView;
     String downloadAudioAction;
     CollectionGridItemView[] allViews;
+    public static boolean isDownloading = true, isPlaylistDownloading = false;
+    private List<OnInternalEvent> downloadList;
 
     public AppCMSPlaylistAdapter(Context context,
                                  ViewCreator viewCreator,
@@ -161,8 +164,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             allViews[position] = holder.componentView;
             bindView(holder.componentView, adapterData.get(position), position);
             if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
-                if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
-                    adapterData.get(position).getGist().setAudioPlaying(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().isAudioPlaying());
+                if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId()) && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
+                    adapterData.get(position).getGist().setAudioPlaying(true);
                 } else {
                     adapterData.get(position).getGist().setAudioPlaying(false);
                 }
@@ -172,6 +175,21 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             } else {
                 holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
             }
+            holder.componentView.setTag((position));
+            holder.componentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.out.println("click holder");
+                    try {
+                        int clickPosition = (int) view.getTag();
+                        ContentDatum data = adapterData.get(position);
+                        playPlaylistItem(data, view, clickPosition);
+
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
 
@@ -210,53 +228,40 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
                                       ContentDatum data, int clickPosition) {
-                        if (isClickable) {
-                            if (data.getGist() != null) {
-                                String action = null;
-                                if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
-                                    action = childComponent.getAction();
-                                }
-                                if (action != null && action.contains(downloadAudioAction)) {
-                                    ImageButton download = null;
-                                    for (int i = 0; i < collectionGridItemView.getChildItems().size(); i++) {
-                                        CollectionGridItemView.ItemContainer itemContainer = collectionGridItemView.getChildItems().get(i);
-                                        if (itemContainer.getComponent().getKey() != null) {
-                                            if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
-                                                download = (ImageButton) itemContainer.getChildView();
+                        try {
+                            System.out.println("playlist adapter on click-");
+
+                            isDownloading = true;
+                            if (isClickable) {
+                                if (data.getGist() != null) {
+                                    String action = null;
+                                    if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
+                                        action = childComponent.getAction();
+                                    }
+                                    if (action != null && action.contains(downloadAudioAction)) {
+                                        ImageButton download = null;
+                                        for (int i = 0; i < collectionGridItemView.getChildItems().size(); i++) {
+                                            CollectionGridItemView.ItemContainer itemContainer = collectionGridItemView.getChildItems().get(i);
+                                            if (itemContainer.getComponent().getKey() != null) {
+                                                if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
+                                                    download = (ImageButton) itemContainer.getChildView();
+                                                    download.setTag(true);
+                                                }
                                             }
                                         }
-                                    }
-                                    audioDownload(download, data, false);
-                                }
-                                if (action == null) {
-                          /*get audio details on tray click item and play song*/
-                                    if (data.getGist() != null &&
-                                            data.getGist().getMediaType() != null &&
-                                            data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                                            data.getGist().getContentType() != null &&
-                                            data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                        appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                                                .PRESENTER_PAGE_LOADING_ACTION));
-                                        // on click from playlist adapter .Get playlist from temp list and set into current playlist
-                                        if (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId)) {
-                                            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
-                                            AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
-                                            AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
-                                        }
-                                        if (oldClick == -1) {
-                                            oldClick = clickPosition;
-                                            data.getGist().setAudioPlaying(true);
-                                        } else {
-                                            adapterData.get(oldClick).getGist().setAudioPlaying(false);
-                                            oldClick = clickPosition;
-                                            data.getGist().setAudioPlaying(true);
-                                        }
-                                        updateData(mRecyclerView, adapterData);
-                                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+
+                                        audioDownload(download, data, false);
+
                                         return;
+                                    }
+                                    if (action == null) {
+                          /*get audio details on tray click item and play song*/
+                                        playPlaylistItem(data, itemView, clickPosition);
                                     }
                                 }
                             }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            e.printStackTrace();
                         }
                     }
 
@@ -267,6 +272,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
             }
         }
+
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
             itemView.bindChild(itemView.getContext(),
                     itemView.getChild(i),
@@ -276,8 +282,52 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
         }
+
+        updatePlaylistAllStatus();
+//        if (pageView.findChildViewById(R.id.playlist_download_id) != null && isAllVideoDownloaded) {
+//            (playlistDownloadBtn).setImageResource(R.drawable.ic_downloaded);
+//
+//        }
     }
 
+    private void updatePlaylistAllStatus() {
+        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id) != null && appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+            ((ImageButton) appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id)).setImageResource(R.drawable.ic_downloaded);
+        }
+    }
+
+
+    private void playPlaylistItem(ContentDatum data, View itemView, int clickPosition) {
+        if (data.getGist() != null &&
+                data.getGist().getMediaType() != null &&
+                data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                data.getGist().getContentType() != null &&
+                data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+            appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
+            // on click from playlist adapter .Get playlist from temp list and set into current playlist
+            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) || (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
+                AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
+            }
+            if (adapterData.size() > oldClick) {
+                if (oldClick != clickPosition) {
+                    if (oldClick == -1) {
+                        oldClick = clickPosition;
+                        data.getGist().setAudioPlaying(true);
+                    } else {
+                        adapterData.get(oldClick).getGist().setAudioPlaying(false);
+                        oldClick = clickPosition;
+                        data.getGist().setAudioPlaying(true);
+                    }
+                }
+            }
+            updateData(mRecyclerView, adapterData);
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+            return;
+        }
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CollectionGridItemView componentView;
@@ -332,21 +382,28 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         return context.getString(R.string.app_cms_download_audio_action);
     }
 
+
     public void startDownloadPlaylist() {
+        isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
                     if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
+
                         ImageButton download = (ImageButton) itemContainer.getChildView();
+                        download.setTag(true);
+                        isDownloading = true;
                         audioDownload(download, adapterData.get(i), true);
+
                     }
                 }
             }
         }
     }
 
-    void audioDownload(ImageButton download, ContentDatum data, Boolean playlistDownload) {
+
+    synchronized void audioDownload(ImageButton download, ContentDatum data, Boolean playlistDownload) {
         appCMSPresenter.getAudioDetail(data.getGist().getId(),
                 0, null, false, false,
                 new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
@@ -360,6 +417,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         false, null) {
                     @Override
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDownload);
                     }
@@ -381,7 +439,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     /**
      * This class has been created to updated the Download Image Action and Status
      */
-    private static class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
+    private class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
         private final AppCMSPresenter appCMSPresenter;
         private final ContentDatum contentDatum;
         private final String userId;
@@ -398,6 +456,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             this.userId = userId;
 
             addClickListener = v -> {
+
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
@@ -415,17 +474,24 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
+                    System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
 
                                     });
                                 });
                     } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
                                 () -> {
                                     appCMSPresenter.setAfterLoginAction(() -> {
 
@@ -447,6 +513,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_FAILED:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
+
                         break;
 
                     case STATUS_PAUSED:
@@ -454,10 +521,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         break;
 
                     case STATUS_PENDING:
-                        appCMSPresenter.setDownloadInProgress(false);
+                        appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
+
                         break;
 
                     case STATUS_RUNNING:
@@ -469,10 +537,13 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                     case STATUS_SUCCESSFUL:
                         appCMSPresenter.setDownloadInProgress(false);
-                        appCMSPresenter.cancelDownloadIconTimerTask();
+                        appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.notifyDownloadHasCompleted();
+                        System.out.println("download start successfull-" + contentDatum.getGist().getTitle());
+
+//                        downloadPlaylist();
                         break;
 
                     case STATUS_INTERRUPTED:
@@ -482,6 +553,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         break;
 
                     default:
+
                         //Log.d(TAG, "No download Status available ");
                         break;
                 }
@@ -493,10 +565,36 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                imageButton.setOnClickListener(addClickListener);
-//                if (playlistDownload) {
-//                addClickListener.onClick(imageButton);
+//                if(isPlaylistDownloading){
+//                    imageButton.setOnClickListener(addClickListener);
 //                }
+//                if ((boolean) imageButton.getTag()) {
+////                    imageButton.setTag(false);
+//                    System.out.println("download status start");
+//
+//                    addClickListener.onClick(imageButton);
+//                }
+//                imageButton.setOnClickListener(addClickListener);
+//                addClickListener.onClick(imageButton);
+
+                System.out.println("download start call-" + contentDatum.getGist().getTitle());
+
+                if ((boolean) imageButton.getTag()) {
+                    imageButton.setTag(false);
+                    addClickListener.onClick(imageButton);
+                }
+//                new android.os.Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if ((boolean) imageButton.getTag()) {
+//                            imageButton.setTag(false);
+//
+//                            addClickListener.onClick(imageButton);
+//                        }
+//                    }
+//                }, 50);
+
+
             }
         }
 
@@ -505,4 +603,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         }
 
     }
+
+    public interface IUpdateState {
+        public void updateState();
+    }
 }
+

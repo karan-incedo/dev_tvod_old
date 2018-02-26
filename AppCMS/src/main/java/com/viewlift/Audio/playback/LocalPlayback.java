@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -91,6 +93,7 @@ public final class LocalPlayback implements Playback {
     private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
     boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
+    private boolean isNetworkConnected = true;
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
     private boolean mExoPlayerNullIsStopped = false;
@@ -237,6 +240,7 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
+
         mCurrentMediaId = null;
         if (mProgressHandler != null) {
             isStreamStart = false;
@@ -288,6 +292,10 @@ public final class LocalPlayback implements Playback {
     @Override
     public boolean isPlaying() {
         return mPlayOnFocusGain || (mExoPlayer != null && mExoPlayer.getPlayWhenReady());
+    }
+
+    public boolean isPaused() {
+        return mPlayOnFocusGain || (mExoPlayer != null && !mExoPlayer.getPlayWhenReady());
     }
 
     @Override
@@ -374,9 +382,11 @@ public final class LocalPlayback implements Playback {
             }
 
         }
-
         configurePlayerState();
         mCallback.onPlaybackStatusChanged(getState());
+        if (appCMSPresenter.getAudioReload()) {
+            relaodAudioItem();
+        }
     }
 
     private void setUri(String source) {
@@ -616,7 +626,7 @@ public final class LocalPlayback implements Playback {
                                 mTotalAudioDuration -= mTotalAudioDuration % 4;
 
                             }
-
+                            appCMSPresenter.setAudioReload(false);
                             if (mProgressHandler != null)
                                 mProgressHandler.post(mProgressRunnable);
                             if (!sentBeaconFirstFrame && appCMSPresenter != null) {
@@ -688,11 +698,25 @@ public final class LocalPlayback implements Playback {
                 default:
                     what = "Unknown: " + error;
             }
-            long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
-            MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
-            System.out.println("Exo Player erroe" + error.type);
-            AudioPlaylistHelper.getInstance().playAudio(mCurrentMediaId, mCurrentPlayerPosition);
+
+            ConnectivityManager connectivityManager = (ConnectivityManager) appCMSPresenter.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = null;
+
+            if (connectivityManager != null) {
+                activeNetwork = connectivityManager.getActiveNetworkInfo();
+            }
+
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+            if (mCallback != null) {
+                mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+            }
+            appCMSPresenter.setAudioReload(true);
+            System.out.println("is network connected-" + isConnected);
+            relaodAudioItem();
+
         }
+
 
         @Override
         public void onPositionDiscontinuity(int reason) {
@@ -721,6 +745,21 @@ public final class LocalPlayback implements Playback {
 
     }
 
+    @Override
+    public void relaodAudioItem() {
+        if (appCMSPresenter!=null && appCMSPresenter.isNetworkConnected()) {
+            isNetworkConnected = true;
+            if(mExoPlayer!=null) {
+                long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
+                MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
+                AudioPlaylistHelper.getInstance().playAudio(mCurrentMediaId, mCurrentPlayerPosition);
+            }
+        } else {
+//            stopPlayback(false);
+            isNetworkConnected = false;
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        }
+    }
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
