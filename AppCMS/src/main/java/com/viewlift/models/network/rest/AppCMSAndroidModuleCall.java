@@ -87,7 +87,7 @@ public class AppCMSAndroidModuleCall {
             for (String[] jsonFromAssetsVal : jsonFromAssets) {
                 if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
                     // TODO: Uncomment after module is available from AppCMS
-//                    if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
+                    if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
                         try {
                             InputStream inputStream = assetManager.open(jsonFromAssetsVal[1]);
                             BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -100,7 +100,7 @@ public class AppCMSAndroidModuleCall {
                                     ": " +
                                     e.getMessage());
                         }
-//                    }
+                    }
                 }
             }
         }
