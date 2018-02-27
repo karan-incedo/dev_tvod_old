@@ -17,11 +17,7 @@
 package com.viewlift.Audio.playback;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -32,6 +28,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
@@ -40,6 +37,7 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.R;
 
 
 /**
@@ -126,6 +124,8 @@ public class PlaybackManager implements Playback.Callback {
      *                  MediaController clients.
      */
     public void handleStopRequest(String withError) {
+        if (mPlayback.getCurrentStreamPosition() < mPlayback.getTotalDuration())
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
@@ -206,8 +206,13 @@ public class PlaybackManager implements Playback.Callback {
         {
             if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
                 handleStopRequest(null);
+            } else if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+//                getPlayback().setCurrentId(AudioPlaylistHelper.getInstance().getNextItemId());
             } else {
                 AudioPlaylistHelper.getInstance().autoPlayNextItemFromPLaylist(callBackPlaylistHelper);
+
             }
         }
     }
@@ -291,13 +296,27 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            AudioPlaylistHelper.getInstance().skipToNextItem(callBackPlaylistHelper);
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
+
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+
+            } else {
+                AudioPlaylistHelper.getInstance().skipToNextItem(callBackPlaylistHelper);
+            }
         }
 
         @Override
         public void onSkipToPrevious() {
-            AudioPlaylistHelper.getInstance().skipToPreviousItem(callBackPlaylistHelper);
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
 
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            } else {
+                AudioPlaylistHelper.getInstance().skipToPreviousItem(callBackPlaylistHelper);
+            }
         }
 
         @Override
@@ -355,6 +374,7 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+
     /**
      * Switch to a different Playback instance, maintaining all playback state, if possible.
      *
@@ -367,7 +387,7 @@ public class PlaybackManager implements Playback.Callback {
 
         long pos = getPlayback().getCurrentStreamPosition();
         String currentMediaId = AudioPlaylistHelper.getInstance().getCurrentMediaId();
-        AudioPlaylistHelper.getInstance().stopPlayback();
+        AudioPlaylistHelper.getInstance().pausePlayback();
         this.mPlayback.stopPlayback(true);
         AudioPlaylistHelper.getInstance().setCurrentMediaId(currentMediaId);
         setCurrentMediaId(currentMediaId);
@@ -390,6 +410,7 @@ public class PlaybackManager implements Playback.Callback {
         void onNotificationRequired();
 
         void onPlaybackStop();
+
         void onPlaybackPause();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);

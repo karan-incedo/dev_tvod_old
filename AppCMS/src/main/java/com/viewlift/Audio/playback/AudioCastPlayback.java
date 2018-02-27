@@ -175,6 +175,10 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public long getTotalDuration() {
+        if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession() && mRemoteMediaClient.getStreamDuration()>0) {
+            mRemoteMediaClient.pause();
+            return mRemoteMediaClient.getStreamDuration();
+        }
         return 0;
     }
 
@@ -201,6 +205,15 @@ public class AudioCastPlayback implements Playback {
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
 
                 }
+
+                if (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails() != null &&
+                        AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId().equalsIgnoreCase(mCurrentMediaId) &&
+                        AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition() > 0) {
+                    currentPosition = (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition());
+                }
+                //reset last save position
+                AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
+
                 audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
                 audioData.getGist().setAudioPlaying(true);
                 appCMSPresenter.notifyDownloadHasCompleted();
@@ -226,6 +239,7 @@ public class AudioCastPlayback implements Playback {
                 mCallback.onError(e.getMessage());
             }
         }
+
     }
 
 

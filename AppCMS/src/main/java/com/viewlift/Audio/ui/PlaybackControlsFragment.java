@@ -40,8 +40,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 import java.util.concurrent.Executors;
@@ -114,21 +116,25 @@ public class PlaybackControlsFragment extends Fragment {
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-                MediaMetadataCompat metadata = controller.getMetadata();
-                if (metadata != null) {
-                    intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                            metadata);
-                }
-                startActivity(intent);
-                getActivity().overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
-
+                launchAudioPlayer();
             }
         });
 
         return rootView;
+    }
+
+    private void launchAudioPlayer() {
+        Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        MediaMetadataCompat metadata = controller.getMetadata();
+        if (metadata != null) {
+            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                    metadata);
+        }
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+
     }
 
     @Override
@@ -161,7 +167,7 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     public void onConnected() {
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
             if (controller != null) {
                 onMetadataChanged(controller.getMetadata());
@@ -183,9 +189,21 @@ public class PlaybackControlsFragment extends Fragment {
 
         updateDuration(metadata);
         mTitle.setText(metadata.getDescription().getTitle());
-
+        checkSubscription(metadata);
     }
 
+    public void checkSubscription(MediaMetadataCompat metadata) {
+        if (getActivity() != null) {
+            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+            if(!isFree.equalsIgnoreCase("true")){
+                if(!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())){
+                    pauseMedia();
+                }
+            }
+
+        }
+    }
 
     public void onPlaybackStateChanged(PlaybackStateCompat state) {
         if (getActivity() == null) {
@@ -214,9 +232,6 @@ public class PlaybackControlsFragment extends Fragment {
         } else {
             mPlayPause.setBackground(getActivity().getDrawable(R.drawable.pause_track_white));
         }
-
-        int tintColor = (getActivity().getResources().getColor(android.R.color.white));
-
     }
 
 
@@ -282,7 +297,17 @@ public class PlaybackControlsFragment extends Fragment {
                     if (state == PlaybackStateCompat.STATE_PAUSED ||
                             state == PlaybackStateCompat.STATE_STOPPED ||
                             state == PlaybackStateCompat.STATE_NONE) {
-                        playMedia();
+                        AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+                        MediaMetadataCompat metadata = controller.getMetadata();
+                        String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+
+                        if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || isFree.equalsIgnoreCase("true")) {
+
+                            playMedia();
+                        } else {
+                            launchAudioPlayer();
+                        }
+//                        playMedia();
                     } else if (state == PlaybackStateCompat.STATE_PLAYING ||
                             state == PlaybackStateCompat.STATE_BUFFERING ||
                             state == PlaybackStateCompat.STATE_CONNECTING) {

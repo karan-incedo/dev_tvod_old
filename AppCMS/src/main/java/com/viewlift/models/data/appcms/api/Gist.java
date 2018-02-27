@@ -46,6 +46,14 @@ public class Gist implements Serializable {
     @Expose
     long runtime;
 
+    public boolean isFree() {
+        return isFree;
+    }
+
+    @SerializedName("isFree")
+    @Expose
+    boolean isFree;
+
     @SerializedName("posterImageUrl")
     @Expose
     String posterImageUrl;

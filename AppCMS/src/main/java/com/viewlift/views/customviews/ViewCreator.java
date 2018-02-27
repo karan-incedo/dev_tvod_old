@@ -812,6 +812,11 @@ public class ViewCreator {
                                             }
                                         });
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY) {
+                                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
+                                            view.setVisibility(View.GONE);
+
+                                        }
+
                                         view.setOnClickListener(v -> {
                                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
                                             if (appCMSMain != null &&
@@ -2608,7 +2613,7 @@ public class ViewCreator {
                                             .get(0).getGist().getId()));
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        //as of now set visibility gone for wathclist button as this is on hold
+                        //as of now set visibility gone for watchlist button as this is on hold
                         if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
@@ -2830,6 +2835,10 @@ public class ViewCreator {
                                 }
                             }
                         });
+                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+
+                        }
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
