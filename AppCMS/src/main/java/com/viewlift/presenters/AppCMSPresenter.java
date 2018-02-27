@@ -882,9 +882,9 @@ public class AppCMSPresenter {
             if (timeInString.length() > 0) {
                 timeInString.append(":");
             }
-            if (hours < 10) {
+            /*if (hours < 10) {
                 timeInString.append("0");
-            }
+            }*/
             timeInString.append(Long.toString(hours));
         } else {
             timeInString.append("0");
