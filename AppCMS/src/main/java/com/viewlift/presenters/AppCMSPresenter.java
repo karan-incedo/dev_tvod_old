@@ -84,10 +84,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-//import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-//import com.kiswe.kmsdkcorekit.reports.Report;
-//import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-//import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -299,6 +295,11 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
+
+//import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+//import com.kiswe.kmsdkcorekit.reports.Report;
+//import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+//import com.kiswe.kmsdkcorekit.reports.Reports;
 
 /*
  * Created by viewlift on 5/3/17.
@@ -881,7 +882,12 @@ public class AppCMSPresenter {
             if (timeInString.length() > 0) {
                 timeInString.append(":");
             }
+            if (hours < 10) {
+                timeInString.append("0");
+            }
             timeInString.append(Long.toString(hours));
+        } else {
+            timeInString.append("0");
         }
 
         long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
@@ -890,6 +896,9 @@ public class AppCMSPresenter {
         if (timeInString.length() > 0) {
             timeInString.append(":");
         }
+        if (minutes < 10) {
+            timeInString.append("0");
+        }
         timeInString.append(Long.toString(minutes));
 //        }
 
@@ -897,6 +906,9 @@ public class AppCMSPresenter {
 //        if (seconds != 0 || timeInString.length() > 0){
         if (timeInString.length() > 0) {
             timeInString.append(":");
+        }
+        if (seconds < 10) {
+            timeInString.append("0");
         }
         timeInString.append(Long.toString(seconds));
 //        }

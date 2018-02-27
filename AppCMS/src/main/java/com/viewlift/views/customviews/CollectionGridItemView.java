@@ -655,7 +655,8 @@ public class CollectionGridItemView extends BaseView {
                             }
                             ((TextView) view).setText(readTimeText);
                         } else {
-                            ((TextView) view).setText(thumbInfo);
+                            long runtime = data.getGist().getRuntime();
+                            ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
