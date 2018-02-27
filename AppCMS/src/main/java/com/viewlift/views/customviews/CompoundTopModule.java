@@ -71,6 +71,7 @@ public class CompoundTopModule extends ModuleView {
         }
 
         parentView.addView(topComponent);
+        setBackgroundColor(Color.GRAY);
     }
 
     private void addComponentTab(final ViewGroup parent) {

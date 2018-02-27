@@ -1637,7 +1637,7 @@
               "xAxis": 0,
               "rightMargin": 0,
               "height": 384,
-              "width": 683
+              "width": 0
             },
             "tabletPortrait": {
               "yAxis": 0,
@@ -1948,23 +1948,26 @@
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "height": 30
                 },
                 "tabletLandscape": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "height": 30
                 },
                 "tabletPortrait": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "height": 30
                 }
               },
               "fontFamily": "OpenSans",
-              "textAlignment": "left",
+              "textAlignment": "center_vertical",
               "numberOfLines": 2,
               "type": "label",
               "textColor": "#000000",
