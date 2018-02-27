@@ -3048,27 +3048,27 @@ public class ViewCreator {
 
             case PAGE_ADS_KEY:
                 //todo need to work for managing Subscribed User case scanerio
+                if(!appCMSPresenter.isUserSubscribed()) {
+                    componentViewResult.componentView = new AdView(context);
+                    switch (jsonValueKeyMap.get(viewType)) {
+                        case PAGE_BANNER_AD_MODULE_KEY:
+                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                            break;
+                        case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
+                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.MEDIUM_RECTANGLE);
+                            break;
+                    }
 
-                componentViewResult.componentView = new AdView(context);
-                switch (jsonValueKeyMap.get(viewType)) {
-                    case PAGE_BANNER_AD_MODULE_KEY:
-                        ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
-                        break;
-                    case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
-                        ((AdView) componentViewResult.componentView).setAdSize(AdSize.MEDIUM_RECTANGLE);
-                        break;
+                    if (moduleAPI != null &&
+                            moduleAPI.getMetadataMap() != null &&
+                            moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
+                        LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
+                        MobileAds.initialize(context, admap.get("adTag"));
+                        ((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        ((AdView) componentViewResult.componentView).loadAd(adRequest);
+                    }
                 }
-
-                if (moduleAPI != null &&
-                        moduleAPI.getMetadataMap() != null &&
-                        moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
-                    LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
-                    MobileAds.initialize(context, admap.get("adTag"));
-                    ((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
-                    AdRequest adRequest = new AdRequest.Builder().build();
-                    ((AdView) componentViewResult.componentView).loadAd(adRequest);
-                }
-
                 break;
 
             case PAGE_LABEL_KEY:
