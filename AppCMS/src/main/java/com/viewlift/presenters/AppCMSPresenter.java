@@ -10565,7 +10565,7 @@ public class AppCMSPresenter {
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     this.appCMSAndroid = appCMSAndroidUI;
 
-                                    initializeAppCMSAnalytics(appCMSAndroidUI);
+                                    initializeAppCMSAnalytics();
 
                                     navigation = appCMSAndroidUI.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
@@ -10667,9 +10667,11 @@ public class AppCMSPresenter {
         }
     }
 
-    private void initializeAppCMSAnalytics(AppCMSAndroidUI appCMSAndroidUI) {
-        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-        initAppsFlyer(appCMSAndroidUI);
+    public void initializeAppCMSAnalytics() {
+        if (appCMSAndroid != null) {
+            initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
+            initAppsFlyer(appCMSAndroid);
+        }
     }
 
     private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
