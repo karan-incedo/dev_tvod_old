@@ -111,6 +111,9 @@ public class ContentDatum implements Serializable {
     @Expose
     ShowDetails showDetails;
 
+    // NOTE: The actual name value pair from the backend will be different
+    boolean isHdEnabled;
+
     public Gist getGist() {
         return gist;
     }
@@ -323,5 +326,13 @@ public class ContentDatum implements Serializable {
         moduleList.add(module);
         appCMSPageAPI.setModules(moduleList);
         return appCMSPageAPI;
+    }
+
+    public boolean isHdEnabled() {
+        return isHdEnabled;
+    }
+
+    public void setHdEnabled(boolean hdEnabled) {
+        isHdEnabled = hdEnabled;
     }
 }

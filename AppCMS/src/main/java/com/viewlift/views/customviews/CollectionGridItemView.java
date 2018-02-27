@@ -543,7 +543,7 @@ public class CollectionGridItemView extends BaseView {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
-                        if (childComponent.isHdEnabled()) {
+                        if (childComponent.isHdEnabled() && data.isHdEnabled()) {
                             Spannable spannable = new SpannableString(" " + data.getGist().getTitle());
                             Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_black_24dp);
                             ImageSpan image = new ImageSpan(hdImage, ImageSpan.ALIGN_BOTTOM);
