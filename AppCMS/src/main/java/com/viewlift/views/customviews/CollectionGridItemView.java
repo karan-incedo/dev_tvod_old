@@ -305,7 +305,7 @@ public class CollectionGridItemView extends BaseView {
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop()
+                                        .centerCrop().placeholder(R.drawable.img_placeholder)
                                         .into((ImageView) view);
                                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
@@ -327,7 +327,7 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 Glide.with(context)
-                                        .load(imageUrl)
+                                        .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop()
                                         .into((ImageView) view);
@@ -354,7 +354,7 @@ public class CollectionGridItemView extends BaseView {
                                     imageWidth,
                                     imageHeight)) {
                                 Glide.with(context)
-                                        .load(imageUrl)
+                                        .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                         .transform(new BitmapTransformation(context) {
                                             @Override
@@ -429,7 +429,7 @@ public class CollectionGridItemView extends BaseView {
 
                         if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                             Glide.with(context)
-                                    .load(imageUrl)
+                                    .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -449,7 +449,7 @@ public class CollectionGridItemView extends BaseView {
                         if (context instanceof Activity && !((Activity) context).isFinishing()) {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 Glide.with(context)
-                                        .load(imageUrl)
+                                        .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                         .override(childViewWidth, childViewHeight)
                                         .into((ImageView) view);
                                 ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -646,12 +646,12 @@ public class CollectionGridItemView extends BaseView {
                             StringBuilder readTimeText = new StringBuilder()
                                     .append(data.getGist().getReadTime().trim())
                                     .append(context.getString(R.string.mins_abbreviation))
-                                    .append(" read ")
-                                    .append("|");
+                                    .append(" read ");
 
-                            if (thumbInfo != null) {
-                                readTimeText.append(" ")
-                                        .append(thumbInfo);
+                            if (thumbInfo != null && thumbInfo.length() > 0) {
+                                readTimeText.append("|")
+                                .append(" ")
+                                .append(thumbInfo);
                             }
                             ((TextView) view).setText(readTimeText);
                         } else {
