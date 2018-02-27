@@ -277,8 +277,8 @@ public class CollectionGridItemView extends BaseView {
                         childViewWidth = (16 * childViewHeight) / 9;
                     }
 
-                    if(data.getGist().getContentType()!=null && data.getGist().getContentType().equalsIgnoreCase("AUDIO")){
-                        String url="";
+                    if (data.getGist().getContentType() != null && data.getGist().getContentType().equalsIgnoreCase("AUDIO")) {
+                        String url = "";
                         if (data.getGist().getImageGist() != null) {
                             if (data.getGist().getImageGist().get_1x1() != null) {
                                 url = data.getGist().getImageGist().get_1x1();
@@ -296,7 +296,10 @@ public class CollectionGridItemView extends BaseView {
                                     url,
                                     childViewWidth,
                                     childViewHeight);
-                            System.out.println("Image Url-"+imageUrl);
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                            System.out.println("Image Url-" + imageUrl);
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -306,8 +309,7 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                             //
                         }
-                    }
-                   else if (childViewHeight > childViewWidth &&
+                    } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
