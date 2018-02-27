@@ -574,7 +574,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = videoAction;
+                    String action = component.getTrayClickAction();
 
                     String contentType = "";
 

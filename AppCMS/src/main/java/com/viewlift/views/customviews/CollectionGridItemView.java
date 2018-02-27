@@ -17,9 +17,11 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.Gravity;
@@ -541,12 +543,23 @@ public class CollectionGridItemView extends BaseView {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
-                        ((TextView) view).setText(data.getGist().getTitle());
+                        if (childComponent.isHdEnabled()) {
+                            Spannable spannable = new SpannableString(" " + data.getGist().getTitle());
+                            Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_black_24dp);
+                            ImageSpan image = new ImageSpan(hdImage, ImageSpan.ALIGN_BOTTOM);
+                            hdImage.setBounds(0, 0, 64,64);
+                            spannable.setSpan(image, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                            ((TextView) view).setText(spannable);
+                        } else {
+                            ((TextView) view).setText(data.getGist().getTitle());
+                        }
+
                         if (0 < childComponent.getMinLines()) {
                             ((TextView) view).setSingleLine(false);
                             ((TextView) view).setMinLines(childComponent.getMinLines());
                             ((TextView) view).setMaxLines(childComponent.getMinLines());
                         }
+
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             ((TextView) view).setTextColor(
                                     Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));

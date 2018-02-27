@@ -54,6 +54,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     int minLines;
 
+    @SerializedName("hdEnabled")
+    @Expose
+    boolean hdEnabled;
+
     public int getOpacity() {
         return opacity;
     }
@@ -603,6 +607,14 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setMinLines(int minLines) {
         this.minLines = minLines;
+    }
+
+    public boolean isHdEnabled() {
+        return hdEnabled;
+    }
+
+    public void setHdEnabled(boolean hdEnabled) {
+        this.hdEnabled = hdEnabled;
     }
 
     public boolean isAlwaysVisible() {

@@ -158,7 +158,7 @@
           "gridWidth": 319
         }
       },
-      "trayClickAction": "lectureDetailPage",
+      "trayClickAction": "watchVideo",
       "components": [
         {
           "layout": {
@@ -214,6 +214,7 @@
           "type": "label",
           "textColor": "#000000",
           "fontWeight": "Semibold",
+          "hdEnabled": true,
           "key": "thumbnailTitle"
         },
         {
