@@ -441,12 +441,6 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_authName),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_date),
-                AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_Nophotos),
-                AppCMSUIKeyType.PAGE_PHOTO_GALLERY_NoPHOTOS_TXT_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_subTitle),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY);
 

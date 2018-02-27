@@ -3102,21 +3102,6 @@ public class ViewCreator {
                     }
                 }
 
-               /* if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
-                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-
-                        ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd") + " |");
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
-                    }
-                }
-
-                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_NoPHOTOS_TXT_KEY) {
-                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
-                    }
-                }*/
-
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY) {
 
                     StringBuilder tags = new StringBuilder();
