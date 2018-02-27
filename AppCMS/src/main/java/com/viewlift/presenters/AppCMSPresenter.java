@@ -875,6 +875,12 @@ public class AppCMSPresenter {
         clearMaps();
     }
 
+    /**
+     * This detects whether the input text field contains spaces and displays a Toast message
+     * if spaces are detected
+     * @param passwordEditText The text field to examine for spaces
+     * @param con The text field Context
+     */
     /*does not let user enter space in editText*/
     public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
         /* To restrict Space Bar in Keyboard */
@@ -890,6 +896,13 @@ public class AppCMSPresenter {
         passwordEditText.setFilters(new InputFilter[]{filter});
     }
 
+    /**
+     * This will format a time value in msec since the epoch and convert it into a String value using
+     * the dataFormat value.
+     * @param timeMilliSeconds The time value to convert into a Date/Time string
+     * @param dateFormat The data format to use for the conversion
+     * @return Returns the converted Date/Time string
+     */
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
         // Create a calendar object that will convert the date and time value in milliseconds to date.
@@ -898,6 +911,12 @@ public class AppCMSPresenter {
         return formatter.format(calendar.getTime());
     }
 
+    /**
+     * This converts an input time value in msec since the epoch into a Time value in the format
+     * HH:MM:SS
+     * @param runtime The input time value to convert
+     * @return Return a string with the converted time in the format HH:MM:SS
+     */
     public static String convertSecondsToTime(long runtime) {
         StringBuilder timeInString = new StringBuilder();
         runtime = runtime * 1000;
@@ -936,6 +955,12 @@ public class AppCMSPresenter {
         return timeInString.toString();
     }
 
+    /**
+     * This prepends a '#' symbol to beginning of color string if it missing from the string
+     * @param context The current Context
+     * @param color The color to prepend a '#' symbol
+     * @return Returns the updated color string with a prepended '#'
+     */
     public static String getColor(Context context, String color) {
         if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
@@ -943,22 +968,42 @@ public class AppCMSPresenter {
         return color;
     }
 
+    /**
+     * This returns the current Android JSON object
+     * @return Return the current Android JSON object
+     */
     public AppCMSAndroidUI getAppCMSAndroid() {
         return appCMSAndroid;
     }
 
+    /**
+     * This sets the current Android JSON object
+     * @param appCMSAndroid The Android JSON object to be assigned
+     */
     public void setAppCMSAndroid(AppCMSAndroidUI appCMSAndroid) {
         this.appCMSAndroid = appCMSAndroid;
     }
 
+    /**
+     * Returns a flag to indicate whether the no network connectivity Toast should be displayed.
+     * @return Returns a flag to indicate whether the no network connectivity Toast should be displayed
+     */
     public boolean shouldShowNetworkContectivity() {
         return showNetworkConnectivity;
     }
 
+    /**
+     * Sets the flag used to indicate whether the no network connectivity Toast should be displayed.
+     * @param showNetworkConnectivity The value of the flag
+     */
     public void setShowNetworkConnectivity(boolean showNetworkConnectivity) {
         this.showNetworkConnectivity = showNetworkConnectivity;
     }
 
+    /**
+     * This sets the flag used to indicate whether all current network loads should be cancelled.
+     * @param cancelAllLoads The flag used to indicate whether all current network loads should be cancelled
+     */
     public void setCancelAllLoads(boolean cancelAllLoads) {
         this.cancelAllLoads = cancelAllLoads;
         if (cancelAllLoads) {
@@ -966,14 +1011,28 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This returns the navigation JSON object returned in the main.json JSON object.
+     * @return Returns the navigation JSON object returned in the main.json JSON object.
+     */
     public Navigation getNavigation() {
         return navigation;
     }
 
+    /**
+     * This returns the flag used to indicate whether the subscription flow banner message
+     * should be displayed to the user.
+     * @return Returns the flag used to indicate whether the subscription flow banner message
+     * should be displayed to the user
+     */
     public SubscriptionFlowContent getSubscriptionFlowContent() {
         return subscriptionFlowContent;
     }
 
+    /**
+     * Returns the LRU cache for storing the most recent page API responses.
+     * @return Returns the LRU cache for storing the most recent page API responses
+     */
     private LruCache<String, AppCMSPageAPI> getPageAPILruCache() {
         if (pageAPILruCache == null) {
             int PAGE_API_LRU_CACHE_SIZE = 10;
@@ -982,6 +1041,10 @@ public class AppCMSPresenter {
         return pageAPILruCache;
     }
 
+    /**
+     * Return the LRU cache used for storing the most recent Page View objects.
+     * @return Return the LRU cache used for storing the most recent Page View objects
+     */
     public LruCache<String, PageView> getPageViewLruCache() {
         if (pageViewLruCache == null) {
             int PAGE_LRU_CACHE_SIZE = 10;
@@ -990,12 +1053,22 @@ public class AppCMSPresenter {
         return pageViewLruCache;
     }
 
+    /**
+     * This removes a Page API response from the LRU cache.
+     * @param context The current Context
+     * @param pageId The pageId used to identify the element in the LRU cache
+     */
     public void removeLruCacheItem(Context context, String pageId) {
         if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
             getPageViewLruCache().remove(pageId + BaseView.isLandscape(context));
         }
     }
 
+    /**
+     * This resets the current Activity object when an Activity has been destroyed and should no
+     * longer be used.
+     * @param closedActivity The current Activity to be reset.
+     */
     public void unsetCurrentActivity(Activity closedActivity) {
         if (currentActivity == closedActivity) {
             currentActivity = null;
@@ -1009,6 +1082,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This calls the GA intialization method to begin tracking events.
+     * @param trackerId The GA ID to assign to the new tracker
+     */
     private void initializeGA(String trackerId) {
         if (this.googleAnalytics == null && currentActivity != null) {
             this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
@@ -1016,19 +1093,43 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * Returns a flag to indicate whether a page is currently being loaded.
+     * @param isLoading Returns a flag to indicate whether a page is currently being loaded
+     */
     public void setIsLoading(boolean isLoading) {
         loadingPage = isLoading;
     }
 
+    /**
+     * Returns a flag to indicate whether a download is currently in progress.
+     * @return Returns a flag to indicate whether a download is currently in progress
+     */
     @SuppressWarnings("unused")
     public boolean isDownloadInProgress() {
         return downloadInProgress;
     }
 
+    /**
+     * Sets the flag indicate whether a download is currently in progress.
+     * @param downloadInProgress The flag to be set to indicate whether a download is currently in progress.
+     */
     public void setDownloadInProgress(boolean downloadInProgress) {
         this.downloadInProgress = downloadInProgress;
     }
 
+    /**
+     * Returns the API URL to be used for making page API requests
+     * @param usePageIdQueryParam Flag to indicate whether the pageId query parameter should be used
+     * @param viewPlansPage Flag to indicate whether the requested page is the View Plans page
+     * @param showPage Flag to indicate whether the requested page is the Show page
+     * @param baseUrl The base URL of the API request
+     * @param endpoint The end point of the API request
+     * @param siteId The value of the Site ID query parameter
+     * @param pageId The pageId value
+     * @param usedCachedAPI Flag to indicate whether the cache API should be used
+     * @return Returns the constructed API URL
+     */
     public String getApiUrl(boolean usePageIdQueryParam,
                             boolean viewPlansPage,
                             boolean showPage,
@@ -1106,18 +1207,35 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * Returns the flag indicating whether a page is currently being loaded.
+     * @return Returns the flag indicating whether a page is currently being loaded
+     */
     public boolean isPageLoading() {
         return pageLoading;
     }
 
+    /**
+     * Sets the flag indicating whether a page is currently being loaded
+     * @param pageLoading The value of the flag
+     */
     public void setPageLoading(boolean pageLoading) {
         this.pageLoading = pageLoading;
     }
 
+    /**
+     * Returns the Android modules JSON object.
+     * @return Returns the Android modules JSON object
+     */
     public AppCMSAndroidModules getAppCMSAndroidModules() {
         return appCMSAndroidModules;
     }
 
+    /**
+     * Performs a network call to refresh a video URL CDN token
+     * @param id The film ID of the video to refresh
+     * @param readyAction The callback to handle the result when the URL with the updated CDN is ready
+     */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
@@ -1145,6 +1263,16 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * Launches the Video Player view associated with the input data
+     * @param contentDatum The video data returned by the API request
+     * @param filmId The film ID of the video
+     * @param currentlyPlayingIndex The currently playing index within a list of related videos used for Autoplay
+     * @param relateVideoIds The list of related videos used for Autoplay
+     * @param watchedTime The current watched time of this video for the current user
+     * @param expectedAction The action to take when launching the player, which may to navigate to the Detail page or play the video
+     * @return
+     */
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      String filmId,
                                      final int currentlyPlayingIndex,
@@ -7860,6 +7988,16 @@ public class AppCMSPresenter {
         deeplinkSearchQuery = null;
     }
 
+    /**
+     * This is the initial launch point of the app and is used to retrieve the main.json file
+     * for this app.
+     * @param activity The current Activity used for launching the app (unused)
+     * @param siteId The AppCMS site ID of the app
+     * @param searchQuery A deeplink URL used launch a Detail page via search
+     * @param platformType An enumeration value to distinguish between mobile or TV variants
+     * @param bustCache A flag to indicate whether to use a parameter to bust the CDN cache via a
+     *                  query parameter using a random value.
+     */
     public void getAppCMSMain(final Activity activity,
                               final String siteId,
                               final Uri searchQuery,
@@ -8162,6 +8300,11 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This displays a dialog message based upon entitlement options and the current user subscription status
+     * @param dialogType An enumerated value to select the message from a set of preexisting messages
+     * @param onCloseAction The action to take when the user closes the dialog
+     */
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null && !loginDialogPopupOpen) {
 
@@ -8503,6 +8646,13 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will navigate the app to the Download Page if there is no network activity
+     * @param launchActivity A flag to indicate whether a new Activity should be launched or an
+     *                       existing Activity should be updated with the Download page UI and content
+     * @param retryAction The callback to execute if the user chooses to retry the previously executed
+     *                    network request
+     */
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
             if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
