@@ -87,10 +87,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
-import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -703,21 +699,6 @@ public class AppCMSPresenter {
     private boolean forceLoad;
 
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
-        @Override
-        public void handleReport(Report report) {
-
-            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
-                return;
-            }
-
-            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
-            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
-            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
-
-            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
-        }
-    };
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
@@ -3904,6 +3885,8 @@ public class AppCMSPresenter {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
+            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
                     contentDatum.getGist().getId());
@@ -8030,7 +8013,9 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                                 }
                             });
-                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
                     builder.setPositiveButton(R.string.app_cms_login_button_text,
                             (dialog, which) -> {
                                 try {
@@ -8115,7 +8100,8 @@ public class AppCMSPresenter {
                             });
                 }
 
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
                     builder.setOnKeyListener((arg0, keyCode, event) -> {
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             if (onCloseAction != null) {
@@ -10590,7 +10576,7 @@ public class AppCMSPresenter {
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     this.appCMSAndroid = appCMSAndroidUI;
 
-                                    initializeAppCMSAnalytics(appCMSAndroidUI);
+                                    initializeAppCMSAnalytics();
 
                                     navigation = appCMSAndroidUI.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
@@ -10692,9 +10678,11 @@ public class AppCMSPresenter {
         }
     }
 
-    private void initializeAppCMSAnalytics(AppCMSAndroidUI appCMSAndroidUI) {
-        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-        initAppsFlyer(appCMSAndroidUI);
+    public void initializeAppCMSAnalytics() {
+        if (appCMSAndroid != null) {
+            initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
+            initAppsFlyer(appCMSAndroid);
+        }
     }
 
     private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
@@ -12604,14 +12592,13 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-        KMSDKCoreKit.initialize(currentActivity);
-        KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
-                .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
-                .setLogLevel(KMSDKCoreKit.DEBUG);
-        mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        if (currentActivity != null) {
+            Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
+            launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
+            launchVideoPlayerBroadcast.putExtra("KISWE_USERNAME", isUserLoggedIn() ? getLoggedInUserEmail() : "guest");
+            currentActivity.sendBroadcast(launchVideoPlayerBroadcast);
+        }
 
-        mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
     public void showEmptySearchToast() {
@@ -13801,7 +13788,8 @@ public class AppCMSPresenter {
             for (int i = 0; i < contentData.size(); i++) {
                 if (contentData.get(i).getGist() != null &&
                         contentData.get(i).getGist().getMediaType() != null
-                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase()) && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
+                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())
+                        && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
                     isPlaylistDownloaded = false;
                     break;
                 }

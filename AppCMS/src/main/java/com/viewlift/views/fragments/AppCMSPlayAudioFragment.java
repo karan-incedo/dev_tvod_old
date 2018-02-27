@@ -46,6 +46,7 @@ import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
@@ -82,6 +83,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     TextView trackEndTime;
     @BindView(R.id.seek_audio)
     SeekBar seekAudio;
+    @BindView(R.id.seek_volume)
+    SeekBar seekVolume;
     @BindView(R.id.shuffle)
     ImageButton shuffle;
     @BindView(R.id.prev)
@@ -231,6 +234,39 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         getActivity().registerReceiver(mMessageReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION));
         setPlaylistVisibility();
+
+        final AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int initVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        seekVolume.setMax(maxVolume);
+        seekVolume.setProgress(initVolume);
+        seekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        ((AppCMSPlayAudioActivity) getActivity()).setVolumeInterface(new AppCMSPlayAudioActivity.VolumeControl() {
+            @Override
+            public void volumeUpDown() {
+                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+
+        });
+
+
         return rootView;
     }
 

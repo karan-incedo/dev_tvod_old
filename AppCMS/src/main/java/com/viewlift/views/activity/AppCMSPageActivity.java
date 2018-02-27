@@ -50,6 +50,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.appsflyer.AppsFlyerLib;
+import com.apptentive.android.sdk.Apptentive;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -64,11 +67,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -111,6 +117,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
@@ -232,7 +239,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean isTabCreated = false;
     private LinearLayout appCMSTabNavContainerItems;
     private Uri pendingDeeplinkUri;
-    private TabCreator tabCreator;
+    private boolean libsThreadExecuted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -511,71 +518,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         shouldSendCloseOthersAction = false;
 
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
-                        if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
-                            GraphRequest request = GraphRequest.newMeRequest(
-                                    AppCMSPageActivity.this.accessToken,
-                                    (user, response) -> {
-                                        String username = null;
-                                        String email = null;
-                                        try {
-                                            username = user.getString("name");
-                                            email = user.getString("email");
-                                        } catch (JSONException | NullPointerException e) {
-                                            //Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
-                                        }
-
-                                        if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                            handleCloseAction(false);
-                                        }
-                                        appCMSPresenter.setFacebookAccessToken(
-                                                AppCMSPageActivity.this.accessToken.getToken(),
-                                                AppCMSPageActivity.this.accessToken.getUserId(),
-                                                username,
-                                                email,
-                                                false,
-                                                true);
-                                    });
-                            Bundle parameters = new Bundle();
-                            parameters.putString("fields", "id,name,email");
-                            request.setParameters(parameters);
-                            request.executeAsync();
-                        }
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        // App code
-//                        Log.e(TAG, "Facebook login was cancelled");
-                        loaderWaitingFor3rdPartyLogin = false;
-                        pageLoading(false);
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        // App code
-//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
-                        loaderWaitingFor3rdPartyLogin = false;
-                        pageLoading(false);
-                    }
-                });
-
-        appCMSPresenter.sendCloseOthersAction(null, false, false);
 
 //        Log.d(TAG, "onCreate()");
     }
 
 
     private void initPageActivity() {
-        AndroidThreeTen.init(this);
-
-        accessToken = AccessToken.getCurrentAccessToken();
-
         inAppBillingServiceConn = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -859,6 +807,95 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+        if (!libsThreadExecuted) {
+            new Thread(() -> {
+                UAirship.takeOff(getApplication());
+                UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+                Fabric.with(getApplication(), new Crashlytics());
+                if(Utils.getProperty("ApptentiveSignatureKey", getApplicationContext())!=null && Utils.getProperty("ApptentiveApiKey", getApplicationContext())!=null)
+                    Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
+                AndroidThreeTen.init(this);
+                AppsFlyerLib.getInstance().startTracking(getApplication());
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                callbackManager = CallbackManager.Factory.create();
+                LoginManager.getInstance().registerCallback(callbackManager,
+                        new FacebookCallback<LoginResult>() {
+                            @Override
+                            public void onSuccess(LoginResult loginResult) {
+                                AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
+                                if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
+                                    GraphRequest request = GraphRequest.newMeRequest(
+                                            AppCMSPageActivity.this.accessToken,
+                                            (user, response) -> {
+                                                String username = null;
+                                                String email = null;
+                                                try {
+                                                    username = user.getString("name");
+                                                    email = user.getString("email");
+                                                } catch (JSONException | NullPointerException e) {
+                                                    //Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                                }
+
+                                                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                                    handleCloseAction(false);
+                                                }
+                                                appCMSPresenter.setFacebookAccessToken(
+                                                        AppCMSPageActivity.this.accessToken.getToken(),
+                                                        AppCMSPageActivity.this.accessToken.getUserId(),
+                                                        username,
+                                                        email,
+                                                        false,
+                                                        true);
+                                            });
+                                    Bundle parameters = new Bundle();
+                                    parameters.putString("fields", "id,name,email");
+                                    request.setParameters(parameters);
+                                    request.executeAsync();
+                                }
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                // App code
+//                        Log.e(TAG, "Facebook login was cancelled");
+                                loaderWaitingFor3rdPartyLogin = false;
+                                pageLoading(false);
+                            }
+
+                            @Override
+                            public void onError(FacebookException exception) {
+                                // App code
+//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                                loaderWaitingFor3rdPartyLogin = false;
+                                pageLoading(false);
+                            }
+                        });
+
+                accessToken = AccessToken.getCurrentAccessToken();
+
+                //noinspection ConstantConditions
+                if (inAppBillingService == null && inAppBillingServiceConn != null) {
+                    Intent serviceIntent =
+                            new Intent("com.android.vending.billing.InAppBillingService.BIND");
+                    serviceIntent.setPackage("com.android.vending");
+                    bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
+                }
+
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
+                    appCMSPresenter.initializeAppCMSAnalytics();
+                    appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
+                    FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+                    if (mFireBaseAnalytics != null && appCMSPresenter != null) {
+                        appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+                    }
+                }
+
+                inflateCastMiniController();
+            }).run();
+            libsThreadExecuted = true;
+        }
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()

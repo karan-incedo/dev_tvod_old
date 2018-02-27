@@ -1,6 +1,5 @@
 package com.viewlift.views.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -18,7 +17,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
@@ -105,7 +103,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-             appCMSPlayAudioFragment =
+            appCMSPlayAudioFragment =
                     AppCMSPlayAudioFragment.newInstance(this);
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
@@ -117,6 +115,34 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
     }
 
+    VolumeControl volumeControl;
+
+    public void setVolumeInterface(VolumeControl volumeControl) {
+        this.volumeControl = volumeControl;
+    }
+
+    public interface VolumeControl {
+        void volumeUpDown();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        if(event.getAction() == KeyEvent.ACTION_DOWN){
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    volumeControl.volumeUpDown();
+                    return false;
+                default:
+                    return super.dispatchKeyEvent(event);
+            }
+        }
+
+       return super.dispatchKeyEvent(event);
+    }
+
+
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -125,10 +151,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
-            isDownloading=true;
+            isDownloading = true;
             audioDownload(downloadAudio, currentAudio);
-            appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
-                    0, null, false, false, null);
         }
         if (view == shareAudio) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();

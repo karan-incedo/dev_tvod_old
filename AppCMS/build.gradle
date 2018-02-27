@@ -97,7 +97,7 @@ android {
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
-    flavorDimensions "green"
+    flavorDimensions "green","blue"
     productFlavors {
         mobile {
             dimension = "green"
@@ -119,6 +119,12 @@ android {
             aaptOptions {
                 cruncherEnabled = false
             }
+        }
+        kiswe {
+            dimension = "blue"
+        }
+        nonKiswe {
+            dimension = "blue"
         }
     }
     defaultConfig {
@@ -157,6 +163,13 @@ android {
             java.srcDirs = ['src/tv/java']
             res.srcDirs = ['src/tv/res']
             manifest.srcFile 'src/tv/AndroidManifest.xml'
+        }
+        kiswe {
+            java.srcDirs = ['src/kiswe/java']
+            manifest.srcFile 'src/kiswe/AndroidManifest.xml'
+        }
+        nonkiswe {
+            java.srcDirs = ['src/nonkiswe/java']
         }
     }
 
@@ -372,8 +385,9 @@ dependencies {
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
     compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
-    compile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+
+    kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+    compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
 
 }
 

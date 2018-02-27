@@ -224,7 +224,9 @@ public class AudioPlaylistHelper {
                 }
 
             }
-
+            if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
+                iconUrl=appCMSAudioDetailResult.getGist().getVideoImageUrl();
+            }
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
 
@@ -259,7 +261,6 @@ public class AudioPlaylistHelper {
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
                         .putString(CUSTOM_METADATA_TRACK_SOURCE, source)
                         .putString(CUSTOM_METADATA_TRACK_ALBUM_YEAR, album_year)
-
                         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
