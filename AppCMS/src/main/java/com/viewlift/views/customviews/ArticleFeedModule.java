@@ -20,8 +20,6 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import net.nightwhistler.htmlspanner.TextUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -312,6 +310,7 @@ public class ArticleFeedModule extends LinearLayout {
                                                 data.getGist() != null &&
                                                 data.getGist().getId() != null &&
                                                 data.getGist().getTitle() != null)
+                                            appCMSPresenter.setCurrentArticleIndex(-1);
                                             appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false,null);
                                     }
                                 });

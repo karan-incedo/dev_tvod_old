@@ -796,6 +796,10 @@ public abstract class BaseView extends FrameLayout {
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
             }
+
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY) {
+                ((TextView) view).setGravity(Gravity.CENTER_VERTICAL);
+            }
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_RIGHT_KEY) {
                 ((TextView) view).setGravity(Gravity.RIGHT);
             }

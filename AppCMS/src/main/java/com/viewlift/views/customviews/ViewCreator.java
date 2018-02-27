@@ -3424,10 +3424,11 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null) {
                                 long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
-                                long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
 
-                                String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
-                                ((TextView) componentViewResult.componentView).setText(publishDate);
+                                String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
+                                ((TextView) componentViewResult.componentView).setText(secondsToTime +" | "+ publishDate);
 
                             }
 
