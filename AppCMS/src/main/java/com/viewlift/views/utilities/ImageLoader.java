@@ -8,8 +8,14 @@ import android.widget.ImageView;
  */
 
 public interface ImageLoader {
+    enum ScaleType {
+        CENTER,
+        START,
+        END
+    }
+
     ImageView createImageView(Context context);
-    void loadImage(ImageView view, String url);
+    void loadImage(ImageView view, String url, ScaleType scaleType);
     void loadImageWithLinearGradient(ImageView view,
                                      String url,
                                      int imageWidth,

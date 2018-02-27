@@ -6,11 +6,11 @@ apply plugin: 'realm-android'
 //def final hostName = "www.hoichoi.tv"
 //def final appVersionName = "2.1.23"
 
-
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         google()
+        mavenCentral()
     }
 
     dependencies {
@@ -26,8 +26,11 @@ buildscript {
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
+    maven { ur  l "https://jitpack.io" }
+    maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
+    mavenCentral()
 }
 
 android {
@@ -146,16 +149,19 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
             multiDexEnabled true
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -211,6 +217,27 @@ configurations.tvCompile {
             if (!requested.name.startsWith("multidex")) {
                 details.useVersion '25.4.0'
             }
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+    configurations.all {
+        resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
+    }
+}
+
+afterEvaluate {
+    if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
+        tasks.matching {
+            it.name.startsWith('dex')
+        }.each { dx ->
+            if (dx.additionalParameters == null) {
+                dx.additionalParameters = []
+            }
+            dx.additionalParameters += '--multi-dex' // enable multidex
+            dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
         }
     }
 }
@@ -291,7 +318,7 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile 'com.github.bumptech.glide:glide:3.4.+'
+    tvCompile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
@@ -334,10 +361,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileCompile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')
     compile project(':htmlspanner')

@@ -13,6 +13,10 @@ public class AppCMSMain implements Serializable {
     @Expose
     String id;
 
+    @SerializedName("templateName")
+    @Expose
+    String templateName;
+
     @SerializedName("accessKey")
     @Expose
     String accessKey;
@@ -149,10 +153,6 @@ public class AppCMSMain implements Serializable {
     @SerializedName("customerService")
     @Expose
     CustomerService customerService;
-
-    @SerializedName("templateName")
-    @Expose
-    String templateName;
 
     public String getId() {
         return id;

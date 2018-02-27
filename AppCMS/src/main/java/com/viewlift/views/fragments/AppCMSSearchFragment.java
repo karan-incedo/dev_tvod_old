@@ -155,7 +155,7 @@ public class AppCMSSearchFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        if (!BaseView.isTablet(getContext())) {
+        if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
 

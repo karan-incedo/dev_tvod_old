@@ -179,6 +179,7 @@
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
+    <string name="app_cms_page_show_detail_module_key">AC ShowDetail 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
@@ -222,12 +223,13 @@
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_duration_key">duration</string>
-    <string name="app_cms_page_watchlist_description_key">listItemDescription</string>
+    <string name="app_cms_page_watchlist_description_key">description</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_bedge_image_key">bedgeImage</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
+    <!--<string name="app_cms_page_video_player_key">videoPlayer</string>-->
     <string name="app_cms_page_show_image_video_key">showImage</string>
     <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
@@ -274,6 +276,7 @@
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
     <string name="app_cms_page_subscription_page_key">Subscription</string>
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
+    <string name="app_cms_page_shows_page_name_key">Shows Page</string>
     <string name="app_cms_page_show_page_name_key">Show Page</string>
 
     <string name="app_cms_page_grid_option_key">gridOptions</string>
@@ -313,6 +316,7 @@
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
+    <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
@@ -332,6 +336,7 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_module_showdetail_key">ShowDetailModule</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
@@ -350,6 +355,7 @@
 
     <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
     <string name="app_cms_action_change_download_storage_location_key">changeStorageLocation</string>
+    <string name="app_cms_action_change_download_via_cellular_key">changeCellularData</string>
     <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>
@@ -366,8 +372,8 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true</string>
-    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s</string>
+    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s&amp;gzip=true</string>
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
@@ -392,6 +398,7 @@
     <string name="app_cms_subscription_api_url">%1$s/content/pages/site=%2$s&amp;path=%3$s&amp;includeContent=true</string>
     <string name="app_cms_subscription_platform_key">android_phone</string>
     <string name="app_cms_subscription_key">android</string>
+    <string name="ua_android_device_key">android</string>
 
     <!--AppCMS Subscription Plan API-->
     <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
@@ -414,6 +421,9 @@
 
     <!-- AppCMS Get Current Subscription API -->
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
+
+    <!-- AppCMS Validate Google Play Subscription API -->
+    <string name="app_cms_google_play_subscription_validation_api_url">%1$s/subscription/android/validate_android_receipt?site=%2$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">icon-menu</string>
@@ -465,10 +475,13 @@
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
     <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
     <string name="app_cms_title_label">titleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>
     <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_delete_history_item_button">deleteHistory</string>
+    <string name="app_cms_delete_watchlist_item_button">deleteWatchlist</string>
     <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
     <string name="app_cms_signup_footer_label_key">signupfooterview</string>
     <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
@@ -567,6 +580,7 @@
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
 
-    <!-- AppCMS Apptentive Events -->
-    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
+    <!-- AppCMS Content Types -->
+    <string name="app_cms_video_content_type">VIDEO</string>
+    <string name="app_cms_series_content_type">SERIES</string>
 </resources>

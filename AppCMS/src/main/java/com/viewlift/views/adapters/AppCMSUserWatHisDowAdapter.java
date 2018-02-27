@@ -26,6 +26,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -232,6 +233,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             ImageButton finalDeleteDownloadButton = deleteDownloadButton;
                             ImageView finalThumbnailImage = thumbnailImage;
                             TextView finalVideoSize = videoSize;
+
+                            int radiusDifference = 5;
+                            if (BaseView.isTablet(componentView.getContext())) {
+                                radiusDifference = 2;
+                            }
+
                             appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                     deleteDownloadButton,
                                     appCMSPresenter,
@@ -270,7 +277,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                         }
                                     },
-                                    userId, true);
+                                    userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
 
                             finalVideoSize.setText("Cancel".toUpperCase());
                             finalVideoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
@@ -426,7 +433,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                 updateData(mRecyclerView,adapterData);
                                             }
                                             notifyDataSetChanged();
-                                        }, false);
+                                        }, false,
+                                        false);
                                 return;
                             }
                             if (action.contains(deleteSingleItemHistoryAction)) {
@@ -450,6 +458,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 } else {
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,

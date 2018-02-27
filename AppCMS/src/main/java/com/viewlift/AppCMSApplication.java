@@ -3,6 +3,7 @@ package com.viewlift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatActivity;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
@@ -14,9 +15,11 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import java.util.Map;
 
+import rx.functions.Action0;
+
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
-/**
+/*
  * Created by viewlift on 5/4/17.
  */
 
@@ -29,6 +32,8 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private int openActivities;
 
+    private Action0 onActivityResumedAction;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -40,17 +45,17 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onInstallConversionDataLoaded(Map<String, String> map) {
-
+                    //
                 }
 
                 @Override
                 public void onInstallConversionFailure(String s) {
-
+                    //
                 }
 
                 @Override
                 public void onAppOpenAttribution(Map<String, String> map) {
-
+                    //
                 }
 
                 @Override
@@ -71,7 +76,9 @@ public class AppCMSApplication extends MultiDexApplication {
             registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                    appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+                    if (activity instanceof AppCompatActivity) {
+                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                    }
                 }
 
                 @Override
@@ -82,7 +89,13 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+                    if (activity instanceof AppCompatActivity) {
+                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                        if (onActivityResumedAction != null) {
+                            onActivityResumedAction.call();
+                            onActivityResumedAction = null;
+                        }
+                    }
                 }
 
                 @Override
@@ -97,6 +110,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     if (openActivities == 1) {
                         appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
                     }
+
                     openActivities--;
                 }
 
@@ -113,9 +127,7 @@ public class AppCMSApplication extends MultiDexApplication {
                 }
             });
 
-
         }).run();
-
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
@@ -130,4 +142,14 @@ public class AppCMSApplication extends MultiDexApplication {
     private void sendAnalytics() {
         trackInstallationEvent(this);
     }
+
+    public Action0 getOnActivityResumedAction() {
+        return onActivityResumedAction;
+    }
+
+    public void setOnActivityResumedAction(Action0 onActivityResumedAction) {
+        this.onActivityResumedAction = onActivityResumedAction;
+    }
+
+
 }

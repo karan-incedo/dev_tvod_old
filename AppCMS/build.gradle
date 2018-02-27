@@ -6,11 +6,11 @@ apply plugin: 'realm-android'
 //def final hostName = "www.hoichoi.tv"
 //def final appVersionName = "2.1.23"
 
-
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         google()
+        mavenCentral()
     }
 
     dependencies {
@@ -27,6 +27,8 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
     maven {
         url "s3://sdkv1.kiswe.com/snapshot"
@@ -43,6 +45,7 @@ repositories {
             secretKey 'lg/hEFZRXNfsw6M3Tilw7XhOx4B6hJejZsoqZZTY'
         }
     }
+    mavenCentral()
 }
 
 android {
@@ -223,10 +226,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
-        incremental true
         javaMaxHeapSize "4g"
         preDexLibraries = false
         additionalParameters = ["--set-max-idx-number=55000"]
+    }
+    configurations.all {
+        resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
 }
 afterEvaluate {
@@ -375,15 +380,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileCompile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
     kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
 }
 

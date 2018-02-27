@@ -32,12 +32,17 @@ public class AppCMSUserDownloadVideoStatusCall {
                      final Action1<UserVideoDownloadStatus> readyAction1, String userId) {
         DownloadVideoRealm downloadVideoRealm=null;
         UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+
+        Cursor cursor = null;
+
         try {
              downloadVideoRealm = appCMSPresenter.getRealmController()
                     .getDownloadByIdBelongstoUser(videoId, userId);
             if (downloadVideoRealm == null) {
 
-                Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
+                Observable.just((UserVideoDownloadStatus) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
                 return;
             }
 
@@ -50,7 +55,7 @@ public class AppCMSUserDownloadVideoStatusCall {
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadVideoRealm.getVideoId_DM());
 
-            Cursor cursor = downloadManager.query(query);
+            cursor = downloadManager.query(query);
             if (cursor.moveToFirst()) {
                 int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
 
@@ -103,12 +108,16 @@ public class AppCMSUserDownloadVideoStatusCall {
                         break;
                 }
 
-                Observable.just(statusResponse).subscribe(readyAction1);
+                Observable.just(statusResponse)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
             }
             else{
                 if (null != downloadVideoRealm ) { // fix of SVFA-1856
                     statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
-                    Observable.just(statusResponse).subscribe(readyAction1);
+                    Observable.just(statusResponse)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction1);
                     return;
                 }
             }
@@ -116,7 +125,13 @@ public class AppCMSUserDownloadVideoStatusCall {
         } catch (Exception e) {
 
             //Log.e(TAG, e.getMessage());
-            Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
+            Observable.just((UserVideoDownloadStatus) null)
+                    .onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(readyAction1);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 }
