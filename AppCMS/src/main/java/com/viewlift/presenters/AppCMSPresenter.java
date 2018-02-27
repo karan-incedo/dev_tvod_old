@@ -4887,7 +4887,54 @@ public class AppCMSPresenter {
                     });
         }
     }
+    public void navigateToSubNavigationPage(String pageId,
+                                            String title,
+                                            String url,
+                                            NavigationPrimary primary,
+                                            List<NavigationPrimary> items,
+                                            boolean launchActivity) {
 
+        AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+        Module module = new Module();
+        module.setId(currentActivity.getString(R.string.blank_string));
+        if(null != appCMSPageUI && null != appCMSPageUI.getModuleList()
+                && appCMSPageUI.getModuleList().size() > 0) {
+            module.setId(appCMSPageUI.getModuleList().get(0).getId());
+        }
+        ArrayList<Module> moduleList = new ArrayList<>();
+        moduleList.add(module);
+        appCMSPageAPI.setModules(moduleList);
+        appCMSPageAPI.setId(pageId);
+        ArrayList<ContentDatum> data = new ArrayList<>();
+        for (NavigationPrimary navigationPrimary : items) {
+            data.add(navigationPrimary.convertToContentDatum());
+        }
+        module.setContentData(data);
+
+        Bundle args = getPageActivityBundle(currentActivity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                title,
+                pageId,
+                pageIdToPageNameMap.get(pageId),
+                loadFromFile,
+                true,
+                false,
+                true,
+                false,
+                Uri.EMPTY,
+                ExtraScreenType.NONE);
+        if (args != null) {
+            Intent updatePageIntent =
+                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                    args);
+            currentActivity.sendBroadcast(updatePageIntent);
+            setNavItemToCurrentAction(currentActivity);
+        }
+    }
     public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
                                         boolean launchActivity) {
 
@@ -7948,7 +7995,7 @@ public class AppCMSPresenter {
                     pageId.contains(navigationPrimary.getPageId()) &&
                     !isViewPlanPage(pageId)) {
                 return true;
-            } else if (navigationPrimary.getItems() != null) {
+            } else if (navigationPrimary.getItems() != null && getPlatformType() == PlatformType.ANDROID) {
                 for (NavigationPrimary item : navigationPrimary.getItems()) {
                     if (pageId != null &&
                             item != null &&
@@ -11815,8 +11862,8 @@ public class AppCMSPresenter {
                                                 Module module = modules.get(i);
                                                 AppCMSUIKeyType moduleType = getJsonValueKeyMap().get(module.getModuleType());
                                                 if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
-                                                    if (module.getContentData() != null &&
-                                                            !module.getContentData().isEmpty()) {
+                                                   /* if (module.getContentData() != null &&
+                                                            !module.getContentData().isEmpty())*/ if(module != null && module.getId() != null){
                                                         int finalI = i;
                                                         isHistoryUpdate = true;
                                                         getHistoryData(appCMSHistoryResult -> {

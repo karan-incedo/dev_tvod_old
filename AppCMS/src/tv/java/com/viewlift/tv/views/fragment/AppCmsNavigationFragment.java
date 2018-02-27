@@ -544,21 +544,22 @@ public class AppCmsNavigationFragment extends Fragment {
                         }
                     }
 
-                    /*Teams*/
-                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))) {
+                    else if (primary.getItems() != null && primary.getItems().size() > 0) {
                         navigationVisibilityListener.showNavigation(false);
-                        subNavigationVisibilityListener.showSubNavigation(true, true);
-                        appCmsPresenter.sendGaScreen("Team Navigation Page");
-                        Utils.pageLoading(false, getActivity());
-
-                      /* appCmsPresenter.navigateToTeamPage(
-                               primary.getPageId(),
-                               primary.getTitle(),
-                               primary.getUrl(),
-                               primary,
-                               primary.getItems(),
-                               false
-                       );*/
+//                        subNavigationVisibilityListener.showSubNavigation(true, true);
+                        appCmsPresenter.sendGaScreen(primary.getTitle() + " Navigation Page");
+//                        Utils.pageLoading(false, getActivity());
+                        if(primary.getPageId() == null){
+                            primary.setPageId(primary.getItems().get(0).getPageId());
+                        }
+                        appCmsPresenter.navigateToSubNavigationPage(
+                                primary.getPageId(),
+                                primary.getTitle(),
+                                primary.getUrl(),
+                                primary,
+                                primary.getItems(),
+                                false
+                        );
 
                     }
 

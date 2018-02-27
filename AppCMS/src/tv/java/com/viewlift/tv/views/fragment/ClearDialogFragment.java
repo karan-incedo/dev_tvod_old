@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -203,10 +204,6 @@ public class ClearDialogFragment extends AbsDialogFragment {
             dismiss();
         });
 
-        positiveButton.setOnFocusChangeListener((v, hasFocus) ->
-                isFocusOnPositiveButton = hasFocus
-        );
-
 
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -243,6 +240,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
         } else {
             isFocusOnPositiveButton = true;
         }
+        Log.d("ANSA onPause" , "isFocusOnPositiveButton = "+isFocusOnPositiveButton);
     }
 
     @Override
@@ -250,6 +248,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
         super.onResume();
         new Handler().postDelayed(() -> {
             if (isVisible() && isAdded()) {
+                Log.d("ANSA onResume" , "isFocusOnPositiveButton = "+isFocusOnPositiveButton);
                 if (isFocusOnPositiveButton) {
                     positiveButton.requestFocus();
                 } else {

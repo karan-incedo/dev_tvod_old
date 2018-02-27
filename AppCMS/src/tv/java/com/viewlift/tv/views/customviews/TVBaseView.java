@@ -163,6 +163,7 @@ public abstract class TVBaseView extends FrameLayout {
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+//        int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
         int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
 
@@ -317,12 +318,25 @@ public abstract class TVBaseView extends FrameLayout {
         }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
             viewHeight = DEVICE_HEIGHT;
             viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY) {
+            int padding = Utils.getViewXAxisAsPerScreen(getContext(), childComponent.getPadding());
+            view.setPadding(padding, padding, padding, padding);
         } else if (componentType.equals(AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY)) {
             Integer padding = Integer.valueOf(
                     childComponent.getLayout().getTv().getPadding() != null
                             ? childComponent.getLayout().getTv().getPadding()
                             : "0");
             view.setPadding(0, 0, 0, padding);
+            if (childComponent.getTextAlignment() != null) {
+                AppCMSUIKeyType textAlignment = jsonValueKeyMap.get(childComponent.getTextAlignment());
+                switch (textAlignment) {
+                    case PAGE_TEXTALIGNMENT_CENTER_KEY:
+                        gravity = Gravity.CENTER;
+                        break;
+                    default:
+                        gravity = Gravity.NO_GRAVITY;
+                }
+            }
         }
 
         if (useWidthOfScreen) {
@@ -336,7 +350,8 @@ public abstract class TVBaseView extends FrameLayout {
         layoutParams.height = viewHeight;
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             layoutParams.gravity = gravity;
         }
         view.setLayoutParams(layoutParams);

@@ -539,6 +539,7 @@
     <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
 
      <string name="icon_image_key">iconImage</string>
+     <string name="icon_label_key">iconLabel</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
 
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
