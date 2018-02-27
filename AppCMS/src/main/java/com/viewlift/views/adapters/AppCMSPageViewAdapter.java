@@ -60,12 +60,15 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public int getItemViewType(int position) {
 
-        if(isPlayerView(position))
-            return position;
-        else if(isStanzaView(position))
-            return TYPE_STANZA;
-        else
-            return position;
+        if (position != 0) {
+            if (isPlayerView(position - 1))
+                return position;
+            else if (isStanzaView(position - 1))
+                return TYPE_STANZA;
+            else
+                return position;
+        }
+        return 0;
     }
 
     private boolean isPlayerView(int position){
@@ -94,7 +97,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
             if (position == 0) {
                 holder.parent.removeAllViews();
                 holder.parent.addView(topLayout);
-            } else if(!isPlayerView(position)) {
+            } else if(!isPlayerView(position - 1)) {
                 holder.parent.removeAllViews();
                 holder.parent.addView(childViews.get(position - 1));
             }
