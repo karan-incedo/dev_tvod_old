@@ -1907,8 +1907,8 @@
               "width": 120
             },
             "tabletPortrait": {
-              "leftMargin": 43,
-              "topMargin": 18,
+              "leftMargin": 40,
+              "topMargin": 10,
               "rightMargin": 0,
               "height": 1,
               "width": 120

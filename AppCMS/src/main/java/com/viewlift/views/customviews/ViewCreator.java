@@ -23,6 +23,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -686,6 +687,7 @@ public class ViewCreator {
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
                                         if (view instanceof TextView) {
+
                                             if (!TextUtils.isEmpty(component.getText())) {
                                                 ((TextView) view).setText(component.getText().toUpperCase());
                                             } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
@@ -712,7 +714,7 @@ public class ViewCreator {
                                                         viewWidth,
                                                         viewHeight);
                                                 Glide.with(context)
-                                                        .load(imageUrl)
+                                                        .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                                         .override(viewWidth, viewHeight)
                                                         .into((ImageView) view);
                                             } else if (viewWidth > 0 && viewHeight > 0) {
@@ -721,18 +723,19 @@ public class ViewCreator {
                                                         viewWidth,
                                                         viewHeight);
                                                 Glide.with(context)
-                                                        .load(videoImageUrl)
+                                                        .load(videoImageUrl).placeholder(R.drawable.img_placeholder)
                                                         .override(viewWidth, viewHeight)
                                                         .into((ImageView) view);
                                             } else if (viewHeight > 0) {
                                                 Glide.with(context)
                                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                                         .override(Target.SIZE_ORIGINAL, viewHeight)
-                                                        .centerCrop()
+                                                        .centerCrop().placeholder(R.drawable.img_placeholder)
                                                         .into((ImageView) view);
                                             } else {
                                                 Glide.with(context)
                                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                                        .placeholder(R.drawable.img_placeholder)
                                                         .into((ImageView) view);
                                             }
                                             view.forceLayout();
@@ -2886,10 +2889,9 @@ public class ViewCreator {
                         break;
                     case PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY:
                         componentViewResult.addToPageView = true;
-                        int viewHeight = (int) BaseView.getViewHeight(context, component.getLayout(), FrameLayout.LayoutParams.WRAP_CONTENT);
                         FrameLayout.LayoutParams bottomBg =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                        viewHeight);
+                                        FrameLayout.LayoutParams.WRAP_CONTENT);
                         bottomBg.gravity = Gravity.BOTTOM;
                         componentViewResult.componentView.setLayoutParams(bottomBg);
                         ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
@@ -3088,12 +3090,19 @@ public class ViewCreator {
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-                        ((TextView) componentViewResult.componentView).setText("By " + moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName() + " |");
+                        StringBuilder authDateAndPhotoCount = new StringBuilder();
+                        authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName())
+                                .append("   |   ")
+                                .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd"))
+                                .append("   |   ")
+                                .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
+
+                        ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
                 }
 
-                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
+               /* if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_DATE_TXT_KEY) {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
 
                         ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd") + " |");
@@ -3106,7 +3115,7 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                     }
-                }
+                }*/
 
                 if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY) {
 
@@ -3696,7 +3705,7 @@ public class ViewCreator {
                                     Glide.with(context)
 //                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
+                                            .override(viewWidth, viewHeight).placeholder(R.drawable.img_placeholder)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
@@ -3705,7 +3714,7 @@ public class ViewCreator {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
-                                            .centerCrop()
+                                            .centerCrop().placeholder(R.drawable.img_placeholder)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
@@ -3713,6 +3722,7 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .placeholder(R.drawable.img_placeholder)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             }
@@ -3755,7 +3765,7 @@ public class ViewCreator {
                             bannerUrl = settings.getImage();
                         }
                         Glide.with(context)
-                                .load(bannerUrl)
+                                .load(bannerUrl).placeholder(R.drawable.img_placeholder)
                                 .into((ImageView) componentViewResult.componentView);
                         break;
                     case PAGE_VIDEO_IMAGE_KEY:
@@ -3777,7 +3787,7 @@ public class ViewCreator {
                                         viewWidth,
                                         viewHeight);
                                 Glide.with(context)
-                                        .load(imageUrl)
+                                        .load(imageUrl).placeholder(R.drawable.img_placeholder)
                                         .override(viewWidth, viewHeight)
                                         .into((ImageView) componentViewResult.componentView);
                             } else if (viewWidth > 0) {
@@ -3786,13 +3796,13 @@ public class ViewCreator {
                                         viewWidth,
                                         viewHeight);
                                 Glide.with(context)
-                                        .load(videoImageUrl)
+                                        .load(videoImageUrl).placeholder(R.drawable.img_placeholder)
                                         .override(viewWidth, viewHeight)
                                         .into((ImageView) componentViewResult.componentView);
                             } else {
                                 Glide.with(context)
                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .fitCenter()
+                                        .fitCenter().placeholder(R.drawable.img_placeholder)
                                         .into((ImageView) componentViewResult.componentView);
                             }
                             componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
@@ -3803,7 +3813,7 @@ public class ViewCreator {
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, component.getImageName())) {
                                 Glide.with(context)
-                                        .load(component.getImageName())
+                                        .load(component.getImageName()).placeholder(R.drawable.img_placeholder)
                                         .into((ImageView) componentViewResult.componentView);
                             }
                         }
@@ -4841,7 +4851,7 @@ public class ViewCreator {
         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
                 Glide.with(context)
-                        .load(imgUrl)
+                        .load(imgUrl).placeholder(R.drawable.img_placeholder)
                         .override(viewWidth, viewHeight)
                         .into((ImageView) componentViewResult.componentView);
             }
@@ -4850,13 +4860,13 @@ public class ViewCreator {
                 Glide.with(context)
                         .load(imgUrl)
                         .override(viewWidth, viewHeight)
-                        .centerCrop()
+                        .centerCrop().placeholder(R.drawable.img_placeholder)
                         .into((ImageView) componentViewResult.componentView);
             }
         } else {
             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
                 Glide.with(context)
-                        .load(imgUrl)
+                        .load(imgUrl).placeholder(R.drawable.img_placeholder)
                         .into((ImageView) componentViewResult.componentView);
             }
         }
