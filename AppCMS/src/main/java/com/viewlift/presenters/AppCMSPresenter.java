@@ -84,7 +84,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -712,6 +711,25 @@ public class AppCMSPresenter {
     private boolean isTeamPAgeVisible = false;
 
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
+
+    public String getUaAccessKey() {
+        return uaAccessKey;
+    }
+
+    public void setUaAccessKey(String uaAccessKey) {
+        this.uaAccessKey = uaAccessKey;
+    }
+
+    public String getUaChannelId() {
+        return uaChannelId;
+    }
+
+    public void setUaChannelId(String uaChannelId) {
+        this.uaChannelId = uaChannelId;
+    }
+
+    private String uaAccessKey;
+    private String uaChannelId;
     private UANamedUserEventCall uaNamedUserEventCall;
 
     private boolean purchaseFromRestore;
@@ -14005,7 +14023,7 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
         }
-        uaAssociateNamedUserRequest.setChannelId(UAirship.shared().getPushManager().getChannelId());
+        uaAssociateNamedUserRequest.setChannelId();
 
         return uaAssociateNamedUserRequest;
     }
@@ -14089,7 +14107,7 @@ public class AppCMSPresenter {
     private PostUANamedUserEventAsyncTask.Params getUAParams() {
         return new PostUANamedUserEventAsyncTask.Params
                         .Builder()
-                        .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
+                        .accessKey(uaAccessKey)
                         /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
                         .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
 //                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
