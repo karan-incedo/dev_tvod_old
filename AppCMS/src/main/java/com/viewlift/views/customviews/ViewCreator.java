@@ -23,7 +23,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -3423,12 +3422,20 @@ public class ViewCreator {
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null) {
-                                long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+
                                 long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
                                 String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
 
-                                String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
-                                ((TextView) componentViewResult.componentView).setText(secondsToTime +" | "+ publishDate);
+                                StringBuilder builder = new StringBuilder(secondsToTime);
+
+                                if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                    long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                    String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
+                                    builder.append(" | ");
+                                    builder.append(publishDate);
+                                }
+
+                                ((TextView) componentViewResult.componentView).setText(builder);
 
                             }
 
