@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -390,11 +391,17 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
                     if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
-
                         ImageButton download = (ImageButton) itemContainer.getChildView();
                         download.setTag(true);
                         isDownloading = true;
-                        audioDownload(download, adapterData.get(i), true);
+                        Handler handler = new Handler();
+                        final int pos = i;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                audioDownload(download, adapterData.get(pos), true);
+                            }
+                        }, 200);
 
                     }
                 }
@@ -476,11 +483,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         appCMSPresenter.isUserLoggedIn()) {
                     System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
 
                 } else {
                     if (appCMSPresenter.isUserLoggedIn()) {

@@ -3885,7 +3885,7 @@ public class AppCMSPresenter {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
-            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+            } else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
@@ -7862,7 +7862,7 @@ public class AppCMSPresenter {
         Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
-    public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
+    public AlertDialog showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
 
             try {
@@ -8117,8 +8117,10 @@ public class AppCMSPresenter {
                         return true;
                     });
                 }
+                final AlertDialog dialog = builder.create();
+                ;
                 currentActivity.runOnUiThread(() -> {
-                    AlertDialog dialog = builder.create();
+
                     if (onCloseAction != null) {
                         dialog.setCanceledOnTouchOutside(false);
 
@@ -8142,13 +8144,17 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
                             }
+
                         }
                     }
                 });
+                return dialog;
+
             } catch (Exception e) {
 
             }
         }
+        return null;
     }
 
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
@@ -13750,7 +13756,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void saveLastPlaySongPosition( String id,long pos) {
+    public void saveLastPlaySongPosition(String id, long pos) {
         Gson gson = new Gson();
 
         String json = gson.toJson(new LastPlayAudioDetail(id, pos));

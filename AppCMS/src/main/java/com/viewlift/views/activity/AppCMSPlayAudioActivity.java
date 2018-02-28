@@ -115,34 +115,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
     }
 
-    VolumeControl volumeControl;
-
-    public void setVolumeInterface(VolumeControl volumeControl) {
-        this.volumeControl = volumeControl;
-    }
-
-    public interface VolumeControl {
-        void volumeUpDown();
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        int keyCode = event.getKeyCode();
-        if(event.getAction() == KeyEvent.ACTION_DOWN){
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    volumeControl.volumeUpDown();
-                    return false;
-                default:
-                    return super.dispatchKeyEvent(event);
-            }
-        }
-
-       return super.dispatchKeyEvent(event);
-    }
-
-
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -185,6 +157,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         finish();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        System.out.println("on key down");
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
@@ -352,4 +329,5 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
 
     }
+
 }

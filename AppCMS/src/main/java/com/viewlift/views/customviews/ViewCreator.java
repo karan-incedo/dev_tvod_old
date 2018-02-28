@@ -1471,20 +1471,20 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {// TODO To Be remove post development finish
-//                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
-//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-//                            loadJsonFromAssets(context, "playlist.json"),
-//                            AppCMSPageUI.class);
-//                    module = appCMSPageUI1.getModuleList().get(1);
-//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
-//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-//                            loadJsonFromAssets(context, "music_hub.json"),
-//                            AppCMSPageUI.class);
-//                    module = appCMSPageUI1.getModuleList().get(2);
-//                } else {
-//                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-//                }
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "playlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } /*else if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "music_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                } */ else {
+                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
+//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             } catch (Exception e) {
 
@@ -2614,10 +2614,10 @@ public class ViewCreator {
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
                         //as of now set visibility gone for watchlist button as this is on hold
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-
-                        }
+//                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
+//                            componentViewResult.componentView.setVisibility(View.GONE);
+//
+//                        }
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -2835,10 +2835,7 @@ public class ViewCreator {
                                 }
                             }
                         });
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
 
-                        }
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
