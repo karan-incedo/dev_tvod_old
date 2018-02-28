@@ -69,7 +69,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
@@ -224,6 +223,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver chromecastDisconnectedReceiver;
     private BroadcastReceiver uaReceiveChannelIdReceiver;
     private BroadcastReceiver uaReceiveAppKeyReceiver;
+    private BroadcastReceiver gmsReceiveInstanceIdReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -710,6 +710,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        gmsReceiveInstanceIdReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null) {
+                    String instanceId = intent.getStringExtra("gms_instance_id");
+                    appCMSPresenter.setInstanceId(instanceId);
+                }
+            }
+        };
+
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -738,6 +748,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter("receive_ua_channel_id"));
         registerReceiver(uaReceiveAppKeyReceiver,
                 new IntentFilter("receive_ua_app_key"));
+        registerReceiver(gmsReceiveInstanceIdReceiver,
+                new IntentFilter("receive_gms_instance_id"));
 
         Intent registerInitReceivers = new Intent("INITIALIZATION");
         registerInitReceivers.putExtra("init_action", "register_receiver");
@@ -1106,7 +1118,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 if (appCMSPresenter != null) {
-                    appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
                     appCMSPresenter.initializeAppCMSAnalytics();
                     appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
                     FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -1389,6 +1400,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(refreshPageDataReceiver);
             unregisterReceiver(uaReceiveChannelIdReceiver);
             unregisterReceiver(uaReceiveAppKeyReceiver);
+            unregisterReceiver(gmsReceiveInstanceIdReceiver);
         } catch (IllegalArgumentException e) {
 //            Log.e(TAG, "receiver not regiestered " + e.getMessage());
 //            e.printStackTrace();
