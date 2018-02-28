@@ -140,15 +140,25 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
                     }
                     if (id != null) {
-                        appCMSPresenter.refreshVideoData(id,
-                                updatedContentDatum -> {
-                                    try {
-                                        binder.setContentData(updatedContentDatum);
-                                    } catch (Exception e) {
+                        String finalId = id;
+                        appCMSPresenter.getAppCMSSignedURL(id, appCMSSignedURLResult -> {
+                            appCMSPresenter.refreshVideoData(finalId,
+                                    updatedContentDatum -> {
+                                        try {
+                                            binder.setContentData(updatedContentDatum);
+                                        } catch (Exception e) {}
+                                        launchVideoPlayer(
+                                                updatedContentDatum.getGist(),
+                                                extra,
+                                                useHls,
+                                                finalFontColor1,
+                                                defaultVideoResolution,
+                                                intent,
+                                                appCMSPlayVideoPageContainer,
+                                                appCMSSignedURLResult);
+                                    });
+                        });
 
-                                    }
-                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-                                });
                     }
                 }
             }
