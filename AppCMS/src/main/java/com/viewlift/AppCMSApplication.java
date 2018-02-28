@@ -64,22 +64,6 @@ public class AppCMSApplication extends MultiDexApplication {
             }
         };
 
-            new Thread(() -> {
-                // NOTE: Replaced with Utils.getProperty()
-                //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
-                AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
-
-                Fabric.with(AppCMSApplication.this, new Crashlytics());
-
-                // NOTE: Replaced with Utils.getProperty()
-                //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-                if(Utils.getProperty("ApptentiveSignatureKey", getApplicationContext())!=null && Utils.getProperty("ApptentiveApiKey", getApplicationContext())!=null)
-                Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
-
-                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
-                FacebookSdk.sdkInitialize(getApplicationContext());
-            }).run();
-
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))

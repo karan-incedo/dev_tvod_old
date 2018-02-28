@@ -164,6 +164,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateMediaDescription(metadata);
                 updateDuration(metadata);
                 onUpdateMetaChange.updateMetaData(metadata);
+//                checkSubscription(metadata);
             }
         }
     };
@@ -348,8 +349,16 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                         break;
                     case PlaybackStateCompat.STATE_PAUSED:
                     case PlaybackStateCompat.STATE_STOPPED:
-                        controls.play();
-                        scheduleSeekbarUpdate();
+                        MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
+
+                        String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+
+                        if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || isFree.equalsIgnoreCase("true")) {
+                            controls.play();
+                            scheduleSeekbarUpdate();
+                        } else {
+                            showEntitleMentDialog();
+                        }
                         break;
                     default:
                 }
@@ -488,6 +497,47 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         fetchImageAsync(metaData.getDescription());
     }
 
+    public void checkSubscription(MediaMetadataCompat metadata) {
+        if (getActivity() != null) {
+            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+            System.out.println("Check subscription-" + isFree);
+            if (!isFree.equalsIgnoreCase("true")) {
+                if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
+                    showEntitleMentDialog();
+                }
+            }
+
+        }
+    }
+
+
+    private void showEntitleMentDialog() {
+        MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+        if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
+            controls.pause();
+            stopSeekbarUpdate();
+            appCMSPresenter.setAudioPlayerOpen(true);
+            if (appCMSPresenter.isUserLoggedIn()) {
+                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
+                        () -> {
+                            appCMSPresenter.setAfterLoginAction(() -> {
+                                System.out.println("After login action");
+
+                            });
+                        });
+            } else {
+                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+                        () -> {
+                            appCMSPresenter.setAfterLoginAction(() -> {
+                                System.out.println("After login action");
+
+                            });
+                        });
+            }
+        }
+    }
+
     long duration = 0;
 
     private void updateDuration(MediaMetadataCompat metadata) {
@@ -532,8 +582,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                MediaMetadataCompat metadata = controller.getMetadata();
 
                 stopSeekbarUpdate();
+                checkSubscription(metadata);
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:

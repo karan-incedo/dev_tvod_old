@@ -43,6 +43,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.playback.AudioCastPlayback;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.LocalPlayback;
 import com.viewlift.Audio.playback.Playback;
 import com.viewlift.Audio.playback.PlaybackManager;
@@ -156,7 +157,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
 
-                if(isConnected){
+                if (isConnected) {
                     mPlaybackManager.getPlayback().relaodAudioItem();
                 }
             }
@@ -235,6 +236,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onDestroy() {
+
+        AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlaybackManager.getPlayback().getCurrentId(),mPlaybackManager.getPlayback().getCurrentStreamPosition());
         unregisterCarConnectionReceiver();
         // Service is being killed, so make sure we release our resources
         mPlaybackManager.handleStopRequest(null);

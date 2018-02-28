@@ -338,6 +338,13 @@ public final class LocalPlayback implements Playback {
         audioData.getGist().setAudioPlaying(true);
         appCMSPresenter.notifyDownloadHasCompleted();
 
+        if (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails() != null && mCurrentMediaId != null && AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId() != null &&
+                AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId().equalsIgnoreCase(mCurrentMediaId) &&
+                AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition() > 0) {
+            currentPosition = (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition());
+        }
+        //reset last save position
+        AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
         //if media has changed then load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
 
@@ -387,6 +394,7 @@ public final class LocalPlayback implements Playback {
         if (appCMSPresenter.getAudioReload()) {
             relaodAudioItem();
         }
+
     }
 
     private void setUri(String source) {
@@ -712,7 +720,6 @@ public final class LocalPlayback implements Playback {
                 mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
             }
             appCMSPresenter.setAudioReload(true);
-            System.out.println("is network connected-" + isConnected);
             relaodAudioItem();
 
         }
@@ -747,15 +754,21 @@ public final class LocalPlayback implements Playback {
 
     @Override
     public void relaodAudioItem() {
-        if (appCMSPresenter!=null && appCMSPresenter.isNetworkConnected()) {
+        if (appCMSPresenter != null && appCMSPresenter.isNetworkConnected()) {
             isNetworkConnected = true;
-            if(mExoPlayer!=null) {
-                long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
-                MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
-                AudioPlaylistHelper.getInstance().playAudio(mCurrentMediaId, mCurrentPlayerPosition);
+            String mediaId = mCurrentMediaId;
+            long mCurrentPlayerPosition = 0;
+            if (mExoPlayer != null) {
+                if ((mExoPlayer.getCurrentPosition() >= getTotalDuration()) && AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
+                    mediaId = AudioPlaylistHelper.getInstance().getNextItemId();
+                } else {
+                    mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
+                }
+
+                AudioPlaylistHelper.getInstance().playAudio(mediaId, mCurrentPlayerPosition);
             }
         } else {
-//            stopPlayback(false);
+//            pausePlayback(false);
             isNetworkConnected = false;
             appCMSPresenter.showNoNetworkConnectivityToast();
         }

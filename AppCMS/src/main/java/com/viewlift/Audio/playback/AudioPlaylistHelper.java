@@ -14,6 +14,7 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
+import com.viewlift.models.data.appcms.audio.LastPlayAudioDetail;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -35,6 +36,7 @@ public class AudioPlaylistHelper {
     public static String mCurrentPlayListId = "";
     public static String CUSTOM_METADATA_TRACK_PARAM_LINK = "__PARAM_LINK__";
     public static String CUSTOM_METADATA_TRACK_ALBUM_YEAR = "_ALBUM_YEAR";
+    public static String CUSTOM_METADATA_IS_FREE = "__IS_FREE__";
 
     Activity mAct;
 
@@ -65,9 +67,14 @@ public class AudioPlaylistHelper {
         currentPlaylistData = mAppCMSPlaylistResult;
     }
 
-    public void stopPlayback() {
+    public void pausePlayback() {
         MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(mAct).getTransportControls();
         controls.pause();
+    }
+
+    public void stopPlayback() {
+        MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(mAct).getTransportControls();
+        controls.stop();
     }
 
     public AppCMSPlaylistResult getCurrentPlaylistData() {
@@ -131,6 +138,15 @@ public class AudioPlaylistHelper {
         }
     }
 
+    public String getNextItemId() {
+        String mediaId = null;
+        indexAudioFromPlaylist++;
+        if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
+            mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
+        }
+        return mediaId;
+    }
+
 
     public void setDuration(long duration) {
         mediaDuration = duration;
@@ -158,7 +174,6 @@ public class AudioPlaylistHelper {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
-//            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
             appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
@@ -178,7 +193,6 @@ public class AudioPlaylistHelper {
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
-//            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
             appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
@@ -189,7 +203,7 @@ public class AudioPlaylistHelper {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
         String artist = "";
-        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown";
+        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown",isFree="true";
         long runTime = 240 * 1000;
 
         if (appCMSAudioDetailResult.getGist() != null) {
@@ -201,10 +215,10 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getImageGist() != null) {
                 if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
-                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_3x4() != null) {
-                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_3x4();
                 } else if (appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+                } else if (appCMSAudioDetailResult.getGist().getImageGist().get_3x4() != null) {
+                    iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_3x4();
                 } else if (appCMSAudioDetailResult.getGist().getImageGist().get_4x3() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_4x3();
                 }
@@ -223,6 +237,9 @@ public class AudioPlaylistHelper {
             if (appCMSAudioDetailResult.getGist().getYear() != null)
                 album_year = appCMSAudioDetailResult.getGist().getYear();
 
+
+                isFree = String.valueOf(appCMSAudioDetailResult.getGist().isFree());
+
         }
         artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
 
@@ -235,6 +252,9 @@ public class AudioPlaylistHelper {
         int totalTrackCount = 0;
         long duration = -1;
 
+//        if(title.equalsIgnoreCase("Aasan Nahin Yahan") || title.equalsIgnoreCase("Qismat")){
+//            isFree="true";
+//        }
         music.put(
                 mediaId,
                 new MediaMetadataCompat.Builder()
@@ -250,6 +270,8 @@ public class AudioPlaylistHelper {
                         .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, trackNumber)
                         .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, totalTrackCount)
                         .putString(CUSTOM_METADATA_TRACK_PARAM_LINK, param_link)
+                        .putString(CUSTOM_METADATA_IS_FREE, isFree)
+
                         .build());
     }
 
@@ -277,6 +299,14 @@ public class AudioPlaylistHelper {
             MediaControllerCompat.getMediaController(mAct).getTransportControls()
                     .playFromMediaId(item.getMediaId(), bundle);
         }
+    }
+
+    public void saveLastPlayPositionDetails(String id,long pos) {
+        appCmsPresenter.saveLastPlaySongPosition(id,pos);
+    }
+
+    public LastPlayAudioDetail getLastPlayPositionDetails() {
+        return appCmsPresenter.getLastPlaySongPosition();
     }
 
     public void setCurrentMediaId(String mediaId) {
@@ -312,4 +342,5 @@ public class AudioPlaylistHelper {
     public void setCurrentAudioPLayingData(ContentDatum currentAudioPLayingData) {
         this.currentAudioPLayingData = currentAudioPLayingData;
     }
+
 }
