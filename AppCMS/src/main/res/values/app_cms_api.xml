@@ -227,8 +227,6 @@
     <!--PHOTO_GALLERY-TAG-->
     <string name="app_cms_page_photogallery_title">photoTitle</string>
     <string name="app_cms_page_photogallery_authName">trayAuthName</string>
-    <string name="app_cms_page_photogallery_date">trayDate</string>
-    <string name="app_cms_page_photogallery_Nophotos">trayPhotoCount</string>
     <string name="app_cms_page_photogallery_subTitle">traySubTitle</string>
     <string name="app_cms_page_photogallery_imgCount">trayImgCount</string>
     <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
