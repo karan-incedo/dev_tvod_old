@@ -21,6 +21,7 @@ package com.viewlift.tv.views.customviews;
 
         import com.bumptech.glide.Glide;
         import com.bumptech.glide.load.engine.DiskCacheStrategy;
+        import com.bumptech.glide.request.RequestOptions;
         import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
         import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
         import com.google.ads.interactivemedia.v3.api.AdEvent;
@@ -106,11 +107,12 @@ public class CustomTVVideoPlayerView
     private String permaLink;
 
 
-    public CustomTVVideoPlayerView(Context context) {
-        super(context);
+    public CustomTVVideoPlayerView(Context context,
+                                   AppCMSPresenter appCMSPresenter) {
+        super(context, appCMSPresenter);
+        this.appCMSPresenter = appCMSPresenter;
         getPlayerView().setUseController(false);
         mContext = context;
-        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         createCustomMessageView();
         createTitleView();
@@ -598,7 +600,7 @@ public class CustomTVVideoPlayerView
             imageView.setVisibility(View.VISIBLE);
             Glide.with(mContext)
                     .load(videoImageUrl)
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                     .into(imageView);
         }
     }
