@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -259,16 +260,36 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             }
         });
 
-        ((AppCMSPlayAudioActivity) getActivity()).setVolumeInterface(new AppCMSPlayAudioActivity.VolumeControl() {
-            @Override
-            public void volumeUpDown() {
-                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-            }
-
-        });
-
-
+        volumeObserver = new VolumeObserver(getActivity(), new Handler());
         return rootView;
+    }
+
+    VolumeObserver volumeObserver;
+
+    public class VolumeObserver extends ContentObserver {
+        private AudioManager audioManager;
+
+        public VolumeObserver(Context context, Handler handler) {
+            super(handler);
+            audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return false;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -466,6 +487,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         stopSeekbarUpdate();
         mExecutorService.shutdown();
         getActivity().unregisterReceiver(mMessageReceiver);
+        getActivity().getContentResolver().unregisterContentObserver(volumeObserver);
     }
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
