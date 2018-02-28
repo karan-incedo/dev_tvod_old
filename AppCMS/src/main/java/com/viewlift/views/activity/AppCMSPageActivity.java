@@ -90,6 +90,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.presenters.BitmapCachePresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
@@ -1096,6 +1097,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 inflateCastMiniController();
+
+                appCMSPresenter.setBitmapCachePresenter(
+                        new BitmapCachePresenter(this, getSupportFragmentManager()));
             }).run();
             libsThreadExecuted = true;
         }

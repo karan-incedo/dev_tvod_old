@@ -77,7 +77,7 @@ public class AppCMSApplication extends MultiDexApplication {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                     if (activity instanceof AppCompatActivity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                     }
                 }
 
@@ -90,7 +90,7 @@ public class AppCMSApplication extends MultiDexApplication {
                 @Override
                 public void onActivityResumed(Activity activity) {
                     if (activity instanceof AppCompatActivity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                         if (onActivityResumedAction != null) {
                             onActivityResumedAction.call();
                             onActivityResumedAction = null;

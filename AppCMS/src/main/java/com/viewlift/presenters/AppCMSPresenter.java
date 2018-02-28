@@ -521,7 +521,7 @@ public class AppCMSPresenter {
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
-    private AppCompatActivity currentActivity;
+    private Activity currentActivity;
     private Context currentContext;
     private Navigation navigation;
     private SubscriptionFlowContent subscriptionFlowContent;
@@ -10420,11 +10420,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public AppCompatActivity getCurrentActivity() {
+    public Activity getCurrentActivity() {
         return currentActivity;
     }
 
-    public void setCurrentActivity(AppCompatActivity activity) {
+    public void setCurrentActivity(Activity activity) {
         this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
@@ -10435,10 +10435,10 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //
         }
+    }
 
-        if (bitmapCachePresenter == null) {
-            bitmapCachePresenter = new BitmapCachePresenter(activity, activity.getSupportFragmentManager());
-        }
+    public void setBitmapCachePresenter(BitmapCachePresenter bitmapCachePresenter) {
+        this.bitmapCachePresenter = bitmapCachePresenter;
     }
 
     public Bitmap getBitmapFromCache(String url) {
