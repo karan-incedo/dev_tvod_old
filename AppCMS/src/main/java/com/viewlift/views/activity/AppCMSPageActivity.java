@@ -72,12 +72,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
-import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.mobile.pushnotif.AppCMSAirshipReceiver;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -224,7 +222,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver keepScreenOnReceiver;
     private BroadcastReceiver clearKeepScreenOnReceiver;
     private BroadcastReceiver chromecastDisconnectedReceiver;
-    private AppCMSAirshipReceiver appCMSAirshipReceiver;
+    private BroadcastReceiver uaReceiveChannelIdReceiver;
+    private BroadcastReceiver uaReceiveAppKeyReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -691,7 +690,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
-        appCMSAirshipReceiver = new AppCMSAirshipReceiver();
+        uaReceiveChannelIdReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null) {
+                    String channelId = intent.getStringExtra("channel_id");
+                    appCMSPresenter.setUaChannelId(channelId);
+                }
+            }
+        };
+
+        uaReceiveAppKeyReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null) {
+                    String appKey = intent.getStringExtra("app_key");
+                    appCMSPresenter.setUaAccessKey(appKey);
+                }
+            }
+        };
 
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
@@ -717,14 +734,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        registerReceiver(appCMSAirshipReceiver,
-                new IntentFilter("com.urbanairship.push.CHANNEL_UPDATED"));
-        registerReceiver(appCMSAirshipReceiver,
-                new IntentFilter("com.urbanairship.push.OPENED"));
-        registerReceiver(appCMSAirshipReceiver,
-                new IntentFilter("com.urbanairship.push.RECEIVED"));
-        registerReceiver(appCMSAirshipReceiver,
-                new IntentFilter("com.urbanairship.push.DISMISSED"));
+        registerReceiver(uaReceiveChannelIdReceiver,
+                new IntentFilter("receive_ua_channel_id"));
+        registerReceiver(uaReceiveAppKeyReceiver,
+                new IntentFilter("receive_ua_app_key"));
+
+        Intent registerInitReceivers = new Intent("INITIALIZATION");
+        registerInitReceivers.putExtra("init_action", "register_receiver");
+        sendBroadcast(registerInitReceivers);
 
         resumeInternalEvents = false;
 
@@ -1013,8 +1030,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!libsThreadExecuted) {
             new Thread(() -> {
-                UAirship.takeOff(getApplication());
-                UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+                Intent initReceivers = new Intent("INITIALIZATION");
+                initReceivers.putExtra("init_action", "init");
+                sendBroadcast(initReceivers);
+
                 Fabric.with(getApplication(), new Crashlytics());
                 Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
                         getString(R.string.app_cms_apptentive_signature_key));
@@ -1100,6 +1119,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 appCMSPresenter.setBitmapCachePresenter(
                         new BitmapCachePresenter(this, getSupportFragmentManager()));
+
+                Intent sendChannelIdIntent = new Intent("INITIALIZATION");
+                sendChannelIdIntent.putExtra("init_action", "send_channel_id");
+                sendBroadcast(sendChannelIdIntent);
+
+                Intent sendAppKey = new Intent("INITIALIZATION");
+                sendAppKey.putExtra("init_action", "send_app_key");
+                sendBroadcast(sendAppKey);
             }).run();
             libsThreadExecuted = true;
         }
@@ -1360,11 +1387,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(processDeeplinkReceiver);
             unregisterReceiver(networkConnectedReceiver);
             unregisterReceiver(refreshPageDataReceiver);
-            unregisterReceiver(appCMSAirshipReceiver);
+            unregisterReceiver(uaReceiveChannelIdReceiver);
+            unregisterReceiver(uaReceiveAppKeyReceiver);
         } catch (IllegalArgumentException e) {
 //            Log.e(TAG, "receiver not regiestered " + e.getMessage());
 //            e.printStackTrace();
         }
+
+        Intent unregisterInitReceivers = new Intent("INITIALIZATION");
+        unregisterInitReceivers.putExtra("init_action", "unregister_receiver");
+        sendBroadcast(unregisterInitReceivers);
 
         if (inAppBillingServiceConn != null) {
             try {

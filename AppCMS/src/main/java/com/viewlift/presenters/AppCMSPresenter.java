@@ -14023,7 +14023,7 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
         }
-        uaAssociateNamedUserRequest.setChannelId();
+        uaAssociateNamedUserRequest.setChannelId(uaChannelId);
 
         return uaAssociateNamedUserRequest;
     }
