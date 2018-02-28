@@ -76,9 +76,7 @@ public class AppCMSApplication extends MultiDexApplication {
             registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                    if (activity instanceof AppCompatActivity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                    }
+                    appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                 }
 
                 @Override
