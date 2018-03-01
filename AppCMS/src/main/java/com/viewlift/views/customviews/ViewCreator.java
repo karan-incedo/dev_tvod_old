@@ -3108,7 +3108,7 @@ public class ViewCreator {
                     String tagsName = "";
                     if (moduleAPI.getContentData().get(0).getTags() != null && moduleAPI.getContentData().get(0).getTags().size() > 0) {
                         for (Tag tag : moduleAPI.getContentData().get(0).getTags())
-                            tags.append(" " + tag.getTitle() + " |");
+                            tags.append(" " + tag.getTitle() + " ,");
                         tagsName = tags.length() > 0 ? tags.substring(0, tags.length() - 1) : "";
                     }
                     ((TextView) componentViewResult.componentView).setText("TAGGED :" + tagsName);
