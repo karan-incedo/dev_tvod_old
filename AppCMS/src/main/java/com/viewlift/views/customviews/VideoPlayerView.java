@@ -935,7 +935,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
 
-            if (useHls && dataSource instanceof DefaultHttpDataSource) {
+            if (/*useHls && */dataSource instanceof DefaultHttpDataSource) {
                 if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
                         !TextUtils.isEmpty(signatureCookies.signatureCookie) &&
                         !TextUtils.isEmpty(signatureCookies.keyPairIdCookie)) {
