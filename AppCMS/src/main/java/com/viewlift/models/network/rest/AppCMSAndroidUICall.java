@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,7 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.Scanner;
 
 import javax.inject.Inject;
 

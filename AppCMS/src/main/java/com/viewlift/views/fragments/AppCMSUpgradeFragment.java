@@ -48,8 +48,8 @@ public class AppCMSUpgradeFragment extends Fragment {
                 .appCMSPresenter();
 
         if (appCMSPresenter != null) {
-            int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
-            int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+            int textColor = Color.parseColor(appCMSPresenter.getAppTextColor());
+            int bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
             upgradeTextView.setTextColor(textColor);
             upgradeButton.setTextColor(textColor);
             upgradeButton.setBackgroundColor(bgColor);

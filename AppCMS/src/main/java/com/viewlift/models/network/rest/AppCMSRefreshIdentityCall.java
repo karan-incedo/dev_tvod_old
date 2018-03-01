@@ -44,13 +44,17 @@ public class AppCMSRefreshIdentityCall {
         appCMSRefreshIdentityRest.get(url).enqueue(new Callback<RefreshIdentityResponse>() {
             @Override
             public void onResponse(Call<RefreshIdentityResponse> call, Response<RefreshIdentityResponse> response) {
-                Observable.just(response.body()).subscribe(readyAction);
+                Observable.just(response.body())
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction);
             }
 
             @Override
             public void onFailure(Call<RefreshIdentityResponse> call, Throwable t) {
                 //Log.e(TAG, "DialogType retrieving Refresh Identity Response");
-                Observable.just((RefreshIdentityResponse) null).subscribe(readyAction);
+                Observable.just((RefreshIdentityResponse) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction);
             }
         });
     }

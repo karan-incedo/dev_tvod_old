@@ -49,6 +49,7 @@ public class BeaconPing extends Thread {
                             && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
 
                         //Log.d(TAG, "Beacon Message Request position: " + currentTime);
+
                         appCMSPresenter.sendBeaconMessage(filmId,
                                 permaLink,
                                 parentScreenName,

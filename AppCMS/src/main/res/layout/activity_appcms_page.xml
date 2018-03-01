@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/new_version_available_parent"
@@ -45,7 +46,6 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
         android:elevation="@dimen/appbar_elevation"
-        android:fitsSystemWindows="true"
         android:layout_below="@id/new_version_available_parent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -73,9 +73,9 @@
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/logo_icon_height"
                     android:layout_centerHorizontal="true"
-                    android:background="@drawable/logo_icon"
+                    android:src="@drawable/logo_icon"
                     android:scaleType="centerInside" />
 
                 <LinearLayout
@@ -90,8 +90,8 @@
                         android:layout_height="@dimen/close_button_size"
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/search"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/icon_search"
                         android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"

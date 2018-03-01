@@ -68,7 +68,7 @@ import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
-import static com.google.android.gms.internal.zzagr.runOnUiThread;
+import static com.google.android.gms.internal.zzahn.runOnUiThread;
 
 public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener {
@@ -166,7 +166,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         //appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         mFullScreenButton = createFullScreenToggleButton();
-        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+        ((LinearLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
         createPreviewMessageView();
         touchToCastOverlay();

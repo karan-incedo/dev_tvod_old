@@ -149,7 +149,11 @@ public class CastHelper {
 
     public static synchronized CastHelper getInstance(Context context) {
         if (objMain == null) {
-            objMain = new CastHelper(context);
+            try {
+                objMain = new CastHelper(context);
+            } catch (Exception e) {
+
+            }
         }
         return objMain;
     }
@@ -820,7 +824,7 @@ public class CastHelper {
         }
     }
 
-    protected RemoteMediaClient getRemoteMediaClient() {
+    public RemoteMediaClient getRemoteMediaClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
         if (castSession == null || !castSession.isConnected()) {
@@ -1026,6 +1030,8 @@ public class CastHelper {
         }
     }
 
-
+    public String getStartingFilmId() {
+        return startingFilmId;
+    }
 }
 

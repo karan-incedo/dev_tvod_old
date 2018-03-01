@@ -74,6 +74,7 @@ public class TabletLandscape implements Serializable {
     boolean isHorizontalScroll;
 
     @SerializedName("thumbnailWidth")
+    @Expose
     int thumbnailWidth;
 
     @SerializedName("thumbnailHeight")

@@ -240,6 +240,7 @@
     <string name="runtime_minute_abbreviation">MIN</string>
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
+    <string name="runtime_episodes_abbreviation">EPISODES</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -365,6 +366,7 @@
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
+    <string name="app_cms_download_unavailable_error_message">The download is currently unavailable. Please try again later.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
     <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
     <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
@@ -590,9 +592,13 @@
         <item quantity="one">SEC</item>
         <item quantity="other">SECS</item>
     </plurals>
+
     <string name="season_episode_placeholders">S%d:E%d</string>
     <string name="subscription_cancelled_in">Scheduled to be cancelled by %s</string>
 
+    <!-- Apptentive Messages -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
+    <string name="app_cms_apptentive_login_event_name">Login</string>
 </resources>
 
 

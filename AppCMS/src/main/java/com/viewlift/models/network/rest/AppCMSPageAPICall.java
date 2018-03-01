@@ -106,7 +106,8 @@ public class AppCMSPageAPICall {
                 if (!TextUtils.isEmpty(authToken)) {
                     headersMap.put("Authorization", authToken);
                 }
-                //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
+                Log.w(TAG, "API URL: " + urlWithContent);
+                Log.w(TAG, "API Headers: " + headersMap.toString());
                 Response<ResponseBody> response = null;
 
                 if (modules != null && !modules.isEmpty()) {

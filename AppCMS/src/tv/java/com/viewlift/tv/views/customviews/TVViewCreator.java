@@ -51,8 +51,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -268,11 +269,11 @@ public class TVViewCreator {
                     && null != moduleAPI.getContentData().get(0)
                     && null != moduleAPI.getContentData().get(0).getGist()
                     && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
-                Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                        .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                Glide.with(context).asBitmap().load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                        .into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
                         TVBaseView.DEVICE_HEIGHT) {
                     @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                         Drawable drawable = new BitmapDrawable(context.getResources(), resource);
                         finalPageView.setBackground(drawable);
                         finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#CC000000"));
@@ -321,15 +322,15 @@ public class TVViewCreator {
                             && null != moduleAPI.getContentData().get(0)
                             && null != moduleAPI.getContentData().get(0).getGist()
                             && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
-                        Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                        Glide.with(context).asBitmap().load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                .into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
                                 TVBaseView.DEVICE_HEIGHT) {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                                finalPageView.setBackground(drawable);
-                                finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#CC000000"));
-                            }
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                                        finalPageView.setBackground(drawable);
+                                        finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#CC000000"));
+                                    }
                         });
                     }
                 }
@@ -920,7 +921,7 @@ public class TVViewCreator {
                                                         } else {
                                                             btn.setText(context.getString(R.string.add_to_watchlist));
                                                         }
-                                                    }, !queued[0]);
+                                                    }, !queued[0], false);
                                         } else /*User is not logged in*/ {
 
                                             ClearDialogFragment newFragment = Utils.getClearDialogFragment(
@@ -1900,22 +1901,24 @@ public class TVViewCreator {
 
                         if (imageViewHeight > 0 && imageViewWidth > 0 && imageViewHeight > imageViewWidth) {
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder)))
                                     .into(((ImageView) componentViewResult.componentView));
                         } else if (imageViewWidth > 0) {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(((ImageView) componentViewResult.componentView));
                         } else {
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(((ImageView) componentViewResult.componentView));
                         }
                         componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
@@ -1954,22 +1957,24 @@ public class TVViewCreator {
 
                         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder)))
                                     .into(imageView);
                         } else if (viewWidth > 0) {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(imageView);
                         } else {
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(imageView);
                         }
                         componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
@@ -2030,9 +2035,9 @@ public class TVViewCreator {
                         }
                         if(null != imgUrl && ( imgUrl.endsWith("png") || imgUrl.endsWith("jpeg") || imgUrl.endsWith("jpg"))) {
                             Glide.with(context)
-                                    .load(imgUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .load(imgUrl).apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into((ImageView) componentViewResult.componentView);
                         }else{
                             componentViewResult.componentView = null;
@@ -2060,9 +2065,10 @@ public class TVViewCreator {
                                 imageUrl = moduleAPI.getContentData().get(0).getGist().getPosterImageUrl();
                             }
                             Glide.with(context)
-                                    .load(imageUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                    .load(imageUrl)
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder)))
                                     .into((ImageView) componentViewResult.componentView);
                         } else if (imageWidth > 0) {
                             String videoImageUrl = "";
@@ -2074,9 +2080,9 @@ public class TVViewCreator {
                             }
                             Glide.with(context)
                                     .load(videoImageUrl)
-                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into((ImageView) componentViewResult.componentView);
                         } else {
                             String videoImageUrl = "";
@@ -2087,9 +2093,10 @@ public class TVViewCreator {
                                 videoImageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
                             }
                             Glide.with(context)
-                                    .load(videoImageUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .load(videoImageUrl)
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into((ImageView) componentViewResult.componentView);
                         }
                         break;
@@ -2121,7 +2128,8 @@ public class TVViewCreator {
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)
-                                    .load(component.getImageName()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .load(component.getImageName())
+                                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                                     .into((ImageView) componentViewResult.componentView);
                         }
                 }

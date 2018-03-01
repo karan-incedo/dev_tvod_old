@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Season_;
@@ -313,15 +314,17 @@ public class CardPresenter extends Presenter {
                                // imageView.setBackground(null);
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)
-                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.video_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
+                                            .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                                .placeholder(R.drawable.video_image_placeholder)
+                                                .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
                                             .into(imageView);
                                 } else {
                                     Glide.with(mContext)
-                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                            .placeholder(R.drawable.poster_image_placeholder)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
+                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
+                                            .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                                .placeholder(R.drawable.poster_image_placeholder)
+                                                .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder)))
                                             .into(imageView);
                                 }
 
@@ -355,7 +358,7 @@ public class CardPresenter extends Presenter {
                                   //      imageView.setBackground(null);
                                         Glide.with(mContext)
                                                 .load(imageUrl)
-                                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                                                 .into(imageView);
 
                                     }catch (Exception e){

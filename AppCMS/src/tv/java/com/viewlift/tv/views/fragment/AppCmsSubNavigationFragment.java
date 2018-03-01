@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.AccessLevels;
@@ -559,7 +560,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)
                         .load(subItem.icon)
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                         .into(holder.navImageView);
             }
 

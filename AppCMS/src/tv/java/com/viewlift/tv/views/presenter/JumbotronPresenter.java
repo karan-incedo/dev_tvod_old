@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -97,9 +98,10 @@ public class JumbotronPresenter extends CardPresenter {
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 Glide.with(mContext)
-                                        .load(contentData.getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                        .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
-                                        .placeholder(ContextCompat.getDrawable(mContext , R.drawable.video_image_placeholder))
+                                        .load(contentData.getGist().getVideoImageUrl())
+                                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                            .placeholder(ContextCompat.getDrawable(mContext , R.drawable.video_image_placeholder)))
                                         .into(imageView);
                                 parentLayout.addView(imageView);
                                 break;

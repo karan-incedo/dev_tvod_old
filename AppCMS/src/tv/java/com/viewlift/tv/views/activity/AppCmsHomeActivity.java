@@ -608,7 +608,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     if (appCMSPresenter.isNetworkConnected()) {
                         appCMSPresenter.editWatchlist(retryCallBinder.getFilmId(),
                                 retryCallBinder.getCallback(),
-                                !bundle.getBoolean("queued"));
+                                !bundle.getBoolean("queued"), true);
                     } else {
                         appCMSPresenter.openErrorDialog(retryCallBinder.getFilmId(),
                                 bundle.getBoolean("queued"),
@@ -1068,6 +1068,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 null,
+                                false,
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;

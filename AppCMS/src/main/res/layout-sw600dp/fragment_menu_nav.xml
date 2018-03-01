@@ -65,8 +65,8 @@
                         android:background="@android:color/transparent"
                         android:text="@string/app_cms_log_in_pager_title"
                         android:textSize="@dimen/nav_item_text_size"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"/>
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"/>
                     <Button
                         android:id="@+id/app_cms_nav_free_trial_button"
                         android:layout_width="match_parent"
@@ -74,8 +74,8 @@
                         android:text="@string/app_cms_subscribe_now"
                         android:textSize="@dimen/nav_item_text_size"
                         android:layout_marginTop="8dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"/>
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

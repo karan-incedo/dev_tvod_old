@@ -53,10 +53,13 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         filmTitle.setText(cursor.getString(1));
         int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
 
-        if (runtimeAsInteger / 60 < 1) {
+        if (runtimeAsInteger < 60 && runtimeAsInteger > 0) {
             runtime.setText(new StringBuilder().append(cursor.getString(2))
                     .append(" ")
                     .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
+        } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
+            // FIXME: Display number of episodes.
+            runtime.setText(new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
         } else if (runtimeAsInteger / 60 < 2) {
             runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
                     .append(" ")
@@ -120,8 +123,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         }
 
         if (limit > 0) {
-            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT,
-                    String.valueOf(limit));
+            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
         }
 
         Uri uri = uriBuilder.build();
