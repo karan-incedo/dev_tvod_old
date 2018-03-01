@@ -40,7 +40,7 @@ public class Gist implements Serializable {
 
     @SerializedName("publishDate")
     @Expose
-    String publishDate;
+    long publishDate;
 
     @SerializedName("runtime")
     @Expose
@@ -72,11 +72,11 @@ public class Gist implements Serializable {
 
     @SerializedName("addedDate")
     @Expose
-    String addedDate;
+    long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    String updateDate;
+    long updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
@@ -106,19 +106,17 @@ public class Gist implements Serializable {
     @Expose
     String kisweEventId;
 
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
     String downloadStatus;
+
+    boolean isAudioPlaying;
     /**
      * This is to store the url of the downloaded file
      */
     String localFileUrl;
-
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    @SerializedName("mediaType")
-    @Expose
-    String mediaType;
 
     public String getId() {
         return id;
@@ -176,11 +174,11 @@ public class Gist implements Serializable {
         this.free = free;
     }
 
-    public String getPublishDate() {
+    public long getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(String publishDate) {
+    public void setPublishDate(long publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -216,19 +214,19 @@ public class Gist implements Serializable {
         this.badgeImages = badgeImages;
     }
 
-    public String getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(String addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public String getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(String updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -315,11 +313,13 @@ public class Gist implements Serializable {
         this.kisweEventId = kisweEventId;
     }
 
+    public String getMediaType() {
+        return mediaType;
+    }
+
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
-
-    boolean isAudioPlaying;
 
     public boolean isAudioPlaying() {
         return isAudioPlaying;
@@ -327,24 +327,5 @@ public class Gist implements Serializable {
 
     public void setAudioPlaying(boolean audioPlaying) {
         isAudioPlaying = audioPlaying;
-    }
-
-    long currentPlayingPosition;
-    Boolean isCastingConnected;
-
-    public long getCurrentPlayingPosition() {
-        return currentPlayingPosition;
-    }
-
-    public void setCurrentPlayingPosition(long currentPlayingPosition) {
-        this.currentPlayingPosition = currentPlayingPosition;
-    }
-
-    public Boolean getCastingConnected() {
-        return isCastingConnected;
-    }
-
-    public void setCastingConnected(Boolean castingConnected) {
-        isCastingConnected = castingConnected;
     }
 }

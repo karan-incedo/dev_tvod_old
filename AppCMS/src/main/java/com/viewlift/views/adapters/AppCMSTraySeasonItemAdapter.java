@@ -32,25 +32,26 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         implements OnInternalEvent, AppCMSBaseAdapter {
 
     private static final String TAG = "TraySeasonItemAdapter";
-
+    private final String episodicContentType;
+    private final String fullLengthFeatureType;
     protected List<ContentDatum> adapterData;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
+    String componentViewType;
     private List<OnInternalEvent> receivers;
     private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
-
-    private final String episodicContentType;
-    private final String fullLengthFeatureType;
-
     private MotionEvent lastTouchDownEvent;
 
-    String componentViewType;
+
+
+
+
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -106,8 +107,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
             }
         }
     }
-
-
 
     @Override
     public int getItemCount() {
@@ -389,45 +388,176 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         String title = data.getGist().getTitle();
         String hlsUrl = getHlsUrl(data);
 
-        String[] extraData = new String[3];
-        extraData[0] = permalink;
-        extraData[1] = hlsUrl;
-        extraData[2] = data.getGist().getId();
+                                @SuppressWarnings("MismatchedReadAndWriteOfArray")
+                                String[] extraData = new String[3];
+                                extraData[0] = permalink;
+                                extraData[1] = hlsUrl;
+                                extraData[2] = data.getGist().getId();
+                                //Log.d(TAG, "Launching " + permalink + ": " + action);
+                                List<String> relatedVideoIds = allEpisodeIds;
+                                int currentPlayingIndex = -1;
+                                if (allEpisodeIds != null) {
+                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                        currentPlayingIndex = currentEpisodeIndex;
+                                    }
+                                }
+                                if (relatedVideoIds == null) {
+                                    currentPlayingIndex = 0;
+                                }
 
-        List<String> relatedVideos = null;
-        if (data.getContentDetails() != null &&
-                data.getContentDetails().getRelatedVideoIds() != null) {
-            relatedVideos = data.getContentDetails().getRelatedVideoIds();
+                                if (data.getGist() == null ||
+                                        data.getGist().getContentType() == null) {
+                                    if (!appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
+                                            currentPlayingIndex,
+                                            relatedVideoIds,
+                                            -1,
+                                            action)) {
+                                        //Log.e(TAG, "Could not launch action: " +
+    //                                                " permalink: " +
+    //                                                permalink +
+    //                                                " action: " +
+    //                                                action);
+                                    }
+                                } else {
+                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds)) {
+                                        //Log.e(TAG, "Could not launch action: " +
+    //                                                " permalink: " +
+    //                                                permalink +
+    //                                                " action: " +
+    //                                                action);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+                        if (isClickable) {
+                            if (data.getGist() != null) {
+                                //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                                List<String> relatedVideoIds = allEpisodeIds;
+                                int currentPlayingIndex = -1;
+                                if (allEpisodeIds != null) {
+                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                        currentPlayingIndex = currentEpisodeIndex;
+                                    }
+                                }
+                                if (relatedVideoIds == null) {
+                                    currentPlayingIndex = 0;
+                                }
+                                if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
+                                        currentPlayingIndex,
+                                        relatedVideoIds,
+                                        -1,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch play action: " +
+    //                                            " filmId: " +
+    //                                            filmId +
+    //                                            " permaLink: " +
+    //                                            permaLink +
+    //                                            " title: " +
+    //                                            title);
+                                }
+                            }
+                        }
+                    }
+            };
         }
-        //Log.d(TAG, "Launching " + permalink + ": " + action);
-        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                action,
-                title,
-                extraData,
-                data,
-                false,
-                -1,
-                relatedVideos)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " permalink: " +
-//                    permalink +
-//                    " action: " +
-//                    action +
-//                    " hlsUrl: " +
-//                    hlsUrl);
+
+        itemView.setOnTouchListener((View v, MotionEvent event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                lastTouchDownEvent = event;
+            }
+
+            return false;
+        });
+        itemView.setOnClickListener(v -> {
+            if (isClickable) {
+                if (v instanceof CollectionGridItemView) {
+                    try {
+                        int eventX = (int) lastTouchDownEvent.getX();
+                        int eventY = (int) lastTouchDownEvent.getY();
+                        ViewGroup childContainer = ((CollectionGridItemView) v).getChildrenContainer();
+                        int childrenCount = childContainer.getChildCount();
+                        for (int i = 0; i < childrenCount; i++) {
+                            View childView = childContainer.getChildAt(i);
+                            if (childView instanceof Button) {
+                                int[] childLocation = new int[2];
+                                childView.getLocationOnScreen(childLocation);
+                                int childX = childLocation[0] - 8;
+                                int childY = childLocation[1] - 8;
+                                int childWidth = childView.getWidth() + 8;
+                                int childHeight = childView.getHeight() + 8;
+                                if (childX <= eventX && eventX <= childX + childWidth) {
+                                    if (childY <= eventY && eventY <= childY + childHeight) {
+                                        childView.performClick();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                String permalink = data.getGist().getPermalink();
+                String title = data.getGist().getTitle();
+                String action = defaultAction;
+
+                //Log.d(TAG, "Launching " + permalink + ":" + action);
+                List<String> relatedVideoIds = allEpisodeIds;
+                int currentPlayingIndex = -1;
+                if (allEpisodeIds != null) {
+                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                        currentPlayingIndex = currentEpisodeIndex;
+                    }
+                }
+                if (relatedVideoIds == null) {
+                    currentPlayingIndex = 0;
+                }
+            }
+        });
+
+        for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
+            itemView.bindChild(itemView.getContext(),
+                    itemView.getChild(i),
+                    data,
+                    jsonValueKeyMap,
+                    onClickHandler,
+                    componentViewType,
+                    Color.parseColor(appCMSPresenter.getAppTextColor()),
+                    appCMSPresenter,
+                    position);
         }
     }
 
-    private void play(ContentDatum data, String action) {
-        if (!appCMSPresenter.launchVideoPlayer(data,
-                -1,
-                null,
-                data.getGist().getWatchedTime(),
-                null)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " action: " +
-//                    action);
-        }
+    @Override
+    public void resetData(RecyclerView listView) {
+        //
+    }
+
+    @Override
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
+        //
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+
     }
 
     private String getDefaultAction(Context context) {

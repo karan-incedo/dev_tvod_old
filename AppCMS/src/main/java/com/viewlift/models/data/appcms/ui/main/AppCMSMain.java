@@ -13,6 +13,10 @@ public class AppCMSMain implements Serializable {
     @Expose
     String id;
 
+    @SerializedName("templateName")
+    @Expose
+    String templateName;
+
     @SerializedName("accessKey")
     @Expose
     String accessKey;

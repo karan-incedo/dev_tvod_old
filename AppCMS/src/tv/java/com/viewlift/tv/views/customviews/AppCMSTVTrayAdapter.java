@@ -131,7 +131,8 @@ public class AppCMSTVTrayAdapter
                     this.parentLayout,
                     false,
                     component,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     Utils.getFocusColor(context, appCMSPresenter));
 
@@ -207,7 +208,7 @@ public class AppCMSTVTrayAdapter
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && adapterData != null && position < adapterData.size()) {
-            bindView(holder.componentView, adapterData.get(position));
+            bindView(holder.componentView, adapterData.get(position), position);
         }
     }
 
@@ -229,7 +230,7 @@ public class AppCMSTVTrayAdapter
     }
 
     protected void bindView(TVCollectionGridItemView itemView,
-                            final ContentDatum data) throws IllegalArgumentException {
+                            final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
             onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
                 @Override
@@ -334,7 +335,8 @@ public class AppCMSTVTrayAdapter
                     data,
                     jsonValueKeyMap,
                     onClickHandler,
-                    viewTypeKey);
+                    viewTypeKey,
+                    position);
         }
     }
 

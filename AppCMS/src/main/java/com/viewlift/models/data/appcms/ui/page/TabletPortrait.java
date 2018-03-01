@@ -74,6 +74,7 @@ public class TabletPortrait implements Serializable {
     boolean isHorizontalScroll;
 
     @SerializedName("thumbnailWidth")
+    @Expose
     int thumbnailWidth;
 
     @SerializedName("thumbnailHeight")

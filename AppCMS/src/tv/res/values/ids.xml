@@ -16,6 +16,9 @@
     <item name="countdown_id" type="id">countdown_id</item>
     <item name="autoplay_play_movie_image" type="id">autoplay_play_movie_image</item>
     <item name="autoplay_finished_movie_title" type="id">autoplay_finished_movie_title</item>
+    <item name="autoplay_up_next_movie_title" type="id">autoplay_up_next_movie_title</item>
+    <item name="autoplay_finished_movie_image" type="id">autoplay_finished_movie_image</item>
     <item name="autoplay_rotating_loader_view_id" type="id">autoplay_rotating_loader_view_id</item>
     <item name="up_next_text_view_id" type="id">up_next_text_view_id</item>
+    <item name="countdown_cancelled_text_view_id" type="id">countdown_cancelled_text_view_id</item>
 </resources>

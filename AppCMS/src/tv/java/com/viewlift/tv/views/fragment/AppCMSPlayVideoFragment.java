@@ -9,9 +9,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.percent.PercentRelativeLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,7 +41,6 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
@@ -112,7 +116,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
     int maxPreviewSecs = 0;
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
+    private PercentRelativeLayout contentRatingMainContainer;
+    private LinearLayout contentRatingInfoContainer;
+    private TextView contentRatingHeaderView;
+    private TextView contentRatingDiscretionView;
+    private TextView contentRatingTitleHeader;
+    private RelativeLayout videoPlayerMainContainer;
 
+    private final int totalCountdownInMillis = 2000;
+    private final int countDownIntervalInMillis = 20;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -175,6 +188,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (activity instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) activity;
         }
+        if (activity instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) activity;
+        }
     }
 
     @Override
@@ -183,6 +199,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         this.mContext = context;
         if (context instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) context;
+        }
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
     }
 
@@ -327,15 +346,24 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
                         }
-                        if (onClosePlayerEvent != null && permaLink.contains(
-                                getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                        if (onClosePlayerEvent != null && isTrailer) {
                             videoPlayerView.releasePlayer();
                             onClosePlayerEvent.closePlayer();
                             return;
                         }
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
-                            onClosePlayerEvent.onMovieFinished();
+                            //sedn the history when complete play.
+                            if (!isTrailer && videoPlayerView != null) {
+                                appCMSPresenter.updateWatchedTime(filmId,
+                                        videoPlayerView.getCurrentPosition() / 1000);
+                            }
+
+                           if(shouldAutoPlay()){
+                               onClosePlayerEvent.onMovieFinished();
+                           } /*else {
+                               onClosePlayerEvent.closePlayer();
+                           }*/
                         }
                         break;
                     default:
@@ -363,6 +391,13 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         });
     }
 
+    private boolean shouldAutoPlay() {
+        boolean isPerVideo = appCMSPresenter.getAppCMSMain().getFeatures().getFreePreview().isPerVideo();
+         if (isPerVideo && !appCMSPresenter.isUserSubscribed() && !freeContent){
+            return false;
+        }
+        return true;
+    }
     private boolean isAdsDisplaying = false;
 
     public boolean isAdsPlaying() {
@@ -374,7 +409,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player_tv, container, false);
-
+        videoPlayerMainContainer =
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
@@ -402,6 +438,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerInfoContainer.bringToFront();
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
 
@@ -416,9 +455,14 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         PorterDuff.Mode.MULTIPLY
                 );
 
+        initViewForCRW(rootView);
         if (!shouldRequestAds) {
-            preparePlayer();
-            startTimer();
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                preparePlayer();
+                startEntitlementCheckTimer();
+            }
         }
 
 
@@ -461,7 +505,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         return rootView;
     }
 
-    private void startTimer() {
+    private void startEntitlementCheckTimer() {
         if (entitlementCheckTimer != null || entitlementCheckTimerTask != null) {
             /*That means timer is already running and no need to create a new timer*/
             return;
@@ -820,7 +864,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 isAdsDisplaying = false;
                 if (isVisible() && isAdded()) {
                     preparePlayer();
-                    startTimer();
+                    startEntitlementCheckTimer();
                 }
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
@@ -1142,4 +1186,103 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
         }
     }
+    private void initViewForCRW(View rootView) {
+
+        contentRatingMainContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
+
+        contentRatingInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
+
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
+
+        contentRatingTitleHeader = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_header);
+
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+
+        if (!TextUtils.isEmpty(fontColor)) {
+            contentRatingTitleHeader.setTextColor(Color.parseColor(fontColor));
+        }
+
+        if (appCMSPresenter.getAppCMSMain() != null &&
+                !TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            contentRatingHeaderView.setTextColor(highlightColor);
+            applyBorderToComponent(contentRatingInfoContainer, 1, highlightColor);
+            progressBar.getProgressDrawable()
+                    .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
+            progressBar.setMax(100);
+        }
+    }
+
+    private void createContentRatingView() throws Exception {
+        if (!isTrailer &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
+            videoPlayerMainContainer.setVisibility(View.GONE);
+            contentRatingMainContainer.setVisibility(View.VISIBLE);
+            contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
+            new Handler().post(this::startCountdown);
+        } else {
+            contentRatingMainContainer.setVisibility(View.GONE);
+            videoPlayerMainContainer.setVisibility(View.VISIBLE);
+            preparePlayer();
+            startEntitlementCheckTimer();
+        }
+    }
+
+    /*private String getParentalRating() {
+        if (!isTrailer &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
+            contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
+        }
+        return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
+    }*/
+
+    private void startCountdown() {
+        new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
+//                Log.d(TAG, "CRW Progress:" + progress);
+                progressBar.setProgress((int) progress);
+            }
+
+            @Override
+            public void onFinish() {
+                if (isVisible() && isAdded()) {
+                    contentRatingMainContainer.setVisibility(View.GONE);
+                    videoPlayerMainContainer.setVisibility(View.VISIBLE);
+                    preparePlayer();
+                    startEntitlementCheckTimer();
+                }
+            }
+        }.start();
+    }
+
+    private void applyBorderToComponent(View view, int width, int Color) {
+        GradientDrawable rectangleBorder = new GradientDrawable();
+        rectangleBorder.setShape(GradientDrawable.RECTANGLE);
+        rectangleBorder.setStroke(width, Color);
+        view.setBackground(rectangleBorder);
+    }
+
+    private void setTypeFace(Context context,
+                             TextView view, String fontType) {
+        if (null != context && null != view && null != fontType) {
+            try {
+                Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
+                view.setTypeface(face);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

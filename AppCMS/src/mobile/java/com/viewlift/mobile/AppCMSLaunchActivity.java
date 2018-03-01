@@ -13,13 +13,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.appsflyer.AppsFlyerLib;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
-import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -27,14 +23,11 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
-import com.google.android.gms.iid.InstanceID;
-import com.viewlift.views.utilities.ImageUtils;
-
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private Uri searchQuery;
-    private CastHelper mCastHelper;
+//    private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
 
     private ConnectivityManager connectivityManager;
@@ -59,6 +52,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (getApplication() instanceof AppCMSApplication) {
             appCMSPresenterComponent =
                     ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent.appCMSPresenter().resetLaunched();
         }
 
         handleIntent(getIntent());
@@ -66,6 +60,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     finish();
                 }
@@ -79,6 +78,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
@@ -94,25 +98,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             }
         };
 
-        setCasting();
-
-        new Thread(() -> {
-            if (appCMSPresenterComponent != null) {
-                appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
-            }
-
-            Fresco.initialize(getApplicationContext());
-
-            ImageUtils.registerImageLoader(new FrescoImageLoader());
-
-            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-
-            AppsFlyerLib.getInstance().startTracking(getApplication());
-        });
+//        setCasting();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
-
-        appCMSPresenterComponent.appCMSPresenter().setAppHomeActivityCreated(true);
-
     }
 
     @Override
@@ -130,14 +117,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
     }
 
-    private void setCasting() {
-        try {
-            mCastHelper = CastHelper.getInstance(getApplicationContext());
-            mCastHelper.initCastingObj();
-        } catch (Exception e) {
-            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
-        }
-    }
+//    private void setCasting() {
+//        try {
+//            mCastHelper = CastHelper.getInstance(getApplicationContext());
+//            mCastHelper.initCastingObj();
+//        } catch (Exception e) {
+//            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
+//        }
+//    }
 
     public void handleIntent(Intent intent) {
         if (intent != null) {
@@ -181,8 +168,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (appCMSPresenterComponent != null) {
             try {
                 if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
+                    Log.w(TAG, "Sending close others action");
                     appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
                 } else {
+                    Log.w(TAG, "Retrieving main.json");
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                             Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,

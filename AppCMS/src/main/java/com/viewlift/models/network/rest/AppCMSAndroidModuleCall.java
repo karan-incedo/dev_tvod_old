@@ -72,16 +72,19 @@ public class AppCMSAndroidModuleCall {
                 version,
                 bustCache,
                 forceLoadFromNetwork,
+                bustCache,
                 (moduleDataMap) -> {
                     addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
-                    Observable.just(appCMSAndroidModules).subscribe(readyAction);
+                    Observable.just(appCMSAndroidModules)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 });
     }
 
     private void addMissingModulesFromAssets(Map<String, ModuleList> moduleListMap) {
-        if (assetManager != null) {
+        if (assetManager != null && moduleListMap != null) {
             for (String[] jsonFromAssetsVal : jsonFromAssets) {
                 if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
                     if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
@@ -147,7 +150,6 @@ public class AppCMSAndroidModuleCall {
     }
 
     private ModuleDataMap readModuleListFromNetwork(ModuleDataMap moduleDataMap,
-                                                    boolean bustCache,
                                                     String blocksBaseUrl,
                                                     String version) {
         try {
@@ -168,8 +170,10 @@ public class AppCMSAndroidModuleCall {
                         new TypeToken<Map<String, ModuleList>>() {
                         }.getType());
                 moduleDataMap.loadedFromNetwork = true;
-                deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
-                writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+                new Thread(() -> {
+                    deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
+                    writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+                }).run();
             }
         } catch (Exception e1) {
             //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
@@ -221,7 +225,10 @@ public class AppCMSAndroidModuleCall {
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+        .onErrorResumeNext(throwable -> Observable.empty())
+        .subscribe((result) -> Observable.just(result)
+                .onErrorResumeNext(throwable -> Observable.empty())
+                .subscribe(readyAction));
     }
 
     private String getResourceFilenameWithJsonOnly(String url) {

@@ -1,24 +1,25 @@
 {
-  "id": "86d97d09-6e80-4460-9477-b4487be8ed64",
+  "id": "036c0c78-5355-4ccd-838a-a88b122c9b6c",
   "settings": {
-    "loop": true,
+    "loop": false,
     "columns": {
       "tablet": 4,
-      "desktop": 5,
+      "desktop": 6,
       "mobile": 3,
-      "ott": 5
+      "ott": 6
     },
-    "thumbnailType": "landscape"
+    "thumbnailType": "portrait",
+    "infoHover": true
   },
-  "view": "AC Tray 02",
-  "type": "AC Tray 03",
-  "blockName": "tray03",
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray01",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 350
+      "height": 470
     }
   },
   "components": [{
@@ -27,29 +28,28 @@
         "fontSize": 18
       }
     },
-    "fontFamily": "Lato",
+    "fontFamily": "OpenSans",
     "textAlignment": "left",
-    "textCase": "sentence",
+    "textCase": "caps",
     "type": "label",
     "textColor": "#008EE0",
-    "fontWeight": "Bold",
+    "fontWeight": "Semibold",
     "key": "trayTitle"
   }, {
     "layout": {
       "ftv": {
-        "width": 396,
-        "height": 320
+        "width": 260,
+        "height": 470
       }
     },
     "trayClickAction": "lectureDetailPage",
     "components": [{
       "layout": {
         "ftv": {
-          "padding": 0,
-          "leftMargin": 8,
-          "topMargin": 9,
-          "width": 380,
-          "height": 214
+          "padding": 6,
+          "topMargin": 10,
+          "width": 260,
+          "height": 380
         }
       },
       "type": "image",
@@ -57,35 +57,32 @@
     }, {
       "layout": {
         "ftv": {
-          "padding": 0,
-          "leftMargin": 8,
-          "topMargin": 9,
-          "width": 380,
-          "height": 214
+          "padding": 6,
+          "topMargin": 10,
+          "width": 260,
+          "height": 380
         }
       },
       "type": "image",
-      "key": "bedgeImage"
+      "key": "badgeImage"
     }, {
       "layout": {
         "ftv": {
-          "leftMargin": 8,
-          "topMargin": 230,
+          "leftMargin": 0,
+          "topMargin": 395,
           "rightMargin": 0,
-          "height": 70
+          "fontSize": 11,
+          "height": 40
         }
       },
-      "fontFamily": "Lato",
-      "numberOfLines": 2,
+      "fontFamily": "OpenSans",
       "textAlignment": "left",
-      "fontSize": 12,
       "type": "label",
       "textColor": "#ffffff",
-      "fontWeight": "Regular",
+      "fontWeight": "Semibold",
       "key": "thumbnailTitle"
     }
     ],
-    "textAlignment": "center",
     "type": "collectionGrid",
     "key": "collectionGrid"
   }

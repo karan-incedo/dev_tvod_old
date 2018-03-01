@@ -966,7 +966,7 @@ public abstract class BaseView extends FrameLayout {
                 viewWidth = LayoutParams.WRAP_CONTENT;
             }
 
-             componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }

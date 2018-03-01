@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -29,18 +30,19 @@ public class ShowDetailModuleView extends TVModuleView {
 
     public ShowDetailModuleView(Context context,
                                 ModuleWithComponents module,
+                                Module moduleAPI,
                                 AppCMSPageAPI appCMSPageAPI,
                                 TVViewCreator tvViewCreator,
                                 AppCMSPresenter appCMSPresenter,
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         super(context, module);
         this.appCMSPageAPI = appCMSPageAPI;
-        initView(context, module, tvViewCreator, appCMSPresenter, jsonValueKeyMap);
+        initView(context, module,moduleAPI, tvViewCreator, appCMSPresenter, jsonValueKeyMap);
     }
 
     public void initView(Context context,
                          ModuleWithComponents module,
-                         TVViewCreator tvViewCreator,
+                         Module moduleAPI, TVViewCreator tvViewCreator,
                          AppCMSPresenter appCMSPresenter,
                          Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         TVViewCreator.ComponentViewResult componentViewResult =
@@ -51,7 +53,7 @@ public class ShowDetailModuleView extends TVModuleView {
                 tvViewCreator.createComponentView(context,
                         component,
                         component.getLayout(),
-                        appCMSPageAPI.getModules().get(1),
+                        moduleAPI,
                         null,
                         component.getSettings(),
                         jsonValueKeyMap,
@@ -85,7 +87,7 @@ public class ShowDetailModuleView extends TVModuleView {
                             trayComponents,
                             module.getLayout(),
                             (ModuleList) module,
-                            appCMSPageAPI.getModules().get(1),
+                            moduleAPI,
                             null,
                             jsonValueKeyMap,
                             appCMSPresenter,

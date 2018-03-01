@@ -13,9 +13,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -421,7 +423,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
 
-
                                 String contentType = "";
 
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
@@ -471,6 +472,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,
@@ -482,19 +484,36 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            action.equalsIgnoreCase("openOptionDialog") ? data : null,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
+                                    if (appCMSPresenter.getCurrentActivity().getResources()
+                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
+                                            !showAction.equals(action)) {
+                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                data.getGist().getId(),
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action)) {
+                                            //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
+                                        }
+                                    } else {
+                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                                action,
+                                                title,
+                                                null,
+                                                null,
+                                                false,
+                                                currentPlayingIndex,
+                                                relatedVideoIds)) {
+                                            //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                        }
                                     }
                                 }
                             }
@@ -519,6 +538,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
                                 if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
@@ -615,6 +635,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (data.getGist() == null ||
                             data.getGist().getContentType() == null) {
                         if (!appCMSPresenter.launchVideoPlayer(data,
+                                data.getGist().getId(),
                                 currentPlayingIndex,
                                 relatedVideoIds,
                                 -1,
@@ -626,10 +647,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-
                         if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 !showAction.equals(action)) {
                             if (!appCMSPresenter.launchVideoPlayer(data,
+                                    data.getGist().getId(),
                                     currentPlayingIndex,
                                     relatedVideoIds,
                                     -1,
@@ -787,6 +808,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private void sortPlansByPriceInAscendingOrder() {
         sortPlansByPriceInDescendingOrder();
         Collections.reverse(adapterData);
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+        int childCount = holder.componentView.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = holder.componentView.getChild(i);
+            if (child instanceof ImageView) {
+                Glide.with(child.getContext()).clear(child);
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
