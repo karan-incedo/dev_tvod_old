@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
@@ -1303,6 +1304,12 @@ public class ViewCreator {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().contains("history02")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_history.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
@@ -3091,9 +3098,9 @@ public class ViewCreator {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                         StringBuilder authDateAndPhotoCount = new StringBuilder();
                         authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName())
-                                .append("   |   ")
+                                .append(" | ")
                                 .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd"))
-                                .append("   |   ")
+                                .append(" | ")
                                 .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
 
                         ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
@@ -3105,12 +3112,13 @@ public class ViewCreator {
 
                     StringBuilder tags = new StringBuilder();
                     String tagsName = "";
+                    tags.append("<b>TAGGED:</b> ");
                     if (moduleAPI.getContentData().get(0).getTags() != null && moduleAPI.getContentData().get(0).getTags().size() > 0) {
                         for (Tag tag : moduleAPI.getContentData().get(0).getTags())
-                            tags.append(" " + tag.getTitle() + " |");
+                            tags.append("" + tag.getTitle().toUpperCase() + ",");
                         tagsName = tags.length() > 0 ? tags.substring(0, tags.length() - 1) : "";
                     }
-                    ((TextView) componentViewResult.componentView).setText("TAGGED :" + tagsName);
+                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(tagsName));
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                 }
 
@@ -3286,6 +3294,11 @@ public class ViewCreator {
                             }
                             break;
 
+                        case PAGE_TRAY_TITLE_UNDERLINE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                            ((TextView) componentViewResult.componentView).setPaintFlags(((TextView) componentViewResult.componentView).getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                            ((TextView) componentViewResult.componentView).setTypeface(((TextView) componentViewResult.componentView).getTypeface(), Typeface.ITALIC);
+                            break;
                         case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
                             String autoplayVideoDescription = null;
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&

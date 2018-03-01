@@ -71,7 +71,7 @@ public class CompoundTopModule extends ModuleView {
         }
 
         parentView.addView(topComponent);
-        setBackgroundColor(Color.GRAY);
+        setBackgroundColor(Color.parseColor("#e4e4e4"));
     }
 
     private void addComponentTab(final ViewGroup parent) {
@@ -133,6 +133,6 @@ public class CompoundTopModule extends ModuleView {
         }
         topComponent.addView(layoutHeadline);
         parent.addView(topComponent);
-        setBackgroundColor(Color.GRAY);
+        setBackgroundColor(Color.parseColor("#e4e4e4"));
     }
 }
