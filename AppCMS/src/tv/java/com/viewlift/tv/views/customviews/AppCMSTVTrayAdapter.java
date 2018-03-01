@@ -304,7 +304,7 @@ public class AppCMSTVTrayAdapter
                                         view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
-                                }, false);
+                                }, false, true);
                     } else {
                         appCMSPresenter.openErrorDialog(data.getGist().getId(),
                                 true,

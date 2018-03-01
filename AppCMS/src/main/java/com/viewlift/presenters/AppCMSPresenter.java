@@ -20,8 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -45,8 +43,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -88,7 +84,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -545,8 +540,6 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
-    private boolean isAppHomeActivityCreated = false;
-
     private Context currentContext;
     private Navigation navigation;
     private SubscriptionFlowContent subscriptionFlowContent;
@@ -739,6 +732,25 @@ public class AppCMSPresenter {
     private boolean isAudioPlayerOpen;
 
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
+
+    public String getUaAccessKey() {
+        return uaAccessKey;
+    }
+
+    public void setUaAccessKey(String uaAccessKey) {
+        this.uaAccessKey = uaAccessKey;
+    }
+
+    public String getUaChannelId() {
+        return uaChannelId;
+    }
+
+    public void setUaChannelId(String uaChannelId) {
+        this.uaChannelId = uaChannelId;
+    }
+
+    private String uaAccessKey;
+    private String uaChannelId;
     private UANamedUserEventCall uaNamedUserEventCall;
 
     private boolean purchaseFromRestore;
@@ -1184,7 +1196,8 @@ public class AppCMSPresenter {
                 } else {
                     try {
                         if (usedCachedAPI) {
-                            if (isUserLoggedIn()) {
+                            if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
+                                    pageId.equals(moviesPage.getPageId()))) {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
                                         appCMSMain.getApiBaseUrlCached(),
                                         siteId,
@@ -2239,7 +2252,6 @@ public class AppCMSPresenter {
                     }
                 }
             }
-
         }
         return result;
     }
@@ -9384,7 +9396,6 @@ public class AppCMSPresenter {
         }
     }
 
-
     private void sendOfflineBeaconMessage() {
         ArrayList<BeaconRequest> beaconRequests = getBeaconRequestList();
 
@@ -9448,6 +9459,8 @@ public class AppCMSPresenter {
 
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
+
+                    Log.e(TAG, "Beacon request: " + gson.toJson(request));
 
                     appCMSBeaconCall.call(url, beaconResponse -> {
                         try {
@@ -10855,10 +10868,10 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //
         }
+    }
 
-        if (bitmapCachePresenter == null) {
-            bitmapCachePresenter = new BitmapCachePresenter(activity, ((AppCompatActivity)activity).getSupportFragmentManager());
-        }
+    public void setBitmapCachePresenter(BitmapCachePresenter bitmapCachePresenter) {
+        this.bitmapCachePresenter = bitmapCachePresenter;
     }
 
     public Bitmap getBitmapFromCache(String url) {
@@ -11255,7 +11268,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSSite(final PlatformType platformType) {
-        //Log.d(TAG, "Attempting to retrieve site.json");
+        Log.w(TAG, "Attempting to retrieve site.json");
         if (currentActivity != null) {
             //Log.d(TAG, "Retrieving site.json");
             String url = currentActivity.getString(R.string.app_cms_site_api_url,
@@ -11918,7 +11931,7 @@ public class AppCMSPresenter {
     private void processMetaPagesList(final boolean loadFromFile,
                                       List<MetaPage> metaPageList,
                                       final Action0 onPagesFinishedAction) {
-
+        Log.w(TAG, "Attempting to retrieve Page UI json");
         if (currentActivity != null) {
             GetAppCMSPageUIAsyncTask getAppCMSPageUIAsyncTask =
                     new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null);
@@ -13696,7 +13709,6 @@ public class AppCMSPresenter {
     }
 
     public void launchKiswePlayer(String eventId) {
-
         if (currentActivity != null) {
             Intent launchVideoPlayerBroadcast = new Intent("LAUNCH_KISWE_PLAYER");
             launchVideoPlayerBroadcast.putExtra("KISWE_EVENT_ID", eventId);
@@ -14434,7 +14446,7 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
         }
-        uaAssociateNamedUserRequest.setChannelId(UAirship.shared().getPushManager().getChannelId());
+        uaAssociateNamedUserRequest.setChannelId(uaChannelId);
 
         return uaAssociateNamedUserRequest;
     }
@@ -14518,7 +14530,7 @@ public class AppCMSPresenter {
     private PostUANamedUserEventAsyncTask.Params getUAParams() {
         return new PostUANamedUserEventAsyncTask.Params
                         .Builder()
-                        .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
+                        .accessKey(uaAccessKey)
                         /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
                         .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
 //                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
@@ -15057,11 +15069,9 @@ public class AppCMSPresenter {
                 now.getTime(),
                 appCMSMain.getSite());
     }
-
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
-
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -15075,7 +15085,6 @@ public class AppCMSPresenter {
             isFullScreenVisible = true;
         }
     }
-
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {

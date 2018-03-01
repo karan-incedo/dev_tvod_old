@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -202,8 +204,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
+                                .apply(new RequestOptions().override(childViewWidth, childViewHeight)
+                                    .centerCrop())
                                 .into((ImageView) view);
                     }
                     bringToFront = false;
@@ -261,7 +263,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                         Log.d(TAG, "Loading image: " + imageUrl);*/
                         Glide.with(context)
                                 .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
+                                .apply(new RequestOptions().override(childViewWidth, childViewHeight))
 //                                .centerCrop()
                                 .into((ImageView) view);
 
