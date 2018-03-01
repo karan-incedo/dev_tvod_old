@@ -130,6 +130,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
 
+        viewHolder.filmThumbnail.setBackgroundResource(R.drawable.img_placeholder);
+
         if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage() != null &&
 
@@ -141,7 +143,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageHeight);
 
             Glide.with(viewHolder.view.getContext())
-                    .load(imageUrl)
+                    .load(imageUrl).placeholder(R.drawable.img_placeholder)
                     .into(viewHolder.filmThumbnail);
         } else if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage() != null &&
@@ -156,7 +158,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageHeight);
             Glide.with(viewHolder.view.getContext())
                     .load(imageUrl)
-                    .asBitmap()
+                    .asBitmap().placeholder(R.drawable.img_placeholder)
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {

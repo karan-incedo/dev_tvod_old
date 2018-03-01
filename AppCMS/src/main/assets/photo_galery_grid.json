@@ -145,7 +145,6 @@
           "textAlignment": "left",
           "type": "label",
           "textColor": "#008EE0",
-          "fontWeight": "Semibold",
           "key": "traySubTitle"
         },
         {

@@ -3092,9 +3092,9 @@ public class ViewCreator {
                     if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                         StringBuilder authDateAndPhotoCount = new StringBuilder();
                         authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName())
-                                .append("   |   ")
+                                .append(" | ")
                                 .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd"))
-                                .append("   |   ")
+                                .append(" | ")
                                 .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
 
                         ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
@@ -3106,12 +3106,13 @@ public class ViewCreator {
 
                     StringBuilder tags = new StringBuilder();
                     String tagsName = "";
+                    tags.append("<b>TAGGED:</b> ");
                     if (moduleAPI.getContentData().get(0).getTags() != null && moduleAPI.getContentData().get(0).getTags().size() > 0) {
                         for (Tag tag : moduleAPI.getContentData().get(0).getTags())
-                            tags.append(" " + tag.getTitle() + " ,");
+                            tags.append("" + tag.getTitle().toUpperCase() + ",");
                         tagsName = tags.length() > 0 ? tags.substring(0, tags.length() - 1) : "";
                     }
-                    ((TextView) componentViewResult.componentView).setText("TAGGED :" + tagsName);
+                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(tagsName));
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
                 }
 
