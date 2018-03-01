@@ -120,6 +120,7 @@
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>

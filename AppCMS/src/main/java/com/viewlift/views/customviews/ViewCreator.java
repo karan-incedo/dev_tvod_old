@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
@@ -3287,6 +3288,11 @@ public class ViewCreator {
                             }
                             break;
 
+                        case PAGE_TRAY_TITLE_UNDERLINE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                            ((TextView) componentViewResult.componentView).setPaintFlags(((TextView) componentViewResult.componentView).getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                            ((TextView) componentViewResult.componentView).setTypeface(((TextView) componentViewResult.componentView).getTypeface(), Typeface.ITALIC);
+                            break;
                         case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
                             String autoplayVideoDescription = null;
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&
