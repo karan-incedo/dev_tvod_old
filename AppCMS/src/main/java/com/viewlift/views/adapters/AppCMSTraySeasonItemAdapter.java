@@ -48,11 +48,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     private boolean isClickable;
     private MotionEvent lastTouchDownEvent;
 
-
-
-
-
-
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                        List<ContentDatum> adapterData,
@@ -108,6 +103,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         }
     }
 
+
     @Override
     public int getItemCount() {
         return adapterData != null && !adapterData.isEmpty() ? adapterData.size() : 1;
@@ -126,13 +122,13 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     @Override
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
-    public String getModuleId() {
-        return moduleId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -189,204 +185,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                 }
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
-
-                                @SuppressWarnings("MismatchedReadAndWriteOfArray")
-                                String[] extraData = new String[3];
-                                extraData[0] = permalink;
-                                extraData[1] = hlsUrl;
-                                extraData[2] = data.getGist().getId();
-                                //Log.d(TAG, "Launching " + permalink + ": " + action);
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
-
-                                if (data.getGist() == null ||
-                                        data.getGist().getContentType() == null) {
-                                    if (!appCMSPresenter.launchVideoPlayer(data,
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                    }
-                                } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            data,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void play(Component childComponent, ContentDatum data) {
-                        if (isClickable) {
-                            if (data.getGist() != null) {
-                                //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
-                                if (!appCMSPresenter.launchVideoPlayer(data,
-                                        currentPlayingIndex,
-                                        relatedVideoIds,
-                                        -1,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch play action: " +
-//                                            " filmId: " +
-//                                            filmId +
-//                                            " permaLink: " +
-//                                            permaLink +
-//                                            " title: " +
-//                                            title);
-                                }
-                            }
-                        }
-                    }
-                };
-        }
-
-        itemView.setOnTouchListener((View v, MotionEvent event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                lastTouchDownEvent = event;
-            }
-
-            return false;
-        });
-        itemView.setOnClickListener(v -> {
-            if (isClickable) {
-                if (v instanceof CollectionGridItemView) {
-                    try {
-                        int eventX = (int) lastTouchDownEvent.getX();
-                        int eventY = (int) lastTouchDownEvent.getY();
-                        ViewGroup childContainer = ((CollectionGridItemView) v).getChildrenContainer();
-                        int childrenCount = childContainer.getChildCount();
-                        for (int i = 0; i < childrenCount; i++) {
-                            View childView = childContainer.getChildAt(i);
-                            if (childView instanceof Button) {
-                                int[] childLocation = new int[2];
-                                childView.getLocationOnScreen(childLocation);
-                                int childX = childLocation[0] - 8;
-                                int childY = childLocation[1] - 8;
-                                int childWidth = childView.getWidth() + 8;
-                                int childHeight = childView.getHeight() + 8;
-                                if (childX <= eventX && eventX <= childX + childWidth) {
-                                    if (childY <= eventY && eventY <= childY + childHeight) {
-                                        childView.performClick();
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-
-                    }
-                }
-
-                String permalink = data.getGist().getPermalink();
-                String title = data.getGist().getTitle();
-                String action = defaultAction;
-
-                //Log.d(TAG, "Launching " + permalink + ":" + action);
-                List<String> relatedVideoIds = allEpisodeIds;
-                int currentPlayingIndex = -1;
-                if (allEpisodeIds != null) {
-                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                        currentPlayingIndex = currentEpisodeIndex;
-                    }
-                }
-                if (relatedVideoIds == null) {
-                    currentPlayingIndex = 0;
-                }
-
-                if (data.getGist() == null ||
-                        data.getGist().getContentType() == null) {
-                    if (!appCMSPresenter.launchVideoPlayer(data,
-                            currentPlayingIndex,
-                            relatedVideoIds,
-                            -1,
-                            action)) {
-                    }
-                } else {
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
-                            title,
-                            null,
-                            data,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                    }
-                }
-            }
-        });
-
-        for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
-            itemView.bindChild(itemView.getContext(),
-                    itemView.getChild(i),
-                    data,
-                    jsonValueKeyMap,
-                    onClickHandler,
-                    componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                    appCMSPresenter,
-                    position);
-        }
-    }
-
-    @Override
-    public void resetData(RecyclerView listView) {
-        //
-    }
-
-    @Override
-    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        //
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-
-    }
-
-    private void click(ContentDatum data) {
-        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-
-        String permalink = data.getGist().getPermalink();
-        String action = defaultAction;
-        String title = data.getGist().getTitle();
-        String hlsUrl = getHlsUrl(data);
 
                                 @SuppressWarnings("MismatchedReadAndWriteOfArray")
                                 String[] extraData = new String[3];

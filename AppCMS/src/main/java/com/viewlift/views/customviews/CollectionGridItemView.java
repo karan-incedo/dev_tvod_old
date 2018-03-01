@@ -397,13 +397,7 @@ public class CollectionGridItemView extends BaseView {
                             0 < childViewHeight) {
                         if (childViewWidth < childViewHeight &&
                                 data.getGist().getImageGist().get_3x4() != null &&
-                                data.getGist().getBadgeImages().get_3x4() != null) {
-                            final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getBadgeImages().get_3x4(),
-                                    childViewWidth,
-                                    childViewHeight);
-                            data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null &&
+                                data.getGist().getBadgeImages().get_3x4() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
                             0 < childViewWidth &&
                             0 < childViewHeight) {
@@ -466,7 +460,9 @@ public class CollectionGridItemView extends BaseView {
 
                     try {
                         int radiusDifference = 5;
-
+                        if (BaseView.isTablet(context)) {
+                            radiusDifference = 2;
+                        }
                         ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                                 updateDownloadImageIconActionMap.get(data.getGist().getId());
                         if (updateDownloadImageIconAction == null) {
@@ -491,6 +487,10 @@ public class CollectionGridItemView extends BaseView {
                         ((ImageButton) view).setImageResource(R.drawable.ic_downloaded);
                         view.setOnClickListener(null);
                     } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
+                        int radiusDifference = 5;
+                        if (BaseView.isTablet(context)) {
+                            radiusDifference = 2;
+                        }
                         appCMSPresenter.updateDownloadingStatus(
                                 data.getGist().getId(),
                                 (ImageButton) view,
@@ -499,9 +499,13 @@ public class CollectionGridItemView extends BaseView {
                                         (ImageButton) view,
                                         appCMSPresenter,
                                         data,
-                                        appCMSPresenter.getLoggedInUser()),
+                                        appCMSPresenter.getLoggedInUser(),
+                                        radiusDifference,
+                                        moduleId),
                                 appCMSPresenter.getLoggedInUser(),
-                                false);
+                                false,
+                                radiusDifference,
+                                moduleId);
                         view.setOnClickListener(null);
                     }
                 } else {
@@ -572,7 +576,7 @@ public class CollectionGridItemView extends BaseView {
                             view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {

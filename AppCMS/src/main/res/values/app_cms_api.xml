@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
@@ -214,6 +214,7 @@
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
+    <string name="app_cms_page_playlist_module_key">AC PlaylistDetail 01</string>
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
@@ -601,7 +602,5 @@
     <string name="app_cms_download_audio_action">downloadAudio</string>
     <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
     <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
-    <!-- AppCMS Apptentive Events -->
-    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
 
 </resources>

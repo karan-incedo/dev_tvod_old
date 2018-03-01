@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +69,6 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(bundleUrl,
                 version,
-                bustCache,
                 forceLoadFromNetwork,
                 bustCache,
                 (moduleDataMap) -> {
@@ -150,6 +148,7 @@ public class AppCMSAndroidModuleCall {
     }
 
     private ModuleDataMap readModuleListFromNetwork(ModuleDataMap moduleDataMap,
+                                                    boolean bustCache,
                                                     String blocksBaseUrl,
                                                     String version) {
         try {

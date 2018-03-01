@@ -3521,36 +3521,6 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                                 }
                                 break;
-
-                            case PAGE_TRAY_TITLE_KEY:
-                                if (!TextUtils.isEmpty(component.getText())) {
-                                    ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
-                                } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
-                                        !TextUtils.isEmpty(moduleAPI.getTitle())) {
-                                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
-                                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
-                                    ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
-                                    ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
-                                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
-                                    ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                                } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                    if (moduleAPI != null &&
-                                            moduleAPI.getContentData() != null &&
-                                            moduleAPI.getContentData().get(0) != null &&
-                                            moduleAPI.getContentData().get(0).getSeason() != null &&
-                                            !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
-                                            moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
-                                            !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle())) {
-                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
-                                    } else {
-                                        StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                                        seasonTitleSb.append(context.getString(R.string.blank_separator));
-                                        seasonTitleSb.append(1);
-                                        ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
-                                    }
-                                }
-                                break;
                             case PAGE_TRAY_TITLE_KEY:
                                 if (!TextUtils.isEmpty(component.getText())) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
@@ -3733,8 +3703,8 @@ public class ViewCreator {
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
-                                    long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                        moduleAPI.getContentData().get(0).getGist().getPublishDate() != 0) {
+                                    long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
                                     long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
 
                                     String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
@@ -4851,183 +4821,7 @@ public class ViewCreator {
         }
     }
 
-    private static class OnSeasonSelectedListener implements
-            AdapterView.OnItemSelectedListener,
-            OnInternalEvent {
 
-        private List<Season_> seasonData;
-        private List<OnInternalEvent> onInternalEvents;
-        private String moduleId;
-
-        public OnSeasonSelectedListener(List<Season_> seasonData) {
-            this.seasonData = seasonData;
-            this.onInternalEvents = new ArrayList<>();
-        }
-
-        @Override
-        public void addReceiver(OnInternalEvent e) {
-            if (onInternalEvents != null) {
-                onInternalEvents.add(e);
-            }
-        }
-
-        @Override
-        public void sendEvent(InternalEvent<?> event) {
-            int internalEventsSize = onInternalEvents != null ? onInternalEvents.size() : 0;
-            for (int i = 0; i < internalEventsSize; i++) {
-                onInternalEvents.get(i).receiveEvent(event);
-            }
-        }
-
-        @Override
-        public void receiveEvent(InternalEvent<?> event) {
-
-        }
-
-        @Override
-        public void cancel(boolean cancel) {
-
-        }
-
-        @Override
-        public String getModuleId() {
-            return moduleId;
-        }
-
-        @Override
-        public void setModuleId(String moduleId) {
-            this.moduleId = moduleId;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (0 <= position && position < seasonData.size()) {
-                sendEvent(new InternalEvent<>(seasonData.get(position).getEpisodes()));
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    }
-
-    private static class SeasonsAdapterView extends ArrayAdapter<String> {
-        private AppCMSPresenter appCMSPresenter;
-        private Component component;
-        private Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-
-        public SeasonsAdapterView(Context context,
-                                  AppCMSPresenter appCMSPresenter,
-                                  Component component,
-                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
-            super(context, R.layout.season_title_dropdown);
-            this.appCMSPresenter = appCMSPresenter;
-            this.component = component;
-            this.jsonValueKeyMap = jsonValueKeyMap;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View result = null;
-            if (convertView != null && convertView instanceof TextView) {
-                result = convertView;
-            } else if (parent != null) {
-                result = LayoutInflater.from(parent.getContext()).inflate(R.layout.season_title_dropdown,
-                        parent,
-                        false);
-
-                try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
-                        ((TextView) result).setTextColor(
-                                Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCtaBackgroundColor())));
-                    }
-                } catch (Exception e) {
-                    //
-                }
-
-                try {
-                    result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppBackgroundColor())));
-                } catch (Exception e) {
-                    //
-                }
-
-                if (component.getFontSize() > 0) {
-                    ((TextView) result).setTextSize(component.getFontSize());
-                } else if (BaseView.getFontSize(parent.getContext(), component.getLayout()) > 0) {
-                    ((TextView) result).setTextSize(BaseView.getFontSize(parent.getContext(), component.getLayout()));
-                }
-
-                if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    setTypeFace(parent.getContext(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            component,
-                            (TextView) result);
-                }
-
-                result.setPadding(8, 0, 8, 0);
-            }
-
-            ((TextView) result).setText(getItem(position));
-
-            return result;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            View result = null;
-            if (convertView != null && convertView instanceof TextView) {
-                result = convertView;
-            } else if (parent != null) {
-                result = LayoutInflater.from(parent.getContext()).inflate(R.layout.season_title_dropdown,
-                        parent,
-                        false);
-
-                try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
-                        ((TextView) result).setTextColor(
-                                Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCtaBackgroundColor())));
-                    }
-                } catch (Exception e) {
-                    //
-                }
-
-                try {
-                    result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppBackgroundColor())));
-                } catch (Exception e) {
-                    //
-                }
-
-                if (component.getFontSize() > 0) {
-                    ((TextView) result).setTextSize(component.getFontSize());
-                } else if (BaseView.getFontSize(parent.getContext(), component.getLayout()) > 0) {
-                    ((TextView) result).setTextSize(BaseView.getFontSize(parent.getContext(), component.getLayout()));
-                }
-
-                if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    setTypeFace(parent.getContext(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            component,
-                            (TextView) result);
-                }
-
-                result.setPadding(8, 8, 8, 8);
-            }
-
-            if (result != null) {
-                ((TextView) result).setText(getItem(position));
-            }
-
-            return result;
-        }
-    }
 
     private void setCasting(boolean allowFreePlay,
                             AppCMSPresenter appCMSPresenter,

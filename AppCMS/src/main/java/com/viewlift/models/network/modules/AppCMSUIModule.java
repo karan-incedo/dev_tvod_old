@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -67,11 +66,7 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
-import com.viewlift.models.network.rest.UANamedUserEventCall;
-import com.viewlift.models.network.rest.UANamedUserEventRest;
 import com.viewlift.presenters.AppCMSActionType;
-import com.viewlift.presenters.UrbanAirshipEventPresenter;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.HashMap;
@@ -968,8 +963,9 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
-                .create();
+        /*return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
+                .create();*/
+        return new Gson();
     }
 
     @Provides

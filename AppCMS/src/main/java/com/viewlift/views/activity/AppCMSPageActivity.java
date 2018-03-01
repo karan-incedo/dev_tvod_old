@@ -78,6 +78,7 @@ import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.mobile.pushnotif.AppCMSAirshipReceiver;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
@@ -605,6 +606,44 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        clearKeepScreenOnReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
+                clearKeepScreenOn();
+            }
+        };
+
+        chromecastDisconnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
+                ViewCreator.clearPlayerView();
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        false,
+                        false,
+                        false);
+            }
+        };
+
         appCMSAirshipReceiver = new AppCMSAirshipReceiver();
 
 
@@ -840,7 +879,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-
         if (AppCMSPresenter.isFullScreenVisible) {
             appCMSPresenter.exitFullScreenPlayer();
             return;
@@ -876,8 +914,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
         appCMSPresenter.setCancelAllLoads(false);
-        AudioServiceHelper.getAudioInstance().onStart();
-        AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
+        if(AudioServiceHelper.getAudioInstance()!=null) {
+            AudioServiceHelper.getAudioInstance().onStart();
+            AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
+        }
     }
 
     @Override
@@ -1171,7 +1211,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isUserLoggedIn()) {
             handleCloseAction(true);
         }
-        AudioServiceHelper.getAudioInstance().onStop();
+        if (AudioServiceHelper.getAudioInstance()!=null ) {
+            AudioServiceHelper.getAudioInstance().onStop();
+        }
         ViewCreator.cancelBeaconPing();
     }
 
@@ -1427,6 +1469,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void enterFullScreenVideoPlayer() {
+
+    }
+
+    @Override
+    public void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer) {
+
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
@@ -1575,9 +1627,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setCastingInstance();
 
-        registerReceiver(presenterCloseActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
         if (updatedAppCMSBinder != null &&
                 updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.BLANK) {
             pageLoading(true);
@@ -1711,7 +1760,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         .replace("#", ""), 16),
                                 Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()
                                         .replace("#", ""), 16));
-                        //Need to FireEvents When User click on Search
                         sendFireBaseSearchScreenEvent();
 
                     } catch (NumberFormatException e) {
@@ -1843,6 +1891,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void setSelectedMenuTabIndex(int selectedMenuTabIndex) {
         currentMenuTabIndex = selectedMenuTabIndex;
+    }
+
+    @Override
+    public void setSelectedSearchTabIndex(int selectedSearchTabIndex) {
+
     }
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
@@ -2148,7 +2201,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getLeft() != null && appCMSPresenter.getNavigation().getLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
-
                     mProfileTopButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -2178,257 +2230,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSTabNavContainerItems.addView(navBarItemView);
     }
 
-    private void createHomeNavItem(int tabCount, final NavigationPrimary homePageNav) {
-        if (homePageNav != null) {
-            if (tabCount <= homePageIndex) {
-                homePageIndex = DEFAULT_HOME_PAGE_INDEX;
-            }
-            if (homePageIndex < tabCount) {
-                final NavBarItemView homeNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainerItems.getChildAt(homePageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                        e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-
-                homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
-                homeNavBarItemView.setHighlightColor(highlightColor);
-                homeNavBarItemView.setLabel(homePageNav.getTitle());
-                homeNavBarItemView.setOnClickListener(v -> {
-
-                    if (getSelectedNavItem() == homeNavBarItemView) {
-                        return;
-                    }
-
-                    currentMenuTabIndex = homePageIndex;
-                    appCMSPresenter.showMainFragmentView(true);
-                    selectNavItemAndLaunchPage(homeNavBarItemView,
-                            homePageNav.getPageId(),
-                            homePageNav.getTitle());
-                });
-
-                ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-                NavTabTag navigationTag = new NavTabTag();
-                navigationTag.setPageId(homePageNav.getPageId());
-                navigationTag.setNavigationTabBar(homePageNav);
-                navigationTag.setNavigationModuleItem(tabBarModule);
-
-                homeNavBarItemView.setTag(navigationTag);
-                if (getSelectedNavItem() == null) {
-                    selectNavItem(homeNavBarItemView);
-                }
-            }
-        }
-    }
-
-    private void createLiveNavItem(int tabCount, NavigationPrimary livePageNav) {
-        if (tabCount <= navLivePageIndex) {
-            navLivePageIndex = DEFAULT_NAV_LIVE_PAGE_INDEX;
-        }
-
-        if (navLivePageIndex < tabCount) {
-            final NavBarItemView navLiveItemView =
-                    (NavBarItemView) appCMSTabNavContainerItems.getChildAt(navLivePageIndex);
-            int highlightColor;
-            try {
-                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral().getBlockTitleColor());
-            } catch (Exception e) {
-                //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                        e.getMessage());
-                highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-            }
-
-            navLiveItemView.setHighlightColor(highlightColor);
-            navLiveItemView.setLabel(livePageNav.getTitle());
-            navLiveItemView.setOnClickListener(v -> {
-                if (getSelectedNavItem() == navLiveItemView) {
-                    return;
-                }
-
-                currentMenuTabIndex = navLivePageIndex;
-                appCMSPresenter.showMainFragmentView(true);
-                selectNavItemAndLaunchPage(navLiveItemView, livePageNav.getPageId(), livePageNav.getTitle());
-            });
-
-
-            ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-            NavTabTag navigationTag = new NavTabTag();
-            navigationTag.setPageId(livePageNav.getPageId());
-            navigationTag.setNavigationTabBar(livePageNav);
-            navigationTag.setNavigationModuleItem(tabBarModule);
-
-            navLiveItemView.setTag(navigationTag);
-            if (navLiveItemView.getParent() == null) {
-                appCMSTabNavContainerItems.addView(navLiveItemView);
-            }
-        }
-    }
-
-    private void createMoviesNavItem(int tabCount, final NavigationPrimary moviePageNav) {
-        if (moviePageNav != null) {
-            if (tabCount <= categoriesPageIndex) {
-                categoriesPageIndex = DEFAULT_CATEGORIES_PAGE_INDEX;
-            }
-
-            if (categoriesPageIndex < tabCount) {
-                final NavBarItemView moviesNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainerItems.getChildAt(categoriesPageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                            e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-                moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
-                moviesNavBarItemView.setHighlightColor(highlightColor);
-                moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-                moviesNavBarItemView.setOnClickListener(v -> {
-                    if (getSelectedNavItem() == moviesNavBarItemView) {
-                        return;
-                    }
-
-                    currentMenuTabIndex = categoriesPageIndex;
-
-                    appCMSPresenter.showMainFragmentView(true);
-                    selectNavItemAndLaunchPage(moviesNavBarItemView,
-                            moviePageNav.getPageId(),
-                            moviePageNav.getTitle());
-                });
-
-                ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-                NavTabTag navigationTag = new NavTabTag();
-                navigationTag.setPageId(moviePageNav.getPageId());
-                navigationTag.setNavigationTabBar(moviePageNav);
-                navigationTag.setNavigationModuleItem(tabBarModule);
-
-                moviesNavBarItemView.setTag(navigationTag);
-                if (moviesNavBarItemView.getParent() == null) {
-                    appCMSTabNavContainerItems.addView(moviesNavBarItemView);
-                }
-            }
-        }
-    }
-
-    private void createSearchNavItem(int tabCount, String pageId) {
-        if (appCMSPresenter.getAppCMSMain() != null) {
-            if (tabCount <= navSearchPageIndex) {
-                navSearchPageIndex = DEFAULT_SEARCH_INDEX;
-            }
-
-            if (navSearchPageIndex < tabCount) {
-                final NavBarItemView searchNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainerItems.getChildAt(navSearchPageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-//                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                            e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-
-                searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
-                searchNavBarItemView.setHighlightColor(highlightColor);
-                searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
-                searchNavBarItemView.setOnClickListener(v -> {
-                    if (getSelectedNavItem() == searchNavBarItemView) {
-                        return;
-                    }
-
-                    currentMenuTabIndex = navSearchPageIndex;
-                    if (!appCMSPresenter.isNetworkConnected()) {
-                        if (!appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                    () -> appCMSPresenter.launchBlankPage(),
-                                    null);
-                            return;
-                        }
-
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                                true,
-                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                        null, null, false),
-                                null);
-                        return;
-                    }
-
-                    selectNavItem(searchNavBarItemView);
-                    appCMSPresenter.launchSearchPage();
-                });
-
-                ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-                NavTabTag navigationTag = new NavTabTag();
-                navigationTag.setPageId(pageId);
-                NavigationPrimary searchNavigation = new NavigationPrimary();
-                searchNavigation.setTitle("SEARCH");
-                searchNavigation.setAccessLevels(new AccessLevels());
-                searchNavigation.setAnchor("");
-                searchNavigation.setDisplayedPath("");
-                searchNavigation.setIcon("");
-                searchNavigation.setPagePath("");
-                searchNavigation.setPlatforms(new Platforms());
-                searchNavigation.setPageId("");
-                navigationTag.setNavigationTabBar(searchNavigation);
-                navigationTag.setNavigationModuleItem(tabBarModule);
-
-                searchNavBarItemView.setTag(navigationTag);
-                if (searchNavBarItemView.getParent() == null) {
-                    appCMSTabNavContainerItems.addView(searchNavBarItemView);
-                }
-            }
-        }
-    }
-
-    private void createMenuNavItem(int tabCount) {
-        if (tabCount <= navMenuPageIndex) {
-            navMenuPageIndex = DEFAULT_NAV_MENU_PAGE_INDEX;
-        }
-
-        final NavBarItemView menuNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainerItems.getChildAt(navMenuPageIndex);
-        int highlightColor;
-
-        if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
-            highlightColor =
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        } else {
-            highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-        }
-
-        menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
-        menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
-        menuNavBarItemView.setHighlightColor(highlightColor);
-        menuNavBarItemView.setOnClickListener(v -> {
-            currentMenuTabIndex = navMenuPageIndex;
-            if (!appCMSBinderStack.isEmpty()) {
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    //Log.e(TAG, "Could not launch navigation page!");
-                } else {
-                    if (getResources().getBoolean(R.bool.menu_icon_dismisses_menu_page)) {
-                        closeMenuPageIfHighlighted(menuNavBarItemView);
-                    } else {
-                        resumeInternalEvents = true;
-                        selectNavItem(menuNavBarItemView);
-                    }
-                }
-            }
-        });
-
-        if (menuNavBarItemView.getParent() == null) {
-            appCMSTabNavContainerItems.addView(menuNavBarItemView);
-        }
-    }
 
     private void createTabBar() {
         ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
@@ -2532,7 +2333,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     }
 
-
     public class NavTabTag {
         public String getPageId() {
             return pageId;
@@ -2610,7 +2410,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             selectNavItem(menuNavBarItemView);
         }*/
     }
-
 
     public void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();

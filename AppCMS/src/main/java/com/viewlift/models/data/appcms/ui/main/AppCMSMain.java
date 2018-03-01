@@ -154,9 +154,7 @@ public class AppCMSMain implements Serializable {
     @Expose
     CustomerService customerService;
 
-    @SerializedName("templateName")
-    @Expose
-    String templateName;
+
 
     public String getId() {
         return id;

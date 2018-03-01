@@ -19,7 +19,7 @@ import rx.functions.Action0;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
-/**
+/*
  * Created by viewlift on 5/4/17.
  */
 

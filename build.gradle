@@ -32,7 +32,7 @@ allprojects {
         mockitoVersion = "1.10.19"
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
-        androidsupportVersion = "26.0.2"
+        androidsupportVersion = "27.0.2"
         androidsupportconstraintVersion = "1.0.2"
         glideVersion = "4.4.0"
         daggerVersion = "2.14.1"

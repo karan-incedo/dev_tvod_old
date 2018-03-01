@@ -168,9 +168,6 @@ public class ContentDatum implements Serializable {
         this.mediaType = mediaType;
     }
 
-    @SerializedName("showDetails")
-    @Expose
-    ShowDetails showDetails;
 
     public Gist getGist() {
         return gist;

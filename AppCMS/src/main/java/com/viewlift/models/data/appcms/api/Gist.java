@@ -110,9 +110,11 @@ public class Gist implements Serializable {
     @Expose
     String mediaType;
 
-    String downloadStatus;
 
+    String downloadStatus;
     boolean isAudioPlaying;
+    long currentPlayingPosition;
+    Boolean isCastingConnected;
     /**
      * This is to store the url of the downloaded file
      */
@@ -327,5 +329,21 @@ public class Gist implements Serializable {
 
     public void setAudioPlaying(boolean audioPlaying) {
         isAudioPlaying = audioPlaying;
+    }
+
+    public long getCurrentPlayingPosition() {
+        return currentPlayingPosition;
+    }
+
+    public void setCurrentPlayingPosition(long currentPlayingPosition) {
+        this.currentPlayingPosition = currentPlayingPosition;
+    }
+
+    public Boolean getCastingConnected() {
+        return isCastingConnected;
+    }
+
+    public void setCastingConnected(Boolean castingConnected) {
+        isCastingConnected = castingConnected;
     }
 }

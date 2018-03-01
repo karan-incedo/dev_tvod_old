@@ -505,7 +505,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
+        long lastWatched = contentDatum.getGist().getUpdateDate();
 
         if (currentTime == 0) {
             lastWatched = 0;

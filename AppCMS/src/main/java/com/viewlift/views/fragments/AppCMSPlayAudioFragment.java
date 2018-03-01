@@ -478,8 +478,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         if (getActivity() != null) {
             Glide.with(getActivity())
-                    .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.logo)
+                    .load(mCurrentArtUrl)
                     .into(trackImage);
         }
 

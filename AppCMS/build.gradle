@@ -49,7 +49,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     buildToolsVersion '27.0.3'
 
     def packageName
@@ -92,7 +92,7 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -169,6 +169,7 @@ android {
         }
         kiswe {
             java.srcDirs = ['src/kiswe/java']
+            manifest.srcFile 'src/kiswe/AndroidManifest.xml'
         }
         nonkiswe {
             java.srcDirs = ['src/nonkiswe/java']
@@ -387,6 +388,7 @@ dependencies {
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
     kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+   // compile 'com.android.support:appcompat-v7:27.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

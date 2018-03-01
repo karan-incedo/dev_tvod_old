@@ -156,6 +156,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Log.w(TAG, "Resuming launch activity");
+
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         appStartWithNetworkConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
