@@ -180,7 +180,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             holder.componentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println("click holder");
                     try {
                         int clickPosition = (int) view.getTag();
                         ContentDatum data = adapterData.get(position);
@@ -408,10 +407,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     private void getPlaylistAudioItems(){
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
+            System.out.println("Play down 1 size -"+allViews[i].getChildItems().size());
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
                     if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
+
                         ImageButton download = (ImageButton) itemContainer.getChildView();
                         download.setTag(true);
                         isDownloading = true;
@@ -420,10 +421,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                System.out.println("Play down 2 call audio download -"+ adapterData.get(pos).getGist().getTitle());
                                 audioDownload(download, adapterData.get(pos), true);
                             }
                         }, 400);
-
 
                     }
                 }
@@ -457,6 +458,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
                                                     Boolean playlistDownload) {
+        System.out.println("Play down 4 getUserVideoDownloadStatus -"+contentDatum.getGist().getTitle());
+
         String userId = appCMSPresenter.getLoggedInUser();
         appCMSPresenter.getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
@@ -465,7 +468,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         contentDatum, userId, playlistDownload), userId);
     }
 
-    /**
+
+        /**
      * This class has been created to updated the Download Image Action and Status
      */
     private class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
@@ -483,6 +487,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             this.contentDatum = contentDatum;
             this.playlistDownload = playlistDownload;
             this.userId = userId;
+
 
             addClickListener = v -> {
 
@@ -503,8 +508,15 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
-                    System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
+
+                    System.out.println("Play down 5 download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     if (appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
@@ -523,9 +535,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     }
                 }
                 imageButton.setOnClickListener(null);
-            }
-
-            ;
+            }  ;
         }
 
         @Override
