@@ -5,13 +5,17 @@
     android:background="#000000"
     android:orientation="horizontal"
     android:weightSum="1"
+    android:gravity="center_vertical"
     tools:context="com.viewlift.views.fragments.AppCMSPlayAudioFragment">
 
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="348dp"
+        android:layout_height="@dimen/app_cms_player_track_image_height"
         android:layout_weight=".5"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+
         android:padding="@dimen/app_cms_audio_image_padding">
 
         <ImageView
@@ -20,6 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:background="@drawable/placeholder_audio"
             android:scaleType="fitXY" />
 
         <TextView
@@ -40,9 +46,8 @@
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/app_cms_player_track_image_height"
         android:layout_weight=".5"
-
         >
 
         <LinearLayout

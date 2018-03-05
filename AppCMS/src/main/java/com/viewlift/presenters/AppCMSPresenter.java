@@ -602,7 +602,11 @@ public class AppCMSPresenter {
     private boolean runUpdateDownloadIconTimer;
     private ContentDatum downloadContentDatumAfterPermissionGranted;
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
+    private Action1<Boolean> downloadResultActionForPlaylistAfterPermissionGranted;
+
     private boolean requestDownloadQualityScreen;
+    private boolean requestPlaylistDownload;
+
     private DownloadQueueThread downloadQueueThread;
     private boolean isVideoPlayerStarted;
     private EntitlementCheckActive entitlementCheckActive;
@@ -3885,7 +3889,7 @@ public class AppCMSPresenter {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
-            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+            } else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
@@ -4091,7 +4095,7 @@ public class AppCMSPresenter {
 
             downloadProgressTimerList.add(downloadTimerTask);
 
-            updateDownloadIconTimer.schedule(downloadTimerTask, 1000, 2000);
+            updateDownloadIconTimer.schedule(downloadTimerTask, 1000, 3000);
         } catch (Exception e) {
             System.out.println("download start faile upload status-");
 
@@ -4848,7 +4852,7 @@ public class AppCMSPresenter {
                                 currentContext.getString(R.string.app_cms_audio_detail_api_url,
                                         apiBaseUrl,
                                         siteId,
-                                        pageId), tryCount,
+                                        pageId),
                                 audiDetail);
                     } catch (IOException e) {
                     }
@@ -4866,15 +4870,14 @@ public class AppCMSPresenter {
 
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
-            , boolean isPlayerScreenOpen, Boolean playAudio, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
+            , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (currentActivity != null) {
-//            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-//                    .PRESENTER_AUDIO_LOADING_ACTION));
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
         }
+        tryCount++;
         this.callBackPlaylistHelper = callBackPlaylistHelper;
-//        AudioPlaylistHelper.getInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
+        int finalTryCount = tryCount;
         getAudioContent(appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
                 audioId,
@@ -4921,12 +4924,15 @@ public class AppCMSPresenter {
                             }
 
                         } else {
-                            Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
+                            System.out.println("on failed try count-" + finalTryCount);
+                            if (finalTryCount < 3) {
+                                getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
+                            } else
+                                Toast.makeText(currentContext, "Failed to load Audio Content.Try Again", Toast.LENGTH_SHORT).show();
                         }
 
                         if (currentActivity != null) {
-//                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-//                                    .PRESENTER_AUDIO_LOADING_STOP_ACTION));
+
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                     .PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
@@ -7862,7 +7868,7 @@ public class AppCMSPresenter {
         Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
-    public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
+    public AlertDialog showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
 
             try {
@@ -8117,8 +8123,25 @@ public class AppCMSPresenter {
                         return true;
                     });
                 }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
+                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO) {
+                    builder.setOnKeyListener((arg0, keyCode, event) -> {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            if (onCloseAction != null) {
+                                //if user press back key without doing login subscription ,clear saved data
+                                onCloseAction.call();
+                                //if user press back key without doing login subscription ,clear saved data
+                            }
+                            setAudioPlayerOpen(false);
+
+                        }
+                        return true;
+                    });
+                }
+                final AlertDialog dialog = builder.create();
+                ;
                 currentActivity.runOnUiThread(() -> {
-                    AlertDialog dialog = builder.create();
+
                     if (onCloseAction != null) {
                         dialog.setCanceledOnTouchOutside(false);
 
@@ -8142,13 +8165,17 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
                             }
+
                         }
                     }
                 });
+                return dialog;
+
             } catch (Exception e) {
 
             }
         }
+        return null;
     }
 
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
@@ -9842,6 +9869,7 @@ public class AppCMSPresenter {
     private void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
                                                              final ContentDatum contentDatum,
                                                              final Action1<UserVideoDownloadStatus> resultAction1) {
+        requestPlaylistDownload=false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             downloadContentDatumAfterPermissionGranted = contentDatum;
             downloadResultActionAfterPermissionGranted = resultAction1;
@@ -9871,6 +9899,38 @@ public class AppCMSPresenter {
         }
     }
 
+    public void askForPermissionToDownloadForPlaylist(boolean checkToShowPermissionRationale, final Action1<Boolean> resultAction11) {
+        requestPlaylistDownload=true;
+        if (!hasWriteExternalStoragePermission()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                downloadResultActionForPlaylistAfterPermissionGranted = resultAction11;
+                if (currentActivity != null && !hasWriteExternalStoragePermission()) {
+                    if (checkToShowPermissionRationale && ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+                                currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
+                                true,
+                                () -> {
+                                    try {
+                                        askForPermissionToDownloadForPlaylist(false, resultAction11);
+                                    } catch (Exception e) {
+                                        //Log.e(TAG, "Error handling request permissions result: " + e.getMessage());
+                                    }
+                                },
+                                null);
+                    } else {
+                        ActivityCompat.requestPermissions(currentActivity,
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+                    }
+                }
+            }
+        } else {
+            resultAction11.call(true);
+        }
+
+    }
+
     private boolean hasWriteExternalStoragePermission() {
         if (currentActivity != null) {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
@@ -9881,7 +9941,9 @@ public class AppCMSPresenter {
     }
 
     public void resumeDownloadAfterPermissionGranted() {
-        if (requestDownloadQualityScreen) {
+        if (requestPlaylistDownload && downloadResultActionForPlaylistAfterPermissionGranted != null) {
+            downloadResultActionForPlaylistAfterPermissionGranted.call(true);
+        } else if (requestDownloadQualityScreen) {
             showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
                     downloadResultActionAfterPermissionGranted);
         } else {
@@ -13750,7 +13812,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void saveLastPlaySongPosition( String id,long pos) {
+    public void saveLastPlaySongPosition(String id, long pos) {
         Gson gson = new Gson();
 
         String json = gson.toJson(new LastPlayAudioDetail(id, pos));

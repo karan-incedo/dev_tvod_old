@@ -1,7 +1,7 @@
 {
   "moduleList": [
     {
-      "id": "ef55a417-e4aa-4369-833f-acd9292b645f",
+      "id": "10e5212a-9b59-4a3b-a195-4fa4781a9f90",
       "settings": {
         "searchThumbnailType": "landscape"
       },
@@ -12,7 +12,7 @@
       "components": []
     },
     {
-      "id": "f0a5c7ac-cf77-4bd7-bd0f-a1a7cf043bea",
+      "id": "69ed3095-d2d9-4422-a1f7-e9a285ae7a76",
       "settings": {},
       "view": "AC PlaylistDetail 01",
       "type": "AC PlaylistDetail 01",
@@ -103,31 +103,7 @@
           "textColor": "#bdbdbd",
           "key": "playlistSubTitle"
         },
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 22,
-              "xAxis": 268,
-              "width": 27,
-              "height": 27
-            },
-            "tabletLandscape": {
-              "yAxis": 22,
-              "xAxis": 930,
-              "width": 28,
-              "height": 28
-            },
-            "tabletPortrait": {
-              "yAxis": 22,
-              "xAxis": 669,
-              "width": 28,
-              "height": 28
-            }
-          },
-          "action": "addToWatchlist",
-          "type": "button",
-          "key": "watchlistButton"
-        },
+
         {
           "layout": {
             "mobile": {
@@ -157,26 +133,26 @@
           "layout": {
             "mobile": {
               "yAxis": 22,
-              "xAxis": 340,
-              "width": 27,
-              "height": 27
+              "xAxis": 346,
+              "width": 24,
+              "height": 24
             },
             "tabletLandscape": {
               "yAxis": 22,
               "xAxis": 993,
-              "width": 27,
-              "height": 27
+              "width": 24,
+              "height": 24
             },
             "tabletPortrait": {
               "yAxis": 22,
               "xAxis": 735,
-              "width": 27,
-              "height": 27
+              "width": 24,
+              "height": 24
             }
           },
-          "action": "share",
+          "action": "close",
           "type": "button",
-          "key": "shareButton"
+          "key": "closeButton"
         },
         {
           "layout": {
@@ -231,22 +207,22 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 2.67,
-                  "topMargin": 1,
-                  "width": 56,
-                  "height": 80
+                  "leftMargin": 4,
+                  "topMargin": 2.5,
+                  "width": 70,
+                  "height": 70
                 },
                 "tabletLandscape": {
-                  "leftMargin": 2.67,
-                  "topMargin": 1,
-                  "width": 56,
-                  "height": 80
+                  "leftMargin": 4,
+                  "topMargin": 2.5,
+                  "width": 70,
+                  "height": 70
                 },
                 "tabletPortrait": {
-                  "leftMargin": 2.67,
-                  "topMargin": 1,
-                  "width": 56,
-                  "height": 80
+                  "leftMargin": 4,
+                  "topMargin": 2.5,
+                  "width": 70,
+                  "height": 70
                 }
               },
               "type": "image",
@@ -255,7 +231,7 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 3.2,
                   "rightMargin": 14.93,
                   "width": 240,
@@ -263,7 +239,7 @@
                   "height": 22
                 },
                 "tabletLandscape": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 2.7,
                   "rightMargin": 14.93,
                   "width": 240,
@@ -271,7 +247,7 @@
                   "height": 22
                 },
                 "tabletPortrait": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 2.5,
                   "rightMargin": 14.93,
                   "width": 240,
@@ -289,7 +265,7 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 5.5,
                   "rightMargin": 19.93,
                   "width": 175,
@@ -297,7 +273,7 @@
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 4.7,
                   "rightMargin": 19.93,
                   "width": 175,
@@ -305,7 +281,7 @@
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "leftMargin": 64,
+                  "leftMargin": 85,
                   "topMargin": 4.5,
                   "rightMargin": 19.93,
                   "width": 175,
@@ -405,13 +381,13 @@
       ]
     },
     {
-      "id": "87d12b5a-acee-41e4-a151-c3f204cc54b7",
+      "id": "35883c7c-d92c-4e7f-a24d-3d18e470c9a3",
       "settings": {
         "showTabBar": true
       },
-      "view": "AC Footer 02",
-      "type": "AC Footer 02",
-      "blockName": "footer02",
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01",
       "components": [
         {
           "layout": {
@@ -462,10 +438,10 @@
               "height": 24
             }
           },
-          "fontFamily": "OpenSans",
+          "fontFamily": "Lato",
           "numberOfLines": 1,
           "textAlignment": "center",
-          "isSelectable": true,
+          "isSelectable": false,
           "type": "label",
           "textColor": "#ffffff",
           "fontWeight": "normal",
@@ -480,5 +456,5 @@
   "caching": {
     "isEnabled": false
   },
-  "version": "0.0.6"
+  "version": "0.0.9"
 }

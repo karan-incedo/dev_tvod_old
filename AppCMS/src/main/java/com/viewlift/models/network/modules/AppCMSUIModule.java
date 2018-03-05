@@ -504,6 +504,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
+                AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_module_key),
                 AppCMSUIKeyType.PAGE_GRID_MODULE_KEY);
 

@@ -27,8 +27,10 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -165,7 +168,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateMediaDescription(metadata);
                 updateDuration(metadata);
                 onUpdateMetaChange.updateMetaData(metadata);
-//                checkSubscription(metadata);
+                checkSubscription(metadata);
             }
         }
     };
@@ -286,11 +289,17 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
     }
 
+boolean isVisible=true;
     @Override
     public void onResume() {
         super.onResume();
+        isVisible=true;
+
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
+
+
+
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -429,6 +438,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
             scheduleSeekbarUpdate();
         }
+        checkSubscription(metadata);
     }
 
     private void updateFromParams(Intent intent) {
@@ -479,6 +489,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mCallback);
         }
+        isVisible=false;
     }
 
     @Override
@@ -501,7 +512,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (getActivity() != null) {
             Glide.with(getActivity())
                     .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.logo)
+                    .placeholder(R.drawable.placeholder_audio)
                     .into(trackImage);
         }
 
@@ -533,29 +544,38 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    AlertDialog dialog;
 
     private void showEntitleMentDialog() {
         MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
         if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
             controls.pause();
             stopSeekbarUpdate();
-            appCMSPresenter.setAudioPlayerOpen(true);
-            if (appCMSPresenter.isUserLoggedIn()) {
-                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
-                        () -> {
-                            appCMSPresenter.setAfterLoginAction(() -> {
-                                System.out.println("After login action");
+            if (((dialog != null && !dialog.isShowing()) || dialog == null) && isVisible ) {
+                System.out.println("isVisible -"+isVisible);
+                appCMSPresenter.setAudioPlayerOpen(true);
+                if (appCMSPresenter.isUserLoggedIn()) {
+                    dialog = appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
+                            new Action0() {
+                                @Override
+                                public void call() {
 
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
                             });
-                        });
-            } else {
-                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
-                        () -> {
-                            appCMSPresenter.setAfterLoginAction(() -> {
-                                System.out.println("After login action");
-
+                } else {
+                    dialog = appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
                             });
-                        });
+                }
             }
         }
     }
@@ -590,29 +610,26 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         } else {
             extra_info.setVisibility(View.GONE);
         }
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        MediaMetadataCompat metadata = controller.getMetadata();
+//        checkSubscription(metadata);
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPauseDrawable);
                 progressBarPlayPause.setVisibility(GONE);
                 scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-//                mControllers.setVisibility(VISIBLE);
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
-                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-                MediaMetadataCompat metadata = controller.getMetadata();
+
 
                 stopSeekbarUpdate();
-                checkSubscription(metadata);
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
@@ -661,5 +678,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     public interface OnUpdateMetaChange {
         void updateMetaData(MediaMetadataCompat metadata);
     }
+
 
 }

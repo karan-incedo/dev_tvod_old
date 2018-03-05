@@ -134,7 +134,7 @@ public class AudioPlaylistHelper {
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
         }
     }
 
@@ -165,7 +165,7 @@ public class AudioPlaylistHelper {
     private void getAudioDetails(String mediaId, long currentPosition, boolean isPlayerScreenOpen) {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, null);
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true,0, null);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
@@ -174,7 +174,7 @@ public class AudioPlaylistHelper {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
         }
@@ -193,7 +193,7 @@ public class AudioPlaylistHelper {
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
         }

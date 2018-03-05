@@ -276,39 +276,45 @@ public class CollectionGridItemView extends BaseView {
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         childViewWidth = (16 * childViewHeight) / 9;
                     }
-//
-//                    if(data.getGist().getContentType()!=null && data.getGist().getContentType().equalsIgnoreCase("AUDIO") && appCMSUIcomponentViewType.equals(AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY)){
-//                        String url="";
-//                        if (data.getGist().getImageGist() != null) {
-//                            if (data.getGist().getImageGist().get_16x9() != null) {
-//                                url = data.getGist().getImageGist().get_16x9();
-//                            } else if (data.getGist().getImageGist().get_4x3() != null) {
-//                                url = data.getGist().getImageGist().get_4x3();
-//                            } else if (data.getGist().getImageGist().get_1x1() != null) {
-//                                url = data.getGist().getImageGist().get_1x1();
-//                            } else if (data.getGist().getImageGist().get_3x4() != null) {
-//                                url = data.getGist().getImageGist().get_3x4();
-//                            }
-//
-//                        }
-//                        try {
-//                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-//                                    url,
-//                                    childViewWidth,
-//                                    childViewHeight);
-//                            System.out.println("Image Url-"+imageUrl);
-//                            if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
-//                                Glide.with(context)
-//                                        .load(imageUrl)
-//                                        .override(childViewWidth, childViewHeight)
-//                                        .into((ImageView) view);
-//                            }
-//                        } catch (Exception e) {
-//                            //
-//                        }
-//                    }
-//                   else
-                       if (childViewHeight > childViewWidth &&
+
+                    if (data!=null &&data.getGist() != null && data.getGist().getContentType()!=null &&
+                            data.getGist().getContentType().equalsIgnoreCase("AUDIO") && appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
+                        if (data.getGist() != null &&
+                                data.getGist().getImageGist() != null &&
+                                data.getGist().getImageGist().get_1x1() != null && (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) {
+                            String imageUrl = data.getGist().getImageGist().get_1x1();
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                if (data.getGist().getVideoImageUrl() != null) {
+                                    imageUrl = data.getGist().getVideoImageUrl();
+                                }
+                            }
+                            int size = childViewWidth;
+                            if (childViewWidth > childViewHeight) {
+                                size = childViewHeight;
+                            }
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
+
+                                int horizontalMargin = 0;
+                                horizontalMargin = (int) getHorizontalMargin(getContext(), childComponent.getLayout());
+                                int verticalMargin = (int) getVerticalMargin(getContext(), parentLayout, size, 0);
+                                if (verticalMargin < 0) {
+                                    verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
+                                }
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                LayoutParams llParams = new LayoutParams(size, size);
+                                llParams.setMargins(horizontalMargin,
+                                        verticalMargin,
+                                        horizontalMargin,
+                                        verticalMargin);
+                                ((ImageView) view).setLayoutParams(llParams);
+                                Glide.with(context.getApplicationContext())
+                                        .load(imageUrl)
+//                                        .override(size,size)
+                                        .into(((ImageView) view));
+                            }
+                        }
+                    } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
@@ -319,6 +325,12 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
+
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
@@ -344,6 +356,11 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl) && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
@@ -459,7 +476,7 @@ public class CollectionGridItemView extends BaseView {
                                     .into((ImageView) view);
                         }
                     } else if (data.getGist() != null &&
-                            data.getGist().getImageGist() != null &childViewHeight < childViewWidth &&
+                            data.getGist().getImageGist() != null & childViewHeight < childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             data.getGist().getImageGist().get_16x9() != null) {
@@ -467,7 +484,22 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getImageGist().get_16x9(),
                                 childViewWidth,
                                 childViewHeight);
-
+                        if (AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY == jsonValueKeyMap.get(componentViewType)) {
+                            if (data.getGist().getImageGist().get_1x1() == null) {
+                                imageUrl = "";
+                            } else {
+                                imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                        data.getGist().getImageGist().get_1x1(),
+                                        childViewWidth,
+                                        childViewHeight);
+                            }
+                            ((ImageView) view).setLayoutParams(new LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                        }
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
                         if (!ImageUtils.loadImage((ImageView) view, imageUrl) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
                             Glide.with(context.getApplicationContext())
                                     .load(imageUrl)

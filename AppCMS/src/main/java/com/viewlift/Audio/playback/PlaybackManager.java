@@ -38,6 +38,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 
 /**
@@ -160,11 +161,28 @@ public class PlaybackManager implements Playback.Callback {
 
 
         updatePlaybackStatus(state, position, error);
+        MediaMetadataCompat currentMusic = getCurrentMediaData();
 
         if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
-                state == PlaybackStateCompat.STATE_PAUSED) {
+                state == PlaybackStateCompat.STATE_PAUSED && isContentPlayable(currentMusic)) {
             mServiceCallback.onNotificationRequired();
+        }/*else{
+            mServiceCallback.stopNotification();
+        }*/
+    }
+
+    public boolean isContentPlayable(MediaMetadataCompat metadata) {
+        if (metadata != null) {
+            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+            if (!isFree.equalsIgnoreCase("true")) {
+                if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
+                    return false;
+                }
+            }
         }
+
+        return true;
     }
 
     private void updatePlaybackStatus(int playBackState, long position, String error) {
@@ -371,6 +389,13 @@ public class PlaybackManager implements Playback.Callback {
             mPlayback.setCallback(this);
             mServiceCallback.onPlaybackStart();
             mPlayback.play(currentMusic, currentPosition);
+            //if content not free than dont show notification
+            if (mServiceCallback != null && isContentPlayable(currentMusic)) {
+                mServiceCallback.onNotificationRequired();
+
+            } else {
+                mServiceCallback.stopNotification();
+            }
         }
     }
 
@@ -408,6 +433,8 @@ public class PlaybackManager implements Playback.Callback {
         void switchPlayback(long currentPosition);
 
         void onNotificationRequired();
+
+        void stopNotification();
 
         void onPlaybackStop();
 
