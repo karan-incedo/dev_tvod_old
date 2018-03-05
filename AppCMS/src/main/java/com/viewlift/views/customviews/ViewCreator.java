@@ -2927,6 +2927,11 @@ public class ViewCreator {
                                 ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                                 ((Button) componentViewResult.componentView).setEnabled(false);
                             }
+                            if (appCMSPresenter.getCurrentArticleIndex() == -1) {
+                                articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
+                                appCMSPresenter.setRelatedArticleIds(articleIDs);
+                            }
+
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 if (appCMSPresenter.getRelatedArticleIds() != null &&
