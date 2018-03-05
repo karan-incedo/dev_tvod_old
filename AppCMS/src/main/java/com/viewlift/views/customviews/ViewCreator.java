@@ -2876,7 +2876,7 @@ public class ViewCreator {
                                         appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         false,
-                                        o -> {
+                                        () -> {
                                             if (appCMSPresenter.getCurrentArticleIndex() < 0) {
                                                 previousButtonView.setBackgroundColor(Color.parseColor("#c8c8c8"));
                                                 previousButtonView.setEnabled(false);
@@ -2940,7 +2940,7 @@ public class ViewCreator {
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
                                     appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(), false,
-                                            o -> {
+                                            () -> {
                                                 if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
                                                     ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                                                     ((Button) componentViewResult.componentView).setEnabled(false);

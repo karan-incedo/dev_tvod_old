@@ -12827,7 +12827,7 @@ public class AppCMSPresenter {
     public void navigateToArticlePage(String articleId,
                                       String pageTitle,
                                       boolean launchActivity,
-                                      Action1<Object> callback) {
+                                      Action0 callback) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12890,7 +12890,7 @@ public class AppCMSPresenter {
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 if (callback != null) {
-                                    callback.call(null);
+                                    callback.call();
                                 }
                             }
                         }
