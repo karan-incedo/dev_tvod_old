@@ -288,11 +288,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         }
     }
+
 boolean isVisible=true;
     @Override
     public void onResume() {
         super.onResume();
         isVisible=true;
+
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
 
