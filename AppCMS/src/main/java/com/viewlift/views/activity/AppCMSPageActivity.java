@@ -1111,6 +1111,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(downloadReceiver);
             unregisterReceiver(notifyUpdateListsReceiver);
             unregisterReceiver(refreshPageDataReceiver);
+            unregisterReceiver(processDeeplinkReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (IllegalArgumentException e) {
 //            Log.e(TAG, "receiver not regiestered " + e.getMessage());

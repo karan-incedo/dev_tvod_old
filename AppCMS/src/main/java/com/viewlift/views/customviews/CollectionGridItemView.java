@@ -277,7 +277,7 @@ public class CollectionGridItemView extends BaseView {
                         childViewWidth = (16 * childViewHeight) / 9;
                     }
 
-                    if (data.getGist() != null &&
+                    if (data!=null &&data.getGist() != null && data.getGist().getContentType()!=null &&
                             data.getGist().getContentType().equalsIgnoreCase("AUDIO") && appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
                         if (data.getGist() != null &&
                                 data.getGist().getImageGist() != null &&
@@ -484,6 +484,17 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getImageGist().get_16x9(),
                                 childViewWidth,
                                 childViewHeight);
+                        if (AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY == jsonValueKeyMap.get(componentViewType)) {
+                            if (data.getGist().getImageGist().get_1x1() == null) {
+                                imageUrl = "";
+                            } else {
+                                imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                        data.getGist().getImageGist().get_1x1(),
+                                        childViewWidth,
+                                        childViewHeight);
+                            }
+                            ((ImageView) view).setLayoutParams(new LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                        }
                         if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                             if (data.getGist().getVideoImageUrl() != null) {
                                 imageUrl = data.getGist().getVideoImageUrl();

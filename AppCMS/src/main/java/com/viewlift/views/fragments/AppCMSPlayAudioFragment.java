@@ -61,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -287,12 +288,16 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         }
     }
-
+boolean isVisible=true;
     @Override
     public void onResume() {
         super.onResume();
+        isVisible=true;
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
+
+
+
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -431,6 +436,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
             scheduleSeekbarUpdate();
         }
+        checkSubscription(metadata);
     }
 
     private void updateFromParams(Intent intent) {
@@ -481,6 +487,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mCallback);
         }
+        isVisible=false;
     }
 
     @Override
@@ -542,21 +549,29 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
             controls.pause();
             stopSeekbarUpdate();
-            if (((dialog != null && !dialog.isShowing()) || dialog == null)) {
+            if (((dialog != null && !dialog.isShowing()) || dialog == null) && isVisible ) {
+                System.out.println("isVisible -"+isVisible);
                 appCMSPresenter.setAudioPlayerOpen(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
                     dialog = appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
-                            () -> {
-                                appCMSPresenter.setAfterLoginAction(() -> {
+                            new Action0() {
+                                @Override
+                                public void call() {
 
-                                });
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
                             });
                 } else {
                     dialog = appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
-                            () -> {
-                                appCMSPresenter.setAfterLoginAction(() -> {
-
-                                });
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
                             });
                 }
             }

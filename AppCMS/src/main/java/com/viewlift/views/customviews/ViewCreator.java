@@ -556,6 +556,7 @@ public class ViewCreator {
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
@@ -1471,6 +1472,12 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {// TODO To Be remove post development finish
+                if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "music_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else
                 if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "playlist.json"),
@@ -1505,6 +1512,7 @@ public class ViewCreator {
 
             if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
                 createModule = false;
@@ -1513,6 +1521,7 @@ public class ViewCreator {
             if (createModule) {
                 if (appCMSPageAPI != null && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
                 }
 
@@ -2548,6 +2557,13 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                if (!appCMSPresenter.isNetworkConnected()) {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
+                                            false,
+                                            null,
+                                            null);
+                                    return;
+                                }
                                 if (!appCMSPresenter.isUserLoggedIn()) {
                                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
                                             () -> {

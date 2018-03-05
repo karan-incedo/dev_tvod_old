@@ -171,7 +171,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     void audioDownload(ImageButton download, ContentDatum data) {
         appCMSPresenter.getAudioDetail(data.getGist().getId(),
-                0, null, false, false,
+                0, null, false, false,0,
                 new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
                         false,
                         false,
