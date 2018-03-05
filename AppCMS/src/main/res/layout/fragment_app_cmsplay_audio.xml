@@ -25,6 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:background="@drawable/placeholder_audio"
+
                 android:scaleType="fitXY" />
 
             <TextView
@@ -64,8 +66,14 @@
                 android:id="@+id/artist_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:freezesText="true"
                 android:gravity="center"
-                android:maxLines="2"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
                 android:text=""
                 android:textColor="@android:color/darker_gray"
                 android:textSize="20sp" />
@@ -237,15 +245,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <ImageButton
+                android:id="@+id/audio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/audio_speaker" />
 
             <SeekBar
@@ -257,7 +267,7 @@
                 android:maxHeight="5dp"
                 android:minHeight="5dp"
                 android:progress="50"
-                android:progressDrawable="@drawable/seekbar_style"
+                android:progressDrawable="@drawable/seekbar_volume_style"
                 android:thumb="@drawable/volume_seekbar_thumb_style" />
         </LinearLayout>
 
