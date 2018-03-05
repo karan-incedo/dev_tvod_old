@@ -548,7 +548,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             }
                         }
                     }
-                };
+                }
+
+                ;
             }
         }
 

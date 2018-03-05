@@ -180,6 +180,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             holder.componentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    System.out.println("click holder");
                     try {
                         int clickPosition = (int) view.getTag();
                         ContentDatum data = adapterData.get(position);
@@ -392,6 +393,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     public void startDownloadPlaylist() {
+        appCMSPresenter.askForPermissionToDownloadForPlaylist(true,new Action1<Boolean>() {
+            @Override
+            public void call(Boolean isStartDownload) {
+                if(isStartDownload){
+                    System.out.println("Play down 0 callback request download");
+
+                    getPlaylistAudioItems();
+                }
+            }
+        });
+    }
+
+    private void getPlaylistAudioItems(){
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
@@ -408,7 +422,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             public void run() {
                                 audioDownload(download, adapterData.get(pos), true);
                             }
-                        }, 500);
+                        }, 400);
+
 
                     }
                 }

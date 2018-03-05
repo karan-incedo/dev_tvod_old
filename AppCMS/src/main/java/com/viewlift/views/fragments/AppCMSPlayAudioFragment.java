@@ -30,6 +30,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
@@ -286,13 +288,18 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         }
     }
+
 boolean isVisible=true;
     @Override
     public void onResume() {
         super.onResume();
         isVisible=true;
+
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
+
+
+
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -617,6 +624,8 @@ boolean isVisible=true;
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
+
+
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_NONE:
@@ -669,5 +678,6 @@ boolean isVisible=true;
     public interface OnUpdateMetaChange {
         void updateMetaData(MediaMetadataCompat metadata);
     }
+
 
 }

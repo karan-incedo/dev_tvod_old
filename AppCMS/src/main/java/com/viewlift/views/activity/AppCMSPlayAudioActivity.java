@@ -157,6 +157,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         finish();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        System.out.println("on key down");
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
@@ -324,4 +329,5 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
 
     }
+
 }

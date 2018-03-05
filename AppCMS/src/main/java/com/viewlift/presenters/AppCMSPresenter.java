@@ -602,7 +602,11 @@ public class AppCMSPresenter {
     private boolean runUpdateDownloadIconTimer;
     private ContentDatum downloadContentDatumAfterPermissionGranted;
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
+    private Action1<Boolean> downloadResultActionForPlaylistAfterPermissionGranted;
+
     private boolean requestDownloadQualityScreen;
+    private boolean requestPlaylistDownload;
+
     private DownloadQueueThread downloadQueueThread;
     private boolean isVideoPlayerStarted;
     private EntitlementCheckActive entitlementCheckActive;
@@ -3885,7 +3889,7 @@ public class AppCMSPresenter {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
-            } else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
@@ -8161,11 +8165,14 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
                             }
+
                         }
                     }
                 });
                 return dialog;
+
             } catch (Exception e) {
+
             }
         }
         return null;
@@ -9862,6 +9869,7 @@ public class AppCMSPresenter {
     private void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
                                                              final ContentDatum contentDatum,
                                                              final Action1<UserVideoDownloadStatus> resultAction1) {
+        requestPlaylistDownload=false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             downloadContentDatumAfterPermissionGranted = contentDatum;
             downloadResultActionAfterPermissionGranted = resultAction1;
@@ -9891,6 +9899,38 @@ public class AppCMSPresenter {
         }
     }
 
+    public void askForPermissionToDownloadForPlaylist(boolean checkToShowPermissionRationale, final Action1<Boolean> resultAction11) {
+        requestPlaylistDownload=true;
+        if (!hasWriteExternalStoragePermission()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                downloadResultActionForPlaylistAfterPermissionGranted = resultAction11;
+                if (currentActivity != null && !hasWriteExternalStoragePermission()) {
+                    if (checkToShowPermissionRationale && ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+                                currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
+                                true,
+                                () -> {
+                                    try {
+                                        askForPermissionToDownloadForPlaylist(false, resultAction11);
+                                    } catch (Exception e) {
+                                        //Log.e(TAG, "Error handling request permissions result: " + e.getMessage());
+                                    }
+                                },
+                                null);
+                    } else {
+                        ActivityCompat.requestPermissions(currentActivity,
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+                    }
+                }
+            }
+        } else {
+            resultAction11.call(true);
+        }
+
+    }
+
     private boolean hasWriteExternalStoragePermission() {
         if (currentActivity != null) {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
@@ -9901,7 +9941,9 @@ public class AppCMSPresenter {
     }
 
     public void resumeDownloadAfterPermissionGranted() {
-        if (requestDownloadQualityScreen) {
+        if (requestPlaylistDownload && downloadResultActionForPlaylistAfterPermissionGranted != null) {
+            downloadResultActionForPlaylistAfterPermissionGranted.call(true);
+        } else if (requestDownloadQualityScreen) {
             showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
                     downloadResultActionAfterPermissionGranted);
         } else {

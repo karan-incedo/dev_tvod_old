@@ -478,7 +478,7 @@ public class CollectionGridItemView extends BaseView {
                                     .into((ImageView) view);
                         }
                     } else if (data.getGist() != null &&
-                            data.getGist().getImageGist() != null & childViewHeight < childViewWidth &&
+                            data.getGist().getImageGist() != null &childViewHeight < childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             data.getGist().getImageGist().get_16x9() != null) {

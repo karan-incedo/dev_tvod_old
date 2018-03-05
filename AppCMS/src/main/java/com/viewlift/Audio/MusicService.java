@@ -328,6 +328,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
         }
     }
 
+
+
+
+
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
