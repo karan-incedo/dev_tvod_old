@@ -51,6 +51,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
+import com.viewlift.Debug;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -739,6 +740,7 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                                             view.setVisibility(View.VISIBLE);
                                             view.setOnClickListener(v -> {
+                                                Debug.debug("ViewCreator 743, view.setOnClickListener");
                                                 String[] extraData = new String[3];
                                                 extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                                 extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
@@ -771,6 +773,7 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
                                                 moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
                                             view.setOnClickListener(v -> {
+                                                Debug.debug("ViewCreator 776, view.setOnClickListener");
                                                 String[] extraData = new String[3];
                                                 extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
                                                 extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
@@ -795,6 +798,7 @@ public class ViewCreator {
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY) {
                                         view.setOnClickListener(v -> {
+                                            Debug.debug("ViewCreator 801, view.setOnClickListener");
                                             if (moduleAPI.getContentData() != null &&
                                                     !moduleAPI.getContentData().isEmpty() &&
                                                     moduleAPI.getContentData().get(0) != null &&
@@ -832,6 +836,7 @@ public class ViewCreator {
                                         });
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY) {
                                         view.setOnClickListener(v -> {
+                                            Debug.debug("ViewCreator 839, view.setOnClickListener");
                                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
                                             if (appCMSMain != null &&
                                                     moduleAPI.getContentData() != null &&
@@ -1739,7 +1744,11 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
-                                childrenContainer.addView(componentView);
+                                if(component.isHeaderView()){
+                                    pageView.addToHeaderView(componentView);
+                                }else{
+                                    childrenContainer.addView(componentView);
+                                }
                                 moduleView.setComponentHasView(i, true);
                                 moduleView.setViewMarginsFromComponent(component,
                                         componentView,
@@ -2497,6 +2506,7 @@ public class ViewCreator {
                         final String changePasswordAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                            Debug.debug("ViewCreator 2505, componentViewResult.componentView.setOnClickListener");
                             String[] extraData = new String[1];
                             extraData[0] = component.getKey();
                             appCMSPresenter.launchButtonSelectedAction(null,
@@ -2689,6 +2699,7 @@ public class ViewCreator {
                                 final String watchTrailerAction = component.getAction();
 
                                 componentViewResult.componentView.setOnClickListener(v -> {
+                                    Debug.debug("ViewCreator 2698, componentViewResult.componentView.setOnClickListener");
                                     String[] extraData = new String[3];
                                     extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                     extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
@@ -2721,6 +2732,7 @@ public class ViewCreator {
                                 final String watchTrailerAction = component.getAction();
 
                                 componentViewResult.componentView.setOnClickListener(v -> {
+                                    Debug.debug("ViewCreator 2731, componentViewResult.componentView.setOnClickListener");
                                     String[] extraData = new String[3];
                                     extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
                                     extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
@@ -2753,6 +2765,7 @@ public class ViewCreator {
                         } else {
                             componentViewResult.componentView.setVisibility(View.VISIBLE);
                             componentViewResult.componentView.setOnClickListener(v -> {
+                                Debug.debug("ViewCreator 2764, componentViewResult.componentView.setOnClickListener");
                                 if (moduleAPI != null &&
                                         moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
@@ -2853,6 +2866,7 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                            Debug.debug("ViewCreator 2865, componentViewResult.componentView.setOnClickListener");
                             if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     new AppCMSActionPresenter.Builder().action(closeAction).build(),
                                     null,
@@ -2874,6 +2888,7 @@ public class ViewCreator {
                         final String shareAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                            Debug.debug("ViewCreator 2887, componentViewResult.componentView.setOnClickListener");
                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
                             if (appCMSMain != null &&
                                     moduleAPI != null &&
@@ -2992,6 +3007,7 @@ public class ViewCreator {
 
                             @Override
                             public void onClick(final View v) {
+                                Debug.debug("ViewCreator 3006, componentViewResult.componentView.setOnClickListener");
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
@@ -3066,6 +3082,7 @@ public class ViewCreator {
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                            Debug.debug("ViewCreator 3081, componentViewResult.componentView.setOnClickListener");
                             String action = component.getAction();
                             String[] extraData = new String[1];
                             extraData[0] = component.getKey();
@@ -4686,6 +4703,7 @@ public class ViewCreator {
                 }
             };
             removeClickListener = v -> {
+                Debug.debug("ViewCreator 4702, removeClickListener");
                 for (String filmId : UpdateImageIconAction.this.filmIds) {
                     appCMSPresenter.editWatchlist(filmId,
                             addToWatchlistResult -> {
@@ -4749,6 +4767,7 @@ public class ViewCreator {
             this.id = id;
 
             addClickListener = v -> {
+                Debug.debug("ViewCreator 4766, addClickListener");
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,

@@ -107,6 +107,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     boolean supportPagination;
 
+    @SerializedName("headerView")
+    @Expose
+    boolean headerView;
+
     @SerializedName("trayClickAction")
     @Expose
     String trayClickAction;
@@ -559,5 +563,12 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setWidthModified(boolean widthModified) {
         this.widthModified = widthModified;
+    }
+    public boolean isHeaderView() {
+        return headerView;
+    }
+
+    public void setHeaderView(boolean headerView) {
+        this.headerView = headerView;
     }
 }
