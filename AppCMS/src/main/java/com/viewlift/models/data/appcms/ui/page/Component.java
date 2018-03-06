@@ -122,6 +122,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     boolean supportPagination;
 
+    @SerializedName("headerView")
+    @Expose
+    boolean headerView;
+
     @SerializedName("trayClickAction")
     @Expose
     String trayClickAction;
@@ -623,5 +627,13 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setAlwaysVisible(boolean alwaysVisible) {
         this.alwaysVisible = alwaysVisible;
+    }
+
+    public boolean isHeaderView() {
+        return headerView;
+    }
+
+    public void setHeaderView(boolean headerView) {
+        this.headerView = headerView;
     }
 }

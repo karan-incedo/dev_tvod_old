@@ -1,17 +1,15 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -53,6 +51,7 @@ public class PageView extends BaseView {
     private OnScrollChangeListener onScrollChangeListener;
 
     private boolean ignoreScroll;
+    private FrameLayout headerView;
 
     @Inject
     public PageView(Context context,
@@ -107,7 +106,13 @@ public class PageView extends BaseView {
                         FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         adapterList = new CopyOnWriteArrayList<>();
+        createHeaderView();
+    }
 
+    private void createHeaderView() {
+        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerView = new FrameLayout(getContext());
+        headerView.setLayoutParams(layoutParams);
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
@@ -360,6 +365,14 @@ public class PageView extends BaseView {
     public void scrollToPosition(int position) {
         if (childrenContainer != null) {
             ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+        }
+    }
+
+    public void addToHeaderView(View view){
+        headerView.addView(view);
+        if(headerView.getParent() == null){
+            addView(headerView);
+            headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }
     }
 }
