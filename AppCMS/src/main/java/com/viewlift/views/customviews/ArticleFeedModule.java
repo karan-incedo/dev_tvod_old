@@ -122,11 +122,11 @@ public class ArticleFeedModule extends LinearLayout {
                 } else {
                     layoutParams.weight = 75;
                 }
-                layoutParams.setMargins(50, 50, 50, 50);
+                layoutParams.setMargins(50, 0, 50, 50);
 
             } else {
                 layoutParams.weight = 100;
-                layoutParams.setMargins(0, 50, 0, 50);
+                layoutParams.setMargins(0, 0, 0, 50);
             }
 
             layoutParams.width = 0;
