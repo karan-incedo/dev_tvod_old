@@ -460,8 +460,11 @@ public class CollectionGridItemView extends BaseView {
                     }else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() == null){
 
-                            view.setVisibility(GONE);
-
+                        Glide.with(context)
+                                .load("").placeholder(R.drawable.img_placeholder)
+                                .override(childViewWidth, childViewHeight)
+                                .into((ImageView) view);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     }
                     bringToFront = false;
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {

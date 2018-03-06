@@ -73,6 +73,9 @@
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
+    <!--Article API-->
+    <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>

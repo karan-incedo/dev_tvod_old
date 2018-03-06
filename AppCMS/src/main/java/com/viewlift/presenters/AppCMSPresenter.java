@@ -7245,6 +7245,12 @@ public class AppCMSPresenter {
                     message = currentActivity.getString(R.string.there_is_a_problem_loading_data);
                     positiveButtonText = currentActivity.getString(R.string.ok);
                 }
+                if (dialogType == DialogType.OPEN_URL_IN_BROWSER) {
+                    title = "";
+                    message = currentActivity.getString(R.string.open_url_in_browser_message);
+                    positiveButtonText = currentActivity.getString(R.string.yes);
+
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
@@ -7351,7 +7357,16 @@ public class AppCMSPresenter {
                                 }
                                 dialog.dismiss();
                             });
-                } else {
+                } else if (dialogType == DialogType.OPEN_URL_IN_BROWSER){
+                    builder.setNegativeButton(currentActivity.getString(R.string.no), (dialog, which) -> {});
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
+                                dialog.dismiss();
+                            });
+                }else {
                     builder.setPositiveButton(positiveButtonText,
                             (dialog, which) -> {
                                 try {
@@ -12179,7 +12194,8 @@ public class AppCMSPresenter {
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
         SIGN_OUT,
-        ARTICLE_API_RESPONSE_ERROR
+        ARTICLE_API_RESPONSE_ERROR,
+        OPEN_URL_IN_BROWSER
     }
 
     public enum RETRY_TYPE {
@@ -12811,7 +12827,7 @@ public class AppCMSPresenter {
     public void navigateToArticlePage(String articleId,
                                       String pageTitle,
                                       boolean launchActivity,
-                                      Action1<Object> callback) {
+                                      Action0 callback) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12874,7 +12890,7 @@ public class AppCMSPresenter {
                                         .PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 if (callback != null) {
-                                    callback.call(null);
+                                    callback.call();
                                 }
                             }
                         }
