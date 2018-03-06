@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.BuildConfig;
-import com.viewlift.Debug;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
