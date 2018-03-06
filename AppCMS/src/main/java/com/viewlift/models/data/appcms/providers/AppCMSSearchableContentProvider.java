@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.BuildConfig;
+import com.viewlift.Debug;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
@@ -41,7 +42,8 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
     private static final String[] SUGGESTION_COLUMN_NAMES = {BaseColumns._ID,
             SearchManager.SUGGEST_COLUMN_TEXT_1,
             SearchManager.SUGGEST_COLUMN_DURATION,
-            SearchManager.SUGGEST_COLUMN_INTENT_DATA};
+            SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+    SearchManager.SUGGEST_COLUMN_CONTENT_TYPE};
 
     static {
         uriMatcher.addURI(URI_AUTHORITY, SUGGEST_URI_PATH_QUERY, 1);
@@ -97,6 +99,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                     //Log.d(TAG, "Search URL: " + url);
                     try {
                         List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(appCMSSearchUrlData.getApiKey(), url);
+
                         if (searchResultList != null) {
                             //Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
@@ -117,8 +120,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         permalinkUri +
                                         "," +
                                         contentType;
-
-                                Object[] rowResult = {i, title, runtime, searchHintResult};
+                                Object[] rowResult = {i, title, runtime, searchHintResult, contentType};
 
                                 cursor.addRow(rowResult);
                                 //Log.d(TAG, searchResultList.get(i).getGist().getTitle());
