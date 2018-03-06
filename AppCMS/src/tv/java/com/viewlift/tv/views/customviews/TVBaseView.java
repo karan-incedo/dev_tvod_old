@@ -66,8 +66,11 @@ public abstract class TVBaseView extends FrameLayout {
             }
             stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
         }
-        stringBuilder.append(" | ");
-         stringBuilder.append(data.getGist().getPrimaryCategory().getTitle() != null ? data.getGist().getPrimaryCategory().getTitle().toUpperCase() : "");
+        //SVFA-3323
+        if(data.getGist().getPrimaryCategory().getTitle() != null) {
+            stringBuilder.append(" | ");
+            stringBuilder.append(data.getGist().getPrimaryCategory().getTitle() != null ? data.getGist().getPrimaryCategory().getTitle().toUpperCase() : "");
+        }
         ((TextView) view).setText(stringBuilder);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
