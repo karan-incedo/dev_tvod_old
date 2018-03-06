@@ -216,7 +216,6 @@ public class AudioPlaylistHelper {
                 if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
                 }
-
             }
             if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
                 iconUrl=appCMSAudioDetailResult.getGist().getVideoImageUrl();

@@ -145,14 +145,14 @@
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 300,
-                  "height": 300
+                  "width": 290,
+                  "height": 250
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 250,
-                  "height": 250
+                  "width": 240,
+                  "height": 200
                 }
               },
               "type": "image",

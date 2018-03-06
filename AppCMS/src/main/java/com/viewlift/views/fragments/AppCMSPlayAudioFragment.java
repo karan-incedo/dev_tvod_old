@@ -496,6 +496,7 @@ boolean isVisible=true;
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
         if (description.getIconUri() == null) {
+            trackImage.setImageResource(R.drawable.placeholder_audio);
             return;
         }
         String artUrl = description.getIconUri().toString();
