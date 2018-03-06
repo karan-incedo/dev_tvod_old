@@ -2643,6 +2643,7 @@ public class AppCMSPresenter {
 
     public void initiateItemPurchase() {
         //Log.d(TAG, "Initiating item purchase");
+        sendCloseOthersAction(null, true, false);
 
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
@@ -4950,10 +4951,10 @@ public class AppCMSPresenter {
                             false,
                             false,
                             appCMSPageUI,
-                            playlistId,
-                            playlistId,
-                            pageTitle,
-                            playlistId,
+                            playlistPage.getPageId(),
+                            playlistPage.getPageId(),
+                            playlistPage.getPageName(),
+                            playlistPage.getPageId(),
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
@@ -8911,27 +8912,41 @@ public class AppCMSPresenter {
                 entitlementPendingVideoData.relateVideoIds = null;
             }
         } else {
-            sendCloseOthersAction(null, true, false);
-            cancelInternalEvents();
-            restartInternalEvents();
+//            sendCloseOthersAction(null, true, false);
+            sendRefreshPageAction();
+//
 
-            if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+            if (getAudioPlayerOpen() && AudioServiceHelper.getAudioInstance().isAudioPlaying()) {
+                Intent fullScreenIntent = new Intent(currentActivity, AppCMSPlayAudioActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                currentActivity.startActivity(fullScreenIntent);
+                setAudioPlayerOpen(false);
             }
 
-            NavigationPrimary homePageNavItem = findHomePageNavItem();
-            if (homePageNavItem != null) {
-                cancelInternalEvents();
-                navigateToPage(homePageNavItem.getPageId(),
-                        homePageNavItem.getTitle(),
-                        homePageNavItem.getUrl(),
-                        false,
-                        true,
-                        false,
-                        true,
-                        true,
-                        deeplinkSearchQuery);
-            }
+
+//            sendCloseOthersAction(null, true, false);
+//            cancelInternalEvents();
+//            restartInternalEvents();
+//
+//            if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+//                setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+//            }
+//
+//            NavigationPrimary homePageNavItem = findHomePageNavItem();
+//            if (homePageNavItem != null) {
+//                cancelInternalEvents();
+////                navigateToHomePage();
+////                navigateToPage(homePageNavItem.getPageId(),
+////                        homePageNavItem.getTitle(),
+////                        homePageNavItem.getUrl(),
+////                        false,
+////                        true,
+////                        false,
+////                        true,
+////                        true,
+////                        deeplinkSearchQuery);
+//            }
         }
 
         setIsUserSubscribed(true);
@@ -9861,7 +9876,7 @@ public class AppCMSPresenter {
     private void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
                                                              final ContentDatum contentDatum,
                                                              final Action1<UserVideoDownloadStatus> resultAction1) {
-        requestPlaylistDownload=false;
+        requestPlaylistDownload = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             downloadContentDatumAfterPermissionGranted = contentDatum;
             downloadResultActionAfterPermissionGranted = resultAction1;
@@ -9892,7 +9907,7 @@ public class AppCMSPresenter {
     }
 
     public void askForPermissionToDownloadForPlaylist(boolean checkToShowPermissionRationale, final Action1<Boolean> resultAction11) {
-        requestPlaylistDownload=true;
+        requestPlaylistDownload = true;
         if (!hasWriteExternalStoragePermission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 downloadResultActionForPlaylistAfterPermissionGranted = resultAction11;
