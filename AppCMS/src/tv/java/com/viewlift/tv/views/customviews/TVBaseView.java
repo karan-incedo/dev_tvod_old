@@ -42,8 +42,8 @@ public abstract class TVBaseView extends FrameLayout {
 
     public TVBaseView(@NonNull Context context) {
         super(context);
-        DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
-        DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
+        DEVICE_WIDTH = Utils.getDeviceWidth(getContext());
+        DEVICE_HEIGHT = Utils.getDeviceHeight(getContext());
     }
 
 

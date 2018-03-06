@@ -446,13 +446,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+                && (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)) {
             createStreamingQualitySelector();
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
-
-        videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitle = playerView.findViewById(R.id.app_cms_mini_video_player_title_view);
 
         videoPlayerTitle.setText("");
 

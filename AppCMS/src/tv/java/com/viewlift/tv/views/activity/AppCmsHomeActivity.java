@@ -112,6 +112,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
+        if (appCMSPresenter.getAppCMSAndroid().getAnalytics() != null) {
+            appCMSPresenter.initializeGA(appCMSPresenter.getAppCMSAndroid().getAnalytics().getGoogleAnalyticsId());
+        }
+
 
         String tag = getTag(updatedAppCMSBinder);
         appCMSBinderStack.push(tag);
@@ -1068,7 +1072,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 null,
-                                false,
+                                appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                        !appCMSBinder.getAppCMSPageUI().getCaching().shouldOverrideCaching() &&
+                                        appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;

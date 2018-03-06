@@ -584,7 +584,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
             if (!binder.isTrailer()
                     && relateVideoIds != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
                 binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                 appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
                     @Override

@@ -1921,7 +1921,8 @@ public class TVViewCreator {
                                         .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(((ImageView) componentViewResult.componentView));
                         }
-                        componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
+                        //setTag is causing crash here. We can not setTag on a View which Glide is targeting.
+                        //componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
                         componentViewResult.componentView.setFocusable(true);
 
 

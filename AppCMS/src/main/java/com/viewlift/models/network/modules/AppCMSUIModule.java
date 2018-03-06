@@ -158,6 +158,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
+                AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_privacy_policy_key),
                 AppCMSUIKeyType.PRIVACY_POLICY_KEY);
 
