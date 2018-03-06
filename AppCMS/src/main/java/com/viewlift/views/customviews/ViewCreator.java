@@ -4947,6 +4947,7 @@ public class ViewCreator {
                 imageButton.setImageResource(R.drawable.add_to_watchlist);
                 imageButton.setOnClickListener(addClickListener);
             }
+            imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
 
         @Override
