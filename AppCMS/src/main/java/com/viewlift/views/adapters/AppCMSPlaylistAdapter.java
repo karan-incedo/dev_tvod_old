@@ -229,7 +229,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                       Component childComponent,
                                       ContentDatum data, int clickPosition) {
                         try {
-                            System.out.println("playlist adapter on click-");
 
                             isDownloading = true;
                             if (isClickable) {
@@ -396,8 +395,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             @Override
             public void call(Boolean isStartDownload) {
                 if(isStartDownload){
-                    System.out.println("Play down 0 callback request download");
-
                     getPlaylistAudioItems();
                 }
             }
@@ -407,7 +404,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     private void getPlaylistAudioItems(){
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
-            System.out.println("Play down 1 size -"+allViews[i].getChildItems().size());
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
@@ -421,7 +417,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("Play down 2 call audio download -"+ adapterData.get(pos).getGist().getTitle());
                                 audioDownload(download, adapterData.get(pos), true);
                             }
                         }, 400);
@@ -458,7 +453,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
                                                     Boolean playlistDownload) {
-        System.out.println("Play down 4 getUserVideoDownloadStatus -"+contentDatum.getGist().getTitle());
 
         String userId = appCMSPresenter.getLoggedInUser();
         appCMSPresenter.getUserVideoDownloadStatus(
@@ -509,7 +503,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
 
-                    System.out.println("Play down 5 download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);
@@ -574,7 +567,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.notifyDownloadHasCompleted();
-                        System.out.println("download start successfull-" + contentDatum.getGist().getTitle());
 
 //                        downloadPlaylist();
                         break;
@@ -610,7 +602,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 //                imageButton.setOnClickListener(addClickListener);
 //                addClickListener.onClick(imageButton);
 
-                System.out.println("download start call-" + contentDatum.getGist().getTitle());
 
                 if ((boolean) imageButton.getTag()) {
                     imageButton.setTag(false);

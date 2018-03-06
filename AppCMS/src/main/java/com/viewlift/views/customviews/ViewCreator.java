@@ -1471,27 +1471,27 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-            try {// TODO To Be remove post development finish
-                if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "music_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else
-                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "playlist.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } /*else if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "music_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(2);
-                } */ else {
-                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }
-//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            try {
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "music_hub.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//                } else
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "playlist.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//                } /*else if (moduleInfo.getBlockName().equalsIgnoreCase("tray01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "music_hub.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(2);
+//                } */ else {
+//                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//                }
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             } catch (Exception e) {
 
