@@ -1171,11 +1171,11 @@ public class AppCMSPresenter {
                         if (usedCachedAPI) {
                             if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
                                     pageId.equals(moviesPage.getPageId()))) {
-                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
-                                        appCMSMain.getApiBaseUrlCached(),
-                                        siteId,
-                                        pageId,
-                                        getLoggedInUser());
+//                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+//                                        appCMSMain.getApiBaseUrlCached(),
+//                                        siteId,
+//                                        pageId,
+//                                        getLoggedInUser());
                             } else {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         appCMSMain.getApiBaseUrlCached(),
@@ -10332,8 +10332,7 @@ public class AppCMSPresenter {
                 }
             }
 
-            cacheMoviesPage();
-            cacheShowsPage();
+            cacheNavItems();
 
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
@@ -11384,7 +11383,7 @@ public class AppCMSPresenter {
                                     false);
 
                             if (launchPageFinal == homePage) {
-                                cacheHomePage();
+                                cachePage(homePage.getPageId());
                             }
                         } else {
                             processMetaPagesList(loadFromFile,
@@ -11469,6 +11468,20 @@ public class AppCMSPresenter {
                     //Log.e(TAG, "Failed to launch page: "
 //                                                                        + loginPage.getPageName());
                     launchBlankPage();
+                }
+            }
+            cacheNavItems();
+        }
+    }
+
+    public void cacheNavItems() {
+        if (getNavigation() != null && getNavigation().getTabBar() != null) {
+            for (int i = 0; i < getNavigation().getTabBar().size(); i++) {
+                NavigationPrimary navigationItem = getNavigation().getTabBar().get(i);
+
+                if (!navigationItem.getPageId().equals("Menu Screen") &&
+                        !navigationItem.getPageId().equals("Search Screen")) {
+                    cachePage(navigationItem.getPageId());
                 }
             }
         }
@@ -11602,108 +11615,38 @@ public class AppCMSPresenter {
         }
     }
 
-    public void cacheHomePage() {
-        if (homePage != null && appCMSMain != null && appCMSSite != null) {
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = homePage.getPageAPI();
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache home page when the app is loading
-            getPageIdContent(getApiUrl(true,
-                    false,
-                    false,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    homePage.getPageId(),
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    homePage.getPageId(),
-                    null,
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                    null);
-        }
-    }
-
-    public void cacheMoviesPage() {
-        if (moviesPage != null && appCMSMain != null && appCMSSite != null) {
-            String pageId = moviesPage.getPageId();
+    public void cachePage(String pageId) {
+        MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+        if (metaPage != null) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
             if (appCMSPageUI == null) {
-                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-                if (metaPage != null) {
-                    getAppCMSPage(metaPage.getPageUI(),
-                            appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
-                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                                    String action = pageNameToActionMap.get(metaPage.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUIResult);
-                                    }
+                getAppCMSPage(metaPage.getPageUI(),
+                        appCMSPageUIResult -> {
+                            if (appCMSPageUIResult != null) {
+                                navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUIResult);
                                 }
-                            },
-                            loadFromFile,
-                            false);
-                }
+                            }
+                        },
+                        loadFromFile,
+                        false);
             }
 
             String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = moviesPage.getPageAPI();
+            String endPoint = metaPage.getPageAPI();
             String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache movies page when the app is loading
+            // Cache meta page when the app is loading
             getPageIdContent(getApiUrl(true,
                     false,
                     false,
                     baseUrl,
                     endPoint,
                     siteId,
-                    moviesPage.getPageId(),
+                    metaPage.getPageId(),
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    moviesPage.getPageId(),
-                    null,
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                    null);
-        }
-    }
-
-    public void cacheShowsPage() {
-        if (showsPage != null && appCMSMain != null && appCMSSite != null) {
-            String pageId = showsPage.getPageId();
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
-            if (appCMSPageUI == null) {
-                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-                if (metaPage != null) {
-                    getAppCMSPage(metaPage.getPageUI(),
-                            appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
-                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                                    String action = pageNameToActionMap.get(metaPage.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUIResult);
-                                    }
-                                }
-                            },
-                            loadFromFile,
-                            false);
-                }
-            }
-
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = showsPage.getPageAPI();
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache movies page when the app is loading
-            getPageIdContent(getApiUrl(true,
-                    false,
-                    false,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    showsPage.getPageId(),
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    showsPage.getPageId(),
+                    metaPage.getPageId(),
                     null,
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
                     null);
