@@ -439,7 +439,8 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                         }
                     } else if (data.getGist().getImageGist() != null &&
-                            data.getGist().getImageGist().get_16x9() != null) {
+                            data.getGist().getImageGist().get_16x9() != null &&
+                            componentKey != AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
                         if (!(childViewWidth > 0)) {
                             childViewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         } else if (!(childViewHeight > 0)) {

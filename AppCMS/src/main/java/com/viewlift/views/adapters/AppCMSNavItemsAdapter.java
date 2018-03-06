@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.apptentive.android.sdk.Apptentive;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
@@ -281,6 +283,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
                                     !TextUtils.isEmpty(navigationFooter.getTitle())){
                                appCMSPresenter.openChromeTab(navigationFooter.getUrl());
+                            }else if(navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.contact_us)) && !TextUtils.isEmpty(Utils.getProperty("ApptentiveApiKey", viewHolder.itemView.getContext()))){
+                                //Firebase Event when contact us screen is opened.
+                                appCMSPresenter.sendFireBaseContactUsEvent();
+                                if (Apptentive.canShowMessageCenter()) {
+                                    Apptentive.showMessageCenter(viewHolder.itemView.getContext());
+                                }
                             }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),

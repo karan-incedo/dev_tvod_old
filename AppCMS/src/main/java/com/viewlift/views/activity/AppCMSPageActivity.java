@@ -1718,6 +1718,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 mSearchTopButton.setVisibility(View.GONE);
             }
             if (appCMSPresenter.isArticlePage(appCMSBinder.getPageId()) ||
+                    appCMSPresenter.isPhotoGalleryPage(appCMSBinder.getPageId()) ||
                     appCMSPresenter.isPageAVideoPage(appCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);

@@ -1188,7 +1188,6 @@
                 "tabletPortrait": {
                   "yAxis": 114,
                   "xAxis": 0,
-                  "leftMargin": 0,
                   "rightMargin": 91,
                   "fontSize": 12,
                   "height": 20

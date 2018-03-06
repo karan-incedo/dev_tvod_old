@@ -5381,7 +5381,7 @@ public class AppCMSPresenter {
         return result;
     }
 
-    private void sendFireBaseContactUsEvent() {
+    public void sendFireBaseContactUsEvent() {
         Bundle bundle = new Bundle();
         String FIREBASE_CONTACT_SCREEN = "Contact Us";
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_CONTACT_SCREEN);
@@ -7038,6 +7038,14 @@ public class AppCMSPresenter {
     public boolean isArticlePage(String pageId) {
         if (pageId != null && articlePage != null && articlePage.getPageId() != null &&
                 pageId.equalsIgnoreCase(articlePage.getPageId())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPhotoGalleryPage(String pageId) {
+        if (pageId != null && photoGalleryPage != null && photoGalleryPage.getPageId() != null &&
+                pageId.equalsIgnoreCase(photoGalleryPage.getPageId())) {
             return true;
         }
         return false;
