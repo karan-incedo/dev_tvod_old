@@ -289,8 +289,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             createNotificationChannel();
         }
 
-        //final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+        //final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder

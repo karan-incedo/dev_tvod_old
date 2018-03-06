@@ -256,7 +256,7 @@ configurations.all {
         def requested = details.requested
         if (requested.group == 'com.android.support') {
             if (!requested.name.startsWith("multidex")) {
-                details.useVersion '25.4.0'
+                details.useVersion '26.0.2'
             }
         }
     }
@@ -279,6 +279,7 @@ dependencies {
     androidTestCompile("tools.fastlane:screengrab:1.0.3", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     androidTestCompile "com.google.dexmaker:dexmaker:$rootProject.ext.dexmakerVersion"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$rootProject.ext.dexmakerVersion"
     androidTestCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
@@ -389,7 +390,7 @@ dependencies {
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
     kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
-    compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+
 }
 
 apply plugin: 'com.google.gms.google-services'
