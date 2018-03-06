@@ -74,7 +74,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     private Map<String, String> availableStreamingQualityMap;
     private List<String> availableStreamingQualities;
-
+    private String videoStreamingUrl;
     private OnResumeVideo onResumeVideo;
 
     @Override
@@ -297,12 +297,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
+           videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
+            VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+            initializeStreamingQualityValues(videoAssets);
         } else if (binder.getContentData() != null &&
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
 
-            initializeStreamingQualityValues(videoAssets);
+
 
             if (useHls) {
                 videoUrl = videoAssets.getHls();
@@ -328,6 +331,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
                 }
             }
+            videoStreamingUrl = videoUrl;
+            initializeStreamingQualityValues(videoAssets);
         }
 
         // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -626,6 +631,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         return 0;
+    }
+
+    @Override
+    public String getVideoStreamingUrl() {
+        return videoStreamingUrl;
+    }
+
+    @Override
+    public void setVideoStreaming(String videoStreamingUrl) {
+        this.videoStreamingUrl = videoStreamingUrl;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
