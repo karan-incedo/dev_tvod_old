@@ -111,7 +111,7 @@
           "numberOfLines": 1,
           "textAlignment": "left",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#4e4e4e",
           "key": "trayAuthName"
         },
         {

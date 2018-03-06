@@ -775,6 +775,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_option_key),
                 AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY_BG);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_badgeimage),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE);
 

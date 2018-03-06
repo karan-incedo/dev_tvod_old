@@ -6089,10 +6089,25 @@ public class AppCMSPresenter {
                 onDownloadPage = downloadPageId.equals(pageId);
             }
             if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
-                navigateToDownloadPage(getDownloadPageId(),
-                        null, null, false);
-            }
 
+                if(isDownloadable()) {
+                    navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false);
+                }else {
+                    // Because we do not have Download functionality in App. So we navigate to Error Page Screen.
+                    showDialog(DialogType.NETWORK, null, true,
+                            () -> {
+                                launched = true;
+                                launchBlankPage();
+                                //sendStopLoadingPageAction(false, null);
+                                showNoNetworkConnectivityToast();
+                                showNetworkConnectivity = false;
+                            },
+                            () -> {
+                                ((Activity)currentContext).finish();
+                            });
+                }
+            }
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
 
                 closeSoftKeyboard();
