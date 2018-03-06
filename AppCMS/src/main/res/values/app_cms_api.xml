@@ -317,6 +317,7 @@
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_musicHub_screen_key">Music Hub</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
@@ -324,6 +325,7 @@
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
+    <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
@@ -338,6 +340,7 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_action_moviespage_key">showMoviesPage</string>
     <string name="app_cms_module_showdetail_key">ShowDetailModule</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
@@ -588,6 +591,7 @@
     <string name="app_cms_series_content_type">SERIES</string>
 
     <string name="app_cms_action_playlistpage_key">Playlist Page</string>
+    <string name="app_cms_action_musicHub_page_key">Music Hub</string>
     <!-- AppCMS Playlist API -->
     <string name="app_cms_playlist_api_url">%1$s/content/playlist?id=%2$s&amp;site=%3$s</string>
     <!-- AppCMS Audio detail API -->

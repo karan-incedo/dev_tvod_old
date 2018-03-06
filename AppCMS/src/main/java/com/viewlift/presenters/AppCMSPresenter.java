@@ -149,6 +149,8 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Component$TypeAdapter;
 import com.viewlift.models.data.appcms.ui.page.Links;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.SocialLinks;
@@ -2133,7 +2135,6 @@ public class AppCMSPresenter
                                 screenType = ExtraScreenType.NONE;
                                 break;
                         }
-
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
 
                         if (appCMSPageUI == null) {
@@ -2144,9 +2145,12 @@ public class AppCMSPresenter
                                 getAppCMSPage(metaPage.getPageUI(),
                                         appCMSPageUIResult -> {
                                             if (appCMSPageUIResult != null) {
+
                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                                 String updatedAction = pageNameToActionMap.get(metaPage.getPageName());
-                                                if (updatedAction != null && !actionToPageMap.containsKey(updatedAction)) {
+                                                System.out.println( updatedAction+" *===**** "+action);
+
+                                                if (updatedAction != null && actionToPageMap.get(updatedAction)==null) {
                                                     actionToPageMap.put(updatedAction, appCMSPageUIResult);
                                                 }
 
@@ -2159,6 +2163,7 @@ public class AppCMSPresenter
                                                         finalCurrentlyPlayingIndex2,
                                                         finalRelateVideoIds2);
                                             }
+
                                         },
                                         loadFromFile,
                                         false);
@@ -2176,9 +2181,11 @@ public class AppCMSPresenter
                                         appCMSPageUI.getCaching() != null &&
                                         !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                         appCMSPageUI.getCaching().isEnabled());
+
                         Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
                         pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(pageLoadingActionIntent);
+
                         if (appCMSPageUI != null) {
                             int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
                             List<String> finalRelateVideoIds1 = relateVideoIds;
@@ -11376,7 +11383,7 @@ public class AppCMSPresenter
                                                                             numPagesProcessed = 0;
                                                                             getAppCMSModules(appCMSAndroid,
                                                                                     true,
-                                                                                    true,
+                                                                                    false,
                                                                                     (appCMSAndroidModules) -> {
                                                                                         if (appCMSAndroidModules != null) {
                                                                                             //Log.d(TAG, "Received and refreshed module list");
@@ -11565,7 +11572,7 @@ public class AppCMSPresenter
                         launchBlankPage();
 
                         getAppCMSModules(appCMSAndroidUI,
-                                false,
+                                true,
                                 false,
                                 (appCMSAndroidModules) -> {
                                     //Log.d(TAG, "Received module list");
@@ -11716,6 +11723,27 @@ public class AppCMSPresenter
         }
     }
 
+  /*  public void getAppCMSPage(String pageId,final Action1<AppCMSPageUI> onPageReady){
+
+
+
+        MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+        if (metaPage != null) {
+            getAppCMSPage(metaPage.getPageUI(),
+                    appCMSPageUIResult -> {
+                        if (appCMSPageUIResult != null) {
+                            navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                            String action = pageNameToActionMap.get(metaPage.getPageName());
+                            if (action != null && actionToPageMap.containsKey(action)) {
+                                actionToPageMap.put(action, appCMSPageUIResult);
+                            }
+                        }
+                    },
+                    false,
+                    false);
+        }
+
+    }*/
     private void getAppCMSPage(String url,
                                final Action1<AppCMSPageUI> onPageReady,
                                boolean loadFromFile,
@@ -11793,6 +11821,11 @@ public class AppCMSPresenter
                         == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
                     showsPage = metaPage;
                     new SoftReference<Object>(showsPage, referenceQueue);
+                }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
+                    playlistPage = metaPage;
+                    new SoftReference<Object>(playlistPage, referenceQueue);
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
@@ -13921,6 +13954,29 @@ public class AppCMSPresenter
         ModuleList footerModule = null;
         if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
             footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        }else
+        {
+            //In case we did not get footer module some how.
+            footerModule =new ModuleList();
+            footerModule.setBlockName("footer01");
+            footerModule.setTabSeparator(false);
+            ArrayList<Component> componets =new ArrayList<>();
+            Component componet1,componet2;
+            componet1=new Component();
+            componet2=new Component();
+
+            componet1.setType("image");
+            componet1.setKey("tabImage");
+            componet1.setSelectable(true);
+
+            componet2.setType("label");
+            componet2.setKey("tabName");
+            componet2.setSelectable(true);
+
+            componets.add(componet1);
+            componets.add(componet2);
+            footerModule.setComponents(componets);
+
         }
         return footerModule;
     }

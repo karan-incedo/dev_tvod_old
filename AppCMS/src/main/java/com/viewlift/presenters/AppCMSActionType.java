@@ -13,6 +13,8 @@ public enum AppCMSActionType {
     PLAYLIST_PAGE,
     VIDEO_PAGE,
     SHOW_PAGE,
+    MUSIC_PAGE,
+    MOVIES_PAGE,
     PLAY_VIDEO_PAGE,
     WATCH_TRAILER,
     SHARE,

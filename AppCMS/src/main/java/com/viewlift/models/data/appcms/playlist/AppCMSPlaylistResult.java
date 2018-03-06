@@ -61,7 +61,7 @@ public class AppCMSPlaylistResult {
         List<ContentDatum> data = new ArrayList<>();
 
         ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setAudioList(this.audioList);
+        contentDatum.setAudioListFromPlayList(this.audioList);
         contentDatum.setGist(this.gist);
         contentDatum.setId(this.id);
         data.add(contentDatum);

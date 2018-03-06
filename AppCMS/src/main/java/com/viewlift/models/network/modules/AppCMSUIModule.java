@@ -81,6 +81,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 @Module
 public class AppCMSUIModule {
@@ -168,7 +169,6 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
 		jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
-
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
                 AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
@@ -799,6 +799,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 context.getString(R.string.app_cms_action_homepage_key));
+        /*this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_musicHub_screen_key),
+                context.getString(R.string.app_cms_action_musicHub_page_key));*/
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
@@ -807,6 +809,10 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_detailvideopage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
+                context.getString(R.string.app_cms_action_moviespage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
+                context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
     }
@@ -820,6 +826,8 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key), null);
+        //this.actionToPageMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
@@ -829,6 +837,8 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key), null);
+        //this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
@@ -851,6 +861,8 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchlistpage_key),
                 AppCMSActionType.WATCHLIST_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_musicHub_page_key),
+                AppCMSActionType.MUSIC_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
                 AppCMSActionType.PLAYLIST_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
@@ -861,6 +873,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSActionType.SHOW_PAGE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_moviespage_key),
+                AppCMSActionType.MOVIES_PAGE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);
@@ -990,6 +1005,7 @@ public class AppCMSUIModule {
     public Retrofit providesRetrofit(OkHttpClient client, Gson gson) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .baseUrl(baseUrl)
                 .client(client)
                 .build();

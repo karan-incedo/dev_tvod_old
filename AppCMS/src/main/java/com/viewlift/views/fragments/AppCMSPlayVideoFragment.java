@@ -153,7 +153,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
         adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
@@ -472,6 +471,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
+
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(ViewCreator.getColorWithOpacity(getContext(),
                     fontColor,
@@ -531,8 +531,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
-        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
+        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
         setCurrentWatchProgress(runTime, watchedTime);
 
@@ -541,6 +541,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             if (beaconPing != null) {
                 beaconPing.playbackState = playerState.getPlaybackState();
             }
+
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
@@ -550,6 +551,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
                 setCurrentWatchProgress(updatedRunTime, watchedTime);
 
                 if (!isVideoLoaded) {
@@ -674,6 +676,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 mStartBufferMilliSec = new Date().getTime();
             }
         });
+
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
             if (visibility == View.GONE) {
                 videoPlayerInfoContainer.setVisibility(View.GONE);

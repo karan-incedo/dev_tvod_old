@@ -32,11 +32,11 @@ allprojects {
         mockitoVersion = "1.10.19"
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
-        androidsupportVersion = "27.0.2"
+        androidsupportVersion = "27.1.0"
         androidsupportconstraintVersion = "1.0.2"
         glideVersion = "4.4.0"
         daggerVersion = "2.14.1"
-        gsonVersion = "2.8.0"
+        gsonVersion = "2.8.2"
         retrofit2Version = "2.3.0"
         okHttp3Version = "3.8.1"
         rxandroidVersion = "1.2.0"
@@ -57,7 +57,6 @@ allprojects {
         jsoupVersion = "1.10.3"
         frescoVersion = "1.7.1"
         multiDexVersion = "1.0.2"
-        draggablePanelVersion = "1.9"
     }
 }
 

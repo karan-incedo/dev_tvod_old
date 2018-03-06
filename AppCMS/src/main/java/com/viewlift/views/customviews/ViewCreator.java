@@ -991,6 +991,7 @@ public class ViewCreator {
                                             filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
                                         }
                                         updateImageIconAction.updateWatchlistResponse(filmsAdded);
+                                        ((ImageButton)view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                                         view.setVisibility(View.VISIBLE);
 
                                         //as of now set visibility gone for wathclist button as this is on hold
@@ -3027,7 +3028,13 @@ public class ViewCreator {
                                 }
                             }
                         });
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
+                        if (moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty() &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("AUDIO")) {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
@@ -3406,10 +3413,10 @@ public class ViewCreator {
                         if (moduleAPI != null
                                 && moduleAPI.getContentData() != null
                                 && moduleAPI.getContentData().get(0) != null
-                                && moduleAPI.getContentData().get(0).getAudioList() != null
+                                && moduleAPI.getContentData().get(0).getAudioListFromPlayList() != null
                                 ) {
-                            int songNum = moduleAPI.getContentData().get(0).getAudioList().size();
-                            ((TextView) componentViewResult.componentView).setText((moduleAPI.getContentData().get(0).getAudioList().size() > 1) ? " " + songNum + " SONGS" : " " + songNum + " SONG");
+                            int songNum = moduleAPI.getContentData().get(0).getAudioListFromPlayList().size();
+                            ((TextView) componentViewResult.componentView).setText((moduleAPI.getContentData().get(0).getAudioListFromPlayList().size() > 1) ? " " + songNum + " SONGS" : " " + songNum + " SONG");
                         }
                         break;
 

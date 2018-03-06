@@ -10,7 +10,7 @@ buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         google()
-        mavenCentral()
+       // mavenCentral()
     }
 
     dependencies {
@@ -27,8 +27,8 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
-    maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
-    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+   // maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
+   // maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
     maven {
         url "s3://sdkv1.kiswe.com/snapshot"
@@ -45,11 +45,11 @@ repositories {
             secretKey 'lg/hEFZRXNfsw6M3Tilw7XhOx4B6hJejZsoqZZTY'
         }
     }
-    mavenCentral()
+    //mavenCentral()
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
     def packageName
@@ -80,6 +80,7 @@ android {
         versionProps['AppPackageName'] = packageName.toString()
         versionProps['AppName'] = customApplicationId.toString()
         versionProps['HostName'] = hostName.toString()
+        versionProps['HostNameSuffix'] = hostNameSuffix.toString()
         versionProps['AppVersionCode'] = appVersionCode.toString()
         versionProps['AppVersionName'] = appVersionName.toString()
         //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
@@ -92,7 +93,7 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -105,8 +106,8 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 26
-            targetSdkVersion 26
+            compileSdkVersion 27
+            targetSdkVersion 27
             aaptOptions {
                 cruncherEnabled = false
             }
@@ -287,14 +288,14 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     compile("com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion", {
-        exclude group: 'com.android.support', module: 'support-v4'
+        //exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
         exclude group: 'com.android.support', module: 'com.android.support:support-core-utils'
         exclude group: 'com.android.support', module: 'com.android.support:support-core-ui'
-        exclude group: 'com.android.support', module: 'support-compat'
+        //exclude group: 'com.android.support', module: 'support-compat'
     })
     compile("com.android.support:support-fragment:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
@@ -346,6 +347,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
     compile "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    compile "com.squareup.retrofit2:converter-scalars:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"

@@ -34,7 +34,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
 import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
 import android.support.v7.app.NotificationCompat.MediaStyle;
