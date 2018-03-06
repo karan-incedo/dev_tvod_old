@@ -325,6 +325,7 @@
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="no_data_received">No response received</string>
     <string name="there_is_a_problem_loading_data">There is a problem loading data</string>
+    <string name="open_url_in_browser_message">Open this link in a Browser?</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
 
@@ -447,6 +448,7 @@
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>
+    <string name="no">NO</string>
     <string name="sign_in_text">SIGN IN</string>
 
     <string name="blank_string"></string>

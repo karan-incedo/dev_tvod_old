@@ -1,7 +1,7 @@
 {
   "moduleList": [
     {
-      "id": "5b694cbd-e754-4dbf-9ec1-f3d926f254f4",
+      "id": "9c326cfa-8b3e-468a-8a0e-bef8362d75c9",
       "settings": {
         "searchThumbnailType": "landscape"
       },
@@ -12,7 +12,7 @@
       "components": []
     },
     {
-      "id": "32d65c60-5d8e-49df-ae50-c78678d94757",
+      "id": "0644d87f-8a2d-4968-b2b5-6ac2d7ebab93",
       "settings": {
         "columns": {
           "tablet": 4,
@@ -21,9 +21,9 @@
           "ott": 6
         }
       },
-      "view": "AC History 01",
-      "type": "AC History 01",
-      "blockName": "history02",
+      "view": "AC Watchlist 01",
+      "type": "AC Watchlist 01",
+      "blockName": "watchlist02",
       "layout": {
         "mobile": {
           "leftMargin": 0,
@@ -387,29 +387,28 @@
               "layout": {
                 "mobile": {
                   "topMargin": 9,
-                  "leftMargin": 57,
-                  "width": 70,
+                  "width": 125,
                   "fontSize": 13,
                   "height": 15
                 },
                 "tabletLandscape": {
                   "topMargin": 7.9,
-                  "width": 70,
-                  "leftMargin": 57,
+                  "width": 125,
                   "fontSize": 13,
                   "height": 15
                 },
                 "tabletPortrait": {
                   "topMargin": 6.2,
-                  "leftMargin": 57,
-                  "width": 70,
+                  "width": 125,
+                  "leftMargin": 2.67,
                   "fontSize": 13,
                   "height": 17
                 }
               },
               "fontFamily": "OpenSans",
-              "textAlignment": "center",
+              "textAlignment": "right",
               "type": "label",
+              "backgroundColor": "#4e4e4e",
               "textColor": "#ffffff",
               "fontWeight": "Semibold",
               "key": "watchListDurationKey"

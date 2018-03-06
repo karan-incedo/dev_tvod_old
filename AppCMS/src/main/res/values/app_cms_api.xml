@@ -73,6 +73,9 @@
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
+    <!--Article API-->
+    <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -294,6 +297,7 @@
 
     <string name="app_cms_page_grid_option_key">gridOptions</string>
     <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
+    <string name="app_cms_page_watchlist_duration_label">watchListDurationKey</string>
     <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
     <string name="app_cms_action_purchase_plan">purchasePlan</string>

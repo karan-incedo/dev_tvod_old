@@ -1318,6 +1318,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_history.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("watchlist02")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
@@ -2883,7 +2889,7 @@ public class ViewCreator {
                                         appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         false,
-                                        o -> {
+                                        () -> {
                                             if (appCMSPresenter.getCurrentArticleIndex() < 0) {
                                                 previousButtonView.setBackgroundColor(Color.parseColor("#c8c8c8"));
                                                 previousButtonView.setEnabled(false);
@@ -2934,6 +2940,11 @@ public class ViewCreator {
                                 ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                                 ((Button) componentViewResult.componentView).setEnabled(false);
                             }
+                            if (appCMSPresenter.getCurrentArticleIndex() == -1) {
+                                articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
+                                appCMSPresenter.setRelatedArticleIds(articleIDs);
+                            }
+
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 if (appCMSPresenter.getRelatedArticleIds() != null &&
@@ -2942,7 +2953,7 @@ public class ViewCreator {
                                     appCMSPresenter.setCurrentArticleIndex(currentIndex);
                                     appCMSPresenter.navigateToArticlePage(appCMSPresenter.getRelatedArticleIds().get(currentIndex + 1),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(), false,
-                                            o -> {
+                                            () -> {
                                                 if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
                                                     ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                                                     ((Button) componentViewResult.componentView).setEnabled(false);
@@ -4683,9 +4694,12 @@ public class ViewCreator {
             webViewUrl = moduleAPI.getRawText();
             html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
             webView.loadURLData(context, appCMSPresenter, html, key);
-        } else if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null) {
-            webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
-            int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
+        } else if (moduleAPI != null && moduleAPI.getContentData() != null
+                && moduleAPI.getContentData().get(0).getGist() != null
+                && moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+            webViewUrl = context.getString(R.string.app_cms_article_api,
+                    appCMSPresenter.getAppCMSMain().getDomainName(),
+                    moduleAPI.getContentData().get(0).getGist().getPermalink());
             webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;

@@ -2,7 +2,6 @@ package com.viewlift.views.customviews;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,7 +29,7 @@ import com.viewlift.presenters.AppCMSPresenter;
  * Created by karan.kaushik on 11/22/2017.
  */
 
-public class CustomWebView extends WebView {
+public class CustomWebView extends AppCMSAdvancedWebView {
 
     private Activity context;
     private WebView webView;
@@ -115,8 +114,11 @@ public class CustomWebView extends WebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                context.startActivity(browserIntent);
+                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
+                        () -> {
+                            Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                            context.startActivity(browserIntent);
+                        });
                 return true;
             }
 
