@@ -29,7 +29,7 @@ import com.viewlift.presenters.AppCMSPresenter;
  * Created by karan.kaushik on 11/22/2017.
  */
 
-public class CustomWebView extends WebView {
+public class CustomWebView extends AppCMSAdvancedWebView {
 
     private Activity context;
     private WebView webView;

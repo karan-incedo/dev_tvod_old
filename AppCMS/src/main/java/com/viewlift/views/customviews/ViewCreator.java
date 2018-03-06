@@ -4681,9 +4681,12 @@ public class ViewCreator {
             webViewUrl = moduleAPI.getRawText();
             html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
             webView.loadURLData(context, appCMSPresenter, html, key);
-        } else if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null) {
-            webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
-            int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
+        } else if (moduleAPI != null && moduleAPI.getContentData() != null
+                && moduleAPI.getContentData().get(0).getGist() != null
+                && moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+            webViewUrl = context.getString(R.string.app_cms_article_api,
+                    appCMSPresenter.getAppCMSMain().getDomainName(),
+                    moduleAPI.getContentData().get(0).getGist().getPermalink());
             webView.loadURL(context, appCMSPresenter, webViewUrl, key);
         }
         return webView;
