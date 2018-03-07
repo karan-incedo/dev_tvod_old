@@ -286,10 +286,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         }
 
         updatePlaylistAllStatus();
-//        if (pageView.findChildViewById(R.id.playlist_download_id) != null && isAllVideoDownloaded) {
-//            (playlistDownloadBtn).setImageResource(R.drawable.ic_downloaded);
-//
-//        }
     }
 
     private void updatePlaylistAllStatus() {
