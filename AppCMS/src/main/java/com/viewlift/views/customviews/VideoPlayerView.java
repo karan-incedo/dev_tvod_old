@@ -418,14 +418,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
 
-        ccToggleButton = playerView.findViewById(R.id.ccButton);
-
-        if (ccToggleButton != null) {
-            if (appCMSPresenter != null && appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
-                ccToggleButton.setVisibility(GONE);
-            }
-        }
-
+        ccToggleButton = createCC_ToggleButton();
+        ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -433,21 +427,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-        chromecastLivePlayerParent = playerView.findViewById(R.id.chromecast_live_player_parent);
 
-        chromecastButtonPlaceholder = playerView.findViewById(R.id.chromecast_live_player_placeholder);
-
-        enterFullscreenButton = playerView.findViewById(R.id.full_screen_button);
-
-        enterFullscreenButton.setOnClickListener(v -> {
-            enterFullScreenMode();
-        });
-
-        exitFullscreenButton = playerView.findViewById(R.id.full_screen_back_button);
-
-        exitFullscreenButton.setOnClickListener(v -> {
-            exitFullscreenMode(true);
-        });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
@@ -456,9 +436,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
 
-        videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
+       /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
 
-        videoPlayerTitle.setText("");
+        videoPlayerTitle.setText("");*/
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 

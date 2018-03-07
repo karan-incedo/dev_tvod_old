@@ -691,7 +691,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
 
-        initViewForCRW(rootView);
+        //Todo commented due to font issue
+       // initViewForCRW(rootView);
         if (!shouldRequestAds) {
             try {
                 createContentRatingView();
