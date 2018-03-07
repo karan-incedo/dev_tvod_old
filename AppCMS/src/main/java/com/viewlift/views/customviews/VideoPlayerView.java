@@ -1,17 +1,27 @@
 package com.viewlift.views.customviews;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,6 +53,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -61,10 +72,12 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
@@ -84,6 +97,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
     private TextView currentStreamingQualitySelector;
+    private AlwaysSelectedTextView videoPlayerTitle;
+    private DefaultTimeBar timeBar;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
@@ -102,6 +117,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private long mCurrentPlayerPosition;
     private ErrorEventListener mErrorEventListener;
 
+    private StreamingQualitySelector streamingQualitySelector;
+
     private Map<String, Integer> failedMediaSourceLoads;
 
     private int fullscreenResizeMode;
@@ -115,9 +132,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private boolean mAudioFocusGranted = false;
     private String filmId;
     DefaultTrackSelector trackSelector;
+
+    private boolean playOnReattach;
+
     private PageView pageView;
 
     private RecyclerView listView;
+    private StreamingQualitySelectorAdapter listViewAdapter;
+
+    private boolean fullScreenMode;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -173,14 +196,34 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if (closedCaptionUri == null) {
+        if(appCMSPresenter != null &&  appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID){
+            if (closedCaptionUri == null) {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setVisibility(GONE);
+                }
+            } else {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+                    ccToggleButton.setVisibility(VISIBLE);
+                }
+            }
+
+        } else {
             if (ccToggleButton != null) {
                 ccToggleButton.setVisibility(GONE);
             }
-        } else {
-            if (ccToggleButton != null) {
-                ccToggleButton.setChecked(isClosedCaptionEnabled);
-                ccToggleButton.setVisibility(VISIBLE);
+        }
+
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
+                currentStreamingQualitySelector != null &&
+                streamingQualitySelector != null) {
+            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+            if (0 < availableStreamingQualities.size()) {
+                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+                if (0 <= streamingQualityIndex) {
+                    currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
+                    setSelectedStreamingQualityIndex();
+                }
             }
         }
 
@@ -319,6 +362,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         failedMediaSourceLoads = new HashMap<>();
     }
 
+    public StreamingQualitySelector getStreamingQualitySelector() {
+        return streamingQualitySelector;
+    }
+
+    public void setStreamingQualitySelector(StreamingQualitySelector streamingQualitySelector) {
+        this.streamingQualitySelector = streamingQualitySelector;
+    }
+
+
 
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
@@ -335,8 +387,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
+        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+            createStreamingQualitySelector();
+        } else {
+            currentStreamingQualitySelector.setVisibility(View.GONE);
+        }
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
+
+        timeBar = playerView.findViewById(R.id.exo_progress);
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
@@ -372,6 +432,78 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+    }
+
+    private void createStreamingQualitySelector() {
+        if (streamingQualitySelector != null && appCMSPresenter != null) {
+            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+            if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
+                listView = new RecyclerView(getContext());
+                listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
+                        appCMSPresenter,
+                        availableStreamingQualities);
+
+                listView.setAdapter(listViewAdapter);
+                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                listView.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.VERTICAL,
+                        false));
+
+                setSelectedStreamingQualityIndex();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
+                    ((ViewGroup) listView.getParent()).removeView(listView);
+                }
+                builder.setView(listView);
+                final Dialog dialog = builder.create();
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                }
+                currentStreamingQualitySelector.setOnClickListener(v -> {
+                    dialog.show();
+                    listViewAdapter.notifyDataSetChanged();
+                });
+                listViewAdapter.setItemClickListener(v -> {
+                    try {
+                        long currentPosition = getCurrentPosition();
+                        if (listViewAdapter.selectedIndex != listViewAdapter.getDownloadQualityPosition()) {
+                            setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
+                                    closedCaptionUri);
+                        }
+                        setCurrentPosition(currentPosition);
+                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
+                        dialog.hide();
+                    } catch (Exception e) {
+
+                    }
+                });
+            } else {
+                currentStreamingQualitySelector.setVisibility(GONE);
+            }
+        } else {
+            currentStreamingQualitySelector.setVisibility(GONE);
+        }
+    }
+
+    private void setSelectedStreamingQualityIndex() {
+        if (streamingQualitySelector != null && listViewAdapter != null) {
+            int currentIndex = -1;
+            int updatedIndex = -1;
+            try {
+                currentIndex = listViewAdapter.selectedIndex;
+                updatedIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString());
+                if (updatedIndex != -1) {
+                    listViewAdapter.setSelectedIndex(updatedIndex);
+                }
+            } catch (Exception e) {
+                listViewAdapter.setSelectedIndex(0);
+            }
+            if (updatedIndex != -1 && currentIndex != -1 && updatedIndex != currentIndex) {
+                listViewAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
@@ -747,6 +879,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         void onFinishCallback(String message);
     }
 
+    public interface StreamingQualitySelector {
+        List<String> getAvailableStreamingQualities();
+        String getStreamingQualityUrl(String streamingQuality);
+        String getMpegResolutionFromUrl(String mpegUrl);
+        int getMpegResolutionIndexFromUrl(String mpegUrl);
+    }
+
     public static class PlayerState {
         boolean playWhenReady;
         int playbackState;
@@ -929,13 +1068,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
 
-            boolean useHls = dataSpec.uri.toString().contains("m3u8");
+            boolean useHls = false;
+            if (dataSpec.uri.toString().contains("m3u8") || dataSpec.uri.toString().contains("hls")){
+                useHls=true;
+            }
 
             if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
 
-            if (/*useHls && */dataSource instanceof DefaultHttpDataSource) {
+            if (useHls && dataSource instanceof DefaultHttpDataSource) {
                 if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
                         !TextUtils.isEmpty(signatureCookies.signatureCookie) &&
                         !TextUtils.isEmpty(signatureCookies.keyPairIdCookie)) {
@@ -1026,5 +1168,72 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mToggleButton.setVisibility(GONE);
         return mToggleButton;
     }
+
+    private static class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<String> {
+        List<String> availableStreamingQualities;
+        int selectedIndex;
+        AppCMSPresenter appCMSPresenter;
+        public StreamingQualitySelectorAdapter(Context context,
+                                               AppCMSPresenter appCMSPresenter,
+                                               List<String> items) {
+            super(context, items);
+            this.appCMSPresenter = appCMSPresenter;
+            this.availableStreamingQualities = items;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
+
+            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (viewHolder.getmRadio().getButtonDrawable() != null) {
+                    viewHolder.getmRadio().getButtonDrawable().setColorFilter(appCMSPresenter.getBrandPrimaryCtaColor(),
+                            PorterDuff.Mode.MULTIPLY);
+                }
+            } else {
+                int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{}
+                        }, new int[]{
+                        switchOnColor,
+                        switchOnColor
+                });
+
+                viewHolder.getmRadio().setButtonTintList(colorStateList);
+            }
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(AppCMSDownloadRadioAdapter.ViewHolder viewHolder, int i) {
+            super.onBindViewHolder(viewHolder, i);
+            viewHolder.getmText().setText(availableStreamingQualities.get(i));
+            if (selectedIndex == i) {
+                viewHolder.getmRadio().setChecked(true);
+            } else {
+                viewHolder.getmRadio().setChecked(false);
+            }
+            viewHolder.getmRadio().invalidate();
+        }
+
+        @Override
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
+        public void setSelectedIndex(int selectedIndex) {
+            this.selectedIndex = selectedIndex;
+        }
+
+        public int getDownloadQualityPosition() {
+            return downloadQualityPosition;
+        }
+    }
+
+
 
 }
