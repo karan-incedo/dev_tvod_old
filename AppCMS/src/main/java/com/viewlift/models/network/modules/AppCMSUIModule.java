@@ -790,6 +790,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_download_button_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
+                AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY);
+
 
     }
 

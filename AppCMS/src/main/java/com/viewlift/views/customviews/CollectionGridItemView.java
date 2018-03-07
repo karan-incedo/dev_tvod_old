@@ -398,13 +398,13 @@ public class CollectionGridItemView extends BaseView {
                         if (childViewWidth < childViewHeight &&
                                 data.getGist().getImageGist().get_3x4() != null &&
                                 data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
-                            0 < childViewWidth &&
-                            0 < childViewHeight) {
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getBadgeImages().get_3x4(),
-                                childViewWidth,
-                                childViewHeight);
+                                componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                                0 < childViewWidth &&
+                                0 < childViewHeight) {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_3x4(),
+                                    childViewWidth,
+                                    childViewHeight);
 
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
@@ -440,7 +440,25 @@ public class CollectionGridItemView extends BaseView {
                         view.setVisibility(GONE);
                         bringToFront = false;
                     }
-
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
+                            appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
+                        String imageUrl = "";
+                        if (data.getGist().getImageGist().get_1x1() != null) {
+                            imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getImageGist().get_1x1(),
+                                    childViewWidth,
+                                    childViewHeight);
+                        }
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(childViewWidth,
+                                            childViewHeight);
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .apply(requestOptions)
+                                    .into((ImageView) view);
+                        }
+                    }
                     if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                                 childComponent, data, position));
@@ -575,6 +593,9 @@ public class CollectionGridItemView extends BaseView {
                             view.setClickable(true);
                             view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
                         }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
+                        String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
+                        ((TextView) view).setText(time);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
@@ -903,7 +924,7 @@ public class CollectionGridItemView extends BaseView {
 
         @Override
         protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-            int outWidth, int outHeight) {
+                                   int outWidth, int outHeight) {
             int width = toTransform.getWidth();
             int height = toTransform.getHeight();
 

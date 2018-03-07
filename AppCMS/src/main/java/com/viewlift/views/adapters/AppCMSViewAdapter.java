@@ -620,6 +620,29 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     } else if (contentType.equals(fullLengthFeatureType)) {
                         action = videoAction;
                     }
+                     /*get audio details on tray click item and play song*/
+                    if (data.getGist() != null &&
+                            data.getGist().getMediaType() != null &&
+                            data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                            data.getGist().getContentType() != null &&
+                            data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                        List<String> audioPlaylistId = new ArrayList<String>();
+                        audioPlaylistId.add(data.getGist().getId());
+                        AudioPlaylistHelper.getInstance().setCurrentPlaylistId(data.getGist().getId());
+                        AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+                        AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+                        appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                                .PRESENTER_PAGE_LOADING_ACTION));
+                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+                        return;
+                    }
+
+                                /*Get playlist data and open playlist page*/
+                    if (data.getGist() != null && data.getGist().getMediaType() != null
+                            && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                        appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), false);
+                        return;
+                    }
 
                     //Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;

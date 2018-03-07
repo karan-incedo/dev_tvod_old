@@ -991,7 +991,7 @@ public class ViewCreator {
                                             filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
                                         }
                                         updateImageIconAction.updateWatchlistResponse(filmsAdded);
-                                        ((ImageButton)view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                        ((ImageButton) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                                         view.setVisibility(View.VISIBLE);
 
                                         //as of now set visibility gone for wathclist button as this is on hold
@@ -1644,7 +1644,7 @@ public class ViewCreator {
                     }
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
                             (appCMSPresenter.getAllUserHistory() != null &&
-                            !appCMSPresenter.getAllUserHistory().isEmpty())) {
+                                    !appCMSPresenter.getAllUserHistory().isEmpty())) {
                         moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
                     }
                 }
@@ -2653,7 +2653,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                        ((ImageButton)componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         break;
 
                     case PAGE_GRID_OPTION_KEY:
@@ -2991,8 +2991,8 @@ public class ViewCreator {
                                     0,
                                     null)) {
 
-                                }
-                            });
+                            }
+                        });
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
@@ -3117,7 +3117,7 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setTextColor(Color
                                 .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
                         componentViewResult.componentView.setBackgroundColor(Color
-                            .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                                .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
@@ -3464,7 +3464,7 @@ public class ViewCreator {
                         }
                         componentViewResult.componentView.setBackgroundColor(textBgColor);
                         ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
-                    ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
                         if (!TextUtils.isEmpty(component.getFontFamily())) {
                             setTypeFace(context,
@@ -3888,7 +3888,8 @@ public class ViewCreator {
 
                 break;
 
-            case PAGE_IMAGE_KEY:componentViewResult.componentView = ImageUtils.createImageView(context);
+            case PAGE_IMAGE_KEY:
+                componentViewResult.componentView = ImageUtils.createImageView(context);
 
                 if (componentViewResult.componentView == null) {
                     componentViewResult.componentView = new ImageView(context);
@@ -4145,6 +4146,7 @@ public class ViewCreator {
                         null,
                         android.R.attr.progressBarStyleHorizontal) {
                     Paint paint = new Paint();
+
                     @Override
                     public void onDraw(Canvas canvas) {
                         super.onDraw(canvas);
@@ -4343,9 +4345,9 @@ public class ViewCreator {
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
                 if (moduleAPI != null && !BaseView.isTablet(context)
-                    && moduleAPI.getModuleType() != null
-                        && ( jsonValueKeyMap.get(moduleAPI.getModuleType())
-                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01  ||
+                        && moduleAPI.getModuleType() != null
+                        && (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
                         jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
                         jsonValueKeyMap.get(moduleAPI.getModuleType())
@@ -4834,7 +4836,6 @@ public class ViewCreator {
     }
 
 
-
     private void setCasting(boolean allowFreePlay,
                             AppCMSPresenter appCMSPresenter,
                             ImageButton mMediaRouteButton,
@@ -4848,7 +4849,7 @@ public class ViewCreator {
                 if ((castHelper.getRemoteMediaClient() != null &&
                         !castHelper.getRemoteMediaClient().isPlaying()) ||
                         (castHelper.getStartingFilmId() != null &&
-                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
+                                !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
 
                     if (videoPlayerViewBinder != null) {
                         if (videoPlayerView != null) {
@@ -5124,7 +5125,7 @@ public class ViewCreator {
             }
         }
 
-		public void updateDownloadImageButton(ImageButton imageButton) {
+        public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
         }
 
@@ -5143,6 +5144,7 @@ public class ViewCreator {
         }
         return videoPlayerView;
     }
+
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
         CustomWebView webView = new CustomWebView(context);
         int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
