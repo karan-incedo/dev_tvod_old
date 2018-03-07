@@ -312,6 +312,8 @@ public class CollectionGridItemView extends BaseView {
                                         .centerCrop().placeholder(R.drawable.img_placeholder)
                                         .into((ImageView) view);
                                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            }else{
+                                ((ImageView) view) .setBackgroundResource(R.drawable.img_placeholder);
                             }
 
                         } catch (Exception e) {

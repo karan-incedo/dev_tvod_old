@@ -417,6 +417,7 @@ public class CastHelper {
                     mAppContext), true, currentPosition);
             getRemoteMediaClient().addListener(remoteListener);
             onAppDisConnectCalled = false;
+            CastingUtils.isMediaQueueLoaded = true;
         }
 
     }
@@ -690,6 +691,7 @@ public class CastHelper {
 
 
     private void callRelatedVideoData() {
+        CastingUtils.isMediaQueueLoaded = true;
         String filmIds = "";
         if (listRelatedVideosId != null && listRelatedVideosId.size() >= 5) {
             List<String> subList = listRelatedVideosId.subList(0, 5);
