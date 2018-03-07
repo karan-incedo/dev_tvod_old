@@ -46,8 +46,10 @@ public class ArticleFeedModule extends LinearLayout {
     private LinearLayout rootView;
 
     private ImageView imageViewPoster;
-    private TextView titleText, subTitleText, publisherName, summeryText, readMore;
+    private TextView titleText, subTitleText, publisherName,publishDate, summeryText, readMore;
     private LinearLayout bottomControll;
+    private RelativeLayout publishInfo;
+    LinearLayout.LayoutParams lpBottom, lpBottomRight;
     private View separatorView;
     int textColor = 0;
 
@@ -93,6 +95,11 @@ public class ArticleFeedModule extends LinearLayout {
         bottomControll = new LinearLayout(context);
         bottomControll.setWeightSum(2);
 
+        publishInfo = new RelativeLayout(context);
+        //publishInfo.setWeightSum(2);
+
+
+
         imageViewPoster = new ImageView(context);
 
         textColor = appCMSPresenter.getGeneralTextColor();
@@ -102,17 +109,18 @@ public class ArticleFeedModule extends LinearLayout {
         titleText = new TextView(context);
         subTitleText = new TextView(context);
         publisherName = new TextView(context);
+        publishDate = new TextView(context);
         summeryText = new TextView(context);
+
+        publisherName.setId(R.id.article_publisher);
+        publishDate.setId(R.id.article_publish_date);
 
         separatorView = new View(context);
 
-        LinearLayout.LayoutParams lpBottom = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpBottom = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         lpBottom.weight=1;
-
-        RelativeLayout.LayoutParams lpPublisherName = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lpPublisherName.addRule(RelativeLayout.CENTER_VERTICAL);
-        lpPublisherName.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        lpPublisherName.addRule(RelativeLayout.RIGHT_OF, readMore.getId());
+        lpBottomRight = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpBottomRight.weight=2;
 
         if (component != null) {
             bgColor = Color.parseColor(component.getBackgroundColor());
@@ -149,14 +157,20 @@ public class ArticleFeedModule extends LinearLayout {
                     case PAGE_LABEL_KEY:
                         switch (componentKey) {
                             case PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY:
-                                //lpPublisherName.setMargins(horizontalMargine, horizontalMargine, horizontalMargine, horizontalMargine);
-                                publisherName.setPadding(0, horizontalMargine, horizontalMargine, horizontalMargine);
+                                publisherName.setPadding(0, horizontalMargine, 0, horizontalMargine);
                                 publisherName.setTextSize(fontSize);
                                 publisherName.setTextColor(Color.parseColor(childComponent.getTextColor()));
                                 setTypeFace(context, jsonValueKeyMap, childComponent, publisherName);
                                 publisherName.setMaxLines(1);
                                 publisherName.setSingleLine(true);
                                 publisherName.setEllipsize(TextUtils.TruncateAt.END);
+
+                                publishDate.setPadding(0, horizontalMargine, horizontalMargine, horizontalMargine);
+                                publishDate.setTextSize(fontSize);
+                                publishDate.setTextColor(Color.parseColor(childComponent.getTextColor()));
+                                setTypeFace(context, jsonValueKeyMap, childComponent, publishDate);
+                                publishDate.setMaxLines(1);
+                                publishDate.setSingleLine(true);
                                 break;
                             case PAGE_THUMBNAIL_TITLE_KEY:
                                 titleText.setLayoutParams(viewLp);
@@ -208,10 +222,31 @@ public class ArticleFeedModule extends LinearLayout {
         }
 
         publisherName.setGravity(Gravity.RIGHT);
+        publishDate.setGravity(Gravity.RIGHT);
+        publishInfo.setGravity(Gravity.CENTER_VERTICAL);
+
+
+
         readMore.setGravity(Gravity.LEFT);
 
+
+        RelativeLayout.LayoutParams lpPublisherDate=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams lpPublisher=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        lpPublisher.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lpPublisher.addRule(RelativeLayout.LEFT_OF,R.id.article_publish_date);
+        lpPublisher.addRule(RelativeLayout.CENTER_VERTICAL);
+
+        lpPublisherDate.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpPublisherDate.addRule(RelativeLayout.CENTER_VERTICAL);
+
+        publishInfo.addView(publisherName,lpPublisher);
+        publishInfo.addView(publishDate,lpPublisherDate);
+
+
+
         bottomControll.addView(readMore, lpBottom);
-        bottomControll.addView(publisherName, lpBottom);
+        bottomControll.addView(publishInfo, lpBottom);
 
         rootView.setLayoutParams(layoutParams);
         rootView.setOrientation(VERTICAL);
@@ -247,24 +282,39 @@ public class ArticleFeedModule extends LinearLayout {
                                 if (data != null && data.getContentDetails() != null &&
                                         data.getContentDetails().getAuthor() != null
                                         ) {
-                                    StringBuffer publishDate = new StringBuffer();
+                                    StringBuffer publishDateVal = new StringBuffer();
                                     if (data.getGist() != null && appCMSPresenter != null &&
                                             data.getGist().getPublishDate() != null) {
                                         long publishDateMillseconds = Long.parseLong(data.getGist().getPublishDate());
-                                        publishDate.append(" | ");
-                                        publishDate.append(appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy"));
+                                        publishDateVal.append(" | ");
+                                        publishDateVal.append(appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy"));
                                     }
-                                    if (data.getContentDetails().getAuthor().getName() != null && publishDate.toString().trim().length() > 0) {
-                                        publisherName.setText(data.getContentDetails().getAuthor().getName() + publishDate);
-                                    } else if (data.getContentDetails().getAuthor().getName() != null) {
-                                        publisherName.setText(data.getContentDetails().getAuthor().getName().toString());
-                                    } else if (publishDate.toString().trim().length() > 0) {
-                                        publisherName.setText(publishDate);
-                                    }
-                                    publisherName.setVisibility(VISIBLE);
+                                    if ( publishDate.toString().trim().length() > 0) {
+                                        publishDate.setText(publishDateVal);
 
-                                } else {
-                                    publisherName.setVisibility(GONE);
+                                    }
+                                    if (data.getContentDetails().getAuthor().getName() != null) {
+                                        publisherName.setText(data.getContentDetails().getAuthor().getName().toString());
+
+                                    }
+
+
+                                   /* if (publishDate.getText().toString().length()<=0){
+                                        publishDate.setVisibility(GONE);
+                                        publishInfo.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                                        publisherName.setGravity(Gravity.RIGHT);
+                                        publishInfo.addView(publisherName);
+
+                                    }else if (publisherName.getText().toString().length()<=0 && publishDateVal.length()>0){
+                                        publisherName.setVisibility(GONE);
+                                        publishDate.setText(publishDateVal.toString().replace(" | ",""));
+                                        publishDate.setGravity(Gravity.RIGHT);
+                                        publishInfo.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                                        publishInfo.addView(publishDate);
+                                    }else{*/
+
+                                   // }
+
                                 }
                                 break;
                             case PAGE_THUMBNAIL_TITLE_KEY:

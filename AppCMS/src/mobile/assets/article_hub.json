@@ -1504,21 +1504,21 @@
                   "yAxis": 0,
                   "leftMargin": 15,
                   "rightMargin": 0,
-                  "fontSize": 15
+                  "fontSize": 12
 
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 18
+                  "fontSize": 14
 
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 18
+                  "fontSize": 14
 
                 }
               },
