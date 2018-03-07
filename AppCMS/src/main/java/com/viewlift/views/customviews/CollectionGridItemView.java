@@ -576,7 +576,7 @@ public class CollectionGridItemView extends BaseView {
                             view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {

@@ -383,15 +383,14 @@ public class ContentDatum implements Serializable {
         return appCMSPageAPI;
     }
 
-    @SerializedName("audioList")
-    @Expose
-    List<String> audioList = null;
 
-    public List<String> getAudioList() {
+    List<AudioList> audioList = null;
+
+    public List<AudioList> getAudioList() {
         return audioList;
     }
 
-    public void setAudioList(List<String> audioList) {
+    public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
 

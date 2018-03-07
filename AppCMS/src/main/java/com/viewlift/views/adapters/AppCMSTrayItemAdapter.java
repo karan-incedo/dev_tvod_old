@@ -141,8 +141,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void sortByMostRecentlyWatchedDate() {
-        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
-                o2.getGist().getUpdateDate()));
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.parseLong(o1.getGist().getUpdateDate()),
+                Long.parseLong(o2.getGist().getUpdateDate())));
         Collections.reverse(adapterData);
     }
 
@@ -505,7 +505,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
+        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
             lastWatched = 0;

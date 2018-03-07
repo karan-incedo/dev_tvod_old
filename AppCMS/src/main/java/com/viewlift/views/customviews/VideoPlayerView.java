@@ -502,12 +502,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     public void applyTimeBarColor(int timeBarColor) {
-        timeBar.applyPlayedColor(timeBarColor);
-        timeBar.applyScrubberColor(timeBarColor);
-        timeBar.applyUnplayedColor(timeBarColor);
-        timeBar.applyBufferedColor(timeBarColor);
-        timeBar.applyAdMarkerColor(timeBarColor);
-        timeBar.applyPlayedAdMarkerColor(timeBarColor);
+//        timeBar.applyPlayedColor(timeBarColor);
+//        timeBar.applyScrubberColor(timeBarColor);
+//        timeBar.applyUnplayedColor(timeBarColor);
+//        timeBar.applyBufferedColor(timeBarColor);
+//        timeBar.applyAdMarkerColor(timeBarColor);
+//        timeBar.applyPlayedAdMarkerColor(timeBarColor);
     }
 
     public void setVideoTitle(String title, int textColor) {

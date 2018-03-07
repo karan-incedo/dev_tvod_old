@@ -3,6 +3,7 @@ package com.viewlift.models.network.modules;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
@@ -71,7 +72,7 @@ public class AppCMSAPIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-        return new Gson();
+        return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         /*return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
                 .create();*/
 

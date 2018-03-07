@@ -3710,8 +3710,8 @@ public class ViewCreator {
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getPublishDate() != 0) {
-                                    long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                        moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                    long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                     long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
 
                                     String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");

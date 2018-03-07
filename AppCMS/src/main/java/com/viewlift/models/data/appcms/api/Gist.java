@@ -40,7 +40,7 @@ public class Gist implements Serializable {
 
     @SerializedName("publishDate")
     @Expose
-    long publishDate;
+    String publishDate;
 
     @SerializedName("runtime")
     @Expose
@@ -72,11 +72,11 @@ public class Gist implements Serializable {
 
     @SerializedName("addedDate")
     @Expose
-    long addedDate;
+    String addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
+    String updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
@@ -176,11 +176,11 @@ public class Gist implements Serializable {
         this.free = free;
     }
 
-    public long getPublishDate() {
+    public String getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(long publishDate) {
+    public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -216,19 +216,19 @@ public class Gist implements Serializable {
         this.badgeImages = badgeImages;
     }
 
-    public long getAddedDate() {
+    public String getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(long addedDate) {
+    public void setAddedDate(String addedDate) {
         this.addedDate = addedDate;
     }
 
-    public long getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 

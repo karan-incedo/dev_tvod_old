@@ -5531,10 +5531,10 @@ public class AppCMSPresenter
                             false,
                             false,
                             appCMSPageUI,
-                            playlistId,
-                            playlistId,
-                            pageTitle,
-                            playlistId,
+                            playlistPage.getPageId(),
+                            playlistPage.getPageId(),
+                            playlistPage.getPageName(),
+                            playlistPage.getPageId(),
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
@@ -5572,7 +5572,7 @@ public class AppCMSPresenter
     public void setPlayListData(AppCMSPlaylistResult appCMSPlaylistResult, AppCMSPlaylistAPIAction appCMSPlaylistAPIAction) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
 
-        //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
+        //on browsingany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
         if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
 //            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSPlaylistResult.getId());
 //                                AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
@@ -14135,7 +14135,7 @@ public class AppCMSPresenter
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
+        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
             lastWatched = 0;
