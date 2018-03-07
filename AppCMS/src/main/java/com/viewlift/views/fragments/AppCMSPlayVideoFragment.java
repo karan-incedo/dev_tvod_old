@@ -153,6 +153,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
         adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
@@ -651,7 +652,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconBuffer.start();
                     }
                 }
-
                 if(!shouldRequestAds || isADPlay) {
                     videoLoadingProgress.setVisibility(View.VISIBLE);
                 }

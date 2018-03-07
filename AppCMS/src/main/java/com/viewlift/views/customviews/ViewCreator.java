@@ -2508,6 +2508,9 @@ public class ViewCreator {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON &&
+                        componentKey != AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
@@ -2643,12 +2646,14 @@ public class ViewCreator {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+                    case PAGE_WATCHLIST_DELETE_ITEM_BUTTON:
                     case PAGE_DELETE_DOWNLOAD_KEY:
                     case PAGE_DELETE_WATCHLIST_KEY:
                     case PAGE_DELETE_HISTORY_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        ((ImageButton)componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         break;
 
                     case PAGE_GRID_OPTION_KEY:
@@ -4947,6 +4952,7 @@ public class ViewCreator {
                 imageButton.setImageResource(R.drawable.add_to_watchlist);
                 imageButton.setOnClickListener(addClickListener);
             }
+            imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
 
         @Override

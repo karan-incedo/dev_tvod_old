@@ -93,6 +93,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     private String moduleId;
     RecyclerView mRecyclerView;
+    private boolean isHistory;
+    private boolean isDownload;
+    private boolean isWatchlist;
 
     public AppCMSUserWatHisDowAdapter(Context context,
                                       ViewCreator viewCreator,
@@ -145,12 +148,55 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
+        detectViewTypes(jsonValueKeyMap,viewType);
+        sortData();
     }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
+    }
+
+    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap,String viewType){
+
+        switch (jsonValueKeyMap.get(viewType)) {
+            case PAGE_HISTORY_MODULE_KEY:
+                this.isHistory = true;
+                break;
+
+            case PAGE_DOWNLOAD_MODULE_KEY:
+                this.isDownload = true;
+                break;
+
+            case PAGE_WATCHLIST_MODULE_KEY:
+                this.isWatchlist = true;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void sortData() {
+        if (adapterData != null) {
+            if (isWatchlist || isDownload) {
+                sortByAddedDate();
+            } else if (isHistory) {
+                sortByUpdateDate();
+            }
+        }
+    }
+
+    private void sortByAddedDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                o2.getAddedDate()));
+    }
+
+    private void sortByUpdateDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
+                o2.getGist().getUpdateDate()));
+        Collections.reverse(adapterData);
     }
 
     @Override
@@ -611,7 +657,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     @Override
     public void receiveEvent(InternalEvent<?> event) {
         adapterData.clear();
-        notifyDataSetChanged();
+        if (adapterData.size() == 0) {
+            emptyList = true;
+            sendEvent(hideRemoveAllButtonEvent);
+            updateData(mRecyclerView, adapterData);
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -26,7 +26,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -87,7 +86,6 @@ public class AppCMSAPIModule {
                 .readTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
                 .build();
         return new Retrofit.Builder()
-                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
                 .client(client)

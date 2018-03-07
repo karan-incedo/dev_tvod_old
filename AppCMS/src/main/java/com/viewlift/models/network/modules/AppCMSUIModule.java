@@ -81,7 +81,6 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 @Module
 public class AppCMSUIModule {
@@ -1005,7 +1004,6 @@ public class AppCMSUIModule {
     public Retrofit providesRetrofit(OkHttpClient client, Gson gson) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addConverterFactory(ScalarsConverterFactory.create())
                 .baseUrl(baseUrl)
                 .client(client)
                 .build();
