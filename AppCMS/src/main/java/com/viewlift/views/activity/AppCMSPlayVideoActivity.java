@@ -31,6 +31,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
@@ -44,7 +45,8 @@ import rx.functions.Action1;
 
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
-        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent {
+        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
+        VideoPlayerView.StreamingQualitySelector{
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -516,5 +518,23 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public List<String> getAvailableStreamingQualities() {
+        return null;
+    }
 
+    @Override
+    public String getStreamingQualityUrl(String streamingQuality) {
+        return null;
+    }
+
+    @Override
+    public String getMpegResolutionFromUrl(String mpegUrl) {
+        return null;
+    }
+
+    @Override
+    public int getMpegResolutionIndexFromUrl(String mpegUrl) {
+        return 0;
+    }
 }
