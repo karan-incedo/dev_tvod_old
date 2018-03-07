@@ -1448,14 +1448,12 @@
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1472,21 +1470,18 @@
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15
-
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1505,21 +1500,18 @@
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15
-
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
                   "fontSize": 18
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
                   "fontSize": 18
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1624,12 +1616,12 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin" : 490,
+                  "topMargin": 490,
                   "fontSize": 23,
                   "height": 40
                 }
               },
-              "backgroundColor" : "#80000000",
+              "backgroundColor": "#80000000",
               "fontFamily": "OpenSans",
               "numberOfLines": 1,
               "textAlignment": "center",
@@ -1645,21 +1637,21 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 210
+                  "height": 210
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 375
+                  "height": 375
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 465
+                  "height": 465
                 }
               },
               "type": "image",
@@ -1672,21 +1664,21 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 211
+                  "height": 211
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 375
+                  "height": 375
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 465
+                  "height": 465
                 }
               },
               "type": "image",
@@ -1776,7 +1768,7 @@
           "leftMargin": 70.5,
           "topMargin": 12.45,
           "rightMargin": 0,
-          "height": 144
+          "height": 190
         },
         "tabletPortrait": {
           "leftMargin": 0,
@@ -1833,7 +1825,7 @@
               "trayPadding": 1,
               "leftMargin": 0,
               "gridWidth": 195,
-              "topMargin": 20
+              "topMargin": 28
             },
             "tabletPortrait": {
               "gridHeight": 38,
@@ -1964,7 +1956,7 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 340,
+          "height": 280,
           "width": 300
         },
         "tabletPortrait": {
@@ -1988,7 +1980,7 @@
             "tabletLandscape": {
               "yAxis": 0,
               "leftMargin": 0,
-              "topMargin": 20,
+              "topMargin": 7,
               "rightMargin": 0
             },
             "tabletPortrait": {

@@ -40,7 +40,7 @@ public class AppCMSSearchCall {
 
             return appCMSSearchRest.get(authHeaders, url).execute().body();
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
+            Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
         }
         return null;
     }

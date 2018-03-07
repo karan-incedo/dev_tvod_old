@@ -11493,7 +11493,7 @@ public class AppCMSPresenter {
         String runtime = searchResultClick[1];
         String mediaType = searchResultClick[4];
         String contentType = searchResultClick[5];
-        String gistId = searchResultClick[6];
+        String gistId = searchResultClick[searchResultClick.length -1];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {

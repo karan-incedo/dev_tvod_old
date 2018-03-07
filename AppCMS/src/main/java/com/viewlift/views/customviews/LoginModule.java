@@ -368,7 +368,7 @@ public class LoginModule extends ModuleView {
                                             null,
                                             authData,
                                             null,
-                                            true,
+                                            false,
                                             0,
                                             null);
                                 }
@@ -412,7 +412,7 @@ public class LoginModule extends ModuleView {
                                                         null,
                                                         authData,
                                                         null,
-                                                        true,
+                                                        false,
                                                         0,
                                                         null);
                                             }

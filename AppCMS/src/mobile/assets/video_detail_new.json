@@ -722,9 +722,10 @@
                   "height": 50
                 },
                 "tabletLandscape": {
+                  "width": 138,
                   "yAxis": 109,
                   "leftMargin": 0,
-                  "rightMargin": 37,
+                  "rightMargin": 0,
                   "fontSize": 12,
                   "height": 50
                 },
