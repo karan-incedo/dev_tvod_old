@@ -38,14 +38,18 @@ public class AppCMSAnonymousAuthTokenCall {
             @Override
             public void onResponse(@NonNull Call<AnonymousAuthTokenResponse> call,
                                    @NonNull Response<AnonymousAuthTokenResponse> response) {
-                Observable.just(response.body()).subscribe(responseAction1);
+                Observable.just(response.body())
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(responseAction1);
             }
 
             @Override
             public void onFailure(@NonNull Call<AnonymousAuthTokenResponse> call,
                                   @NonNull Throwable t) {
                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                Observable.just((AnonymousAuthTokenResponse) null).subscribe(responseAction1);
+                Observable.just((AnonymousAuthTokenResponse) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(responseAction1);
             }
         });
     }

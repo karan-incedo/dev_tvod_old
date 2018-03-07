@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,13 +20,16 @@ import java.util.List;
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
     private List<ModuleView> childViews;
+
     private static int TYPE_PLAYER = 0;
     private static int TYPE_STANZA = 1;
 
+    private FrameLayout topLayout;
 
-    public AppCMSPageViewAdapter() {
+    public AppCMSPageViewAdapter(Context context) {
         childViews = new ArrayList<>();
-        setHasStableIds(true);
+        setHasStableIds(false);
+        createTopLayout(context);
     }
 
     public void addView(ModuleView view) {
@@ -56,12 +60,15 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public int getItemViewType(int position) {
 
-        if(isPlayerView(position))
-            return position;
-        else if(isStanzaView(position))
-            return TYPE_STANZA;
-        else
-            return position;
+        if (position != 0) {
+            if (isPlayerView(position - 1))
+                return position;
+            else if (isStanzaView(position - 1))
+                return TYPE_STANZA;
+            else
+                return position;
+        }
+        return 0;
     }
 
     private boolean isPlayerView(int position){
@@ -87,17 +94,21 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public void onBindViewHolder(PageViewHolder holder, int position) {
         try {
-            if(!isPlayerView(position))
+            if (position == 0) {
                 holder.parent.removeAllViews();
-            holder.parent.addView(childViews.get(position));
+                holder.parent.addView(topLayout);
+            } else if(!isPlayerView(position - 1)) {
+                holder.parent.removeAllViews();
+                holder.parent.addView(childViews.get(position - 1));
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return childViews != null ? childViews.size() : 0;
+        return childViews != null ? childViews.size() + 1 : 0;
     }
 
     public List<String> getViewIdList(int firstIndex, int lastIndex) {
@@ -127,5 +138,12 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
             super(itemView);
             this.parent = (ViewGroup) itemView;
         }
+    }
+
+    private void createTopLayout(Context context) {
+        topLayout = new FrameLayout(context);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                1);
+        topLayout.setLayoutParams(layoutParams);
     }
 }

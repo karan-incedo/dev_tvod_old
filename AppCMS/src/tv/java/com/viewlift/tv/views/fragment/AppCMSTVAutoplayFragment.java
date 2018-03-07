@@ -4,9 +4,18 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +25,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
@@ -29,6 +42,7 @@ import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomTypefaceSpan;
 import com.viewlift.views.customviews.PageView;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -52,6 +66,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     private Button cancelCountdownButton;
     private AppCMSTVAutoplayCustomLoader appCMSTVAutoplayCustomLoader;
     private TextView upNextTextView;
+    private TextView countdownCancelledTextView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSVideoPageBinder binder);
@@ -148,7 +163,10 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             ImageView movieImage = (ImageView) pageView.findViewById(R.id.autoplay_play_movie_image);
             cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
             TextView finishedMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_finished_movie_title);
+            ImageView finishedMovieImage = (ImageView) pageView.findViewById(R.id.autoplay_finished_movie_image);
+            TextView upNextMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_up_next_movie_title);
             upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
+            countdownCancelledTextView = (TextView) pageView.findViewById(R.id.countdown_cancelled_text_view_id);
             appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
 
             if (movieImage != null) {
@@ -172,14 +190,51 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                         if (upNextTextView != null) {
                             upNextTextView.setVisibility(View.GONE);
                         }
+                        if (countdownCancelledTextView != null) {
+                            countdownCancelledTextView.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         fragmentInteractionListener.closeActivity();
                     }
                 });
             }
-
+            Typeface font = Typeface.createFromAsset(getResources().getAssets(), "fonts/OpenSans-ExtraBold.ttf");
+            String mediaType = binder.getContentData().getGist().getMediaType();
             if (finishedMovieTitle != null) {
-                finishedMovieTitle.setText(binder.getCurrentMovieName());
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
+                    String seasonAndEpisodeNumber = getSeasonAndEpisodeNumber(binder.getContentData(),
+                            binder.getCurrentMovieId());
+                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(seasonAndEpisodeNumber);
+                    spannableStringBuilder.append(" ").append(binder.getCurrentMovieName());
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, seasonAndEpisodeNumber.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, seasonAndEpisodeNumber.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    finishedMovieTitle.setText(spannableStringBuilder);
+                } else {
+                    finishedMovieTitle.setText(binder.getCurrentMovieName());
+                }
+            }
+
+            if (upNextMovieTitle != null) {
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
+                    int episodeNumber = getEpisodeNumber(binder.getContentData(),
+                            binder.getContentData().getGist().getId());
+                    String text = upNextMovieTitle.getText().toString();
+                    String episodeNumberStr = Integer.toString(episodeNumber);
+                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(episodeNumberStr);
+                    spannableStringBuilder.append(" ").append(text);
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, episodeNumberStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, episodeNumberStr.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    upNextMovieTitle.setText(spannableStringBuilder);
+                }
+            }
+
+            if (finishedMovieImage != null) {
+                Glide.with(context)
+                        .load(binder.getCurrentMovieImageUrl())
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                            .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
+                        .into(finishedMovieImage);
             }
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0).setBackgroundResource(R.drawable.autoplay_overlay);
@@ -191,13 +246,12 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                 imageUrl = binder.getContentData().getGist().getPosterImageUrl();
             }
 
-            Glide.with(context).load(imageUrl)
-                    .bitmapTransform(new BlurTransformation(context, 5))
-                    .into(new SimpleTarget<GlideDrawable>() {
+            Glide.with(context)
+                    .load(imageUrl)
+                    .apply(new RequestOptions().transform(new BlurTransformation(context, 5)))
+                    .into(new SimpleTarget<Drawable>() {
                         @Override
-                        public void onResourceReady(GlideDrawable resource,
-                                                    GlideAnimation<? super GlideDrawable>
-                                                            glideAnimation) {
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
                             if (isAdded() && isVisible()) {
                                 pageView.setBackground(resource);
                             }
@@ -205,6 +259,44 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                     });
         }
         return pageView;
+    }
+
+    private String getSeasonAndEpisodeNumber(ContentDatum mainContentData, String id) {
+        String returnVal = "";
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = getString(R.string.season_episode_placeholders, seasonNumber + 1, episodeNumber + 1);
+                        break;
+                    }
+                }
+                if (returnVal.length() > 0) break;
+            }
+        }
+        return returnVal;
+    }
+
+
+    private int getEpisodeNumber(ContentDatum mainContentData, String id) {
+        int returnVal = 0;
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = episodeNumber + 1;
+                        break;
+                    }
+                }
+                if (returnVal > 0) break;
+            }
+        }
+
+        return returnVal;
     }
 
     private void startCountdown() {
@@ -288,6 +380,9 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             }
             if (upNextTextView != null) {
                 upNextTextView.setVisibility(View.GONE);
+            }
+            if (countdownCancelledTextView != null) {
+                countdownCancelledTextView.setVisibility(View.VISIBLE);
             }
         }
     }

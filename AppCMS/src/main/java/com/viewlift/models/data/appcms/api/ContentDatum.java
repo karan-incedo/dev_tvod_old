@@ -382,8 +382,7 @@ public class ContentDatum implements Serializable {
         return appCMSPageAPI;
     }
 
-    @SerializedName("audioList")
-    @Expose
+
     List<AudioList> audioList = null;
 
     public List<AudioList> getAudioList() {
@@ -394,8 +393,7 @@ public class ContentDatum implements Serializable {
         this.audioList = audioList;
     }
 
-    @SerializedName("audioAssets")
-    @Expose
+
     AudioAssets audioAssets = null;
 
     public AudioAssets getAudioAssets() {
@@ -405,8 +403,6 @@ public class ContentDatum implements Serializable {
     public void setAudioAssets(AudioAssets audioAssets) {
         this.audioAssets = audioAssets;
     }
-
-
 
 
 }

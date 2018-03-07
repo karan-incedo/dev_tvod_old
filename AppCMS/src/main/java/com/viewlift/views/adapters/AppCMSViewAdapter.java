@@ -13,9 +13,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -421,7 +423,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
 
-
                                 String contentType = "";
 
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
@@ -433,13 +434,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    if (!appCMSPresenter.isNetworkConnected()) {
-                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                                false,
-                                                null,
-                                                null);
-                                        return;
-                                    }
                                     List<String> audioPlaylistId = new ArrayList<String>();
                                     audioPlaylistId.add(data.getGist().getId());
                                     AudioPlaylistHelper.getInstance().setCurrentPlaylistId(data.getGist().getId());
@@ -454,13 +448,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 /*Get playlist data and open playlist page*/
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
-                                    if (!appCMSPresenter.isNetworkConnected()) {
-                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                                false,
-                                                null,
-                                                null);
-                                        return;
-                                    }
                                     appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), false);
                                     return;
                                 }
@@ -485,6 +472,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,
@@ -496,19 +484,36 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            action.equalsIgnoreCase("openOptionDialog") ? data : null,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
+                                    if (appCMSPresenter.getCurrentActivity().getResources()
+                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
+                                            !showAction.equals(action)) {
+                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                data.getGist().getId(),
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action)) {
+                                            //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
+                                        }
+                                    } else {
+                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                                action,
+                                                title,
+                                                null,
+                                                null,
+                                                false,
+                                                currentPlayingIndex,
+                                                relatedVideoIds)) {
+                                            //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                        }
                                     }
                                 }
                             }
@@ -533,6 +538,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
                                 if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
@@ -614,43 +620,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     } else if (contentType.equals(fullLengthFeatureType)) {
                         action = videoAction;
                     }
- /*get audio details on tray click item and play song*/
-                    if (data.getGist() != null &&
-                            data.getGist().getMediaType() != null &&
-                            data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                            data.getGist().getContentType() != null &&
-                            data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                        if (!appCMSPresenter.isNetworkConnected()) {
-                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                    false,
-                                    null,
-                                    null);
-                            return;
-                        }
-                        List<String> audioPlaylistId = new ArrayList<String>();
-                        audioPlaylistId.add(data.getGist().getId());
-                        AudioPlaylistHelper.getInstance().setCurrentPlaylistId(data.getGist().getId());
-                        AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
-                        AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
-                        appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                                .PRESENTER_PAGE_LOADING_ACTION));
-                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
-                        return;
-                    }
 
-                                /*Get playlist data and open playlist page*/
-                    if (data.getGist() != null && data.getGist().getMediaType() != null
-                            && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
-                        if (!appCMSPresenter.isNetworkConnected()) {
-                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                    false,
-                                    null,
-                                    null);
-                            return;
-                        }
-                        appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), false);
-                        return;
-                    }
                     //Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;
                     if (data.getContentDetails() != null &&
@@ -665,6 +635,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (data.getGist() == null ||
                             data.getGist().getContentType() == null) {
                         if (!appCMSPresenter.launchVideoPlayer(data,
+                                data.getGist().getId(),
                                 currentPlayingIndex,
                                 relatedVideoIds,
                                 -1,
@@ -676,10 +647,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-
                         if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 !showAction.equals(action)) {
                             if (!appCMSPresenter.launchVideoPlayer(data,
+                                    data.getGist().getId(),
                                     currentPlayingIndex,
                                     relatedVideoIds,
                                     -1,
@@ -837,6 +808,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private void sortPlansByPriceInAscendingOrder() {
         sortPlansByPriceInDescendingOrder();
         Collections.reverse(adapterData);
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+        int childCount = holder.componentView.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = holder.componentView.getChild(i);
+            if (child instanceof ImageView) {
+                Glide.with(child.getContext()).clear(child);
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

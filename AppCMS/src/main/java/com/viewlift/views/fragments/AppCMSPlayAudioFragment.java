@@ -496,7 +496,6 @@ boolean isVisible=true;
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
         if (description.getIconUri() == null) {
-            trackImage.setImageResource(R.drawable.placeholder_audio);
             return;
         }
         String artUrl = description.getIconUri().toString();
@@ -505,8 +504,7 @@ boolean isVisible=true;
 
         if (getActivity() != null) {
             Glide.with(getActivity())
-                    .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.placeholder_audio)
+                    .load(mCurrentArtUrl)
                     .into(trackImage);
         }
 

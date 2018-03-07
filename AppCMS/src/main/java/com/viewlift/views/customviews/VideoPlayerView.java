@@ -1,21 +1,26 @@
 package com.viewlift.views.customviews;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -50,6 +55,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
@@ -151,6 +158,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
+        this.appCMSPresenter = appCMSPresenter;
         initializeView(context);
     }
 
@@ -161,7 +169,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initializePlayer(context);
+        initializeView(context);
     }
 
     public SimpleExoPlayer getPlayer() {
@@ -216,6 +224,22 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
+                currentStreamingQualitySelector != null &&
+                streamingQualitySelector != null) {
+            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+            if (0 < availableStreamingQualities.size()) {
+                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+                if (0 <= streamingQualityIndex) {
+                    currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
+                    setSelectedStreamingQualityIndex();
+                }
+            }
+        }
+    }
+
+    public Uri getUri() {
+        return uri;
     }
 
     public boolean shouldPlayWhenReady() {
@@ -225,6 +249,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void startPlayer() {
         if (player != null) {
             player.setPlayWhenReady(true);
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendKeepScreenOnAction();
+            }
         }
     }
 
@@ -236,12 +263,24 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             } else {
                 player.setPlayWhenReady(player.getPlayWhenReady());
             }
+
+            if (appCMSPresenter != null) {
+                if (player.getPlayWhenReady()) {
+                    appCMSPresenter.sendKeepScreenOnAction();
+                } else {
+                    appCMSPresenter.sendClearKeepScreenOnAction();
+                }
+            }
+            appCMSPresenter.cancelInternalEvents();
         }
     }
 
     public void pausePlayer() {
         if (player != null) {
             player.setPlayWhenReady(false);
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+            }
         }
 
     }
@@ -249,12 +288,19 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void stopPlayer() {
         if (player != null) {
             player.stop();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+                appCMSPresenter.restartInternalEvents();
+            }
         }
     }
 
     public void releasePlayer() {
         if (player != null) {
             player.release();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+            }
         }
     }
 
@@ -316,6 +362,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (BaseView.isLandscape(getContext())) {
             playerView.setResizeMode(fullscreenResizeMode);
         } else {
+//            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
             playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
     }
@@ -341,10 +388,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = findViewById(R.id.videoPlayerView);
+        playerView = (AppCMSSimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
         fullScreenMode = false;
-        playerJustInitialized = true;
+        init(context);
     }
 
     public void init(Context context) {
@@ -386,7 +433,31 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-        videoPlayerTitle = playerView.findViewById(R.id.app_cms_mini_video_player_title_view);
+        chromecastLivePlayerParent = playerView.findViewById(R.id.chromecast_live_player_parent);
+
+        chromecastButtonPlaceholder = playerView.findViewById(R.id.chromecast_live_player_placeholder);
+
+        enterFullscreenButton = playerView.findViewById(R.id.full_screen_button);
+
+        enterFullscreenButton.setOnClickListener(v -> {
+            enterFullScreenMode();
+        });
+
+        exitFullscreenButton = playerView.findViewById(R.id.full_screen_back_button);
+
+        exitFullscreenButton.setOnClickListener(v -> {
+            exitFullscreenMode(true);
+        });
+
+        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+            createStreamingQualitySelector();
+        } else {
+            currentStreamingQualitySelector.setVisibility(View.GONE);
+        }
+
+        videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
+
         videoPlayerTitle.setText("");
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
@@ -427,21 +498,95 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+//        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     }
 
     public void applyTimeBarColor(int timeBarColor) {
-       /* timeBar.applyPlayedColor(timeBarColor);
+        timeBar.applyPlayedColor(timeBarColor);
         timeBar.applyScrubberColor(timeBarColor);
         timeBar.applyUnplayedColor(timeBarColor);
         timeBar.applyBufferedColor(timeBarColor);
         timeBar.applyAdMarkerColor(timeBarColor);
-        timeBar.applyPlayedAdMarkerColor(timeBarColor);*/
+        timeBar.applyPlayedAdMarkerColor(timeBarColor);
     }
 
     public void setVideoTitle(String title, int textColor) {
         if (videoPlayerTitle != null) {
             videoPlayerTitle.setText(title);
             videoPlayerTitle.setTextColor(textColor);
+        }
+    }
+
+    private void createStreamingQualitySelector() {
+        if (streamingQualitySelector != null && appCMSPresenter != null) {
+            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+            if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
+                listView = new RecyclerView(getContext());
+                listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
+                        appCMSPresenter,
+                        availableStreamingQualities);
+
+                listView.setAdapter(listViewAdapter);
+                listView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+                listView.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.VERTICAL,
+                        false));
+
+                setSelectedStreamingQualityIndex();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
+                    ((ViewGroup) listView.getParent()).removeView(listView);
+                }
+                builder.setView(listView);
+                final Dialog dialog = builder.create();
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                            Color.parseColor(appCMSPresenter.getAppBackgroundColor())));
+                }
+                currentStreamingQualitySelector.setOnClickListener(v -> {
+                    dialog.show();
+                    listViewAdapter.notifyDataSetChanged();
+                });
+                listViewAdapter.setItemClickListener(v -> {
+                    try {
+                        long currentPosition = getCurrentPosition();
+                        if (listViewAdapter.selectedIndex != listViewAdapter.getDownloadQualityPosition()) {
+                            setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
+                                    closedCaptionUri);
+                        }
+                        setCurrentPosition(currentPosition);
+                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
+                        dialog.hide();
+                    } catch (Exception e) {
+
+                    }
+                });
+            } else {
+                currentStreamingQualitySelector.setVisibility(GONE);
+            }
+        } else {
+            currentStreamingQualitySelector.setVisibility(GONE);
+        }
+    }
+
+    private void setSelectedStreamingQualityIndex() {
+        if (streamingQualitySelector != null && listViewAdapter != null) {
+            int currentIndex = -1;
+            int updatedIndex = -1;
+            try {
+                currentIndex = listViewAdapter.selectedIndex;
+                updatedIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString());
+                if (updatedIndex != -1) {
+                    listViewAdapter.setSelectedIndex(updatedIndex);
+                }
+            } catch (Exception e) {
+                listViewAdapter.setSelectedIndex(0);
+            }
+            if (updatedIndex != -1 && currentIndex != -1 && updatedIndex != currentIndex) {
+                listViewAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -564,6 +709,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
@@ -587,6 +733,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onSeekProcessed() {
 
     }
+
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;
@@ -666,8 +813,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-
+    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
+                                          long initializationDurationMs) {
+        //
     }
 
     @Override
@@ -702,6 +850,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
+
+        videoWidth = width;
+        videoHeight = height;
     }
 
     @Override
@@ -722,7 +873,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        //commented due to custom video player implementation
+        playOnReattach = player.getPlayWhenReady();
 //        pausePlayer();
 //
 //        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
@@ -1056,12 +1207,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             if (dataSource == null) {
                 return 0;
             }
-            if (dataSource instanceof FileDataSource) {
+            if (dataSource instanceof FileDataSource &&
+                    !dataSource.getUri().toString().toLowerCase().contains("srt")) {
                 try {
                     long bytesRead = ((FileDataSource) dataSource).getBytesRead();
                     result = dataSource.read(buffer, offset, readLength);
                     for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
-                        if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
+                        if (~buffer[i] >= -128 &&
+                                ~buffer[i] <= 127 &&
+                                buffer[i + offset]<0) {
                             buffer[i + offset] = (byte) ~buffer[i + offset];
                         }
                     }

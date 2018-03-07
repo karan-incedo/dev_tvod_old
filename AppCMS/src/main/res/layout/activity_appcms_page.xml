@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:background="@drawable/logo_icon"
+                    android:src="@drawable/logo_icon"
                     android:scaleType="centerInside" />
 
                 <LinearLayout
@@ -95,9 +95,8 @@
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/search"
-                        android:visibility="gone" />
-
+                        android:src="@drawable/icon_search"
+                        android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
 

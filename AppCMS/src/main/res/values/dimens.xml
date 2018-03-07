@@ -115,6 +115,8 @@
 
     <dimen name="chromecast_toolbar_padding">8dp</dimen>
 
+    <dimen name="logo_icon_height">40dp</dimen>
+
     <dimen name="app_cms_audio_play_width">40dp</dimen>
     <dimen name="app_cms_audio_play_height">50dp</dimen>
     <dimen name="app_cms_audio_play_control_height">70dp</dimen>

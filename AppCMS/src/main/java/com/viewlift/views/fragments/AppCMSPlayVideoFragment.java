@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +74,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         AdEvent.AdEventListener,
         VideoPlayerView.ErrorEventListener,
         Animation.AnimationListener,
-        AudioManager.OnAudioFocusChangeListener {
+        AudioManager.OnAudioFocusChangeListener,
+        OnResumeVideo {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -158,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -179,6 +182,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+    private boolean crwCreated;
 
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
@@ -268,6 +272,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             onUpdateContentDatumEvent = (OnUpdateContentDatumEvent) context;
         }
 
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
+        }
+        if (context instanceof RegisterOnResumeVideo) {
+            ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
+        }
     }
 
     @Override
@@ -462,6 +472,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
+
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(ViewCreator.getColorWithOpacity(getContext(),
                     fontColor,
@@ -480,6 +491,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(getContext(),
+                appCMSPresenter.getAppCtaBackgroundColor())));
+
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
 
         if (!TextUtils.isEmpty(policyCookie) &&
                 !TextUtils.isEmpty(signatureCookie) &&
@@ -496,6 +513,15 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
+        ProgressBar videoLoadingProgressBar = rootView.findViewById(R.id.video_loading_progress_indicator);
+        try {
+            videoLoadingProgressBar.getIndeterminateDrawable().setTint(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getCta().getPrimary().getBackgroundColor()));
+        } catch (Exception e) {
+//                //Log.w(TAG, "Failed to set color for loader: " + e.getMessage());
+            videoLoadingProgressBar.getIndeterminateDrawable().setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        }
+
         boolean allowFreePlay = !appCMSPresenter.isAppSVOD() || isTrailer || freeContent;
 
         setCasting(allowFreePlay);
@@ -506,6 +532,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
+
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
 
@@ -553,26 +580,27 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                             }
                         }
-                        if (!sentBeaconFirstFrame) {
-                            mStopBufferMilliSec = new Date().getTime();
-                            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    ttfirstframe,
-                                    0,
-                                    isVideoDownloaded);
-                            sentBeaconFirstFrame = true;
+                    }
 
-                        }
+                    if (!sentBeaconFirstFrame) {
+                        mStopBufferMilliSec = new Date().getTime();
+                        ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        appCMSPresenter.sendBeaconMessage(filmId,
+                                permaLink,
+                                parentScreenName,
+                                videoPlayerView.getCurrentPosition(),
+                                false,
+                                AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                                "Video",
+                                videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                String.valueOf(videoPlayerView.getVideoHeight()),
+                                String.valueOf(videoPlayerView.getVideoWidth()),
+                                mStreamId,
+                                ttfirstframe,
+                                0,
+                                isVideoDownloaded);
+                        sentBeaconFirstFrame = true;
+
                     }
                 }
 
@@ -835,9 +863,18 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
-//        createContentRatingView();
-        videoPlayerInfoContainer.bringToFront();
-        videoPlayerView.resumePlayer();
+        if (!crwCreated) {
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                videoPlayerInfoContainer.bringToFront();
+                videoPlayerView.resumePlayer();
+            }
+        } else {
+            videoPlayerView.resumePlayer();
+        }
+        sendAdRequest();
+        resumeContent();
     }
 
     @Override
@@ -858,7 +895,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         mProgressHandler.removeCallbacks(mProgressRunnable);
                 }
                 if (appCMSPresenter != null) {
-
+                    sendAdRequest();
                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
                             parentScreenName,
@@ -878,35 +915,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case CONTENT_RESUME_REQUESTED:
-                isAdDisplayed = false;
-                // videoPlayerView.startPlayer();
-                if (beaconPing != null) {
-                    beaconPing.sendBeaconPing = true;
-                }
-                if (appCMSPresenter != null) {
-                    mStopBufferMilliSec = new Date().getTime();
-                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(filmId,
-                            permaLink,
-                            parentScreenName,
-                            videoPlayerView.getCurrentPosition(),
-                            false,
-                            AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                            "Video",
-                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                            String.valueOf(videoPlayerView.getVideoHeight()),
-                            String.valueOf(videoPlayerView.getVideoWidth()),
-                            mStreamId,
-                            ttfirstframe,
-                            0,
-                            isVideoDownloaded);
-                }
-                if (beaconPing != null && !beaconPing.isAlive()) {
-                    beaconPing.start();
-
-                    if (mProgressHandler != null)
-                        mProgressHandler.post(mProgressRunnable);
-                }
+                resumeContent();
                 break;
 
             case ALL_ADS_COMPLETED:
@@ -926,6 +935,40 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             default:
                 break;
+        }
+    }
+
+    private void sendAdRequest() {
+        if (!TextUtils.isEmpty(mStreamId) && appCMSPresenter != null) {
+            appCMSPresenter.sendBeaconMessage(filmId,
+                    permaLink,
+                    parentScreenName,
+                    videoPlayerView.getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.AD_REQUEST,
+                    "Video",
+                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                    String.valueOf(videoPlayerView.getVideoHeight()),
+                    String.valueOf(videoPlayerView.getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    apod,
+                    isVideoDownloaded);
+        }
+    }
+
+    private void resumeContent() {
+        isAdDisplayed = false;
+        // videoPlayerView.startPlayer();
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = true;
+        }
+
+        if (beaconPing != null && !beaconPing.isAlive()) {
+            beaconPing.start();
+
+            if (mProgressHandler != null)
+                mProgressHandler.post(mProgressRunnable);
         }
     }
 
@@ -1097,23 +1140,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             adsLoader.requestAds(request);
             apod += 1;
-
-            if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(filmId,
-                        permaLink,
-                        parentScreenName,
-                        videoPlayerView.getCurrentPosition(),
-                        false,
-                        AppCMSPresenter.BeaconEvent.AD_REQUEST,
-                        "Video",
-                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                        String.valueOf(videoPlayerView.getVideoHeight()),
-                        String.valueOf(videoPlayerView.getVideoWidth()),
-                        mStreamId,
-                        0d,
-                        apod,
-                        isVideoDownloaded);
-            }
         }
     }
 
@@ -1123,67 +1149,67 @@ public class AppCMSPlayVideoFragment extends Fragment
                 onUpdateContentDatumEvent.getCurrentContentDatum() != null &&
                 onUpdateContentDatumEvent.getCurrentContentDatum().getGist() != null) {
             appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum()
-                    .getGist()
-                    .getId(),
+                            .getGist()
+                            .getId(),
                     updatedContentDatum -> {
-                onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
-                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-                    if (videoPlayerView != null && appCMSSignedURLResult != null) {
-                        boolean foundMatchingMpeg = false;
-                        if (!TextUtils.isEmpty(hlsUrl) && hlsUrl.contains("mp4")) {
-                            if (updatedContentDatum != null &&
-                                    updatedContentDatum.getStreamingInfo() != null &&
-                                    updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
-                                    updatedContentDatum.getStreamingInfo()
-                                            .getVideoAssets()
-                                            .getMpeg() != null &&
-                                    !updatedContentDatum.getStreamingInfo()
-                                            .getVideoAssets()
-                                            .getMpeg()
-                                            .isEmpty()) {
-                                updatedContentDatum.getGist()
-                                        .setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
-                                for (int i = 0;
-                                     i < updatedContentDatum.getStreamingInfo()
-                                        .getVideoAssets()
-                                        .getMpeg()
-                                        .size() &&
-                                        !foundMatchingMpeg;
-                                     i++) {
-                                    int queryIndex = hlsUrl.indexOf("?");
-                                    if (0 <= queryIndex) {
-                                        if (updatedContentDatum.getStreamingInfo()
-                                                .getVideoAssets()
-                                                .getMpeg()
-                                                .get(0)
-                                                .getUrl()
-                                                .contains(hlsUrl.substring(0, queryIndex))) {
-                                            foundMatchingMpeg = true;
-                                            hlsUrl = updatedContentDatum.getStreamingInfo()
+                        onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
+                        appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                            if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                                boolean foundMatchingMpeg = false;
+                                if (!TextUtils.isEmpty(hlsUrl) && hlsUrl.contains("mp4")) {
+                                    if (updatedContentDatum != null &&
+                                            updatedContentDatum.getStreamingInfo() != null &&
+                                            updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                                            updatedContentDatum.getStreamingInfo()
+                                                    .getVideoAssets()
+                                                    .getMpeg() != null &&
+                                            !updatedContentDatum.getStreamingInfo()
                                                     .getVideoAssets()
                                                     .getMpeg()
-                                                    .get(0)
-                                                    .getUrl();
+                                                    .isEmpty()) {
+                                        updatedContentDatum.getGist()
+                                                .setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                                        for (int i = 0;
+                                             i < updatedContentDatum.getStreamingInfo()
+                                                     .getVideoAssets()
+                                                     .getMpeg()
+                                                     .size() &&
+                                                     !foundMatchingMpeg;
+                                             i++) {
+                                            int queryIndex = hlsUrl.indexOf("?");
+                                            if (0 <= queryIndex) {
+                                                if (updatedContentDatum.getStreamingInfo()
+                                                        .getVideoAssets()
+                                                        .getMpeg()
+                                                        .get(0)
+                                                        .getUrl()
+                                                        .contains(hlsUrl.substring(0, queryIndex))) {
+                                                    foundMatchingMpeg = true;
+                                                    hlsUrl = updatedContentDatum.getStreamingInfo()
+                                                            .getVideoAssets()
+                                                            .getMpeg()
+                                                            .get(0)
+                                                            .getUrl();
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
+                                videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                                        appCMSSignedURLResult.getSignature(),
+                                        appCMSSignedURLResult.getKeyPairId());
+
+                                if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
+                                    videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                            !TextUtils.isEmpty(closedCaptionUrl) ?
+                                                    Uri.parse(closedCaptionUrl) : null);
+                                    videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
+                                            .getWatchedTime() * 1000L);
+                                }
                             }
-                        }
-
-                        videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
-                                appCMSSignedURLResult.getSignature(),
-                                appCMSSignedURLResult.getKeyPairId());
-
-                        if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                            videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                    !TextUtils.isEmpty(closedCaptionUrl) ?
-                                            Uri.parse(closedCaptionUrl) : null);
-                            videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
-                                    .getWatchedTime() * 1000L);
-                        }
-                    }
-                });
-            });
+                        });
+                    });
         }
     }
 
@@ -1275,7 +1301,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer &&
+        crwCreated = true;
+        if (appCMSPresenter.shouldDisplayCRW() &&
+                !isTrailer &&
                 !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
                 !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
                 watchedTime == 0) {
@@ -1467,6 +1495,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
+    @Override
+    public void onResumeVideo() {
+        resumeVideo();
+        if (videoPlayerView != null) {
+            videoPlayerView.startPlayer();
+        }
+    }
+
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -1488,5 +1524,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         ContentDatum getCurrentContentDatum();
 
         List<String> getCurrentRelatedVideoIds();
+    }
+
+    public interface RegisterOnResumeVideo {
+        void registerOnResumeVideo(OnResumeVideo onResumeVideo);
     }
 }

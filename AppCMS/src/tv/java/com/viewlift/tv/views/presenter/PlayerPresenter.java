@@ -97,7 +97,8 @@ public class PlayerPresenter extends Presenter {
 
 
     public CustomTVVideoPlayerView playerView(Context context) {
-        CustomTVVideoPlayerView videoPlayerView = new CustomTVVideoPlayerView(context);
+        CustomTVVideoPlayerView videoPlayerView = new CustomTVVideoPlayerView(context,
+                appCmsPresenter);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
         return videoPlayerView;

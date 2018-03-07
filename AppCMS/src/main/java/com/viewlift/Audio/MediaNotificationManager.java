@@ -34,7 +34,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+
+import android.support.v7.app.NotificationCompat.MediaStyle;
+
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -289,8 +291,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             createNotificationChannel();
         }
 
-        final NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(mService, CHANNEL_ID);
+//        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder

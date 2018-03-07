@@ -180,8 +180,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
-                                    appCMSPresenter.getCurrentActivity()
-                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                                    appCMSPresenter.showLoadingDialog(true);
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
@@ -202,8 +201,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                                 null);
                                         return;
                                     }
-                                    appCMSPresenter.getCurrentActivity()
-                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                                    appCMSPresenter.showLoadingDialog(true);
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
@@ -222,8 +220,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                                 null);
                                         return;
                                     }
-                                    appCMSPresenter.getCurrentActivity()
-                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                                    appCMSPresenter.showLoadingDialog(true);
                                     appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;

@@ -583,7 +583,8 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setWidthModified(boolean widthModified) {
         this.widthModified = widthModified;
     }
-	 public String getTrayBackground() {
+
+    public String getTrayBackground() {
         return trayBackground;
     }
 

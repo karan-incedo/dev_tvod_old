@@ -5,23 +5,20 @@ import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
 
-import com.viewlift.models.data.appcms.ui.android.Navigation;
-import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.models.network.rest.AppCMSSearchCall;
-
-/**
+/*
  * Created by viewlift on 5/4/17.
  */
 
 public class AppCMSBinder extends Binder {
     private final AppCMSMain appCMSMain;
-    private AppCMSPageUI appCMSPageUI;
-    private AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
     private final String pageId;
     private final String pageName;
@@ -34,19 +31,16 @@ public class AppCMSBinder extends Binder {
     private final boolean userLoggedIn;
     private final boolean userSubscribed;
     private final AppCMSPresenter.ExtraScreenType extraScreenType;
-    private boolean sendCloseAction;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+    private AppCMSPageUI appCMSPageUI;
+    private AppCMSPageAPI appCMSPageAPI;
+    private boolean sendCloseAction;
     private Uri searchQuery;
-
-    public AppCMSSearchCall getAppCMSSearchCall() {
-        return appCMSSearchCall;
-    }
-
-    public void setAppCMSSearchCall(AppCMSSearchCall appCMSSearchCall) {
-        this.appCMSSearchCall = appCMSSearchCall;
-    }
-
     private AppCMSSearchCall appCMSSearchCall;
+    private int xScroll;
+    private int yScroll;
+    private boolean scrollOnLandscape;
+    private int currentScrollPosition;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
@@ -65,7 +59,7 @@ public class AppCMSBinder extends Binder {
                         boolean userSubscribed,
                         AppCMSPresenter.ExtraScreenType extraScreenType,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                        Uri searchQuery ,
+                        Uri searchQuery,
                         AppCMSSearchCall appCMSSearchCall) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
@@ -88,12 +82,24 @@ public class AppCMSBinder extends Binder {
         this.appCMSSearchCall = appCMSSearchCall;
     }
 
+    public AppCMSSearchCall getAppCMSSearchCall() {
+        return appCMSSearchCall;
+    }
+
+    public void setAppCMSSearchCall(AppCMSSearchCall appCMSSearchCall) {
+        this.appCMSSearchCall = appCMSSearchCall;
+    }
+
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
 
     public AppCMSPageUI getAppCMSPageUI() {
         return appCMSPageUI;
+    }
+
+    public void setAppCMSPageUI(AppCMSPageUI appCMSPageUI) {
+        this.appCMSPageUI = appCMSPageUI;
     }
 
     public AppCMSPageAPI getAppCMSPageAPI() {
@@ -176,7 +182,35 @@ public class AppCMSBinder extends Binder {
         return extraScreenType;
     }
 
-    public void setAppCMSPageUI(AppCMSPageUI appCMSPageUI) {
-        this.appCMSPageUI = appCMSPageUI;
+    public int getxScroll() {
+        return xScroll;
+    }
+
+    public void setxScroll(int xScroll) {
+        this.xScroll = xScroll;
+    }
+
+    public int getyScroll() {
+        return yScroll;
+    }
+
+    public void setyScroll(int yScroll) {
+        this.yScroll = yScroll;
+    }
+
+    public boolean isScrollOnLandscape() {
+        return scrollOnLandscape;
+    }
+
+    public void setScrollOnLandscape(boolean scrollOnLandscape) {
+        this.scrollOnLandscape = scrollOnLandscape;
+    }
+
+    public int getCurrentScrollPosition() {
+        return currentScrollPosition;
+    }
+
+    public void setCurrentScrollPosition(int currentScrollPosition) {
+        this.currentScrollPosition = currentScrollPosition;
     }
 }

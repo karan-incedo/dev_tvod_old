@@ -68,7 +68,6 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
 import com.viewlift.presenters.AppCMSActionType;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.HashMap;
@@ -170,6 +169,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
 		jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
+                AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
                 AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
@@ -453,6 +454,11 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_duration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_duration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_unit_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_description_key),
@@ -476,6 +482,12 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_api_history_module_key),
                 AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_module_showdetail_key),
+                AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_detail_module_key),
+                AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_page_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_PAGE_KEY);
@@ -673,6 +685,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
                 AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_cellular_data_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_logout_button_key),
                 AppCMSUIKeyType.PAGE_SETTING_LOGOUT_BUTTON_KEY);
 
@@ -786,6 +801,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 context.getString(R.string.app_cms_action_homepage_key));
+        /*this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_musicHub_screen_key),
+                context.getString(R.string.app_cms_action_musicHub_page_key));*/
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
@@ -794,6 +811,10 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_detailvideopage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
+                context.getString(R.string.app_cms_action_moviespage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
+                context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
     }
@@ -807,6 +828,8 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key), null);
+        //this.actionToPageMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
@@ -816,6 +839,8 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key), null);
+        //this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
@@ -838,6 +863,8 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchlistpage_key),
                 AppCMSActionType.WATCHLIST_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_musicHub_page_key),
+                AppCMSActionType.MUSIC_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
                 AppCMSActionType.PLAYLIST_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
@@ -846,10 +873,11 @@ public class AppCMSUIModule {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_detailvideopage_key),
                 AppCMSActionType.VIDEO_PAGE);
 
-
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSActionType.SHOW_PAGE);
 
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_moviespage_key),
+                AppCMSActionType.MOVIES_PAGE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);
@@ -896,7 +924,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_history_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
 
@@ -906,7 +934,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_watchlist_item_button),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_startfreetrial_key),
@@ -952,8 +980,9 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
-                .create();
+        /*return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
+                .create();*/
+        return new Gson();
     }
 
     @Provides

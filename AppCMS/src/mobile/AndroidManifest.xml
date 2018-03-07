@@ -60,6 +60,40 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
+
+        <!--
+        <receiver
+            android:name=".mobile.pushnotif.AppCMSAirshipReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.urbanairship.push.CHANNEL_UPDATED" />
+                <action android:name="com.urbanairship.push.OPENED" />
+                <action android:name="com.urbanairship.push.RECEIVED" />
+                <action android:name="com.urbanairship.push.DISMISSED" />
+
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+        -->
+
+        <receiver
+            android:name=".mobile.initialization.UrbanAirshipInitReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="INITIALIZATION"/>
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".mobile.initialization.GMSInitReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="INITIALIZATION"/>
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.appsflyer.InstanceIDListener"
             android:exported="false">
