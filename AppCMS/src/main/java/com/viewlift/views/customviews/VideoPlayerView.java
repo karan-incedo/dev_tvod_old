@@ -1185,7 +1185,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
 
-            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (viewHolder.getmRadio().getButtonDrawable() != null) {
