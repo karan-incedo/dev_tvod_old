@@ -54,6 +54,30 @@ public abstract class BaseView extends FrameLayout {
         return 0.0f;
     }
 
+    public static float convertWidthDpToPixel(Layout layout, Context context) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                return convertDpToPixel(layout.getTabletLandscape().getWidth(), context);
+            } else {
+                return convertDpToPixel(layout.getTabletPortrait().getWidth(), context);
+            }
+        } else {
+            return convertDpToPixel(layout.getMobile().getWidth(), context);
+        }
+    }
+
+    public static float convertHeightDpToPixel(Layout layout, Context context) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                return convertDpToPixel(layout.getTabletLandscape().getHeight(), context);
+            } else {
+                return convertDpToPixel(layout.getTabletPortrait().getHeight(), context);
+            }
+        } else {
+            return convertDpToPixel(layout.getMobile().getHeight(), context);
+        }
+    }
+
     public static float convertPixelsToDp(float px, Context context) {
         if (context != null) {
             Resources resources = context.getResources();
@@ -769,8 +793,27 @@ public abstract class BaseView extends FrameLayout {
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        if (componentType == null) {
+            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+            viewWidth = (int) convertWidthDpToPixel(layout, getContext());
+            if (viewWidth == 0) {
+                viewWidth = LayoutParams.MATCH_PARENT;
+            }
+            viewHeight = (int) convertHeightDpToPixel(layout, getContext());
+            if (viewHeight == 0) {
+                viewHeight = LayoutParams.WRAP_CONTENT;
+            }
+        }
+
         int parentViewWidth = (int) getViewWidth(getContext(),
                 parentLayout,
                 parentView.getMeasuredWidth());
@@ -982,12 +1025,6 @@ public abstract class BaseView extends FrameLayout {
         AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-        }
-
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
-
-        if (componentType == null) {
-            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
