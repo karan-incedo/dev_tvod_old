@@ -607,4 +607,6 @@
     <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
     <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
 
+    <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
+
 </resources>

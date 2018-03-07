@@ -317,8 +317,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY
  * Created by viewlift on 5/3/17.
  */
 
-public class AppCMSPresenter
-{
+public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_AUTOPLAY_SCREEN = "appcms_presenter_close_autoplay_action";
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
@@ -648,11 +647,11 @@ public class AppCMSPresenter
                     currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
                         editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
-                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
-                            Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
-                        },
+                                    Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                    stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                    currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+                                    Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
+                                },
                                 isAddedOrNot,
                                 true);
                     } else {
@@ -925,8 +924,9 @@ public class AppCMSPresenter
     /**
      * This detects whether the input text field contains spaces and displays a Toast message
      * if spaces are detected
+     *
      * @param passwordEditText The text field to examine for spaces
-     * @param con The text field Context
+     * @param con              The text field Context
      */
     /*does not let user enter space in editText*/
     public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
@@ -946,8 +946,9 @@ public class AppCMSPresenter
     /**
      * This will format a time value in msec since the epoch and convert it into a String value using
      * the dataFormat value.
+     *
      * @param timeMilliSeconds The time value to convert into a Date/Time string
-     * @param dateFormat The data format to use for the conversion
+     * @param dateFormat       The data format to use for the conversion
      * @return Returns the converted Date/Time string
      */
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
@@ -961,6 +962,7 @@ public class AppCMSPresenter
     /**
      * This converts an input time value in msec since the epoch into a Time value in the format
      * HH:MM:SS
+     *
      * @param runtime The input time value to convert
      * @return Return a string with the converted time in the format HH:MM:SS
      */
@@ -1004,8 +1006,9 @@ public class AppCMSPresenter
 
     /**
      * This prepends a '#' symbol to beginning of color string if it missing from the string
+     *
      * @param context The current Context
-     * @param color The color to prepend a '#' symbol
+     * @param color   The color to prepend a '#' symbol
      * @return Returns the updated color string with a prepended '#'
      */
     public static String getColor(Context context, String color) {
@@ -1017,6 +1020,7 @@ public class AppCMSPresenter
 
     /**
      * This returns the current Android JSON object
+     *
      * @return Return the current Android JSON object
      */
     public AppCMSAndroidUI getAppCMSAndroid() {
@@ -1025,6 +1029,7 @@ public class AppCMSPresenter
 
     /**
      * This sets the current Android JSON object
+     *
      * @param appCMSAndroid The Android JSON object to be assigned
      */
     public void setAppCMSAndroid(AppCMSAndroidUI appCMSAndroid) {
@@ -1033,6 +1038,7 @@ public class AppCMSPresenter
 
     /**
      * Returns a flag to indicate whether the no network connectivity Toast should be displayed.
+     *
      * @return Returns a flag to indicate whether the no network connectivity Toast should be displayed
      */
     public boolean shouldShowNetworkContectivity() {
@@ -1041,6 +1047,7 @@ public class AppCMSPresenter
 
     /**
      * Sets the flag used to indicate whether the no network connectivity Toast should be displayed.
+     *
      * @param showNetworkConnectivity The value of the flag
      */
     public void setShowNetworkConnectivity(boolean showNetworkConnectivity) {
@@ -1049,6 +1056,7 @@ public class AppCMSPresenter
 
     /**
      * This sets the flag used to indicate whether all current network loads should be cancelled.
+     *
      * @param cancelAllLoads The flag used to indicate whether all current network loads should be cancelled
      */
     public void setCancelAllLoads(boolean cancelAllLoads) {
@@ -1060,6 +1068,7 @@ public class AppCMSPresenter
 
     /**
      * This returns the navigation JSON object returned in the main.json JSON object.
+     *
      * @return Returns the navigation JSON object returned in the main.json JSON object.
      */
     public Navigation getNavigation() {
@@ -1069,6 +1078,7 @@ public class AppCMSPresenter
     /**
      * This returns the flag used to indicate whether the subscription flow banner message
      * should be displayed to the user.
+     *
      * @return Returns the flag used to indicate whether the subscription flow banner message
      * should be displayed to the user
      */
@@ -1078,6 +1088,7 @@ public class AppCMSPresenter
 
     /**
      * Returns the LRU cache for storing the most recent page API responses.
+     *
      * @return Returns the LRU cache for storing the most recent page API responses
      */
     private LruCache<String, AppCMSPageAPI> getPageAPILruCache() {
@@ -1090,6 +1101,7 @@ public class AppCMSPresenter
 
     /**
      * Return the LRU cache used for storing the most recent Page View objects.
+     *
      * @return Return the LRU cache used for storing the most recent Page View objects
      */
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -1102,8 +1114,9 @@ public class AppCMSPresenter
 
     /**
      * This removes a Page API response from the LRU cache.
+     *
      * @param context The current Context
-     * @param pageId The pageId used to identify the element in the LRU cache
+     * @param pageId  The pageId used to identify the element in the LRU cache
      */
     public void removeLruCacheItem(Context context, String pageId) {
         if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
@@ -1114,6 +1127,7 @@ public class AppCMSPresenter
     /**
      * This resets the current Activity object when an Activity has been destroyed and should no
      * longer be used.
+     *
      * @param closedActivity The current Activity to be reset.
      */
     public void unsetCurrentActivity(Activity closedActivity) {
@@ -1131,6 +1145,7 @@ public class AppCMSPresenter
 
     /**
      * This calls the GA intialization method to begin tracking events.
+     *
      * @param trackerId The GA ID to assign to the new tracker
      */
     private void initializeGA(String trackerId) {
@@ -1142,6 +1157,7 @@ public class AppCMSPresenter
 
     /**
      * Returns a flag to indicate whether a page is currently being loaded.
+     *
      * @param isLoading Returns a flag to indicate whether a page is currently being loaded
      */
     public void setIsLoading(boolean isLoading) {
@@ -1150,6 +1166,7 @@ public class AppCMSPresenter
 
     /**
      * Returns a flag to indicate whether a download is currently in progress.
+     *
      * @return Returns a flag to indicate whether a download is currently in progress
      */
     @SuppressWarnings("unused")
@@ -1159,6 +1176,7 @@ public class AppCMSPresenter
 
     /**
      * Sets the flag indicate whether a download is currently in progress.
+     *
      * @param downloadInProgress The flag to be set to indicate whether a download is currently in progress.
      */
     public void setDownloadInProgress(boolean downloadInProgress) {
@@ -1167,14 +1185,15 @@ public class AppCMSPresenter
 
     /**
      * Returns the API URL to be used for making page API requests
+     *
      * @param usePageIdQueryParam Flag to indicate whether the pageId query parameter should be used
-     * @param viewPlansPage Flag to indicate whether the requested page is the View Plans page
-     * @param showPage Flag to indicate whether the requested page is the Show page
-     * @param baseUrl The base URL of the API request
-     * @param endpoint The end point of the API request
-     * @param siteId The value of the Site ID query parameter
-     * @param pageId The pageId value
-     * @param usedCachedAPI Flag to indicate whether the cache API should be used
+     * @param viewPlansPage       Flag to indicate whether the requested page is the View Plans page
+     * @param showPage            Flag to indicate whether the requested page is the Show page
+     * @param baseUrl             The base URL of the API request
+     * @param endpoint            The end point of the API request
+     * @param siteId              The value of the Site ID query parameter
+     * @param pageId              The pageId value
+     * @param usedCachedAPI       Flag to indicate whether the cache API should be used
      * @return Returns the constructed API URL
      */
     public String getApiUrl(boolean usePageIdQueryParam,
@@ -1259,6 +1278,7 @@ public class AppCMSPresenter
 
     /**
      * Returns the flag indicating whether a page is currently being loaded.
+     *
      * @return Returns the flag indicating whether a page is currently being loaded
      */
     public boolean isPageLoading() {
@@ -1267,6 +1287,7 @@ public class AppCMSPresenter
 
     /**
      * Sets the flag indicating whether a page is currently being loaded
+     *
      * @param pageLoading The value of the flag
      */
     public void setPageLoading(boolean pageLoading) {
@@ -1275,6 +1296,7 @@ public class AppCMSPresenter
 
     /**
      * Returns the Android modules JSON object.
+     *
      * @return Returns the Android modules JSON object
      */
     public AppCMSAndroidModules getAppCMSAndroidModules() {
@@ -1283,7 +1305,8 @@ public class AppCMSPresenter
 
     /**
      * Performs a network call to refresh a video URL CDN token
-     * @param id The film ID of the video to refresh
+     *
+     * @param id          The film ID of the video to refresh
      * @param readyAction The callback to handle the result when the URL with the updated CDN is ready
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
@@ -1313,12 +1336,13 @@ public class AppCMSPresenter
 
     /**
      * Launches the Video Player view associated with the input data
-     * @param contentDatum The video data returned by the API request
-     * @param filmId The film ID of the video
+     *
+     * @param contentDatum          The video data returned by the API request
+     * @param filmId                The film ID of the video
      * @param currentlyPlayingIndex The currently playing index within a list of related videos used for Autoplay
-     * @param relateVideoIds The list of related videos used for Autoplay
-     * @param watchedTime The current watched time of this video for the current user
-     * @param expectedAction The action to take when launching the player, which may to navigate to the Detail page or play the video
+     * @param relateVideoIds        The list of related videos used for Autoplay
+     * @param watchedTime           The current watched time of this video for the current user
+     * @param expectedAction        The action to take when launching the player, which may to navigate to the Detail page or play the video
      * @return
      */
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
@@ -2148,9 +2172,9 @@ public class AppCMSPresenter
 
                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                                 String updatedAction = pageNameToActionMap.get(metaPage.getPageName());
-                                                System.out.println( updatedAction+" *===**** "+action);
+                                                System.out.println(updatedAction + " *===**** " + action);
 
-                                                if (updatedAction != null && actionToPageMap.get(updatedAction)==null) {
+                                                if (updatedAction != null && actionToPageMap.get(updatedAction) == null) {
                                                     actionToPageMap.put(updatedAction, appCMSPageUIResult);
                                                 }
 
@@ -3838,7 +3862,7 @@ public class AppCMSPresenter
 //                    Log.e(TAG, "Failed to resume download");
 //                }
 //            }
-            String downloadURL="";
+            String downloadURL = "";
             long file_size = 0L;
             try {
                 if (contentDatum.getGist() != null &&
@@ -3901,7 +3925,7 @@ public class AppCMSPresenter
                 updatedRows = currentContext.getContentResolver().update(Uri.parse("content://downloads/my_downloads"),
                         pauseDownload,
                         "title=?",
-                        new String[]{ contentDatum.getGist().getTitle() });
+                        new String[]{contentDatum.getGist().getTitle()});
             } catch (Exception e) {
                 Log.e(TAG, "Failed to update control for downloading video");
             }
@@ -4429,7 +4453,7 @@ public class AppCMSPresenter
                 contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
             mediaPrefix = MEDIA_SURFIX_MP3;
         }
-       // cancelDownloadIconTimerTask(contentDatum.getGist().getId());
+        // cancelDownloadIconTimerTask(contentDatum.getGist().getId());
 
         DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                 .setTitle(contentDatum.getGist().getTitle())
@@ -4461,7 +4485,7 @@ public class AppCMSPresenter
                 audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
             } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
-            }else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+            } else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
@@ -4483,11 +4507,9 @@ public class AppCMSPresenter
                 ccEnqueueId,
                 contentDatum,
                 downloadURL);
-                        showToast(
-                                currentActivity.getString(R.string.app_cms_download_started_message,
-                                        contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
-
-
+        showToast(
+                currentActivity.getString(R.string.app_cms_download_started_message,
+                        contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
 
     }
@@ -4637,7 +4659,6 @@ public class AppCMSPresenter
             }
         }
     }
-
 
 
     public void editHistory(final String filmId,
@@ -5119,6 +5140,7 @@ public class AppCMSPresenter
                     });
         }
     }
+
     public void navigateToSubNavigationPage(String pageId,
                                             String title,
                                             String url,
@@ -5130,7 +5152,7 @@ public class AppCMSPresenter
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         module.setId(currentActivity.getString(R.string.blank_string));
-        if(null != appCMSPageUI && null != appCMSPageUI.getModuleList()
+        if (null != appCMSPageUI && null != appCMSPageUI.getModuleList()
                 && appCMSPageUI.getModuleList().size() > 0) {
             module.setId(appCMSPageUI.getModuleList().get(0).getId());
         }
@@ -5167,6 +5189,7 @@ public class AppCMSPresenter
             setNavItemToCurrentAction(currentActivity);
         }
     }
+
     public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
                                         boolean launchActivity) {
 
@@ -5450,10 +5473,9 @@ public class AppCMSPresenter
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (currentActivity != null) {
-//            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-//                    .PRESENTER_AUDIO_LOADING_ACTION));
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
         }
         this.callBackPlaylistHelper = callBackPlaylistHelper;
 //        AudioPlaylistHelper.getInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
@@ -5507,10 +5529,9 @@ public class AppCMSPresenter
                         }
 
                         if (currentActivity != null) {
-//                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-//                                    .PRESENTER_AUDIO_LOADING_STOP_ACTION));
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(pageLoadingActionIntent);
                         }
                     }
                 });
@@ -5521,29 +5542,49 @@ public class AppCMSPresenter
                                        boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(playlistId)) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
+
             AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
 
-            getPlaylistPageContent(appCMSMain.getApiBaseUrl(),
-                    appCMSSite.getGist().getSiteInternalName(),
-                    playlistId, new AppCMSPlaylistAPIAction(false,
-                            false,
-                            false,
-                            appCMSPageUI,
-                            playlistPage.getPageId(),
-                            playlistPage.getPageId(),
-                            playlistPage.getPageName(),
-                            playlistPage.getPageId(),
-                            launchActivity, null) {
-                        @Override
-                        public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
-                            if (appCMSPlaylistResult != null) {
-                                setPlayListData(appCMSPlaylistResult, this);
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(playlistPage.getPageId());
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                    navigateToPlaylistPage(playlistId, pageTitle, launchActivity);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            } else {
+                getPlaylistPageContent(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        playlistId, new AppCMSPlaylistAPIAction(false,
+                                false,
+                                false,
+                                appCMSPageUI,
+                                playlistPage.getPageId(),
+                                playlistPage.getPageId(),
+                                playlistPage.getPageName(),
+                                playlistPage.getPageId(),
+                                launchActivity, null) {
+                            @Override
+                            public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
+                                if (appCMSPlaylistResult != null) {
+                                    setPlayListData(appCMSPlaylistResult, this);
+                                }
                             }
-                        }
-                    });
-
+                        });
+            }
         }
     }
 
@@ -5637,14 +5678,16 @@ public class AppCMSPresenter
                 Intent playlistPageIntent =
                         new Intent(AppCMSPresenter
                                 .PRESENTER_NAVIGATE_ACTION);
+                playlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key),
+                        currentActivity.getPackageName());
                 playlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
                 currentActivity.sendBroadcast(playlistPageIntent);
             }
         }
-
-        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                .PRESENTER_STOP_PAGE_LOADING_ACTION));
+        Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+        pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+        currentActivity.sendBroadcast(pageLoadingActionIntent);
     }
 
     private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
@@ -7412,6 +7455,7 @@ public class AppCMSPresenter
 
     /**
      * Set the total remaining free time of the user.
+     *
      * @param userFreePlayTime in milli seconds
      */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
@@ -8373,12 +8417,13 @@ public class AppCMSPresenter
     /**
      * This is the initial launch point of the app and is used to retrieve the main.json file
      * for this app.
-     * @param activity The current Activity used for launching the app (unused)
-     * @param siteId The AppCMS site ID of the app
-     * @param searchQuery A deeplink URL used launch a Detail page via search
+     *
+     * @param activity     The current Activity used for launching the app (unused)
+     * @param siteId       The AppCMS site ID of the app
+     * @param searchQuery  A deeplink URL used launch a Detail page via search
      * @param platformType An enumeration value to distinguish between mobile or TV variants
-     * @param bustCache A flag to indicate whether to use a parameter to bust the CDN cache via a
-     *                  query parameter using a random value.
+     * @param bustCache    A flag to indicate whether to use a parameter to bust the CDN cache via a
+     *                     query parameter using a random value.
      */
     public void getAppCMSMain(final Activity activity,
                               final String siteId,
@@ -8684,7 +8729,8 @@ public class AppCMSPresenter
 
     /**
      * This displays a dialog message based upon entitlement options and the current user subscription status
-     * @param dialogType An enumerated value to select the message from a set of preexisting messages
+     *
+     * @param dialogType    An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
@@ -9043,10 +9089,11 @@ public class AppCMSPresenter
 
     /**
      * This will navigate the app to the Download Page if there is no network activity
+     *
      * @param launchActivity A flag to indicate whether a new Activity should be launched or an
      *                       existing Activity should be updated with the Download page UI and content
-     * @param retryAction The callback to execute if the user chooses to retry the previously executed
-     *                    network request
+     * @param retryAction    The callback to execute if the user chooses to retry the previously executed
+     *                       network request
      */
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
@@ -11353,7 +11400,7 @@ public class AppCMSPresenter
                                         Log.d(TAG, "Clearing Page and API cache");
                                         clearPageAPIData(() -> {
                                             final int numPages = appCMSAndroid.getMetaPages().size();
-                                            for (int i = 0; i < numPages ; i++) {
+                                            for (int i = 0; i < numPages; i++) {
                                                 final MetaPage metaPage = appCMSAndroid.getMetaPages().get(i);
                                                 numPagesProcessed = 0;
                                                 //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
@@ -11723,27 +11770,27 @@ public class AppCMSPresenter
         }
     }
 
-  /*  public void getAppCMSPage(String pageId,final Action1<AppCMSPageUI> onPageReady){
+    /*  public void getAppCMSPage(String pageId,final Action1<AppCMSPageUI> onPageReady){
 
 
 
-        MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-        if (metaPage != null) {
-            getAppCMSPage(metaPage.getPageUI(),
-                    appCMSPageUIResult -> {
-                        if (appCMSPageUIResult != null) {
-                            navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                            String action = pageNameToActionMap.get(metaPage.getPageName());
-                            if (action != null && actionToPageMap.containsKey(action)) {
-                                actionToPageMap.put(action, appCMSPageUIResult);
-                            }
-                        }
-                    },
-                    false,
-                    false);
-        }
+          MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+          if (metaPage != null) {
+              getAppCMSPage(metaPage.getPageUI(),
+                      appCMSPageUIResult -> {
+                          if (appCMSPageUIResult != null) {
+                              navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                              String action = pageNameToActionMap.get(metaPage.getPageName());
+                              if (action != null && actionToPageMap.containsKey(action)) {
+                                  actionToPageMap.put(action, appCMSPageUIResult);
+                              }
+                          }
+                      },
+                      false,
+                      false);
+          }
 
-    }*/
+      }*/
     private void getAppCMSPage(String url,
                                final Action1<AppCMSPageUI> onPageReady,
                                boolean loadFromFile,
@@ -12250,14 +12297,14 @@ public class AppCMSPresenter
             String value = entry.getValue();
             if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
                 if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
-                    autoPlayKey =  key;
+                    autoPlayKey = key;
                     return autoPlayKey;
                 } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey =  key;
+                    autoPlayKey = key;
                 }
             } else {
                 if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey =  key;
+                    autoPlayKey = key;
                     return autoPlayKey;
                 }
             }
@@ -12492,7 +12539,8 @@ public class AppCMSPresenter
                                                 AppCMSUIKeyType moduleType = getJsonValueKeyMap().get(module.getModuleType());
                                                 if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                                                    /* if (module.getContentData() != null &&
-                                                            !module.getContentData().isEmpty())*/ if(module != null && module.getId() != null){
+                                                            !module.getContentData().isEmpty())*/
+                                                    if (module != null && module.getId() != null) {
                                                         int finalI = i;
                                                         isHistoryUpdate = true;
                                                         getHistoryData(appCMSHistoryResult -> {
@@ -12716,7 +12764,7 @@ public class AppCMSPresenter
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-       // sendCloseOthersAction(null, true, false);
+        // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -13954,16 +14002,15 @@ public class AppCMSPresenter
         ModuleList footerModule = null;
         if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
             footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
-        }else
-        {
+        } else {
             //In case we did not get footer module some how.
-            footerModule =new ModuleList();
+            footerModule = new ModuleList();
             footerModule.setBlockName("footer01");
             footerModule.setTabSeparator(false);
-            ArrayList<Component> componets =new ArrayList<>();
-            Component componet1,componet2;
-            componet1=new Component();
-            componet2=new Component();
+            ArrayList<Component> componets = new ArrayList<>();
+            Component componet1, componet2;
+            componet1 = new Component();
+            componet2 = new Component();
 
             componet1.setType("image");
             componet1.setKey("tabImage");
@@ -14588,12 +14635,12 @@ public class AppCMSPresenter
 
     private PostUANamedUserEventAsyncTask.Params getUAParams() {
         return new PostUANamedUserEventAsyncTask.Params
-                        .Builder()
-                        .accessKey(uaAccessKey)
-                        /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+                .Builder()
+                .accessKey(uaAccessKey)
+                /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
+                .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
 //                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
-                        .build();
+                .build();
     }
 
     private void sendUAAssociateUserEventRequest(UAAssociateNamedUserRequest uaAssociateNamedUserRequest,
@@ -15128,9 +15175,11 @@ public class AppCMSPresenter
                 now.getTime(),
                 appCMSMain.getSite());
     }
+
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
+
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -15144,6 +15193,7 @@ public class AppCMSPresenter
             isFullScreenVisible = true;
         }
     }
+
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
@@ -15244,7 +15294,7 @@ public class AppCMSPresenter
         return false;
     }
 
-    public void saveLastPlaySongPosition( String id,long pos) {
+    public void saveLastPlaySongPosition(String id, long pos) {
         Gson gson = new Gson();
 
         String json = gson.toJson(new LastPlayAudioDetail(id, pos));
