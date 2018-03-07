@@ -3418,10 +3418,10 @@ public class ViewCreator {
                         if (moduleAPI != null
                                 && moduleAPI.getContentData() != null
                                 && moduleAPI.getContentData().get(0) != null
-                                && moduleAPI.getContentData().get(0).getAudioListFromPlayList() != null
+                                && moduleAPI.getContentData().get(0).getAudioList() != null
                                 ) {
-                            int songNum = moduleAPI.getContentData().get(0).getAudioListFromPlayList().size();
-                            ((TextView) componentViewResult.componentView).setText((moduleAPI.getContentData().get(0).getAudioListFromPlayList().size() > 1) ? " " + songNum + " SONGS" : " " + songNum + " SONG");
+                            int songNum = moduleAPI.getContentData().get(0).getAudioList().size();
+                            ((TextView) componentViewResult.componentView).setText((moduleAPI.getContentData().get(0).getAudioList().size() > 1) ? " " + songNum + " SONGS" : " " + songNum + " SONG");
                         }
                         break;
 

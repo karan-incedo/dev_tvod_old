@@ -206,7 +206,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if(appCMSPresenter != null &&  appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID){
+        if (appCMSPresenter != null && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
             if (closedCaptionUri == null) {
                 if (ccToggleButton != null) {
                     ccToggleButton.setVisibility(GONE);
@@ -502,12 +502,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     public void applyTimeBarColor(int timeBarColor) {
-//        timeBar.applyPlayedColor(timeBarColor);
-//        timeBar.applyScrubberColor(timeBarColor);
-//        timeBar.applyUnplayedColor(timeBarColor);
-//        timeBar.applyBufferedColor(timeBarColor);
-//        timeBar.applyAdMarkerColor(timeBarColor);
-//        timeBar.applyPlayedAdMarkerColor(timeBarColor);
+        timeBar.applyPlayedColor(timeBarColor);
+        timeBar.applyScrubberColor(timeBarColor);
+        timeBar.applyUnplayedColor(timeBarColor);
+        timeBar.applyBufferedColor(timeBarColor);
+        timeBar.applyAdMarkerColor(timeBarColor);
+        timeBar.applyPlayedAdMarkerColor(timeBarColor);
     }
 
     public void setVideoTitle(String title, int textColor) {
@@ -977,8 +977,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();
+
         String getStreamingQualityUrl(String streamingQuality);
+
         String getMpegResolutionFromUrl(String mpegUrl);
+
         int getMpegResolutionIndexFromUrl(String mpegUrl);
     }
 
@@ -1215,7 +1218,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
                         if (~buffer[i] >= -128 &&
                                 ~buffer[i] <= 127 &&
-                                buffer[i + offset]<0) {
+                                buffer[i + offset] < 0) {
                             buffer[i + offset] = (byte) ~buffer[i + offset];
                         }
                     }
@@ -1269,6 +1272,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<String> availableStreamingQualities;
         int selectedIndex;
         AppCMSPresenter appCMSPresenter;
+
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {

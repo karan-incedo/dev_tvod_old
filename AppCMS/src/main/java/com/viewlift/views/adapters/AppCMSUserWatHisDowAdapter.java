@@ -194,8 +194,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void sortByUpdateDate() {
-        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
-                o2.getGist().getUpdateDate()));
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.parseLong(o1.getGist().getUpdateDate()),
+                Long.parseLong(o2.getGist().getUpdateDate())));
         Collections.reverse(adapterData);
     }
 

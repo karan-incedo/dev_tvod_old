@@ -394,19 +394,6 @@ public class ContentDatum implements Serializable {
         this.audioList = audioList;
     }
 
-
-    List<AudioList> audioListFromPlayList = null;
-
-    public List<AudioList> getAudioListFromPlayList() {
-        return audioListFromPlayList;
-    }
-
-    public void setAudioListFromPlayList(List<AudioList> audioListFromPlayList) {
-        this.audioListFromPlayList = audioListFromPlayList;
-    }
-
-    @SerializedName("audioAssets")
-    @Expose
     AudioAssets audioAssets = null;
 
     public AudioAssets getAudioAssets() {
@@ -416,8 +403,6 @@ public class ContentDatum implements Serializable {
     public void setAudioAssets(AudioAssets audioAssets) {
         this.audioAssets = audioAssets;
     }
-
-
 
 
 }
