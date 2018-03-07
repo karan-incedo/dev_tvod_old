@@ -1,0 +1,95 @@
+{
+  "id": "036c0c78-5355-4ccd-838a-a88b122c9b6c",
+  "settings": {
+    "loop": false,
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    },
+    "thumbnailType": "portrait",
+    "infoHover": true
+  },
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray01",
+  "layout": {
+    "ftv": {
+      "padding": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 470
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "fontSize": 18
+        }
+      },
+      "fontFamily": "OpenSans",
+      "textAlignment": "left",
+      "textCase": "caps",
+      "type": "label",
+      "textColor": "#008EE0",
+      "fontWeight": "Semibold",
+      "key": "trayTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "width": 260,
+          "height": 470
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
+            }
+          },
+          "type": "image",
+          "key": "badgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 395,
+              "rightMargin": 0,
+              "fontSize": 11,
+              "height": 40
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "thumbnailTitle"
+        }
+      ],
+      "type": "collectionGrid",
+      "key": "collectionGrid"
+    }
+  ]
+}
