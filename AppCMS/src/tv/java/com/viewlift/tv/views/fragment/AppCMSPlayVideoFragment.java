@@ -43,6 +43,7 @@ import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -50,6 +51,8 @@ import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -126,6 +129,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     private final int totalCountdownInMillis = 2000;
     private final int countDownIntervalInMillis = 20;
+    private String signatureCookie;
+    private String policyCookie;
+    private String keyPairIdCookie;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -157,7 +163,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       String imageUrl,
                                                       String closedCaptionUrl,
                                                       String parentalRating,
-                                                      boolean freeContent) {
+                                                      boolean freeContent, AppCMSSignedURLResult appCMSSignedURLResult) {
 
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
@@ -177,6 +183,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
         args.putBoolean(context.getString(R.string.free_content_key), freeContent);
+        if (appCMSSignedURLResult != null) {
+            appCMSSignedURLResult.parseKeyValuePairs();
+            args.putString(context.getString(R.string.signed_policy_key), appCMSSignedURLResult.getPolicy());
+            args.putString(context.getString(R.string.signed_signature_key), appCMSSignedURLResult.getSignature());
+            args.putString(context.getString(R.string.signed_keypairid_key), appCMSSignedURLResult.getKeyPairId());
+        } else {
+            args.putString(context.getString(R.string.signed_policy_key), "");
+            args.putString(context.getString(R.string.signed_signature_key), "");
+            args.putString(context.getString(R.string.signed_keypairid_key), "");
+        }
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -226,6 +242,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+            policyCookie = args.getString(getString(R.string.signed_policy_key));
+            signatureCookie = args.getString(getString(R.string.signed_signature_key));
+            keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
             Log.d(TAG, "ANAS: free " + freeContent);
         }
 
@@ -455,6 +474,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(), appCMSPresenter)),
                         PorterDuff.Mode.MULTIPLY
                 );
+        if (!TextUtils.isEmpty(policyCookie) &&
+                !TextUtils.isEmpty(signatureCookie) &&
+                !TextUtils.isEmpty(keyPairIdCookie)) {
+            CookieManager cookieManager = new CookieManager();
+            CookieHandler.setDefault(cookieManager);
+
+            videoPlayerView.setPolicyCookie(policyCookie);
+            videoPlayerView.setSignatureCookie(signatureCookie);
+            videoPlayerView.setKeyPairIdCookie(keyPairIdCookie);
+        }
 
         initViewForCRW(rootView);
         if (!shouldRequestAds) {
