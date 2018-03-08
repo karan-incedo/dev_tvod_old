@@ -5113,6 +5113,22 @@ public class AppCMSPresenter {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (appCMSPageUI == null) {
+                if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
+                    RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                            pageTitle, null,
+                            null, false, null, WATCHLIST_RETRY_ACTION);
+                    retryCallBinder.setPageId(pageId);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                    args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(args);
+                    return;
+                }
+
                 MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
@@ -8189,8 +8205,16 @@ public class AppCMSPresenter {
                         } else {
                             launchBlankPage();
                         }
-                    } else if (main != null && TextUtils.isEmpty(main
+                    } else if (main != null
+                            && getPlatformType() == PlatformType.ANDROID
+                            && TextUtils.isEmpty(main
                             .getAndroid())) {
+                        //Log.e(TAG, "AppCMS key for main not found");
+                        launchBlankPage();
+                    }else if (main != null
+                            && getPlatformType() == PlatformType.TV
+                            && TextUtils.isEmpty(main
+                            .getFireTv())) {
                         //Log.e(TAG, "AppCMS key for main not found");
                         launchBlankPage();
                     } else if (main != null && TextUtils.isEmpty(main
@@ -10908,9 +10932,9 @@ public class AppCMSPresenter {
                     currentActivity.startActivity(appCMSIntent);
                 }
 
-            } else if (getPlatformType() == PlatformType.TV) {
-                launchErrorActivity(PlatformType.TV);
             }
+        }else if (null != currentActivity && getPlatformType() == PlatformType.TV) {
+            launchErrorActivity(PlatformType.TV);
         }
     }
 
@@ -12132,11 +12156,13 @@ public class AppCMSPresenter {
                     return false;
                 }
             }else{
-                if (forcedDownload) {
-                    appCMSPageAPI = null;
-                    if (null != pageId) {
-                        getPageAPILruCache().remove(pageId);
-                        getPlayerLruCache().remove(pageId);
+                if (forcedDownload && appCMSPageAPI != null) {
+                    if(isNetworkConnected()) {
+                        appCMSPageAPI = null;
+                        if (null != pageId) {
+                            getPageAPILruCache().remove(pageId);
+                            getPlayerLruCache().remove(pageId);
+                        }
                     }
                 }
 

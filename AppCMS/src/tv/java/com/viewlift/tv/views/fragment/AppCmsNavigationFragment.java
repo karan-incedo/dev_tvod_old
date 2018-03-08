@@ -321,13 +321,8 @@ public class AppCmsNavigationFragment extends Fragment {
                                 Utils.pageLoading(false, getActivity());
                             } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                                     getString(R.string.profile_label)))) {
-
                                 NavigationUser navigationUser = getNavigationUser();
-                                //Log.d("","Selected Title = "+navigationUser.getTitle());
-
                                 if (navigationUser != null) {
-
-
                                     if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
                                             .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                                         appCmsPresenter.navigateToWatchlistPage(

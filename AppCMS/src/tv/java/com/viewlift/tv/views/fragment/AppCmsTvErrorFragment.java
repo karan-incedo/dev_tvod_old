@@ -99,9 +99,9 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(shouldNavigateToLogin) {
+               // if(shouldNavigateToLogin) {
                     mErrorFragmentListener.onErrorScreenClose();
-                }
+                //}
                 dismiss();
             }
         });
