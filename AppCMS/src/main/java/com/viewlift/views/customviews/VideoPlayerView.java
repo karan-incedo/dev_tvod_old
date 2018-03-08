@@ -1159,7 +1159,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
 
-            boolean useHls = dataSpec.uri.toString().contains("m3u8") || dataSpec.uri.toString().contains(".ts");
+            boolean useHls = dataSpec.uri.toString().contains(".m3u8") || dataSpec.uri.toString().contains(".ts");
 
             if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
