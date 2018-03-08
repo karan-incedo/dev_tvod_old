@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -297,15 +299,18 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
-           videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
-            VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-            initializeStreamingQualityValues(videoAssets);
+            videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
+            if(binder.getContentData().getStreamingInfo() != null) {
+                if (binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
+                    VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+                    initializeStreamingQualityValues(videoAssets);
+                }
+            }
+
         } else if (binder.getContentData() != null &&
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-
-
 
             if (useHls) {
                 videoUrl = videoAssets.getHls();
@@ -467,13 +472,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
-
         super.onDestroy();
     }
 
-
     @Override
     public void closePlayer() {
+
         finish();
     }
 
