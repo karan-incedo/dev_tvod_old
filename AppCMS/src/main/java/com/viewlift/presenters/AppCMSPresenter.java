@@ -150,7 +150,6 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.Component$TypeAdapter;
 import com.viewlift.models.data.appcms.ui.page.Links;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.SocialLinks;
@@ -224,11 +223,9 @@ import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
-import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
@@ -354,12 +351,11 @@ public class AppCMSPresenter {
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
+    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     private static final String TAG = "AppCMSPresenter";
-
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
     private static final String MINI_PLAYER_VIEW_STATUS = "mini_player_view_status";
-
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
@@ -386,7 +382,6 @@ public class AppCMSPresenter {
     private static final String RESTORE_SUBSCRIPTION_RECEIPT = "restore_subscription_payment_process_key";
     private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
-
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
@@ -400,13 +395,11 @@ public class AppCMSPresenter {
     private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
-
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
     private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
     private static final String IS_HOME_STARTED = "is_home_started";
-    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     private static final String IS_AUDIO_RELOAD = "is_audio_reload";
     private static final String IS_AUDIO_RELOAD_PREF = "is_audio_reload_pref";
     private static final String LAST_PLAY_SONG_DETAILS = "last_play_song_details";
@@ -431,11 +424,8 @@ public class AppCMSPresenter {
 
     private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
-    public TVVideoPlayerView tvVideoPlayerView;
-    private RelativeLayout relativeLayoutFull;
     public static boolean isExitFullScreen = false;
     public static boolean isFullScreenVisible;
-
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
@@ -527,6 +517,9 @@ public class AppCMSPresenter {
     private final String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
     private final List<DownloadTimerTask> downloadProgressTimerList = new ArrayList<>();
     private final ReferenceQueue<Object> referenceQueue;
+    private final AppCMSPlaylistCall appCMSPlaylistCall;
+    private final AppCMSAudioDetailCall appCMSAudioDetailCall;
+    public TVVideoPlayerView tvVideoPlayerView;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     public CustomVideoPlayerView videoPlayerView = null;
@@ -537,6 +530,9 @@ public class AppCMSPresenter {
     public MiniPlayerView relativeLayoutPIP;
     Boolean isMoreOptionsAvailable = false;
     String loginPageUserName, loginPagePassword;
+    AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
+    boolean isLastStatePlaying = true;
+    private RelativeLayout relativeLayoutFull;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -582,7 +578,6 @@ public class AppCMSPresenter {
     private String subscriptionUserPassword;
     private boolean isSignupFromFacebook;
     private boolean isSignupFromGoogle;
-
     private String facebookAccessToken;
     private String facebookUserId;
     private String facebookUsername;
@@ -609,7 +604,6 @@ public class AppCMSPresenter {
     private LruCache<String, PageView> pageViewLruCache;
     private LruCache<String, AppCMSPageAPI> pageAPILruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
-
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean configurationChanged;
     private FirebaseAnalytics mFireBaseAnalytics;
@@ -631,12 +625,31 @@ public class AppCMSPresenter {
     private boolean shouldLaunchLoginAction;
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
-
     private boolean loginDialogPopupOpen;
-
     private volatile boolean processedUIModules;
     private volatile boolean processedUIPages;
-
+    private String cachedAPIUserToken;
+    private boolean usedCachedAPI;
+    private HashMap<String, CustomVideoPlayerView> playerViewCache;
+    private HashMap<String, CustomWebView> webViewCache;
+    private AppCMSWatchlistResult filmsInUserWatchList;
+    private List<String> temporaryWatchlist;
+    private ImageButton currentMediaRouteButton;
+    private ViewGroup currentMediaRouteButtonParent;
+    private Typeface regularFontFace;
+    private Typeface boldTypeFace;
+    private Typeface semiBoldTypeFace;
+    private Typeface extraBoldTypeFace;
+    private long mLastClickTime = 0;
+    private boolean showNetworkConnectivity;
+    private boolean waithingFor3rdPartyLogin;
+    private AppCMSAndroidUI appCMSAndroid;
+    private Map<String, MetaPage> pageIdToMetaPageMap;
+    private boolean forceLoad;
+    private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
+    private LruCache<String, Object> tvPlayerViewCache;
+    private boolean isTeamPAgeVisible = false;
+    private boolean isAudioPlayerOpen;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -704,63 +717,12 @@ public class AppCMSPresenter {
 
                 }
             };
-    private String cachedAPIUserToken;
-    private boolean usedCachedAPI;
-    private HashMap<String, CustomVideoPlayerView> playerViewCache;
-    private HashMap<String, CustomWebView> webViewCache;
-    private AppCMSWatchlistResult filmsInUserWatchList;
-    private List<String> temporaryWatchlist;
-
-    private ImageButton currentMediaRouteButton;
-    private ViewGroup currentMediaRouteButtonParent;
-
-    private Typeface regularFontFace;
-    private Typeface boldTypeFace;
-    private Typeface semiBoldTypeFace;
-    private Typeface extraBoldTypeFace;
-    private long mLastClickTime = 0;
-    private boolean showNetworkConnectivity;
-    private boolean waithingFor3rdPartyLogin;
-    private AppCMSAndroidUI appCMSAndroid;
-
-    private Map<String, MetaPage> pageIdToMetaPageMap;
-
-    private boolean forceLoad;
-
-    private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-
-    private LruCache<String, Object> tvPlayerViewCache;
-    private boolean isTeamPAgeVisible = false;
-    private final AppCMSPlaylistCall appCMSPlaylistCall;
-    private final AppCMSAudioDetailCall appCMSAudioDetailCall;
-    private boolean isAudioPlayerOpen;
-
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
-
-    public String getUaAccessKey() {
-        return uaAccessKey;
-    }
-
-    public void setUaAccessKey(String uaAccessKey) {
-        this.uaAccessKey = uaAccessKey;
-    }
-
-    public String getUaChannelId() {
-        return uaChannelId;
-    }
-
-    public void setUaChannelId(String uaChannelId) {
-        this.uaChannelId = uaChannelId;
-    }
-
     private String uaAccessKey;
     private String uaChannelId;
     private UANamedUserEventCall uaNamedUserEventCall;
-
     private boolean purchaseFromRestore;
-
     private BitmapCachePresenter bitmapCachePresenter;
-
     private int numPagesProcessed;
 
     @Inject
@@ -1018,6 +980,22 @@ public class AppCMSPresenter {
         return color;
     }
 
+    public String getUaAccessKey() {
+        return uaAccessKey;
+    }
+
+    public void setUaAccessKey(String uaAccessKey) {
+        this.uaAccessKey = uaAccessKey;
+    }
+
+    public String getUaChannelId() {
+        return uaChannelId;
+    }
+
+    public void setUaChannelId(String uaChannelId) {
+        this.uaChannelId = uaChannelId;
+    }
+
     /**
      * This returns the current Android JSON object
      *
@@ -1208,7 +1186,7 @@ public class AppCMSPresenter {
             appCMSMain.setApiBaseUrlCached("https://release-api-cached.viewlift.com");
         }
         if (currentContext != null && pageId != null) {
-            String urlWithContent;
+            String urlWithContent = null;
             if (usePageIdQueryParam) {
                 if (viewPlansPage) {
                     urlWithContent =
@@ -2692,7 +2670,7 @@ public class AppCMSPresenter {
     public boolean isMainFragmentTransparent() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 return (mainFragmentView.getAlpha() != 1.0f &&
                         mainFragmentView.getVisibility() == View.VISIBLE);
@@ -2711,7 +2689,7 @@ public class AppCMSPresenter {
     public boolean isMainFragmentViewVisible() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -2727,13 +2705,13 @@ public class AppCMSPresenter {
     public void showMainFragmentView(boolean show) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 if (show) {
                     mainFragmentView.setVisibility(View.VISIBLE);
                     mainFragmentView.setAlpha(1.0f);
                     FrameLayout addOnFragment =
-                            (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                            currentActivity.findViewById(R.id.app_cms_addon_fragment);
                     if (addOnFragment != null) {
                         addOnFragment.setVisibility(View.GONE);
                     }
@@ -2753,7 +2731,7 @@ public class AppCMSPresenter {
      */
     private void setMainFragmentEnabled(boolean isEnabled) {
         FrameLayout mainFragmentView =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                currentActivity.findViewById(R.id.app_cms_fragment);
         if (mainFragmentView != null) {
             setAllChildrenEnabled(isEnabled, mainFragmentView);
         }
@@ -2795,7 +2773,7 @@ public class AppCMSPresenter {
     public void setMainFragmentTransparency(float transparency) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 mainFragmentView.setAlpha(transparency);
             }
@@ -2809,7 +2787,7 @@ public class AppCMSPresenter {
     public boolean isAddOnFragmentVisible() {
         if (currentActivity != null) {
             FrameLayout addOnFragment =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
         }
         return false;
@@ -2822,7 +2800,7 @@ public class AppCMSPresenter {
     public boolean isAdditionalFragmentVisibile() {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             if (additionalFragmentView != null) {
                 return additionalFragmentView.getVisibility() == View.VISIBLE;
             }
@@ -2841,7 +2819,7 @@ public class AppCMSPresenter {
             showMainFragmentView(showMainFragment);
             setMainFragmentTransparency(mainFragmentTransparency);
             FrameLayout addOnFragment =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             if (addOnFragment != null) {
                 addOnFragment.setVisibility(View.VISIBLE);
                 addOnFragment.bringToFront();
@@ -2853,7 +2831,7 @@ public class AppCMSPresenter {
     private boolean isAdditionalFragmentViewAvailable() {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             if (additionalFragmentView != null) {
                 return true;
             }
@@ -2864,7 +2842,7 @@ public class AppCMSPresenter {
     private void clearAdditionalFragment() {
         if (isAdditionalFragmentViewAvailable()) {
             FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             additionalFragmentView.removeAllViews();
         }
     }
@@ -3768,9 +3746,9 @@ public class AppCMSPresenter {
     private void displayCustomToast(String toastMessage) {
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
-                (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
+                currentActivity.findViewById(R.id.custom_toast_layout_root));
 
-        TextView customToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
+        TextView customToastMessage = layout.findViewById(R.id.custom_toast_message);
         customToastMessage.setText(toastMessage);
 
         customToast = new Toast(currentActivity.getApplicationContext());
@@ -4857,7 +4835,6 @@ public class AppCMSPresenter {
         }
     }
 
-
     public void editHistory(final String filmId,
                             final Action1<AppCMSDeleteHistoryResult> resultAction1, boolean post) {
         final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
@@ -5664,8 +5641,6 @@ public class AppCMSPresenter {
         return callBackPlaylistHelper;
     }
 
-    AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
-
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
@@ -5696,13 +5671,13 @@ public class AppCMSPresenter {
                             /*check to play audio*/
                             if (playAudio) {
                                 AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
-                                mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-                                PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                                AudioPlaylistHelper.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getMetadata(appCMSAudioDetailResult.getId()));
                                 mAudioPlaylist.setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                                 if (callBackPlaylistHelper != null) {
-                                    callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    callBackPlaylistHelper.onPlaybackStart(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 } else if (currentActivity != null) {
-                                    mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    mAudioPlaylist.onMediaItemSelected(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
                             } else {
                                 if (appCMSAudioDetailAPIAction != null) {
@@ -5733,7 +5708,6 @@ public class AppCMSPresenter {
                     }
                 });
     }
-
 
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
@@ -8791,12 +8765,9 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageSearch(String pageId) {
-        if (pageId != null &&
+        return pageId != null &&
                 !TextUtils.isEmpty(pageId) &&
-                pageId.contains(currentActivity.getString(R.string.app_cms_search_page_tag))) {
-            return true;
-        }
-        return false;
+                pageId.contains(currentActivity.getString(R.string.app_cms_search_page_tag));
     }
 
     public NavigationPrimary getPageTeamNavigationPage(List<NavigationPrimary> navigationTabBarList) {
@@ -11137,15 +11108,6 @@ public class AppCMSPresenter {
     public void addBitmapToCache(String url, Bitmap bitmap) {
         if (bitmapCachePresenter != null && currentContext != null) {
             bitmapCachePresenter.addBitmapToCache(currentContext, url, bitmap);
-        }
-    }
-
-    public void setCurrentContext(Context context) {
-        this.currentContext = context;
-        try {
-            this.cachedAPIUserToken = context.getString(R.string.app_cms_cached_api_user_token);
-        } catch (Exception e) {
-
         }
     }
 
@@ -13873,10 +13835,7 @@ public class AppCMSPresenter {
 
         final Rect scrollBounds = new Rect();
         v.getHitRect(scrollBounds);
-        if (childView != null && childView.getLocalVisibleRect(scrollBounds)) {
-            return true;
-        }
-        return false;
+        return childView != null && childView.getLocalVisibleRect(scrollBounds);
 
     }
 
@@ -14026,7 +13985,7 @@ public class AppCMSPresenter {
                 pipPlayerVisible = false;
             }
             relativeLayoutPIP.setVisibility(View.GONE);
-            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+            RelativeLayout rootView = currentActivity.findViewById(R.id.app_cms_parent_view);
             if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
                 relativeLayoutPIP.disposeRelativeLayoutEvent();
             }
@@ -14044,11 +14003,11 @@ public class AppCMSPresenter {
         if (videoPlayerView != null && videoPlayerView.getParent() != null) {
             relativeLayoutFull = new FullPlayerView(currentActivity, this);
             relativeLayoutFull.setVisibility(View.VISIBLE);
-            if (((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)) == null) {
+            if (currentActivity.findViewById(R.id.app_cms_parent_view) == null) {
                 return;
             }
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
+            currentActivity.findViewById(R.id.app_cms_parent_view).setVisibility(View.VISIBLE);
 
             isFullScreenVisible = true;
             restrictLandscapeOnly();
@@ -14076,7 +14035,7 @@ public class AppCMSPresenter {
 //                relativeLayoutFull.setVisibility(View.GONE);
 //                relativeLayoutFull.removeAllViews();
 
-                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+                RelativeLayout rootView = currentActivity.findViewById(R.id.app_cms_parent_view);
                 rootView.postDelayed(() -> {
                     try {
                         rootView.removeView(relativeLayoutFull);
@@ -14398,6 +14357,343 @@ public class AppCMSPresenter {
         isTeamPAgeVisible = isVisible;
     }
 
+    private UAAssociateNamedUserRequest getUAAssociateNamedUserRequest(String userId) {
+        UAAssociateNamedUserRequest uaAssociateNamedUserRequest = new UAAssociateNamedUserRequest();
+        uaAssociateNamedUserRequest.setNamedUserId(userId);
+        if (currentContext != null) {
+            uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
+        }
+        uaAssociateNamedUserRequest.setChannelId(uaChannelId);
+
+        return uaAssociateNamedUserRequest;
+    }
+
+    private void sendUALoggedInEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUserLoginEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
+                                true);
+                    });
+        }
+    }
+
+    private void sendUALoggedOutEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUserLogoutEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
+                                false);
+                    });
+        }
+    }
+
+    private void sendUASubscribedEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscribedEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUAUnsubscribedEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUnsubscribedEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscriptionAboutToExpireEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionAboutToExpireEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscriptionEndDateEvent(String userId, String subscriptionEndDate) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionEndDateEvent(userId,
+                    subscriptionEndDate,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscriptionPlanEvent(String userId, String subscriptionPlan) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionPlanEvent(userId,
+                    subscriptionPlan,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private PostUANamedUserEventAsyncTask.Params getUAParams() {
+        return new PostUANamedUserEventAsyncTask.Params
+                .Builder()
+                .accessKey(uaAccessKey)
+                /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
+                .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+//                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
+                .build();
+    }
+
+    private void sendUAAssociateUserEventRequest(UAAssociateNamedUserRequest uaAssociateNamedUserRequest,
+                                                 boolean associate) {
+        PostUANamedUserEventAsyncTask.Params params = getUAParams();
+
+        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
+                .execute(params, uaAssociateNamedUserRequest, associate);
+    }
+
+    private void sendUANamedUserEventRequest(UANamedUserRequest uaNamedUserRequest) {
+        PostUANamedUserEventAsyncTask.Params params = getUAParams();
+
+        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
+                .execute(params, uaNamedUserRequest);
+    }
+
+    public String getAdsUrl(String pagePath) {
+        String videoTag = null;
+        if (appCMSAndroid != null
+                && appCMSAndroid.getAdvertising() != null
+                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+        }
+        if (videoTag == null) {
+            return null;
+        }
+        Date now = new Date();
+        return currentActivity.getString(R.string.app_cms_ads_api_url,
+                videoTag,
+                getPermalinkCompletePath(pagePath),
+                now.getTime(),
+                appCMSMain.getSite());
+    }
+
+    public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
+        this.tvVideoPlayerView = customVideoPlayerView;
+    }
+
+    public void showFullScreenTVPlayer() {
+        if (videoPlayerViewParent == null) {
+            videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
+        }
+        if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            currentActivity.findViewById(R.id.app_cms_parent_view).setVisibility(View.VISIBLE);
+            tvVideoPlayerView.getPlayerView().showController();
+            isFullScreenVisible = true;
+        }
+    }
+
+    public void exitFullScreenTVPlayer() {
+        try {
+            if (relativeLayoutFull != null) {
+                if (videoPlayerViewParent != null) {
+                    relativeLayoutFull.removeView(tvVideoPlayerView);
+                    if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
+                        ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
+                    }
+                    tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                    videoPlayerViewParent.addView(tvVideoPlayerView);
+                }
+                tvVideoPlayerView = null;
+                videoPlayerViewParent = null;
+
+                RelativeLayout rootView = currentActivity.findViewById(R.id.app_cms_parent_view);
+                rootView.postDelayed(() -> {
+                    try {
+                        rootView.removeView(relativeLayoutFull);
+                        relativeLayoutFull = null;
+                    } catch (Exception e) {
+
+                    }
+                }, 50);
+
+            }
+        } catch (Exception e) {
+        }
+        if (relativeLayoutFull != null) {
+            relativeLayoutFull.setVisibility(View.GONE);
+        }
+        isFullScreenVisible = false;
+    }
+
+    public void stopAudioServices() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
+        currentActivity.sendBroadcast(intent);
+    }
+
+    public String audioDuration(int totalSeconds) {
+
+        final int MINUTES_IN_AN_HOUR = 60;
+        final int SECONDS_IN_A_MINUTE = 60;
+
+        int seconds = totalSeconds % SECONDS_IN_A_MINUTE;
+        int totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
+        int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+//        int hours = totalMinutes / MINUTES_IN_AN_HOUR;
+
+//        return hours + " hours " + minutes + " minutes " + seconds + " seconds";
+        String min = "";
+        String sec = "";
+        if (minutes < 10) {
+            min = min + "0" + minutes;
+        } else {
+            min = min + minutes;
+        }
+        if (seconds < 10) {
+            sec = sec + "0" + seconds;
+        } else {
+            sec = sec + seconds;
+        }
+        return min + ":" + sec;
+    }
+
+    public Context getCurrentContext() {
+        return currentContext;
+    }
+
+    public void setCurrentContext(Context context) {
+        this.currentContext = context;
+        try {
+            this.cachedAPIUserToken = context.getString(R.string.app_cms_cached_api_user_token);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public boolean getAppHomeActivityCreated() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(IS_HOME_STARTED, false);
+        }
+        return false;
+    }
+
+    public void setAppHomeActivityCreated(boolean isHomeCreated) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            sharedPrefs.edit().putBoolean(IS_HOME_STARTED, isHomeCreated).commit();
+        }
+    }
+
+    public boolean getAudioReload() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            return sharedPrefs.getBoolean(IS_AUDIO_RELOAD, false);
+        }
+        return false;
+    }
+
+    public void setAudioReload(boolean isReload) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            sharedPrefs.edit().putBoolean(IS_AUDIO_RELOAD, isReload).commit();
+        }
+    }
+
+    public void saveLastPlaySongPosition(String id, long pos) {
+        Gson gson = new Gson();
+
+        String json = gson.toJson(new LastPlayAudioDetail(id, pos));
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            sharedPrefs.edit().putString(LAST_PLAY_SONG_DETAILS, json).commit();
+        }
+    }
+
+    public LastPlayAudioDetail getLastPlaySongPosition() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
+            Gson gson = new Gson();
+            String json = sharedPrefs.getString(LAST_PLAY_SONG_DETAILS, "");
+            LastPlayAudioDetail obj = gson.fromJson(json, LastPlayAudioDetail.class);
+
+            return obj;
+        }
+        return null;
+    }
+
+    public void setLastAudioPlayState(boolean isReload) {
+        isLastStatePlaying = isReload;
+    }
+
+    public boolean getLastAudioPlayState(boolean isReload) {
+        return isLastStatePlaying;
+    }
+
+    public boolean isAllPlaylistAudioDownloaded(List<ContentDatum> contentData) {
+        boolean isPlaylistDownloaded = true;
+        if (contentData != null) {
+            for (int i = 0; i < contentData.size(); i++) {
+                if (contentData.get(i).getGist() != null &&
+                        contentData.get(i).getGist().getMediaType() != null
+                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())
+                        && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
+                    isPlaylistDownloaded = false;
+                    break;
+                }
+            }
+        }
+        return isPlaylistDownloaded;
+    }
+
+    public boolean getAudioPlayerOpen() {
+        return isAudioPlayerOpen;
+    }
+
+    public void setAudioPlayerOpen(boolean isAudioPlayer) {
+        isAudioPlayerOpen = isAudioPlayer;
+    }
+
+    public String getArtistNameFromCreditBlocks(List<CreditBlock> creditBlocks) {
+        StringBuilder artist = new StringBuilder();
+        if (creditBlocks != null && creditBlocks.size() > 0 && creditBlocks.get(0).getCredits() != null && creditBlocks.get(0).getCredits().size() > 0 && creditBlocks.get(0).getCredits().get(0).getTitle() != null) {
+
+            for (int i = 0; i < creditBlocks.size(); i++) {
+                if (creditBlocks.get(i).getTitle().equalsIgnoreCase("Starring")) {
+                    if (creditBlocks.get(i).getCredits() != null && creditBlocks.get(i).getCredits().size() > 0 && creditBlocks.get(i).getCredits().get(0).getTitle() != null) {
+                        for (int j = 0; j < creditBlocks.get(i).getCredits().size(); j++) {
+                            if (j > 0 && j == creditBlocks.get(i).getCredits().size() - 1) {
+                                artist.append(" & ");
+                            } else if (j > 0) {
+                                artist.append(" , ");
+                            }
+                            artist.append(creditBlocks.get(i).getCredits().get(j).getTitle());
+
+                        }
+                    }
+                }
+            }
+        }
+        if (TextUtils.isEmpty(artist.toString())) {
+            artist.append("Unknown");
+        }
+        return artist.toString();
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
@@ -14487,11 +14783,11 @@ public class AppCMSPresenter {
         final OnRunOnUIThread onRunOnUIThread;
         final boolean isTablet;
         final AppCMSPresenter appCMSPresenter;
-        volatile ImageView imageView;
         final Action1<UserVideoDownloadStatus> responseAction;
         final Timer timer;
         final int radiusDifference;
         final String id;
+        volatile ImageView imageView;
         volatile boolean cancelled;
         volatile boolean finished;
         volatile boolean running;
@@ -14684,118 +14980,6 @@ public class AppCMSPresenter {
                 iv2.requestLayout();
             }
         }
-    }
-
-    private UAAssociateNamedUserRequest getUAAssociateNamedUserRequest(String userId) {
-        UAAssociateNamedUserRequest uaAssociateNamedUserRequest = new UAAssociateNamedUserRequest();
-        uaAssociateNamedUserRequest.setNamedUserId(userId);
-        if (currentContext != null) {
-            uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
-        }
-        uaAssociateNamedUserRequest.setChannelId(uaChannelId);
-
-        return uaAssociateNamedUserRequest;
-    }
-
-    private void sendUALoggedInEvent(String userId) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendUserLoginEvent(userId,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
-                                true);
-                    });
-        }
-    }
-
-    private void sendUALoggedOutEvent(String userId) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendUserLogoutEvent(userId,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
-                                false);
-                    });
-        }
-    }
-
-    private void sendUASubscribedEvent(String userId) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendSubscribedEvent(userId,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                    });
-        }
-    }
-
-    private void sendUAUnsubscribedEvent(String userId) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendUnsubscribedEvent(userId,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                    });
-        }
-    }
-
-    private void sendUASubscriptionAboutToExpireEvent(String userId) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendSubscriptionAboutToExpireEvent(userId,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                    });
-        }
-    }
-
-    private void sendUASubscriptionEndDateEvent(String userId, String subscriptionEndDate) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendSubscriptionEndDateEvent(userId,
-                    subscriptionEndDate,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                    });
-        }
-    }
-
-    private void sendUASubscriptionPlanEvent(String userId, String subscriptionPlan) {
-        if (currentContext != null &&
-                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
-            urbanAirshipEventPresenter.sendSubscriptionPlanEvent(userId,
-                    subscriptionPlan,
-                    uaNamedUserRequest -> {
-                        sendUANamedUserEventRequest(uaNamedUserRequest);
-                    });
-        }
-    }
-
-    private PostUANamedUserEventAsyncTask.Params getUAParams() {
-        return new PostUANamedUserEventAsyncTask.Params
-                .Builder()
-                .accessKey(uaAccessKey)
-                /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-                .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
-//                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
-                .build();
-    }
-
-    private void sendUAAssociateUserEventRequest(UAAssociateNamedUserRequest uaAssociateNamedUserRequest,
-                                                 boolean associate) {
-        PostUANamedUserEventAsyncTask.Params params = getUAParams();
-
-        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
-                .execute(params, uaAssociateNamedUserRequest, associate);
-    }
-
-    private void sendUANamedUserEventRequest(UANamedUserRequest uaNamedUserRequest) {
-        PostUANamedUserEventAsyncTask.Params params = getUAParams();
-
-        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
-                .execute(params, uaNamedUserRequest);
     }
 
     private static class EntitlementCheckActive implements Action1<UserIdentity> {
@@ -15296,226 +15480,6 @@ public class AppCMSPresenter {
                 }
             }
         }
-    }
-
-    public String getAdsUrl(String pagePath) {
-        String videoTag = null;
-        if (appCMSAndroid != null
-                && appCMSAndroid.getAdvertising() != null
-                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-        }
-        if (videoTag == null) {
-            return null;
-        }
-        Date now = new Date();
-        return currentActivity.getString(R.string.app_cms_ads_api_url,
-                videoTag,
-                getPermalinkCompletePath(pagePath),
-                now.getTime(),
-                appCMSMain.getSite());
-    }
-
-    public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
-        this.tvVideoPlayerView = customVideoPlayerView;
-    }
-
-    public void showFullScreenTVPlayer() {
-        if (videoPlayerViewParent == null) {
-            videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
-        }
-        if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
-            relativeLayoutFull = new FullPlayerView(currentActivity, this);
-            relativeLayoutFull.setVisibility(View.VISIBLE);
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
-            tvVideoPlayerView.getPlayerView().showController();
-            isFullScreenVisible = true;
-        }
-    }
-
-    public void exitFullScreenTVPlayer() {
-        try {
-            if (relativeLayoutFull != null) {
-                if (videoPlayerViewParent != null) {
-                    relativeLayoutFull.removeView(tvVideoPlayerView);
-                    if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
-                        ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
-                    }
-                    tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-                    videoPlayerViewParent.addView(tvVideoPlayerView);
-                }
-                tvVideoPlayerView = null;
-                videoPlayerViewParent = null;
-
-                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-                rootView.postDelayed(() -> {
-                    try {
-                        rootView.removeView(relativeLayoutFull);
-                        relativeLayoutFull = null;
-                    } catch (Exception e) {
-
-                    }
-                }, 50);
-
-            }
-        } catch (Exception e) {
-        }
-        if (relativeLayoutFull != null) {
-            relativeLayoutFull.setVisibility(View.GONE);
-        }
-        isFullScreenVisible = false;
-    }
-
-    public void stopAudioServices() {
-        Intent intent = new Intent();
-        intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
-        intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
-        currentActivity.sendBroadcast(intent);
-    }
-
-    public String audioDuration(int totalSeconds) {
-
-        final int MINUTES_IN_AN_HOUR = 60;
-        final int SECONDS_IN_A_MINUTE = 60;
-
-        int seconds = totalSeconds % SECONDS_IN_A_MINUTE;
-        int totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
-        int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
-//        int hours = totalMinutes / MINUTES_IN_AN_HOUR;
-
-//        return hours + " hours " + minutes + " minutes " + seconds + " seconds";
-        String min = "";
-        String sec = "";
-        if (minutes < 10) {
-            min = min + "0" + minutes;
-        } else {
-            min = min + minutes;
-        }
-        if (seconds < 10) {
-            sec = sec + "0" + seconds;
-        } else {
-            sec = sec + seconds;
-        }
-        return min + ":" + sec;
-    }
-
-    public Context getCurrentContext() {
-        return currentContext;
-    }
-
-    public void setAppHomeActivityCreated(boolean isHomeCreated) {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
-            sharedPrefs.edit().putBoolean(IS_HOME_STARTED, isHomeCreated).commit();
-        }
-    }
-
-    public boolean getAppHomeActivityCreated() {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(IS_HOME_STARTED, false);
-        }
-        return false;
-    }
-
-    public void setAudioReload(boolean isReload) {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
-            sharedPrefs.edit().putBoolean(IS_AUDIO_RELOAD, isReload).commit();
-        }
-    }
-
-    public boolean getAudioReload() {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
-            return sharedPrefs.getBoolean(IS_AUDIO_RELOAD, false);
-        }
-        return false;
-    }
-
-    public void saveLastPlaySongPosition(String id, long pos) {
-        Gson gson = new Gson();
-
-        String json = gson.toJson(new LastPlayAudioDetail(id, pos));
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
-            sharedPrefs.edit().putString(LAST_PLAY_SONG_DETAILS, json).commit();
-        }
-    }
-
-    public LastPlayAudioDetail getLastPlaySongPosition() {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);
-            Gson gson = new Gson();
-            String json = sharedPrefs.getString(LAST_PLAY_SONG_DETAILS, "");
-            LastPlayAudioDetail obj = gson.fromJson(json, LastPlayAudioDetail.class);
-
-            return obj;
-        }
-        return null;
-    }
-
-    boolean isLastStatePlaying = true;
-
-    public void setLastAudioPlayState(boolean isReload) {
-        isLastStatePlaying = isReload;
-    }
-
-    public boolean getLastAudioPlayState(boolean isReload) {
-        return isLastStatePlaying;
-    }
-
-    public boolean isAllPlaylistAudioDownloaded(List<ContentDatum> contentData) {
-        boolean isPlaylistDownloaded = true;
-        if (contentData != null) {
-            for (int i = 0; i < contentData.size(); i++) {
-                if (contentData.get(i).getGist() != null &&
-                        contentData.get(i).getGist().getMediaType() != null
-                        && !contentData.get(i).getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())
-                        && !isVideoDownloaded(String.valueOf(contentData.get(i).getGist().getId()))) {
-                    isPlaylistDownloaded = false;
-                    break;
-                }
-            }
-        }
-        return isPlaylistDownloaded;
-    }
-
-
-    public void setAudioPlayerOpen(boolean isAudioPlayer) {
-        isAudioPlayerOpen = isAudioPlayer;
-    }
-
-    public boolean getAudioPlayerOpen() {
-        return isAudioPlayerOpen;
-    }
-
-
-    public String getArtistNameFromCreditBlocks(List<CreditBlock> creditBlocks) {
-        StringBuilder artist = new StringBuilder();
-        if (creditBlocks != null && creditBlocks.size() > 0 && creditBlocks.get(0).getCredits() != null && creditBlocks.get(0).getCredits().size() > 0 && creditBlocks.get(0).getCredits().get(0).getTitle() != null) {
-
-            for (int i = 0; i < creditBlocks.size(); i++) {
-                if (creditBlocks.get(i).getTitle().equalsIgnoreCase("Starring")) {
-                    if (creditBlocks.get(i).getCredits() != null && creditBlocks.get(i).getCredits().size() > 0 && creditBlocks.get(i).getCredits().get(0).getTitle() != null) {
-                        for (int j = 0; j < creditBlocks.get(i).getCredits().size(); j++) {
-                            if (j > 0 && j == creditBlocks.get(i).getCredits().size() - 1) {
-                                artist.append(" & ");
-                            } else if (j > 0) {
-                                artist.append(" , ");
-                            }
-                            artist.append(creditBlocks.get(i).getCredits().get(j).getTitle());
-
-                        }
-                    }
-                }
-            }
-        }
-        if (TextUtils.isEmpty(artist.toString())) {
-            artist.append("Unknown");
-        }
-        return artist.toString();
     }
 
 }
