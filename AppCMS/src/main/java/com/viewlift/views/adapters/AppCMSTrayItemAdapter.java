@@ -647,18 +647,19 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
         actionPresenter.setAction(action);
 
-        if (permalink == null ||
-                hlsUrl == null ||
-                extraData[2] == null ||
-                !appCMSPresenter.launchButtonSelectedAction(
-                        permalink,
-                        actionPresenter,
-                        title,
-                        extraData,
-                        data,
-                        false,
-                        0,
-                        relatedVideoIds)) {
+        if (!appCMSPresenter.isNetworkConnected() &&
+                (permalink == null ||
+                        hlsUrl == null ||
+                        extraData[2] == null ||
+                        !appCMSPresenter.launchButtonSelectedAction(
+                                permalink,
+                                actionPresenter,
+                                title,
+                                extraData,
+                                data,
+                                false,
+                                0,
+                                relatedVideoIds))) {
             //Log.e(TAG, "Could not launch action: " +
 //                    " permalink: " +
 //                    permalink +
@@ -666,6 +667,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 //                    action +
 //                    " hlsUrl: " +
 //                    hlsUrl);
+        } else {
+            appCMSPresenter.launchVideoPlayer(data,
+                    data.getGist().getId(),
+                    0,
+                    relatedVideoIds,
+                    data.getGist().getWatchedTime(),
+                    action);
         }
     }
 
