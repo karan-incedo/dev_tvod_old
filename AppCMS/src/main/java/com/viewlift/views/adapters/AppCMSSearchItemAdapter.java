@@ -113,7 +113,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     title,
                     null,
                     null,
-                    true,
+                    false,
                     0,
                     null)) {
 //                    //Log.e(TAG, "Could not launch action: " +
@@ -193,7 +193,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
                 applySportsStyleDefault(viewHolder, createEmptyBitmap());
             }
-            viewHolder.gridOptions.setVisibility(View.GONE);
+            viewHolder.gridOptions.setVisibility(View.INVISIBLE);
         }
         viewHolder.gridOptions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,7 +324,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.gridOptions.setId(View.generateViewId());
             this.gridOptions.setLayoutParams(gridLayoutParams);
             this.gridOptions.setImageResource(R.drawable.dots_more);
-            this.gridOptions.setVisibility(View.GONE);
+            this.gridOptions.setVisibility(View.INVISIBLE);
             this.titleLayout.addView(this.gridOptions);
 
             this.filmTitle = new TextView(view.getContext());

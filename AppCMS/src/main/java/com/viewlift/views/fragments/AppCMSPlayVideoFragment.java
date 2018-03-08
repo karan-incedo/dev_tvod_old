@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,7 +73,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         AdEvent.AdEventListener,
         VideoPlayerView.ErrorEventListener,
         Animation.AnimationListener,
-        AudioManager.OnAudioFocusChangeListener {
+        AudioManager.OnAudioFocusChangeListener,
+        OnResumeVideo {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -157,6 +159,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
+
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -266,7 +270,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (context instanceof OnUpdateContentDatumEvent) {
             onUpdateContentDatumEvent = (OnUpdateContentDatumEvent) context;
         }
-
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
+        }
+        if (context instanceof RegisterOnResumeVideo) {
+            ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
+        }
     }
 
     @Override
@@ -477,6 +486,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
 
         if (!TextUtils.isEmpty(policyCookie) &&
                 !TextUtils.isEmpty(signatureCookie) &&
@@ -1436,6 +1449,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
+    @Override
+    public void onResumeVideo() {
+        resumeVideo();
+        if (videoPlayerView != null) {
+            videoPlayerView.startPlayer();
+        }
+    }
+
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -1457,5 +1478,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         ContentDatum getCurrentContentDatum();
 
         List<String> getCurrentRelatedVideoIds();
+    }
+
+    public interface RegisterOnResumeVideo {
+        void registerOnResumeVideo(OnResumeVideo onResumeVideo);
     }
 }
