@@ -5472,6 +5472,13 @@ public class AppCMSPresenter {
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
+        if (!isNetworkConnected()) {
+            showDialog(AppCMSPresenter.DialogType.NETWORK, null,
+                    false,
+                    null,
+                    null);
+            return;
+        }
         if (currentActivity != null) {
             Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
@@ -5540,7 +5547,13 @@ public class AppCMSPresenter {
 
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
-
+        if (!isNetworkConnected()) {
+            showDialog(AppCMSPresenter.DialogType.NETWORK, null,
+                    false,
+                    null,
+                    null);
+            return;
+        }
         if (currentActivity != null && !TextUtils.isEmpty(playlistId)) {
             Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
