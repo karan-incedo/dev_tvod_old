@@ -53,12 +53,15 @@ public class RESTUnitTest {
     @Before
     public void initialize() {
         when(context.getPackageName()).thenReturn("myPackage");
-        when(context.getString(R.string.app_cms_baseurl))
+        //when(context.getString(R.string.app_cms_baseurl))
+        when(Utils.getProperty("BaseUrl", context))
                 .thenReturn("https://appcms.viewlift.com/");
         when(context.getFilesDir())
                 .thenReturn(new File(""));
         when(context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_baseurl),
+                //context.getString(R.string.app_cms_baseurl),
+
+                Utils.getProperty("BaseUrl", context),
                 APP_CMS_APP_NAME,
                 123454321))
                 .thenReturn(String.format(APP_CMS_MAIN_URL,
@@ -74,7 +77,7 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSMainCall() throws Exception {
         AppCMSMainUICall appCMSMainUICall = appCMSUIComponent.appCMSMainCall();
-        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME, 0, false);
+        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME, 0, false, false);
         assertNotNull(main);
         assertTrue(!TextUtils.isEmpty(main.getAndroid()));
     }
