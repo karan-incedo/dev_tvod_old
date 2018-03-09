@@ -59,6 +59,7 @@ public class BeaconPing extends Thread {
                             contentDatum.setMediaType("video");
                         }
                         //Log.d(TAG, "Beacon Message Request position: " + currentTime);
+
                         appCMSPresenter.sendBeaconMessage(filmId,
                                 permaLink,
                                 parentScreenName,

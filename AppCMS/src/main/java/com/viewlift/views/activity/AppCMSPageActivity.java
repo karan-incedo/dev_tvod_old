@@ -262,6 +262,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
         setContentView(R.layout.activity_appcms_page);
 
         homePageIndex = getResources().getInteger(R.integer.home_page_index);
@@ -1057,7 +1058,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
         appCMSPresenter.setCancelAllLoads(false);
-        if(AudioServiceHelper.getAudioInstance()!=null) {
+        if (AudioServiceHelper.getAudioInstance() != null) {
             AudioServiceHelper.getAudioInstance().onStart();
             AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
         }
@@ -1184,6 +1185,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(this)) {
+            System.out.println("config from onresume");
+
             appCMSPresenter.restrictPortraitOnly();
         } else if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -1309,12 +1312,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSBinder != null) {
                 Log.w(TAG, "Refreshing screen: " + appCMSBinder.getScreenName());
                 AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
-                    if (appCMSPageUI != null) {
-                        appCMSBinder.setAppCMSPageUI(appCMSPageUI);
-                    } else if (cancelLoadingOnFinish) {
-                        pageLoading(false);
-                    }
-                    updateData(appCMSBinder, () -> appCMSPresenter.sendRefreshPageAction());
+                if (appCMSPageUI != null) {
+                    appCMSBinder.setAppCMSPageUI(appCMSPageUI);
+                } else if (cancelLoadingOnFinish) {
+                    pageLoading(false);
+                }
+                updateData(appCMSBinder, () -> appCMSPresenter.sendRefreshPageAction());
 
 
             } else if (cancelLoadingOnFinish) {
@@ -1377,19 +1380,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String deeplinkUri = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
                 if (!TextUtils.isEmpty(deeplinkUri)) {
                     pendingDeeplinkUri = Uri.parse(deeplinkUri);
-                }
-                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
-
-                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-                        startActivity(new Intent(this, AppCMSLaunchActivity.class));
-                        finish();
-                    } else {
-                        Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(fullScreenIntent);
-                    }
-                    appCMSPresenter.setAppHomeActivityCreated(true);
 
                 }
             }
@@ -1411,7 +1401,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isUserLoggedIn()) {
             handleCloseAction(true);
         }
-        if (AudioServiceHelper.getAudioInstance()!=null ) {
+        if (AudioServiceHelper.getAudioInstance() != null) {
             AudioServiceHelper.getAudioInstance().onStop();
         }
         ViewCreator.cancelBeaconPing();
@@ -1980,7 +1970,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         .replace("#", ""), 16),
                                 Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()
                                         .replace("#", ""), 16));
-                        //Need to FireEvents When User click on Search
                         sendFireBaseSearchScreenEvent();
 
                     } catch (NumberFormatException e) {
@@ -2013,7 +2002,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-          }
+            }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
@@ -2047,7 +2036,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getmFireBaseAnalytics() != null)
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
-
 
     public void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
         if (!appCMSPresenter.navigateToPage(pageId,
@@ -2199,6 +2187,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         if (!BaseView.isTablet(this)) {
+            System.out.println("config from handleLaunchPageAction");
             appCMSPresenter.restrictPortraitOnly();
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -2423,7 +2412,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getLeft() != null && appCMSPresenter.getNavigation().getLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
-
                     mProfileTopButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -2431,7 +2419,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getRight() != null && appCMSPresenter.getNavigation().getRight().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getRight().size(); i++) {
                 if (appCMSPresenter.getNavigation().getRight().get(i).getDisplayedPath().equalsIgnoreCase("Search Screen")) {
-
                     mSearchTopButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -2707,6 +2694,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createTabBar() {
+
+
         ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
         if (appCMSPresenter.getNavigation() != null &&
                 appCMSPresenter.getNavigation().getTabBar() != null &&
@@ -2718,12 +2707,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSTabNavContainer.removeAllViews();
 
             //add separator view
-//            if (tabBarModule.isTabSeparator()) {
-//                View sepratorView = new View(this);
-//                sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
-//                sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
-//                appCMSTabNavContainer.addView(sepratorView);
-//            }
+            if (tabBarModule.isTabSeparator()) {
+                View sepratorView = new View(this);
+                sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
+                sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
+                appCMSTabNavContainer.addView(sepratorView);
+            }
 
             //add navigation item parent view
             appCMSTabNavContainerItems = new LinearLayout(this);
@@ -2808,7 +2797,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     }
 
-
     public class NavTabTag {
         public String getPageId() {
             return pageId;
@@ -2882,11 +2870,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
        /* if (!foundPage) {
             final NavBarItemView menuNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
+                    (NavBarItemView) appCMSTabNavContainerItems.getChildAt(navMenuPageIndex);
             selectNavItem(menuNavBarItemView);
         }*/
     }
-
 
     public void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
@@ -3190,7 +3177,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
             CastServiceProvider.getInstance(this).onActivityResume();
             appCMSPresenter.setCurrentMediaRouteButton(mMediaRouteButton);
-            if (mMediaRouteButton.getParent() != null && mMediaRouteButton.getParent() instanceof  ViewGroup) {
+            if (mMediaRouteButton.getParent() != null && mMediaRouteButton.getParent() instanceof ViewGroup) {
                 appCMSPresenter.setCurrentMediaRouteButtonParent((ViewGroup) mMediaRouteButton.getParent());
             }
         } catch (Exception e) {
@@ -3241,7 +3228,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             recurse,
                             true);
-
                 }
 
                 if (appCMSBinderStack.isEmpty()) {
@@ -3467,6 +3453,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
     }
+
 
     public void setFullScreenFocus() {
         synchronized (this) {

@@ -317,7 +317,7 @@
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
-    <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_homescreen_key">Home Page CLONE</string>
     <string name="app_cms_pagename_musicHub_screen_key">Music Hub</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
@@ -335,7 +335,7 @@
     <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_authpage_key">Authentication Screen</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
-    <string name="app_cms_action_homepage_key">Home Page</string>
+    <string name="app_cms_action_homepage_key">Home Page CLONE</string>
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
@@ -378,8 +378,8 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
-    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s</string>
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
@@ -607,5 +607,6 @@
     <string name="app_cms_download_audio_action">downloadAudio</string>
     <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
     <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
+
 
 </resources>

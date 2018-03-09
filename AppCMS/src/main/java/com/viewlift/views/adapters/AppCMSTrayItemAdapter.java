@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -56,7 +57,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private static final int SECONDS_PER_MIN = 60;
 
-    protected  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
+    protected ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -96,9 +97,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             case PAGE_HISTORY_01_MODULE_KEY:
             case PAGE_HISTORY_02_MODULE_KEY:
                 this.isHistory = true;
+                Log.e(TAG, "Created new history tray");
                 break;
 
             case PAGE_DOWNLOAD_MODULE_KEY:
+                Log.e(TAG, "Created new download tray");
                 this.isDownload = true;
                 break;
 
@@ -148,9 +151,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.continue_watching_item, parent, false);
-//        View view = collectionGridItemViewCreator.createView(parent.getContext());
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
+
+        Log.e(TAG, "Created new view holder");
+
         return viewHolder;
     }
 
@@ -938,7 +943,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 extraData,
                 data,
                 false,
-                -1,
+                0,
                 relatedVideos)) {
             //Log.e(TAG, "Could not launch action: " +
 //                    " permalink: " +

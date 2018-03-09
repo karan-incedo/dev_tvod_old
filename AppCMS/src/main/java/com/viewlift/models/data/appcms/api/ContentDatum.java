@@ -168,6 +168,7 @@ public class ContentDatum implements Serializable {
         this.mediaType = mediaType;
     }
 
+
     public Gist getGist() {
         return gist;
     }
@@ -392,7 +393,6 @@ public class ContentDatum implements Serializable {
     public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
-
 
     AudioAssets audioAssets = null;
 

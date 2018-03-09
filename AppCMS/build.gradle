@@ -50,7 +50,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     buildToolsVersion '27.0.3'
 
     def packageName
@@ -65,7 +65,7 @@ android {
     def versionPropsFile = file('src/main/assets/version.properties')
 
     if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
+        Properties versionProps = new Properties()
 
         versionProps.load(new FileInputStream(versionPropsFile))
 
@@ -94,7 +94,7 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -257,7 +257,7 @@ configurations.all {
         def requested = details.requested
         if (requested.group == 'com.android.support') {
             if (!requested.name.startsWith("multidex")) {
-                details.useVersion '25.4.0'
+                details.useVersion '26.0.2'
             }
         }
     }

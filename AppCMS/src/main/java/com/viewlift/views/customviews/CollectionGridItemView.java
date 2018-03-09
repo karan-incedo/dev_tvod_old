@@ -407,16 +407,23 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data != null &&
                             data.getGist() != null &&
-                            data.getGist().getVideoImageUrl() != null &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         bringToFront = false;
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-                        final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                deviceWidth,
-                                childViewHeight);
-                        //Log.d(TAG, "Loading image: " + imageUrl);
+                        String imageUrl = "";
+                        if (data.getGist() != null &&
+                                data.getGist().getContentType() != null &&
+                                data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())
+                                && data.getGist().getImageGist() != null
+                                && data.getGist().getImageGist().get_16x9() != null) {
+                            imageUrl = data.getGist().getImageGist().get_16x9();
+                        } else if (data.getGist() != null && data.getGist().getVideoImageUrl() != null) {
+                            imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    deviceWidth,
+                                    childViewHeight);
+                        }
+
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
