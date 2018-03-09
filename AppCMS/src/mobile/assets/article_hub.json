@@ -920,14 +920,14 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 283
+          "height": 293
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 283
+          "height": 293
         }
       },
       "components": [
@@ -1104,37 +1104,6 @@
               "textColor": "#000000",
               "fontWeight": "Semibold",
               "key": "articleTitle"
-            },
-            {
-              "layout": {
-                "mobile": {
-                  "yAxis": 186,
-                  "xAxis": 0,
-                  "leftMargin": 5,
-                  "width": 55,
-                  "fontSize": 12,
-                  "height": 1
-                },
-                "tabletLandscape": {
-                  "yAxis": 186,
-                  "xAxis": 0,
-                  "leftMargin": 5,
-                  "width": 55,
-                  "fontSize": 12,
-                  "height": 1
-                },
-                "tabletPortrait": {
-                  "yAxis": 186,
-                  "xAxis": 0,
-                  "leftMargin": 5,
-                  "width": 55,
-                  "fontSize": 12,
-                  "height": 1
-                }
-              },
-              "backgroundColor": "000000",
-              "type": "separatorView",
-              "key": "separatorView"
             },
             {
               "layout": {
@@ -1459,8 +1428,8 @@
               "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
-              "numberOfLines": 3,
               "textColor": "#8c8c8c",
+              "numberOfLines": 3,
               "fontWeight": "Italic",
               "key": "summaryText"
             },
