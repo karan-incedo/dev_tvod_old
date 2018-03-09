@@ -1417,12 +1417,14 @@
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
+
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
+
                 }
               },
               "fontFamily": "OpenSans",
@@ -1439,18 +1441,21 @@
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15
+
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
+
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
+
                 }
               },
               "fontFamily": "OpenSans",
@@ -1468,19 +1473,22 @@
                   "yAxis": 0,
                   "leftMargin": 15,
                   "rightMargin": 0,
-                  "fontSize": 15
+                  "fontSize": 12
+
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 18
+                  "fontSize": 14
+
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
-                  "fontSize": 18
+                  "fontSize": 14
+
                 }
               },
               "fontFamily": "OpenSans",
@@ -1613,14 +1621,14 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height": 375
+                  "height" : 375
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height": 465
+                  "height" : 465
                 }
               },
               "type": "image",
@@ -1633,21 +1641,21 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height": 211
+                  "height" : 211
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height": 375
+                  "height" : 375
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height": 465
+                  "height" : 465
                 }
               },
               "type": "image",

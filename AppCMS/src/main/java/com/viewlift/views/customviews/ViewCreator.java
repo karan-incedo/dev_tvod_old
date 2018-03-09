@@ -1301,6 +1301,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
+                } else if (moduleInfo.getBlockName().contains("tray02")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "photo_galery.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_details.json"),
@@ -3212,7 +3218,8 @@ public class ViewCreator {
                     if (settings != null && settings.getTitle() != null)
                         ((TextView) componentViewResult.componentView).setText(settings.getTitle());
                 }
-                if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
+                if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO
+                        || componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO ) {
                     int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                         textBgColor = Color.parseColor(getColorWithOpacity(context, component.getBackgroundColor(), component.getOpacity()));
