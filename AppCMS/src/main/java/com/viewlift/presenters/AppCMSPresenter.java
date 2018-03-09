@@ -12416,30 +12416,66 @@ public class AppCMSPresenter {
                                      String pageTitle,
                                      String url) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
-        appCMSPageAPI.setId(getPageId(appCMSPageUI));
-        Bundle args = getPageActivityBundle(currentActivity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageTitle,
-                pageId,
-                pageIdToPageNameMap.get(pageId),
-                loadFromFile,
-                true,
-                false,
-                true,
-                false,
-                Uri.EMPTY,
-                ExtraScreenType.NONE);
-        if (args != null) {
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-            currentActivity.sendBroadcast(updatePageIntent);
-            setNavItemToCurrentAction(currentActivity);
+        if (appCMSPageUI == null) {
+            if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
+                RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                        pageTitle, null,
+                        null, false, pageId, PAGE_ACTION);
+                retryCallBinder.setPageId(pageId);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+                bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), false);
+                bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), false);
+                bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(args);
+                return;
+            }
+            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+            if (metaPage != null) {
+                getAppCMSPage(metaPage.getPageUI(),
+                        appCMSPageUIResult -> {
+                            if (appCMSPageUIResult != null) {
+                                navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUIResult);
+                                }
+                                openContactUsScreen(pageId, pageTitle, url);
+                            }
+                        },
+                        loadFromFile,
+                        false);
+            }
+        }else {
+            AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+            appCMSPageAPI.setId(getPageId(appCMSPageUI));
+            Bundle args = getPageActivityBundle(currentActivity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageTitle,
+                    pageId,
+                    pageIdToPageNameMap.get(pageId),
+                    loadFromFile,
+                    true,
+                    false,
+                    true,
+                    false,
+                    Uri.EMPTY,
+                    ExtraScreenType.NONE);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(updatePageIntent);
+                setNavItemToCurrentAction(currentActivity);
+            }
         }
     }
 
