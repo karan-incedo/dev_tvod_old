@@ -1200,11 +1200,11 @@ public class AppCMSPresenter {
                         if (usedCachedAPI) {
                             if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
                                     pageId.equals(moviesPage.getPageId()))) {
-//                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
-//                                        appCMSMain.getApiBaseUrlCached(),
-//                                        siteId,
-//                                        pageId,
-//                                        getLoggedInUser());
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+                                        appCMSMain.getApiBaseUrlCached(),
+                                        siteId,
+                                        pageId,
+                                        getLoggedInUser());
                             } else {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         appCMSMain.getApiBaseUrlCached(),
@@ -4836,7 +4836,7 @@ public class AppCMSPresenter {
     }
 
     public void editHistory(final String filmId,
-                            final Action1<AppCMSDeleteHistoryResult> resultAction1, boolean post) {
+                            final Action1<List<AppCMSDeleteHistoryResult>> resultAction1, boolean post) {
         final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(),
@@ -5235,7 +5235,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
+    public void clearHistory(final Action1<List<AppCMSDeleteHistoryResult>> resultAction1) {
         try {
             showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
@@ -5247,7 +5247,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void makeClearHistoryRequest(Action1<AppCMSDeleteHistoryResult> resultAction1) {
+    public void makeClearHistoryRequest(Action1<List<AppCMSDeleteHistoryResult>> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(),
