@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +29,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,10 +42,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -55,7 +51,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -83,8 +78,6 @@ import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -109,9 +102,6 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
-import static com.viewlift.Utils.loadJsonFromAssets;
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_ACTIONLABEL_KEY;
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_TITLE_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY;
 
@@ -121,23 +111,15 @@ import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_N
 
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
+    private static final long SECS_TO_MSECS = 1000L;
     private static VideoPlayerView videoPlayerView;
     private static AppCMSVideoPageBinder videoPlayerViewBinder;
     private static AppCMSVideoPlayerPresenter appCMSVideoPlayerPresenter;
+    private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
+    AppCMSPlaylistAdapter appCMSPlaylistAdapter;
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
-
-    private static class VideoPlayerContent {
-        long videoPlayTime = 0;
-        String videoUrl;
-        String ccUrl;
-        boolean fullScreenEnabled;
-    }
-
-    private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
-    private static final long SECS_TO_MSECS = 1000L;
-
     private CastServiceProvider castProvider;
     private boolean isCastConnected;
 
@@ -440,45 +422,6 @@ public class ViewCreator {
         }
     }
 
-    private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
-                                         ContentDatum contentDatum) {
-        if (!ignoreBinderUpdate ||
-                (videoPlayerViewBinder != null &&
-                        videoPlayerViewBinder.getContentData() != null &&
-                        videoPlayerViewBinder.getContentData().getGist() != null &&
-                        videoPlayerViewBinder.getContentData().getGist().getId() != null &&
-                        contentDatum != null &&
-                        contentDatum.getGist() != null &&
-                        !videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId()))) {
-            if (videoPlayerViewBinder == null) {
-                videoPlayerViewBinder =
-                        appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
-                                -1,
-                                contentDatum.getContentDetails().getRelatedVideoIds(),
-                                false,
-                                false,  /** TODO: Replace with a value that is true if the video is a trailer */
-                                !appCMSPresenter.isAppSVOD(),
-                                appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
-                                appCMSPresenter.getAppBackgroundColor());
-            } else {
-                int currentlyPlayingIndex = -1;
-                if (videoPlayerViewBinder.getRelateVideoIds() != null &&
-                        videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
-                    currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
-                } else {
-                    videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
-                    videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
-                }
-                if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
-                    currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
-                }
-                videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                videoPlayerViewBinder.setContentData(contentDatum);
-            }
-        }
-        ignoreBinderUpdate = false;
-    }
-
     private static void setTypeFace(Context context,
                                     AppCMSPresenter appCMSPresenter,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
@@ -532,10 +475,6 @@ public class ViewCreator {
         }
     }
 
-    public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
-        this.ignoreBinderUpdate = ignoreBinderUpdate;
-    }
-
     public static void openFullScreenVideoPlayer(Activity activity) {
         if (videoPlayerView != null && videoPlayerView.getParent() != null
                 && videoPlayerView.getParent() instanceof ViewGroup) {
@@ -580,6 +519,75 @@ public class ViewCreator {
         if (videoPlayerContent != null) {
             videoPlayerContent.fullScreenEnabled = false;
         }
+    }
+
+    public static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
+        }
+        return baseColorCode;
+    }
+
+    public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
+        CustomWebView webView = new CustomWebView(context);
+        int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
+        String webViewUrl = "";
+        if (moduleAPI != null && moduleAPI.getRawText() != null) {
+            webViewUrl = moduleAPI.getRawText();
+            String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            webView.loadURLData(context, appCMSPresenter, html, key);
+        }
+        return webView;
+    }
+
+    private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
+                                         ContentDatum contentDatum) {
+        if (!ignoreBinderUpdate ||
+                (videoPlayerViewBinder != null &&
+                        videoPlayerViewBinder.getContentData() != null &&
+                        videoPlayerViewBinder.getContentData().getGist() != null &&
+                        videoPlayerViewBinder.getContentData().getGist().getId() != null &&
+                        contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        !videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId()))) {
+            if (videoPlayerViewBinder == null) {
+                videoPlayerViewBinder =
+                        appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
+                                -1,
+                                contentDatum.getContentDetails().getRelatedVideoIds(),
+                                false,
+                                false,  /** TODO: Replace with a value that is true if the video is a trailer */
+                                !appCMSPresenter.isAppSVOD(),
+                                appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
+                                appCMSPresenter.getAppBackgroundColor());
+            } else {
+                int currentlyPlayingIndex = -1;
+                if (videoPlayerViewBinder.getRelateVideoIds() != null &&
+                        videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
+                } else {
+                    videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
+                    videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
+                }
+                if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
+                }
+                videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                videoPlayerViewBinder.setContentData(contentDatum);
+            }
+        }
+        ignoreBinderUpdate = false;
+    }
+
+    public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
+        this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
@@ -1036,7 +1044,7 @@ public class ViewCreator {
                                             ((TextView) view).setSingleLine(true);
                                             componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             ((TextView) view).setGravity(Gravity.CENTER);
-                                            ((TextView) view).setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                                            view.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             applyBorderToComponent(context,
                                                     view,
                                                     component,
@@ -2028,8 +2036,6 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    AppCMSPlaylistAdapter appCMSPlaylistAdapter;
-
     /**
      *
      * @param context
@@ -2188,7 +2194,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                    
+
                     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2273,7 +2279,7 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                       
+
                         if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
@@ -2760,12 +2766,12 @@ public class ViewCreator {
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
-                        ((ImageButton) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setId(R.id.playlist_download_id);
 
                         if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
                             ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
-                            ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                            componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -2794,7 +2800,7 @@ public class ViewCreator {
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
-                        ((ImageButton) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -3785,7 +3791,7 @@ public class ViewCreator {
                                     long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                     long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
 
-                                    String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
+                                    String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
                                     ((TextView) componentViewResult.componentView).setText(publishDate);
 
                                 }
@@ -4677,20 +4683,6 @@ public class ViewCreator {
         }
     }
 
-    public static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
-        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
-        }
-        return baseColorCode;
-    }
-
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
@@ -4749,10 +4741,122 @@ public class ViewCreator {
         }
     }
 
+    private void setCasting(boolean allowFreePlay,
+                            AppCMSPresenter appCMSPresenter,
+                            ImageButton mMediaRouteButton,
+                            long watchedTime) {
+        try {
+            castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
+            castProvider.setAllowFreePlay(allowFreePlay);
+
+            CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
+                CastHelper castHelper = CastHelper.getInstance(appCMSPresenter.getCurrentActivity());
+                if ((castHelper.getRemoteMediaClient() != null &&
+                        !castHelper.getRemoteMediaClient().isPlaying()) ||
+                        (castHelper.getStartingFilmId() != null &&
+                                !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
+
+                    if (videoPlayerViewBinder != null) {
+                        if (videoPlayerView != null) {
+                            videoPlayerView.pausePlayer();
+                        }
+                        long castPlayPosition = watchedTime * 1000;
+                        if (!isCastConnected) {
+                            castPlayPosition = videoPlayerView.getCurrentPosition();
+                        }
+
+                        castHelper.launchRemoteMedia(appCMSPresenter,
+                                videoPlayerViewBinder.getRelateVideoIds(),
+                                videoPlayerViewBinder.getContentData().getGist().getId(),
+                                castPlayPosition,
+                                videoPlayerViewBinder,
+                                true,
+                                null);
+
+                        if (!BaseView.isTablet(appCMSPresenter.getCurrentActivity())) {
+                            appCMSPresenter.restrictPortraitOnly();
+                        }
+
+                        appCMSPresenter.sendExitFullScreenAction(false);
+                    }
+                }
+            };
+
+            castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
+                    mMediaRouteButton);
+            castProvider.onActivityResume();
+
+            castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
+            if (isCastConnected) {
+
+            } else {
+                castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
+                        mMediaRouteButton);
+            }
+        } catch (Exception e) {
+            //Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
+        }
+    }
+
+    public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context, appCmsPresenter);
+
+
+        if (videoId != null) {
+            videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+            appCmsPresenter.setVideoPlayerViewCache(key, videoPlayerView);
+        }
+        return videoPlayerView;
+    }
+
+    void setAutoPlayImage(Context context, Component component, String imgUrl) {
+        int viewWidth = (int) BaseView.getViewWidth(context,
+                component.getLayout(),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        int viewHeight = (int) BaseView.getViewHeight(context,
+                component.getLayout(),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl, ImageLoader.ScaleType.CENTER)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .apply(new RequestOptions().override(viewWidth, viewHeight))
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        } else if (viewWidth > 0) {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl, ImageLoader.ScaleType.CENTER)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        } else {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl,
+                    ImageLoader.ScaleType.CENTER)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        }
+        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
+                android.R.color.transparent));
+        componentViewResult.useWidthOfScreen = false;
+    }
+
     private enum AdjustOtherState {
         IGNORE,
         INITIATED,
         ADJUST_OTHERS
+    }
+
+    private static class VideoPlayerContent {
+        long videoPlayTime = 0;
+        String videoUrl;
+        String ccUrl;
+        boolean fullScreenEnabled;
     }
 
     static class ComponentViewResult {
@@ -4951,65 +5055,6 @@ public class ViewCreator {
         }
     }
 
-    private void setCasting(boolean allowFreePlay,
-                            AppCMSPresenter appCMSPresenter,
-                            ImageButton mMediaRouteButton,
-                            long watchedTime) {
-        try {
-            castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
-            castProvider.setAllowFreePlay(allowFreePlay);
-
-            CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
-                CastHelper castHelper = CastHelper.getInstance(appCMSPresenter.getCurrentActivity());
-                if ((castHelper.getRemoteMediaClient() != null &&
-                        !castHelper.getRemoteMediaClient().isPlaying()) ||
-                        (castHelper.getStartingFilmId() != null &&
-                                !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
-
-                    if (videoPlayerViewBinder != null) {
-                        if (videoPlayerView != null) {
-                            videoPlayerView.pausePlayer();
-                        }
-                        long castPlayPosition = watchedTime * 1000;
-                        if (!isCastConnected) {
-                            castPlayPosition = videoPlayerView.getCurrentPosition();
-                        }
-
-                        castHelper.launchRemoteMedia(appCMSPresenter,
-                                videoPlayerViewBinder.getRelateVideoIds(),
-                                videoPlayerViewBinder.getContentData().getGist().getId(),
-                                castPlayPosition,
-                                videoPlayerViewBinder,
-                                true,
-                                null);
-
-                        if (!BaseView.isTablet(appCMSPresenter.getCurrentActivity())) {
-                            appCMSPresenter.restrictPortraitOnly();
-                        }
-
-                        appCMSPresenter.sendExitFullScreenAction(false);
-                    }
-                }
-            };
-
-            castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
-                    mMediaRouteButton);
-            castProvider.onActivityResume();
-
-            castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            isCastConnected = castProvider.isCastingConnected();
-            castProvider.playChromeCastPlaybackIfCastConnected();
-            if (isCastConnected) {
-
-            } else {
-                castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
-                        mMediaRouteButton);
-            }
-        } catch (Exception e) {
-            //Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
-        }
-    }
-
     /**
      * This class is used to associate the Watchlist icon with the user's watchlist status for
      * a specific video ID.  This also creates the click listener that responds with the correct
@@ -5110,10 +5155,10 @@ public class ViewCreator {
         private final AppCMSPresenter appCMSPresenter;
         private final ContentDatum contentDatum;
         private final String userId;
-        private ImageButton imageButton;
-        private View.OnClickListener addClickListener;
         private final int radiusDifference;
         private final String id;
+        private ImageButton imageButton;
+        private View.OnClickListener addClickListener;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
                                       ContentDatum contentDatum, String userId, int radiusDifference,
@@ -5263,30 +5308,6 @@ public class ViewCreator {
             return addClickListener;
         }
     }
-
-    public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context, appCmsPresenter);
-
-
-        if (videoId != null) {
-            videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-            appCmsPresenter.setVideoPlayerViewCache(key, videoPlayerView);
-        }
-        return videoPlayerView;
-    }
-
-    public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
-        CustomWebView webView = new CustomWebView(context);
-        int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-        String webViewUrl = "";
-        if (moduleAPI != null && moduleAPI.getRawText() != null) {
-            webViewUrl = moduleAPI.getRawText();
-            String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-            webView.loadURLData(context, appCMSPresenter, html, key);
-        }
-        return webView;
-    }
-
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
@@ -5439,41 +5460,6 @@ public class ViewCreator {
             }
             return null;
         }
-    }
-
-    void setAutoPlayImage(Context context, Component component, String imgUrl) {
-        int viewWidth = (int) BaseView.getViewWidth(context,
-                component.getLayout(),
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        int viewHeight = (int) BaseView.getViewHeight(context,
-                component.getLayout(),
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl, ImageLoader.ScaleType.CENTER)) {
-                Glide.with(context)
-                        .load(imgUrl)
-                        .apply(new RequestOptions().override(viewWidth, viewHeight))
-                        .into((ImageView) componentViewResult.componentView);
-            }
-        } else if (viewWidth > 0) {
-            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl, ImageLoader.ScaleType.CENTER)) {
-                Glide.with(context)
-                        .load(imgUrl)
-                        .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
-                        .into((ImageView) componentViewResult.componentView);
-            }
-        } else {
-            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl,
-                    ImageLoader.ScaleType.CENTER)) {
-                Glide.with(context)
-                        .load(imgUrl)
-                        .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
-                        .into((ImageView) componentViewResult.componentView);
-            }
-        }
-        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
-                android.R.color.transparent));
-        componentViewResult.useWidthOfScreen = false;
     }
 }
 
