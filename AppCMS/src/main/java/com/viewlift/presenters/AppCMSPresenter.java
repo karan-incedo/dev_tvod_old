@@ -293,6 +293,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.LOGOUT_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_RETRY;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SUB_NAV_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
 
@@ -5064,46 +5065,84 @@ public class AppCMSPresenter {
                                             NavigationPrimary primary,
                                             List<NavigationPrimary> items,
                                             boolean launchActivity) {
-
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
-        Module module = new Module();
-        module.setId(currentActivity.getString(R.string.blank_string));
-        if(null != appCMSPageUI && null != appCMSPageUI.getModuleList()
-                && appCMSPageUI.getModuleList().size() > 0) {
-            module.setId(appCMSPageUI.getModuleList().get(0).getId());
-        }
-        ArrayList<Module> moduleList = new ArrayList<>();
-        moduleList.add(module);
-        appCMSPageAPI.setModules(moduleList);
-        appCMSPageAPI.setId(pageId);
-        ArrayList<ContentDatum> data = new ArrayList<>();
-        for (NavigationPrimary navigationPrimary : items) {
-            data.add(navigationPrimary.convertToContentDatum());
-        }
-        module.setContentData(data);
+            if (appCMSPageUI == null) {
+                if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
+                    Toast.makeText(currentActivity , "UI is null.....",Toast.LENGTH_SHORT).show();
+                    RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                            title, null,
+                            null, launchActivity, pageId, SUB_NAV_RETRY_ACTION);
+                    retryCallBinder.setPageId(pageId);
+                    retryCallBinder.setPrimary(primary);
+                    retryCallBinder.setItems(items);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), false);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), false);
+                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                    args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(args);
+                    return;
+                }
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                    navigateToSubNavigationPage(pageId, title, url,primary,items, launchActivity);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+        }else {
+            AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+            Module module = new Module();
+            module.setId(currentActivity.getString(R.string.blank_string));
+            if (null != appCMSPageUI && null != appCMSPageUI.getModuleList()
+                    && appCMSPageUI.getModuleList().size() > 0) {
+                module.setId(appCMSPageUI.getModuleList().get(0).getId());
+            }
+            ArrayList<Module> moduleList = new ArrayList<>();
+            moduleList.add(module);
+            appCMSPageAPI.setModules(moduleList);
+            appCMSPageAPI.setId(pageId);
+            ArrayList<ContentDatum> data = new ArrayList<>();
+            for (NavigationPrimary navigationPrimary : items) {
+                data.add(navigationPrimary.convertToContentDatum());
+            }
+            module.setContentData(data);
 
-        Bundle args = getPageActivityBundle(currentActivity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                title,
-                pageId,
-                pageIdToPageNameMap.get(pageId),
-                loadFromFile,
-                true,
-                false,
-                true,
-                false,
-                Uri.EMPTY,
-                ExtraScreenType.NONE);
-        if (args != null) {
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            currentActivity.sendBroadcast(updatePageIntent);
-            setNavItemToCurrentAction(currentActivity);
+            Bundle args = getPageActivityBundle(currentActivity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    title,
+                    pageId,
+                    pageIdToPageNameMap.get(pageId),
+                    loadFromFile,
+                    true,
+                    false,
+                    true,
+                    false,
+                    Uri.EMPTY,
+                    ExtraScreenType.NONE);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+                setNavItemToCurrentAction(currentActivity);
+            }
         }
     }
     public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
@@ -14018,7 +14057,7 @@ public class AppCMSPresenter {
 
     public enum RETRY_TYPE {
         VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION,
-        HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION, EDIT_WATCHLIST
+        HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION, EDIT_WATCHLIST , SUB_NAV_RETRY_ACTION
     }
 
     public enum ExtraScreenType {

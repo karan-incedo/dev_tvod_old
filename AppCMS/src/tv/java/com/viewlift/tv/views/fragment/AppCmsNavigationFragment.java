@@ -538,9 +538,9 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false);
                         }
                     }
-
+                    //This code is for SubNavigation items like Teams in MSE. So we are treating here that if primary.getItems() is not null then its a subnavigation.
                     else if (primary.getItems() != null && primary.getItems().size() > 0) {
-                        navigationVisibilityListener.showNavigation(false);
+                       // navigationVisibilityListener.showNavigation(false);
 //                        subNavigationVisibilityListener.showSubNavigation(true, true);
                         appCmsPresenter.sendGaScreen(primary.getTitle() + " Navigation Page");
 //                        Utils.pageLoading(false, getActivity());

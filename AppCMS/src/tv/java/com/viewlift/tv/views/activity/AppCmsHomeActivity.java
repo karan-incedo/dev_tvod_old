@@ -591,6 +591,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             retryCallBinder.getPagePath(),
                             false);
                     break;
+                case SUB_NAV_RETRY_ACTION:
+                    appCMSPresenter.showLoadingDialog(true);
+                    appCMSPresenter.navigateToSubNavigationPage(
+                            retryCallBinder.getPageId(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getPagePath(),
+                            retryCallBinder.getPrimary(),
+                            retryCallBinder.getItems(),
+                            false);
+                    break;
                 case HISTORY_RETRY_ACTION:
                     appCMSPresenter.showLoadingDialog(true);
                     appCMSPresenter.navigateToHistoryPage(
@@ -846,6 +856,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         hideFooterControl();
                         break;
