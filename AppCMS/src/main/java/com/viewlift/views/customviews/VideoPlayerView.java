@@ -465,6 +465,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dialog.show();
                     listViewAdapter.notifyDataSetChanged();
                 });
+
+
                 listViewAdapter.setItemClickListener(v -> {
                     try {
                         long currentPosition = getCurrentPosition();
