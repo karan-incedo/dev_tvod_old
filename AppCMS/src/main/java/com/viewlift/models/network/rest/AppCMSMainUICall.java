@@ -67,7 +67,7 @@ public class AppCMSMainUICall {
         Date now = new Date();
 
         StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_baseurl),
+                Utils.getProperty("BaseUrl", context),
                 siteId));
         if (bustCache) {
             appCMSMainUrlSb.append("?x=");

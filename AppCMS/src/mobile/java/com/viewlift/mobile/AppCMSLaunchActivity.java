@@ -15,8 +15,6 @@ import android.view.View;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Utils;
-import com.viewlift.casting.CastHelper;
-import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -28,7 +26,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private Uri searchQuery;
-    private CastHelper mCastHelper;
+//    private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
 
     private ConnectivityManager connectivityManager;
@@ -53,6 +51,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (getApplication() instanceof AppCMSApplication) {
             appCMSPresenterComponent =
                     ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent.appCMSPresenter().resetLaunched();
         }
 
         handleIntent(getIntent());
@@ -100,9 +99,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
 //        setCasting();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
-
-        appCMSPresenterComponent.appCMSPresenter().setAppHomeActivityCreated(true);
-
     }
 
     @Override

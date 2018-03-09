@@ -3,40 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/new_version_available_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="@dimen/new_version_available_elevation"
-        android:visibility="gone"
+        tools:textColor="@android:color/white"
         tools:background="@android:color/black"
-        tools:textColor="@android:color/white">
-
+        android:visibility="gone"
+        android:elevation="@dimen/new_version_available_elevation">
         <TextView
             android:id="@+id/new_version_available_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/app_cms_upgrade_now_text_margin"
-            android:layout_marginStart="@dimen/app_cms_upgrade_now_text_margin"
-            android:singleLine="false"
             android:textAlignment="center"
+            android:singleLine="false"
+            android:layout_marginStart="@dimen/app_cms_upgrade_now_text_margin"
+            android:layout_marginEnd="@dimen/app_cms_upgrade_now_text_margin"
             android:textSize="@dimen/a_new_version_of_the_app_is_available_textsize" />
 
         <ImageButton
             android:id="@+id/new_version_available_close_button"
             android:layout_width="@dimen/new_version_available_close_button_size"
             android:layout_height="@dimen/new_version_available_close_button_size"
-            android:layout_gravity="end"
-            android:layout_marginBottom="@dimen/close_button_margin"
+            android:layout_marginTop="0dp"
             android:layout_marginEnd="0dp"
             android:layout_marginStart="@dimen/close_button_margin"
-            android:layout_marginTop="0dp"
+            android:layout_marginBottom="@dimen/close_button_margin"
             android:background="@android:color/transparent"
-            android:padding="0dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/cancel" />
+            android:padding="0dp"
+            android:src="@drawable/cancel"
+            android:layout_gravity="end"/>
 
     </FrameLayout>
 
@@ -44,10 +44,10 @@
         android:id="@+id/app_cms_appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/new_version_available_parent"
         android:background="?attr/colorPrimaryDark"
         android:elevation="@dimen/appbar_elevation"
         android:fitsSystemWindows="true"
+        android:layout_below="@id/new_version_available_parent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
@@ -61,18 +61,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center">
-
                 <ImageButton
                     android:id="@+id/app_cms_profile_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:background="#00000000"
+                    android:layout_centerVertical="true"
                     android:padding="5dp"
                     android:src="@drawable/profile"
                     android:visibility="gone" />
-
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
@@ -87,7 +85,6 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:orientation="horizontal">
-
                     <ImageButton
                         android:id="@+id/app_cms_search_button"
                         android:layout_width="@dimen/close_button_size"
@@ -123,24 +120,24 @@
                         android:layout_width="@dimen/close_button_size"
                         android:layout_height="@dimen/close_button_size"
                         android:layout_margin="@dimen/close_button_margin"
+                        android:visibility="gone"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/cancel"
-                        android:visibility="gone" />
+                        android:src="@drawable/cancel" />
 
                 </LinearLayout>
 
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
-
         <TextView
             android:id="@+id/app_cms_start_free_trial_tool"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:gravity="center"
             android:textSize="16sp"
-            android:visibility="gone" />
+            android:gravity="center"
+            android:visibility="gone"
+            />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -182,7 +179,6 @@
             android:layout_alignParentTop="true"
             android:alpha="1"
             android:visibility="invisible" />
-
 
         <FrameLayout
             android:id="@+id/controls_container"

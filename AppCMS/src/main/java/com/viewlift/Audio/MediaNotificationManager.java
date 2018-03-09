@@ -32,6 +32,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
@@ -41,15 +42,12 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
-import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 
 /**
@@ -291,8 +289,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             createNotificationChannel();
         }
 
-//        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+        //final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder

@@ -194,7 +194,6 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
                                 heightLayoutAdjusterIndicesToRemove.add(i);
                             }
                         }
-
                     }
                 }
             }
@@ -206,6 +205,7 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
                 modifiedHeightLayoutAdjusters.add(heightLayoutAdjusterList.get(i));
             }
         }
+
         heightLayoutAdjusterList = modifiedHeightLayoutAdjusters;
     }
 

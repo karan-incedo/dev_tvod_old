@@ -1,7 +1,6 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +24,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
@@ -246,6 +246,8 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
         } else if (!BaseView.isTablet(getContext()) && appCMSPresenter!=null) {
+            System.out.println("config from onresume fragment");
+
             appCMSPresenter.restrictPortraitOnly();
         }
         setMiniPlayer();
@@ -520,15 +522,24 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public synchronized void setPageOriantationForVideoPage() {
-
+        /**
+         * if current activity is video player then restrict to landscape only
+         */
+        if(appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity){
+            appCMSPresenter.restrictLandscapeOnly();
+            return;
+        }
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
                 appCMSPresenter.isAutoRotate() ) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(getContext())) {
+            System.out.println("config from setPageOriantationForVideoPage fragment");
+
             appCMSPresenter.restrictPortraitOnly();
         } else if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+
     }
 
     RecyclerView.OnScrollListener scrollListenerForMiniPlayer = new RecyclerView.OnScrollListener() {

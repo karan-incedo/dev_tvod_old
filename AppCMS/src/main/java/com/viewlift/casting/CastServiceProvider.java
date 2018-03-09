@@ -63,7 +63,9 @@ public class CastServiceProvider {
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
+
     public static final String CAST_STATUS = "com.viewlift.casting.CASTING_STATUS";
+
     private String pageName;
 
     /**
@@ -700,7 +702,5 @@ public class CastServiceProvider {
             return "";
         }
     }
-
-
 }
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -159,6 +158,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_PLAYLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_privacy_policy_key),
                 AppCMSUIKeyType.PRIVACY_POLICY_KEY);
 
@@ -793,6 +793,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_download_button_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
+                AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY);
+
 
     }
 

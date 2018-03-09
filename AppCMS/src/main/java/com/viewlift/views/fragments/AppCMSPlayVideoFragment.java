@@ -535,7 +535,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
-
         setCurrentWatchProgress(runTime, watchedTime);
 
 
@@ -543,13 +542,17 @@ public class AppCMSPlayVideoFragment extends Fragment
             if (beaconPing != null) {
                 beaconPing.playbackState = playerState.getPlaybackState();
             }
+
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
+                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
+
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
                 setCurrentWatchProgress(updatedRunTime, watchedTime);
 
                 if (!isVideoLoaded) {
@@ -649,7 +652,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconBuffer.start();
                     }
                 }
-                if (!shouldRequestAds || isADPlay) {
+                if(!shouldRequestAds || isADPlay) {
                     videoLoadingProgress.setVisibility(View.VISIBLE);
                 }
             }
@@ -673,6 +676,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 mStartBufferMilliSec = new Date().getTime();
             }
         });
+
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
             if (visibility == View.GONE) {
                 videoPlayerInfoContainer.setVisibility(View.GONE);
@@ -724,8 +728,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         }*/
 
         return rootView;
-
     }
+
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
 
@@ -1329,7 +1333,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
-    // TODO: 11/30/17 Replace countdown timer with value coming from Template Builder.
     private void startCountdown() {
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">http://dev-tools.viewlift.com</string>-->
 
-    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">62cab672-424e-4191-9066-4bb9a0993247</string>-->
 
     <!-- x-api-key -->
     <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
@@ -44,12 +46,14 @@
     <integer name="nav_live_page_index">4</integer>
     <integer name="categories_page_index">1</integer>
     <integer name="search_page_index">2</integer>
+
     <integer name="nav_menu_page_index">3</integer>
 
     <bool name="use_cached_api">true</bool>
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
+
     <bool name="show_navbar">false</bool>
 
     <bool name="enable_stream_quality_selection">true</bool>

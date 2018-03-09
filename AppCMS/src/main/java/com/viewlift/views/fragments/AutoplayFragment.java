@@ -207,7 +207,7 @@ public class AutoplayFragment extends Fragment {
                 RequestOptions requestOptions = new RequestOptions()
                         .transform(new AutoplayBlurTransformation(getContext(), imageUrl));
                 Glide.with(getContext()).load(imageUrl)
-                        .apply(requestOptions)
+//                        .apply(requestOptions)
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {

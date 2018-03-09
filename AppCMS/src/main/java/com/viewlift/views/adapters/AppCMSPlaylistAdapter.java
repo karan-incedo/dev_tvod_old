@@ -230,6 +230,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                       Component childComponent,
                                       ContentDatum data, int clickPosition) {
                         try {
+                            System.out.println("playlist adapter on click-");
 
                             isDownloading = true;
                             if (isClickable) {
@@ -446,6 +447,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDownload);
+
                     }
                 });
 
@@ -508,7 +510,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
-
+                    System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);

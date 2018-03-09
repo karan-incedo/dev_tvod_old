@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -33,6 +34,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
@@ -440,6 +442,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        System.out.println("config from playvideo");
 
         appCMSPresenter.restrictLandscapeOnly();
 

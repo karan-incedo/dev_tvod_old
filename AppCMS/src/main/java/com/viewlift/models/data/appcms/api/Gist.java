@@ -106,19 +106,19 @@ public class Gist implements Serializable {
     @Expose
     String kisweEventId;
 
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
+
     String downloadStatus;
+    boolean isAudioPlaying;
+    long currentPlayingPosition;
+    Boolean isCastingConnected;
     /**
      * This is to store the url of the downloaded file
      */
     String localFileUrl;
-
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    @SerializedName("mediaType")
-    @Expose
-    String mediaType;
 
     public String getId() {
         return id;
@@ -315,11 +315,13 @@ public class Gist implements Serializable {
         this.kisweEventId = kisweEventId;
     }
 
+    public String getMediaType() {
+        return mediaType;
+    }
+
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
-
-    boolean isAudioPlaying;
 
     public boolean isAudioPlaying() {
         return isAudioPlaying;
@@ -328,9 +330,6 @@ public class Gist implements Serializable {
     public void setAudioPlaying(boolean audioPlaying) {
         isAudioPlaying = audioPlaying;
     }
-
-    long currentPlayingPosition;
-    Boolean isCastingConnected;
 
     public long getCurrentPlayingPosition() {
         return currentPlayingPosition;
