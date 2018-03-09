@@ -1185,6 +1185,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(this)) {
+            System.out.println("config from onresume");
+
             appCMSPresenter.restrictPortraitOnly();
         } else if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -2185,6 +2187,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         if (!BaseView.isTablet(this)) {
+            System.out.println("config from handleLaunchPageAction");
             appCMSPresenter.restrictPortraitOnly();
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
