@@ -598,9 +598,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingQualityMap == null) {
             availableStreamingQualityMap = new HashMap<>();
+        } else {
+            availableStreamingQualityMap.clear();
         }
         if (availableStreamingQualities == null) {
             availableStreamingQualities = new ArrayList<>();
+        }else {
+            availableStreamingQualities.clear();
         }
         if (videoAssets != null && videoAssets.getMpeg() != null) {
             List<Mpeg> availableMpegs = videoAssets.getMpeg();

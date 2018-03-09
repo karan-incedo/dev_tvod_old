@@ -559,6 +559,11 @@
         <item quantity="other">EPISODES</item>
     </plurals>
 
+    <plurals name="no_of_photos">
+        <item quantity="one">%1$s photo</item>
+        <item quantity="other">%1$s photos</item>
+    </plurals>
+
     <plurals name="minute_subtitle_text">
         <item quantity="one">MIN</item>
         <item quantity="other">MINS</item>

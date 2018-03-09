@@ -696,6 +696,18 @@ public class CollectionGridItemView extends BaseView {
                             long runtime = data.getGist().getRuntime();
                             ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
                         }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
+                        StringBuilder thumbInfo = new StringBuilder();
+                        if (data.getGist().getPublishDate() != null) {
+                            thumbInfo.append(getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd"));
+                        }
+                        thumbInfo.append(" | ");
+                        int noOfPhotos = 0;
+                        if (data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
+                            noOfPhotos =  data.getStreamingInfo().getPhotogalleryAssets().size();
+                        }
+                        thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
+                        ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
@@ -869,7 +881,8 @@ public class CollectionGridItemView extends BaseView {
                             childComponent.getTextColor() !=null &&
                             (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO)&&
+                            componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO ||
+                            componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO)&&
                             !TextUtils.isEmpty(childComponent.getTextColor())){
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));

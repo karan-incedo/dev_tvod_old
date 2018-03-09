@@ -1,7 +1,6 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -201,7 +200,7 @@ public class AppCMSPageFragment extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setPageOriantationForVideoPage();
+                    setPageOrientationForVideoPage();
                 }
             }, 3000);
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
@@ -382,13 +381,7 @@ public class AppCMSPageFragment extends Fragment {
             boolean updatePage = false;
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setPageOriantationForVideoPage();
-
-                    }
-                }, 1000);
+                setPageOrientationForVideoPage();
             }
 
             try {
@@ -444,10 +437,10 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-    public synchronized void setPageOriantationForVideoPage() {
-        if (!appCMSPresenter.isFullScreenVisible) {
+    public synchronized void setPageOrientationForVideoPage() {
+        if (!AppCMSPresenter.isFullScreenVisible) {
             if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                    appCMSPresenter.isAutoRotate() && !appCMSPresenter.isFullScreenVisible) {
+                    appCMSPresenter.isAutoRotate() && !AppCMSPresenter.isFullScreenVisible) {
                 appCMSPresenter.unrestrictPortraitOnly();
             } else if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
