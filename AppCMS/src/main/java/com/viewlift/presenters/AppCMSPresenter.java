@@ -1172,11 +1172,11 @@ public class AppCMSPresenter {
                         if (usedCachedAPI) {
                             if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
                                     pageId.equals(moviesPage.getPageId()))) {
-                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
-                                        appCMSMain.getApiBaseUrlCached(),
-                                        siteId,
-                                        pageId,
-                                        getLoggedInUser());
+//                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+//                                        appCMSMain.getApiBaseUrlCached(),
+//                                        siteId,
+//                                        pageId,
+//                                        getLoggedInUser());
                             } else {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         appCMSMain.getApiBaseUrlCached(),
@@ -1404,10 +1404,18 @@ public class AppCMSPresenter {
         return result;
     }
 
+    /**
+     * This returns a hashmap containing a list of download callbacks, which are used when returning to
+     * a screen with active downloads to resume the UI for each individual download.
+     * @return Returns the hashmap containing the list of download callback
+     */
     public Map<String, ViewCreator.UpdateDownloadImageIconAction> getUpdateDownloadImageIconActionMap() {
         return updateDownloadImageIconActionMap;
     }
 
+    /**
+     * Updates the watched time parameter for all downloaded (offline) videos.
+     */
     private void updateAllOfflineWatchTime() {
         if (getLoggedInUser() != null) {
             if (currentActivity != null) {
@@ -1422,6 +1430,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * Evaluates whether the app should display the subscription cancel button (usually displayed in the Settings page).
+     * @return Returns the flag indicating whether the subscription cancel button should be displayed
+     */
     public boolean shouldDisplaySubscriptionCancelButton() {
         if (currentActivity != null) {
             return currentActivity.getResources().getBoolean(R.bool.display_cancel_subscription_button);
@@ -1430,6 +1442,11 @@ public class AppCMSPresenter {
         return true;
     }
 
+    /**
+     * Calls the update watch history API to update the watch time for the specified video.
+     * @param filmId The ID of the to update the watched time value
+     * @param watchedTime The value of the watchedTime to update
+     */
     public void updateWatchedTime(String filmId, long watchedTime) {
         if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
@@ -1476,6 +1493,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will retrieve the current user watch history and store the data into a hashmap
+     * to be used as a cache for future requests to display the user's current watched history.
+     */
     private void populateUserHistoryData() {
         getHistoryData(appCMSHistoryResult -> {
             try {
@@ -1491,6 +1512,10 @@ public class AppCMSPresenter {
         });
     }
 
+    /**
+     * This will make a call to the Watchlist API and populate a hashmap used as a cache
+     * for retrieving the current user's watchlist again.
+     */
     private void populateFilmsInUserWatchlist() {
         AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistPage.getPageId());
 
@@ -1533,12 +1558,21 @@ public class AppCMSPresenter {
                 });
     }
 
+    /**
+     * This will send a broadcast action to registered receivers to update make a call to the History API
+     * and then use the result to update the UI accordingly.
+     */
     private void sendUpdateHistoryAction() {
         Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
         updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(updateHistoryIntent);
     }
 
+    /**
+     * This will make a call to the video status API to refresh the CDN token used for the film.
+     * @param filmId This is the ID for which to receive the video status
+     * @param responseAction This is the callback to execute after the API has returned with the result
+     */
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
         if (currentActivity != null) {
             if (shouldRefreshAuthToken()) {
@@ -1556,10 +1590,21 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This retrieves the download status of a specified video.
+     * @param filmId This is the ID of the video to check the download status
+     * @param responseAction This is the callback to execute when the download status is ready
+     * @param userId This is the user ID of the user whose downloads should be examined for the specfied video
+     */
     public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction, String userId) {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    /**
+     * This will make a call to the anonymous user API to retrieve an anonymous user token.
+     * The token will be stored as a Shared Preference which may be used future usages.  The
+     * token is only used when there are no users logged in.
+     */
     private void signinAnonymousUser() {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
@@ -1577,6 +1622,15 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will make a call to the anonymous user API to retrieve an anonymous user token.
+     * The token will be stored as a Shared Preference which may be used future usages.  The
+     * token is only used when there are no users logged in.  This also resume the app launch flow
+     * by executing the call to retrieve the android.json.
+     * @param tryCount This is the number of sequential attempts that this method has been exectued
+     * @param searchQuery This is a deeplink URI that will passed on through the app launch flow
+     * @param platformType This is the Platform Type, which may either by Android or TV
+     */
     private void signinAnonymousUser(int tryCount,
                                      Uri searchQuery,
                                      PlatformType platformType) {
@@ -1605,6 +1659,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will retrieve the app text color from the main.json in the general brand JSON object.
+     * @return Returns the app text color from the main.json in the general brand JSON object
+     */
     public String getAppTextColor() {
         if (appCMSMain != null) {
             return getAppCMSMain()
@@ -1616,6 +1674,10 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will retrieve the app background color from the main.json in the general JSON object.
+     * @return Returns the app background color from the main.json in the general JSON object
+     */
     public String getAppBackgroundColor() {
         if (appCMSMain != null) {
             return appCMSMain.getBrand()
@@ -1626,6 +1688,10 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will retrieve the app CTA text color from the main.json in the CTA JSON object.
+     * @return Returns the CTA text color from the main.json in the general JSON object
+     */
     public String getAppCtaTextColor() {
         if (appCMSMain != null) {
             return appCMSMain.getBrand()
@@ -1636,6 +1702,10 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will retrieve the app CTA background color from the main.json in the CTA JSON object.
+     * @return Returns the CTA background color from the main.json in the general JSON object
+     */
     public String getAppCtaBackgroundColor() {
         if (appCMSMain != null) {
             return appCMSMain.getBrand()
@@ -1646,6 +1716,11 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will construct the ad URL from the android.json JSON object.
+     * @param pagePath  This is the URL path which will be included in the ads URL
+     * @return Returns the constructed ad URL using the API URL from android.json and the given path
+     */
     public String getAppAdsURL(String pagePath) {
         if (currentActivity != null && appCMSAndroid != null) {
             Date now = new Date();
@@ -1668,6 +1743,10 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will return a flag to indicate whether to display CRWs set by the main.json JSON object.
+     * @return Returns a flag to indicate whether to display CRWs set by the main.json JSON object.
+     */
     public boolean shouldDisplayCRW() {
         if (appCMSMain != null && appCMSMain.getFeatures() != null) {
             return appCMSMain.getFeatures().isAutoPlay();
@@ -1675,10 +1754,27 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will set a flag that is used to force a new page to be loaded.
+     */
     public void forceLoad() {
         this.forceLoad = true;
     }
 
+    /**
+     * This is the entry point for most user click options, which are specified as actions
+     * in AppCMS UI results.  This will evaulate the input arguments to determine which screen
+     * or dialog should be presented to the user next.
+     * @param pagePath This is the URL path of the next screen to load
+     * @param action This is the action which will determine which type of screen to display next
+     * @param filmTitle This is the name of the video
+     * @param extraData This additional data that is used by different results, which could include the video permalink or HLS URL
+     * @param contentDatum This the API data associated with the video to be associated with the next screen to launch
+     * @param closeLauncher This flag will send a broadcast message to close the screen that launching the next scren (e.g. a Video Detail page will close itself when launching another Video Detail page)
+     * @param currentlyPlayingIndex This is the current index in the list of related videos used for Autoplay
+     * @param relateVideoIds This is the list of related video used for Autoplay
+     * @return This will return true if the input parameters, otherwise it will return false
+     */
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
@@ -2235,6 +2331,18 @@ public class AppCMSPresenter {
         return result;
     }
 
+    /**
+     * This will create a Binder object containing a default set of flags used for launching the Video Player.
+     * @param contentDatum This is the API content data used for launching the video player
+     * @param currentlyPlayingIndex This is the currently playing index in the list of related videos used for Autoplay
+     * @param relateVideoIds This is the list of related videos used for Autoplay
+     * @param isVideoOffline This flag should be true if there no available networks and the video should be played in offline mode
+     * @param isTrailer This flag should be true if the video to be launched is a trailer
+     * @param requestAds This flag should be true if Ads should be requested
+     * @param adsUrl This is ad URL associated with this video
+     * @param backgroundColor This is the app background color to be used by the Video Player
+     * @return
+     */
     public AppCMSVideoPageBinder getDefaultAppCMSVideoPageBinder(ContentDatum contentDatum,
                                                                  int currentlyPlayingIndex,
                                                                  List<String> relateVideoIds,
@@ -2265,10 +2373,19 @@ public class AppCMSPresenter {
                 isVideoOffline);
     }
 
+    /**
+     * This flag is set to true if the video player is running.  This may used to determine specific logic
+     * based upon whether a video is playing or not.  For example, it may be used to prevent the app
+     * from automatically redirecting the user to different pages based upon a change in the network status.
+     */
     public void setVideoPlayerHasStarted() {
         isVideoPlayerStarted = false;
     }
 
+    /**
+     * This will launch the CC Avenue Seamless activity (currently incomplete)
+     * @return Returns true if the activity can be launched
+     */
     @SuppressWarnings("unused")
     public boolean launchCCAvenueSeamless() {
         boolean result = false;
@@ -2306,6 +2423,11 @@ public class AppCMSPresenter {
         return result;
     }
 
+    /**
+     * This will retrieve the content datum associated with a specific in the user's history.
+     * @param filmId This is the ID of the video of the retrieved content datum
+     * @return Returns the content datum associated with a specific in the user's history
+     */
     public ContentDatum getUserHistoryContentDatum(String filmId) {
         try {
             return userHistoryData.get(filmId);
@@ -2315,6 +2437,10 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will return a list of all video content data associated with the currently logged in user.
+     * @return Returns a list of all video content data associated with the currently logged in user
+     */
     public ArrayList<ContentDatum> getAllUserHistory() {
         if (userHistoryData != null) {
             return new ArrayList(userHistoryData.values());
@@ -2322,6 +2448,11 @@ public class AppCMSPresenter {
         return null;
     }
 
+    /**
+     * This will determine if a film has been added to the user's watchlist.
+     * @param filmId This is the ID of the video to determine whether it is in the user's watchlist
+     * @return Returns true if the video is in the user's watchlist
+     */
     public boolean isFilmAddedToWatchlist(String filmId) {
         try {
             if (filmId != null) {
@@ -2347,6 +2478,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will launch the navigation (menu/more) page.
+     * @return Returns true if the page can be launched
+     */
     public boolean launchNavigationPage() {
         boolean result = false;
 
@@ -2383,6 +2518,10 @@ public class AppCMSPresenter {
         return result;
     }
 
+    /**
+     * This will launch the Team page.
+     * @return Returns true if the page can be launched
+     */
     public boolean launchTeamNavPage() {
         boolean result = false;
 
@@ -2418,6 +2557,11 @@ public class AppCMSPresenter {
         return result;
     }
 
+    /**
+     * This flag is set to true if the app launch flow, which includes the retrieval of main.json,
+     * platform, site.json, platform modules.json, and the landing page UI
+     * @return Returns true if the app launch flow has been completed
+     */
     public boolean isLaunched() {
         return launched;
     }
@@ -2462,6 +2606,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will dismiss the Navigation menu.
+     * @param newAppCMSNavItemsFragment This is the curent Navigation fragment
+     */
     public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
         if (appCMSNavItemsFragment != null && appCMSNavItemsFragment.isVisible()) {
             appCMSNavItemsFragment.dismiss();
@@ -2470,10 +2618,18 @@ public class AppCMSPresenter {
         appCMSNavItemsFragment = newAppCMSNavItemsFragment;
     }
 
+    /**
+     * This flag determines if a configuration change has occurred.
+     * @param configurationChanged This is set to true if a configuration change has just occurred
+     */
     public void onConfigurationChange(boolean configurationChanged) {
         this.configurationChanged = configurationChanged;
     }
 
+    /**
+     * This returns a flag to indicate that a configuration change has occurred.
+     * @return Returns a flag to indicate that configuration change has occurred.
+     */
     public boolean getConfigurationChanged() {
         return configurationChanged;
     }
@@ -2490,6 +2646,13 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will return a flag indicating whether the main content fragment is visible.  The main fragment
+     * is used for displaying most of the content of the app.  It may be invisible if another fragment
+     * is overlaid on top of the main fragment, e.g. a dialog displaying additional content such as the More
+     * option in the Video Details screen.
+     * @return Returns true if the main content fragment is visible.
+     */
     public boolean isMainFragmentViewVisible() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
@@ -2501,6 +2664,11 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will show the main fragment entirely and set it's transparency to 100% based upon
+     * the input flag.
+     * @param show The flag that will determine whether to display the fragment entirely or not
+     */
     public void showMainFragmentView(boolean show) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
@@ -2523,6 +2691,11 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This well enable the main fragment and all its children based upon the input flag.
+     * This may be set to false to disable the fragment if there another dialog has a modal property
+     * @param isEnabled This will enable the main fragment and all its children if set to true
+     */
     private void setMainFragmentEnabled(boolean isEnabled) {
         FrameLayout mainFragmentView =
                 (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
@@ -2531,6 +2704,12 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This is a helper method that will iterate through all child views of the given ViewGroup
+     * and set each one's enabled property
+     * @param isEnabled This will enable all children if set to true and disable all children if set to false
+     * @param viewGroup This is the ViewGroup to traverse all child views
+     */
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
         viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
@@ -2554,6 +2733,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will set the transparency value of the main fragment.
+     * @param transparency This is the transparency value to apply to the main fragment
+     */
     public void setMainFragmentTransparency(float transparency) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
@@ -2564,6 +2747,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This will return a value to indicate whether the add on fragment is visible or not.
+     * @return Returns true if the add on fragment is visible
+     */
     public boolean isAddOnFragmentVisible() {
         if (currentActivity != null) {
             FrameLayout addOnFragment =
@@ -2573,6 +2760,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will return a value to indicate whether the add on fragment is visible or not.
+     * @return Returns true if the add on fragment is visible
+     */
     public boolean isAdditionalFragmentVisibile() {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
@@ -2584,6 +2775,12 @@ public class AppCMSPresenter {
         return false;
     }
 
+    /**
+     * This will display or hide the add on fragment based upon the input parameter and set the
+     * transparency of the main fragment of the
+     * @param showMainFragment
+     * @param mainFragmentTransparency
+     */
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
         if (currentActivity != null) {
             showMainFragmentView(showMainFragment);
@@ -10334,8 +10531,7 @@ public class AppCMSPresenter {
                 }
             }
 
-            cacheMoviesPage();
-            cacheShowsPage();
+            cacheNavItems();
 
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
@@ -11386,7 +11582,7 @@ public class AppCMSPresenter {
                                     false);
 
                             if (launchPageFinal == homePage) {
-                                cacheHomePage();
+                                cachePage(homePage.getPageId());
                             }
                         } else {
                             processMetaPagesList(loadFromFile,
@@ -11495,6 +11691,20 @@ public class AppCMSPresenter {
                             false,
                             false,
                             false);
+                }
+            }
+            cacheNavItems();
+        }
+    }
+
+    public void cacheNavItems() {
+        if (getNavigation() != null && getNavigation().getTabBar() != null) {
+            for (int i = 0; i < getNavigation().getTabBar().size(); i++) {
+                NavigationPrimary navigationItem = getNavigation().getTabBar().get(i);
+
+                if (!navigationItem.getPageId().equals("Menu Screen") &&
+                        !navigationItem.getPageId().equals("Search Screen")) {
+                    cachePage(navigationItem.getPageId());
                 }
             }
         }
@@ -11628,108 +11838,38 @@ public class AppCMSPresenter {
         }
     }
 
-    public void cacheHomePage() {
-        if (homePage != null && appCMSMain != null && appCMSSite != null) {
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = homePage.getPageAPI();
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache home page when the app is loading
-            getPageIdContent(getApiUrl(true,
-                    false,
-                    false,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    homePage.getPageId(),
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    homePage.getPageId(),
-                    null,
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                    null);
-        }
-    }
-
-    public void cacheMoviesPage() {
-        if (moviesPage != null && appCMSMain != null && appCMSSite != null) {
-            String pageId = moviesPage.getPageId();
+    public void cachePage(String pageId) {
+        MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+        if (metaPage != null) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
             if (appCMSPageUI == null) {
-                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-                if (metaPage != null) {
-                    getAppCMSPage(metaPage.getPageUI(),
-                            appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
-                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                                    String action = pageNameToActionMap.get(metaPage.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUIResult);
-                                    }
+                getAppCMSPage(metaPage.getPageUI(),
+                        appCMSPageUIResult -> {
+                            if (appCMSPageUIResult != null) {
+                                navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUIResult);
                                 }
-                            },
-                            loadFromFile,
-                            false);
-                }
+                            }
+                        },
+                        loadFromFile,
+                        false);
             }
 
             String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = moviesPage.getPageAPI();
+            String endPoint = metaPage.getPageAPI();
             String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache movies page when the app is loading
+            // Cache meta page when the app is loading
             getPageIdContent(getApiUrl(true,
                     false,
                     false,
                     baseUrl,
                     endPoint,
                     siteId,
-                    moviesPage.getPageId(),
+                    metaPage.getPageId(),
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    moviesPage.getPageId(),
-                    null,
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                    null);
-        }
-    }
-
-    public void cacheShowsPage() {
-        if (showsPage != null && appCMSMain != null && appCMSSite != null) {
-            String pageId = showsPage.getPageId();
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
-            if (appCMSPageUI == null) {
-                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-                if (metaPage != null) {
-                    getAppCMSPage(metaPage.getPageUI(),
-                            appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
-                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                                    String action = pageNameToActionMap.get(metaPage.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUIResult);
-                                    }
-                                }
-                            },
-                            loadFromFile,
-                            false);
-                }
-            }
-
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = showsPage.getPageAPI();
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-
-            // Cache movies page when the app is loading
-            getPageIdContent(getApiUrl(true,
-                    false,
-                    false,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    showsPage.getPageId(),
-                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                    showsPage.getPageId(),
+                    metaPage.getPageId(),
                     null,
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
                     null);
