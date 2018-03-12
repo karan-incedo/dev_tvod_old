@@ -10250,11 +10250,15 @@ public class AppCMSPresenter {
     }
 
     private int getHomePage(List<MetaPage> metaPageList) {
+        String id=navigation.getTabBar().get(0).getPageId();
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
-                    == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+            if (id.equalsIgnoreCase(metaPageList.get(i).getPageId())) {
                 return i;
             }
+            /*if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                return i;
+            }*/
         }
         return -1;
     }

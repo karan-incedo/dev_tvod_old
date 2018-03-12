@@ -593,7 +593,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
-        return 0;
+        return availableStreamingQualityMap.size()-1;
     }
 
     /**

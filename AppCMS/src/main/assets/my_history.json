@@ -380,6 +380,7 @@
               "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
+              "numberOfLines": 2,
               "textColor": "#ffffff",
               "key": "description"
             },
@@ -387,22 +388,22 @@
               "layout": {
                 "mobile": {
                   "topMargin": 9,
-                  "leftMargin": 57,
-                  "width": 70,
+                  "width": 85,
+                  "leftMargin": 42,
                   "fontSize": 13,
-                  "height": 15
+                  "height": 16
                 },
                 "tabletLandscape": {
                   "topMargin": 7.9,
-                  "width": 70,
-                  "leftMargin": 57,
+                  "width": 85,
+                  "leftMargin": 42,
                   "fontSize": 13,
-                  "height": 15
+                  "height": 17
                 },
                 "tabletPortrait": {
                   "topMargin": 6.2,
-                  "leftMargin": 57,
-                  "width": 70,
+                  "width": 85,
+                  "leftMargin": 42,
                   "fontSize": 13,
                   "height": 17
                 }
@@ -410,6 +411,8 @@
               "fontFamily": "OpenSans",
               "textAlignment": "center",
               "type": "label",
+              "opacity": 56,
+              "backgroundColor": "000000",
               "textColor": "#ffffff",
               "fontWeight": "Semibold",
               "key": "watchListDurationKey"
