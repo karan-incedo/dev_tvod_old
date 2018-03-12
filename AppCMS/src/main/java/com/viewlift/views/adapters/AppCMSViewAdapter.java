@@ -16,12 +16,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.bumptech.glide.Glide;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -43,11 +42,9 @@ import java.util.Map;
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder>
         implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
-
+    static int selectedPosition = -1;
     private final String episodicContentType;
     private final String fullLengthFeatureType;
-
-
     protected Context mContext;
     protected Layout parentLayout;
     protected Component component;
@@ -64,7 +61,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     String componentViewType;
     AppCMSAndroidModules appCMSAndroidModules;
     CollectionGridItemView planItemView[];
-    static int selectedPosition = -1;
     private boolean useParentSize;
     private String defaultAction;
     private AppCMSUIKeyType viewTypeKey;
@@ -204,7 +200,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     selectedText = childComponent.getSelectedText();
                 }
                 ((TextView) collectionGridChild).setText(selectedText);
-                ((TextView) collectionGridChild).setTextColor(Color.parseColor(appCMSPresenter.getColor(mContext,
+                ((TextView) collectionGridChild).setTextColor(Color.parseColor(AppCMSPresenter.getColor(mContext,
                         childComponent.getTextColor())));
                 collectionGridChild.setBackgroundColor(selectedColor);
             }
@@ -231,7 +227,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (collectionGridChild instanceof Button) {
                 Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
                 ((TextView) collectionGridChild).setText(childComponent.getText());
-                setBorder(((TextView) collectionGridChild), ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                setBorder(collectionGridChild, ContextCompat.getColor(mContext, R.color.disabledButtonColor));
                 ((TextView) collectionGridChild).setTextColor(ContextCompat.getColor(mContext, R.color.disabledButtonColor));
             }
         }
@@ -564,10 +560,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     component, data, position));
         }
 
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-            //
-        } else {
+        if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY &&
+                viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnTouchListener((View v, MotionEvent event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     lastTouchDownEvent = event;
@@ -714,7 +708,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                    appCMSPresenter,
+                    position);
         }
     }
 
