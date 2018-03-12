@@ -554,7 +554,8 @@
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
-<plurals name="episode_subtitle_text">
+    <string name="auto">Auto</string>
+    <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
     </plurals>
