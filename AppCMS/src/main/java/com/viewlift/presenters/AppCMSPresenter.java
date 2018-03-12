@@ -9542,6 +9542,11 @@ public class AppCMSPresenter {
                                            String resolutionWidth, String streamId, double ttfirstframe, int apod, boolean isDownloaded) {
         BeaconRequest beaconRequest = new BeaconRequest();
         String uid = getInstanceId();
+        if(getPlatformType() == PlatformType.TV){
+            uid = android.provider.Settings.Secure.getString(currentActivity.getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        }
+
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
