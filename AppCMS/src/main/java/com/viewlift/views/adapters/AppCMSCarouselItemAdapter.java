@@ -77,8 +77,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 appCMSAndroidModules);
 
         this.listView = listView;
-        //this.loop = loop;
-        this.loop = false;
+        this.loop = loop;
 
         this.updatedIndex = getDefaultIndex();
 
