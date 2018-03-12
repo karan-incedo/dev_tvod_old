@@ -271,10 +271,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
 
-            initializeStreamingQualityValues(videoAssets);
-
             if (useHls) {
                 videoUrl = videoAssets.getHls();
+                /*for hls streaming quality values are extracted in the VideoPlayerView class*/
+            } else {
+                initializeStreamingQualityValues(videoAssets);
             }
             if (TextUtils.isEmpty(videoUrl)) {
                 if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
@@ -595,6 +596,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         return 0;
     }
 
+    /**
+     * Used for MP4 renditions
+     * */
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingQualityMap == null) {
             availableStreamingQualityMap = new HashMap<>();
@@ -630,7 +634,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Collections.sort(availableStreamingQualities, (q1, q2) -> {
             int i1 = Integer.valueOf(q1.replace("p", ""));
             int i2 = Integer.valueOf(q2.replace("p", ""));
-            if (i2 < i1) {
+            if (i1 < i2) {
                 return -1;
             } else if (i1 == i2) {
                 return 0;

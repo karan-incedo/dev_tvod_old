@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
@@ -42,6 +41,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
@@ -50,7 +50,7 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
@@ -76,9 +76,12 @@ import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -139,8 +142,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private RecyclerView listView;
     private StreamingQualitySelectorAdapter listViewAdapter;
+    private HLSStreamingQualitySelectorAdapter hlsListViewAdapter;
 
     private boolean fullScreenMode;
+    private AdaptiveTrackSelection.Factory videoTrackSelectionFactory;
+    private int mVideoRendererIndex;
+    private boolean streamingQualitySelectorCreated;
+    private boolean useHls;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -226,7 +234,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
         }
-
     }
 
     public boolean shouldPlayWhenReady() {
@@ -377,7 +384,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-
+        useHls = getResources().getBoolean(R.bool.use_hls);
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -388,8 +395,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+                && !useHls
+                && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
+            currentStreamingQualitySelector.setVisibility(View.VISIBLE);
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
@@ -398,7 +408,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         timeBar = playerView.findViewById(R.id.exo_progress);
 
-        TrackSelection.Factory videoTrackSelectionFactory =
+        videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
         trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
@@ -485,6 +495,121 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             currentStreamingQualitySelector.setVisibility(GONE);
         }
+        streamingQualitySelectorCreated = true;
+    }
+
+    /**
+     * Used to extract the different tracks available in an HLS stream.
+     *
+     * {@link DefaultTrackSelector#getCurrentMappedTrackInfo} returns {@link MappingTrackSelector.MappedTrackInfo} object
+     * </br>
+     * <p>
+     * {@link MappingTrackSelector.MappedTrackInfo#getTrackGroups(int)} is called with 0 as argument for video tracks, which returns {@link TrackGroupArray}.
+     * </br></br></p><p>
+     * {@link TrackGroupArray} is then iterated on index which return {@link TrackGroup} by calling the {@link TrackGroupArray#get(int)}
+     * </br></br></p>
+     * {@link TrackGroup#getFormat(int)} is called and {@link Format} is used to get the track index and the {@link Format#height} is used to calculate the resolution of the track.
+     */
+    private void createStreamingQualitySelectorForHLS() {
+        if (player == null) {
+            return;
+        }
+        MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+        if (mappedTrackInfo == null) {
+            return;
+        }
+        for (int i = 0; i < mappedTrackInfo.length; i++) {
+            TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(i);
+            if (trackGroups.length != 0) {
+                if (player.getRendererType(i) == C.TRACK_TYPE_VIDEO){
+                    mVideoRendererIndex = i;
+                    break;
+                }
+            }
+        }
+        if (streamingQualitySelector != null && appCMSPresenter != null) {
+            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
+            List<HLSStreamingQuality> availableStreamingQualities = new ArrayList<>();
+            availableStreamingQualities.add(new HLSStreamingQuality(0, "Auto"));
+            for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+                TrackGroup group = trackGroups.get(groupIndex);
+                for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
+                    Format format = group.getFormat(trackIndex);
+                    availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
+                            format.height == Format.NO_VALUE ? "" : format.height +"p"));
+                }
+            }
+
+            /*the following is done to only have distinct values in the HLS track list. We are getting
+            * multiple tracks for same resolution with different bitrate.*/
+            Set<HLSStreamingQuality> set = new TreeSet<>((o1, o2) -> {
+                if (o1.getValue().equalsIgnoreCase(o2.getValue())) {
+                    return 0;
+                }
+                return 1;
+            });
+            set.addAll(availableStreamingQualities);
+            availableStreamingQualities.clear();
+            availableStreamingQualities.addAll(set);
+
+            if (availableStreamingQualities.size() > 1) {
+                listView = new RecyclerView(getContext());
+                hlsListViewAdapter = new HLSStreamingQualitySelectorAdapter(getContext(),
+                        appCMSPresenter,
+                        availableStreamingQualities);
+
+                listView.setAdapter(hlsListViewAdapter);
+                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                listView.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.VERTICAL,
+                        false));
+
+                setSelectedStreamingQualityIndex();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
+                    ((ViewGroup) listView.getParent()).removeView(listView);
+                }
+                builder.setView(listView);
+                final Dialog dialog = builder.create();
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                }
+                currentStreamingQualitySelector.setOnClickListener(v -> {
+                    /*Click Handler*/
+                    dialog.show();
+                    hlsListViewAdapter.notifyDataSetChanged();
+                });
+                hlsListViewAdapter.setItemClickListener(v -> {
+
+                    try {
+                        if (v instanceof HLSStreamingQuality) {
+                            int selectedIndex = hlsListViewAdapter.getDownloadQualityPosition();
+                            if (selectedIndex == 0) {
+                                trackSelector.clearSelectionOverrides(mVideoRendererIndex);
+                            } else {
+                                int[] tracks = new int[1];
+                                tracks[0] = ((HLSStreamingQuality) v).getIndex();
+                                MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                                        0, tracks);
+                                trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups, override);
+                            }
+                            currentStreamingQualitySelector.setText(availableStreamingQualities.get(selectedIndex).getValue());
+                            hlsListViewAdapter.setSelectedIndex(selectedIndex);
+                        }
+                        dialog.hide();
+                    } catch (Exception e) {
+
+                    }
+                });
+            } else {
+                currentStreamingQualitySelector.setVisibility(GONE);
+            }
+        } else {
+            currentStreamingQualitySelector.setVisibility(GONE);
+        }
+        streamingQualitySelectorCreated = true;
     }
 
     private void setSelectedStreamingQualityIndex() {
@@ -611,6 +736,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
                 }
+            }
+            if (playbackState == Player.STATE_READY /*checking if the playback state is ready*/
+                    && getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) /*check if stream quality selector is enabled*/
+                    && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
+                    && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
+                    ) {
+                createStreamingQualitySelectorForHLS();
+
+                // Default "Auto" is selected
+                currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
+                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -1234,6 +1370,106 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+
+    /**
+     * Specialized version of the {@link AppCMSDownloadRadioAdapter} for HLS track selection
+     */
+    private static class HLSStreamingQualitySelectorAdapter
+            extends AppCMSDownloadRadioAdapter<HLSStreamingQuality> {
+        List<HLSStreamingQuality> availableStreamingQualities;
+        int selectedIndex;
+        AppCMSPresenter appCMSPresenter;
+        HLSStreamingQualitySelectorAdapter(Context context,
+                                           AppCMSPresenter appCMSPresenter,
+                                           List<HLSStreamingQuality> items) {
+            super(context, items);
+            this.appCMSPresenter = appCMSPresenter;
+            this.availableStreamingQualities = items;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
+
+            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (viewHolder.getmRadio().getButtonDrawable() != null) {
+                    viewHolder.getmRadio().getButtonDrawable().setColorFilter(appCMSPresenter.getBrandPrimaryCtaColor(),
+                            PorterDuff.Mode.MULTIPLY);
+                }
+            } else {
+                int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{}
+                        }, new int[]{
+                        switchOnColor,
+                        switchOnColor
+                });
+
+                viewHolder.getmRadio().setButtonTintList(colorStateList);
+            }
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(AppCMSDownloadRadioAdapter.ViewHolder viewHolder, int i) {
+            super.onBindViewHolder(viewHolder, i);
+            viewHolder.getmText().setText(availableStreamingQualities.get(i).getValue());
+            if (selectedIndex == i) {
+                viewHolder.getmRadio().setChecked(true);
+            } else {
+                viewHolder.getmRadio().setChecked(false);
+            }
+            viewHolder.getmRadio().invalidate();
+        }
+
+        @Override
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
+        void setSelectedIndex(int selectedIndex) {
+            this.selectedIndex = selectedIndex;
+        }
+
+        int getDownloadQualityPosition() {
+            return downloadQualityPosition;
+        }
+    }
+
+    /**
+     * Class is used to store the index and value (resolution eg. 360p) of a particular track of
+     *  an HLS stream.
+     */
+    private static class HLSStreamingQuality {
+        int index;
+        String value;
+
+        HLSStreamingQuality(int index, String value) {
+            this.index = index;
+            this.value = value;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+    }
 
 
 }
