@@ -400,9 +400,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
-        } else {
+        }/* else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
-        }
+        }*/
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
