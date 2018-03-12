@@ -3379,7 +3379,7 @@ public class AppCMSPresenter {
     private void upgradePlanAPICall() {
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
+        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
@@ -3460,7 +3460,7 @@ public class AppCMSPresenter {
             if (!TextUtils.isEmpty(getActiveSubscriptionSku())) {
                 SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
                 subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
                 subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
                 subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
                 subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
@@ -4836,7 +4836,7 @@ public class AppCMSPresenter {
     }
 
     public void editHistory(final String filmId,
-                            final Action1<AppCMSDeleteHistoryResult> resultAction1, boolean post) {
+                            final Action1<List<AppCMSDeleteHistoryResult>> resultAction1, boolean post) {
         final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(),
@@ -5235,7 +5235,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
+    public void clearHistory(final Action1<List<AppCMSDeleteHistoryResult>> resultAction1) {
         try {
             showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
@@ -5247,7 +5247,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void makeClearHistoryRequest(Action1<AppCMSDeleteHistoryResult> resultAction1) {
+    public void makeClearHistoryRequest(Action1<List<AppCMSDeleteHistoryResult>> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(),
