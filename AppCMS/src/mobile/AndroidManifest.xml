@@ -104,8 +104,8 @@
 
         <activity
             android:name="com.viewlift.mobile.AppCMSLaunchActivity"
-            android:theme="@style/AppThemeTransparent"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppThemeTransparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -119,33 +119,34 @@
                     android:pathPrefix="/videos"
                     android:scheme="http" />
                 <data
-                    android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/films/title" />
+                    android:host="@string/app_cms_app_host_name"
+                    android:pathPrefix="/videos"
+                    android:scheme="https" />
                 <data
-                    android:scheme="http"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title" />
+                    android:pathPrefix="/films"
+                    android:scheme="http" />
                 <data
-                    android:scheme="https"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title" />
+                    android:pathPrefix="/films"
+                    android:scheme="https" />
                 <data
-                    android:scheme="http"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/films/title/" />
+                    android:pathPrefix="/show/title"
+                    android:scheme="http" />
                 <data
-                    android:scheme="https"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/films/title/" />
+                    android:pathPrefix="/show/title"
+                    android:scheme="https" />
                 <data
-                    android:scheme="http"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title/" />
+                    android:pathPrefix="/films/title/"
+                    android:scheme="http" />
                 <data
-                    android:scheme="https"
                     android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title/" />
+                    android:pathPrefix="/films/title/"
+                    android:scheme="https" />
+
             </intent-filter>
         </activity>
 
