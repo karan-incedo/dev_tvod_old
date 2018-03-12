@@ -8794,13 +8794,15 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageUser(String pageId) {
-        for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (pageId != null &&
-                    !TextUtils.isEmpty(pageId) &&
-                    navigationUser != null &&
-                    !TextUtils.isEmpty(navigationUser.getPageId()) &&
-                    pageId.contains(navigationUser.getPageId())) {
-                return true;
+        if (navigation != null && navigation.getNavigationUser() != null) {
+            for (NavigationUser navigationUser : navigation.getNavigationUser()) {
+                if (pageId != null &&
+                        !TextUtils.isEmpty(pageId) &&
+                        navigationUser != null &&
+                        !TextUtils.isEmpty(navigationUser.getPageId()) &&
+                        pageId.contains(navigationUser.getPageId())) {
+                    return true;
+                }
             }
         }
         return false;
