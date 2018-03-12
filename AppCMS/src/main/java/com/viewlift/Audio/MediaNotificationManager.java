@@ -26,21 +26,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-
-import android.support.v7.app.NotificationCompat.MediaStyle;
-
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.NotificationCompat.MediaStyle;
 import android.text.TextUtils;
 
 import com.viewlift.Audio.utils.ResourceHelper;
@@ -57,46 +53,70 @@ import com.viewlift.views.activity.AppCMSPageActivity;
  */
 public class MediaNotificationManager extends BroadcastReceiver {
 
-    private static final String CHANNEL_ID = "com.viewlift.Audio.MUSIC_CHANNEL_ID";
-
-    private static final int NOTIFICATION_ID = 412;
-    private static final int REQUEST_CODE = 100;
-
     public static final String ACTION_PAUSE = "com.viewlift.Audio.pause";
     public static final String ACTION_PLAY = "com.viewlift.Audio.play";
     public static final String ACTION_PREV = "com.viewlift.Audio.prev";
     public static final String ACTION_NEXT = "com.viewlift.Audio.next";
     public static final String ACTION_STOP = "com.viewlift.Audio.stop";
     public static final String ACTION_STOP_CASTING = "com.viewlift.Audio.stop_cast";
-
+    private static final String CHANNEL_ID = "com.viewlift.Audio.MUSIC_CHANNEL_ID";
+    private static final int NOTIFICATION_ID = 412;
+    private static final int REQUEST_CODE = 100;
     private final MusicService mService;
-    private MediaSessionCompat.Token mSessionToken;
-    private MediaControllerCompat mController;
-    private MediaControllerCompat.TransportControls mTransportControls;
-
-    private PlaybackStateCompat mPlaybackState;
-    private MediaMetadataCompat mMetadata;
-
     private final NotificationManager mNotificationManager;
-
     private final PendingIntent mPlayIntent;
     private final PendingIntent mPauseIntent;
     private final PendingIntent mPreviousIntent;
     private final PendingIntent mNextIntent;
     private final PendingIntent mStopIntent;
-
     private final PendingIntent mStopCastIntent;
-
     private final int mNotificationColor;
-
+    private MediaSessionCompat.Token mSessionToken;
+    private MediaControllerCompat mController;
+    private MediaControllerCompat.TransportControls mTransportControls;
+    private PlaybackStateCompat mPlaybackState;
+    private MediaMetadataCompat mMetadata;
     private boolean mStarted = false;
+    private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {
+        @Override
+        public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+            mPlaybackState = state;
+            if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
+                    state.getState() == PlaybackStateCompat.STATE_NONE) {
+                stopNotification();
+            } else {
+                Notification notification = createNotification();
+                if (notification != null) {
+                    mNotificationManager.notify(NOTIFICATION_ID, notification);
+                }
+            }
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            mMetadata = metadata;
+            Notification notification = createNotification();
+            if (notification != null) {
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
+        }
+
+        @Override
+        public void onSessionDestroyed() {
+            super.onSessionDestroyed();
+            try {
+                updateSessionToken();
+            } catch (RemoteException e) {
+            }
+        }
+    };
 
     public MediaNotificationManager(MusicService service) throws RemoteException {
         mService = service;
         updateSessionToken();
 
         mNotificationColor = ResourceHelper.getThemeColor(mService, R.attr.colorPrimary,
-                Color.DKGRAY);
+                R.color.colorAccent);
 
         mNotificationManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -227,40 +247,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {
-        @Override
-        public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-            mPlaybackState = state;
-            if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
-                    state.getState() == PlaybackStateCompat.STATE_NONE) {
-                stopNotification();
-            } else {
-                Notification notification = createNotification();
-                if (notification != null) {
-                    mNotificationManager.notify(NOTIFICATION_ID, notification);
-                }
-            }
-        }
-
-        @Override
-        public void onMetadataChanged(MediaMetadataCompat metadata) {
-            mMetadata = metadata;
-            Notification notification = createNotification();
-            if (notification != null) {
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
-        }
-
-        @Override
-        public void onSessionDestroyed() {
-            super.onSessionDestroyed();
-            try {
-                updateSessionToken();
-            } catch (RemoteException e) {
-            }
-        }
-    };
-
     private Notification createNotification() {
         if (mMetadata == null || mPlaybackState == null) {
             return null;
@@ -302,7 +288,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         .setMediaSession(mSessionToken))
                 .setDeleteIntent(mStopIntent)
                 .setColor(mNotificationColor)
-                .setSmallIcon(R.mipmap.app_logo)
+                .setSmallIcon(R.mipmap.ic_skylight_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(createContentIntent(description))

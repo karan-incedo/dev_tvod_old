@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -41,8 +42,10 @@ public class AppCMSAirshipReceiver extends AirshipReceiver {
                 String title = Apptentive.getTitleFromApptentivePush(pushBundle);
                 String body = Apptentive.getBodyFromApptentivePush(pushBundle);
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                int color = Build.VERSION.SDK_INT >= 23 ? context.getResources().getColor(R.color.colorAccent, null) : context.getResources().getColor(R.color.colorAccent);
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.app_logo)
+                        .setSmallIcon(R.mipmap.ic_skylight_notification)
+                        .setColor(color)
                         .setContentTitle(title)
                         .setContentText(body)
                         .setAutoCancel(true)

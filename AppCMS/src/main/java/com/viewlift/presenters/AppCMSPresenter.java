@@ -3437,7 +3437,7 @@ public class AppCMSPresenter {
     private void upgradePlanAPICall() {
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
@@ -3518,7 +3518,7 @@ public class AppCMSPresenter {
             if (!TextUtils.isEmpty(getActiveSubscriptionSku())) {
                 SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
                 subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
                 subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
                 subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
                 subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
@@ -8864,13 +8864,15 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageUser(String pageId) {
-        for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (pageId != null &&
-                    !TextUtils.isEmpty(pageId) &&
-                    navigationUser != null &&
-                    !TextUtils.isEmpty(navigationUser.getPageId()) &&
-                    pageId.contains(navigationUser.getPageId())) {
-                return true;
+        if (navigation != null && navigation.getNavigationUser() != null) {
+            for (NavigationUser navigationUser : navigation.getNavigationUser()) {
+                if (pageId != null &&
+                        !TextUtils.isEmpty(pageId) &&
+                        navigationUser != null &&
+                        !TextUtils.isEmpty(navigationUser.getPageId()) &&
+                        pageId.contains(navigationUser.getPageId())) {
+                    return true;
+                }
             }
         }
         return false;
