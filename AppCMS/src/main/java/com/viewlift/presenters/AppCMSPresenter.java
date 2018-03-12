@@ -1158,7 +1158,7 @@ public class AppCMSPresenter {
                             String pageId,
                             boolean usedCachedAPI) {
         if (currentContext != null && pageId != null) {
-            String urlWithContent;
+            String urlWithContent = null;
             if (usePageIdQueryParam) {
                 if (viewPlansPage) {
                     urlWithContent =
@@ -1172,11 +1172,11 @@ public class AppCMSPresenter {
                         if (usedCachedAPI) {
                             if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
                                     pageId.equals(moviesPage.getPageId()))) {
-//                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
-//                                        appCMSMain.getApiBaseUrlCached(),
-//                                        siteId,
-//                                        pageId,
-//                                        getLoggedInUser());
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+                                        appCMSMain.getApiBaseUrlCached(),
+                                        siteId,
+                                        pageId,
+                                        getLoggedInUser());
                             } else {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         appCMSMain.getApiBaseUrlCached(),
@@ -11698,15 +11698,21 @@ public class AppCMSPresenter {
     }
 
     public void cacheNavItems() {
-        if (getNavigation() != null && getNavigation().getTabBar() != null) {
-            for (int i = 0; i < getNavigation().getTabBar().size(); i++) {
-                NavigationPrimary navigationItem = getNavigation().getTabBar().get(i);
+        List<NavigationPrimary> navigationPrimaryList = null;
+        if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
+            navigationPrimaryList = getNavigation().getTabBar();
+        } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
+            navigationPrimaryList = getNavigation().getNavigationPrimary();
+        }
 
-                if (!navigationItem.getPageId().equals("Menu Screen") &&
-                        !navigationItem.getPageId().equals("Search Screen")) {
-                    cachePage(navigationItem.getPageId());
+        if (navigationPrimaryList != null) {
+                for (int i = 0; i < navigationPrimaryList.size(); i++) {
+                    NavigationPrimary navigationItem = navigationPrimaryList.get(i);
+                    if (!navigationItem.getPageId().equals("Menu Screen") &&
+                            !navigationItem.getPageId().equals("Search Screen")){
+                        cachePage(navigationItem.getPageId());
+                    }
                 }
-            }
         }
     }
 
@@ -12261,7 +12267,7 @@ public class AppCMSPresenter {
                                 false);
 
                         if (launchPageFinal == homePage) {
-                            cacheHomePage();
+                            cachePage(homePage.getPageId());
                         }
                     } else {
                         processMetaPagesList(loadFromFile,
