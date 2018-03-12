@@ -1,11 +1,9 @@
 package com.viewlift.tv.views.fragment;
 
 import android.content.Context;
-
 import android.graphics.Color;
-import android.os.Build;
-
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -16,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -34,6 +31,7 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
     private String desc_text;
     private static Context mContext;
     private AppCMSPresenter appCMSPresenter;
+    private Button btnClose;
 
     public TextOverlayDialogFragment() {
         super();
@@ -60,7 +58,7 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
         mView.findViewById(R.id.fragment_text_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
-        Button btnClose = (Button) mView.findViewById(R.id.btn_close);
+        btnClose = (Button) mView.findViewById(R.id.btn_close);
         TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
         TextView tvDescription = (TextView) mView.findViewById(R.id.text_overlay_description);
         ScrollView scrollView = (ScrollView)mView.findViewById(R.id.scrollview);
@@ -151,5 +149,15 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
         bundle.putInt( getString(R.string.tv_dialog_width_key) , width);
         bundle.putInt( getString(R.string.tv_dialog_height_key) , height);
         super.onActivityCreated(bundle);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Handler().postDelayed(() -> {
+            if (isVisible() && isAdded()) {
+                btnClose.requestFocus();
+            }
+        }, 500);
     }
 }

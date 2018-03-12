@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -35,6 +36,8 @@ import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -231,7 +234,7 @@ public class Utils {
 
     public static float getItemViewHeight(FireTV fireTV) {
         if (fireTV != null) {
-            if (fireTV.getHeight() != null) {
+            if (fireTV.getItemHeight() != null) {
                 return Float.valueOf(fireTV.getItemHeight());
             }
         }
@@ -241,8 +244,8 @@ public class Utils {
 
     public static float getItemViewWidth(FireTV fireTV) {
         if (fireTV != null) {
-            if (fireTV.getWidth() != null) {
-                return Float.valueOf(fireTV.getItemHeight());
+            if (fireTV.getItemWidth() != null) {
+                return Float.valueOf(fireTV.getItemWidth());
             }
         }
         return -1.0f;
@@ -262,7 +265,7 @@ public class Utils {
 
     public static float getFontSizeValue(Context context, Layout layout) {
             if (layout.getTv().getFontSizeValue() != null) {
-                layout.getTv().getFontSizeValue();
+                return layout.getTv().getFontSizeValue();
             }
         return -1.0f;
     }
@@ -636,6 +639,21 @@ public class Utils {
     }
 
 
+    /**
+     * Used to open the Season switch dialog.
+     *
+     * @param appCMSSwitchSeasonBinder data
+     */
+    public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder,
+                                               AppCMSPresenter appCMSPresenter) {
+        android.app.FragmentTransaction ft =
+                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
+                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
+        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
+    }
+
     @NonNull
     public static ClearDialogFragment getClearDialogFragment(Context context,
                                                        AppCMSPresenter appCMSPresenter,
@@ -733,12 +751,37 @@ public class Utils {
         return timeInString.toString();
     }
 
-    public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder, AppCMSPresenter appCMSPresenter) {
-        android.app.FragmentTransaction ft =
-                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
-        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
-                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
-        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
-
+    public static List<String> getRelatedVideosInShow(List<Season_> season, int showNumber, int episodeNumber) {
+        List<String> relatedVids = new ArrayList<>();
+        for (int i = showNumber; i < season.size(); i ++) {
+            if (i == showNumber) {
+                for (int j = episodeNumber + 1; j < season.get(i).getEpisodes().size(); j++) {
+                    relatedVids.add(season.get(i).getEpisodes().get(j).getGist().getId());
+                }
+            } else {
+                for (int j = 0; j < season.get(i).getEpisodes().size(); j++) {
+                    relatedVids.add(season.get(i).getEpisodes().get(j).getGist().getId());
+                }
+            }
+        }
+        return relatedVids;
     }
+
+
+     public static String convertStringIntoCamelCase(String text) {
+         try {
+             String[] words = text.toString().split(" ");
+             StringBuilder sb = new StringBuilder();
+             if (words[0].length() > 0) {
+                 sb.append(Character.toUpperCase(words[0].charAt(0)) + words[0].subSequence(1, words[0].length()).toString().toLowerCase());
+                 for (int i = 1; i < words.length; i++) {
+                     sb.append(" ");
+                     sb.append(Character.toUpperCase(words[i].charAt(0)) + words[i].subSequence(1, words[i].length()).toString().toLowerCase());
+                 }
+             }
+             return sb.toString();
+         }catch (Exception e){
+             return null;
+     }
+     }
 }

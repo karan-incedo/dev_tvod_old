@@ -39,6 +39,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -92,6 +93,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     private String moduleId;
     RecyclerView mRecyclerView;
+    private boolean isHistory;
+    private boolean isDownload;
+    private boolean isWatchlist;
 
     public AppCMSUserWatHisDowAdapter(Context context,
                                       ViewCreator viewCreator,
@@ -144,12 +148,55 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
+        detectViewTypes(jsonValueKeyMap,viewType);
+        sortData();
     }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
+    }
+
+    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap,String viewType){
+
+        switch (jsonValueKeyMap.get(viewType)) {
+            case PAGE_HISTORY_MODULE_KEY:
+                this.isHistory = true;
+                break;
+
+            case PAGE_DOWNLOAD_MODULE_KEY:
+                this.isDownload = true;
+                break;
+
+            case PAGE_WATCHLIST_MODULE_KEY:
+                this.isWatchlist = true;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void sortData() {
+        if (adapterData != null) {
+            if (isWatchlist || isDownload) {
+                sortByAddedDate();
+            } else if (isHistory) {
+                sortByUpdateDate();
+            }
+        }
+    }
+
+    private void sortByAddedDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                o2.getAddedDate()));
+    }
+
+    private void sortByUpdateDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
+                Long.valueOf(o2.getGist().getUpdateDate())));
+        Collections.reverse(adapterData);
     }
 
     @Override
@@ -248,6 +295,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             ImageButton finalDeleteDownloadButton = deleteDownloadButton;
                             ImageView finalThumbnailImage = thumbnailImage;
                             TextView finalVideoSize = videoSize;
+
+                            int radiusDifference = 5;
+                            if (BaseView.isTablet(componentView.getContext())) {
+                                radiusDifference = 2;
+                            }
+
                             appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                     deleteDownloadButton,
                                     appCMSPresenter,
@@ -286,7 +339,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                         }
                                     },
-                                    userId, true);
+                                    userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
 
                             finalVideoSize.setText("Cancel".toUpperCase());
                             finalVideoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
@@ -444,7 +497,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                 updateData(mRecyclerView, adapterData);
                                             }
                                             notifyDataSetChanged();
-                                        }, false);
+                                        }, false,
+                                        false);
                                 return;
                             }
                             if (action.contains(deleteSingleItemHistoryAction)) {
@@ -469,7 +523,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                    /*play audio if already downloaded*/
-                                        playDownloadedAudio(data);
+                                        playDownloadedAudio(data,position);
 
                                         return;
                                     } else {
@@ -480,6 +534,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 } else {
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,
@@ -494,7 +549,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                    /*play audio if already downloaded*/
-                                        playDownloadedAudio(data);
+                                        playDownloadedAudio(data,position);
                                         return;
                                     } else {
                                     /*play movie if already downloaded*/
@@ -602,7 +657,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     @Override
     public void receiveEvent(InternalEvent<?> event) {
         adapterData.clear();
-        notifyDataSetChanged();
+        if (adapterData.size() == 0) {
+            emptyList = true;
+            sendEvent(hideRemoveAllButtonEvent);
+            updateData(mRecyclerView, adapterData);
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -683,7 +744,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         isClickable = clickable;
     }
 
-    private void playDownloadedAudio(ContentDatum contentDatum) {
+    private void playDownloadedAudio(ContentDatum contentDatum,int position ) {
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
         AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();

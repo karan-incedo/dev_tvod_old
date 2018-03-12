@@ -30,6 +30,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -229,6 +230,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                       Component childComponent,
                                       ContentDatum data, int clickPosition) {
                         try {
+                            System.out.println("playlist adapter on click-");
 
                             isDownloading = true;
                             if (isClickable) {
@@ -290,10 +292,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         }
 
         updatePlaylistAllStatus();
-//        if (pageView.findChildViewById(R.id.playlist_download_id) != null && isAllVideoDownloaded) {
-//            (playlistDownloadBtn).setImageResource(R.drawable.ic_downloaded);
-//
-//        }
     }
 
     private void updatePlaylistAllStatus() {
@@ -445,6 +443,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDownload);
+
                     }
                 });
 
@@ -453,17 +452,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
                                                     Boolean playlistDownload) {
-
         String userId = appCMSPresenter.getLoggedInUser();
+        int radiusDifference = 5;
+        if (BaseView.isTablet(mContext)) {
+            radiusDifference = 2;
+        }
         appCMSPresenter.getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
                 new UpdateDownloadImageIconAction(downloadView,
                         appCMSPresenter,
-                        contentDatum, userId, playlistDownload), userId);
+                        contentDatum, userId, playlistDownload,radiusDifference,userId), userId);
     }
 
-
-        /**
+    /**
      * This class has been created to updated the Download Image Action and Status
      */
     private class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
@@ -473,15 +474,18 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         private ImageButton imageButton;
         private Boolean playlistDownload;
         private View.OnClickListener addClickListener;
+        int radiusDifference;
+        String id;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId, boolean playlistDownload) {
+                                      ContentDatum contentDatum, String userId, boolean playlistDownload,int radiusDifference,String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
             this.playlistDownload = playlistDownload;
             this.userId = userId;
-
+            this.radiusDifference = radiusDifference;
+            this.id=id;
 
             addClickListener = v -> {
 
@@ -502,7 +506,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
-
+                    System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);
@@ -549,7 +553,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                         imageButton.setOnClickListener(null);
 
                         break;
@@ -557,7 +561,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -585,7 +589,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());

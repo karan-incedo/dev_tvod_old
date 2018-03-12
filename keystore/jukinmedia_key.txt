@@ -1,2 +1,16 @@
+
+FailArmy
 Alias name: failarmy
 Password: failarmy
+
+JukinVideo
+Alias name: jukinvideo
+Password: jukinvideo777
+
+People Are Awesome
+Alias name: peopleareawesome
+Password: peopleareawesome
+
+Pet Collective
+Alias name: petcollective
+Password: petcollective*

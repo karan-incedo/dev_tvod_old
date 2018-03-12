@@ -145,7 +145,7 @@ public class AppCmsSearchFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (lastSearchedString.equals(editable.toString())) {
+                if (lastSearchedString.trim().equals(editable.toString().trim())) {
                     return;
                 }
                 if (editable.toString().trim().length() >= 3){
@@ -631,7 +631,7 @@ public class AppCmsSearchFragment extends Fragment {
         CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
-                component.getTrayBackground(),
+                component,
                 jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
@@ -666,7 +666,7 @@ public class AppCmsSearchFragment extends Fragment {
                  CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                          Integer.valueOf(component.getLayout().getTv().getHeight()),
                          Integer.valueOf(component.getLayout().getTv().getWidth()),
-                         component.getTrayBackground(),
+                         component,
                          jsonValueKeyMap
                  );
 

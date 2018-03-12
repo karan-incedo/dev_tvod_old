@@ -32,6 +32,19 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     ArrayList<Component> components;
 
+    @SerializedName("key")
+    @Expose
+    String key;
+
+    @SerializedName("value")
+    @Expose
+    int value;
+
+
+    @SerializedName("alpha")
+    @Expose
+    float alpha;
+
     @SerializedName("type")
     @Expose
     String type;

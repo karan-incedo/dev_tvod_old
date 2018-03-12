@@ -157,11 +157,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         finish();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("on key down");
-        return super.onKeyDown(keyCode, event);
-    }
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
@@ -193,11 +188,16 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
+        int radiusDifference = 5;
+        if (BaseView.isTablet(this)) {
+            radiusDifference = 2;
+        }
+
         appCMSPresenter.getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
                 new UpdateDownloadImageIconAction(downloadView,
                         appCMSPresenter,
-                        contentDatum, userId), userId);
+                        contentDatum, userId,radiusDifference,userId), userId);
     }
 
     /**
@@ -209,13 +209,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         private final String userId;
         private ImageButton imageButton;
         private View.OnClickListener addClickListener;
+        private final int radiusDifference;
+        private final String id;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId) {
+                                      ContentDatum contentDatum, String userId, int radiusDifference, String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
             this.userId = userId;
+            this.radiusDifference = radiusDifference;
+            this.id = id;
 
             addClickListener = v -> {
                 if (!appCMSPresenter.isNetworkConnected()) {
@@ -279,14 +283,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -311,7 +315,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());

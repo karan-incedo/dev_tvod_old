@@ -32,25 +32,21 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         implements OnInternalEvent, AppCMSBaseAdapter {
 
     private static final String TAG = "TraySeasonItemAdapter";
-
+    private final String episodicContentType;
+    private final String fullLengthFeatureType;
     protected List<ContentDatum> adapterData;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
+    String componentViewType;
     private List<OnInternalEvent> receivers;
     private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
-
-    private final String episodicContentType;
-    private final String fullLengthFeatureType;
-
     private MotionEvent lastTouchDownEvent;
-
-    String componentViewType;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -108,7 +104,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
 
-
     @Override
     public int getItemCount() {
         return adapterData != null && !adapterData.isEmpty() ? adapterData.size() : 1;
@@ -127,13 +122,13 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     @Override
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
-    public String getModuleId() {
-        return moduleId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -212,15 +207,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,
                                             action)) {
                                         //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
+    //                                                " permalink: " +
+    //                                                permalink +
+    //                                                " action: " +
+    //                                                action);
                                     }
                                 } else {
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
@@ -232,10 +228,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                             currentPlayingIndex,
                                             relatedVideoIds)) {
                                         //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
+    //                                                " permalink: " +
+    //                                                permalink +
+    //                                                " action: " +
+    //                                                action);
                                     }
                                 }
                             }
@@ -259,22 +255,23 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                     currentPlayingIndex = 0;
                                 }
                                 if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
                                         null)) {
                                     //Log.e(TAG, "Could not launch play action: " +
-//                                            " filmId: " +
-//                                            filmId +
-//                                            " permaLink: " +
-//                                            permaLink +
-//                                            " title: " +
-//                                            title);
+    //                                            " filmId: " +
+    //                                            filmId +
+    //                                            " permaLink: " +
+    //                                            permaLink +
+    //                                            " title: " +
+    //                                            title);
                                 }
                             }
                         }
                     }
-                };
+            };
         }
 
         itemView.setOnTouchListener((View v, MotionEvent event) -> {
@@ -330,26 +327,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 if (relatedVideoIds == null) {
                     currentPlayingIndex = 0;
                 }
-
-                if (data.getGist() == null ||
-                        data.getGist().getContentType() == null) {
-                    if (!appCMSPresenter.launchVideoPlayer(data,
-                            currentPlayingIndex,
-                            relatedVideoIds,
-                            -1,
-                            action)) {
-                    }
-                } else {
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
-                            title,
-                            null,
-                            data,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                    }
-                }
             }
         });
 
@@ -360,7 +337,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                    Color.parseColor(appCMSPresenter.getAppTextColor()),
                     appCMSPresenter,
                     position);
         }
@@ -379,55 +356,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     @Override
     public void setClickable(boolean clickable) {
 
-    }
-
-    private void click(ContentDatum data) {
-        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-
-        String permalink = data.getGist().getPermalink();
-        String action = defaultAction;
-        String title = data.getGist().getTitle();
-        String hlsUrl = getHlsUrl(data);
-
-        String[] extraData = new String[3];
-        extraData[0] = permalink;
-        extraData[1] = hlsUrl;
-        extraData[2] = data.getGist().getId();
-
-        List<String> relatedVideos = null;
-        if (data.getContentDetails() != null &&
-                data.getContentDetails().getRelatedVideoIds() != null) {
-            relatedVideos = data.getContentDetails().getRelatedVideoIds();
-        }
-        //Log.d(TAG, "Launching " + permalink + ": " + action);
-        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                action,
-                title,
-                extraData,
-                data,
-                false,
-                -1,
-                relatedVideos)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " permalink: " +
-//                    permalink +
-//                    " action: " +
-//                    action +
-//                    " hlsUrl: " +
-//                    hlsUrl);
-        }
-    }
-
-    private void play(ContentDatum data, String action) {
-        if (!appCMSPresenter.launchVideoPlayer(data,
-                -1,
-                null,
-                data.getGist().getWatchedTime(),
-                null)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " action: " +
-//                    action);
-        }
     }
 
     private String getDefaultAction(Context context) {

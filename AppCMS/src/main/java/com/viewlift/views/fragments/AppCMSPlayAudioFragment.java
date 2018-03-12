@@ -505,8 +505,7 @@ boolean isVisible=true;
 
         if (getActivity() != null) {
             Glide.with(getActivity())
-                    .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.placeholder_audio)
+                    .load(mCurrentArtUrl)
                     .into(trackImage);
         }
 

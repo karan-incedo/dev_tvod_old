@@ -125,6 +125,11 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
                 String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) ||
                         sendingPage == null ||
@@ -176,10 +181,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
-                !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
-            appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
-                    .getGeneral()
-                    .getBackgroundColor()));
+                !TextUtils.isEmpty(appCMSPresenter.getAppBackgroundColor())) {
+            appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }
 
         appCMSCloseButton.setOnClickListener(v -> finish());

@@ -3,9 +3,11 @@ package com.viewlift.models.network.rest;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +44,19 @@ public class AppCMSPageUICall {
     }
 
     @WorkerThread
+    public boolean writeToFile(AppCMSPageUI appCMSPageUI, String url) {
+        String filename = getResourceFilename(url);
+        try {
+            writePageToFile(filename, appCMSPageUI);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to write AppCMSPageUI file: " +
+                    url);
+        }
+        return false;
+    }
+
+    @WorkerThread
     public AppCMSPageUI call(String url, boolean bustCache, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
@@ -50,7 +65,7 @@ public class AppCMSPageUICall {
                 appCMSPageUI = readPageFromFile(filename);
                 appCMSPageUI.setLoadedFromNetwork(false);
             } catch (Exception e) {
-                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
                 try {
                     if (bustCache) {
                         StringBuilder urlWithCacheBuster = new StringBuilder(url);
@@ -74,6 +89,15 @@ public class AppCMSPageUICall {
             } else {
                 appCMSPageUI = loadFromNetwork(url, filename);
             }
+
+            if (appCMSPageUI == null) {
+                try {
+                    appCMSPageUI = readPageFromFile(filename);
+                    appCMSPageUI.setLoadedFromNetwork(false);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                }
+            }
         }
         return appCMSPageUI;
     }
@@ -86,7 +110,7 @@ public class AppCMSPageUICall {
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {
-
+            Log.e(TAG, "Error receiving network data " + url + ": " + e.getMessage());
         }
         return appCMSPageUI;
     }

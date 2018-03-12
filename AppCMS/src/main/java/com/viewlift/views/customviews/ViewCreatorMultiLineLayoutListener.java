@@ -63,7 +63,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             int lineEnd = textView.getLayout().getLineVisibleEnd(linesCompletelyVisible - 1) -
                     EXTRA_TRUNC_CHARS;
             if (0 <= lineEnd &&
-                    lineEnd < fullText.length() &&
+                    lineEnd + EXTRA_TRUNC_CHARS < fullText.length() &&
                     appCMSPresenter != null) {
                 if (0 < lineEnd) {
                     SpannableString spannableTextWithMore =

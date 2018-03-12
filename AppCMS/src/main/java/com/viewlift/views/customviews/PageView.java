@@ -5,9 +5,13 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -34,6 +38,8 @@ import javax.inject.Inject;
  */
 
 public class PageView extends BaseView {
+    private static final String TAG = "PageView";
+
     private final AppCMSPageUI appCMSPageUI;
     private List<ListWithAdapter> adapterList;
     private List<ViewWithComponentId> viewsWithComponentIds;
@@ -47,6 +53,12 @@ public class PageView extends BaseView {
 
     private boolean shouldRefresh;
 
+    private boolean reparentChromecastButton;
+
+    private OnScrollChangeListener onScrollChangeListener;
+
+    private boolean ignoreScroll;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -56,8 +68,9 @@ public class PageView extends BaseView {
         this.viewsWithComponentIds = new ArrayList<>();
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
-        this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
+        this.appCMSPageViewAdapter = new AppCMSPageViewAdapter(context);
         this.shouldRefresh = true;
+        this.ignoreScroll = false;
         init();
     }
 
@@ -78,19 +91,29 @@ public class PageView extends BaseView {
 
         childrenContainer.setVisibility(GONE);
         viewParent.removeView(view);
+
+        LayoutParams adjustedLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
+
+        view.setLayoutParams(adjustedLayoutParams);
+
         addView(view);
+
+        view.forceLayout();
+
+        Log.d(TAG, "Video Player opened in fullscreen");
     }
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = true;
-        if (fullScreenViewOriginalDimensions != null) {
+        if (view.getParent() == this) {
             removeView(view);
 
-            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
-            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
-
-            viewParent.addView(view);
             childrenContainer.setVisibility(VISIBLE);
+
+            getRootView().forceLayout();
+
+            Log.d(TAG, "Video Player closed out fullscreen");
         }
     }
 
@@ -176,33 +199,29 @@ public class PageView extends BaseView {
         ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
-
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
+        ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (onScrollChangeListener != null &&
+                        recyclerView.isLaidOut() &&
+                        !ignoreScroll) {
+                    onScrollChangeListener.onScroll(dx, dy);
+                    int currentPosition =
+                            ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                    if (currentPosition < 0) {
+                        currentPosition =
+                                ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    }
+                    if (0 <= currentPosition) {
+                        onScrollChangeListener.setCurrentPosition(currentPosition);
+                    }
+                }
 
-        // NOTE: The following is an implementation of lazy loading for individual tray elements
-//        childrenContainer.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-//            int firstVisibleIndex =
-//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findFirstVisibleItemPosition();
-//            int lastVisibleIndex =
-//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findLastVisibleItemPosition();
-//
-//            List<String> modulesToDisplay = appCMSPageViewAdapter.getViewIdList(firstVisibleIndex, lastVisibleIndex);
-//            appCMSPresenter.getPagesContent(modulesToDisplay,
-//                    appCMSPageAPI -> {
-//                        if (appCMSPageAPI != null) {
-//                            try {
-//                                int numResultModules = appCMSPageAPI.getModules().size();
-//                                for (int i = 0; i < numResultModules; i++) {
-//                                    Module module = appCMSPageAPI.getModules().get(i);
-//                                    updateDataList(module.getContentData(), module.getId());
-//                                }
-//                            } catch (Exception e) {
-//
-//                            }
-//                        }
-//                    });
-//        });
-
+                ignoreScroll = false;
+            }
+        });
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -210,11 +229,12 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            appCMSPresenter.clearPageAPIData(() -> {
-                appCMSPresenter.setMiniPLayerVisibility(true);
-                mainView.setRefreshing(false);
-            },
-                    true);
+            if (shouldRefresh) {
+                appCMSPresenter.clearPageAPIData(() -> {
+                            mainView.setRefreshing(false);
+                        },
+                        true);
+            }
         });
         addView(mainView);
         return childrenContainer;
@@ -249,9 +269,14 @@ public class PageView extends BaseView {
         appCMSPageViewAdapter.removeAllViews();
     }
 
-    public void addModuleViewWithModuleId(String moduleId, ModuleView moduleView) {
+    public void addModuleViewWithModuleId(String moduleId,
+                                          ModuleView moduleView,
+                                          boolean userModuleViewAsHeader) {
         moduleViewMap.put(moduleId, moduleView);
         appCMSPageViewAdapter.addView(moduleView);
+        if (userModuleViewAsHeader) {
+            addView(moduleView);
+        }
     }
 
     public ModuleView getModuleViewWithModuleId(String moduleId) {
@@ -289,6 +314,39 @@ public class PageView extends BaseView {
         return null;
     }
 
+    public boolean shouldReparentChromecastButton() {
+        return reparentChromecastButton;
+    }
+
+    public void setReparentChromecastButton(boolean reparentChromecastButton) {
+        this.reparentChromecastButton = reparentChromecastButton;
+    }
+
+    public interface OnScrollChangeListener {
+        void onScroll(int dx, int dy);
+        void setCurrentPosition(int position);
+    }
+
+    public OnScrollChangeListener getOnScrollChangeListener() {
+        return onScrollChangeListener;
+    }
+
+    public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {
+        this.onScrollChangeListener = onScrollChangeListener;
+    }
+
+    public void scrollToPosition(int dx, int dy) {
+        if (childrenContainer != null) {
+            ignoreScroll = true;
+            childrenContainer.scrollBy(dx, dy);
+        }
+    }
+
+    public void scrollToPosition(int position) {
+        if (childrenContainer != null) {
+            ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+        }
+    }
     private static class ViewDimensions {
         int width;
         int height;
