@@ -48,17 +48,18 @@
         android:id="@+id/exo_controller_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="#CC000000"
-        android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:orientation="vertical">
         <LinearLayout
             android:id="@+id/exo_media_controller"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingTop="4dp"
-            android:layout_above="@+id/seek_bar_parent">
+            android:paddingTop="4dp">
 
 
             <ImageButton
@@ -81,23 +82,23 @@
                 android:id="@+id/streamingQualitySelector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:textAlignment="center"
-                android:background="@drawable/streaming_quality_background"
-                android:visibility="gone"
                 android:layout_margin="@dimen/streaming_quality_view_margin"
-                android:padding="@dimen/streaming_quality_view_padding"/>
+                android:background="@drawable/streaming_quality_background"
+                android:gravity="center"
+                android:padding="@dimen/streaming_quality_view_padding"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:visibility="gone" />
         </LinearLayout>
     </RelativeLayout>
         <LinearLayout
             android:id="@+id/seek_bar_parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_marginTop="4dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_alignParentBottom="true">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@id/exo_position"
