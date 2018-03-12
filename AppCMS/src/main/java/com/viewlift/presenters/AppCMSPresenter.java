@@ -3379,7 +3379,7 @@ public class AppCMSPresenter {
     private void upgradePlanAPICall() {
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
@@ -3460,7 +3460,7 @@ public class AppCMSPresenter {
             if (!TextUtils.isEmpty(getActiveSubscriptionSku())) {
                 SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
                 subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
                 subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
                 subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
                 subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
