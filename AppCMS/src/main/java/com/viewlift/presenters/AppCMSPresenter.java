@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -630,7 +631,9 @@ public class AppCMSPresenter {
     private boolean shouldLaunchLoginAction;
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
-    private boolean loginDialogPopupOpen;
+
+    private boolean loginDialogPopupOpen = false;
+
     private volatile boolean processedUIModules;
     private volatile boolean processedUIPages;
     private String cachedAPIUserToken;
@@ -9270,6 +9273,16 @@ public class AppCMSPresenter {
 
                     dialog.setOnCancelListener(arg0 -> {
                         loginDialogPopupOpen = false;
+                    });
+                    dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                        @Override
+                        public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                dialog.dismiss();
+                                loginDialogPopupOpen = false;
+                            }
+                            return true;
+                        }
                     });
 
                     if (dialog.getWindow() != null) {
