@@ -777,33 +777,33 @@
                 "mobile": {
                   "yAxis": 80,
                   "leftMargin": 0,
-                  "rightMargin": 70,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 105
                 },
                 "tabletLandscape": {
                   "yAxis": 80,
                   "leftMargin": 0,
-                  "rightMargin": 70,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 105
                 },
                 "tabletPortrait": {
                   "yAxis": 80,
                   "leftMargin": 0,
-                  "rightMargin": 70,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 105
                 }
               },
               "backgroundColor": "000000",
               "fontFamily": "Lato",
               "numberOfLines": 1,
-              "textAlignment": "center",
               "type": "label",
               "opacity": 56,
               "textColor": "#ffffff",
-              "key": "thumbnailInfo"
+              "key": "thumbnailInfo",
+              "padding": 5
             }
           ],
           "isHorizontalScroll": true,
