@@ -34,7 +34,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -50,10 +49,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -184,6 +181,7 @@ public class CollectionGridItemView extends BaseView {
             if (createRoundedCorners) {
                 ((CardView) childrenContainer).setRadius(14);
                 setBackgroundResource(android.R.color.transparent);
+                childrenContainer.setBackgroundColor(R.color.transparentColor);
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
@@ -332,7 +330,7 @@ public class CollectionGridItemView extends BaseView {
                                         verticalMargin,
                                         horizontalMargin,
                                         verticalMargin);
-                                ((ImageView) view).setLayoutParams(llParams);
+                                view.setLayoutParams(llParams);
                                 Glide.with(context.getApplicationContext())
                                         .load(imageUrl)
 //                                        .override(size,size)
@@ -914,6 +912,10 @@ public class CollectionGridItemView extends BaseView {
         return formatter.format(calendar.getTime());
     }
 
+    public List<ItemContainer> getChildItems() {
+        return childItems;
+    }
+
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
@@ -925,6 +927,14 @@ public class CollectionGridItemView extends BaseView {
     public static class ItemContainer {
         View childView;
         Component component;
+
+        public View getChildView() {
+            return childView;
+        }
+
+        public Component getComponent() {
+            return component;
+        }
 
         public static class Builder {
             private ItemContainer itemContainer;
@@ -946,14 +956,6 @@ public class CollectionGridItemView extends BaseView {
             public ItemContainer build() {
                 return itemContainer;
             }
-        }
-
-        public View getChildView() {
-            return childView;
-        }
-
-        public Component getComponent() {
-            return component;
         }
     }
 
@@ -1042,10 +1044,6 @@ public class CollectionGridItemView extends BaseView {
         public int hashCode() {
             return ID.hashCode();
         }
-    }
-
-    public List<ItemContainer> getChildItems() {
-        return childItems;
     }
 
 }
