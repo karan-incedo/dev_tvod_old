@@ -1143,34 +1143,31 @@
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 120
+                  "height": 20
                 },
                 "tabletLandscape": {
                   "yAxis": 114,
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 130
+                  "height": 20
                 },
                 "tabletPortrait": {
                   "yAxis": 114,
                   "xAxis": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 130
+                  "height": 20
                 }
               },
               "backgroundColor": "000000",
               "fontFamily": "Lato",
               "numberOfLines": 1,
-//              "textAlignment": "center",
+              "textAlignment": "center",
               "type": "label",
               "opacity": 56,
               "textColor": "#ffffff",
               "key": "thumbnailInfo",
-              "padding": 5
+              "padding": 10
             }
           ],
           "backgroundColor": "#000000",
