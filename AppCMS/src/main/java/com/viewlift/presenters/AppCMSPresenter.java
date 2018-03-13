@@ -352,6 +352,7 @@ public class AppCMSPresenter {
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
+    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
@@ -631,7 +632,7 @@ public class AppCMSPresenter {
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
 
-    private boolean loginDialogPopupOpen=false;
+    private boolean loginDialogPopupOpen = false;
 
     private volatile boolean processedUIModules;
     private volatile boolean processedUIPages;
