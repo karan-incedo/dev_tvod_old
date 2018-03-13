@@ -508,8 +508,7 @@ public class CollectionGridItemView extends BaseView {
                         view.setVisibility(GONE);
                         bringToFront = false;
                     }
-                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
-                            appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ) {
                         String imageUrl = "";
                         if (data.getGist().getImageGist().get_1x1() != null) {
                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -518,9 +517,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewHeight);
                         }
                         view.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
-                            view.setPadding(20, 20, 20, 20);
-                        }
+
                         if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                             RequestOptions requestOptions = new RequestOptions()
                                     .override(childViewWidth,

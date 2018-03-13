@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -500,7 +501,7 @@ public class AppCMSPresenter {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
             "/storage/sdcard0/external_sdcard", // User request
-            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+            "/mnt/extsdcard","/mnt/sdcard/external_sd", // Samsung galaxy family
             "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
             "/removable/microsd", // Asus transformer prime
             "/mnt/emmc", "/storage/external_SD", // LG
@@ -640,7 +641,7 @@ public class AppCMSPresenter {
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
 
-    private boolean loginDialogPopupOpen;
+    private boolean loginDialogPopupOpen=false;
 
     private volatile boolean processedUIModules;
     private volatile boolean processedUIPages;
@@ -9286,6 +9287,16 @@ public class AppCMSPresenter {
 
                     dialog.setOnCancelListener(arg0 -> {
                         loginDialogPopupOpen = false;
+                    });
+                    dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                        @Override
+                        public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                dialog.dismiss();
+                                loginDialogPopupOpen = false;
+                            }
+                            return true;
+                        }
                     });
 
                     if (dialog.getWindow() != null) {

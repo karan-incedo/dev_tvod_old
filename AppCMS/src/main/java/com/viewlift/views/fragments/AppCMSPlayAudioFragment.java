@@ -143,6 +143,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         return appCMSPlayAudioFragment;
     }
 
+    int currentProgess;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -212,7 +214,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         seekAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                currentProgess = progress;
+                audioPreview();
                 trackStartTime.setText(DateUtils.formatElapsedTime(progress / 1000));
+
             }
 
             @Override
@@ -286,11 +291,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         }
     }
-boolean isVisible=true;
+
+    boolean isVisible = true;
+
     @Override
     public void onResume() {
         super.onResume();
-        isVisible=true;
+        isVisible = true;
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }
 
@@ -372,16 +379,8 @@ boolean isVisible=true;
                         break;
                     case PlaybackStateCompat.STATE_PAUSED:
                     case PlaybackStateCompat.STATE_STOPPED:
-                        MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
-
-                        String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-
-                        if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || isFree.equalsIgnoreCase("true")) {
-                            controls.play();
-                            scheduleSeekbarUpdate();
-                        } else {
-                            showEntitleMentDialog();
-                        }
+                        scheduleSeekbarUpdate();
+                        audioPreview();
                         break;
                     default:
                 }
@@ -402,6 +401,37 @@ boolean isVisible=true;
         }
     }
 
+    void audioPreview() {
+        if (getActivity() != null
+                && MediaControllerCompat.getMediaController(getActivity()) != null
+                && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
+            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+            MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
+            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+            if (mScheduleFuture != null && mScheduleFuture.isCancelled()) {
+                return;
+            }
+            if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+                controls.play();
+                scheduleSeekbarUpdate();
+            } else {
+                if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+                        && appCMSPresenter.getAppCMSMain().getFeatures() != null
+                        && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                    if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                        if (currentProgess > Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                            showEntitleMentDialog();
+                        } else {
+                            controls.play();
+                            scheduleSeekbarUpdate();
+                        }
+                    }
+                } else {
+                    showEntitleMentDialog();
+                }
+            }
+        }
+    }
 
     private void setPlaylistVisibility() {
         if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() == null) {
@@ -482,7 +512,7 @@ boolean isVisible=true;
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mCallback);
         }
-        isVisible=false;
+        isVisible = false;
     }
 
     @Override
@@ -525,15 +555,7 @@ boolean isVisible=true;
 
     public void checkSubscription(MediaMetadataCompat metadata) {
         if (getActivity() != null) {
-            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-            System.out.println("Check subscription-" + isFree);
-            if (!isFree.equalsIgnoreCase("true")) {
-                if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
-                    showEntitleMentDialog();
-                }
-            }
-
+            audioPreview();
         }
     }
 
@@ -544,8 +566,8 @@ boolean isVisible=true;
         if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
             controls.pause();
             stopSeekbarUpdate();
-            if (((dialog != null && !dialog.isShowing()) || dialog == null) && isVisible ) {
-                System.out.println("isVisible -"+isVisible);
+            if (((dialog != null && !dialog.isShowing()) || dialog == null) && isVisible) {
+                System.out.println("isVisible -" + isVisible);
                 appCMSPresenter.setAudioPlayerOpen(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
                     dialog = appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
