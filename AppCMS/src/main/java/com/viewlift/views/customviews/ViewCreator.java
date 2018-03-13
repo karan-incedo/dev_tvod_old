@@ -2419,11 +2419,12 @@ public class ViewCreator {
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)
                         && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
+                    ((Button) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                     applyBorderToComponent(
                             context,
                             componentViewResult.componentView,
                             component,
-                            -1);
+                            Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta()
                             .getPrimary().getBackgroundColor())) {
@@ -3041,11 +3042,11 @@ public class ViewCreator {
                         } else {
                             componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
                         }
-                        applyBorderToComponent(
+                        /*applyBorderToComponent(
                                 context,
                                 componentViewResult.componentView,
                                 component,
-                                -1);
+                                -1);*/
                         break;
 
                     default:
@@ -3754,7 +3755,6 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
@@ -3764,7 +3764,7 @@ public class ViewCreator {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
 //                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
@@ -4335,7 +4335,7 @@ public class ViewCreator {
                     viewBorder.setStroke(component.getBorderWidth(),
                             Color.parseColor(getColor(context, component.getBorderColor())));
                 } else {
-                    viewBorder.setStroke(4, forcedColor);
+                    viewBorder.setStroke(1, forcedColor);
                 }
                 viewBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
                 view.setBackground(viewBorder);

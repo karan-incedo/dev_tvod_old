@@ -149,6 +149,7 @@ import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -172,6 +173,7 @@ import com.viewlift.models.network.rest.AppCMSArticleCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSContentDetailCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
@@ -507,6 +509,7 @@ public class AppCMSPresenter {
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
+    private AppCMSContentDetailCall appCMSContentDetailCall;
     private Activity currentActivity;
     private Context currentContext;
     private Navigation navigation;
@@ -1067,20 +1070,18 @@ public class AppCMSPresenter {
     public void refreshVideoData(final String id,
                                  Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+            String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     id,
                     appCMSSite.getGist().getSiteInternalName());
-            GetAppCMSVideoDetailAsyncTask.Params params =
-                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+            GetAppCMSContentDetailTask.Params params =
+                    new GetAppCMSContentDetailTask.Params.Builder().url(url)
                             .authToken(getAuthToken()).build();
-            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                    appCMSVideoDetail -> {
-                        if (appCMSVideoDetail != null &&
-                                appCMSVideoDetail.getRecords() != null &&
-                                appCMSVideoDetail.getRecords().get(0) != null) {
-                            ContentDatum currentContentDatum = appCMSVideoDetail.getRecords().get(0);
-                            ContentDatum userHistoryContentDatum = getUserHistoryContentDatum(currentContentDatum.getGist().getId());
+            new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                    appCMSContentDetail -> {
+                        if (appCMSContentDetail != null) {
+                            ContentDatum currentContentDatum = appCMSContentDetail.convertToContentDatum();
+                            ContentDatum userHistoryContentDatum = AppCMSPresenter.this.getUserHistoryContentDatum(currentContentDatum.getGist().getId());
                             if (userHistoryContentDatum != null) {
                                 currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
                             }
@@ -1107,21 +1108,19 @@ public class AppCMSPresenter {
             /*When content details are null it means video player is launched from somewhere
             * other than video detail fragment*/
 
-            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+            String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     contentDatum.getGist().getId(),
                     appCMSSite.getGist().getSiteInternalName());
-            GetAppCMSVideoDetailAsyncTask.Params params =
-                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+            GetAppCMSContentDetailTask.Params params =
+                    new GetAppCMSContentDetailTask.Params.Builder().url(url)
                             .authToken(getAuthToken()).build();
 
-            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                    appCMSVideoDetail -> {
+            new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                    appCMSContentDetail -> {
                         try {
-                            if (appCMSVideoDetail != null &&
-                                    appCMSVideoDetail.getRecords() != null &&
-                                    appCMSVideoDetail.getRecords().get(0) != null &&
-                                    appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
+                            if (appCMSContentDetail != null &&
+                                    appCMSContentDetail.getContentDetails() != null) {
                                 String updatedAction = expectedAction;
 
                                 if (!TextUtils.isEmpty(expectedAction) &&
@@ -1129,9 +1128,9 @@ public class AppCMSPresenter {
                                         !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
                                     String contentType = "";
 
-                                    if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
-                                            appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
-                                        contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
+                                    if (appCMSContentDetail.getGist() != null &&
+                                            appCMSContentDetail.getGist().getContentType() != null) {
+                                        contentType = appCMSContentDetail.getGist().getContentType();
                                     }
 
                                     switch (contentType) {
@@ -1153,19 +1152,19 @@ public class AppCMSPresenter {
                                 }
 
                                 Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
-                                Log.d(TAG, "Updated watched time: " + appCMSVideoDetail.getRecords().get(0).getGist().getWatchedTime());
+                                Log.d(TAG, "Updated watched time: " + appCMSContentDetail.getGist().getWatchedTime());
 
-                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
-                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
+                                appCMSContentDetail.getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
+                                appCMSContentDetail.getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
-                                launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                launchButtonSelectedAction(appCMSContentDetail.getGist().getPermalink(),
                                         updatedAction,
-                                        appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                        appCMSContentDetail.getGist().getTitle(),
                                         null,
-                                        appCMSVideoDetail.getRecords().get(0),
+                                        appCMSContentDetail.convertToContentDatum(),
                                         false,
                                         currentlyPlayingIndex,
-                                        appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                        appCMSContentDetail.getContentDetails().getRelatedVideoIds());
                             } else {
                                 if (!isNetworkConnected()) {
                                     // Fix of SVFA-1435
@@ -4400,20 +4399,20 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (!binder.isOffline()) {
-                GetAppCMSVideoDetailAsyncTask.Params params =
-                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                GetAppCMSContentDetailTask.Params params =
+                        new GetAppCMSContentDetailTask.Params.Builder().url(url)
                                 .authToken(getAuthToken()).build();
-                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        appCMSVideoDetail -> {
+                new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                        appCMSContentDetail -> {
                             try {
-                                if (appCMSVideoDetail != null) {
-                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                if (appCMSContentDetail != null) {
+                                    binder.setContentData(appCMSContentDetail.convertToContentDatum());
                                     AppCMSPageAPI pageAPI = null;
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)) {
-                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                            pageAPI = appCMSContentDetail.convertToAppCMSPageAPI(pageId,
                                                     moduleList.getType());
                                             break;
                                         }
@@ -6848,6 +6847,7 @@ public class AppCMSPresenter {
                         appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+                        appCMSContentDetailCall = appCMSAPIComponent.appCMSContentDetailCall();
                         if (!loadFromFile) {
                             refreshAPIData(() -> {
                                         getAppCMSSite(platformType);
@@ -10264,11 +10264,15 @@ public class AppCMSPresenter {
     }
 
     private int getHomePage(List<MetaPage> metaPageList) {
+        String id=navigation.getTabBar().get(0).getPageId();
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
-                    == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+            if (id.equalsIgnoreCase(metaPageList.get(i).getPageId())) {
                 return i;
             }
+            /*if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                return i;
+            }*/
         }
         return -1;
     }
@@ -10774,7 +10778,7 @@ public class AppCMSPresenter {
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
-                url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
                         appCMSSite.getGist().getSiteInternalName());
@@ -11288,27 +11292,25 @@ public class AppCMSPresenter {
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
 
             if (contentDatum.getContentDetails() == null) {
-                String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
                         appCMSSite.getGist().getSiteInternalName());
-                GetAppCMSVideoDetailAsyncTask.Params params =
-                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                GetAppCMSContentDetailTask.Params params =
+                        new GetAppCMSContentDetailTask.Params.Builder().url(url)
                                 .authToken(getAuthToken()).build();
 
-                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        appCMSVideoDetail -> {
-                            if (appCMSVideoDetail != null &&
-                                    appCMSVideoDetail.getRecords() != null &&
-                                    appCMSVideoDetail.getRecords().get(0) != null) {
-                                getUserVideoStatus(appCMSVideoDetail.getRecords().get(0).getGist().getId(),
+                new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                        appCMSContentDetail -> {
+                            if (appCMSContentDetail != null) {
+                                getUserVideoStatus(appCMSContentDetail.getGist().getId(),
                                         userVideoStatusResponse -> {
                                             if (userVideoStatusResponse != null) {
                                                 long watchedTime = userVideoStatusResponse.getWatchedTime();
                                                 String[] extraData = new String[4];
-                                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
-                                                if (appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
-                                                    StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
+                                                appCMSContentDetail.getGist().setWatchedTime(watchedTime);
+                                                if (appCMSContentDetail.getStreamingInfo() != null) {
+                                                    StreamingInfo streamingInfo = appCMSContentDetail.getStreamingInfo();
                                                     extraData[0] = contentDatum.getGist().getPermalink();
                                                     if (streamingInfo.getVideoAssets() != null &&
                                                             !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
@@ -11321,10 +11323,10 @@ public class AppCMSPresenter {
                                                         extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
                                                     }
                                                     extraData[2] = contentDatum.getGist().getId();
-                                                    if (appCMSVideoDetail.getRecords().get(0).getContentDetails() != null &&
-                                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null) {
+                                                    if (appCMSContentDetail.getContentDetails() != null &&
+                                                            appCMSContentDetail.getContentDetails().getClosedCaptions() != null) {
                                                         for (ClosedCaptions closedCaption :
-                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions()) {
+                                                                appCMSContentDetail.getContentDetails().getClosedCaptions()) {
                                                             if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
                                                                 extraData[3] = closedCaption.getUrl();
                                                                 break;
@@ -11335,12 +11337,12 @@ public class AppCMSPresenter {
                                                     if (!TextUtils.isEmpty(extraData[1])) {
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
-                                                                appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                                                appCMSContentDetail.getGist().getTitle(),
                                                                 extraData,
-                                                                appCMSVideoDetail.getRecords().get(0),
+                                                                appCMSContentDetail.convertToContentDatum(),
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                                                appCMSContentDetail.getContentDetails().getRelatedVideoIds());
                                                     } else {
                                                         openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                                 currentActivity.getString(R.string.app_name)),

@@ -4,6 +4,9 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
+import com.viewlift.models.network.rest.AppCMSContentDetailCall;
+import com.viewlift.models.network.rest.AppCMSContentDetailRest;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
@@ -23,7 +26,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -93,6 +95,12 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public AppCMSContentDetailRest providesAppCMSContentDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSContentDetailRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI,
                                                        Gson gson,
                                                        File storageDirectory) {
@@ -115,5 +123,11 @@ public class AppCMSAPIModule {
     @Singleton
     public AppCMSFloodLightRest appCMSFloodLightRest(Retrofit retrofit) {
         return retrofit.create(AppCMSFloodLightRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSContentDetailCall providesAppCMSContentDetailCall(AppCMSContentDetailRest appCMSContentDetailRest){
+        return new AppCMSContentDetailCall(appCMSContentDetailRest);
     }
 }
