@@ -938,6 +938,12 @@ public abstract class BaseView extends FrameLayout {
                     lm += convertDpToPixel(8, getContext());
                     break;
 
+                case PAGE_GRID_THUMBNAIL_INFO:
+                case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
+                    int padding = childComponent.getPadding();
+                    view.setPadding(padding, 0, 0, 0);
+                    break;
+
                 default:
                     break;
             }
