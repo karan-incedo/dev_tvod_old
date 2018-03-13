@@ -3267,6 +3267,21 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                 }
 
+                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
+                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                        StringBuilder authDateAndPhotoCount = new StringBuilder();
+                        authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName())
+                                .append(" | ")
+                                .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),"MMM dd"))
+                                .append(" | ")
+                                .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
+
+                        ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
+//                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#80000000"));
+                    }
+                }
+
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_API_TITLE:

@@ -6907,6 +6907,20 @@ public class AppCMSPresenter {
         return 0;
     }
 
+    public int getBrandSecondaryCtaTextColor(){
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getCta() != null &&
+                getAppCMSMain().getBrand().getCta().getSecondary() != null &&
+                getAppCMSMain().getBrand().getCta().getSecondary().getTextColor() != null
+                ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getCta().getSecondary().getTextColor());
+        } else if (currentActivity != null) {
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+        return 0;
+    }
+
     public int getBrandPrimaryCtaTextColor() {
 
         if (getAppCMSMain() != null &&
