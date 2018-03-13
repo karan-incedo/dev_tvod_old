@@ -778,32 +778,30 @@
                   "yAxis": 80,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 90
+                  "height": 20
                 },
                 "tabletLandscape": {
                   "yAxis": 80,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 105
+                  "height": 20
                 },
                 "tabletPortrait": {
                   "yAxis": 80,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width": 105
+                  "height": 20
                 }
               },
               "backgroundColor": "000000",
               "fontFamily": "Lato",
               "numberOfLines": 1,
               "type": "label",
+              "textAlignment": "center",
               "opacity": 56,
               "textColor": "#ffffff",
               "key": "thumbnailInfo",
-              "padding": 5
+              "padding": 10
             }
           ],
           "isHorizontalScroll": true,
