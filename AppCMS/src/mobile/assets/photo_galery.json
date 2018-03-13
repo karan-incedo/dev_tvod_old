@@ -222,24 +222,20 @@
                   "yAxis": 108,
                   "leftMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width" : 105
+                  "height": 20
                 },
                 "tabletLandscape": {
                   "yAxis": 160,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width" : 115
+                  "height": 20
                 },
                 "tabletPortrait": {
                   "yAxis": 160,
                   "leftMargin": 0,
-                  "rightMargin": 0,
                   "fontSize": 12,
-                  "height": 20,
-                  "width" : 115
+                  "height": 20
                 }
               },
               "backgroundColor": "000000",
@@ -249,7 +245,8 @@
               "type": "label",
               "opacity": 56,
               "textColor": "#ffffff",
-              "key": "photoGalleryThumbnailInfo"
+              "key": "photoGalleryThumbnailInfo",
+              "padding": 10
             }
           ],
           "isHorizontalScroll": true,

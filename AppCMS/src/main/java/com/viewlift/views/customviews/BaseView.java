@@ -792,6 +792,10 @@ public abstract class BaseView extends FrameLayout {
             if (viewWidth < 0) {
                 viewWidth = LayoutParams.MATCH_PARENT;
             }
+            if (jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO
+                    || jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
+                viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
 
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
@@ -941,7 +945,7 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_GRID_THUMBNAIL_INFO:
                 case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
                     int padding = childComponent.getPadding();
-                    view.setPadding(padding, 0, 0, 0);
+                    view.setPadding(padding, 0, padding, 0);
                     break;
 
                 default:
