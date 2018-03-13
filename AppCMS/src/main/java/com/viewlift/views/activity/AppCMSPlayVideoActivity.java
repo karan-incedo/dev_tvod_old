@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -341,9 +340,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
         }
 
-        if (!TextUtils.isEmpty(bgColor)) {
-            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
-        }
+//        if (!TextUtils.isEmpty(bgColor)) {
+//            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+//        }
 
         boolean freeContent = false;
         if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
