@@ -1142,34 +1142,35 @@
                   "yAxis": 114,
                   "xAxis": 0,
                   "leftMargin": 0,
-                  "rightMargin": 101,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 120
                 },
                 "tabletLandscape": {
                   "yAxis": 114,
                   "xAxis": 0,
                   "leftMargin": 0,
-                  "rightMargin": 91,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 130
                 },
                 "tabletPortrait": {
                   "yAxis": 114,
                   "xAxis": 0,
-                  "rightMargin": 91,
                   "fontSize": 12,
-                  "height": 20
+                  "height": 20,
+                  "width": 130
                 }
               },
               "backgroundColor": "000000",
               "fontFamily": "Lato",
               "numberOfLines": 1,
-              "textAlignment": "center",
+//              "textAlignment": "center",
               "type": "label",
               "opacity": 56,
               "textColor": "#ffffff",
-              "key": "thumbnailInfo"
+              "key": "thumbnailInfo",
+              "padding": 5
             }
           ],
           "backgroundColor": "#000000",
