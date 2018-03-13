@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -223,11 +224,9 @@ import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
-import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
@@ -353,12 +352,11 @@ public class AppCMSPresenter {
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
+    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     private static final String TAG = "AppCMSPresenter";
-
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
     private static final String MINI_PLAYER_VIEW_STATUS = "mini_player_view_status";
-
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
@@ -385,7 +383,6 @@ public class AppCMSPresenter {
     private static final String RESTORE_SUBSCRIPTION_RECEIPT = "restore_subscription_payment_process_key";
     private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
-
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
@@ -399,13 +396,11 @@ public class AppCMSPresenter {
     private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
-
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
     private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
     private static final String IS_HOME_STARTED = "is_home_started";
-    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     private static final String IS_AUDIO_RELOAD = "is_audio_reload";
     private static final String IS_AUDIO_RELOAD_PREF = "is_audio_reload_pref";
     private static final String LAST_PLAY_SONG_DETAILS = "last_play_song_details";
@@ -539,6 +534,7 @@ public class AppCMSPresenter {
     Boolean isMoreOptionsAvailable = false;
     String loginPageUserName, loginPagePassword;
     boolean isLastStatePlaying = true;
+    AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
     private RelativeLayout relativeLayoutFull;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -548,7 +544,6 @@ public class AppCMSPresenter {
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
     private boolean isAppHomeActivityCreated = false;
-
     private Context currentContext;
     private Navigation navigation;
     private SubscriptionFlowContent subscriptionFlowContent;
@@ -620,10 +615,8 @@ public class AppCMSPresenter {
     private ContentDatum downloadContentDatumAfterPermissionGranted;
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private Action1<Boolean> downloadResultActionForPlaylistAfterPermissionGranted;
-
     private boolean requestDownloadQualityScreen;
     private boolean requestPlaylistDownload;
-
     private DownloadQueueThread downloadQueueThread;
     private boolean isVideoPlayerStarted;
     private EntitlementCheckActive entitlementCheckActive;
@@ -635,12 +628,11 @@ public class AppCMSPresenter {
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
-
     private boolean shouldLaunchLoginAction;
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
 
-    private boolean loginDialogPopupOpen;
+    private boolean loginDialogPopupOpen = false;
 
     private volatile boolean processedUIModules;
     private volatile boolean processedUIPages;
@@ -734,31 +726,11 @@ public class AppCMSPresenter {
                 }
             };
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
-
-    public String getUaAccessKey() {
-        return uaAccessKey;
-    }
-
-    public void setUaAccessKey(String uaAccessKey) {
-        this.uaAccessKey = uaAccessKey;
-    }
-
-    public String getUaChannelId() {
-        return uaChannelId;
-    }
-
-    public void setUaChannelId(String uaChannelId) {
-        this.uaChannelId = uaChannelId;
-    }
-
     private String uaAccessKey;
     private String uaChannelId;
     private UANamedUserEventCall uaNamedUserEventCall;
-
     private boolean purchaseFromRestore;
-
     private BitmapCachePresenter bitmapCachePresenter;
-
     private int numPagesProcessed;
 
     @Inject
@@ -922,12 +894,6 @@ public class AppCMSPresenter {
     /**
      * This detects whether the input text field contains spaces and displays a Toast message
      * if spaces are detected
-     * @param passwordEditText The text field to examine for spaces
-     * @param con The text field Context
-     */
-    /**
-     * This detects whether the input text field contains spaces and displays a Toast message
-     * if spaces are detected
      *
      * @param passwordEditText The text field to examine for spaces
      * @param con              The text field Context
@@ -1009,6 +975,13 @@ public class AppCMSPresenter {
     }
 
     /**
+     * This detects whether the input text field contains spaces and displays a Toast message
+     * if spaces are detected
+     * @param passwordEditText The text field to examine for spaces
+     * @param con The text field Context
+     */
+
+    /**
      * This prepends a '#' symbol to beginning of color string if it missing from the string
      *
      * @param context The current Context
@@ -1020,6 +993,22 @@ public class AppCMSPresenter {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    public String getUaAccessKey() {
+        return uaAccessKey;
+    }
+
+    public void setUaAccessKey(String uaAccessKey) {
+        this.uaAccessKey = uaAccessKey;
+    }
+
+    public String getUaChannelId() {
+        return uaChannelId;
+    }
+
+    public void setUaChannelId(String uaChannelId) {
+        this.uaChannelId = uaChannelId;
     }
 
     /**
@@ -5733,8 +5722,6 @@ public class AppCMSPresenter {
         return callBackPlaylistHelper;
     }
 
-    AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
-
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
@@ -5773,13 +5760,13 @@ public class AppCMSPresenter {
                             /*check to play audio*/
                             if (playAudio) {
                                 AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
-                                mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-                                PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                                AudioPlaylistHelper.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getMetadata(appCMSAudioDetailResult.getId()));
                                 mAudioPlaylist.setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                                 if (callBackPlaylistHelper != null) {
-                                    callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    callBackPlaylistHelper.onPlaybackStart(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 } else if (currentActivity != null) {
-                                    mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    mAudioPlaylist.onMediaItemSelected(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
                             } else {
                                 if (appCMSAudioDetailAPIAction != null) {
@@ -8766,7 +8753,8 @@ public class AppCMSPresenter {
                         new SoftReference<Object>(appCMSMain, referenceQueue);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
-                        apikey = currentActivity.getString(R.string.x_api_key);
+                        //apikey = currentActivity.getString(R.string.x_api_key);
+                        apikey = Utils.getProperty("xapi", currentActivity);
 
                         getAppCMSSite(platformType);
                     }
@@ -9293,7 +9281,6 @@ public class AppCMSPresenter {
                     });
                 }
                 final AlertDialog dialog = builder.create();
-                ;
                 currentActivity.runOnUiThread(() -> {
 
                     if (onCloseAction != null) {
@@ -9321,6 +9308,16 @@ public class AppCMSPresenter {
 
                     dialog.setOnCancelListener(arg0 -> {
                         loginDialogPopupOpen = false;
+                    });
+                    dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                        @Override
+                        public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                dialog.dismiss();
+                                loginDialogPopupOpen = false;
+                            }
+                            return true;
+                        }
                     });
 
                     if (dialog.getWindow() != null) {
