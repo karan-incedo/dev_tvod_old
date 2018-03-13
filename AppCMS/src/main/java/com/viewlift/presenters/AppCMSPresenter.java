@@ -9017,15 +9017,17 @@ public class AppCMSPresenter {
                                 );
                             }
                         } else {
-                            navigateToPage(homePageNavItem.getPageId(),
-                                    homePageNavItem.getTitle(),
-                                    homePageNavItem.getUrl(),
-                                    false,
-                                    true,
-                                    false,
-                                    true,
-                                    true,
-                                    deeplinkSearchQuery);
+                            if (loginFromNavPage) {
+                                navigateToPage(homePageNavItem.getPageId(),
+                                        homePageNavItem.getTitle(),
+                                        homePageNavItem.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        true,
+                                        true,
+                                        deeplinkSearchQuery);
+                            }
                         }
                     }
                 }
