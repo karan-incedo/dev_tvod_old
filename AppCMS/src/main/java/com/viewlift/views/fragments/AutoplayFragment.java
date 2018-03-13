@@ -207,7 +207,7 @@ public class AutoplayFragment extends Fragment {
             @Override
             public void onFinish() {
                 if (isAdded() && isVisible()) {
-//                    fragmentInteractionListener.onCountdownFinished();
+                    fragmentInteractionListener.onCountdownFinished();
                 }
             }
         }.start();
