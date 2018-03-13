@@ -62,7 +62,7 @@
                 android:layout_width="@dimen/app_cms_video_controller_cc_width"
                 android:layout_height="@dimen/app_cms_video_controller_cc_height"
                 android:layout_gravity="right|center_vertical"
-                android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
+                android:layout_marginStart="@dimen/app_cms_  video_controller_cc_left_margin"
                 android:background="@drawable/cc_toggle_selector"
                 android:checked="false"
                 android:textOff=""
