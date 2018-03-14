@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
@@ -14,7 +15,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailRest;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.models.network.rest.UANamedUserEventRest;
 import com.viewlift.presenters.UrbanAirshipEventPresenter;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -72,9 +71,10 @@ public class AppCMSAPIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
-        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
-                .create();
+      return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        /*return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
+                .create();*/
+
     }
 
     @Provides

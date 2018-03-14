@@ -1,7 +1,6 @@
 package com.viewlift.casting;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,10 +22,12 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.cast.CastDevice;
+import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
 import com.viewlift.casting.roku.RokuDevice;
@@ -36,10 +37,11 @@ import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
-import com.viewlift.views.binders.AppCMSVideoPageBinder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Observer;
 
 /**
  * A singleton to manage the different casting options such as chromecast and roku , on different activities.
@@ -141,8 +143,9 @@ public class CastServiceProvider {
             mCastHelper.onFilterRoutes(mCastHelper.routes);
             mCastHelper.isCastDeviceAvailable = mCastHelper.routes.size() > 0;
             refreshCastMediaIcon();
-            if (castChooserDialog != null && mCastHelper != null && mCastHelper.routes != null){
-                castChooserDialog.setRoutes(mCastHelper.routes);}
+            if (castChooserDialog != null && mCastHelper != null && mCastHelper.routes != null) {
+                castChooserDialog.setRoutes(mCastHelper.routes);
+            }
         }
 
         @Override
@@ -164,7 +167,6 @@ public class CastServiceProvider {
 
         @Override
         public void onRouterSelected(MediaRouter mMediaRouter, MediaRouter.RouteInfo info) {
-
             mCastHelper.chromeCastConnecting = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
             mCastHelper.isCastDeviceConnected = true;
@@ -231,18 +233,18 @@ public class CastServiceProvider {
                 }
             };
 
-    private CastServiceProvider(Activity activity) {
+    private CastServiceProvider(Context activity) {
         this.mContext = activity;
         setCasting();
 
-        appCMSPresenter = ((AppCMSApplication) activity.getApplication())
+        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
         allowFreePlay = false;
     }
 
-    public static synchronized CastServiceProvider getInstance(Activity activity) {
+    public static synchronized CastServiceProvider getInstance(Context activity) {
         if (objMain == null) {
             objMain = new CastServiceProvider(activity);
         }
@@ -307,6 +309,11 @@ public class CastServiceProvider {
                     .getCurrentCastSession();
         }
         mCastHelper.setCastSessionManager();
+        if (shouldCastMiniControllerVisible()) {
+            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+        } else {
+            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
+        }
 
         createMediaChooserDialog();
         mCastHelper.setCastDiscovery();
@@ -319,6 +326,43 @@ public class CastServiceProvider {
             mCastHelper.isCastDeviceAvailable = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
         }
+    }
+
+    public boolean shouldCastMiniControllerVisible() {
+        boolean shouldControllerVisible = true;
+        RemoteMediaClient mRemoteMediaClient = null;
+        mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
+                .getCurrentCastSession();
+        if (mCastSession != null && mCastSession.isConnected()) {
+            mRemoteMediaClient = mCastSession.getRemoteMediaClient();
+        }
+        try {
+            if (mRemoteMediaClient != null) {
+                MediaInfo mediaInfo = mRemoteMediaClient.getMediaInfo();
+                if (mediaInfo == null) {
+                    return false;
+                }
+                String appPackageName = mContext.getPackageName();
+
+                JSONObject customData = mediaInfo.getCustomData();
+                if (customData != null && customData.has(CastingUtils.ITEM_TYPE)) {
+                    String remoteItemType = customData.getString(CastingUtils.ITEM_TYPE);
+                    if (remoteItemType.equalsIgnoreCase(appPackageName + "" + CastingUtils.ITEM_TYPE_AUDIO)) {
+                        shouldControllerVisible = false;
+                    } else {
+                        shouldControllerVisible = true;
+                    }
+                } else if (customData != null && customData.has("video_title")) {
+                    shouldControllerVisible = true;
+                } else {
+                    shouldControllerVisible = false;
+                }
+            } else {
+                shouldControllerVisible = false;
+            }
+        } catch (JSONException e) {
+        }
+        return shouldControllerVisible;
     }
 
     //if user comes from player screen and Remote devices already connected launch remote playback
@@ -535,7 +579,9 @@ public class CastServiceProvider {
                                 }
                             });
                 }
-            } else {
+            } else
+
+            {
                 try {
                     castDisconnectDialog = new CastDisconnectDialog(mActivity);
 

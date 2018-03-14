@@ -3,22 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView
-        android:layout_width="match_parent"
-        android:id="@+id/videoPlayerView"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:controller_layout_id="@layout/custom_exo_playback_control_view"
-        android:layout_height="match_parent" />
+        android:id="@+id/videoPlayerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:controller_layout_id="@layout/custom_exo_playback_control_view" />
     <ImageView
         android:id="@+id/videoPlayerThumbnailImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <View
-        android:visibility="gone"
         android:id="@+id/videoPlayerThumbnailImageContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#d4000000"
-        android:orientation="horizontal"/>
+        android:orientation="horizontal"
+        android:visibility="gone" />
 
 </RelativeLayout>

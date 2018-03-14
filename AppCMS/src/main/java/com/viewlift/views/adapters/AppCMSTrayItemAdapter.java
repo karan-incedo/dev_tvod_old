@@ -94,7 +94,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.defaultAction = getDefaultAction(context);
 
         switch (jsonValueKeyMap.get(viewType)) {
-            case PAGE_HISTORY_MODULE_KEY:
+            case PAGE_HISTORY_01_MODULE_KEY:
+            case PAGE_HISTORY_02_MODULE_KEY:
                 this.isHistory = true;
                 Log.e(TAG, "Created new history tray");
                 break;
@@ -104,8 +105,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 this.isDownload = true;
                 break;
 
-            case PAGE_WATCHLIST_MODULE_KEY:
-                Log.e(TAG, "Created new watchlist tray");
+            case PAGE_WATCHLIST_01_MODULE_KEY:
+            case PAGE_WATCHLIST_02_MODULE_KEY:
                 this.isWatchlist = true;
                 break;
 
@@ -140,8 +141,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void sortByMostRecentlyWatchedDate() {
-        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
-                o2.getGist().getUpdateDate()));
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.parseLong(o1.getGist().getUpdateDate()),
+                Long.parseLong(o2.getGist().getUpdateDate())));
         Collections.reverse(adapterData);
     }
 
@@ -150,7 +151,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.continue_watching_item, parent, false);
-//        View view = collectionGridItemViewCreator.createView(parent.getContext());
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
 
@@ -208,7 +208,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
-
                 if (contentDatum.getGist() != null) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
 
@@ -245,7 +244,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus != null) {
-
                                                 if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
                                                     holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
@@ -357,7 +355,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            position);
                 } else {
                     if (!adapterData.isEmpty()) {
                         click(adapterData.get(position));
@@ -369,7 +369,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            position);
                 } else {
                     click(adapterData.get(position));
                 }
@@ -377,10 +379,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            position);
                 } else {
                     play(adapterData.get(position),
-                            holder.itemView.getContext().getString(R.string.app_cms_action_watchvideo_key));
+                            holder.itemView.getContext()
+                                    .getString(R.string.app_cms_action_watchvideo_key));
                 }
             });
 
@@ -406,7 +411,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingTitle.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            position);
                 } else {
                     click(contentDatum);
                 }
@@ -498,7 +505,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
+        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
             lastWatched = 0;
@@ -642,7 +649,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
-
         if (permalink == null ||
                 hlsUrl == null ||
                 extraData[2] == null ||
@@ -756,8 +762,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         viewHolder.appCMSContinueWatchingDeleteButton,
                                         component);
                             }
-                            // Additional fix for SVFA-2902
-//                            viewHolder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.ic_deleteicon));
                             viewHolder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.ic_deleteicon));
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -793,7 +797,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
                                                 component.getBackgroundColor())));
                             }
-
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
@@ -816,7 +819,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingTitle.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
                             }
-
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
@@ -834,7 +836,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
                             }
-
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,

@@ -11,16 +11,9 @@
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:node="merge">
-        <!--
         <meta-data
-            android:name="com.urbanairship.autopilot"
-            android:value="com.urbanairship.Autopilot" />
-            -->
-        <!--
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-            -->
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="010453f0fe88d0a913753d705ba2c0cf368eb0c9" />
@@ -129,6 +122,35 @@
         <!-- This activity declaration should be in the AppCMS/src/tv/AndroidManifest.xml
         <activity android:name=".tv.views.activity.AppCMSTVAutoplayActivity" />
         -->
+        <activity
+            android:name=".views.activity.AppCMSPlayAudioActivity"
+            android:launchMode="singleTask"
+         >
+
+            <!--<intent-filter>-->
+            <!--<action android:name="com.viewlift.Audio.MediaNotificationManager" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+
+        </activity>
+
+        <service
+            android:name="com.viewlift.Audio.MusicService"
+            android:enabled="true"
+            android:exported="true">>
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <!-- A receiver that will receive media buttons and send as
+      intents to your MediaBrowserServiceCompat implementation.
+      Required on pre-Lollipop. More information at
+      http://developer.android.com/reference/android/support/v4/media/session/MediaButtonReceiver.html -->
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

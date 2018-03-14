@@ -38,7 +38,7 @@ public class TabCreator {
             int highlightColor;
             try {
                 highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getCta().getPrimary().getBackgroundColor());
+                        .getGeneral().getBlockTitleColor());
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
 //                            e.getMessage());

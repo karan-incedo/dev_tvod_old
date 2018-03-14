@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +23,7 @@ import android.widget.FrameLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -32,6 +34,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
@@ -71,6 +74,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String contentRating;
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
+    private CastServiceProvider castProvider;
 
     private Map<String, String> availableStreamingQualityMap;
     private List<String> availableStreamingQualities;
@@ -87,6 +91,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 getAppCMSPresenterComponent().appCMSPresenter();
 
         getBundleData();
+        appCMSPresenter.stopAudioServices();
     }
 
     @Override
@@ -94,11 +99,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             Fragment fragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
             if (fragmentPlayer != null) {
-                getSupportFragmentManager().beginTransaction().
-                        remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
             }
         } catch (Exception e) {
-            //
+
         }
         getBundleData();
         super.onNewIntent(intent);
@@ -136,7 +142,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution,
                                     intent, appCMSPlayVideoPageContainer, null);
                         } catch (Exception e) {
-                            //
+
                         }
                     }, 500);
                 } else {
@@ -436,6 +442,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        System.out.println("config from playvideo");
 
         appCMSPresenter.restrictLandscapeOnly();
 
@@ -507,7 +514,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            //
+
         }
     }
 

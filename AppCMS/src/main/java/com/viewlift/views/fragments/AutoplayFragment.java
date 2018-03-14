@@ -43,7 +43,13 @@ import java.security.MessageDigest;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
+/**
+ * This fragment is the manifestation of the autoplay screen which opens whenever a movie gets
+ * completed and a new movie is to be played
+ */
 public class AutoplayFragment extends Fragment {
+    //private static final String TAG = "AutoplayFragment";
+    private static final int TOTAL_COUNTDOWN_IN_MILLIS = 13000;
     private static final int COUNTDOWN_INTERVAL_IN_MILLIS = 1000;
     private static final String TAG = "AutoplayFragment";
     private int totalCountdownInMillis;
@@ -201,7 +207,7 @@ public class AutoplayFragment extends Fragment {
                 RequestOptions requestOptions = new RequestOptions()
                         .transform(new AutoplayBlurTransformation(getContext(), imageUrl));
                 Glide.with(getContext()).load(imageUrl)
-                        .apply(requestOptions)
+//                        .apply(requestOptions)
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {

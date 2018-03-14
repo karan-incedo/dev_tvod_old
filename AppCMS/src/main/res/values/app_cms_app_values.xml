@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">http://dev-tools.viewlift.com</string>-->
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">62cab672-424e-4191-9066-4bb9a0993247</string>-->
 
     <!-- x-api-key -->
-    <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
+    <!--<string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>-->
 
     <!-- AppCMS Facebook Login values -->
     <string name="facebook_app_id">910134432450680</string>
@@ -75,4 +77,7 @@
     <bool name="display_cancel_subscription_button">false</bool>
 
     <string name="KISWE_PLAYER_API_KEY">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJLaXN3ZSIsInN1YiI6MTM5MDk5LCJleHAiOiIyMDMwLTAzLTE0VDAwOjAwOjAwLjAwMFoifQ.ZAvxOdEAW-h7JtCOy6JJTL78EqRxu8Y5LYKLMv7-fh4</string>
+
+
 </resources>
+

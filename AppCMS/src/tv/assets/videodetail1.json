@@ -63,32 +63,32 @@
       "type": "headerView",
       "key": "videoDetailHeader"
     },
-   /* {
-      "layout": {
-        "ftv": {
-          "padding": 4,
-          "yAxis": 120,
-          "xAxis": 1080,
-          "width": 747,
-          "height": 420
-        }
-      },
-      "action": "watchVideo",
-      "type": "image",
-      "key": "videoImage"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 260,
-          "xAxis": 1410,
-          "width": 113,
-          "height": 130
-        }
-      },
-      "type": "button",
-      "key": "playButton"
-    },*/
+    /* {
+       "layout": {
+         "ftv": {
+           "padding": 4,
+           "yAxis": 120,
+           "xAxis": 1080,
+           "width": 747,
+           "height": 420
+         }
+       },
+       "action": "watchVideo",
+       "type": "image",
+       "key": "videoImage"
+     },
+     {
+       "layout": {
+         "ftv": {
+           "yAxis": 260,
+           "xAxis": 1410,
+           "width": 113,
+           "height": 130
+         }
+       },
+       "type": "button",
+       "key": "playButton"
+     },*/
     {
       "layout": {
         "ftv": {

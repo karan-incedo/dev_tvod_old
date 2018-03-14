@@ -21,73 +21,78 @@
       "height": 350
     }
   },
-  "components": [{
-    "layout": {
-      "ftv": {
-        "fontSize": 18
-      }
-    },
-    "fontFamily": "Lato",
-    "textAlignment": "left",
-    "textCase": "sentence",
-    "type": "label",
-    "textColor": "#008EE0",
-    "fontWeight": "Bold",
-    "key": "trayTitle"
-  }, {
-    "layout": {
-      "ftv": {
-        "width": 396,
-        "height": 320
-      }
-    },
-    "trayClickAction": "lectureDetailPage",
-    "components": [{
+  "components": [
+    {
       "layout": {
         "ftv": {
-          "padding": 0,
-          "leftMargin": 8,
-          "topMargin": 9,
-          "width": 380,
-          "height": 214
-        }
-      },
-      "type": "image",
-      "key": "thumbnailImage"
-    }, {
-      "layout": {
-        "ftv": {
-          "padding": 0,
-          "leftMargin": 8,
-          "topMargin": 9,
-          "width": 380,
-          "height": 214
-        }
-      },
-      "type": "image",
-      "key": "bedgeImage"
-    }, {
-      "layout": {
-        "ftv": {
-          "leftMargin": 8,
-          "topMargin": 230,
-          "rightMargin": 0,
-          "height": 70
+          "fontSize": 18
         }
       },
       "fontFamily": "Lato",
-      "numberOfLines": 2,
       "textAlignment": "left",
-      "fontSize": 12,
+      "textCase": "sentence",
       "type": "label",
-      "textColor": "#ffffff",
-      "fontWeight": "Regular",
-      "key": "thumbnailTitle"
+      "textColor": "#008EE0",
+      "fontWeight": "Bold",
+      "key": "trayTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "width": 396,
+          "height": 320
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 8,
+              "topMargin": 9,
+              "width": 380,
+              "height": 214
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 8,
+              "topMargin": 9,
+              "width": 380,
+              "height": 214
+            }
+          },
+          "type": "image",
+          "key": "bedgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 8,
+              "topMargin": 230,
+              "rightMargin": 0,
+              "height": 70
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 2,
+          "textAlignment": "left",
+          "fontSize": 12,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Regular",
+          "key": "thumbnailTitle"
+        }
+      ],
+      "textAlignment": "center",
+      "type": "collectionGrid",
+      "key": "collectionGrid"
     }
-    ],
-    "textAlignment": "center",
-    "type": "collectionGrid",
-    "key": "collectionGrid"
-  }
   ]
 }

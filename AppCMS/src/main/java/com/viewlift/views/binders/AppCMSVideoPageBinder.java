@@ -42,7 +42,6 @@ public class AppCMSVideoPageBinder extends Binder {
     private String currentMovieId;
     private String currentMovieName;
     private String currentMovieImageUrl;
-
     private int playerState;
     private boolean autoplayCancelled;
 

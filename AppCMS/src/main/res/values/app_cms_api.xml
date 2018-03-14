@@ -1,6 +1,7 @@
 <resources>
     <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
+    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS StreamingInfo API -->
@@ -177,6 +178,7 @@
     <string name="app_cms_page_banner_module_key">AC Banner 01</string>
     <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_show_detail_module_key">AC ShowDetail 01</string>
@@ -213,6 +215,7 @@
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
+    <string name="app_cms_page_playlist_module_key">AC PlaylistDetail 01</string>
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
@@ -223,7 +226,7 @@
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_duration_key">duration</string>
-    <string name="app_cms_page_watchlist_description_key">description</string>
+    <string name="app_cms_page_watchlist_description_key">listItemDescription</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
@@ -315,6 +318,7 @@
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_musicHub_screen_key">Music Hub</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
@@ -322,6 +326,7 @@
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
+    <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
@@ -336,6 +341,7 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_action_moviespage_key">showMoviesPage</string>
     <string name="app_cms_module_showdetail_key">ShowDetailModule</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
@@ -372,8 +378,8 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
-    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">%1$s/content/pages?site=%2$s&amp;pageId=%3$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%4$s</string>
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
@@ -570,7 +576,7 @@
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
     <string name="plan_type_day">Month</string>
 
-    <string name="app_cms_page_download_size_key">downloadDuration</string>
+    <string name="app_cms_page_download_size_key">videoSize</string>
     <string name="app_cms_page_download_duration_key">downloadDuration</string>
     <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
@@ -584,4 +590,23 @@
     <!-- AppCMS Content Types -->
     <string name="app_cms_video_content_type">VIDEO</string>
     <string name="app_cms_series_content_type">SERIES</string>
+
+    <string name="app_cms_action_playlistpage_key">Playlist Page</string>
+    <string name="app_cms_action_musicHub_page_key">Music Hub</string>
+    <!-- AppCMS Playlist API -->
+    <string name="app_cms_playlist_api_url">%1$s/content/playlist?id=%2$s&amp;site=%3$s</string>
+    <!-- AppCMS Audio detail API -->
+    <string name="app_cms_audio_detail_api_url">%1$s/content/audio?site=%2$s&amp;id=%3$s</string>
+
+    <string name="app_cms_page_playlist_title_key">playlistTitle</string>
+    <string name="app_cms_page_playlist_sub_title_key">playlistSubTitle</string>
+    <string name="app_cms_page_playlist_audio_duration_key">audioDuration</string>
+    <string name="app_cms_page_playlist_audio_artist_key">audioArtistName</string>
+    <string name="not_item_available_inqueue">No item available in queue</string>
+
+    <string name="app_cms_download_audio_action">downloadAudio</string>
+    <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
+    <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
+
+
 </resources>

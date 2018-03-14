@@ -318,6 +318,9 @@
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
+    <string name="app_cms_login_and_subscription_audio_required_title">Premium Content</string>
+    <string name="app_cms_login_and_subscription_audio_required_message">You need to have a valid subscription to access this content.</string>
+
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
@@ -577,8 +580,7 @@
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
-
-    <plurals name="episode_subtitle_text">
+<plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
     </plurals>
@@ -592,9 +594,25 @@
         <item quantity="one">SEC</item>
         <item quantity="other">SECS</item>
     </plurals>
-
     <string name="season_episode_placeholders">S%d:E%d</string>
     <string name="subscription_cancelled_in">Scheduled to be cancelled by %s</string>
+
+    <string name="audio_fragment_tag_key">audio_fragment</string>
+    <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_audio">AUDIO</string>
+    <string name="content_type_audio">AUDIO</string>
+
+
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">UAMP_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for UAMP</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+
+    <string name="stop_casting">Stop Casting</string>
+    <string name="casting_to_device">Casting to %1$s</string>
 
     <!-- Apptentive Messages -->
     <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>

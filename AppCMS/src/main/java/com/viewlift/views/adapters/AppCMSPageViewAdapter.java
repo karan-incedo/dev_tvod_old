@@ -102,7 +102,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
                 holder.parent.addView(childViews.get(position - 1));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
