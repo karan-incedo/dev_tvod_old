@@ -109,6 +109,7 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
+import static com.viewlift.Utils.loadJsonFromAssets;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY;
 
@@ -1643,11 +1644,29 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-            try {
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+
+            try {// TODO To Be remove post development finish
+
+                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "playlist_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }  else {
+                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
+//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+
             } catch (Exception e) {
 
             }
+
+//            try {
+//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//            } catch (Exception e) {
+//
+//            }
+
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {

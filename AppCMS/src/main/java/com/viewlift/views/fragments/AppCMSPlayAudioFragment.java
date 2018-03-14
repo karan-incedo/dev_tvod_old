@@ -214,7 +214,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         seekAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                currentProgess = progress;
+                currentProgess = (progress / 1000);
                 audioPreview();
                 trackStartTime.setText(DateUtils.formatElapsedTime(progress / 1000));
 
@@ -400,6 +400,34 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             }
         }
     }
+//
+//    void audioPreviewOnSeekUpdate() {
+//        if (getActivity() != null
+//                && MediaControllerCompat.getMediaController(getActivity()) != null
+//                && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
+//            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+//            MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
+//            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+//            if (mScheduleFuture != null && mScheduleFuture.isCancelled()) {
+//                return;
+//            }
+//            if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+//                scheduleSeekbarUpdate();
+//            } else {
+//                if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+//                        && appCMSPresenter.getAppCMSMain().getFeatures() != null
+//                        && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+//                    if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+//                        if (currentProgess >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+//                            showEntitleMentDialog();
+//                        }
+//                    }
+//                } else {
+//                    showEntitleMentDialog();
+//                }
+//            }
+//        }
+//    }
 
     void audioPreview() {
         if (getActivity() != null
@@ -408,11 +436,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
             MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
             String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-            if (mScheduleFuture != null && mScheduleFuture.isCancelled()) {
-                return;
-            }
+
             if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
-                controls.play();
+//                controls.play();
                 scheduleSeekbarUpdate();
             } else {
                 if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
@@ -421,9 +447,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
                         if (currentProgess > Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
                             showEntitleMentDialog();
-                        } else {
-                            controls.play();
-                            scheduleSeekbarUpdate();
                         }
                     }
                 } else {
