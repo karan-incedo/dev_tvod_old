@@ -1,0 +1,97 @@
+{
+  "id": "eeeaf583-f6f3-4a19-ac3e-ed403f8d4c1d",
+  "settings": {
+    "loop": false,
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    },
+    "thumbnailType": "landscape",
+    "infoHover": false
+  },
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray02",
+  "layout": {
+    "ftv": {
+      "padding": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 280
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "fontSize": 20
+        }
+      },
+      "fontFamily": "OpenSans",
+      "textAlignment": "left",
+      "type": "label",
+      "textColor": "#008EE0",
+      "textCase": "caps",
+      "fontWeight": "Semibold",
+      "key": "trayTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "width": 350,
+          "height": 250
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 202,
+              "rightMargin": 0,
+              "fontSize": 11,
+              "height": 40
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "thumbnailTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "yAxis": 183,
+              "xAxis": 0,
+              "height": 8
+            }
+          },
+          "progressColor": "008EE0",
+          "unprogressColor": "0A151C",
+          "type": "progressView",
+          "key": "progressView"
+        }
+      ],
+      "type": "collectionGrid",
+      "key": "collectionGrid"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "86d97d09-6e80-4460-9477-b4487be8ed64",
+  "settings": {
+    "loop": true,
+    "columns": {
+      "tablet": 4,
+      "desktop": 5,
+      "mobile": 3,
+      "ott": 5
+    },
+    "thumbnailType": "landscape"
+  },
+  "view": "AC Tray 02",
+  "type": "AC Tray 03",
+  "blockName": "tray03",
+  "layout": {
+    "ftv": {
+      "padding": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 350
+    }
+  },
+  "components": [{
+    "layout": {
+      "ftv": {
+        "fontSize": 18
+      }
+    },
+    "fontFamily": "Lato",
+    "textAlignment": "left",
+    "textCase": "sentence",
+    "type": "label",
+    "textColor": "#008EE0",
+    "fontWeight": "Bold",
+    "key": "trayTitle"
+  }, {
+    "layout": {
+      "ftv": {
+        "width": 396,
+        "height": 320
+      }
+    },
+    "trayClickAction": "lectureDetailPage",
+    "components": [{
+      "layout": {
+        "ftv": {
+          "padding": 0,
+          "leftMargin": 8,
+          "topMargin": 9,
+          "width": 380,
+          "height": 214
+        }
+      },
+      "type": "image",
+      "key": "thumbnailImage"
+    }, {
+      "layout": {
+        "ftv": {
+          "padding": 0,
+          "leftMargin": 8,
+          "topMargin": 9,
+          "width": 380,
+          "height": 214
+        }
+      },
+      "type": "image",
+      "key": "bedgeImage"
+    }, {
+      "layout": {
+        "ftv": {
+          "leftMargin": 8,
+          "topMargin": 230,
+          "rightMargin": 0,
+          "height": 70
+        }
+      },
+      "fontFamily": "Lato",
+      "numberOfLines": 2,
+      "textAlignment": "left",
+      "fontSize": 12,
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "Regular",
+      "key": "thumbnailTitle"
+    }
+    ],
+    "textAlignment": "center",
+    "type": "collectionGrid",
+    "key": "collectionGrid"
+  }
+  ]
+}

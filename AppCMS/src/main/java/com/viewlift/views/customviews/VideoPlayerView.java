@@ -118,6 +118,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected AppCMSSimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
+    private int timeBarColor;
 
     private long bitrate = 0l;
     private int videoHeight = 0;
@@ -139,10 +140,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private boolean playerJustInitialized;
     private boolean mAudioFocusGranted = false;
-    private String filmId;
     DefaultTrackSelector trackSelector;
 
     private boolean playOnReattach;
+
+    private String filmId;
 
     private PageView pageView;
 
@@ -326,28 +328,28 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    public void setBitrate(long bitrate) {
-        this.bitrate = bitrate;
-    }
-
     public long getBitrate() {
         return bitrate;
     }
 
-    public void setVideoHeight(int videoHeight) {
-        this.videoHeight = videoHeight;
+    public void setBitrate(long bitrate) {
+        this.bitrate = bitrate;
     }
 
     public int getVideoHeight() {
         return videoHeight;
     }
 
-    public void setVideoWidth(int videoWidth) {
-        this.videoWidth = videoWidth;
+    public void setVideoHeight(int videoHeight) {
+        this.videoHeight = videoHeight;
     }
 
     public int getVideoWidth() {
         return videoWidth;
+    }
+
+    public void setVideoWidth(int videoWidth) {
+        this.videoWidth = videoWidth;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -430,7 +432,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+                && (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)) {
             createStreamingQualitySelector();
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
@@ -650,17 +653,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object o) {
-
+        //
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
-
+        //
     }
 
     @Override
     public void onLoadingChanged(boolean b) {
-
+        //
     }
 
     @Override
@@ -689,7 +692,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
@@ -706,14 +708,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
+        //
     }
 
     @Override
     public void onSeekProcessed() {
 
     }
-
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;
@@ -774,13 +775,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
-
+        //
     }
 
     @Override
     public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason,
                                           Object trackSelectionData, long mediaTimeMs) {
-
+        //
     }
 
     public void setListener(ErrorEventListener errorEventListener) {
@@ -789,7 +790,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoEnabled(DecoderCounters counters) {
-
+        //
     }
 
     @Override
@@ -807,7 +808,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onDroppedFrames(int count, long elapsedMs) {
-
+        //
     }
 
     @Override
@@ -825,6 +826,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
         }
+
         if (BaseView.isLandscape(getContext())) {
             playerView.setResizeMode(fullscreenResizeMode);
         } else {
@@ -837,12 +839,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onRenderedFirstFrame(Surface surface) {
-
+        //
     }
 
     @Override
     public void onVideoDisabled(DecoderCounters counters) {
-
+        //
     }
 
     @Override
@@ -855,7 +857,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         super.onDetachedFromWindow();
         playOnReattach = player.getPlayWhenReady();
 //        pausePlayer();
-//
+
 //        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
     }
 
@@ -957,11 +959,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();
-
         String getStreamingQualityUrl(String streamingQuality);
-
         String getMpegResolutionFromUrl(String mpegUrl);
-
         int getMpegResolutionIndexFromUrl(String mpegUrl);
     }
 
@@ -1147,7 +1146,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
 
-            boolean useHls = dataSpec.uri.toString().contains("m3u8");
+            boolean useHls = dataSpec.uri.toString().contains(".m3u8") ||
+                    dataSpec.uri.toString().contains(".ts") ||
+                    dataSpec.uri.toString().contains("hls");
 
             if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
@@ -1252,7 +1253,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<String> availableStreamingQualities;
         int selectedIndex;
         AppCMSPresenter appCMSPresenter;
-
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {
