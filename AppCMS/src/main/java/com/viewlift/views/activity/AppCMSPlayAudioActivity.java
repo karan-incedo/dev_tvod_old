@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -39,6 +40,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     ImageButton downloadAudio;
     @BindView(R.id.share_audio)
     ImageView shareAudio;
+    @BindView(R.id.ll_cross_icon)
+    LinearLayout ll_cross_icon;
     AppCMSPlayAudioFragment appCMSPlayAudioFragment;
     private AppCMSPresenter appCMSPresenter;
     private String audioData = "";
@@ -62,6 +65,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         addToPlaylist.setOnClickListener(this);
         downloadAudio.setOnClickListener(this);
         shareAudio.setOnClickListener(this);
+        ll_cross_icon.setOnClickListener(this);
+
         launchAudioPlayer();
         setCasting();
     }
@@ -120,6 +125,9 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == casting) {
 
         }
+        if (view == ll_cross_icon) {
+            finish();
+        }
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
@@ -166,7 +174,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     void audioDownload(ImageButton download, ContentDatum data) {
         appCMSPresenter.getAudioDetail(data.getGist().getId(),
-                0, null, false, false,0,
+                0, null, false, false, 0,
                 new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
                         false,
                         false,
@@ -197,7 +205,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                 contentDatum.getGist().getId(),
                 new UpdateDownloadImageIconAction(downloadView,
                         appCMSPresenter,
-                        contentDatum, userId,radiusDifference,userId), userId);
+                        contentDatum, userId, radiusDifference, userId), userId);
     }
 
     /**
@@ -283,14 +291,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -315,7 +323,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
