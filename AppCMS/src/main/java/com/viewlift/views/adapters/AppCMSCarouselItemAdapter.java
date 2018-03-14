@@ -256,7 +256,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        if (loop) {
+
             for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
                 Component childComponent =
                         holder.componentView.matchComponentToView(holder.componentView.getChild(i));
@@ -272,10 +272,14 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                     }
                 }
             }
-        }
+
 
         if (adapterData.size() != 0) {
-            bindView(holder.componentView, adapterData.get(position % adapterData.size()));
+                if (loop) {
+                    bindView(holder.componentView, adapterData.get(position % adapterData.size()));
+                } else {
+                    bindView(holder.componentView, adapterData.get(position));
+                }
         }
     }
 

@@ -650,8 +650,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new DefaultHttpDataSourceFactory(userAgent, bandwidthMeter);
     }
 
+
+
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
 
     }
 

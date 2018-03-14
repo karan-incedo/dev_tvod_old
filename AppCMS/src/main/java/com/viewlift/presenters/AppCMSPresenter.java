@@ -593,11 +593,11 @@ public class AppCMSPresenter {
                     currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
                         editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
-                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
-                            Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
-                        },
+                                    Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                    stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                    currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+                                    Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
+                                },
                                 isAddedOrNot,
                                 true);
                     } else {
@@ -2032,9 +2032,33 @@ public class AppCMSPresenter {
 
     public ArrayList<ContentDatum> getAllUserHistory() {
         if (userHistoryData != null) {
-            return new ArrayList(userHistoryData.values());
+            ArrayList<ContentDatum> continueWatching = new ArrayList<>();
+            for (ContentDatum data : userHistoryData.values()) {
+                if (getWatchingPercentage(data) < 97) {
+                    continueWatching.add(data);
+                }
+            }
+            return continueWatching;
         }
         return null;
+    }
+
+    public int getWatchingPercentage(ContentDatum historyData) {
+
+        int progress = 0;
+        if (historyData != null) {
+            if (historyData.getGist().getWatchedPercentage() > 0) {
+                progress = historyData.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = historyData.getGist().getWatchedTime();
+                long runTime = historyData.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                    progress = (int) percentageWatched;
+                }
+            }
+        }
+        return progress;
     }
 
     public boolean isFilmAddedToWatchlist(String filmId) {
@@ -3448,7 +3472,7 @@ public class AppCMSPresenter {
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
-            showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED, 
+            showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
                     currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
                     false,
                     null,
@@ -3524,7 +3548,7 @@ public class AppCMSPresenter {
                 updatedRows = currentContext.getContentResolver().update(Uri.parse("content://downloads/my_downloads"),
                         pauseDownload,
                         "title=?",
-                        new String[]{ contentDatum.getGist().getTitle() });
+                        new String[]{contentDatum.getGist().getTitle()});
             } catch (Exception e) {
                 Log.e(TAG, "Failed to update control for downloading video");
             }
@@ -10280,7 +10304,7 @@ public class AppCMSPresenter {
                                         Log.d(TAG, "Clearing Page and API cache");
                                         clearPageAPIData(() -> {
                                             final int numPages = appCMSAndroid.getMetaPages().size();
-                                            for (int i = 0; i < numPages ; i++) {
+                                            for (int i = 0; i < numPages; i++) {
                                                 final MetaPage metaPage = appCMSAndroid.getMetaPages().get(i);
                                                 numPagesProcessed = 0;
                                                 //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
@@ -12943,12 +12967,12 @@ public class AppCMSPresenter {
 
     private PostUANamedUserEventAsyncTask.Params getUAParams() {
         return new PostUANamedUserEventAsyncTask.Params
-                        .Builder()
-                        .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
-                        /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+                .Builder()
+                .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
+                /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
+                .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
 //                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
-                        .build();
+                .build();
     }
 
     private void sendUAAssociateUserEventRequest(UAAssociateNamedUserRequest uaAssociateNamedUserRequest,

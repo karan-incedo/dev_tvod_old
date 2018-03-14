@@ -92,7 +92,11 @@
                 android:background="@drawable/streaming_quality_background"
                 android:visibility="gone"
                 android:layout_margin="@dimen/streaming_quality_view_margin"
-                android:padding="@dimen/streaming_quality_view_padding"/>
+                android:paddingLeft="@dimen/streaming_quality_view_padding"
+                android:paddingRight="@dimen/streaming_quality_view_padding"
+                android:paddingTop="@dimen/streaming_quality_view_padding_top"
+                android:paddingBottom="@dimen/streaming_quality_view_padding_top"
+                />
 
             <ToggleButton
                 android:id="@+id/ccButton"

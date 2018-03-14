@@ -190,6 +190,7 @@ public class CollectionGridItemView extends BaseView {
             if (createRoundedCorners) {
                 ((CardView) childrenContainer).setRadius(14);
                 setBackgroundResource(android.R.color.transparent);
+                ((CardView) childrenContainer).setBackgroundColor(Color.alpha(R.color.transparentColor));
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
@@ -545,11 +546,16 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         if (childComponent.isHdEnabled() && data.isHdEnabled()) {
                             Spannable spannable = new SpannableString(" " + data.getGist().getTitle());
-                            Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_black_24dp);
+                            //Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_black_24dp);
+                            Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_24dp);
+                            hdImage.setColorFilter(Color.parseColor(appCMSPresenter.getAppTextColor()), PorterDuff.Mode.MULTIPLY);
+
+                            int spanImageHeight = ((TextView) view).getLineHeight();
                             ImageSpan image = new ImageSpan(hdImage, ImageSpan.ALIGN_BOTTOM);
-                            hdImage.setBounds(0, 0, 64,64);
+                            hdImage.setBounds(0, 0, spanImageHeight,spanImageHeight);
                             spannable.setSpan(image, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                             ((TextView) view).setText(spannable);
+
                         } else {
                             ((TextView) view).setText(data.getGist().getTitle());
                         }

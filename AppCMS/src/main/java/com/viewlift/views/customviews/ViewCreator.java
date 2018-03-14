@@ -1583,10 +1583,11 @@ public class ViewCreator {
                     if (viewType == null) {
                         viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
+                    ArrayList<ContentDatum> allUserHistoryforContinueWatching = appCMSPresenter.getAllUserHistory();
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
-                            (appCMSPresenter.getAllUserHistory() != null &&
-                            !appCMSPresenter.getAllUserHistory().isEmpty())) {
-                        moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
+                            (allUserHistoryforContinueWatching != null &&
+                            !allUserHistoryforContinueWatching.isEmpty())) {
+                        moduleAPI.setContentData(allUserHistoryforContinueWatching);
                     }
                 }
 
