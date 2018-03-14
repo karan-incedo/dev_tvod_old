@@ -457,11 +457,15 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         if (BaseView.isTablet(mContext)) {
             radiusDifference = 2;
         }
+
+        UpdateDownloadImageIconAction updateDownloadImageIconAction=new UpdateDownloadImageIconAction(downloadView,
+                appCMSPresenter,
+                contentDatum, userId, playlistDownload,radiusDifference,userId);
+        updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+
         appCMSPresenter.getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
-                new UpdateDownloadImageIconAction(downloadView,
-                        appCMSPresenter,
-                        contentDatum, userId, playlistDownload,radiusDifference,userId), userId);
+                updateDownloadImageIconAction, userId);
     }
 
     /**
@@ -506,7 +510,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
-                    System.out.println("download start-" + UpdateDownloadImageIconAction.this.contentDatum.getGist().getTitle());
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);
@@ -559,6 +562,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         break;
 
                     case STATUS_RUNNING:
+                        System.out.println("dowloading status running");
                         appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,radiusDifference,id);

@@ -34,6 +34,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -312,7 +313,7 @@ public class CollectionGridItemView extends BaseView {
                                 }
                             }
                             int size = childViewWidth;
-                            if (childViewWidth > childViewHeight) {
+                            if (childViewWidth < childViewHeight) {
                                 size = childViewHeight;
                             }
 

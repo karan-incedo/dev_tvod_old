@@ -5361,6 +5361,40 @@ public class AppCMSPresenter {
                     });
         }
     }
+    public void getPlaylistRefreshData(final Action1<AppCMSPlaylistResult> appCMSPlaylistResultAction,String playlistId) {
+        if (currentActivity != null) {
+            AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
+
+            MetaPage metaPage = pageIdToMetaPageMap.get(playlistPage.getPageId());
+
+            getPlaylistPageContent(appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    playlistId, new AppCMSPlaylistAPIAction(false,
+                            false,
+                            false,
+                            appCMSPageUI,
+                            metaPage.getPageId(),
+                            metaPage.getPageId(),
+                            metaPage.getPageName(),
+                            metaPage.getPageId(),
+                            false, null) {
+                        @Override
+                        public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
+                            if (appCMSPlaylistResult != null) {
+                                Observable.just(appCMSPlaylistResult)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(appCMSPlaylistResultAction);
+                            } else {
+                                Observable.just((AppCMSPlaylistResult) null)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(appCMSPlaylistResultAction);
+                            }
+                        }
+                   });
+
+
+        }
+    }
 
     public void navigateToSubNavigationPage(String pageId,
                                             String title,
@@ -5862,6 +5896,7 @@ public class AppCMSPresenter {
         pushActionInternalEvents(appCMSPlaylistAPIAction.pageId
                 + BaseView.isLandscape(currentActivity));
 
+        String playlistId=appCMSPlaylistResult.getId();
         AppCMSPageAPI pageAPI;
         if (appCMSPlaylistResult != null) {
             pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(appCMSPlaylistAPIAction.pageId);
@@ -5879,7 +5914,7 @@ public class AppCMSPresenter {
             pageAPI.setModuleIds(moduleIds);
             pageAPI.setModules(apiModules);
         }
-
+        navigationPages.put(appCMSPlaylistAPIAction.pageId, appCMSPageUI);
         navigationPageData.put(appCMSPlaylistAPIAction.pageId, pageAPI);
 
         if (appCMSPlaylistAPIAction.launchActivity) {
@@ -5888,7 +5923,7 @@ public class AppCMSPresenter {
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
                     appCMSPlaylistAPIAction.pageTitle,
-                    appCMSPlaylistAPIAction.pagePath,
+                    playlistId,
                     pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
@@ -5903,7 +5938,7 @@ public class AppCMSPresenter {
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
                     appCMSPlaylistAPIAction.pageTitle,
-                    appCMSPlaylistAPIAction.pagePath,
+                    playlistId,
                     pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
@@ -12427,6 +12462,9 @@ public class AppCMSPresenter {
 
     public boolean isWatchlistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && watchlistPage != null && pageId.equals(watchlistPage.getPageId());
+    }
+    public boolean isPlaylistPage(String pageId) {
+        return !TextUtils.isEmpty(pageId) && playlistPage != null && pageId.equals(playlistPage.getPageId());
     }
 
     private int getSigninPage(List<MetaPage> metaPageList) {

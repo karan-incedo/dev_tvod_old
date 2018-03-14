@@ -1818,6 +1818,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
+
                     handleLaunchPageAction(updatedAppCMSBinder,
                             appCMSPresenter.getConfigurationChanged(),
                             false,
@@ -2946,6 +2947,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             });
+        } else if (appCMSPresenter.isPlaylistPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getPlaylistRefreshData(appCMSPlaylistResult -> {
+                if (appCMSPlaylistResult != null) {
+                    AppCMSPageAPI watchlistAPI =
+                            appCMSPlaylistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+//                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(watchlistAPI);
+
+                    //Log.d(TAG, "Updated watched history for loaded displays");
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            },appCMSBinder.getPagePath());
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
