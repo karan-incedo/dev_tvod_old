@@ -3,8 +3,11 @@ package com.viewlift.views.binders;
 import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import java.util.List;
 
 import rx.functions.Action1;
 
@@ -22,6 +25,8 @@ public class RetryCallBinder extends Binder {
     private ContentDatum contentDatum;
     private String pageId;
     private Action1<AppCMSAddToWatchlistResult> callback;
+    private NavigationPrimary primary;
+    private List<NavigationPrimary> items;
 
     public String getFilmId() {
         return filmId;
@@ -106,4 +111,23 @@ public class RetryCallBinder extends Binder {
     public void setCallback(Action1<AppCMSAddToWatchlistResult> action1) {
         this.callback = action1;
     }
+
+
+    public NavigationPrimary getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(NavigationPrimary primary) {
+        this.primary = primary;
+    }
+
+    public List<NavigationPrimary> getItems() {
+        return items;
+    }
+
+    public void setItems(List<NavigationPrimary> items) {
+        this.items = items;
+    }
+
+
 }

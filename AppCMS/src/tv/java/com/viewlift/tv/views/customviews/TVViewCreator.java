@@ -973,22 +973,22 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
-                        Button startWatchingButton = (Button)componentViewResult.componentView;
+                        Button startWatchingButton = (Button) componentViewResult.componentView;
                         if (appCMSPresenter.isUserLoggedIn()) {
 
-                            if(null != moduleAPI && null != moduleAPI.getContentData()
-                                    && moduleAPI.getContentData().size() > 0 ){
+                            if (null != moduleAPI && null != moduleAPI.getContentData()
+                                    && moduleAPI.getContentData().size() > 0) {
 
                                 appCMSPresenter.getUserVideoStatus(
                                         moduleAPI.getContentData().get(0).getGist().getId(),
                                         userVideoStatusResponse -> {
                                             if (null != userVideoStatusResponse) {
-                                                Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                                Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime()
                                                 );
-                                                if(userVideoStatusResponse.getWatchedTime() > 0){
+                                                if (userVideoStatusResponse.getWatchedTime() > 0) {
                                                     startWatchingButton.setText(context.getString(R.string.resume_watching));
                                                 }
-                                                if(userVideoStatusResponse.getWatchedPercentage() >= 98){
+                                                if (userVideoStatusResponse.getWatchedPercentage() >= 98) {
                                                     startWatchingButton
                                                             .setText(appCMSPresenter.getCurrentActivity().getString(R.string.start_watching));
                                                 }
@@ -1011,18 +1011,24 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
+                        //SVFA-3320
+                        if(null != moduleAPI
+                                && null != moduleAPI.getContentData()
+                                && moduleAPI.getContentData().size() > 0
+                                && null != moduleAPI.getContentData().get(0).getSeason()
+                                && moduleAPI.getContentData().get(0).getSeason().size() > 0){
                         startWatchingButton = (Button) componentViewResult.componentView;
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.getUserVideoStatus(
+                                    appCMSPresenter.getUserVideoStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(),
                                     userVideoStatusResponse -> {
                                         if (null != userVideoStatusResponse) {
-                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                            Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime()
                                             );
-                                            if(userVideoStatusResponse.getWatchedTime() > 0){
+                                            if (userVideoStatusResponse.getWatchedTime() > 0) {
                                                 startWatchingButton.setText(context.getString(R.string.resume_watching));
                                             }
-                                            if(userVideoStatusResponse.getWatchedPercentage() >= 98){
+                                            if (userVideoStatusResponse.getWatchedPercentage() >= 98) {
                                                 startWatchingButton
                                                         .setText(appCMSPresenter.getCurrentActivity().getString(R.string.start_watching));
                                             }
@@ -1039,6 +1045,9 @@ public class TVViewCreator {
                                 componentView.setClickable(true);
                             }, 3000);
                         });
+                }else{
+                            componentViewResult.componentView = null;
+                        }
                         break;
 
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
@@ -1921,7 +1930,8 @@ public class TVViewCreator {
                                         .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                     .into(((ImageView) componentViewResult.componentView));
                         }
-                        componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
+                        //setTag is causing crash here. We can not setTag on a View which Glide is targeting.
+                        //componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
                         componentViewResult.componentView.setFocusable(true);
 
 

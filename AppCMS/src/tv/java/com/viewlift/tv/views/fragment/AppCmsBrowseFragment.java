@@ -180,6 +180,11 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 ContentDatum data = rowData.contentData;
 
                 String action = rowData.action;
+
+                if(appCMSPresenter.getAppCMSMain().getFeatures().isTrickPlay()){
+                    action = getString(R.string.app_cms_action_watchvideo_key);
+                }
+
                 if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
                     pushedPlayKey();
                 } else {

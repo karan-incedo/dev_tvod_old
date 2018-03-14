@@ -26,15 +26,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.AppCMSTVAutoplayCustomLoader;
@@ -44,6 +45,8 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomTypefaceSpan;
 import com.viewlift.views.customviews.PageView;
+
+import java.security.MessageDigest;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -172,6 +175,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             if (movieImage != null) {
                 movieImage.setOnClickListener(v -> {
                     if (isAdded() && isVisible()) {
+                        stopCountdown();
                         fragmentInteractionListener.onCountdownFinished();
                     }
                 });
@@ -229,12 +233,16 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             }
 
             if (finishedMovieImage != null) {
-                Glide.with(context)
-                        .load(binder.getCurrentMovieImageUrl())
-                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                            .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                            .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
-                        .into(finishedMovieImage);
+                try {
+                    Glide.with(context)
+                            .load(binder.getCurrentMovieImageUrl())
+                            .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
+                            .into(finishedMovieImage);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0).setBackgroundResource(R.drawable.autoplay_overlay);
@@ -246,17 +254,31 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                 imageUrl = binder.getContentData().getGist().getPosterImageUrl();
             }
 
-            Glide.with(context)
-                    .load(imageUrl)
-                    .apply(new RequestOptions().transform(new BlurTransformation(context, 5)))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                            if (isAdded() && isVisible()) {
-                                pageView.setBackground(resource);
+            try {
+                Glide.with(context)
+                        .load(imageUrl)
+                        .apply(new RequestOptions().transform(new BlurTransformation(context, 10){
+                            @Override
+                            public void updateDiskCacheKey(MessageDigest messageDigest) {
                             }
-                        }
-                    });
+
+                            @Override
+                            public Resource<Bitmap> transform(Context context, Resource<Bitmap> resource, int outWidth, int outHeight) {
+                                return super.transform(resource,outWidth,outHeight);
+                            }
+                        }))
+                        .into(new SimpleTarget<Drawable>(Utils.getDeviceWidth(context),
+                                Utils.getDeviceHeight(context)) {
+                            @Override
+                            public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                if (isAdded() && isVisible()) {
+                                    pageView.setBackground(resource);
+                                }
+                            }
+                        });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return pageView;
     }
@@ -389,7 +411,6 @@ public class AppCMSTVAutoplayFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (binder != null && appCMSViewComponent.tvviewCreator() != null) {
             appCMSPresenter.removeLruCacheItem(context, binder.getPageID());
         }
@@ -399,6 +420,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
         }
         binder = null;
         pageView = null;
+        super.onDestroy();
     }
 
 

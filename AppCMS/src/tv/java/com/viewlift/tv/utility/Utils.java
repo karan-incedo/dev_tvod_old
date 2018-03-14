@@ -784,4 +784,12 @@ public class Utils {
              return null;
      }
      }
+
+     public static int getDeviceWidth(Context context){
+         return context.getResources().getDisplayMetrics().widthPixels;
+     }
+
+     public static int getDeviceHeight(Context context){
+         return context.getResources().getDisplayMetrics().heightPixels;
+     }
 }

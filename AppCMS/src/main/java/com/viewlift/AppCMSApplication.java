@@ -87,13 +87,11 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    if (activity instanceof AppCompatActivity) {
                         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                         if (onActivityResumedAction != null) {
                             onActivityResumedAction.call();
                             onActivityResumedAction = null;
                         }
-                    }
                 }
 
                 @Override

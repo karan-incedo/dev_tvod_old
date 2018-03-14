@@ -525,7 +525,7 @@ public class CustomTVVideoPlayerView
                     beaconBufferingThread.sendBeaconBuffering = false;
                 }
                 if (beaconMessageThread != null) {
-                    if(!isLiveStream)
+                    //if(!isLiveStream)
                     beaconMessageThread.sendBeaconPing = true;
                     if (!beaconMessageThread.isAlive()) {
                         try {
@@ -628,7 +628,7 @@ public class CustomTVVideoPlayerView
                         Log.d(TAG , "resumePlayer()");
                         getPlayer().setPlayWhenReady(true);
                         if (beaconMessageThread != null) {
-                            if(!isLiveStream)
+                          //  if(!isLiveStream)
                             beaconMessageThread.sendBeaconPing = true;
                         }
                         if (beaconBufferingThread != null) {
