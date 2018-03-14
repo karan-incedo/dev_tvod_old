@@ -3770,17 +3770,19 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
-                            Observable.just(addToWatchlistResult)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(resultAction1);
-                            if (showToast) {
-                                if (add) {
-                                    displayCustomToast("Added to Watchlist");
-                                } else {
-                                    displayCustomToast("Removed from Watchlist");
+                            if (addToWatchlistResult != null) {
+                                Observable.just(addToWatchlistResult)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(resultAction1);
+                                if (showToast) {
+                                    if (add) {
+                                        displayCustomToast("Added to Watchlist");
+                                    } else {
+                                        displayCustomToast("Removed from Watchlist");
+                                    }
                                 }
+                                populateFilmsInUserWatchlist();
                             }
-                            populateFilmsInUserWatchlist();
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
                         }
@@ -5361,6 +5363,7 @@ public class AppCMSPresenter {
                     });
         }
     }
+
     public void getPlaylistRefreshData(final Action1<AppCMSPlaylistResult> appCMSPlaylistResultAction,String playlistId) {
         if (currentActivity != null) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
@@ -5390,7 +5393,7 @@ public class AppCMSPresenter {
                                         .subscribe(appCMSPlaylistResultAction);
                             }
                         }
-                   });
+                    });
 
 
         }
@@ -5896,7 +5899,7 @@ public class AppCMSPresenter {
         pushActionInternalEvents(appCMSPlaylistAPIAction.pageId
                 + BaseView.isLandscape(currentActivity));
 
-        String playlistId=appCMSPlaylistResult.getId();
+        String playlistId = appCMSPlaylistResult.getId();
         AppCMSPageAPI pageAPI;
         if (appCMSPlaylistResult != null) {
             pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(appCMSPlaylistAPIAction.pageId);
@@ -12463,6 +12466,7 @@ public class AppCMSPresenter {
     public boolean isWatchlistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && watchlistPage != null && pageId.equals(watchlistPage.getPageId());
     }
+
     public boolean isPlaylistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && playlistPage != null && pageId.equals(playlistPage.getPageId());
     }

@@ -54,9 +54,13 @@ public class AppCMSAddToWatchlistCall {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSAddToWatchlistResult> call,
                                        @NonNull Response<AppCMSAddToWatchlistResult> response) {
-                    Observable.just(response.body())
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(addToWatchlistResultAction1);
+                    if (response.body() == null) {
+                        addToWatchlistResultAction1.call(null);
+                    } else {
+                        Observable.just(response.body())
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(addToWatchlistResultAction1);
+                    }
                 }
 
                 @Override
