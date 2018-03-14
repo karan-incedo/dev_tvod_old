@@ -309,21 +309,21 @@
                   "width": 85,
                   "leftMargin": 42,
                   "fontSize": 13,
-                  "height": 15
+                  "height": 16
                 },
                 "tabletLandscape": {
-                  "topMargin": 7.9,
+                  "topMargin": 8,
                   "width": 85,
                   "leftMargin": 42,
                   "fontSize": 13,
-                  "height": 15
+                  "height": 16
                 },
                 "tabletPortrait": {
-                  "topMargin": 6.5,
+                  "topMargin": 6.4,
                   "width": 85,
                   "leftMargin": 42,
                   "fontSize": 13,
-                  "height": 15
+                  "height": 16
                 }
               },
               "fontFamily": "OpenSans",
@@ -367,20 +367,20 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 1.3,
-                  "topMargin": 5.52,
+                  "leftMargin": 2.67,
+                  "topMargin": 11.4,
                   "width": 125,
                   "height": 5
                 },
                 "tabletLandscape": {
-                  "leftMargin": 0.98,
-                  "topMargin": 81.52,
+                  "leftMargin": 2.67,
+                  "topMargin": 9.9,
                   "width": 125,
                   "height": 5
                 },
                 "tabletPortrait": {
-                  "leftMargin": 1.3,
-                  "topMargin": 81.52,
+                  "leftMargin": 2.67,
+                  "topMargin": 7.8,
                   "width": 125,
                   "height": 5
                 }
@@ -466,7 +466,8 @@
             }
           ],
           "type": "tableView",
-          "key": "tableView"
+          "key": "tableView",
+          "padding": 50
         }
       ]
     },
