@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +29,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,10 +42,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -55,7 +51,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -83,8 +78,6 @@ import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -108,9 +101,6 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
-
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY;
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -545,6 +535,35 @@ public class ViewCreator {
             webView.loadURLData(context, appCMSPresenter, html, key);
         }
         return webView;
+    }
+
+    /**
+     * This will prepend a '#' character to the beginning of a color string if one is missing.
+     *
+     * @param context This is the context value that created UI components should use
+     * @param color   This is the color string to prepend the '#' value
+     * @return A string value with one prepended '#' character
+     */
+    public static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    /**
+     * This will prepend a '#' character and a hex value of the alpha or opacity value to a color string if the '#' character is missing
+     *
+     * @param context          This is the context value that created UI components should use
+     * @param baseColorCode    This is the color string to prepend the '#' value and the alpha or opacity value
+     * @param opacityColorCode This is the opacity value to prepend to the color value
+     * @return The original color value or a the color prepended with a '#' character followed by the alpha value
+     */
+    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
+        }
+        return baseColorCode;
     }
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
@@ -2209,7 +2228,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                    
+
                     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2294,7 +2313,7 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                       
+
                         if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
@@ -4291,6 +4310,7 @@ public class ViewCreator {
                         null,
                         android.R.attr.progressBarStyleHorizontal) {
                     Paint paint = new Paint();
+
                     @Override
                     public void onDraw(Canvas canvas) {
                         super.onDraw(canvas);
@@ -4703,33 +4723,6 @@ public class ViewCreator {
                     .view(componentViewResult.componentView)
                     .build());
         }
-    }
-
-    /**
-     * This will prepend a '#' character to the beginning of a color string if one is missing.
-     * @param context This is the context value that created UI components should use
-     * @param color This is the color string to prepend the '#' value
-     * @return A string value with one prepended '#' character
-     */
-    public static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    /**
-     * This will prepend a '#' character and a hex value of the alpha or opacity value to a color string if the '#' character is missing
-     * @param context This is the context value that created UI components should use
-     * @param baseColorCode This is the color string to prepend the '#' value and the alpha or opacity value
-     * @param opacityColorCode This is the opacity value to prepend to the color value
-     * @return The original color value or a the color prepended with a '#' character followed by the alpha value
-     */
-    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
-        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
-        }
-        return baseColorCode;
     }
 
     /**
@@ -5222,10 +5215,10 @@ public class ViewCreator {
         private final AppCMSPresenter appCMSPresenter;
         private final ContentDatum contentDatum;
         private final String userId;
-        private ImageButton imageButton;
-        private View.OnClickListener addClickListener;
         private final int radiusDifference;
         private final String id;
+        private ImageButton imageButton;
+        private View.OnClickListener addClickListener;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
                                       ContentDatum contentDatum, String userId, int radiusDifference,

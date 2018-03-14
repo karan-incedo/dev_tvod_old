@@ -64,7 +64,7 @@ android {
     def versionPropsFile = file('src/main/assets/version.properties')
 
     if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
+        Properties versionProps = new Properties()
 
         versionProps.load(new FileInputStream(versionPropsFile))
 
@@ -111,6 +111,7 @@ android {
             aaptOptions {
                 cruncherEnabled = false
             }
+
         }
         tv {
             minSdkVersion 21
@@ -124,22 +125,34 @@ android {
                 cruncherEnabled = false
             }
 
-            configurations.all {
-                resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                    def requested = details.requested
-                    if (requested.group == 'com.android.support') {
-                        if (!requested.name.startsWith("multidex")) {
-                            details.useVersion '25.4.0'
-                        }
-                    }
-                }
-            }
         }
         kiswe {
             dimension = "blue"
         }
         nonKiswe {
             dimension = "blue"
+        }
+
+        configurations.mobileCompile {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def requested = details.requested
+                if (requested.group == 'com.android.support') {
+                    if (!requested.name.startsWith("multidex")) {
+                        details.useVersion '27.0.3'
+                    }
+                }
+            }
+        }
+
+        configurations.tvCompile {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def requested = details.requested
+                if (requested.group == 'com.android.support') {
+                    if (!requested.name.startsWith("multidex")) {
+                        details.useVersion '25.4.0'
+                    }
+                }
+            }
         }
     }
     defaultConfig {

@@ -3,7 +3,6 @@ package com.viewlift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
-import android.support.v7.app.AppCompatActivity;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
