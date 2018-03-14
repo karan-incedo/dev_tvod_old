@@ -3792,6 +3792,8 @@ public class ViewCreator {
                             componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
                                     android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
+                        } else {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.img_placeholder);
                         }
                         break;
 
