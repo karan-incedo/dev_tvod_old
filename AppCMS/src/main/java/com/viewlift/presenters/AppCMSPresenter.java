@@ -5284,74 +5284,92 @@ public class AppCMSPresenter {
                     }
                 }
 
-                if (launchActivity) {
-                    launchPageActivity(currentActivity,
-                            appCMSPageUI,
-                            appCMSPageAPI,
-                            pageId,
-                            pageTitle,
-                            pageId,
-                            pageIdToPageNameMap.get(pageId),
-                            loadFromFile,
-                            appbarPresent,
-                            fullscreenEnabled,
-                            navbarPresent,
-                            sendCloseAction,
-                            searchQuery,
-                            ExtraScreenType.NONE);
+                if (isNetworkConnected()) {
+                    if (launchActivity) {
+                        launchPageActivity(currentActivity,
+                                appCMSPageUI,
+                                appCMSPageAPI,
+                                pageId,
+                                pageTitle,
+                                pageId,
+                                pageIdToPageNameMap.get(pageId),
+                                loadFromFile,
+                                appbarPresent,
+                                fullscreenEnabled,
+                                navbarPresent,
+                                sendCloseAction,
+                                searchQuery,
+                                ExtraScreenType.NONE);
 
-                    launched = true;
-                } else {
-                    Bundle args = getPageActivityBundle(currentActivity,
-                            appCMSPageUI,
-                            appCMSPageAPI,
-                            pageId,
-                            pageTitle,
-                            pageId,
-                            pageIdToPageNameMap.get(pageId),
-                            loadFromFile,
-                            appbarPresent,
-                            fullscreenEnabled,
-                            navbarPresent,
-                            sendCloseAction,
-                            searchQuery,
-                            ExtraScreenType.NONE);
-                    if (args != null) {
-                        Intent updatePageIntent =
-                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                args);
-                        currentActivity.sendBroadcast(updatePageIntent);
-                        dismissOpenDialogs(null);
+                        launched = true;
+                    } else {
+                        Bundle args = getPageActivityBundle(currentActivity,
+                                appCMSPageUI,
+                                appCMSPageAPI,
+                                pageId,
+                                pageTitle,
+                                pageId,
+                                pageIdToPageNameMap.get(pageId),
+                                loadFromFile,
+                                appbarPresent,
+                                fullscreenEnabled,
+                                navbarPresent,
+                                sendCloseAction,
+                                searchQuery,
+                                ExtraScreenType.NONE);
+                        if (args != null) {
+                            Intent updatePageIntent =
+                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                    args);
+                            currentActivity.sendBroadcast(updatePageIntent);
+                            dismissOpenDialogs(null);
+                        }
+
+                        launched = true;
                     }
 
-                    launched = true;
-                }
+                    if (appCMSPageAPI == null && isNetworkConnected()) {
+                        showLoadingDialog(true);
+                        refreshPageAPIData(appCMSPageUI, pageId, appCMSPageAPI1 -> {
+                            loadingPage = false;
+                            try {
+                                getPageAPILruCache().put(pageId, appCMSPageAPI1);
+                            } catch (Exception e) {
 
-                if (appCMSPageAPI == null) {
-                    showLoadingDialog(true);
-                    refreshPageAPIData(appCMSPageUI, pageId, appCMSPageAPI1 -> {
+                            }
+                            cancelInternalEvents();
+                            if (currentActivity != null) {
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                                pushActionInternalEvents(pageId
+                                        + BaseView.isLandscape(currentActivity));
+                            }
+                            restartInternalEvents();
+                            navigationPageData.put(pageId, appCMSPageAPI1);
+                        });
+                    } else {
                         loadingPage = false;
-                        try {
-                            getPageAPILruCache().put(pageId, appCMSPageAPI1);
-                        } catch (Exception e) {
-
-                        }
                         cancelInternalEvents();
-                        if (currentActivity != null) {
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-                            pushActionInternalEvents(pageId
-                                    + BaseView.isLandscape(currentActivity));
-                        }
-                        restartInternalEvents();
-                        navigationPageData.put(pageId, appCMSPageAPI1);
-                    });
+                        pushActionInternalEvents(pageId
+                                + BaseView.isLandscape(currentActivity));
+                        navigationPageData.put(pageId, appCMSPageAPI);
+                    }
                 } else {
-                    loadingPage = false;
-                    cancelInternalEvents();
-                    pushActionInternalEvents(pageId
-                            + BaseView.isLandscape(currentActivity));
-                    navigationPageData.put(pageId, appCMSPageAPI);
+                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                    showDialog(DialogType.NETWORK, null, true,
+                            () -> {
+                                navigateToPage(pageId,
+                                        pageTitle,
+                                        url,
+                                        launchActivity,
+                                        appbarPresent,
+                                        fullscreenEnabled,
+                                        navbarPresent,
+                                        sendCloseAction,
+                                        searchQuery);
+                            },
+                            () -> {}
+                                );
                 }
 
                 //Firebase Event when contact us screen is opened.

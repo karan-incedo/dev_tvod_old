@@ -284,10 +284,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     !TextUtils.isEmpty(navigationFooter.getTitle())){
                                appCMSPresenter.openChromeTab(navigationFooter.getUrl());
                             }else if(navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.contact_us)) && !TextUtils.isEmpty(Utils.getProperty("ApptentiveApiKey", viewHolder.itemView.getContext()))){
-                                //Firebase Event when contact us screen is opened.
-                                appCMSPresenter.sendFireBaseContactUsEvent();
-                                if (Apptentive.canShowMessageCenter()) {
-                                    Apptentive.showMessageCenter(viewHolder.itemView.getContext());
+                                if (appCMSPresenter.isNetworkConnected()) {
+                                    //Firebase Event when contact us screen is opened.
+                                    appCMSPresenter.sendFireBaseContactUsEvent();
+                                    if (Apptentive.canShowMessageCenter()) {
+                                        Apptentive.showMessageCenter(viewHolder.itemView.getContext());
+                                    }
+                                } else {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                            null,
+                                            false,
+                                            () -> {},
+                                            () -> {});
                                 }
                             }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
