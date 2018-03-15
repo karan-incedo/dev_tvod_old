@@ -466,7 +466,8 @@
             }
           ],
           "type": "tableView",
-          "key": "tableView"
+          "key": "tableView",
+          "padding": 50
         }
       ]
     },

@@ -21,7 +21,6 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/app_cms_text_input_height"
         android:layout_marginStart="8dp"
-        android:background="@android:color/black"
         android:ems="10"
         android:gravity="center_vertical|start"
         android:text="@string/app_cms_username_input_text_hint"
@@ -42,7 +41,6 @@
             android:id="@+id/app_cms_edit_profile_name_input"
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:background="@android:color/black"
             android:ems="10"
             android:gravity="center_vertical|start"
             android:inputType="text" />
@@ -51,9 +49,9 @@
     <TextView
         android:id="@+id/app_cms_edit_profile_email_text"
         android:layout_width="0dp"
+        android:layout_marginTop="@dimen/app_cms_text_input_margin"
         android:layout_height="@dimen/app_cms_text_input_height"
         android:layout_marginStart="8dp"
-        android:background="@android:color/black"
         android:ems="10"
         android:gravity="center_vertical|start"
         android:text="@string/app_cms_email_input_text_hint"
@@ -64,6 +62,7 @@
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_email_container"
         android:layout_width="0dp"
+        android:layout_marginTop="@dimen/app_cms_text_input_margin"
         android:layout_height="wrap_content"
         app:hintEnabled="false"
         app:layout_constraintLeft_toRightOf="@id/app_cms_edit_profile_email_text"
@@ -74,7 +73,6 @@
             android:id="@+id/app_cms_edit_profile_email_input"
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:background="@android:color/black"
             android:ems="10"
             android:gravity="center_vertical|start"
             android:inputType="textEmailAddress" />

@@ -3803,6 +3803,8 @@ public class ViewCreator {
                             componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
                                     android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
+                        } else {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.img_placeholder);
                         }
                         break;
 
@@ -4296,16 +4298,12 @@ public class ViewCreator {
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                if (module.getId().equals(moduleAPI.getId()) &&
-                        (moduleAPI.getContentData() != null ||
-                                moduleAPI.getMetadataMap() != null ||
-                                moduleAPI.getRawText() != null)) {
+                if (module.getId().equals(moduleAPI.getId())) {
                     return moduleAPI;
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
                         jsonValueKeyMap.get(module.getType()) ==
-                                jsonValueKeyMap.get(moduleAPI.getModuleType()) &&
-                        (moduleAPI.getContentData() != null || moduleAPI.getRawText() != null)) {
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
                 }
             }
