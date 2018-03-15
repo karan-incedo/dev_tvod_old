@@ -627,32 +627,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         );
 
         mShareTopButton.setOnClickListener(v -> {
-                    AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-                    if (appCMSMain != null &&
-                            updatedAppCMSBinder != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI() != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules() != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0) != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData() != null &&
-                            !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().isEmpty() &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0) != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist() != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getTitle() != null &&
-                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink() != null) {
-                        StringBuilder filmUrl = new StringBuilder();
-                        filmUrl.append(appCMSMain.getDomainName());
-                        filmUrl.append(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink());
-                        String[] extraData = new String[1];
-                        extraData[0] = filmUrl.toString();
-                        appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getPermalink(),
-                                getString(R.string.app_cms_action_share_key),
-                                updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getTitle(),
-                                extraData,
-                                updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0),
-                                false,
-                                0,
-                                null);
-                    }
+                    openShareLink();
                 }
         );
 
@@ -725,6 +700,49 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
+    }
+
+    private void openShareLink() {
+        AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        if (appCMSMain != null &&
+                updatedAppCMSBinder != null &&
+                updatedAppCMSBinder.getAppCMSPageAPI() != null &&
+                updatedAppCMSBinder.getAppCMSPageAPI().getModules() != null) {
+            int moduleSize = updatedAppCMSBinder.getAppCMSPageAPI().getModules().size();
+            for (int i = 0; i < moduleSize ; i++) {
+                if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i) != null &&
+                        updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData() != null &&
+                        !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().isEmpty() &&
+                        updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0) != null &&
+                        updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist() != null) {
+                    if ((updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType() != null && (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_article_key_type).toLowerCase()) ||
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_photo_gallery_key_type).toLowerCase()))) ||
+                            updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType() != null && updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType().toLowerCase().contains("VideoDetailModule".toLowerCase())) {
+                        getShareLink(i);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void getShareLink(int position) {
+        if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink() != null &&
+                updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getTitle() != null) {
+            StringBuilder filmUrl = new StringBuilder();
+            filmUrl.append(appCMSPresenter.getAppCMSMain().getDomainName());
+            filmUrl.append(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink());
+            String[] extraData = new String[1];
+            extraData[0] = filmUrl.toString();
+            appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink(),
+                    getString(R.string.app_cms_action_share_key),
+                    updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getTitle(),
+                    extraData,
+                    updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0),
+                    false,
+                    0,
+                    null);
+        }
     }
 
     private boolean shouldShowSearchInToolbar() {
@@ -2006,7 +2024,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter!= null ) {
+                if (appCMSPresenter != null) {
                     highlightColor = appCMSPresenter.getBrandPrimaryCtaColor();
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
@@ -2698,7 +2716,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
     }
-
 
 
 }
