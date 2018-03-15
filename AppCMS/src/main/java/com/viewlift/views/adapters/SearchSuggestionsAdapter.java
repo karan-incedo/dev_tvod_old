@@ -67,6 +67,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String contentType = searchHintResult[5];
         if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             runtime.setText("");
+        }else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+            runtime.setText("");
         }
 
     }

@@ -11517,6 +11517,9 @@ public class AppCMSPresenter {
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             navigateToArticlePage(gistId, title, false, null);
             return;
+        }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+            navigateToPhotoGalleryPage(gistId, title, null, false);
+            return;
         }
 
 

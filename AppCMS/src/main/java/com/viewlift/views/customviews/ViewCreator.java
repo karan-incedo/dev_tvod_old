@@ -1329,6 +1329,11 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("standaloneVideoPlayer01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
@@ -3662,22 +3667,28 @@ public class ViewCreator {
                             componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
                             ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
 
-                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
+                            if(appCMSPresenter.getRelatedPhotoGalleryIds() != null) {
+                                if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
+                                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
+                                    ((TextView) componentViewResult.componentView).setEnabled(false);
+                                }
+                                componentViewResult.componentView.setOnClickListener(v -> {
+                                    int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
+                                    if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
+                                            currentIndex < appCMSPresenter.getRelatedPhotoGalleryIds().size()) {
+                                        currentIndex = currentIndex + 1;
+                                        appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
+                                        appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
+                                                null, null, false);
+                                    }
+
+                                });
+                            }else{
                                 ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
-                                ((TextView)componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
+                                ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
                                 ((TextView) componentViewResult.componentView).setEnabled(false);
                             }
-                            componentViewResult.componentView.setOnClickListener(v -> {
-                                int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
-                                if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
-                                        currentIndex < appCMSPresenter.getRelatedPhotoGalleryIds().size()) {
-                                    currentIndex = currentIndex + 1;
-                                    appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
-                                    appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
-                                            null, null, false);
-                                }
-
-                            });
                             break;
 
                         default:
