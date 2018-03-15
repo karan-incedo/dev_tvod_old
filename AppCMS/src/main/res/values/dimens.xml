@@ -48,7 +48,7 @@
     <dimen name="app_cms_account_title_textsize">18sp</dimen>
     <dimen name="app_cms_account_padding">4dp</dimen>
     <dimen name="app_cms_separator_view_height">1dp</dimen>
-    <dimen name="app_cms_text_input_height">34dp</dimen>
+    <dimen name="app_cms_text_input_height">44dp</dimen>
     <dimen name="app_cms_text_input_margin">8dp</dimen>
     <dimen name="app_cms_continue_watching_tray_height">71dp</dimen>
     <dimen name="app_cms_episode_tray_height">71dp</dimen>
