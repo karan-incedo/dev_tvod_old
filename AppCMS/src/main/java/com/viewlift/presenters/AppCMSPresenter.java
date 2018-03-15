@@ -1563,8 +1563,10 @@ public class AppCMSPresenter {
                                     now.getTime(),
                                     appCMSMain.getSite());
                         } catch (Exception e) {
-                            //
+                            requestAds = false;
                         }
+
+                        if (!TextUtils.isEmpty(adsUrl)) requestAds = false;
 
                         String backgroundColor = appCMSMain.getBrand()
                                 .getGeneral()
