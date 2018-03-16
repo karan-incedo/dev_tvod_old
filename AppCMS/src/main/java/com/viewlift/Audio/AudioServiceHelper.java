@@ -68,7 +68,9 @@ public class AudioServiceHelper {
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mMediaControllerCallback);
         }
-        mMediaBrowser.disconnect();
+        if (mMediaBrowser != null) {
+            mMediaBrowser.disconnect();
+        }
     }
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
