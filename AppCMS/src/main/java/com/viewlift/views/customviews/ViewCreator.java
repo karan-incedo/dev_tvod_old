@@ -1307,7 +1307,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "photo_galery.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("articleDetail01")) {
+                } /*else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_details.json"),
                             AppCMSPageUI.class);
@@ -1317,7 +1317,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
+                }*/ else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
@@ -1329,11 +1329,6 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }else if (moduleInfo.getBlockName().contains("standaloneVideoPlayer01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "home.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
                 }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
@@ -3105,6 +3100,9 @@ public class ViewCreator {
                 //todo need to work for managing Subscribed User case scanerio
                 if(!appCMSPresenter.isUserSubscribed()) {
                     componentViewResult.componentView = new AdView(context);
+                    componentViewResult.componentView.setFocusable(false);
+                    componentViewResult.componentView.setEnabled(false);
+                    componentViewResult.componentView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
                             ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
@@ -3963,6 +3961,11 @@ public class ViewCreator {
                 break;
 
             case PAGE_SEPARATOR_VIEW_KEY:
+                componentViewResult.componentView = new View(context);
+                    componentViewResult.componentView.
+                            setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                break;
+
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {

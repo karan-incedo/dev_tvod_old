@@ -1049,34 +1049,6 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 134,
-                  "xAxis": 0,
-                  "width": 238,
-                  "fontSize": 12,
-                  "height": 113
-                },
-                "tabletLandscape": {
-                  "yAxis": 134,
-                  "xAxis": 0,
-                  "width": 238,
-                  "fontSize": 12,
-                  "height": 113
-                },
-                "tabletPortrait": {
-                  "yAxis": 134,
-                  "xAxis": 0,
-                  "width": 238,
-                  "fontSize": 12,
-                  "height": 113
-                }
-              },
-              "backgroundColor": "#ffffff",
-              "type": "separatorView",
-              "key": "separatorView"
-            },
-            {
-              "layout": {
-                "mobile": {
                   "yAxis": 140,
                   "leftMargin": 5,
                   "rightMargin": 37,
