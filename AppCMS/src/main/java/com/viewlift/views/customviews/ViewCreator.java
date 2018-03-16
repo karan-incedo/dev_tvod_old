@@ -1307,7 +1307,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "photo_galery.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("articleDetail01")) {
+                } /*else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_details.json"),
                             AppCMSPageUI.class);
@@ -1317,7 +1317,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
+                }*/ else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
@@ -3100,6 +3100,9 @@ public class ViewCreator {
                 //todo need to work for managing Subscribed User case scanerio
                 if(!appCMSPresenter.isUserSubscribed()) {
                     componentViewResult.componentView = new AdView(context);
+                    componentViewResult.componentView.setFocusable(false);
+                    componentViewResult.componentView.setEnabled(false);
+                    componentViewResult.componentView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
                             ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
