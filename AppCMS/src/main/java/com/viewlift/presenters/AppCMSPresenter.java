@@ -8183,6 +8183,7 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DELETE_ONE_WATCHLIST_ITEM:
                 case DELETE_ALL_WATCHLIST_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
@@ -9835,7 +9836,9 @@ public class AppCMSPresenter {
         try {
             this.realmController = RealmController.with(currentActivity);
         } catch (Exception e) {
-            //
+            Log.d(TAG,e.getMessage());
+
+            e.printStackTrace();
         }
 
         if (bitmapCachePresenter == null) {
@@ -10304,7 +10307,7 @@ public class AppCMSPresenter {
                                         Log.d(TAG, "Clearing Page and API cache");
                                         clearPageAPIData(() -> {
                                             final int numPages = appCMSAndroid.getMetaPages().size();
-                                            for (int i = 0; i < numPages; i++) {
+                                            for (int i = 0; i < numPages ; i++) {
                                                 final MetaPage metaPage = appCMSAndroid.getMetaPages().get(i);
                                                 numPagesProcessed = 0;
                                                 //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
@@ -12624,6 +12627,7 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
+        DELETE_ONE_WATCHLIST_ITEM,
         DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,

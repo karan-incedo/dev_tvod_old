@@ -994,6 +994,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
             //Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_HISTORY_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_history_item_message),
+                    true, () ->
             appCMSPresenter.editHistory(contentDatum.getGist().getId(),
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
@@ -1001,7 +1004,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         if (adapterData.size() == 0) {
                             sendEvent(hideRemoveAllButtonEvent);
                         }
-                    }, false);
+                    }, false),
+                    null);
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
@@ -1026,6 +1030,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
             //Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_watchlist_item_message),
+                    true, () ->
             appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
@@ -1035,7 +1042,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         }
                     },
                     false,
-                    true);
+                    true),
+                    null);
         }
     }
 
