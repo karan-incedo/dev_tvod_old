@@ -2,6 +2,7 @@ package com.viewlift.views.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -39,6 +40,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -74,6 +76,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.mobile.AppCMSLaunchActivity;
@@ -93,6 +96,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.presenters.BitmapCachePresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.TabCreator;
 import com.viewlift.views.customviews.ViewCreator;
@@ -144,6 +148,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int NO_NAV_MENU_PAGE_INDEX = -1;
 
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the view, so we need to account for this.
     private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
@@ -254,6 +259,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean mAudioFocusGranted;
 
     private boolean libsThreadExecuted;
+    private float downRawX, downRawY;
+    private float dX, dY;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -401,13 +408,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent != null &&
-                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        intent.getStringExtra(getPackageName()) != null &&
                         !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
                     return;
                 }
 
                 if (intent == null ||
-                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                        intent.getStringExtra(getPackageName()) == null) {
                     return;
                 }
 
@@ -980,12 +987,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private boolean shouldReadNavItemsFromAppCMS() {
-        if (appCMSPresenter.getNavigation() != null &&
+        return appCMSPresenter.getNavigation() != null &&
                 appCMSPresenter.getNavigation().getTabBar() != null &&
-                !appCMSPresenter.getNavigation().getTabBar().isEmpty()) {
-            return true;
-        }
-        return false;
+                !appCMSPresenter.getNavigation().getTabBar().isEmpty();
     }
 
     private boolean shouldShowSearchInToolbar() {
@@ -1186,8 +1190,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(this)) {
-            System.out.println("config from onresume");
-
             appCMSPresenter.restrictPortraitOnly();
         } else if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -3512,5 +3514,64 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     };
 
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void dragMiniPlayer(final MiniPlayerView relativeLayoutPIP) {
+        relativeLayoutPIP.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                int action = event.getAction();
+                System.out.println("Touched  ...");
+                if (action == MotionEvent.ACTION_DOWN) {
+                    downRawX = event.getRawX();
+                    downRawY = event.getRawY();
+                    dX = view.getX() - downRawX;
+                    dY = view.getY() - downRawY;
+                    return true;
+                } else if (action == MotionEvent.ACTION_MOVE) {
+                    int viewWidth = view.getWidth();
+                    int viewHeight = view.getHeight();
+
+                    View viewParent = (View) view.getParent();
+                    int parentWidth = viewParent.getWidth();
+                    int parentHeight = viewParent.getHeight();
+
+                    float newX = event.getRawX() + dX;
+                    newX = Math.max(0, newX); // Don't allow the view past the left hand side of screen
+                    newX = Math.min(parentWidth - viewWidth, newX); // Don't allow the view past the right hand side of screen
+
+                    float newY = event.getRawY() + dY;
+                    newY = Math.max(toolbar.getHeight(), newY); // Don't allow the view past the top of screen including toolbar
+                    int bottomHeight = viewHeight + appCMSTabNavContainer.getHeight();
+                    newY = Math.min(parentHeight - bottomHeight, newY); // Don't allow the view past the bottom of screen including bottombar
+
+                    view.animate()
+                            .x(newX)
+                            .y(newY)
+                            .setDuration(0)
+                            .start();
+
+                    return true;
+
+                } else if (action == MotionEvent.ACTION_UP) {
+
+                    float upRawX = event.getRawX();
+                    float upRawY = event.getRawY();
+
+                    float upDX = upRawX - downRawX;
+                    float upDY = upRawY - downRawY;
+
+                    if (Math.abs(upDX) < CLICK_DRAG_TOLERANCE && Math.abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
+                        relativeLayoutPIP.pipClick();
+                        return true;
+                    } else { // A drag
+                        return true;
+                    }
+
+                }
+                return true;
+            }
+        });
+    }
 
 }
