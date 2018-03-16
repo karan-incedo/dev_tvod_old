@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +29,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,10 +42,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -55,7 +51,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -117,6 +112,12 @@ import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_N
  * Created by viewlift on 5/5/17.
  */
 
+/**
+ * This class will utilize ingested AppCMS UI JSON and API data JSON files to dynamically create the views for entire pages,
+ * including the modules and component child views.  It is used to create and return a PageView and will descend through
+ * to inspect all the child elements in the input AppCMS UI JSON responses.  It will currently ignore the masthead and footer
+ * modules.
+ */
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static final long SECS_TO_MSECS = 1000L;
@@ -237,7 +238,6 @@ public class ViewCreator {
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
     }
-
 
     public static long adjustColor1(long color1, long color2) {
         double ratio = (double) color1 / (double) color2;
@@ -530,19 +530,6 @@ public class ViewCreator {
         }
     }
 
-    public static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
-        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
-        }
-        return baseColorCode;
-    }
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
         CustomWebView webView = new CustomWebView(context);
@@ -554,6 +541,35 @@ public class ViewCreator {
             webView.loadURLData(context, appCMSPresenter, html, key);
         }
         return webView;
+    }
+
+    /**
+     * This will prepend a '#' character to the beginning of a color string if one is missing.
+     *
+     * @param context This is the context value that created UI components should use
+     * @param color   This is the color string to prepend the '#' value
+     * @return A string value with one prepended '#' character
+     */
+    public static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    /**
+     * This will prepend a '#' character and a hex value of the alpha or opacity value to a color string if the '#' character is missing
+     *
+     * @param context          This is the context value that created UI components should use
+     * @param baseColorCode    This is the color string to prepend the '#' value and the alpha or opacity value
+     * @param opacityColorCode This is the opacity value to prepend to the color value
+     * @return The original color value or a the color prepended with a '#' character followed by the alpha value
+     */
+    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
+        }
+        return baseColorCode;
     }
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
@@ -611,12 +627,13 @@ public class ViewCreator {
         if (appCMSPageUI == null) {
             return;
         }
+
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
             ModuleList module = null;
             try {
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
-
+                //
             }
             if (module == null) {
                 module = moduleInfo;
@@ -895,7 +912,6 @@ public class ViewCreator {
                                                             currentPlayingIndex, relatedVideoIds,
                                                             moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                             component.getAction());
-
                                                 }
                                             }
                                         });
@@ -1032,7 +1048,6 @@ public class ViewCreator {
                                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                                             ((TextView) view).setSingleLine(true);
                                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
                                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -1279,9 +1294,9 @@ public class ViewCreator {
                                                 String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
 
                                                 if (settingsView != null) {
-                                                    if (settingsComponentKey == PAGE_SETTINGS_NAME_VALUE_KEY) {
+                                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
                                                         ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
-                                                    } else if (settingsComponentKey == PAGE_SETTINGS_EMAIL_VALUE_KEY) {
+                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
                                                         ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
                                                     } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
                                                         settingsView.setVisibility(View.GONE);
@@ -1538,7 +1553,7 @@ public class ViewCreator {
      * @param appCMSPageAPI This is the Page API data used to populate the UI fields specified by appCMSPageUI
      * @param appCMSAndroidModules This contains the individual block module definitions used for creating each UI element
      * @param screenName This is the screen name used to demarcate specific page landing events as well as distinguish this page from other types of screens
-     * @param jsonValueKeyMap This is hashmap that associates UI string values with value enumerations
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
      * @param appCMSPresenter This is a reference to the presenter class which handles all UI events including click events
      * @param modulesToIgnore This is a list of block modules that ViewCreator should ignore
      * @return Returns a reference to a PageView View that may be rendered on the screen
@@ -1626,7 +1641,7 @@ public class ViewCreator {
      * @param appCMSPageAPI This is the Page API data used to populate the UI fields specified by appCMSPageUI
      * @param appCMSAndroidModules This contains the individual block module definitions used for creating each UI element
      * @param pageView The PageView to use as the parent View Group for the created block modules
-     * @param jsonValueKeyMap This is hashmap that associates UI string values with value enumerations
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
      * @param appCMSPresenter This is a reference to the presenter class which handles all UI events including click events
      * @param modulesToIgnore This is a list of block modules that ViewCreator should ignore
      */
@@ -1644,28 +1659,11 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-
-            try {// TODO To Be remove post development finish
-
-                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "playlist_detail.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                }  else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "music_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                }  else {
-                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }
-//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
 
             }
-
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -1682,7 +1680,7 @@ public class ViewCreator {
             if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY )) {
                 createModule = false;
             }
 
@@ -1742,7 +1740,7 @@ public class ViewCreator {
      * @param moduleAPI This is the API data that should be used to populate the UI fields
      * @param appCMSAndroidModules This contains the block modules definition
      * @param pageView This is the PageView that should be used as the ViewGroup container for the created module
-     * @param jsonValueKeyMap This is hashmap that associates UI string values with value enumerations
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
      * @param appCMSPresenter This is a reference to the presenter class which handles all UI events including click events
      * @return Returns a ModuleView that will be added as a child view within the PageView ViewGroup
      */
@@ -1777,6 +1775,19 @@ public class ViewCreator {
                     if (moduleAPI != null) {
                         updateUserHistory(appCMSPresenter,
                                 moduleAPI.getContentData());
+
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty()) {
+                            AppCMSUIKeyType moduleType = jsonValueKeyMap.get(moduleAPI.getModuleType());
+                            if (moduleType == null) {
+                                moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                            }
+                            if (moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
+                            }
+                        }
                     }
 
                     int size = module.getComponents().size();
@@ -1970,24 +1981,24 @@ public class ViewCreator {
     }
 
     /**
-     *
-     * @param context
-     * @param parentLayout
-     * @param useParentLayout
-     * @param component
-     * @param appCMSPresenter
-     * @param moduleAPI
-     * @param appCMSAndroidModules
-     * @param settings
-     * @param jsonValueKeyMap
-     * @param defaultWidth
-     * @param defaultHeight
-     * @param useMarginsAsPercentages
-     * @param gridElement
-     * @param viewType
-     * @param createMultipleContainersForChildren
-     * @param createRoundedCorners
-     * @return
+     * This method is used by Adapters for creating a component view.
+     * @param context This is the context value that created UI components should use
+     * @param parentLayout This is the UI JSON layout object used by the parent ViewGroup
+     * @param useParentLayout This flag should be set to true if this component should use the parent layout
+     * @param component This is UI JSON component object that contains the information from AppCMS needed to create the component
+     * @param appCMSPresenter This is the Presenter class used for handling all UI events including click events
+     * @param moduleAPI This is the API data for the module that contains the data used for this component
+     * @param appCMSAndroidModules This is the list of the Android block modules definitions used for creating each UI block type
+     * @param settings This is the settings object from the module object that contains this object
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
+     * @param defaultWidth This is a default width for the component if the view width is not specified in the UI JSON response
+     * @param defaultHeight This is a default height for the component if the view height is not specified in the UI JSON response
+     * @param useMarginsAsPercentages This flag should be set to true if this component should interpret the margin as percentages instead of pixel values
+     * @param gridElement This flag should be set to true if this component is a grid component and its values from come an array of values instead of a single element
+     * @param viewType This is the component view type of the parent view and is used to infer additional view properties
+     * @param createMultipleContainersForChildren  This flag should be set to true if the parent view has multiple viewgroups as child layouts that a component may be placed in
+     * @param createRoundedCorners This flag should be set to true if this component should have rounded corners (e.g. round corners in a CardView)
+     * @return Returns a CollectionGridItemView that may be bound to a view in a view adapter
      */
     public CollectionGridItemView createCollectionGridItemView(final Context context,
                                                                final Layout parentLayout,
@@ -2064,21 +2075,21 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-
     /**
-     *
-     * @param context
-     * @param component
-     * @param parentLayout
-     * @param moduleAPI
-     * @param appCMSAndroidModules
-     * @param pageView
-     * @param settings
-     * @param jsonValueKeyMap
-     * @param appCMSPresenter
-     * @param gridElement
-     * @param viewType
-     * @param moduleId
+     * This method is used to create an individual component view, which may by a recycler view,
+     * text view, button, image view, etc.  The result is stored in the componentViewResult member object.
+     * @param context This is the context value that created UI components should use
+     * @param component This is UI JSON component object that contains the information from AppCMS needed to create the component
+     * @param parentLayout This is the UI JSON layout object used by the parent ViewGroup
+     * @param moduleAPI This is the API data for the module that contains the data used for this component
+     * @param appCMSAndroidModules This is the list of the Android block modules definitions used for creating each UI block type
+     * @param pageView This is view used by the entire page and is used as a parent viewgroup for specific components that may be positioned anywhere on the page
+     * @param settings This is the settings object from the module object that contains this object
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
+     * @param appCMSPresenter This is the Presenter class used for handling all UI events including click events
+     * @param gridElement This flag should be set to true if this component is a grid component and its values from come an array of values instead of a single element
+     * @param viewType This is the component view type of the parent view and is used to infer additional view properties
+     * @param moduleId This is the module ID that associates
      */
     @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
@@ -2223,7 +2234,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                    
+
                     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2308,7 +2319,7 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                       
+
                         if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
@@ -3414,7 +3425,6 @@ public class ViewCreator {
                             seasonTitleSb.append(i + 1);
                             seasonTrayAdapter.add(seasonTitleSb.toString());
                         }
-
                     }
 
                     componentViewResult.onInternalEvent =
@@ -3673,7 +3683,6 @@ public class ViewCreator {
                                         seasonTitleSb.append(1);
                                         ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
                                     }
-
                                 }
                                 break;
 
@@ -3836,7 +3845,6 @@ public class ViewCreator {
                                 }
 
                                 break;
-
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -4723,6 +4731,13 @@ public class ViewCreator {
         }
     }
 
+    /**
+     * This will match a module from a UI JSON response to a module in a API data JSON response.
+     * @param module Module from a UI JSON response
+     * @param appCMSPageAPI Module from an API data JSON response
+     * @param jsonValueKeyMap This is a hashmap that associates UI string values with value enumerations
+     * @return A matching module UI JSON response to the input module API data JSON response
+     */
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
@@ -4764,6 +4779,13 @@ public class ViewCreator {
         return null;
     }
 
+    /**
+     * This applies a visual border around an input view.
+     * @param context This is the context value that created UI components should use
+     * @param view This is the view to apply the border
+     * @param component This is the component object from the UI JSON response associated with the input view
+     * @param forcedColor If this value does not equal -1 than this color will be applied to the border instead of the color specified in the component
+     */
     private void applyBorderToComponent(Context context, View view, Component component, int forcedColor) {
         if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
@@ -4909,6 +4931,10 @@ public class ViewCreator {
         boolean shouldHideComponent;
     }
 
+    /**
+     * This class is used to handle events when a season is selected from the dropdown box.  It will
+     * send an event message to repopulate the view with a list of episodes from the given season.
+     */
     private static class OnSeasonSelectedListener implements
             AdapterView.OnItemSelectedListener,
             OnInternalEvent {
@@ -5135,7 +5161,7 @@ public class ViewCreator {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                             () -> {
                                 appCMSPresenter.setAfterLoginAction(() -> {
-
+                                    //
                                 });
                             });
                 }
@@ -5239,21 +5265,21 @@ public class ViewCreator {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-
+                                            //
                                         });
                                     });
                         } else {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-
+                                            //
                                         });
                                     });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                                 () -> {
-
+                                    //
                                 });
                     }
                 }

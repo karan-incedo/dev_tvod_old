@@ -134,7 +134,13 @@ public class AppCmsSearchFragment extends Fragment {
             btnClearHistory.setTypeface(openSansSemiBoldTypeFace);
         }
 
-        moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component_sports.json"), ModuleList.class);
+        }else {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        }
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override

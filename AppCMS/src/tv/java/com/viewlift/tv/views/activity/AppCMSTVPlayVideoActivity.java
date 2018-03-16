@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
@@ -110,12 +111,16 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                         } catch (Exception e) {
                                             //
                                         }
-                                        launchVideoPlayer(updatedContentDatum.getGist());
+                                        appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
+                                            launchVideoPlayer(updatedContentDatum.getGist() , appCMSSignedURLResult);
+                                        });
                                     }
                                 });
                     }
                 } else {
-                    launchVideoPlayer(binder.getContentData().getGist());
+                    appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
+                        launchVideoPlayer(binder.getContentData().getGist() , appCMSSignedURLResult);
+                    });
                 }
             }
         } catch (ClassCastException e) {
@@ -218,7 +223,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             }
         }
     }
-    private void launchVideoPlayer(Gist gist) {
+    private void launchVideoPlayer(Gist gist , AppCMSSignedURLResult appCMSSignedURLResult) {
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
@@ -316,7 +321,8 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         null,
                         closedCaptionUrl,
                         binder.getContentData().getParentalRating(),
-                        freeContent);
+                        freeContent,
+                        appCMSSignedURLResult);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
@@ -584,7 +590,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
             if (!binder.isTrailer()
                     && relateVideoIds != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
                 binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                 appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
                     @Override

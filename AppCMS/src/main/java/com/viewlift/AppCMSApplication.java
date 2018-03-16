@@ -3,7 +3,6 @@ package com.viewlift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
-import android.support.v7.app.AppCompatActivity;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
@@ -87,13 +86,11 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    if (activity instanceof AppCompatActivity) {
                         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                         if (onActivityResumedAction != null) {
                             onActivityResumedAction.call();
                             onActivityResumedAction = null;
                         }
-                    }
                 }
 
                 @Override

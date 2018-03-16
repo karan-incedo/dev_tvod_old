@@ -112,6 +112,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
+        if (appCMSPresenter.getAppCMSAndroid().getAnalytics() != null) {
+            appCMSPresenter.initializeGA(appCMSPresenter.getAppCMSAndroid().getAnalytics().getGoogleAnalyticsId());
+        }
+
 
         String tag = getTag(updatedAppCMSBinder);
         appCMSBinderStack.push(tag);
@@ -276,6 +280,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
+            findViewById(R.id.black_shadow).setVisibility(View.INVISIBLE);
 
         } else {
             findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
@@ -284,6 +289,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.VISIBLE);
+            findViewById(R.id.black_shadow).setVisibility(View.VISIBLE);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -585,6 +591,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             retryCallBinder.getPagePath(),
                             false);
                     break;
+                case SUB_NAV_RETRY_ACTION:
+                    appCMSPresenter.showLoadingDialog(true);
+                    appCMSPresenter.navigateToSubNavigationPage(
+                            retryCallBinder.getPageId(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getPagePath(),
+                            retryCallBinder.getPrimary(),
+                            retryCallBinder.getItems(),
+                            false);
+                    break;
                 case HISTORY_RETRY_ACTION:
                     appCMSPresenter.showLoadingDialog(true);
                     appCMSPresenter.navigateToHistoryPage(
@@ -840,6 +856,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         hideFooterControl();
                         break;
@@ -1066,7 +1083,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 null,
-                                false,
+                                appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                        !appCMSBinder.getAppCMSPageUI().getCaching().shouldOverrideCaching() &&
+                                        appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;

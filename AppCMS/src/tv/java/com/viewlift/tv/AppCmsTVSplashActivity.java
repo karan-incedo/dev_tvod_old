@@ -93,7 +93,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                     public void run() {
                         CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
                     }
-                },2000);
+                },550);
             }
         }
     };
@@ -117,20 +117,20 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             public void run() {
                 ObjectAnimator translateX = ObjectAnimator.ofFloat(logo, "translationX",
                         ((Resources.getSystem().getDisplayMetrics().widthPixels / 2) - smallWidth / 2 - getResources().getDimension(R.dimen.logo_margin)));
-                translateX.setDuration(1500);
+                translateX.setDuration(500);
                 translateX.start();
 
                 ObjectAnimator translateY = ObjectAnimator.ofFloat(logo, "translationY",
                         ((Resources.getSystem().getDisplayMetrics().heightPixels / 2) - smallHeight / 2 - getResources().getDimension(R.dimen.logo_margin)));
-                translateY.setDuration(1500);
+                translateY.setDuration(500);
                 translateY.start();
 
                 ObjectAnimator anim = ObjectAnimator.ofFloat(logo, "scaleX", xScale);
-                anim.setDuration(1500); // duration 3 seconds
+                anim.setDuration(500); // duration 3 seconds
                 anim.start();
 
                 ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo, "scaleY", yScale);
-                anim2.setDuration(1500); // duration 3 seconds
+                anim2.setDuration(500); // duration 3 seconds
                 anim2.start();
             }
         });

@@ -321,13 +321,8 @@ public class AppCmsNavigationFragment extends Fragment {
                                 Utils.pageLoading(false, getActivity());
                             } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                                     getString(R.string.profile_label)))) {
-
                                 NavigationUser navigationUser = getNavigationUser();
-                                //Log.d("","Selected Title = "+navigationUser.getTitle());
-
                                 if (navigationUser != null) {
-
-
                                     if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
                                             .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                                         appCmsPresenter.navigateToWatchlistPage(
@@ -543,9 +538,9 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false);
                         }
                     }
-
+                    //This code is for SubNavigation items like Teams in MSE. So we are treating here that if primary.getItems() is not null then its a subnavigation.
                     else if (primary.getItems() != null && primary.getItems().size() > 0) {
-                        navigationVisibilityListener.showNavigation(false);
+                       // navigationVisibilityListener.showNavigation(false);
 //                        subNavigationVisibilityListener.showSubNavigation(true, true);
                         appCmsPresenter.sendGaScreen(primary.getTitle() + " Navigation Page");
 //                        Utils.pageLoading(false, getActivity());
