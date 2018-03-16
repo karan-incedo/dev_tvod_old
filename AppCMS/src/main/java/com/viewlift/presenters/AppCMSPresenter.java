@@ -3716,6 +3716,7 @@ public class AppCMSPresenter {
                 onRefreshFinished.call();
             }
         }
+        showLoadingDialog(false);
     }
 
     public void editWatchlist(final String filmId,
@@ -5926,14 +5927,13 @@ public class AppCMSPresenter {
                             AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
                             /*check to play audio*/
                             if (playAudio) {
-                                AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
-                                AudioPlaylistHelper.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-                                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getMetadata(appCMSAudioDetailResult.getId()));
-                                mAudioPlaylist.setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+                                AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
+                                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                                 if (callBackPlaylistHelper != null) {
-                                    callBackPlaylistHelper.onPlaybackStart(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    callBackPlaylistHelper.onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 } else if (currentActivity != null) {
-                                    mAudioPlaylist.onMediaItemSelected(AudioPlaylistHelper.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                    AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
                             } else {
                                 if (appCMSAudioDetailAPIAction != null) {
