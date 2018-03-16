@@ -3698,7 +3698,7 @@ public class AppCMSPresenter {
                     }
                     if (onRefreshFinished != null) {
                         onRefreshFinished.call();
-                        if (getAudioPlayerOpen()) {
+                        if (getAudioPlayerOpen() && isUserLoggedIn()) {
                             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                         }
 
