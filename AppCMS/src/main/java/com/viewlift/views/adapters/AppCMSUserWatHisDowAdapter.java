@@ -147,7 +147,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
-        detectViewTypes(jsonValueKeyMap, viewType);
+        detectViewTypes(jsonValueKeyMap,viewType);
         sortData();
     }
 
@@ -157,7 +157,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         mRecyclerView = recyclerView;
     }
 
-    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap, String viewType) {
+    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap,String viewType){
 
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_MODULE_KEY:
@@ -310,7 +310,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
                                                 finalDeleteDownloadButton.setImageBitmap(null);
                                                 finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.ic_deleteicon));
-                                                finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(appCMSPresenter.getColor(mContext,
+                                                finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
                                                         appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                                                 finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                                                 finalDeleteDownloadButton.invalidate();
@@ -355,7 +355,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     case STATUS_SUCCESSFUL:
                         deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                 R.drawable.ic_deleteicon));
-                        deleteDownloadButton.getBackground().setTint(Color.parseColor(appCMSPresenter.getColor(mContext,
+                        deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
                                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                         deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
@@ -501,6 +501,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
+                                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
+                                        appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_watchlist_item_message),
+                                        true, () ->
                                 appCMSPresenter.editWatchlist(data.getGist().getId(),
                                         addToWatchlistResult -> {
                                             adapterData.remove(data);
@@ -512,11 +515,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             }
                                             notifyDataSetChanged();
                                         }, false,
-                                        false);
+                                        false),
+                                null);
                                 return;
                             }
                             if (action.contains(deleteSingleItemHistoryAction)) {
                                 /*delete video from user history*/
+                                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_HISTORY_ITEM,
+                                        appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_history_item_message),
+                                        true, () ->
                                 appCMSPresenter.editHistory(data.getGist().getId(),
                                         appCMSDeleteHistoryResult -> {
                                             adapterData.remove(data);
@@ -526,7 +533,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                 updateData(mRecyclerView, adapterData);
                                             }
                                             notifyDataSetChanged();
-                                        }, false);
+                                        }, false),
+                                null);
                                 return;
                             }
                             if (action.contains(videoAction)) {
@@ -763,7 +771,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         isClickable = clickable;
     }
 
-    private void playDownloadedAudio(ContentDatum contentDatum) {
+    private void playDownloadedAudio(ContentDatum contentDatum ) {
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
         AudioPlaylistHelper mAudioPlaylist =  AudioPlaylistHelper.getInstance();

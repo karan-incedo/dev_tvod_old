@@ -74,6 +74,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
@@ -1697,10 +1698,11 @@ public class ViewCreator {
                     if (viewType == null) {
                         viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
+                    ArrayList<ContentDatum> allUserHistoryforContinueWatching = appCMSPresenter.getAllUserHistory();
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
-                            (appCMSPresenter.getAllUserHistory() != null &&
-                                    !appCMSPresenter.getAllUserHistory().isEmpty())) {
-                        moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
+                            (allUserHistoryforContinueWatching != null &&
+                                    !allUserHistoryforContinueWatching.isEmpty())) {
+                        moduleAPI.setContentData(allUserHistoryforContinueWatching);
                     }
                 }
 
@@ -1807,7 +1809,7 @@ public class ViewCreator {
                                 module.getView(),
                                 module.getId());
 
-                        if (adjustOthers == AdjustOtherState.INITIATED) {
+                        if (adjustOthers == AdjustOtherState.INITIATED ) {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                         }
 
