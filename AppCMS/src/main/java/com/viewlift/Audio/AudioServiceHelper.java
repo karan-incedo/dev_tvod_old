@@ -25,8 +25,11 @@ public class AudioServiceHelper {
     private PlaybackControlsFragment mControlsFragment;
     public static AudioServiceHelper audioHelper;
     public static IaudioServiceCallBack callbackAudioService;
+    public static String APP_CMS_SAVE_LAST_POSITION_MESSAGE = "app_cms_save_last_position_message";
     public static String APP_CMS_STOP_AUDIO_SERVICE_MESSAGE = "app_cms_stop_audio_service_message";
     public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION = "app_cms_stop_audio_service_action";
+    public static String APP_CMS_SHOW_PREVIEW_MESSAGE = "app_cms_show_preview_message";
+    public static String APP_CMS_SHOW_PREVIEW_ACTION= "app_cms_show_preview_action";
 
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
@@ -86,7 +89,7 @@ public class AudioServiceHelper {
         MediaControllerCompat mediaController = new MediaControllerCompat(mActivity, token);
         MediaControllerCompat.setMediaController(mActivity, mediaController);
         mediaController.registerCallback(mMediaControllerCallback);
-
+        callbackAudioService.onConnect();
         if (shouldShowControls()) {
             showPlaybackControls();
         } else {
@@ -251,6 +254,8 @@ public class AudioServiceHelper {
 
     public interface IaudioServiceCallBack {
         public void getAudioPlaybackControlVisibility(boolean isControllerShowing);
+        public void onConnect();
+
     }
 
 }

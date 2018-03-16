@@ -18,6 +18,7 @@ package com.viewlift.Audio.playback;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -40,11 +41,14 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 
 
 /**
@@ -132,8 +136,6 @@ public class PlaybackManager implements Playback.Callback {
      *                  MediaController clients.
      */
     public void handleStopRequest(String withError) {
-        if (mPlayback.getCurrentStreamPosition() < mPlayback.getTotalDuration())
-            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
@@ -141,10 +143,18 @@ public class PlaybackManager implements Playback.Callback {
             AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().setAudioPlaying(false);
         }
         AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
-
+        currentProgess = 0;
+        stopSeekbarUpdate();
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
+        setCurrentMediaId(null);
+        mPlayback.setCurrentId(null);
     }
 
+    public void saveLastPositionAudioOnForcefullyStop() {
+        if (mPlayback.getCurrentStreamPosition() < mPlayback.getTotalDuration())
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
+
+    }
 
     /**
      * Update the current media player state, optionally showing an error message.
@@ -239,6 +249,7 @@ public class PlaybackManager implements Playback.Callback {
                 onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
 //                getPlayback().setCurrentId(AudioPlaylistHelper.getInstance().getNextItemId());
             } else {
+                stopSeekbarUpdate();
                 AudioPlaylistHelper.getInstance().autoPlayNextItemFromPLaylist(callBackPlaylistHelper);
 
             }
@@ -302,12 +313,12 @@ public class PlaybackManager implements Playback.Callback {
 
 
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mPlayback.getCurrentId());
+            currentProgess = 0;
             if (mediaHasChanged || AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload()) {
                 long currentPosition = 0;
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
                 }
-                currentProgess=0;
                 setCurrentMediaId(mediaId);
                 handlePlayRequest(currentPosition);
             }
@@ -428,6 +439,8 @@ public class PlaybackManager implements Playback.Callback {
         AudioPlaylistHelper.getInstance().pausePlayback();
         this.mPlayback.stopPlayback(true);
         AudioPlaylistHelper.getInstance().setCurrentMediaId(currentMediaId);
+        AudioPlaylistHelper.getInstance().setLastMediaId(currentMediaId);
+
         setCurrentMediaId(currentMediaId);
         updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, 0, null);
         new Handler().postDelayed(new Runnable() {
@@ -591,7 +604,6 @@ public class PlaybackManager implements Playback.Callback {
         }
         currentProgess = (int) (currentPosition / 1000);
 
-        System.out.println("Current poition- "+currentProgess);
         audioPreview();
     }
 
@@ -602,23 +614,27 @@ public class PlaybackManager implements Playback.Callback {
             String isFree = "true";
             if (metadata != null) {
                 isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-                if (mScheduleFuture != null && mScheduleFuture.isCancelled()) {
-                    return;
-                }
+
                 if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
-//                controls.play();
-                    scheduleSeekbarUpdate();
+                    stopSeekbarUpdate();
                 } else {
                     if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
                         if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
-                            if (currentProgess > Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                            if (currentProgess >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
                                 handlePauseRequest();
+                                stopSeekbarUpdate();
+                                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                                    Intent intent = new Intent();
+                                    intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
+                                    intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
+                                    appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
+                                }
                             }
                         }
                     } else {
-                        handlePauseRequest();
+                        stopSeekbarUpdate();
                     }
                 }
             }

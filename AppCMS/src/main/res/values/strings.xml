@@ -49,6 +49,8 @@
     <string name="resume_internal_events_key">resume_internal_events</string>
     <string name="send_to">Share Video</string>
     <string name="done">DONE</string>
+    <string name="preview_ended">Preview ended</string>
+
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>

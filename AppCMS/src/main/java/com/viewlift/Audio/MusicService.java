@@ -213,7 +213,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-
+        mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
 
@@ -237,7 +237,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onDestroy() {
 
-        AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlaybackManager.getPlayback().getCurrentId(), mPlaybackManager.getPlayback().getCurrentStreamPosition());
+//        AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlaybackManager.getPlayback().getCurrentId(), mPlaybackManager.getPlayback().getCurrentStreamPosition());
         unregisterCarConnectionReceiver();
         // Service is being killed, so make sure we release our resources
         mPlaybackManager.handleStopRequest(null);
@@ -379,8 +379,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE)) {
                 //do what you want to
                 mPlaybackManager.handleStopRequest(null);
+                mPlaybackManager.setCurrentMediaId(null);
                 AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
                 stopSelf();
+                if (arg1.hasExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE) && arg1.getBooleanExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE, false)) {
+                    mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
+                }
             }
         }
     }

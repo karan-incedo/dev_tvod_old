@@ -317,6 +317,10 @@ public final class LocalPlayback implements Playback {
     public String getCurrentId() {
         return mCurrentMediaId;
     }
+    @Override
+    public void setCurrentId(String currentMediaId) {
+         mCurrentMediaId=currentMediaId;
+    }
 
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
@@ -329,8 +333,12 @@ public final class LocalPlayback implements Playback {
         audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
+        AudioPlaylistHelper.getInstance().setLastMediaId(mediaId);
+
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
+            setCurrentId(mediaId);
+
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
 
