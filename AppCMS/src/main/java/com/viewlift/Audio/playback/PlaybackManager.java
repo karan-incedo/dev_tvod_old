@@ -344,6 +344,8 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPlayFromSearch(final String query, final Bundle extras) {
+            mPlayback.setState(PlaybackStateCompat.STATE_CONNECTING);
+
 
         }
 

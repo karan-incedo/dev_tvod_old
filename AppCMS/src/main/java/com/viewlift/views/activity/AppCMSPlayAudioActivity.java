@@ -99,6 +99,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
     }
 
+
     private void launchAudioPlayer() {
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();

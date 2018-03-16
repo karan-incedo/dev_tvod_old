@@ -302,17 +302,17 @@
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
 
-    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
-    <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
+    <string name="app_cms_delete_history_alert_title">Delete History</string>
+    <string name="app_cms_delete_one_history_item_message">Do you want to delete video from history?</string>
+    <string name="app_cms_delete_all_history_items_message">Do you want to delete all videos from history?</string>
 
-    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
-    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+    <string name="app_cms_delete_watchlist_alert_title">Delete Watchlist</string>
+    <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
+    <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
 
-    <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
-    <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
+    <string name="app_cms_delete_download_alert_title">Delete Download</string>
+    <string name="app_cms_delete_one_download_item_message">Do you want to delete video from downloads?</string>
+    <string name="app_cms_delete_all_download_items_message">Do you want to delete all videos from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>

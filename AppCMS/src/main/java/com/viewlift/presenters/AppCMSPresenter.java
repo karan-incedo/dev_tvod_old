@@ -2467,9 +2467,33 @@ public class AppCMSPresenter {
      */
     public ArrayList<ContentDatum> getAllUserHistory() {
         if (userHistoryData != null) {
-            return new ArrayList(userHistoryData.values());
+            ArrayList<ContentDatum> continueWatching = new ArrayList<>();
+            for (ContentDatum data : userHistoryData.values()) {
+                if (getWatchingPercentage(data) < 95) {
+                    continueWatching.add(data);
+                }
+            }
+            return continueWatching;
         }
         return null;
+    }
+
+    public int getWatchingPercentage(ContentDatum historyData) {
+
+        int progress = 0;
+        if (historyData != null) {
+            if (historyData.getGist().getWatchedPercentage() > 0) {
+                progress = historyData.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = historyData.getGist().getWatchedTime();
+                long runTime = historyData.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                    progress = (int) percentageWatched;
+                }
+            }
+        }
+        return progress;
     }
 
     /**
@@ -9627,6 +9651,7 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DELETE_ONE_WATCHLIST_ITEM:
                 case DELETE_ALL_WATCHLIST_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
@@ -9951,7 +9976,7 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
-                    Log.e(TAG, "Beacon request: " + gson.toJson(request));
+                    Log.d(TAG, "Beacon request: " + gson.toJson(request));
 
                     appCMSBeaconCall.call(url, beaconResponse -> {
                         try {
@@ -14393,7 +14418,7 @@ public class AppCMSPresenter {
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
 
-        if (relativeLayoutPIP != null && currentActivity != null) {
+        if (relativeLayoutPIP != null && currentActivity != null && videoPlayerViewParent !=null ) {
             relativeLayoutPIP.removeAllViews();
             if (videoPlayerView != null) {
                 videoPlayerView.enableController();
@@ -15145,6 +15170,7 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
+        DELETE_ONE_WATCHLIST_ITEM,
         DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
