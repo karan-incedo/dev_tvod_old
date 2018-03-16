@@ -120,16 +120,16 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                if(!loadingURL.equalsIgnoreCase(url.replace("https","http"))) {
+                //if(!loadingURL.equalsIgnoreCase(url.replace("https","http"))) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
                     () -> {
                        Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
                        context.startActivity(browserIntent);
                     });
-                }else {
+                /*}else {
                     Log.e("CustomWebView","Redirected URL :"+url);
                     view.loadUrl(url);
-                }
+                }*/
                 return true;
             }
 
@@ -143,6 +143,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
 
         });
 
+        loadingURL = loadingURL.replace("http","https");
         this.loadUrl(loadingURL);
         Log.e("CustomWebView","URL :"+loadingURL);
     }
