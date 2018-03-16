@@ -58,6 +58,9 @@ public class AudioPlaylistHelper {
         return audioPlaylistInstance;
     }
 
+    private AudioPlaylistHelper() {
+    }
+
     public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance, Activity mActivity) {
         appCmsPresenter = appCmsPresenterInstance;
         mAct = mActivity;
@@ -201,7 +204,7 @@ public class AudioPlaylistHelper {
         }
     }
 
-    public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+    public  void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
         String artist = "";
@@ -270,7 +273,7 @@ public class AudioPlaylistHelper {
                         .build());
     }
 
-    public static MediaMetadataCompat getMetadata(String mediaId) {
+    public  MediaMetadataCompat getMetadata(String mediaId) {
         MediaMetadataCompat metaDataForMediaId = null;
         if (music != null && music.size() > 0 && mediaId != null) {
             metaDataForMediaId = music.get(mediaId);
@@ -280,7 +283,7 @@ public class AudioPlaylistHelper {
         return metaDataForMediaId;
     }
 
-    public static MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
+    public  MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
         MediaMetadataCompat metaData = getMetadata(mediaId);
 
         return new MediaBrowserCompat.MediaItem(

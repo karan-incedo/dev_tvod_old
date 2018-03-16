@@ -1,12 +1,12 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -236,9 +236,11 @@ public class AppCMSPageFragment extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    appCMSPresenter.unrestrictPortraitOnly();
+
+                    setPageOriantationForVideoPage();
+                    //appCMSPresenter.unrestrictPortraitOnly();
                 }
-            }, 1000);
+            }, 3000);
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
             if ((group.getChildAt(0)) != null) {
@@ -284,7 +286,7 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
-            if (((VideoPlayerView) group.getChildAt(0)) != null) {
+            if (group.getChildAt(0) != null) {
                 ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
             }
         }
@@ -322,10 +324,10 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View playerParent = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) playerParent;
-            if (((VideoPlayerView) group.getChildAt(0)) != null)
+            if (group.getChildAt(0) != null)
                 ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
 
-            if (((CustomVideoPlayerView) group.getChildAt(0)) != null && ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer != null) {
+            if (group.getChildAt(0) != null && ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer != null) {
                 ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer.cancel();
                 ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer = null;
 
@@ -367,9 +369,9 @@ public class AppCMSPageFragment extends Fragment {
                 }
             }
         }
-        if (!appCMSPresenter.isFullScreenVisible) {
+       // if (!appCMSPresenter.isFullScreenVisible) {
             handleOrientation(newConfig.orientation);
-        }
+       // }
     }
 
     private void handleOrientation(int orientation) {
@@ -383,10 +385,10 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-        String screenName = appCMSBinder.getScreenName();
-        if (!appCMSPresenter.isPageAVideoPage(screenName)) {
+       String screenName = appCMSBinder.getScreenName();
+        /* if (!appCMSPresenter.isPageAVideoPage(screenName)) {
             screenName = appCMSBinder.getPageId();
-        }
+        }*/
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
@@ -606,7 +608,7 @@ public class AppCMSPageFragment extends Fragment {
 
     public void setMiniPlayer() {
         if ((pageView != null && pageView.getAppCMSPageUI() != null && pageView.findViewById(R.id.home_nested_scroll_view) != null) && pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView) {
-            RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
+            RecyclerView nestedScrollView = pageView.findViewById(R.id.home_nested_scroll_view);
 //            if (appCMSPresenter.relativeLayoutPIP == null) {
 //                appCMSPresenter.relativeLayoutPIP = new MiniPlayerView(getActivity(), appCMSPresenter, nestedScrollView);
 //            }

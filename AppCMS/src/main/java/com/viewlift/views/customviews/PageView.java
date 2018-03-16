@@ -106,9 +106,13 @@ public class PageView extends BaseView {
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = true;
-        if (view.getParent() == this) {
+        if (view.getParent() == this && fullScreenViewOriginalDimensions != null) {
             removeView(view);
 
+            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
+            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
+
+            viewParent.addView(view);
             childrenContainer.setVisibility(VISIBLE);
 
             getRootView().forceLayout();
@@ -229,6 +233,7 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
+            appCMSPresenter.setMiniPLayerVisibility(true);
             if (shouldRefresh) {
                 appCMSPresenter.clearPageAPIData(() -> {
                             mainView.setRefreshing(false);

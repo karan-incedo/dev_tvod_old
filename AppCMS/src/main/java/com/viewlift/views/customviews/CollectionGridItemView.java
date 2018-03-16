@@ -182,7 +182,9 @@ public class CollectionGridItemView extends BaseView {
             if (createRoundedCorners) {
                 ((CardView) childrenContainer).setRadius(14);
                 setBackgroundResource(android.R.color.transparent);
-                childrenContainer.setBackgroundColor(R.color.transparentColor);
+                if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                    childrenContainer.setBackgroundResource(android.R.color.transparent);
+                }
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
