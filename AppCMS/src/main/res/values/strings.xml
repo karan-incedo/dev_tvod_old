@@ -553,6 +553,10 @@
 
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
+    <string name="play_video_action">playVideo</string>
+
+    <string name="play_video_category">player-video</string>
+
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="auto">Auto</string>
     <plurals name="episode_subtitle_text">

@@ -277,7 +277,7 @@ public class CastHelper {
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
             isCastDeviceConnected = true;
 
-        }else if(mSelectedDevice!=null){
+        } else if (mSelectedDevice != null) {
             isCastDeviceConnected = true;
 
         } else if (mMediaRouter.getSelectedRoute().getConnectionState()
@@ -382,7 +382,6 @@ public class CastHelper {
     }
 
 
-
     public void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
 
         if (binder != null && binder.getContentData() != null && binder.getContentData().getGist() != null) {
@@ -422,7 +421,7 @@ public class CastHelper {
 
     }
 
-    public void launchSingeRemoteMedia(String title,String paramLink,String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
+    public void launchSingeRemoteMedia(String title, String paramLink, String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
 
         this.paramLink = paramLink != null ? paramLink : "";
         this.imageUrl = imageUrl != null ? imageUrl : "";
@@ -857,7 +856,7 @@ public class CastHelper {
 
         if (!sentBeaconPlay) {
 
-            if(appCMSPresenterComponenet == null)
+            if (appCMSPresenterComponenet == null)
                 return;
             isVideoDownloaded = appCMSPresenterComponenet.isVideoDownloaded(currentRemoteMediaId);
             mStartBufferMilliSec = new Date().getTime();
@@ -878,6 +877,9 @@ public class CastHelper {
                         0,
                         isVideoDownloaded);
                 sentBeaconPlay = true;
+
+                appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
+                        mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
             }
         }
         switch (status) {

@@ -653,6 +653,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         isVideoDownloaded);
                 sentBeaconPlay = true;
                 mStartBufferMilliSec = new Date().getTime();
+
+                appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                        getContext().getResources().getString(R.string.play_video_category), filmId);
             }
         });
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
