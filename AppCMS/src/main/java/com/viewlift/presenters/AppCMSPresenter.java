@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -623,6 +622,7 @@ public class AppCMSPresenter {
     private EntitlementCheckActive entitlementCheckActive;
     private AppCMSAndroidModules appCMSAndroidModules;
     private Toast customToast;
+    private AlertDialog dialogAlert;
     private boolean pageLoading;
     private boolean cancelLoad;
     private boolean cancelAllLoads;
@@ -1843,7 +1843,10 @@ public class AppCMSPresenter {
             // Fix of SVFA-1435
             if (actionType == AppCMSActionType.CLOSE) {
                 if (pagePath == null) {
-                    currentActivity.finish();
+                    if (AudioServiceHelper.getAudioInstance() != null) {
+                        AudioServiceHelper.getAudioInstance().onStop();
+                    }
+                    currentActivity.finishAffinity();
                     return false;
                 }
                 sendCloseOthersAction(null, true, false);
@@ -3739,17 +3742,19 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
-                            Observable.just(addToWatchlistResult)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(resultAction1);
-                            if (showToast) {
-                                if (add) {
-                                    displayCustomToast("Added to Watchlist");
-                                } else {
-                                    displayCustomToast("Removed from Watchlist");
+                            if (addToWatchlistResult != null) {
+                                Observable.just(addToWatchlistResult)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(resultAction1);
+                                if (showToast) {
+                                    if (add) {
+                                        displayCustomToast("Added to Watchlist");
+                                    } else {
+                                        displayCustomToast("Removed from Watchlist");
+                                    }
                                 }
+                                populateFilmsInUserWatchlist();
                             }
-                            populateFilmsInUserWatchlist();
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
                         }
@@ -5856,9 +5861,17 @@ public class AppCMSPresenter {
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (!isNetworkConnected()) {
-            showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                    false,
-                    null,
+            if (!isUserLoggedIn()) {
+                showDialog(DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
                     null);
             return;
         }
@@ -5903,18 +5916,19 @@ public class AppCMSPresenter {
                                     appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
                                 }
                             }
-                            if (isPlayerScreenOpen) {
+                            if (isPlayerScreenOpen && currentActivity != null) {
                                 Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
-                                MediaMetadataCompat metadata = controller.getMetadata();
-                                if (metadata != null) {
-                                    intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                            metadata);
+                                if (controller != null) {
+                                    MediaMetadataCompat metadata = controller.getMetadata();
+                                    if (metadata != null) {
+                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                metadata);
+                                    }
                                 }
                                 currentActivity.startActivity(intent);
                             }
-
                         } else {
                             System.out.println("on failed try count-" + finalTryCount);
                             if (finalTryCount < 3) {
@@ -5937,9 +5951,17 @@ public class AppCMSPresenter {
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
         if (!isNetworkConnected()) {
-            showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                    false,
-                    null,
+            if (!isUserLoggedIn()) {
+                showDialog(DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
                     null);
             return;
         }
@@ -8887,7 +8909,7 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        apikey = Utils.getProperty("xapi", currentActivity);
+                        apikey = Utils.getProperty("XAPI", currentActivity);
 
                         getAppCMSSite(platformType);
                     }
@@ -9141,7 +9163,7 @@ public class AppCMSPresenter {
      * @param dialogType An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
-    public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
+    public AlertDialog showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null && !loginDialogPopupOpen) {
 
             try {
@@ -9158,7 +9180,7 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
 
-                    if (isSportsTemplate()) {
+                    if (getTemplateType() == TemplateType.SPORTS) {
 
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
                         if (subscriptionFlowContent != null &&
@@ -9440,17 +9462,24 @@ public class AppCMSPresenter {
                     dialog.setOnCancelListener(arg0 -> {
                         loginDialogPopupOpen = false;
                     });
-                    dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-                        @Override
-                        public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                dialog.dismiss();
-                                loginDialogPopupOpen = false;
-                            }
-                            return true;
-                        }
-                    });
 
+                    dialog.setOnKeyListener((arg0, keyCode, event) -> {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            loginDialogPopupOpen = false;
+                            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO) {
+                                if (onCloseAction != null) {
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    onCloseAction.call();
+                                    //if user press back key without doing login subscription ,clear saved data
+                                }
+                                setAudioPlayerOpen(false);
+                            }
+                            dialog.dismiss();
+
+                        }
+                        return true;
+                    });
                     if (dialog.getWindow() != null) {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                                 Color.parseColor(getAppBackgroundColor())));
@@ -9464,10 +9493,11 @@ public class AppCMSPresenter {
                         }
                     }
                 });
+                return dialog;
             } catch (Exception e) {
-
             }
         }
+        return null;
     }
 
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
@@ -9742,36 +9772,36 @@ public class AppCMSPresenter {
 
             builder.setCancelable(false);
 
-            AlertDialog dialog = builder.create();
-            if (dialog.getWindow() != null) {
+            dialogAlert = builder.create();
+            if (dialogAlert.getWindow() != null) {
                 try {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                    dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(
                             Color.parseColor(getAppBackgroundColor())));
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
 //                            e.getMessage());
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                    dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
 
-                dialog.setOnShowListener(arg0 -> {
+                dialogAlert.setOnShowListener(arg0 -> {
                     int buttonTextColor = ContextCompat.getColor(currentActivity, R.color.colorAccent);
                     try {
                         buttonTextColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());
                     } catch (Exception e) {
                         buttonTextColor = ContextCompat.getColor(currentActivity, R.color.colorAccent);
                     }
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonTextColor);
-                    if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonTextColor);
+                    dialogAlert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonTextColor);
+                    if (dialogAlert.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+                        dialogAlert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonTextColor);
                     }
                 });
 
                 currentActivity.runOnUiThread(() -> {
                     if (currentActivity.getWindow().isActive()) {
                         try {
-                            if (!dialog.isShowing())
-                                dialog.show();
+                            if (!dialogAlert.isShowing())
+                                dialogAlert.show();
                         } catch (Exception e) {
                             //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
@@ -9779,6 +9809,12 @@ public class AppCMSPresenter {
                     }
                 });
             }
+        }
+    }
+
+    public void cancelAlertDialog(){
+        if(dialogAlert!=null && dialogAlert.isShowing()){
+            dialogAlert.dismiss();
         }
     }
 
