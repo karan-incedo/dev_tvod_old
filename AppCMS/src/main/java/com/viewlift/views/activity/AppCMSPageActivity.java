@@ -1216,6 +1216,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.setCancelAllLoads(false);
 
         appCMSPresenter.setCurrentActivity(this);
+        appCMSPresenter.setAppHomeActivityCreated(true);
+
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
@@ -1385,6 +1387,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pendingDeeplinkUri = Uri.parse(deeplinkUri);
 
                 }
+                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
+
+                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                        startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                        finish();
+                    } else {
+                        Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(fullScreenIntent);
+                    }
+                    appCMSPresenter.setAppHomeActivityCreated(true);
+
+                }
+
             }
         } catch (Exception e) {
             //
@@ -2967,7 +2984,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (readyAction != null) {
                     readyAction.call();
                 }
-            },appCMSBinder.getPagePath());
+            }, appCMSBinder.getPagePath());
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
@@ -3511,6 +3528,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 appCMSCastController.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        public void onConnect() {
+
         }
     };
 
