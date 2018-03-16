@@ -235,9 +235,17 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             isDownloading = true;
                             if (isClickable) {
                                 if (!appCMSPresenter.isNetworkConnected()) {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                            false,
-                                            null,
+                                    if (!appCMSPresenter.isUserLoggedIn()) {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                                appCMSPresenter::launchBlankPage,
+                                                null);
+                                        return;
+                                    }
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                            true,
+                                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                    null, null, false),
                                             null);
                                     return;
                                 }

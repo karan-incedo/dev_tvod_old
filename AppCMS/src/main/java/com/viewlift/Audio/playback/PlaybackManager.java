@@ -40,6 +40,11 @@ import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Manage the interactions among the container service, localplayback ,audio cast playback and the actual playback.
@@ -101,6 +106,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePlayRequest(long currentPosition) {
         mServiceCallback.onPlaybackStart();
         mServiceCallback.switchPlayback(currentPosition);
+        scheduleSeekbarUpdate();
     }
 
     public void setActivity(Activity mAct) {
@@ -162,11 +168,13 @@ public class PlaybackManager implements Playback.Callback {
 
         updatePlaybackStatus(state, position, error);
         MediaMetadataCompat currentMusic = getCurrentMediaData();
+        mServiceCallback.onNotificationRequired();
 
-        if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
-                state == PlaybackStateCompat.STATE_PAUSED && isContentPlayable(currentMusic)) {
-            mServiceCallback.onNotificationRequired();
-        }/*else{
+//        if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
+//                state == PlaybackStateCompat.STATE_PAUSED && isContentPlayable(currentMusic)) {
+//            mServiceCallback.onNotificationRequired();
+//        }
+        /*else{
             mServiceCallback.stopNotification();
         }*/
     }
@@ -196,7 +204,7 @@ public class PlaybackManager implements Playback.Callback {
             playBackState = PlaybackStateCompat.STATE_ERROR;
         }
         stateBuilder.setState(playBackState, position, 1.0f, SystemClock.elapsedRealtime());
-
+        mLastPlaybackState = stateBuilder.build();
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
     }
 
@@ -297,6 +305,7 @@ public class PlaybackManager implements Playback.Callback {
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
                 }
+                currentProgess=0;
                 setCurrentMediaId(mediaId);
                 handlePlayRequest(currentPosition);
             }
@@ -391,13 +400,15 @@ public class PlaybackManager implements Playback.Callback {
             mPlayback.setCallback(this);
             mServiceCallback.onPlaybackStart();
             mPlayback.play(currentMusic, currentPosition);
-            //if content not free than dont show notification
-            if (mServiceCallback != null && isContentPlayable(currentMusic)) {
-                mServiceCallback.onNotificationRequired();
+            mServiceCallback.onNotificationRequired();
 
-            } else {
-                mServiceCallback.stopNotification();
-            }
+//            //if content not free than dont show notification
+//            if (mServiceCallback != null && isContentPlayable(currentMusic)) {
+//                mServiceCallback.onNotificationRequired();
+//
+//            } else {
+//                mServiceCallback.stopNotification();
+//            }
         }
     }
 
@@ -526,5 +537,90 @@ public class PlaybackManager implements Playback.Callback {
         public void onSessionSuspended(CastSession session, int reason) {
         }
     }
+    private final ScheduledExecutorService mExecutorService =
+            Executors.newSingleThreadScheduledExecutor();
+    private final Handler mHandler = new Handler();
+    private ScheduledFuture<?> mScheduleFuture;
 
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+    private PlaybackStateCompat mLastPlaybackState;
+    int currentProgess;
+
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
+        }
+    }
+
+    private final Runnable mUpdateProgressTask = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+        }
+    };
+
+    private void updateProgress() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+        currentProgess = (int) (currentPosition / 1000);
+
+        System.out.println("Current poition- "+currentProgess);
+        audioPreview();
+    }
+
+    void audioPreview() {
+        if (AudioPlaylistHelper.getInstance() != null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
+            MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+            String isFree = "true";
+            if (metadata != null) {
+                isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+                if (mScheduleFuture != null && mScheduleFuture.isCancelled()) {
+                    return;
+                }
+                if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+//                controls.play();
+                    scheduleSeekbarUpdate();
+                } else {
+                    if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                        if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                            if (currentProgess > Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                                handlePauseRequest();
+                            }
+                        }
+                    } else {
+                        handlePauseRequest();
+                    }
+                }
+            }
+        }
+    }
 }

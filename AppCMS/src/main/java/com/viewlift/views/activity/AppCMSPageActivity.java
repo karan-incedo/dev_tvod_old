@@ -542,6 +542,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.showNoNetworkConnectivityToast();
                     } else {
                         appCMSPresenter.setShowNetworkConnectivity(false);
+                        appCMSPresenter.cancelAlertDialog();
                     }
 
                     if (isConnected) {

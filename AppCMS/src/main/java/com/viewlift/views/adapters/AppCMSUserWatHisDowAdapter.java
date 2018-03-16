@@ -288,9 +288,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 switch (contentDatum.getGist().getDownloadStatus()) {
                     case STATUS_PENDING:
                     case STATUS_RUNNING:
-                        if (contentDatum.getGist() != null) {
-                            deleteDownloadButton.getBackground().setTint(ContextCompat.getColor(mContext, R.color.transparentColor));
-                            deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        if (contentDatum.getGist() != null && deleteDownloadButton != null) {
+                            if (deleteDownloadButton.getBackground() != null) {
+                                deleteDownloadButton.getBackground().setTint(ContextCompat.getColor(mContext, R.color.transparentColor));
+                                deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                            }
 
                             ImageButton finalDeleteDownloadButton = deleteDownloadButton;
                             ImageView finalThumbnailImage = thumbnailImage;
@@ -455,6 +457,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                   Component childComponent,
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
+
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();
@@ -531,12 +534,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                    /*play audio if already downloaded*/
-                                        playDownloadedAudio(data,position);
+                                        playDownloadedAudio(data);
 
                                         return;
                                     } else {
                                     /*play movie if already downloaded*/
-                                        playDownloaded(data, position);
+                                        playDownloaded(data, clickPosition);
                                         return;
                                     }
                                 } else {
@@ -557,11 +560,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                    /*play audio if already downloaded*/
-                                        playDownloadedAudio(data,position);
+                                        playDownloadedAudio(data);
                                         return;
                                     } else {
                                     /*play movie if already downloaded*/
-                                        playDownloaded(data, position);
+                                        playDownloaded(data, clickPosition);
                                         return;
                                     }
                                 }
@@ -693,12 +696,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         if (position + 1 == adapterData.size()) {
             return Collections.emptyList();
         }
-
         List<String> contentDatumList = new ArrayList<>();
         for (int i = position + 1; i < adapterData.size(); i++) {
             ContentDatum contentDatum = adapterData.get(i);
             if (contentDatum.getGist() != null &&
-                    contentDatum.getGist().getDownloadStatus().equals(downloadStatus)) {
+                    contentDatum.getGist().getDownloadStatus().equals(downloadStatus)
+                    && contentDatum.getGist().getContentType() != null
+                    && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_video).toLowerCase())) {
                 contentDatumList.add(contentDatum.getGist().getId());
             }
         }
@@ -707,7 +711,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void playDownloaded(ContentDatum data, int position) {
-        List<String> relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_SUCCESSFUL);
+        List<String> relatedVideoIds = new ArrayList<>();
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                 data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
@@ -730,6 +734,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         extraData[3] = "true"; // to know that this is an offline video
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
+            if (relatedVideoIds != null && relatedVideoIds.size() != 0) {
+                /*remove current playing film id from the list*/
+                relatedVideoIds.remove(data.getGist().getId());
+            }
         }
 
         if (permalink == null ||
@@ -752,7 +760,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         isClickable = clickable;
     }
 
-    private void playDownloadedAudio(ContentDatum contentDatum,int position ) {
+    private void playDownloadedAudio(ContentDatum contentDatum ) {
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
         AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
