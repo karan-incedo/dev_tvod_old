@@ -252,7 +252,7 @@ public class AudioServiceHelper {
     }
 
     public interface IaudioServiceCallBack {
-        public void getAudioPlaybackControlVisibility(boolean isControllerShowing);
+        void getAudioPlaybackControlVisibility(boolean isControllerShowing);
     }
 
 }
