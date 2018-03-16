@@ -56,6 +56,9 @@ public class AudioPlaylistHelper {
         return audioPlaylistInstance;
     }
 
+    private AudioPlaylistHelper() {
+    }
+
     public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance, Activity mActivity) {
         appCmsPresenter = appCmsPresenterInstance;
         mAct = mActivity;

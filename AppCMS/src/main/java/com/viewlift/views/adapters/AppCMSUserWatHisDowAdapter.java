@@ -24,7 +24,6 @@ import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.ImageGist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
@@ -148,7 +147,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
-        detectViewTypes(jsonValueKeyMap,viewType);
+        detectViewTypes(jsonValueKeyMap, viewType);
         sortData();
     }
 
@@ -158,7 +157,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         mRecyclerView = recyclerView;
     }
 
-    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap,String viewType){
+    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap, String viewType) {
 
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_MODULE_KEY:
@@ -384,13 +383,25 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void deleteDownloadVideo(final ContentDatum contentDatum, int position) {
+        String deleteMsg = appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_video_item_message);
+        if (contentDatum.getGist() != null
+                && contentDatum.getGist().getContentType() != null
+                && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
+            deleteMsg = appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_audio_item_message);
+        }
         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
-                appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
-                true, () ->
+                deleteMsg, true, () ->
                         appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                 userVideoDownloadStatus -> {
 //                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
 //                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                    if (contentDatum.getGist() != null
+                                            && contentDatum.getGist().getContentType() != null
+                                            && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
+                                        if (contentDatum.getGist().getId().contains(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
+                                            appCMSPresenter.stopAudioServices();
+                                        }
+                                    }
                                     notifyItemRangeRemoved(position, getItemCount());
                                     adapterData.remove(contentDatum);
                                     notifyItemRangeChanged(position, getItemCount());
@@ -752,10 +763,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         isClickable = clickable;
     }
 
-    private void playDownloadedAudio(ContentDatum contentDatum ) {
+    private void playDownloadedAudio(ContentDatum contentDatum) {
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
-        AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
+        AudioPlaylistHelper mAudioPlaylist =  AudioPlaylistHelper.getInstance();
         mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
         PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
         if (appCMSPresenter.getCallBackPlaylistHelper() != null) {

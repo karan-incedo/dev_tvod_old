@@ -3692,6 +3692,7 @@ public class AppCMSPresenter {
                 onRefreshFinished.call();
             }
         }
+        showLoadingDialog(false);
     }
 
     public void editWatchlist(final String filmId,
@@ -5902,7 +5903,7 @@ public class AppCMSPresenter {
                             AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
                             /*check to play audio*/
                             if (playAudio) {
-                                AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
+                                AudioPlaylistHelper mAudioPlaylist = AudioPlaylistHelper.getInstance();
                                 AudioPlaylistHelper.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
                                 PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getMetadata(appCMSAudioDetailResult.getId()));
                                 mAudioPlaylist.setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
