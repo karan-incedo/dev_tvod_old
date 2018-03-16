@@ -774,13 +774,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private void playDownloadedAudio(ContentDatum contentDatum ) {
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
-        AudioPlaylistHelper mAudioPlaylist =  AudioPlaylistHelper.getInstance();
-        mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-        PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+        AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+        PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
         if (appCMSPresenter.getCallBackPlaylistHelper() != null) {
-            appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+            appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
         } else if (appCMSPresenter.getCurrentActivity() != null) {
-            mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+            AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
         }
         AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
         Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
