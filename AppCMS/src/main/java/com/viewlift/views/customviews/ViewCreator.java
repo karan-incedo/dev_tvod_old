@@ -936,8 +936,8 @@ public class ViewCreator {
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
                                         switch (componentType) {
                                             case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                                                ((Switch) view).setChecked(appCMSPresenter
-                                                        .getAutoplayEnabledUserPref(context));
+                                                ((Switch) view).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                                ((Switch) view).setTrackResource(R.color.googleRed);
                                                 break;
 
                                             case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
@@ -4185,8 +4185,7 @@ public class ViewCreator {
 
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
-                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor("#ff0000"));
                 int switchOnColor = Color.parseColor(
                         appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
                 int switchOffColor = Color.parseColor(
