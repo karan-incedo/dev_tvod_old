@@ -58,7 +58,10 @@ public class UrbanAirshipInitReceiver extends BroadcastReceiver {
     }
 
     public void unregisterReciever(Context context) {
-        context.unregisterReceiver(appCMSAirshipReceiver);
+        try {
+            context.unregisterReceiver(appCMSAirshipReceiver);
+        } catch (IllegalArgumentException e) {
+        }
     }
 
     public void sendChannelId(Context context) {

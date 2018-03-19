@@ -51,6 +51,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -73,11 +74,14 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -101,6 +105,11 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
+
+import static com.viewlift.Utils.loadJsonFromAssets;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY;
+
 
 /*
  * Created by viewlift on 5/5/17.
@@ -1692,10 +1701,11 @@ public class ViewCreator {
                     if (viewType == null) {
                         viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
+                    ArrayList<ContentDatum> allUserHistoryforContinueWatching = appCMSPresenter.getAllUserHistory();
                     if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
-                            (appCMSPresenter.getAllUserHistory() != null &&
-                                    !appCMSPresenter.getAllUserHistory().isEmpty())) {
-                        moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
+                            (allUserHistoryforContinueWatching != null &&
+                                    !allUserHistoryforContinueWatching.isEmpty())) {
+                        moduleAPI.setContentData(allUserHistoryforContinueWatching);
                     }
                 }
 

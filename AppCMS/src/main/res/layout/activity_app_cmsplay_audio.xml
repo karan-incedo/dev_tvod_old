@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageButton
@@ -40,8 +41,8 @@
 
             <com.viewlift.views.customviews.ResponsiveButton
                 android:id="@+id/download_audio"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="19dp"
                 android:layout_marginRight="5dp"
                 android:background="@android:color/transparent"
                 android:scaleType="fitEnd"
@@ -54,6 +55,27 @@
                 android:background="@android:color/transparent"
                 android:visibility="gone"
                 android:src="@drawable/share" />
+        <LinearLayout
+            android:id="@+id/ll_cross_icon"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/cross_icon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+
+
+                android:background="@android:color/transparent"
+                android:visibility="visible"
+                android:src="@drawable/cancel" />
+        </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 

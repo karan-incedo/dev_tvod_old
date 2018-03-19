@@ -33,6 +33,8 @@ public class AudioPlaylistHelper {
     public static int indexAudioFromPlaylist = 0;
     public static String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
     private String mCurrentMusicId = "";
+    private String lastMediaId = "";
+
     public static String mCurrentPlayListId = "";
     public static String CUSTOM_METADATA_TRACK_PARAM_LINK = "__PARAM_LINK__";
     public static String CUSTOM_METADATA_TRACK_ALBUM_YEAR = "_ALBUM_YEAR";
@@ -54,6 +56,9 @@ public class AudioPlaylistHelper {
             audioPlaylistInstance = new AudioPlaylistHelper();
         }
         return audioPlaylistInstance;
+    }
+
+    private AudioPlaylistHelper() {
     }
 
     public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance, Activity mActivity) {
@@ -134,7 +139,7 @@ public class AudioPlaylistHelper {
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
         }
     }
 
@@ -165,7 +170,7 @@ public class AudioPlaylistHelper {
     private void getAudioDetails(String mediaId, long currentPosition, boolean isPlayerScreenOpen) {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true,0, null);
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, 0, null);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
@@ -174,7 +179,7 @@ public class AudioPlaylistHelper {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
         }
@@ -193,17 +198,17 @@ public class AudioPlaylistHelper {
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true,0, null);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+    public  void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
         String artist = "";
-        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown",isFree="true";
+        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown", isFree = "true";
         long runTime = 240 * 1000;
 
         if (appCMSAudioDetailResult.getGist() != null) {
@@ -218,7 +223,7 @@ public class AudioPlaylistHelper {
                 }
             }
             if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
-                iconUrl=appCMSAudioDetailResult.getGist().getVideoImageUrl();
+                iconUrl = appCMSAudioDetailResult.getGist().getVideoImageUrl();
             }
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
@@ -231,7 +236,7 @@ public class AudioPlaylistHelper {
                 album_year = appCMSAudioDetailResult.getGist().getYear();
 
 
-                isFree = String.valueOf(appCMSAudioDetailResult.getGist().isFree());
+            isFree = String.valueOf(appCMSAudioDetailResult.getGist().isFree());
 
         }
         artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
@@ -268,7 +273,7 @@ public class AudioPlaylistHelper {
                         .build());
     }
 
-    public static MediaMetadataCompat getMetadata(String mediaId) {
+    public  MediaMetadataCompat getMetadata(String mediaId) {
         MediaMetadataCompat metaDataForMediaId = null;
         if (music != null && music.size() > 0 && mediaId != null) {
             metaDataForMediaId = music.get(mediaId);
@@ -278,7 +283,7 @@ public class AudioPlaylistHelper {
         return metaDataForMediaId;
     }
 
-    public static MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
+    public  MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
         MediaMetadataCompat metaData = getMetadata(mediaId);
 
         return new MediaBrowserCompat.MediaItem(
@@ -294,8 +299,8 @@ public class AudioPlaylistHelper {
         }
     }
 
-    public void saveLastPlayPositionDetails(String id,long pos) {
-        appCmsPresenter.saveLastPlaySongPosition(id,pos);
+    public void saveLastPlayPositionDetails(String id, long pos) {
+        appCmsPresenter.saveLastPlaySongPosition(id, pos);
     }
 
     public LastPlayAudioDetail getLastPlayPositionDetails() {
@@ -304,6 +309,15 @@ public class AudioPlaylistHelper {
 
     public void setCurrentMediaId(String mediaId) {
         mCurrentMusicId = mediaId;
+    }
+
+    public void setLastMediaId(String mediaId) {
+        lastMediaId = mediaId;
+    }
+
+
+    public String getLastMediaId() {
+        return lastMediaId;
     }
 
     public String getCurrentPlaylistId() {

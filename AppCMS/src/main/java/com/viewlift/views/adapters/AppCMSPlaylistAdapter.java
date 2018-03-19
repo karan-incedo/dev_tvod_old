@@ -235,9 +235,17 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             isDownloading = true;
                             if (isClickable) {
                                 if (!appCMSPresenter.isNetworkConnected()) {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                            false,
-                                            null,
+                                    if (!appCMSPresenter.isUserLoggedIn()) {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                                appCMSPresenter::launchBlankPage,
+                                                null);
+                                        return;
+                                    }
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                            true,
+                                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                    null, null, false),
                                             null);
                                     return;
                                 }
@@ -297,7 +305,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     private void updatePlaylistAllStatus() {
         if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id) != null && appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
             ((ImageButton) appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id)).setImageResource(R.drawable.ic_downloaded);
-            ((ImageButton) appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id)).setVisibility(View.GONE);
+            appCMSPresenter.getCurrentActivity().findViewById(R.id.playlist_download_id).setVisibility(View.GONE);
         }
     }
 
@@ -461,7 +469,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         UpdateDownloadImageIconAction updateDownloadImageIconAction=new UpdateDownloadImageIconAction(downloadView,
                 appCMSPresenter,
                 contentDatum, userId, playlistDownload,radiusDifference,userId);
-        updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+        updateDownloadImageIconAction.updateDownloadImageButton(downloadView);
 
         appCMSPresenter.getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
@@ -637,7 +645,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     }
 
     public interface IUpdateState {
-        public void updateState();
+        void updateState();
     }
 }
 

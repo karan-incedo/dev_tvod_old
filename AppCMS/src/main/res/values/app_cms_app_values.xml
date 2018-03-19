@@ -9,12 +9,16 @@
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
     <!--<string name="app_cms_app_name">62cab672-424e-4191-9066-4bb9a0993247</string>-->
 
+    <!--
+    TODO MSE id for temp dev
+    SiteId=00000151-11b4-d29b-a17d-55fdb2b80000-->
+
     <!-- x-api-key -->
     <!--<string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>-->
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">910134432450680</string>
-    <string name="fb_login_protocol_scheme">fb910134432450680</string>
+    <string name="facebook_app_id">1324523080924996</string>
+    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
     <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
@@ -22,7 +26,7 @@
     <!--<string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>-->
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">3D49630B</string>
+    <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
     <bool name="use_hls">false</bool>
