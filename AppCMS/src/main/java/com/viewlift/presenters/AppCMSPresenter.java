@@ -2249,7 +2249,8 @@ public class AppCMSPresenter {
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
                                 //Todo need to manage it depend on Template
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
+                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar) ||
+                                        getTemplateType() == TemplateType.SPORTS) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
@@ -2640,6 +2641,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
 
@@ -14542,6 +14544,7 @@ public class AppCMSPresenter {
 
                 if (relativeLayoutPIP.getParent() == null && currentActivity != null && currentActivity.findViewById(R.id.app_cms_parent_view) != null) {
                     ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+                    ((AppCMSPageActivity) currentActivity).dragMiniPlayer(relativeLayoutPIP);
                 }
                 videoPlayerViewParent = group;
 

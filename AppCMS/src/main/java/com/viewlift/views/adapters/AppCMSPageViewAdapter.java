@@ -60,21 +60,22 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public int getItemViewType(int position) {
 
-        if (position != 0) {
-            if (isPlayerView(position - 1))
-                return position;
-            else if (isStanzaView(position - 1))
+        
+            if (isPlayerView(position ))
+                return TYPE_PLAYER;
+            else if (isStanzaView(position ))
                 return TYPE_STANZA;
             else
                 return position;
-        }
-        return 0;
+        
     }
 
     private boolean isPlayerView(int position){
-        if(((ModuleView)childViews.get(position)).getModule().getType().equalsIgnoreCase("AC StandaloneVideoPlayer 01"))
+       /* if(((ModuleView)childViews.get(position)).getModule().getType().equalsIgnoreCase("AC StandaloneVideoPlayer 01"))
             return true;
         return false;
+		*/
+		return position == TYPE_PLAYER;
     }
 
     private boolean isStanzaView(int position){
@@ -94,21 +95,24 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public void onBindViewHolder(PageViewHolder holder, int position) {
         try {
-            if (position == 0) {
+            /*if (position == 0) {
                 holder.parent.removeAllViews();
                 holder.parent.addView(topLayout);
-            } else if(!isPlayerView(position - 1)) {
+            } else if(!isPlayerView(position - 1)) {*/
                 holder.parent.removeAllViews();
-                holder.parent.addView(childViews.get(position - 1));
-            }
+                holder.parent.addView(childViews.get(position));
+            //}
         } catch (Exception e) {
 
         }
+		if (childViews.get(position).findViewById(R.id.video_player_id) !=null){
+           TYPE_PLAYER=position;
+       }
     }
 
     @Override
     public int getItemCount() {
-        return childViews != null ? childViews.size() + 1 : 0;
+        return childViews != null ? childViews.size()  : 0;
     }
 
     public List<String> getViewIdList(int firstIndex, int lastIndex) {
