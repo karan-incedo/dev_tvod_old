@@ -673,6 +673,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     isVideoDownloaded);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+
+            appCMSPresenter.sendGaEvent(mContext.getResources().getString(R.string.play_video_action),
+                    mContext.getResources().getString(R.string.play_video_category), videoDataId);
         }
     }
 
