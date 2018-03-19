@@ -9246,7 +9246,7 @@ public class AppCMSPresenter {
      * @param dialogType    An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
-    public AlertDialog showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
+    public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null && !loginDialogPopupOpen) {
 
             try {
@@ -9447,7 +9447,7 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
                                 }
                             });
-                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||  dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
 
 
                     builder.setPositiveButton(negativeButtonText,
@@ -9534,27 +9534,9 @@ public class AppCMSPresenter {
                             });
                 }
 
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
-                    builder.setOnKeyListener((arg0, keyCode, event) -> {
-                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            if (onCloseAction != null) {
-                                //if user press back key without doing login subscription ,clear saved data
-                                setEntitlementPendingVideoData(null);
-                                onCloseAction.call();
-                                //if user press back key without doing login subscription ,clear saved data
-                                setEntitlementPendingVideoData(null);
-                            }
-                            setAudioPlayerOpen(false);
 
-                        }
-                        return true;
-                    });
-                }
-
-
-                final AlertDialog dialog = builder.create();
                 currentActivity.runOnUiThread(() -> {
+                    AlertDialog dialog  = builder.create();
 
                     if (onCloseAction != null) {
                         dialog.setCanceledOnTouchOutside(false);
@@ -9596,6 +9578,16 @@ public class AppCMSPresenter {
                                 }
                                 setAudioPlayerOpen(false);
                             }
+                            else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER){
+                                if (onCloseAction != null) {
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    setEntitlementPendingVideoData(null);
+                                    onCloseAction.call();
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    setEntitlementPendingVideoData(null);
+                                }
+                            }
                             dialog.dismiss();
 
                         }
@@ -9613,13 +9605,13 @@ public class AppCMSPresenter {
                             }
                         }
                     }
-                });
-                return dialog;
-            } catch (Exception e) {
 
+                });
+
+            } catch (Exception e) {
+                System.out.println("Excep e -" + e.toString());
             }
         }
-        return null;
     }
 
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
@@ -15128,11 +15120,12 @@ public class AppCMSPresenter {
      *
      * @param saveLastAudioPosition
      */
-    public void stopAudioServices(boolean saveLastAudioPosition) {
+    public void stopAudioServices(boolean saveLastAudioPosition,boolean isPreviewShow) {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
         intent.putExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE, saveLastAudioPosition);
+        intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW, isPreviewShow);
 
         currentActivity.sendBroadcast(intent);
     }

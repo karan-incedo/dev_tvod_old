@@ -175,7 +175,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public long getTotalDuration() {
-        if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession() && mRemoteMediaClient.getStreamDuration()>0) {
+        if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession() && mRemoteMediaClient.getStreamDuration() > 0) {
             mRemoteMediaClient.pause();
             return mRemoteMediaClient.getStreamDuration();
         }
@@ -194,8 +194,9 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public void setCurrentId(String currentMediaId) {
-        mCurrentMediaId=currentMediaId;
+        mCurrentMediaId = currentMediaId;
     }
+
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         try {
@@ -204,16 +205,18 @@ public class AudioCastPlayback implements Playback {
                 String mediaId = item.getDescription().getMediaId();
                 audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
                 AudioPlaylistHelper.getInstance().setLastMediaId(mediaId);
+                boolean mediaHasChanged = false;
+                if (mCurrentMediaId != null) {
+                    mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
+                }
 
-                boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
                 if (mediaHasChanged) {
                     mCurrentMediaId = mediaId;
                     setCurrentId(mediaId);
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
-
                 }
 
-                if (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails() != null &&
+                if (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails() != null && AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId() != null &&
                         AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId().equalsIgnoreCase(mCurrentMediaId) &&
                         AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition() > 0) {
                     currentPosition = (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition());

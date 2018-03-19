@@ -151,8 +151,12 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public void saveLastPositionAudioOnForcefullyStop() {
-        if (mPlayback.getCurrentStreamPosition() < mPlayback.getTotalDuration())
+        if (mPlayback.getCurrentStreamPosition() >0){
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
+        }else{
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), currentPositionInMS);
+
+        }
 
     }
 
@@ -560,6 +564,7 @@ public class PlaybackManager implements Playback.Callback {
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     private PlaybackStateCompat mLastPlaybackState;
     int currentProgess;
+    long currentPositionInMS;
 
     private void scheduleSeekbarUpdate() {
         stopSeekbarUpdate();
@@ -602,10 +607,14 @@ public class PlaybackManager implements Playback.Callback {
                     mLastPlaybackState.getLastPositionUpdateTime();
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
+
         currentProgess = (int) (currentPosition / 1000);
 
+        currentPositionInMS=currentPosition;
+        System.out.println("currentPositionInMS- "+currentPositionInMS);
         audioPreview();
     }
+
 
     void audioPreview() {
         if (AudioPlaylistHelper.getInstance() != null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
@@ -616,7 +625,7 @@ public class PlaybackManager implements Playback.Callback {
                 isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
 
                 if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
-                    stopSeekbarUpdate();
+//                    stopSeekbarUpdate();
                 } else {
                     if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures() != null
