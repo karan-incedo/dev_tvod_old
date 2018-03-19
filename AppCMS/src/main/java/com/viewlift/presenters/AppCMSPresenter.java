@@ -11807,6 +11807,28 @@ public class AppCMSPresenter {
     }
 
     public void showPopupWindowPlayer(View scrollView, ViewGroup group) {
+        String currentVisiblePageTitle = null;
+        try {
+            /*extracting the top (visible) page title/id from the activity's binder map.*/
+            currentVisiblePageTitle = ((AppCMSPageActivity) currentActivity).getAppCMSBinderMap().keySet().iterator().next();
+        } catch (Exception e) {}
+
+        /*We needed this check in order to not have the popup player on the search screen. One might
+        * question that this method shouldn't be called from the AppCMSPageFragment itself, and
+        * that's correct, had the Search fragment created using AppCMSPageFragment this method
+        * wouldn't have been called because inside the setMiniPlayer method in the
+        * AppCMSPageFragment we check if the AppCMSPageUI contains a 'standAlonePlayer', if that
+        * exist only then this method is called, and as said before the search fragment isn't
+        * created using AppCMSPageFragment. So at the time when user rotates the tablet,
+        * handleLaunchPageAction is called in AppCMSPageActivity, which in turn recreats
+        * AppCMSPageFragment, here AppCMSPageFragment contains homepage (instead of search, since
+        * search isn't created using AppCMSPageFragment), since it's homepage and homepage contains
+        * the 'standAlonePlayer', the condition inside 'setMiniPlayer is satisfied and this method
+        * is called, even though the current page visible is search.*/
+        if ("search".equalsIgnoreCase(currentVisiblePageTitle)){
+            dismissPopupWindowPlayer(false);
+            return;
+        }
         if (videoPlayerView != null) {
             // if preview frame need to show than mini player will be true and miniplayer need to be hide
             if (videoPlayerView.hideMiniPlayer) {
