@@ -193,15 +193,22 @@ public class AudioCastPlayback implements Playback {
     }
 
     @Override
+    public void setCurrentId(String currentMediaId) {
+        mCurrentMediaId=currentMediaId;
+    }
+    @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         try {
             {
                 initRemoteClient();
                 String mediaId = item.getDescription().getMediaId();
                 audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+                AudioPlaylistHelper.getInstance().setLastMediaId(mediaId);
+
                 boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
                 if (mediaHasChanged) {
                     mCurrentMediaId = mediaId;
+                    setCurrentId(mediaId);
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
 
                 }

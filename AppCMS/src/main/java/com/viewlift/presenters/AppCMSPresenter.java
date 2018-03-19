@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -334,8 +335,6 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION = "appcms_presenter_dont_keep_screen_on_action";
     public static final String PRESENTER_CHROMECAST_DISCONNECTED_ACTION = "appcms_presenter_chromecast_disconnected_action";
     public static final String SWITCH_SEASON_ACTION = "switch_season_action";
-    public static final String PRESENTER_AUDIO_LOADING_ACTION = "appcms_presenter_audio_loading_action";
-    public static final String PRESENTER_AUDIO_LOADING_STOP_ACTION = "appcms_presenter_audio_loading_stop_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -936,6 +935,7 @@ public class AppCMSPresenter {
     /**
      * This converts an input time value in msec since the epoch into a Time value in the format
      * HH:MM:SS
+     *
      * @param runtime The input time value to convert
      * @return Return a string with the converted time in the format HH:MM:SS
      */
@@ -2215,7 +2215,8 @@ public class AppCMSPresenter {
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
                                 //Todo need to manage it depend on Template
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
+                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar) ||
+                                        getTemplateType() == TemplateType.SPORTS) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
@@ -2599,6 +2600,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
 
@@ -3698,12 +3700,8 @@ public class AppCMSPresenter {
                     }
                     if (onRefreshFinished != null) {
                         onRefreshFinished.call();
-                        if (getAudioPlayerOpen() && AudioServiceHelper.getAudioInstance().isAudioPlaying()) {
-                            Intent fullScreenIntent = new Intent(currentActivity, AppCMSPlayAudioActivity.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                            Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            currentActivity.startActivity(fullScreenIntent);
-
+                        if (getAudioPlayerOpen() && isUserLoggedIn()) {
+                            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                         }
 
                     }
@@ -5360,7 +5358,8 @@ public class AppCMSPresenter {
                     });
         }
     }
-    public void getPlaylistRefreshData(final Action1<AppCMSPlaylistResult> appCMSPlaylistResultAction,String playlistId) {
+
+    public void getPlaylistRefreshData(final Action1<AppCMSPlaylistResult> appCMSPlaylistResultAction, String playlistId) {
         if (currentActivity != null) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
 
@@ -5953,6 +5952,7 @@ public class AppCMSPresenter {
                                 }
                                 currentActivity.startActivity(intent);
                             }
+
                         } else {
                             System.out.println("on failed try count-" + finalTryCount);
                             if (finalTryCount < 3) {
@@ -9192,6 +9192,8 @@ public class AppCMSPresenter {
 
             try {
                 String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
+                String negativeButtonText = currentActivity.getString(R.string.app_cms_login);
+
                 int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
                 String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                 String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
@@ -9222,6 +9224,19 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_message);
 
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
+                        message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
+                    }
+
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                        positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                    }
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                        negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                    }
                     //Set Firebase User Property when user is not logged in and unsubscribed
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
@@ -9339,8 +9354,7 @@ public class AppCMSPresenter {
                                 }
                             });
                 } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED ||
-                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                     builder.setPositiveButton(R.string.app_cms_login_button_text,
                             (dialog, which) -> {
                                 try {
@@ -9355,6 +9369,34 @@ public class AppCMSPresenter {
                                 }
                             });
                     builder.setNegativeButton(R.string.app_cms_subscription_button_text,
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToSubscriptionPlansPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
+                                }
+                            });
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
+
+
+                    builder.setPositiveButton(negativeButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToLoginPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
+                                }
+                            });
+                    builder.setNegativeButton(positiveButtonText,
                             (dialog, which) -> {
                                 try {
                                     dialog.dismiss();
@@ -9442,21 +9484,8 @@ public class AppCMSPresenter {
                         return true;
                     });
                 }
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
-                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO) {
-                    builder.setOnKeyListener((arg0, keyCode, event) -> {
-                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            if (onCloseAction != null) {
-                                //if user press back key without doing login subscription ,clear saved data
-                                onCloseAction.call();
-                                //if user press back key without doing login subscription ,clear saved data
-                            }
-                            setAudioPlayerOpen(false);
 
-                        }
-                        return true;
-                    });
-                }
+
                 final AlertDialog dialog = builder.create();
                 currentActivity.runOnUiThread(() -> {
 
@@ -9519,6 +9548,7 @@ public class AppCMSPresenter {
                 });
                 return dialog;
             } catch (Exception e) {
+
             }
         }
         return null;
@@ -9837,8 +9867,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void cancelAlertDialog(){
-        if(dialogAlert!=null && dialogAlert.isShowing()){
+    public void cancelAlertDialog() {
+        if (dialogAlert != null && dialogAlert.isShowing()) {
             dialogAlert.dismiss();
         }
     }
@@ -10012,7 +10042,7 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
-                    Log.d(TAG, "Beacon request: " + gson.toJson(request));
+                    Log.e(TAG, "Beacon request: " + gson.toJson(request));
 
                     appCMSBeaconCall.call(url, beaconResponse -> {
                         try {
@@ -12839,94 +12869,94 @@ public class AppCMSPresenter {
 
     private void getAppCMSTV(int tryCount) {
         GetAppCMSAndroidUIAsyncTask.Params params =
-                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(appCMSMain.getFireTv())
-                            .loadFromFile(loadFromFile)
-                            .bustCache(false)
-                            .build();
-            //Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
-            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-                appCMSAndroid = appCMSAndroidUI;
-                if (appCMSAndroidUI == null ||
-                        appCMSAndroidUI.getMetaPages() == null ||
-                        appCMSAndroidUI.getMetaPages().isEmpty()) {
-                    if (tryCount < 2) {
-                        getAppCMSTV(tryCount + 1);
-                    } else {
-                        launchErrorActivity(PlatformType.TV);
+                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                        .url(appCMSMain.getFireTv())
+                        .loadFromFile(loadFromFile)
+                        .bustCache(false)
+                        .build();
+        //Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+            appCMSAndroid = appCMSAndroidUI;
+            if (appCMSAndroidUI == null ||
+                    appCMSAndroidUI.getMetaPages() == null ||
+                    appCMSAndroidUI.getMetaPages().isEmpty()) {
+                if (tryCount < 2) {
+                    getAppCMSTV(tryCount + 1);
+                } else {
+                    launchErrorActivity(PlatformType.TV);
+                }
+            } else {
+                navigation = appCMSAndroidUI.getNavigation();
+
+                if (getTemplateType() == TemplateType.ENTERTAINMENT) {
+                    //add search in navigation item.
+                    NavigationPrimary myProfile = new NavigationPrimary();
+                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
+                            currentActivity.getString(R.string.profile_label)));
+                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
+                            appCMSAndroidUI.getShortAppName() != null ?
+                                    appCMSAndroidUI.getShortAppName() :
+                                    currentActivity.getString(R.string.profile_label)));
+                    navigation.getNavigationPrimary().add(myProfile);
+
+                    //add search in navigation item.
+                    NavigationPrimary searchNav = new NavigationPrimary();
+                    searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                    searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                    navigation.getNavigationPrimary().add(searchNav);
+                }
+                queueMetaPages(appCMSAndroidUI.getMetaPages());
+                final MetaPage firstPage = pagesToProcess.peek();
+                //Log.d(TAG, "Processing meta pages queue");
+
+                getAppCMSModules(appCMSAndroidUI,
+                        false,
+                        false,
+                        (appCMSAndroidModules) -> {
+                            //Log.d(TAG, "Received module list");
+                            this.appCMSAndroidModules = appCMSAndroidModules;
+                        });
+
+                MetaPage launchPage = homePage;
+                if (appCMSMain.isForceLogin() && !isUserLoggedIn()) {
+                    launchPage = loginPage;
+                }
+
+                if (launchPage != null) {
+                    pageIdToPageAPIUrlMap.put(launchPage.getPageId(), launchPage.getPageAPI());
+                    pageIdToPageNameMap.put(launchPage.getPageId(), launchPage.getPageName());
+
+                    final MetaPage launchPageFinal = launchPage;
+
+                    getAppCMSPage(launchPage.getPageUI(),
+                            appCMSPageUI -> {
+                                navigationPages.put(launchPageFinal.getPageId(), appCMSPageUI);
+                                String action = pageNameToActionMap.get(launchPageFinal.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUI);
+                                }
+                                if (getTemplateType() == TemplateType.ENTERTAINMENT) {
+                                    Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
+                                    currentActivity.sendBroadcast(logoAnimIntent);
+                                }
+                                finalizeLaunch(tryCount);
+                            },
+                            loadFromFile,
+                            false);
+
+                    if (launchPageFinal == homePage) {
+                        cachePage(homePage.getPageId());
                     }
                 } else {
-                    navigation = appCMSAndroidUI.getNavigation();
-
-                    if (getTemplateType() == TemplateType.ENTERTAINMENT) {
-                        //add search in navigation item.
-                        NavigationPrimary myProfile = new NavigationPrimary();
-                        myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
-                                currentActivity.getString(R.string.profile_label)));
-                        myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
-                                appCMSAndroidUI.getShortAppName() != null ?
-                                        appCMSAndroidUI.getShortAppName() :
-                                        currentActivity.getString(R.string.profile_label)));
-                        navigation.getNavigationPrimary().add(myProfile);
-
-                        //add search in navigation item.
-                        NavigationPrimary searchNav = new NavigationPrimary();
-                        searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                        searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                        navigation.getNavigationPrimary().add(searchNav);
-                    }
-                    queueMetaPages(appCMSAndroidUI.getMetaPages());
-                    final MetaPage firstPage = pagesToProcess.peek();
-                    //Log.d(TAG, "Processing meta pages queue");
-
-                    getAppCMSModules(appCMSAndroidUI,
-                            false,
-                            false,
-                            (appCMSAndroidModules) -> {
-                                //Log.d(TAG, "Received module list");
-                                this.appCMSAndroidModules = appCMSAndroidModules;
+                    processMetaPagesList(loadFromFile,
+                            appCMSAndroidUI.getMetaPages(),
+                            () -> {
+                                finalizeLaunch(tryCount);
                             });
-
-                    MetaPage launchPage = homePage;
-                    if (appCMSMain.isForceLogin() && !isUserLoggedIn()) {
-                        launchPage = loginPage;
-                    }
-
-                    if (launchPage != null) {
-                        pageIdToPageAPIUrlMap.put(launchPage.getPageId(), launchPage.getPageAPI());
-                        pageIdToPageNameMap.put(launchPage.getPageId(), launchPage.getPageName());
-
-                        final MetaPage launchPageFinal = launchPage;
-
-                        getAppCMSPage(launchPage.getPageUI(),
-                                appCMSPageUI -> {
-                                    navigationPages.put(launchPageFinal.getPageId(), appCMSPageUI);
-                                    String action = pageNameToActionMap.get(launchPageFinal.getPageName());
-                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                        actionToPageMap.put(action, appCMSPageUI);
-                                    }
-                                    if (getTemplateType() == TemplateType.ENTERTAINMENT) {
-                                        Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
-                                        currentActivity.sendBroadcast(logoAnimIntent);
-                                    }
-                                    finalizeLaunch(tryCount);
-                                },
-                                loadFromFile,
-                                false);
-
-                        if (launchPageFinal == homePage) {
-                            cachePage(homePage.getPageId());
-                        }
-                    } else {
-                        processMetaPagesList(loadFromFile,
-                                appCMSAndroidUI.getMetaPages(),
-                                () -> {
-                                    finalizeLaunch(tryCount);
-                                });
-                    }
                 }
-            }).execute(params);
-        }
+            }
+        }).execute(params);
+    }
 
     public boolean navigateToTVPage(String pageId,
                                     String pageTitle,
@@ -15020,10 +15050,18 @@ public class AppCMSPresenter {
         isFullScreenVisible = false;
     }
 
-    public void stopAudioServices() {
+    /**
+     * Last position of playing audio item will save in following conditions:-
+     * uf user kill the app , if video starts to play while audio is playing
+     *
+     * @param saveLastAudioPosition
+     */
+    public void stopAudioServices(boolean saveLastAudioPosition) {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
+        intent.putExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE, saveLastAudioPosition);
+
         currentActivity.sendBroadcast(intent);
     }
 
@@ -15098,7 +15136,6 @@ public class AppCMSPresenter {
 
     public void saveLastPlaySongPosition(String id, long pos) {
         Gson gson = new Gson();
-
         String json = gson.toJson(new LastPlayAudioDetail(id, pos));
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(IS_AUDIO_RELOAD_PREF, 0);

@@ -59,7 +59,7 @@ public interface Playback {
     boolean isConnected();
 
     String getCurrentId();
-
+   void setCurrentId(String mediaId);
     /**
      * @return boolean indicating whether the player is playing or is supposed to be
      * playing when we gain audio focus.
