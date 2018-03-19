@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -120,7 +121,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private OnUpdateMetaChange onUpdateMetaChange;
     private ScheduledFuture<?> mScheduleFuture;
     private PlaybackStateCompat mLastPlaybackState;
-    boolean isDialogVisible=false;
+    boolean isDialogVisible = false;
 
     private final Runnable mUpdateProgressTask = new Runnable() {
         @Override
@@ -204,7 +205,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         playlist.setOnClickListener(this);
         mPauseDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.pause_track);
         mPlayDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.play_track);
-        isDialogVisible=false;
+        isDialogVisible = false;
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication()).
                 getAppCMSPresenterComponent().appCMSPresenter();
         if (!BaseView.isTablet(getActivity())) {
@@ -213,7 +214,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         seekAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                currentProgess = (progress/1000);
+                currentProgess = (progress / 1000);
                 trackStartTime.setText(DateUtils.formatElapsedTime(progress / 1000));
 
             }
@@ -261,6 +262,12 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         });
 
         volumeObserver = new VolumeObserver(getActivity(), new Handler());
+
+        setTypeFace(getContext(), trackName, getContext().getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), artistName, getContext().getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), trackYear, getContext().getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), albumName, getContext().getString(R.string.helvaticaneu_bold));
+
         return rootView;
     }
 
@@ -373,7 +380,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                         && appCMSPresenter.getAppCMSMain().getFeatures() != null
                         && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
                     if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
-                        if ((currentProgess ) >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                        if ((currentProgess) >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
                             stopSeekbarUpdate();
                             showEntitleMentDialog();
                         }
@@ -511,21 +518,22 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             audioPreview(false);
         }
     }
+
     private void showEntitleMentDialog() {
         MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
         if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
             controls.pause();
             stopSeekbarUpdate();
-            if (!isDialogVisible && isVisible && getActivity()!=null) {
-                isDialogVisible=true;
+            if (!isDialogVisible && isVisible && getActivity() != null) {
+                isDialogVisible = true;
                 System.out.println("isVisible -" + isVisible);
                 appCMSPresenter.setAudioPlayerOpen(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
                                 public void call() {
-                                    isDialogVisible=false;
+                                    isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
                                         appCMSPresenter.stopAudioServices(false);
@@ -534,11 +542,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                 }
                             });
                 } else {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
                                 public void call() {
-                                    isDialogVisible=false;
+                                    isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
                                         appCMSPresenter.stopAudioServices(false);
@@ -637,7 +645,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
         seekAudio.setProgress((int) currentPosition);
-        currentProgess= (int) (currentPosition/1000);
+        currentProgess = (int) (currentPosition / 1000);
         audioPreview(false);
 
     }
@@ -682,6 +690,18 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE)) {
                 System.out.println("in recever");
                 audioPreview(false);
+            }
+        }
+    }
+
+    private void setTypeFace(Context context,
+                             TextView view, String fontType) {
+        if (null != context && null != view && null != fontType) {
+            try {
+                Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
+                view.setTypeface(face);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

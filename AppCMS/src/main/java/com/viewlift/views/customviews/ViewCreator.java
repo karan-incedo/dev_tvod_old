@@ -5258,6 +5258,8 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    imageButton.setOnClickListener(null);
+
                     if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
@@ -5287,7 +5289,6 @@ public class ViewCreator {
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
             };
 
 //            imageButton.setOnClickListener(addClickListener);

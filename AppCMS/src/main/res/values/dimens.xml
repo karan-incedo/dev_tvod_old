@@ -128,4 +128,16 @@
     <dimen name="app_cms_audio_controller_play_width">26dp</dimen>
     <dimen name="app_cms_audio_controller_play_height">33dp</dimen>
     <dimen name="app_cms_audio_controller_play_control_height">45dp</dimen>
+
+    <dimen name="app_cms_audio_shuffle_width">35dp</dimen>
+    <dimen name="app_cms_audio_shuffle_height">25dp</dimen>
+
+
+    <dimen name="app_cms_audio_playlist_width">30dp</dimen>
+    <dimen name="app_cms_audio_playlist_height">22dp</dimen>
+
+
+    <dimen name="app_cms_audio_audio_icon_width">30dp</dimen>
+    <dimen name="app_cms_audio_audio_icon_height">20dp</dimen>
+
 </resources>
