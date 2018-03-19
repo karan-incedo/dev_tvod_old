@@ -14473,6 +14473,7 @@ public class AppCMSPresenter {
 
                 if (relativeLayoutPIP.getParent() == null && currentActivity != null && currentActivity.findViewById(R.id.app_cms_parent_view) != null) {
                     ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+                    ((AppCMSPageActivity) currentActivity).dragMiniPlayer(relativeLayoutPIP);
                 }
                 videoPlayerViewParent = group;
 
