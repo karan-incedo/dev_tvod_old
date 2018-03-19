@@ -42,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:gravity="center_vertical|start"
             android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
@@ -73,7 +74,7 @@
             android:id="@+id/app_cms_edit_profile_email_input"
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:ems="10"
+            android:ems="10" android:textCursorDrawable="@null"
             android:gravity="center_vertical|start"
             android:inputType="textEmailAddress" />
     </android.support.design.widget.TextInputLayout>

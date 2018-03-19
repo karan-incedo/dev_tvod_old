@@ -102,8 +102,7 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
             appCMSPresenter.updateUserPassword(oldPassword, newPassword, confirmPassword);
         });
 
-        confirmPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
-                buttonColor));
+        confirmPasswordButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
         confirmPasswordButton.setBackgroundColor(buttonColor);
         setBgColor(bgColor);
 
