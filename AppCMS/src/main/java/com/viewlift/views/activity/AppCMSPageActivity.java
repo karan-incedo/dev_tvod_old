@@ -61,7 +61,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -1585,6 +1584,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 fragmentTransaction.commit();
                 getSupportFragmentManager().executePendingTransactions();
             }
+
+            /*Just to make sure that the pop-up (mini) player is dismissed when a new page is
+            * opened, so that the player isn't visible on the next page.*/
+            appCMSPresenter.dismissPopupWindowPlayer(false);
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
         }
@@ -2717,5 +2720,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     }
 
+    public Map<String, AppCMSBinder> getAppCMSBinderMap(){
+        return appCMSBinderMap;
+    }
 
 }
