@@ -167,7 +167,7 @@ public class PageView extends BaseView {
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new RecyclerView(getContext());
         childrenContainer.setId(R.id.home_nested_scroll_view);
-        childrenContainer.setDescendantFocusability(RecyclerView.FOCUS_BEFORE_DESCENDANTS);
+        childrenContainer.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
         childrenContainer.setFocusableInTouchMode(true);
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,

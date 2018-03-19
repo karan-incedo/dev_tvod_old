@@ -4185,7 +4185,7 @@ public class ViewCreator {
 
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
-                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor("#ff0000"));
+                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(ContextCompat.getColor(context, R.color.colorNavBarText));
                 int switchOnColor = Color.parseColor(
                         appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
                 int switchOffColor = Color.parseColor(
