@@ -12878,13 +12878,21 @@ public class AppCMSPresenter {
                                 }
 
                                 navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
+
+                                final StringBuffer screenName = new StringBuffer();
+                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(photoGalleryPage.getPageId()))){
+                                    screenName.append(photoGalleryPage.getPageName());
+                                }
+                                screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                                screenName.append(pageTitle);
+
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
                                         photoGalleryPage.getPageId(),
                                         this.pageTitle,
                                         this.pagePath,
-                                        pageIdToPageNameMap.get(photoGalleryPage.getPageId()),
+                                        screenName.toString(),
                                         loadFromFile,
                                         this.appbarPresent,
                                         this.fullscreenEnabled,
@@ -12957,13 +12965,21 @@ public class AppCMSPresenter {
                                     }
                                 }
                                 navigationPageData.put(this.pageId, pageAPI);
+
+                                final StringBuffer screenName = new StringBuffer();
+                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))){
+                                    screenName.append(articlePage.getPageName());
+                                }
+                                screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                                screenName.append(pageTitle);
+
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
                                         articlePage.getPageId(),
                                         this.pageTitle,
                                         this.pagePath,
-                                        pageIdToPageNameMap.get(articlePage.getPageId()),
+                                        screenName.toString(),
                                         loadFromFile,
                                         this.appbarPresent,
                                         this.fullscreenEnabled,
