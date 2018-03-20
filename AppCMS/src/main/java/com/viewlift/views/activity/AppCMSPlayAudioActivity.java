@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,7 +43,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     LinearLayout ll_cross_icon;
     AppCMSPlayAudioFragment appCMSPlayAudioFragment;
     private AppCMSPresenter appCMSPresenter;
-    private String audioData = "";
     private CastServiceProvider castProvider;
     ContentDatum currentAudio;
     public static boolean isDownloading = true;
@@ -99,7 +97,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         if (appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
-            downloadAudio.setImageResource(R.drawable.ic_downloaded);
+            downloadAudio.setImageResource(R.drawable.ic_downloaded_big);
             downloadAudio.setOnClickListener(null);
         }
     }
@@ -169,7 +167,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
-        audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
+        String audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
 
 
@@ -306,7 +304,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     case STATUS_SUCCESSFUL:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
-                        imageButton.setImageResource(R.drawable.ic_downloaded);
+                        imageButton.setImageResource(R.drawable.ic_downloaded_big);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.notifyDownloadHasCompleted();
                         break;
@@ -325,7 +323,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
-                imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setImageResource(R.drawable.ic_download_big);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));

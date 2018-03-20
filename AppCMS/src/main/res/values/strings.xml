@@ -315,7 +315,7 @@
     <string name="app_cms_delete_download_alert_title">Delete Download</string>
     <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
     <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
-    <string name="app_cms_delete_all_download_items_message">Do you want to delete all videos and audios from downloads?</string>
+    <string name="app_cms_delete_all_download_items_message">Do you want to delete all video/audio from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
