@@ -242,9 +242,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 scheduleSeekbarUpdate();
             }
         });
-        if (savedInstanceState == null) {
-            updateFromParams(getActivity().getIntent());
-        }
+        updateFromParams(getActivity().getIntent());
+
         setProgress();
         updataeShuffleState();
 

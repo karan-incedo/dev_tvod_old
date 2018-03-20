@@ -219,15 +219,15 @@ public class AudioPlaylistHelper {
 
             if (appCMSAudioDetailResult.getGist().getDescription() != null)
                 album = appCMSAudioDetailResult.getGist().getDescription();
-
+            if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
+                iconUrl = appCMSAudioDetailResult.getGist().getVideoImageUrl();
+            }
             if (appCMSAudioDetailResult.getGist().getImageGist() != null) {
                 if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
                 }
             }
-            if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
-                iconUrl = appCMSAudioDetailResult.getGist().getVideoImageUrl();
-            }
+
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
 

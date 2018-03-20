@@ -4751,13 +4751,7 @@ public class AppCMSPresenter {
                 contentDatum.getGist().getContentType() != null &&
                 contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
             String audioImageUrl = null;
-            if (contentDatum.getGist().getImageGist().get_16x9() != null) {
-                audioImageUrl = contentDatum.getGist().getImageGist().get_16x9();
-            } else if (contentDatum.getGist().getImageGist().get_3x4() != null) {
-                audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
-            } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
-                audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
-            } else if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+            if (contentDatum.getGist().getImageGist().get_1x1() != null) {
                 audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
