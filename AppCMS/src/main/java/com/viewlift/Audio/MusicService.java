@@ -80,7 +80,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private static final int STOP_DELAY = 60 * 60 * 1000;
 
     private PlaybackManager mPlaybackManager;
-    private boolean isAudioPreview=false;
+    private boolean isAudioPreview = false;
 
     public MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
@@ -159,6 +159,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                         activeNetwork.isConnectedOrConnecting();
 
                 if (isConnected) {
+
                     mPlaybackManager.getPlayback().relaodAudioItem();
                 }
             }
@@ -214,7 +215,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        System.out.println("on task removed");
+        System.out.println("TAsk Stopped stop on task removed");
         mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
@@ -238,11 +239,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onDestroy() {
-        System.out.println("on task destroy");
+        System.out.println("TAsk Stopped ondestroy");
         mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
 
         //as in some device like redmi note OnTaskRemoved() method not detected so using this one to save last state
-        if(isAudioPreview){
+        if (!isAudioPreview) {
             mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         }
         unregisterCarConnectionReceiver();
@@ -293,14 +294,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
         if (!CastServiceProvider.getInstance(getApplicationContext()).isCastingConnected())
 
 
-
-
-
-
-
-
-
-
         {
             mPlaybackManager.updatePlayback(localPlayback, true, currentPosition);
         } else {
@@ -315,6 +308,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onPlaybackStop() {
+        System.out.println("TAsk Stopped stop on playbackstop");
+
         mSession.setActive(false);
         // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
         // potentially stopping the service.
@@ -393,20 +388,20 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         @Override
         public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("TAsk Stopped stop on receiver");
 
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE)) {
                 if (arg1.hasExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE) && arg1.getBooleanExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE, false)) {
                     mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
                 }
-                if (arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW) ) {
-                    isAudioPreview=arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW);
-                }else{
-                    isAudioPreview=false;
+                if (arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW)) {
+                    isAudioPreview = arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW);
+                } else {
+                    isAudioPreview = false;
                 }
-                if(isAudioPreview){
+                if (!isAudioPreview) {
                     mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
                 }
-                //do what you want to
                 mPlaybackManager.handleStopRequest(null);
                 mPlaybackManager.setCurrentMediaId(null);
                 AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);

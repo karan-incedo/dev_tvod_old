@@ -6009,10 +6009,11 @@ public class AppCMSPresenter {
 
                         } else {
                             System.out.println("on failed try count-" + finalTryCount);
-                            if (finalTryCount < 3) {
+                            if (finalTryCount <= 3) {
                                 getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
-                            } else
+                            } else{
                                 Toast.makeText(currentContext, "Failed to load Audio Content.Try Again", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         if (currentActivity != null) {
@@ -9247,7 +9248,7 @@ public class AppCMSPresenter {
      * @param onCloseAction The action to take when the user closes the dialog
      */
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
-        if (currentActivity != null && !loginDialogPopupOpen) {
+        if (currentActivity != null) {
 
             try {
                 String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
@@ -9536,7 +9537,7 @@ public class AppCMSPresenter {
 
 
                 currentActivity.runOnUiThread(() -> {
-                    AlertDialog dialog  = builder.create();
+                    AlertDialog dialog = builder.create();
 
                     if (onCloseAction != null) {
                         dialog.setCanceledOnTouchOutside(false);
@@ -9574,12 +9575,10 @@ public class AppCMSPresenter {
                                 if (onCloseAction != null) {
                                     //if user press back key without doing login subscription ,clear saved data
                                     onCloseAction.call();
-                                    //if user press back key without doing login subscription ,clear saved data
                                 }
                                 setAudioPlayerOpen(false);
-                            }
-                            else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER){
+                            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
                                 if (onCloseAction != null) {
                                     //if user press back key without doing login subscription ,clear saved data
                                     setEntitlementPendingVideoData(null);
@@ -15120,7 +15119,7 @@ public class AppCMSPresenter {
      *
      * @param saveLastAudioPosition
      */
-    public void stopAudioServices(boolean saveLastAudioPosition,boolean isPreviewShow) {
+    public void stopAudioServices(boolean saveLastAudioPosition, boolean isPreviewShow) {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
@@ -15258,6 +15257,31 @@ public class AppCMSPresenter {
 
             for (int i = 0; i < creditBlocks.size(); i++) {
                 if (creditBlocks.get(i).getTitle().equalsIgnoreCase("Starring")) {
+                    if (creditBlocks.get(i).getCredits() != null && creditBlocks.get(i).getCredits().size() > 0 && creditBlocks.get(i).getCredits().get(0).getTitle() != null) {
+                        for (int j = 0; j < creditBlocks.get(i).getCredits().size(); j++) {
+                            if (j > 0 && j == creditBlocks.get(i).getCredits().size() - 1) {
+                                artist.append(" & ");
+                            } else if (j > 0) {
+                                artist.append(" , ");
+                            }
+                            artist.append(creditBlocks.get(i).getCredits().get(j).getTitle());
+
+                        }
+                    }
+                }
+            }
+        }
+        if (TextUtils.isEmpty(artist.toString())) {
+            artist.append("Unknown");
+        }
+        return artist.toString();
+    }
+    public String getDirectorNameFromCreditBlocks(List<CreditBlock> creditBlocks) {
+        StringBuilder artist = new StringBuilder();
+        if (creditBlocks != null && creditBlocks.size() > 0 && creditBlocks.get(0).getCredits() != null && creditBlocks.get(0).getCredits().size() > 0 && creditBlocks.get(0).getCredits().get(0).getTitle() != null) {
+
+            for (int i = 0; i < creditBlocks.size(); i++) {
+                if (creditBlocks.get(i).getTitle().equalsIgnoreCase("Director")) {
                     if (creditBlocks.get(i).getCredits() != null && creditBlocks.get(i).getCredits().size() > 0 && creditBlocks.get(i).getCredits().get(0).getTitle() != null) {
                         for (int j = 0; j < creditBlocks.get(i).getCredits().size(); j++) {
                             if (j > 0 && j == creditBlocks.get(i).getCredits().size() - 1) {

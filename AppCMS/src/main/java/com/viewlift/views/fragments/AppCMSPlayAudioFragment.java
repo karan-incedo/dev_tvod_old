@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -31,17 +32,21 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.MusicService;
@@ -53,6 +58,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -60,6 +67,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import rx.functions.Action0;
 
 import static android.view.View.GONE;
@@ -78,9 +86,14 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             Executors.newSingleThreadScheduledExecutor();
     @BindView(R.id.track_image)
     ImageView trackImage;
+
+    @BindView(R.id.track_image_blurred)
+    ImageView track_image_blurred;
+
     @BindView(R.id.track_name)
     TextView trackName;
     @BindView(R.id.artist_name)
+
     TextView artistName;
     @BindView(R.id.track_year)
     TextView trackYear;
@@ -216,7 +229,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 currentProgess = (progress / 1000);
                 trackStartTime.setText(DateUtils.formatElapsedTime(progress / 1000));
-
             }
 
             @Override
@@ -263,10 +275,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         volumeObserver = new VolumeObserver(getActivity(), new Handler());
 
-        setTypeFace(getContext(), trackName, getContext().getString(R.string.helvaticaneu_bold));
-        setTypeFace(getContext(), artistName, getContext().getString(R.string.helvaticaneu_bold));
-        setTypeFace(getContext(), trackYear, getContext().getString(R.string.helvaticaneu_bold));
-        setTypeFace(getContext(), albumName, getContext().getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), trackName, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), artistName, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), trackYear, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), albumName, getContext().getString(R.string.opensans_bold_ttf));
 
         return rootView;
     }
@@ -486,17 +498,25 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
         if (description.getIconUri() == null) {
-            trackImage.setImageResource(R.drawable.placeholder_audio);
-            return;
+            track_image_blurred.setImageResource(R.drawable.placeholder_audio);
+            mCurrentArtUrl = "";
+        } else {
+            mCurrentArtUrl = description.getIconUri().toString();
+
         }
-        String artUrl = description.getIconUri().toString();
-        mCurrentArtUrl = artUrl;
 
 
         if (getActivity() != null) {
+            RequestOptions requestOptions = new RequestOptions().centerInside().error(R.drawable.placeholder_audio)
+                    .transform(new ImageBlurTransformation(getContext(), mCurrentArtUrl));
+            ;
             Glide.with(getActivity())
-                    .load(mCurrentArtUrl)
+                    .load(mCurrentArtUrl).apply(new RequestOptions().centerInside()
+                    .fitCenter())
                     .into(trackImage);
+            Glide.with(getActivity())
+                    .load(mCurrentArtUrl).apply(requestOptions)
+                    .into(track_image_blurred);
         }
 
     }
@@ -505,8 +525,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (metaData == null) {
             return;
         }
+        String directorName = "";
         trackName.setText(metaData.getDescription().getTitle());
-        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        if (metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR) != null && !TextUtils.isEmpty(metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR))) {
+            directorName = (String) metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR);
+            directorName = " (" + directorName + ")";
+        }
+        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST) + "" + directorName);
         String albumInfo = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + " | " + metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
         trackYear.setText(albumInfo);
 
@@ -536,7 +561,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                     isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
-                                        appCMSPresenter.stopAudioServices(false,true);
+                                        appCMSPresenter.stopAudioServices(false, true);
                                         stopSeekbarUpdate();
                                     }
                                 }
@@ -549,7 +574,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                     isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
-                                        appCMSPresenter.stopAudioServices(false,true);
+                                        appCMSPresenter.stopAudioServices(false, true);
                                         stopSeekbarUpdate();
 
                                     }
@@ -706,4 +731,37 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    private static class ImageBlurTransformation extends BlurTransformation {
+        private final String ID;
+
+        public ImageBlurTransformation(Context context, String imageUrl) {
+            super(context);
+            this.ID = imageUrl;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ImageBlurTransformation;
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            try {
+                byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
+                messageDigest.update(ID_BYTES);
+            } catch (UnsupportedEncodingException e) {
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return ID.hashCode();
+        }
+
+        @NonNull
+        @Override
+        public Resource<Bitmap> transform(@NonNull Context context, @NonNull Resource<Bitmap> resource, int outWidth, int outHeight) {
+            return super.transform(resource, outWidth, outHeight);
+        }
+    }
 }

@@ -20,14 +20,28 @@
             android:orientation="vertical"
             android:padding="@dimen/app_cms_audio_image_padding">
 
-            <ImageView
-                android:id="@+id/track_image"
+            <RelativeLayout
+                android:id="@+id/rl_track_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="@drawable/placeholder_audio"
+                android:layout_marginLeft="@dimen/app_cms_audio_player_thumbnail_pading"
+                android:layout_marginRight="@dimen/app_cms_audio_player_thumbnail_pading">
+                <ImageView
+                    android:id="@+id/track_image_blurred"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
 
-                android:scaleType="fitXY" />
+                    />
+                <ImageView
+                    android:id="@+id/track_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                  />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/extra_info"
@@ -49,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".2"
+            android:gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
@@ -57,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:singleLine="true"
-                android:text=""
+                android:text="fdf"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -74,10 +89,10 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text=""
-                android:textStyle="bold"
+                android:text="fd"
                 android:textColor="@android:color/darker_gray"
-                android:textSize="19sp" />
+                android:textSize="19sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -89,7 +104,7 @@
                     android:id="@+id/track_year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="fd"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
 
@@ -106,7 +121,7 @@
                     android:id="@+id/album_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="fdf"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
 
@@ -128,11 +143,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/app_cms_audio_player_controller_padding"
+        android:layout_marginLeft="@dimen/app_cms_audio_player_controller_padding"
+        android:layout_marginRight="@dimen/app_cms_audio_player_controller_padding"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/app_cms_audio_player_controller_height"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp">
 

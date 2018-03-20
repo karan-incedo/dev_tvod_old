@@ -4293,7 +4293,8 @@ public class ViewCreator {
 
                         if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
-                        } else {
+                        } else
+                            {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         }
                         break;

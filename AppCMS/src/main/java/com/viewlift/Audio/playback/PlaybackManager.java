@@ -109,9 +109,14 @@ public class PlaybackManager implements Playback.Callback {
      * @param currentPosition
      */
     public void handlePlayRequest(long currentPosition) {
-        mServiceCallback.onPlaybackStart();
-        mServiceCallback.switchPlayback(currentPosition);
-        scheduleSeekbarUpdate();
+        /**
+         * check if audio item is playable
+         */
+        if (!isPreviewEnded()) {
+            mServiceCallback.onPlaybackStart();
+            mServiceCallback.switchPlayback(currentPosition);
+            scheduleSeekbarUpdate();
+        }
     }
 
     public void setActivity(Activity mAct) {
@@ -136,6 +141,7 @@ public class PlaybackManager implements Playback.Callback {
      *                  MediaController clients.
      */
     public void handleStopRequest(String withError) {
+        System.out.println("TAsk Stopped stop playback");
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
@@ -151,9 +157,9 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public void saveLastPositionAudioOnForcefullyStop() {
-        if (mPlayback.getCurrentStreamPosition() >0){
+        if (mPlayback.getCurrentStreamPosition() > 0) {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
-        }else{
+        } else {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), currentPositionInMS);
 
         }
@@ -320,6 +326,8 @@ public class PlaybackManager implements Playback.Callback {
             currentProgess = 0;
             if (mediaHasChanged || AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload()) {
                 long currentPosition = 0;
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(false);
+
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
                 }
@@ -610,13 +618,29 @@ public class PlaybackManager implements Playback.Callback {
 
         currentProgess = (int) (currentPosition / 1000);
 
-        currentPositionInMS=currentPosition;
-        System.out.println("currentPositionInMS- "+currentPositionInMS);
+        currentPositionInMS = currentPosition;
+        System.out.println("currentPositionInMS- " + currentPositionInMS);
         audioPreview();
     }
 
 
     void audioPreview() {
+        if (isPreviewEnded()) {
+            handlePauseRequest();
+            stopSeekbarUpdate();
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+
+            if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                Intent intent = new Intent();
+                intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
+                intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
+                appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
+            }
+        }
+    }
+
+    public boolean isPreviewEnded() {
+        boolean previewEnd = false;
         if (AudioPlaylistHelper.getInstance() != null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
             MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());
             AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
@@ -625,28 +649,20 @@ public class PlaybackManager implements Playback.Callback {
                 isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
 
                 if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
-//                    stopSeekbarUpdate();
+                    previewEnd = false;
                 } else {
                     if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
                         if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
                             if (currentProgess >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
-                                handlePauseRequest();
-                                stopSeekbarUpdate();
-                                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
-                                    Intent intent = new Intent();
-                                    intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
-                                    intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
-                                    appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
-                                }
+                                previewEnd = true;
                             }
                         }
-                    } else {
-                        stopSeekbarUpdate();
                     }
                 }
             }
         }
+        return previewEnd;
     }
 }

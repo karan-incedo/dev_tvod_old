@@ -18,15 +18,27 @@
 
         android:padding="@dimen/app_cms_audio_image_padding">
 
-        <ImageView
-            android:id="@+id/track_image"
+
+        <RelativeLayout
+            android:id="@+id/rl_track_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:layout_centerInParent="true"
-            android:background="@drawable/placeholder_audio"
-            android:scaleType="fitXY" />
+            android:layout_marginLeft="@dimen/app_cms_audio_player_thumbnail_pading"
+            android:layout_marginRight="@dimen/app_cms_audio_player_thumbnail_pading">
+            <ImageView
+                android:id="@+id/track_image_blurred"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/placeholder_audio" />
+            <ImageView
+                android:id="@+id/track_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/placeholder_audio" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/extra_info"
