@@ -395,13 +395,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 userVideoDownloadStatus -> {
 //                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
 //                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                    if (contentDatum.getGist() != null
+
+                                    /*The below code is to stop audio if user has deleted the audio file while the audio is playing*/
+                                    /*if (contentDatum.getGist() != null
                                             && contentDatum.getGist().getContentType() != null
                                             && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
                                         if (contentDatum.getGist().getId().contains(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
                                             appCMSPresenter.stopAudioServices(false);
                                         }
-                                    }
+                                    }*/
                                     notifyItemRangeRemoved(position, getItemCount());
                                     adapterData.remove(contentDatum);
                                     notifyItemRangeChanged(position, getItemCount());
