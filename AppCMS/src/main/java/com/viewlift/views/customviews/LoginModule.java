@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
@@ -89,6 +90,10 @@ public class LoginModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         init();
+        RecyclerView view = appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+        if(view != null){
+            view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+        }
     }
 
     public void init() {
