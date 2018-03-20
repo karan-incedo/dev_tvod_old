@@ -611,16 +611,11 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        String artist = "";
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-                            for (int i = 0; i < data.getCreditBlocks().size(); i++) {
-                                if (data.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")) {
-                                    if (data.getCreditBlocks().get(i).getCredits() != null && data.getCreditBlocks().get(i).getCredits().size() > 0 && data.getCreditBlocks().get(i).getCredits().get(0).getTitle() != null) {
-                                        artist = data.getCreditBlocks().get(i).getCredits().get(0).getTitle();
-                                        break;
-                                    }
-                                }
-                            }
+
+                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+
+
                             ((TextView) view).setText(artist);
                         } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);

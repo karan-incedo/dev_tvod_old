@@ -266,7 +266,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
+//                imageButton.setOnClickListener(null);
             }
 
             ;

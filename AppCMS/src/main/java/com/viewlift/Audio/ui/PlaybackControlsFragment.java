@@ -230,7 +230,7 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     void audioPreview(MediaMetadataCompat metadata) {
-        if (ifPreviewEnded(metadata)) {
+        if (isPreviewEnded(metadata)) {
             stopSeekbarUpdate();
             mTitle.setText(getActivity().getResources().getString(R.string.preview_ended));
             mPlayPause.setBackground(getActivity().getDrawable(R.drawable.audio_preview_end_icon));
@@ -238,7 +238,7 @@ public class PlaybackControlsFragment extends Fragment {
         }
     }
 
-    private boolean ifPreviewEnded(MediaMetadataCompat metadataAudio) {
+    private boolean isPreviewEnded(MediaMetadataCompat metadataAudio) {
         boolean showPreview = false;
         MediaMetadataCompat metadata = null;
         if (metadataAudio == null && getActivity() != null
@@ -368,7 +368,7 @@ public class PlaybackControlsFragment extends Fragment {
                         AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
                         MediaMetadataCompat metadata = controller.getMetadata();
 
-                        if (!ifPreviewEnded(metadata)) {
+                        if (!isPreviewEnded(metadata)) {
                             playMedia();
                         } else {
                             launchAudioPlayer();
