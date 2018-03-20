@@ -393,7 +393,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
     Bitmap createEmptyBitmap() {
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap emptyBitmap = Bitmap.createBitmap(476, 268, conf);
+        Bitmap emptyBitmap = Bitmap.createBitmap(426, 239, conf);
         return emptyBitmap;
     }
 

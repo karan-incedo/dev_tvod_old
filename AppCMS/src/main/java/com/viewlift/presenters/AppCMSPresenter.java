@@ -11545,6 +11545,7 @@ public class AppCMSPresenter {
         //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            setCurrentArticleIndex(-1);
             navigateToArticlePage(gistId, title, false, null);
             return;
         }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
