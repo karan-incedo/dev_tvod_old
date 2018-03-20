@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:singleLine="true"
-                android:text="fdf"
+                android:text=""
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -89,7 +89,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="fd"
+                android:text=""
                 android:textColor="@android:color/darker_gray"
                 android:textSize="19sp"
                 android:textStyle="bold" />
@@ -104,7 +104,7 @@
                     android:id="@+id/track_year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="fd"
+                    android:text=""
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
 
@@ -121,7 +121,7 @@
                     android:id="@+id/album_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="fdf"
+                    android:text=""
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
 

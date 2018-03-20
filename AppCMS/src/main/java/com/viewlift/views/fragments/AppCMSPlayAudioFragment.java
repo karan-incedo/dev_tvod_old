@@ -306,11 +306,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (appCMSPresenter.getAudioShuffledPreference()) {
             int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-            applyTintToDrawable(shuffle.getDrawable(), tintColor);
+            applyTintToDrawable(shuffle.getBackground(), tintColor);
         } else {
 
             int tintColor = (getActivity().getResources().getColor(android.R.color.darker_gray));
-            applyTintToDrawable(shuffle.getDrawable(), tintColor);
+            applyTintToDrawable(shuffle.getBackground(), tintColor);
         }
     }
 
