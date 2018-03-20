@@ -41,12 +41,12 @@
 
             <com.viewlift.views.customviews.ResponsiveButton
                 android:id="@+id/download_audio"
-                android:layout_width="25dp"
-                android:layout_height="19dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_marginRight="5dp"
                 android:background="@android:color/transparent"
                 android:scaleType="fitEnd"
-                app:srcCompat="@drawable/ic_download" />
+                app:srcCompat="@drawable/ic_download_big" />
 
             <ImageView
                 android:id="@+id/share_audio"

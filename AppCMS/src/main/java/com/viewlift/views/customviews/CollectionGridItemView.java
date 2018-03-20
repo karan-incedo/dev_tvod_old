@@ -34,7 +34,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -571,7 +570,7 @@ public class CollectionGridItemView extends BaseView {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded);
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
                         view.setOnClickListener(null);
                     } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
                         int radiusDifference = 5;

@@ -76,11 +76,9 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
-import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.mobile.AppCMSLaunchActivity;
-import com.viewlift.mobile.pushnotif.AppCMSAirshipReceiver;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -265,13 +263,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-
         setContentView(R.layout.activity_appcms_page);
-
         homePageIndex = getResources().getInteger(R.integer.home_page_index);
         categoriesPageIndex = getResources().getInteger(R.integer.categories_page_index);
         navMenuPageIndex = getResources().getInteger(R.integer.nav_menu_page_index);
