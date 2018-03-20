@@ -1615,7 +1615,7 @@ public class TVViewCreator {
 
                                 if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                                     String text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
-                                    String publishDate = appCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getPublishDate(), "MMMM dd, yyyy");
+                                    String publishDate = appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMMM dd, yyyy");
                                     if(null != publishDate) {
                                         text = text + " | " + publishDate;
                                     }
