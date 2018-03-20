@@ -1555,7 +1555,7 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin": 460,
+                  "topMargin": 484,
                   "fontSize": 23,
                   "height": 32
                 },
@@ -1591,7 +1591,7 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 375
+                  "height" : 388
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
@@ -1618,7 +1618,7 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 375
+                  "height" : 388
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,

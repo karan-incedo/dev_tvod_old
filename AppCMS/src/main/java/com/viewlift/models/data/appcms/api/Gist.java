@@ -113,6 +113,16 @@ public class Gist implements Serializable {
     String summaryText;
 
     String downloadStatus;
+
+    public String getLandscapeImageUrl() {
+        return landscapeImageUrl;
+    }
+
+    public void setLandscapeImageUrl(String landscapeImageUrl) {
+        this.landscapeImageUrl = landscapeImageUrl;
+    }
+
+    String landscapeImageUrl;
     /**
      * This is to store the url of the downloaded file
      */
