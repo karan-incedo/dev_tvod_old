@@ -146,7 +146,8 @@ public class CustomTVVideoPlayerView
                 isTrailer,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                contentDatum );
 
         beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -154,7 +155,8 @@ public class CustomTVVideoPlayerView
                 permaLink,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                contentDatum);
     }
 
 
