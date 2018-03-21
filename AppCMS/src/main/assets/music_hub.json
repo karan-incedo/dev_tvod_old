@@ -1,0 +1,1205 @@
+{
+  "moduleList": [
+    {
+      "id": "240b3f53-feef-4bd6-a649-153760ee6b78",
+      "settings": {
+        "searchThumbnailType": "landscape"
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01",
+      "layout": {},
+      "components": []
+    },
+    {
+      "id": "2e3aec67-f8ab-4845-b506-a3516ecd206a",
+      "settings": {
+        "loop": true,
+        "columns": {},
+        "thumbnailType": "landscape",
+        "infoHover": false
+      },
+      "view": "AC Carousel 01",
+      "type": "AC Carousel 01",
+      "blockName": "carousel01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 211
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 383
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 432
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 211
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 383
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 432
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 20.85,
+                  "fontSize": 18,
+                  "height": 24
+                },
+                "tabletLandscape": {
+                  "leftMargin": 66.5,
+                  "rightMargin": 0,
+                  "bottomMargin": 66.84,
+                  "fontSize": 23,
+                  "height": 32
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 22.69,
+                  "fontSize": 23,
+                  "height": 32
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Bold",
+              "key": "carouselTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 13.74,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletLandscape": {
+                  "leftMargin": 66.5,
+                  "rightMargin": 0,
+                  "bottomMargin": 63.19,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 19.68,
+                  "fontSize": 10,
+                  "height": 14
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "key": "carouselInfo"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 33.5,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 33.5,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselBadgeImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "isVerticallyCentered": true,
+                  "bottomMargin": 47.39,
+                  "width": 44,
+                  "height": 50
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                }
+              },
+              "isVisibleForTablet": false,
+              "action": "watchVideo",
+              "isVisibleForPhone": true,
+              "type": "button",
+              "key": "playImage"
+            }
+          ],
+          "type": "carousel",
+          "key": "carousel"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 7.11,
+              "height": 8
+            },
+            "tabletLandscape": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 4.96,
+              "height": 8
+            },
+            "tabletPortrait": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 3.56,
+              "height": 8
+            }
+          },
+          "unSelectedColor": "FFFFFF",
+          "selectedColor": "008EE0",
+          "type": "pageControl"
+        }
+      ]
+    },
+    {
+      "id": "31d392ee-b650-4c2a-b261-11bd8145dd7d",
+      "settings": {
+        "loop": true,
+        "columns": {},
+        "thumbnailType": "landscape",
+        "infoHover": false
+      },
+      "view": "AC Carousel 01",
+      "type": "AC Carousel 01",
+      "blockName": "carousel01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 211
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 383
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 432
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 211
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 383
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "xAxis": 0,
+              "rightMargin": 0,
+              "height": 432
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 20.85,
+                  "fontSize": 18,
+                  "height": 24
+                },
+                "tabletLandscape": {
+                  "leftMargin": 66.5,
+                  "rightMargin": 0,
+                  "bottomMargin": 66.84,
+                  "fontSize": 23,
+                  "height": 32
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 22.69,
+                  "fontSize": 23,
+                  "height": 32
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Bold",
+              "key": "carouselTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 13.74,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletLandscape": {
+                  "leftMargin": 66.5,
+                  "rightMargin": 0,
+                  "bottomMargin": 63.19,
+                  "fontSize": 10,
+                  "height": 14
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 19.68,
+                  "fontSize": 10,
+                  "height": 14
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "key": "carouselInfo"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 33.5,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 33.5,
+                  "bottomMargin": 0
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "topMargin": 0,
+                  "rightMargin": 0,
+                  "bottomMargin": 0
+                }
+              },
+              "type": "image",
+              "key": "carouselBadgeImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "isVerticallyCentered": true,
+                  "bottomMargin": 47.39,
+                  "width": 44,
+                  "height": 50
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 179,
+                  "height": 100
+                }
+              },
+              "isVisibleForTablet": false,
+              "action": "watchVideo",
+              "isVisibleForPhone": true,
+              "type": "button",
+              "key": "playImage"
+            }
+          ],
+          "type": "carousel",
+          "key": "carousel"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 7.11,
+              "height": 8
+            },
+            "tabletLandscape": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 4.96,
+              "height": 8
+            },
+            "tabletPortrait": {
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "bottomMargin": 3.56,
+              "height": 8
+            }
+          },
+          "unSelectedColor": "FFFFFF",
+          "selectedColor": "008EE0",
+          "type": "pageControl"
+        }
+      ]
+    },
+    {
+      "id": "828ce272-b10c-449f-9642-758aeea81cc9",
+      "settings": {
+        "loop": false,
+        "columns": {
+          "tablet": 4,
+          "desktop": 6,
+          "mobile": 3,
+          "ott": 6
+        },
+        "thumbnailType": "landscape"
+      },
+      "view": "AC AudioTray 01",
+      "type": "AC AudioTray 01",
+      "blockName": "audioTray01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 231
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 260
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 260
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 2.67,
+              "rightMargin": 2.67,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0.97,
+              "rightMargin": 0.97,
+              "fontSize": 24,
+              "height": 33
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 1.3,
+              "rightMargin": 1.3,
+              "fontSize": 24,
+              "height": 33
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#008EE0",
+          "fontWeight": "Semibold",
+          "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 22.5,
+              "leftMargin": 1.73,
+              "rightMargin": 1.73,
+              "height": 1
+            },
+            "tabletLandscape": {
+              "yAxis": 32,
+              "leftMargin": 0.68,
+              "rightMargin": 0.68,
+              "height": 1
+            },
+            "tabletPortrait": {
+              "yAxis": 32,
+              "leftMargin": 0.91,
+              "rightMargin": 0.91,
+              "height": 1
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 170,
+              "trayPadding": 5,
+              "leftMargin": 2.67,
+              "topMargin": 14.45,
+              "bottomMargin": 0,
+              "gridWidth": 120
+            },
+            "tabletLandscape": {
+              "gridHeight": 285,
+              "trayPadding": 7,
+              "leftMargin": 0.98,
+              "topMargin": 14.45,
+              "bottomMargin": 0,
+              "gridWidth": 150
+            },
+            "tabletPortrait": {
+              "gridHeight": 285,
+              "trayPadding": 7,
+              "leftMargin": 1.3,
+              "topMargin": 14.45,
+              "bottomMargin": 0,
+              "gridWidth": 150
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 120,
+                  "height": 120
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 150,
+                  "height": 150
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 150,
+                  "height": 150
+                }
+              },
+              "type": "image",
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 124,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 19
+                },
+                "tabletLandscape": {
+                  "yAxis": 154,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 154,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 23
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 143,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 20
+                },
+                "tabletLandscape": {
+                  "yAxis": 174,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 174,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 19
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#777777",
+              "fontWeight": "Semibold",
+              "key": "audioArtistName"
+            }
+          ],
+          "isHorizontalScroll": true,
+          "type": "collectionGrid",
+          "supportPagination": false,
+          "key": "collectionGrid",
+          "cornerRadius": 0
+        }
+      ]
+    },
+    {
+      "id": "eb96bbac-b318-465a-99ae-7944d6dae623",
+      "settings": {
+        "loop": false,
+        "columns": {
+          "tablet": 4,
+          "desktop": 6,
+          "mobile": 3,
+          "ott": 6
+        },
+        "thumbnailType": "landscape"
+      },
+      "view": "AC AudioTray 01",
+      "type": "AC AudioTray 01",
+      "blockName": "audioTray01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 231
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 350
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 300
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 2.67,
+              "rightMargin": 2.67,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0.97,
+              "rightMargin": 0.97,
+              "fontSize": 24,
+              "height": 33
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 1.3,
+              "rightMargin": 1.3,
+              "fontSize": 24,
+              "height": 33
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#008EE0",
+          "fontWeight": "Semibold",
+          "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 22.5,
+              "leftMargin": 1.73,
+              "rightMargin": 1.73,
+              "height": 1
+            },
+            "tabletLandscape": {
+              "yAxis": 32,
+              "leftMargin": 0.68,
+              "rightMargin": 0.68,
+              "height": 1
+            },
+            "tabletPortrait": {
+              "yAxis": 32,
+              "leftMargin": 0.91,
+              "rightMargin": 0.91,
+              "height": 1
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 201,
+              "trayPadding": 5,
+              "leftMargin": 2.67,
+              "topMargin": 13.45,
+              "bottomMargin": 0,
+              "gridWidth": 150
+            },
+            "tabletLandscape": {
+              "gridHeight": 301,
+              "trayPadding": 7,
+              "leftMargin": 0.98,
+              "topMargin": 13.67,
+              "bottomMargin": 0,
+              "gridWidth": 250
+            },
+            "tabletPortrait": {
+              "gridHeight": 269,
+              "trayPadding": 7,
+              "leftMargin": 1.3,
+              "topMargin": 13.67,
+              "bottomMargin": 0,
+              "gridWidth": 219
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 150,
+                  "height": 150
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 250,
+                  "height": 250
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 219,
+                  "height": 219
+                }
+              },
+              "type": "image",
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 155,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 19
+                },
+                "tabletLandscape": {
+                  "yAxis": 255,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 224,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 23
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 168,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 20
+                },
+                "tabletLandscape": {
+                  "yAxis": 268,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 238,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 19
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#777777",
+              "fontWeight": "Semibold",
+              "key": "audioArtistName"
+            }
+          ],
+          "isHorizontalScroll": true,
+          "type": "collectionGrid",
+          "supportPagination": false,
+          "key": "collectionGrid",
+          "cornerRadius": 0
+        }
+      ]
+    },
+    {
+      "id": "6e8e860e-8579-4e2f-aa72-ddff8aef0994",
+      "settings": {
+        "loop": false,
+        "columns": {
+          "tablet": 4,
+          "desktop": 6,
+          "mobile": 3,
+          "ott": 6
+        },
+        "thumbnailType": "landscape"
+      },
+      "view": "AC AudioTray 01",
+      "type": "AC AudioTray 01",
+      "blockName": "audioTray01",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 231
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 350
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 300
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 2.67,
+              "rightMargin": 2.67,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 0.97,
+              "rightMargin": 0.97,
+              "fontSize": 24,
+              "height": 33
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 1.3,
+              "rightMargin": 1.3,
+              "fontSize": 24,
+              "height": 33
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#008EE0",
+          "fontWeight": "Semibold",
+          "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 22.5,
+              "leftMargin": 1.73,
+              "rightMargin": 1.73,
+              "height": 1
+            },
+            "tabletLandscape": {
+              "yAxis": 32,
+              "leftMargin": 0.68,
+              "rightMargin": 0.68,
+              "height": 1
+            },
+            "tabletPortrait": {
+              "yAxis": 32,
+              "leftMargin": 0.91,
+              "rightMargin": 0.91,
+              "height": 1
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 201,
+              "trayPadding": 5,
+              "leftMargin": 2.67,
+              "topMargin": 13.45,
+              "bottomMargin": 0,
+              "gridWidth": 150
+            },
+            "tabletLandscape": {
+              "gridHeight": 301,
+              "trayPadding": 7,
+              "leftMargin": 0.98,
+              "topMargin": 13.67,
+              "bottomMargin": 0,
+              "gridWidth": 250
+            },
+            "tabletPortrait": {
+              "gridHeight": 269,
+              "trayPadding": 7,
+              "leftMargin": 1.3,
+              "topMargin": 13.67,
+              "bottomMargin": 0,
+              "gridWidth": 219
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 150,
+                  "height": 150
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 250,
+                  "height": 250
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "xAxis": 0,
+                  "width": 219,
+                  "height": 219
+                }
+              },
+              "type": "image",
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 155,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 19
+                },
+                "tabletLandscape": {
+                  "yAxis": 255,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 224,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 23
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 168,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 11,
+                  "height": 20
+                },
+                "tabletLandscape": {
+                  "yAxis": 268,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 28
+                },
+                "tabletPortrait": {
+                  "yAxis": 238,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 14,
+                  "height": 19
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#777777",
+              "fontWeight": "Semibold",
+              "key": "audioArtistName"
+            }
+          ],
+          "isHorizontalScroll": true,
+          "type": "collectionGrid",
+          "supportPagination": false,
+          "key": "collectionGrid",
+          "cornerRadius": 0
+        }
+      ]
+    },
+    {
+      "id": "61c8252d-bb05-4d57-91e1-043c0db4b64b",
+      "settings": {
+        "showTabBar": true
+      },
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01",
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            }
+          },
+          "isSelectable": true,
+          "type": "image",
+          "key": "tabImage"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0,
+              "fontSize": 12,
+              "height": 12
+            },
+            "tabletLandscape": {
+              "leftMargin": 0.98,
+              "topMargin": 0.91,
+              "rightMargin": 4.69,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletPortrait": {
+              "leftMargin": 1.3,
+              "topMargin": 0.68,
+              "rightMargin": 6.25,
+              "fontSize": 18,
+              "height": 24
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "center",
+          "isSelectable": true,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "normal",
+          "key": "tabName"
+        }
+      ],
+      "isTabSeparator": false,
+      "tabSeparator-color": "#cf0a2b",
+      "isBackgroundSelectable": false
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.135"
+}
