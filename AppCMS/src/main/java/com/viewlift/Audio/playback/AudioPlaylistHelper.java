@@ -23,6 +23,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+/**
+ * AudioPlaylistHelper  is a static class which provide different methods to perform
+ * audio events and functionlities ssuch as creating meta objects for audio items. play next/previous item, mantain playlist data, maintain current playing
+ * audio item
+ */
 public class AudioPlaylistHelper {
 
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
@@ -57,9 +62,6 @@ public class AudioPlaylistHelper {
             audioPlaylistInstance = new AudioPlaylistHelper();
         }
         return audioPlaylistInstance;
-    }
-
-    private AudioPlaylistHelper() {
     }
 
     public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance, Activity mActivity) {

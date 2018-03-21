@@ -291,10 +291,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     @Override
     public void switchPlayback(long currentPosition) {
-        if (!CastServiceProvider.getInstance(getApplicationContext()).isCastingConnected())
-
-
-        {
+        if (!CastServiceProvider.getInstance(getApplicationContext()).isCastingConnected()) {
             mPlaybackManager.updatePlayback(localPlayback, true, currentPosition);
         } else {
             castPlayback.initRemoteClient();

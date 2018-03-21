@@ -143,10 +143,11 @@ public class AudioServiceHelper {
     }
 
     protected void hidePlaybackControls() {
-        mActivity.getFragmentManager().beginTransaction()
-                .hide(mControlsFragment)
-                .commit();
-//        changeMiniControllerVisiblity(true);
+        if(mActivity!=null) {
+            mActivity.getFragmentManager().beginTransaction()
+                    .hide(mControlsFragment)
+                    .commit();
+        }
 
     }
 

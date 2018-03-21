@@ -614,9 +614,14 @@ public class CollectionGridItemView extends BaseView {
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
 
                             String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
-
-
+                            ((TextView) view).setMaxLines(1);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             ((TextView) view).setText(artist);
+                            ((TextView) view).setPadding(10,
+                                    0,
+                                    10,
+                                    0);
+
                         } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
                         } else {

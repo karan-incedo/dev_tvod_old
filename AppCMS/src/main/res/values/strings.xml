@@ -321,10 +321,10 @@
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
-    <string name="app_cms_login_and_subscription_audio_required_title">Premium Content</string>
+    <string name="preview_content">Premium Content</string>
     <string name="app_cms_login_and_subscription_audio_preview_title">Preview Ended</string>
 
-    <string name="app_cms_login_and_subscription_audio_required_message">You need to have a valid subscription to access this content.</string>
+    <string name="app_cms_login_and_subscription_premium_content_required_message">You need to have a valid subscription to access this content.</string>
 
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
