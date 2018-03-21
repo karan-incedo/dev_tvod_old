@@ -12334,21 +12334,25 @@ public class AppCMSPresenter {
     }
 
     public void cacheNavItems() {
-        List<NavigationPrimary> navigationPrimaryList = null;
-        if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getTabBar();
-        } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getNavigationPrimary();
-        }
+        try {
+            List<NavigationPrimary> navigationPrimaryList = null;
+            if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getTabBar();
+            } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getNavigationPrimary();
+            }
 
-        if (navigationPrimaryList != null) {
-            for (int i = 0; i < navigationPrimaryList.size(); i++) {
-                NavigationPrimary navigationItem = navigationPrimaryList.get(i);
-                if (!navigationItem.getPageId().equals("Menu Screen") &&
-                        !navigationItem.getPageId().equals("Search Screen")) {
-                    cachePage(navigationItem.getPageId());
+            if (navigationPrimaryList != null) {
+                for (int i = 0; i < navigationPrimaryList.size(); i++) {
+                    NavigationPrimary navigationItem = navigationPrimaryList.get(i);
+                    if (!navigationItem.getPageId().equals("Menu Screen") &&
+                            !navigationItem.getPageId().equals("Search Screen")) {
+                        cachePage(navigationItem.getPageId());
+                    }
                 }
             }
+        }catch (Exception e){
+
         }
     }
 
