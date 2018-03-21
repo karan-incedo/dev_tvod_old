@@ -2404,13 +2404,15 @@ public class TVViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
-            if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+            if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
             }
 
-            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }

@@ -119,6 +119,32 @@
         <!-- This activity declaration should be in the AppCMS/src/tv/AndroidManifest.xml
         <activity android:name=".tv.views.activity.AppCMSTVAutoplayActivity" />
         -->
+        <activity
+            android:name=".views.activity.AppCMSPlayAudioActivity"
+            android:launchMode="singleTask"
+         >
+
+            <!--<intent-filter>-->
+            <!--<action android:name="com.viewlift.Audio.MediaNotificationManager" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+
+            <intent-filter>
+                <action android:name=
+                    "android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <category android:name=
+                    "android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.viewlift.Audio.MusicService"
+            android:enabled="true"
+            android:exported="true">>
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

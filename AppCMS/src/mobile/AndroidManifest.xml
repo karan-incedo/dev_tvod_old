@@ -162,36 +162,10 @@
             android:name="com.kiswe.apiKey"
             android:value="@string/KISWE_PLAYER_API_KEY" />
 
-        <activity
-            android:name=".views.activity.AppCMSPlayAudioActivity"
-            android:launchMode="singleTask"
-            >
-
-            <!--<intent-filter>-->
-            <!--<action android:name="com.viewlift.Audio.MediaNotificationManager" />-->
-            <!--<category android:name="android.intent.category.DEFAULT" />-->
-            <!--</intent-filter>-->
-
-            <intent-filter>
-                <action android:name=
-                    "android.media.action.MEDIA_PLAY_FROM_SEARCH" />
-                <category android:name=
-                    "android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service
-            android:name="com.viewlift.Audio.MusicService"
-            android:enabled="true"
-            android:exported="true">>
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
         <!-- A receiver that will receive media buttons and send as
-      intents to your MediaBrowserServiceCompat implementation.
-      Required on pre-Lollipop. More information at
-      http://developer.android.com/reference/android/support/v4/media/session/MediaButtonReceiver.html -->
+    intents to your MediaBrowserServiceCompat implementation.
+    Required on pre-Lollipop. More information at
+    http://developer.android.com/reference/android/support/v4/media/session/MediaButtonReceiver.html -->
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
