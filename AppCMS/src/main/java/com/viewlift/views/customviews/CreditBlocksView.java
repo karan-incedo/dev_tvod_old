@@ -167,17 +167,19 @@ public class CreditBlocksView extends RelativeLayout {
                 starringListView != null) {
             starringListTitleView.setText(starringListTitle);
             starringListView.setText(starringList);
-
-            if (BaseView.isTablet(getContext())&&!BaseView.isLandscape(getContext())) {
-                starringListView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                starringListView.setSelected(true);
-                starringListView.setFocusable(true);
-                starringListView.setFocusableInTouchMode(true);
-                starringListView.setFreezesText(true);
-                starringListView.setMarqueeRepeatLimit(-1);
-                starringListView.setHorizontallyScrolling(true);
-                starringListView.setSingleLine();
-            }else{
+            starringListView.setSingleLine();
+            starringListView.setEllipsize(TextUtils.TruncateAt.END);
+//            if (BaseView.isTablet(getContext())&&!BaseView.isLandscape(getContext())) {
+//                starringListView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+//                starringListView.setSelected(true);
+//                starringListView.setFocusable(true);
+//                starringListView.setFocusableInTouchMode(true);
+//                starringListView.setFreezesText(true);
+//                starringListView.setMarqueeRepeatLimit(-1);
+//                starringListView.setHorizontallyScrolling(true);
+//                starringListView.setSingleLine();
+//            }else
+                {
                 ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
                 starringListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(starringListView,
                         null,
