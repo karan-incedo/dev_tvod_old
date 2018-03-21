@@ -12,93 +12,6 @@
       "components": []
     },
     {
-      "id": "c6af59f2-6b8e-498b-bca7-1e2a10fb8aac",
-      "settings": {
-        "showPIP": true,
-        "isStandaloneVideo": true,
-        "columns": {},
-        "showPlaybackControls": true,
-        "isZoomSupported": true
-      },
-      "view": "AC StandaloneVideoPlayer 01",
-      "type": "AC StandaloneVideoPlayer 01",
-      "blockName": "standaloneVideoPlayer01",
-      "layout": {
-        "mobile": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "rightMargin": 0,
-          "height": 221
-        },
-        "tabletLandscape": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "xAxis": 0,
-          "rightMargin": 0,
-          "height": 442
-        },
-        "tabletPortrait": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "xAxis": 0,
-          "rightMargin": 0,
-          "height": 442
-        }
-      },
-      "components": [
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 0,
-              "leftMargin": 0,
-              "rightMargin": 0,
-              "height": 211
-            },
-            "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 0.97,
-              "rightMargin": 0.97,
-              "fontSize": 24,
-              "height": 432
-            },
-            "tabletPortrait": {
-              "yAxis": 0,
-              "leftMargin": 1.3,
-              "rightMargin": 1.3,
-              "fontSize": 24,
-              "height": 432
-            }
-          },
-          "type": "player",
-          "key": "videoPlayer"
-        },
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 211,
-              "leftMargin": 0,
-              "rightMargin": 0,
-              "height": 10
-            },
-            "tabletLandscape": {
-              "yAxis": 432,
-              "leftMargin": 0,
-              "rightMargin": 0,
-              "height": 10
-            },
-            "tabletPortrait": {
-              "yAxis": 432,
-              "leftMargin": 0,
-              "rightMargin": 0,
-              "height": 10
-            }
-          },
-          "backgroundColor": "#000000",
-          "type": "separatorView"
-        }
-      ]
-    },
-    {
       "id": "8db77c21-bc2e-4933-9166-2854788480cd",
       "settings": {},
       "view": "AC BannerAd 01",
@@ -109,21 +22,21 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 50
+          "height": 53
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 90
+          "height": 70
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 90
+          "height": 70
         }
       },
       "components": [
@@ -2389,5 +2302,5 @@
   "caching": {
     "isEnabled": false
   },
-  "version": "0.0.34"
+  "version": "0.0.36"
 }
