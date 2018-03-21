@@ -581,11 +581,11 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(data.getGist().getTitle());
                         }
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                        /*if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             int textColor = Color.parseColor(getColor(getContext(),
                                     childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
-                        }
+                        }*/
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
                         if (childComponent.getNumberOfLines() != 0) {
@@ -678,42 +678,63 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = null;
-                        if (data.getGist().getPublishDate() != null) {
-                            thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
-                        }
-                        if (data.getGist() != null && data.getGist().getReadTime() != null) {
-                            StringBuilder readTimeText = new StringBuilder()
-                                    .append(data.getGist().getReadTime().trim())
-                                    .append("min")
-                                    .append(" read ");
 
-                            if (thumbInfo != null && thumbInfo.length() > 0) {
-                                readTimeText.append("|")
-                                        .append(" ")
-                                        .append(thumbInfo);
+                        if(data.getGist().getMediaType() != null && data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())){
+                            StringBuilder thumbInfo = new StringBuilder();
+                            if (data.getGist().getPublishDate() != null) {
+                                thumbInfo.append(getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd"));
                             }
-                            ((TextView) view).setText(readTimeText);
-                        } else {
-                            long runtime = data.getGist().getRuntime();
-                            if (thumbInfo != null) {
-                                ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
+                            int noOfPhotos = 0;
+                            if (data.getStreamingInfo() != null && data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
+                                if(thumbInfo.length() > 0) {
+                                    thumbInfo.append(" | ");
+                                }
+                                noOfPhotos =  data.getStreamingInfo().getPhotogalleryAssets().size();
+                                thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
+                            }
+
+                            ((TextView) view).setText(thumbInfo);
+                        }else {
+                            String thumbInfo = null;
+                            if (data.getGist().getPublishDate() != null) {
+                                thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                            }
+                            if (data.getGist() != null && data.getGist().getReadTime() != null) {
+                                StringBuilder readTimeText = new StringBuilder()
+                                        .append(data.getGist().getReadTime().trim())
+                                        .append("min")
+                                        .append(" read ");
+
+                                if (thumbInfo != null && thumbInfo.length() > 0) {
+                                    readTimeText.append("|")
+                                            .append(" ")
+                                            .append(thumbInfo);
+                                }
+                                ((TextView) view).setText(readTimeText);
                             } else {
-                                ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
-                            }
+                                long runtime = data.getGist().getRuntime();
+                                if (thumbInfo != null) {
+                                    ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
+                                } else {
+                                    ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+                                }
 
+                            }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
                         StringBuilder thumbInfo = new StringBuilder();
                         if (data.getGist().getPublishDate() != null) {
                             thumbInfo.append(getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd"));
                         }
-                        thumbInfo.append(" | ");
                         int noOfPhotos = 0;
-                        if (data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
+                        if (data.getStreamingInfo() != null && data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
+                            if(thumbInfo.length() > 0) {
+                                thumbInfo.append(" | ");
+                            }
                             noOfPhotos =  data.getStreamingInfo().getPhotogalleryAssets().size();
+                            thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
                         }
-                        thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
+
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {

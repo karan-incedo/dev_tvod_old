@@ -668,19 +668,19 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 178,
+                  "width": 168,
                   "height": 100
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 178,
+                  "width": 168,
                   "height": 100
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 178,
+                  "width": 168,
                   "height": 100
                 }
               },

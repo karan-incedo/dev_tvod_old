@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -1345,6 +1346,12 @@ public class ViewCreator {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("bannerAd01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
@@ -3100,16 +3107,17 @@ public class ViewCreator {
             case PAGE_ADS_KEY:
                 //todo need to work for managing Subscribed User case scanerio
                 if(!appCMSPresenter.isUserSubscribed()) {
-                    componentViewResult.componentView = new AdView(context);
-                    componentViewResult.componentView.setFocusable(false);
-                    componentViewResult.componentView.setEnabled(false);
-                    componentViewResult.componentView.setClickable(false);
+                    componentViewResult.componentView = new LinearLayout(context);
+                    AdView adView = new AdView(context);
+                    adView.setFocusable(false);
+                    adView.setEnabled(false);
+                    adView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
-                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                            adView.setAdSize(AdSize.SMART_BANNER);
                             break;
                         case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
-                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.MEDIUM_RECTANGLE);
+                            adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
                             break;
                     }
 
@@ -3118,9 +3126,16 @@ public class ViewCreator {
                             moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
                         LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
                         MobileAds.initialize(context, admap.get("adTag"));
-                        ((AdView) componentViewResult.componentView).setAdUnitId(admap.get("adTag"));
+                        adView.setAdUnitId(admap.get("adTag"));
                         AdRequest adRequest = new AdRequest.Builder().build();
-                        ((AdView) componentViewResult.componentView).loadAd(adRequest);
+                        adView.loadAd(adRequest);
+                        ((LinearLayout)componentViewResult.componentView).addView(adView);
+                        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) adView.getLayoutParams();
+                        if(params != null){
+                            params.weight = 1.0f;
+                            params.gravity = Gravity.CENTER;
+                            adView.setLayoutParams(params);
+                        }
                     }
                 }
                 break;

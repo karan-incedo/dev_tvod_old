@@ -245,7 +245,7 @@
               "type": "label",
               "opacity": 56,
               "textColor": "#ffffff",
-              "key": "photoGalleryThumbnailInfo",
+              "key": "thumbnailInfo",
               "padding": 10
             }
           ],
@@ -394,13 +394,13 @@
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 319,
+                  "width": 311,
                   "height": 180
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 319,
+                  "width": 311,
                   "height": 180
                 }
               },
