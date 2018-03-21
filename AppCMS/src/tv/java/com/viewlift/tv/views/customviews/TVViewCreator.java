@@ -1615,7 +1615,7 @@ public class TVViewCreator {
 
                                 if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                                     String text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
-                                    String publishDate = appCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getPublishDate(), "MMMM dd, yyyy");
+                                    String publishDate = appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMMM dd, yyyy");
                                     if(null != publishDate) {
                                         text = text + " | " + publishDate;
                                     }
@@ -2404,13 +2404,15 @@ public class TVViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
-            if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+            if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
             }
 
-            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
