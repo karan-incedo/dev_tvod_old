@@ -220,8 +220,8 @@
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
 
-    <string name="app_cms_page_history_title">History</string>
-    <string name="app_cms_page_watchlist_title">WatchList</string>
+    <string name="app_cms_page_history_title">My History</string>
+    <string name="app_cms_page_watchlist_title">My WatchList</string>
     <string name="app_cms_page_download_title">My Downloads</string>
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>

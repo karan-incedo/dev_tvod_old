@@ -30,6 +30,7 @@ public class AudioServiceHelper {
     public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION = "app_cms_stop_audio_service_action";
     public static String APP_CMS_SHOW_PREVIEW_MESSAGE = "app_cms_show_preview_message";
     public static String APP_CMS_SHOW_PREVIEW_ACTION= "app_cms_show_preview_action";
+    public static String APP_CMS_SHOW_iS_AUDIO_PREVIEW = "app_cms_show_is_audio_preview";
 
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
