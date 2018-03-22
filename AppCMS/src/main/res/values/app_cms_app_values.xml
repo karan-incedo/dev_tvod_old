@@ -14,7 +14,7 @@
     SiteId=00000151-11b4-d29b-a17d-55fdb2b80000-->
 
     <!-- x-api-key -->
-    <!--<string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>-->
+    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS Facebook Login values -->
     <string name="facebook_app_id">1324523080924996</string>

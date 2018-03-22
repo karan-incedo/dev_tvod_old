@@ -9785,7 +9785,7 @@ public class AppCMSPresenter {
             if (showCancelButton) {
                 String okText = currentContext.getString(R.string.app_cms_confirm_alert_dialog_button_text);
                 String cancelText = currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
-                if (dialogType == DialogType.NETWORK) {
+                if (dialogType == DialogType.NETWORK && optionalMessage == null) {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
                 }

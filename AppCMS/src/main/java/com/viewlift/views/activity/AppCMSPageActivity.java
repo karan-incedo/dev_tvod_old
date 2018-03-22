@@ -1390,7 +1390,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
                     if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-                        startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                        String mobileLaunchActivity = "com.viewlift.mobile.AppCMSLaunchActivity";
+                        Class launchActivity = Class.forName(mobileLaunchActivity);
+                        startActivity(new Intent(this, launchActivity));
+                        //startActivity(new Intent(this, AppCMSLaunchActivity.class));
                         finish();
                     } else {
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)

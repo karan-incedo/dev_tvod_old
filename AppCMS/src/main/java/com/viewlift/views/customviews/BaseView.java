@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -731,6 +732,9 @@ public abstract class BaseView extends FrameLayout {
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+        /*if (childComponent.getKey()!=null && childComponent.getKey().equalsIgnoreCase("showTitle")) {
+            layout.getMobile().setWidth(290f);
+        }*/
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
         int parentViewWidth = (int) getViewWidth(getContext(),
