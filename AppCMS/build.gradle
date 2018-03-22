@@ -50,7 +50,7 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '26.0.2'
 
     def packageName
     def customApplicationId
@@ -112,7 +112,6 @@ android {
             aaptOptions {
                 cruncherEnabled = false
             }
-
         }
         tv {
             minSdkVersion 21
@@ -134,7 +133,7 @@ android {
             dimension = "blue"
         }
 
-        configurations.mobileCompile {
+       /* configurations.mobileCompile {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 def requested = details.requested
                 if (requested.group == 'com.android.support') {
@@ -143,9 +142,9 @@ android {
                     }
                 }
             }
-        }
+        }*/
 
-        configurations.tvCompile {
+       /* configurations.tvCompile {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 def requested = details.requested
                 if (requested.group == 'com.android.support') {
@@ -154,7 +153,7 @@ android {
                     }
                 }
             }
-        }
+        }*/
     }
     defaultConfig {
         javaCompileOptions {
@@ -358,9 +357,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
-    tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    tvCompile "com.android.support:leanback-v17:$rootProject.ext.leanbackVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
@@ -412,7 +409,6 @@ dependencies {
     compile project(path: ':exoplayer-extension-vp9')
     kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-
 }
 
 apply plugin: 'com.google.gms.google-services'

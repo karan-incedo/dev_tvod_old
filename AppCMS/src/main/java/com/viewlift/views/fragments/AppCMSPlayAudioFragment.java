@@ -508,7 +508,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (getActivity() != null) {
             RequestOptions requestOptions = new RequestOptions().centerInside().error(R.drawable.placeholder_audio)
                     .transform(new ImageBlurTransformation(getContext(), mCurrentArtUrl));
-
             Glide.with(getActivity())
                     .load(mCurrentArtUrl).apply(new RequestOptions().centerInside()
                     .fitCenter())

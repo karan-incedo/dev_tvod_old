@@ -161,7 +161,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap, String viewType) {
 
         switch (jsonValueKeyMap.get(viewType)) {
-            case PAGE_HISTORY_MODULE_KEY:
+            case PAGE_HISTORY_01_MODULE_KEY:
+            case PAGE_HISTORY_02_MODULE_KEY:
                 this.isHistory = true;
                 break;
 
@@ -169,7 +170,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 this.isDownload = true;
                 break;
 
-            case PAGE_WATCHLIST_MODULE_KEY:
+            case PAGE_WATCHLIST_01_MODULE_KEY:
+            case PAGE_WATCHLIST_02_MODULE_KEY:
                 this.isWatchlist = true;
                 break;
 

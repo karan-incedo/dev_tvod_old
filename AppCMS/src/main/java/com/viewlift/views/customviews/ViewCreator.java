@@ -2823,7 +2823,7 @@ public class ViewCreator {
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setId(R.id.playlist_download_id);
 
@@ -2864,7 +2864,7 @@ public class ViewCreator {
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
@@ -3400,6 +3400,7 @@ public class ViewCreator {
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
 
                 boolean showTrayLabel = false;
+                int numSeasons = 0;
 
                 if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY &&
                         moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
@@ -3407,7 +3408,7 @@ public class ViewCreator {
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getSeason() != null) {
-                    int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+                        numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
                     if (1 < numSeasons) {
                         showTrayLabel = true;
                     }
@@ -3415,7 +3416,7 @@ public class ViewCreator {
 
                 if (showTrayLabel) {
                     List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
-                    int numSeasons = seasons.size();
+                    numSeasons = seasons.size();
 
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
@@ -3472,7 +3473,9 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
+                            (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                                    numSeasons == 0 )) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -3661,6 +3664,8 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                                    ((TextView) componentViewResult.componentView).setMaxLines(1);
                                 }
                                 break;
 
@@ -4414,6 +4419,15 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
+                if ( moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                        moduleAPI != null && moduleAPI.getContentData() != null &&
+                        !moduleAPI.getContentData().isEmpty() &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getSeason() != null &&
+                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                    componentViewResult.shouldHideComponent = true;
+                }
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,

@@ -44,6 +44,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
@@ -134,6 +135,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String signatureCookie;
     private String policyCookie;
     private String keyPairIdCookie;
+    private ContentDatum contentDatum;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -165,7 +167,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       String imageUrl,
                                                       String closedCaptionUrl,
                                                       String parentalRating,
-                                                      boolean freeContent, AppCMSSignedURLResult appCMSSignedURLResult) {
+                                                      boolean freeContent, AppCMSSignedURLResult appCMSSignedURLResult, ContentDatum contentDatum) {
 
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
@@ -185,6 +187,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
         args.putBoolean(context.getString(R.string.free_content_key), freeContent);
+        args.putSerializable("content_datum",contentDatum);
         if (appCMSSignedURLResult != null) {
             appCMSSignedURLResult.parseKeyValuePairs();
             args.putString(context.getString(R.string.signed_policy_key), appCMSSignedURLResult.getPolicy());
@@ -247,6 +250,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             policyCookie = args.getString(getString(R.string.signed_policy_key));
             signatureCookie = args.getString(getString(R.string.signed_signature_key));
             keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
+            contentDatum = (ContentDatum)args.getSerializable("content_datum");
             Log.d(TAG, "ANAS: free " + freeContent);
         }
 
@@ -524,7 +528,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 isTrailer,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,
+                contentDatum);
 
         beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -532,7 +537,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 permaLink,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,
+                contentDatum);
 
         return rootView;
     }

@@ -4299,8 +4299,10 @@ public class AppCMSPresenter {
 
             if (contentDatum.getGist().getId() != null) {
                 downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
-                downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
-                downloadVideoRealm.setPosterFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+//                downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
+//                downloadVideoRealm.setPosterFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+                downloadVideoRealm.setVideoImageUrl(downloadedMediaLocalURI(thumbEnqueueId));
+                downloadVideoRealm.setPosterFileURL(downloadedMediaLocalURI(posterEnqueueId));
             }
             if (contentDatum.getGist().getTitle() != null) {
                 downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
@@ -4503,6 +4505,7 @@ public class AppCMSPresenter {
         }
         return uriLocal == null ? "data" : uriLocal;
     }
+
 
     public boolean isDownloadUnfinished() {
         if (getRealmController() != null) {
@@ -4745,23 +4748,30 @@ public class AppCMSPresenter {
 
         long enqueueId = downloadManager.enqueue(downloadRequest);
         long thumbEnqueueId;
+        long posterEnqueueId;
         if (contentDatum.getGist() != null &&
                 contentDatum.getGist().getMediaType() != null &&
                 contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                 contentDatum.getGist().getContentType() != null &&
                 contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
             String audioImageUrl = null;
-            if (contentDatum.getGist().getImageGist().get_1x1() != null) {
-                audioImageUrl = contentDatum.getGist().getImageGist().get_1x1();
+            if (contentDatum.getGist().getImageGist().get_16x9() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_16x9();
             }
             thumbEnqueueId = downloadVideoImage(audioImageUrl,
+                    contentDatum.getGist().getId());
+            String audioPlayerImage = null;
+            if (contentDatum.getGist().getImageGist().get_1x1() != null) {
+                audioPlayerImage = contentDatum.getGist().getImageGist().get_1x1();
+            }
+            posterEnqueueId = downloadPosterImage(audioPlayerImage,
                     contentDatum.getGist().getId());
         } else {
             thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
                     contentDatum.getGist().getId());
+            posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                    contentDatum.getGist().getId());
         }
-        long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                contentDatum.getGist().getId());
 
                         /*
                          * Inserting data in realm data object
@@ -5923,10 +5933,18 @@ public class AppCMSPresenter {
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (!isNetworkConnected()) {
-            int count = tryCount;
-            openDownloadScreenForNetworkError(false,
-                    () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
-                            playAudio, count, appCMSAudioDetailAPIAction));
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
+                    null);
             return;
         }
         if (currentActivity != null) {
@@ -6005,8 +6023,18 @@ public class AppCMSPresenter {
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
         if (!isNetworkConnected()) {
-            openDownloadScreenForNetworkError(launchActivity,
-                    () -> navigateToPlaylistPage(playlistId, pageTitle, launchActivity));
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
+                    null);
             return;
         }
 
@@ -9850,7 +9878,7 @@ public class AppCMSPresenter {
             if (showCancelButton) {
                 String okText = currentContext.getString(R.string.app_cms_confirm_alert_dialog_button_text);
                 String cancelText = currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
-                if (dialogType == DialogType.NETWORK) {
+                if (dialogType == DialogType.NETWORK && optionalMessage == null) {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
                 }
@@ -12434,21 +12462,25 @@ public class AppCMSPresenter {
     }
 
     public void cacheNavItems() {
-        List<NavigationPrimary> navigationPrimaryList = null;
-        if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getTabBar();
-        } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getNavigationPrimary();
-        }
+        try {
+            List<NavigationPrimary> navigationPrimaryList = null;
+            if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getTabBar();
+            } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getNavigationPrimary();
+            }
 
-        if (navigationPrimaryList != null) {
-            for (int i = 0; i < navigationPrimaryList.size(); i++) {
-                NavigationPrimary navigationItem = navigationPrimaryList.get(i);
-                if (!navigationItem.getPageId().equals("Menu Screen") &&
-                        !navigationItem.getPageId().equals("Search Screen")) {
-                    cachePage(navigationItem.getPageId());
+            if (navigationPrimaryList != null) {
+                for (int i = 0; i < navigationPrimaryList.size(); i++) {
+                    NavigationPrimary navigationItem = navigationPrimaryList.get(i);
+                    if (!navigationItem.getPageId().equals("Menu Screen") &&
+                            !navigationItem.getPageId().equals("Search Screen")) {
+                        cachePage(navigationItem.getPageId());
+                    }
                 }
             }
+        }catch (Exception e){
+
         }
     }
 
