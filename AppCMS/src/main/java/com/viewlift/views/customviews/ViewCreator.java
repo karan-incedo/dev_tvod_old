@@ -4290,7 +4290,8 @@ public class ViewCreator {
 
                         if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
-                        } else {
+                        } else
+                            {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         }
                         break;
@@ -5257,6 +5258,8 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    imageButton.setOnClickListener(null);
+
                     if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
@@ -5286,7 +5289,6 @@ public class ViewCreator {
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
             };
 
 //            imageButton.setOnClickListener(addClickListener);

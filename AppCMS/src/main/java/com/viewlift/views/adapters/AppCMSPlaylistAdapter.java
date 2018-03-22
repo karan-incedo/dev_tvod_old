@@ -507,6 +507,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
+                    imageButton.setOnClickListener(null);
+
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);
@@ -531,7 +533,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
             }  ;
         }
 

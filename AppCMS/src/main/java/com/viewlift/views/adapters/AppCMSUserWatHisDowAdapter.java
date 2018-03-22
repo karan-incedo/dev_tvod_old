@@ -401,7 +401,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             && contentDatum.getGist().getContentType() != null
                                             && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
                                         if (contentDatum.getGist().getId().contains(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
-                                            appCMSPresenter.stopAudioServices(false);
+                                            appCMSPresenter.stopAudioServices(false,false);
                                         }
                                     }*/
                                     notifyItemRangeRemoved(position, getItemCount());
