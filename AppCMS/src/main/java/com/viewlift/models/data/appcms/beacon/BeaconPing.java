@@ -66,7 +66,7 @@ public class BeaconPing extends Thread {
                                 videoPlayerView.getCurrentPosition(),
                                 false,
                                 AppCMSPresenter.BeaconEvent.PING,
-                                contentDatum.getMediaType(),
+                                contentDatum != null ? contentDatum.getMediaType() : "Video",
                                 videoPlayerView.getBitrate() != 0 ?
                                         String.valueOf(videoPlayerView.getBitrate()) : null,
                                 String.valueOf(videoPlayerView.getVideoHeight()),

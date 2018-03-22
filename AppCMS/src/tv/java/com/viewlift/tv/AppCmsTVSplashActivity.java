@@ -55,7 +55,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 Utils.getProperty("SiteId", getApplicationContext()),
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV,
-                false);
+                true);
         }else{
             showErrorFragment(true);
         }
