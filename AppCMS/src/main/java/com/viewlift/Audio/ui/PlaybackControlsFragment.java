@@ -108,17 +108,17 @@ public class PlaybackControlsFragment extends Fragment {
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
 
         mMediaBrowser.connect();
-        mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
-        seek_audio = (SeekBar) rootView.findViewById(R.id.seek_audio);
+        mPlayPause = rootView.findViewById(R.id.play_pause);
+        seek_audio = rootView.findViewById(R.id.seek_audio);
 
-        progressBarPlayPause = (ProgressBar) rootView.findViewById(R.id.progressBarPlayPause);
+        progressBarPlayPause = rootView.findViewById(R.id.progressBarPlayPause);
         mPlayPause.setEnabled(true);
         seek_audio.setEnabled(false);
         seek_audio.setClickable(false);
         mPlayPause.setOnClickListener(mButtonListener);
-        extra_info = (TextView) rootView.findViewById(R.id.extra_info);
+        extra_info = rootView.findViewById(R.id.extra_info);
 
-        mTitle = (TextView) rootView.findViewById(R.id.title);
+        mTitle = rootView.findViewById(R.id.title);
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
