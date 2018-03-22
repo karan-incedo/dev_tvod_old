@@ -136,25 +136,6 @@ public class CustomTVVideoPlayerView
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
 
-        beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
-        beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-        beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
-                appCMSPresenter,
-                videoDataId,
-                permaLink,
-                isTrailer,
-                parentScreenName,
-                this,
-                mStreamId);
-
-        beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
-                appCMSPresenter,
-                videoDataId,
-                permaLink,
-                parentScreenName,
-                this,
-                mStreamId);
     }
 
 
@@ -226,6 +207,31 @@ public class CustomTVVideoPlayerView
 
     }
 
+    private void initlizeBeaconsThread(){
+        beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
+        beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
+        beaconMessageThread = null;
+        beaconBufferingThread = null;
+
+        beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
+                appCMSPresenter,
+                videoDataId,
+                permaLink,
+                isTrailer,
+                parentScreenName,
+                this,
+                mStreamId,
+                contentDatum );
+
+        beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
+                appCMSPresenter,
+                videoDataId,
+                permaLink,
+                parentScreenName,
+                this,
+                mStreamId,
+                contentDatum);
+    }
     public void setVideoUri(String videoId) {
         showProgressBar("Loading...");
         videoDataId = videoId;
@@ -233,6 +239,7 @@ public class CustomTVVideoPlayerView
         sentBeaconFirstFrame = false;
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
+            initlizeBeaconsThread();
             if (contentDatum.getStreamingInfo() != null) {
                 isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
             }

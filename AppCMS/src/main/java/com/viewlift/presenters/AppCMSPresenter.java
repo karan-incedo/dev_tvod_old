@@ -9811,7 +9811,7 @@ public class AppCMSPresenter {
             if (showCancelButton) {
                 String okText = currentContext.getString(R.string.app_cms_confirm_alert_dialog_button_text);
                 String cancelText = currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
-                if (dialogType == DialogType.NETWORK) {
+                if (dialogType == DialogType.NETWORK && optionalMessage == null) {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
                 }
@@ -12360,21 +12360,25 @@ public class AppCMSPresenter {
     }
 
     public void cacheNavItems() {
-        List<NavigationPrimary> navigationPrimaryList = null;
-        if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getTabBar();
-        } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
-            navigationPrimaryList = getNavigation().getNavigationPrimary();
-        }
+        try {
+            List<NavigationPrimary> navigationPrimaryList = null;
+            if (getPlatformType() == PlatformType.ANDROID && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getTabBar();
+            } else if (getPlatformType() == PlatformType.TV && getNavigation() != null) {
+                navigationPrimaryList = getNavigation().getNavigationPrimary();
+            }
 
-        if (navigationPrimaryList != null) {
-            for (int i = 0; i < navigationPrimaryList.size(); i++) {
-                NavigationPrimary navigationItem = navigationPrimaryList.get(i);
-                if (!navigationItem.getPageId().equals("Menu Screen") &&
-                        !navigationItem.getPageId().equals("Search Screen")) {
-                    cachePage(navigationItem.getPageId());
+            if (navigationPrimaryList != null) {
+                for (int i = 0; i < navigationPrimaryList.size(); i++) {
+                    NavigationPrimary navigationItem = navigationPrimaryList.get(i);
+                    if (!navigationItem.getPageId().equals("Menu Screen") &&
+                            !navigationItem.getPageId().equals("Search Screen")) {
+                        cachePage(navigationItem.getPageId());
+                    }
                 }
             }
+        }catch (Exception e){
+
         }
     }
 
