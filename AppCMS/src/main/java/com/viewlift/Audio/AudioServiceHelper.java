@@ -256,8 +256,8 @@ public class AudioServiceHelper {
     }
 
     public interface IaudioServiceCallBack {
-        public void getAudioPlaybackControlVisibility(boolean isControllerShowing);
-        public void onConnect();
+        void getAudioPlaybackControlVisibility(boolean isControllerShowing);
+        void onConnect();
 
     }
 

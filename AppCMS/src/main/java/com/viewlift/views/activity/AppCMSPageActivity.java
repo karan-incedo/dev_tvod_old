@@ -78,7 +78,6 @@ import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -259,6 +258,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean libsThreadExecuted;
     private float downRawX, downRawY;
     private float dX, dY;
+    private final String mobileLaunchActivity = "com.viewlift.mobile.AppCMSLaunchActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -288,7 +288,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
             if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-                startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                try {
+                    Class launchActivity = Class.forName(mobileLaunchActivity);
+                    startActivity(new Intent(this, launchActivity));
+                }catch (Exception e){
+
+                }
                 finish();
             } else {
                 Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
@@ -1385,7 +1390,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
                     if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-                        startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                        Class launchActivity = Class.forName(mobileLaunchActivity);
+                        startActivity(new Intent(this, launchActivity));
                         finish();
                     } else {
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
