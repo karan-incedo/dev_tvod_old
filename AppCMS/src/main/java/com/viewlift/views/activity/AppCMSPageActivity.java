@@ -291,7 +291,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 try {
                     Class launchActivity = Class.forName(mobileLaunchActivity);
                     startActivity(new Intent(this, launchActivity));
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 finish();

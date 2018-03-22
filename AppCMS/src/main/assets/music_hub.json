@@ -568,7 +568,7 @@
         {
           "layout": {
             "mobile": {
-              "gridHeight": 170,
+              "gridHeight": 201,
               "trayPadding": 5,
               "leftMargin": 2.67,
               "topMargin": 14.45,
@@ -599,8 +599,8 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 120,
-                  "height": 120
+                  "width": 150,
+                  "height": 150
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
@@ -621,7 +621,7 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 124,
+                  "yAxis": 155,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 11,
@@ -652,7 +652,7 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 143,
+                  "yAxis": 168,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 11,
