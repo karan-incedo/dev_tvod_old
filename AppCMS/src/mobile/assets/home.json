@@ -29,14 +29,14 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 70
+          "height": 90
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 70
+          "height": 90
         }
       },
       "components": [
