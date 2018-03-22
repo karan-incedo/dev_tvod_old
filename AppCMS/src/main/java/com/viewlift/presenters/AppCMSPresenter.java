@@ -8158,7 +8158,7 @@ public class AppCMSPresenter {
             }
             if (!networkConnected &&
                     (downloadInProgress || !onDownloadPage) &&
-                    downloadsAvailableForApp()) {
+                    downloadsAvailableForApp() && isUserLoggedIn()) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
             } else if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) &&

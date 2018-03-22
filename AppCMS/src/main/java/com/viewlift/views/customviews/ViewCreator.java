@@ -1673,7 +1673,7 @@ public class ViewCreator {
                 }  else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
-//                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             } catch (Exception e) {
 
