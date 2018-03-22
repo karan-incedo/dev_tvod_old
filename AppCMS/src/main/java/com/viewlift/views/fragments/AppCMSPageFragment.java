@@ -694,8 +694,8 @@ public class AppCMSPageFragment extends Fragment {
 
                         int x = appCMSBinder.getxScroll();
                         int y = appCMSBinder.getyScroll();
-                        pageView.scrollToPosition(-x, -y);
-                        pageView.scrollToPosition(x, y);
+                        pageView.scrollTo(-x, -y);
+                        pageView.scrollTo(x, y);
                     }
                     appCMSBinder.setScrollOnLandscape(BaseView.isLandscape(pageView.getContext()));
                 }

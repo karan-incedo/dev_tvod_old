@@ -73,6 +73,7 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * create constructor for PlaybackManager. initialize castsession manager , cast listener , and callback methods
+     *
      * @param serviceCallback
      * @param playback
      * @param applicationContext
@@ -171,7 +172,6 @@ public class PlaybackManager implements Playback.Callback {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
         } else {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), currentPositionInMS);
-
         }
 
     }
@@ -243,6 +243,11 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
+            /**
+             * on complete of songs reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+
             if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
                 handleStopRequest(null);
             } else if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
@@ -618,13 +623,19 @@ public class PlaybackManager implements Playback.Callback {
             handlePauseRequest();
             stopSeekbarUpdate();
             AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
-
+            /**
+             * on end of preview reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+            System.out.println("currentPositionInMS- set to 0" );
             if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                 Intent intent = new Intent();
                 intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
                 intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
                 appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
             }
+        }else{
+            saveLastPositionAudioOnForcefullyStop();
         }
     }
 

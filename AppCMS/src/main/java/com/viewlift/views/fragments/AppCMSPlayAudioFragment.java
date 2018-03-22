@@ -560,7 +560,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                     isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
-                                        appCMSPresenter.stopAudioServices(false, true);
+                                        appCMSPresenter.stopAudioServices();
                                         stopSeekbarUpdate();
                                     }
                                 }
@@ -573,7 +573,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                     isDialogVisible = false;
                                     if (getActivity() != null) {
                                         getActivity().finish();
-                                        appCMSPresenter.stopAudioServices(false, true);
+                                        appCMSPresenter.stopAudioServices();
                                         stopSeekbarUpdate();
 
                                     }

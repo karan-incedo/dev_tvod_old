@@ -94,6 +94,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 26
+
         versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -201,7 +202,15 @@ android {
         }
     }
 
+    signingConfigs {
 
+        debug {
+            storeFile file('D:\\AppCMSDir\\Audio_Hoichoi_Final_merge_Mach_13\\android-appcms\\keystore\\Hoichoi_Keystore.jks')
+            storePassword "hoichoi321"
+            keyAlias "hoichoi"
+            keyPassword "hoichoi321"
+        }
+    }
 
     buildTypes {
         debug {
@@ -215,6 +224,7 @@ android {
             resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
+            signingConfig signingConfigs.debug
         }
         release {
             multiDexEnabled true
