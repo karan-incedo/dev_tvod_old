@@ -319,7 +319,7 @@ public final class LocalPlayback implements Playback {
     }
     @Override
     public void setCurrentId(String currentMediaId) {
-         mCurrentMediaId=currentMediaId;
+        mCurrentMediaId = currentMediaId;
     }
 
     @Override
@@ -778,7 +778,9 @@ public final class LocalPlayback implements Playback {
         } else {
 //            pausePlayback(false);
             isNetworkConnected = false;
-            appCMSPresenter.showNoNetworkConnectivityToast();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.showNoNetworkConnectivityToast();
+            }
         }
     }
 

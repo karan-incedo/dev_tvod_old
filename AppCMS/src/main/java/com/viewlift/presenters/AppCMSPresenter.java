@@ -5933,10 +5933,18 @@ public class AppCMSPresenter {
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (!isNetworkConnected()) {
-            int count = tryCount;
-            openDownloadScreenForNetworkError(false,
-                    () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
-                            playAudio, count, appCMSAudioDetailAPIAction));
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
+                    null);
             return;
         }
         if (currentActivity != null) {
@@ -6015,8 +6023,18 @@ public class AppCMSPresenter {
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
         if (!isNetworkConnected()) {
-            openDownloadScreenForNetworkError(launchActivity,
-                    () -> navigateToPlaylistPage(playlistId, pageTitle, launchActivity));
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                        this::launchBlankPage,
+                        null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false),
+                    null);
             return;
         }
 
