@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -777,25 +778,36 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void playDownloadedAudio(ContentDatum contentDatum) {
+
+
         AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(contentDatum);
-        AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
-        AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-        PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
-        if (appCMSPresenter.getCallBackPlaylistHelper() != null) {
-            appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
-        } else if (appCMSPresenter.getCurrentActivity() != null) {
-            AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+
+        /*
+        if at the time of click from download list device already connected to casatin device than get audio details from server
+        and cast audio url to casting device
+         */
+        if (CastServiceProvider.getInstance(mContext).isCastingConnected()) {
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSAudioDetailResult.getId(), 0);
+        } else {
+            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
+            AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+            PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
+            if (appCMSPresenter.getCallBackPlaylistHelper() != null) {
+                appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+            } else if (appCMSPresenter.getCurrentActivity() != null) {
+                AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+            }
+            AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+            Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
+            MediaMetadataCompat metadata = controller.getMetadata();
+            if (metadata != null) {
+                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                        metadata);
+            }
+            mContext.startActivity(intent);
         }
-        AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
-        Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
-        MediaMetadataCompat metadata = controller.getMetadata();
-        if (metadata != null) {
-            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                    metadata);
-        }
-        mContext.startActivity(intent);
 
     }
 

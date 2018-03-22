@@ -415,14 +415,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     }
                                     videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                                     if (appCMSPresenter.isUserLoggedIn()) {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
                                                 () -> {
                                                     if (onClosePlayerEvent != null) {
                                                         onClosePlayerEvent.closePlayer();
                                                     }
                                                 });
                                     } else {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
                                                 () -> {
                                                     if (onClosePlayerEvent != null) {
                                                         onClosePlayerEvent.closePlayer();

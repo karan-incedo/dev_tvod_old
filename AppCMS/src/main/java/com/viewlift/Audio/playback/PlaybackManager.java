@@ -71,7 +71,15 @@ public class PlaybackManager implements Playback.Callback {
     private static boolean isCastConnected = false;
     MediaSessionCompat msession;
 
-
+    /**
+     * create constructor for PlaybackManager. initialize castsession manager , cast listener , and callback methods
+     *
+     * @param serviceCallback
+     * @param playback
+     * @param applicationContext
+     * @param callBackLocalPlaybackListener
+     * @param mSession
+     */
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
                            Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener, MediaSessionCompat mSession) {
         mServiceCallback = serviceCallback;
@@ -104,7 +112,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     /**
-     * Handle a request to play music
+     * This will initiate the audio play  whenever any controller send request to play
      *
      * @param currentPosition
      */
@@ -156,12 +164,14 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.setCurrentId(null);
     }
 
+    /**
+     * save the last position of playing audio content
+     */
     public void saveLastPositionAudioOnForcefullyStop() {
         if (mPlayback.getCurrentStreamPosition() > 0) {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
         } else {
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), currentPositionInMS);
-
         }
 
     }
@@ -191,28 +201,9 @@ public class PlaybackManager implements Playback.Callback {
         MediaMetadataCompat currentMusic = getCurrentMediaData();
         mServiceCallback.onNotificationRequired();
 
-//        if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
-//                state == PlaybackStateCompat.STATE_PAUSED && isContentPlayable(currentMusic)) {
-//            mServiceCallback.onNotificationRequired();
-//        }
-        /*else{
-            mServiceCallback.stopNotification();
-        }*/
+
     }
 
-    public boolean isContentPlayable(MediaMetadataCompat metadata) {
-        if (metadata != null) {
-            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
-            if (!isFree.equalsIgnoreCase("true")) {
-                if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
 
     private void updatePlaybackStatus(int playBackState, long position, String error) {
         //noinspection ResourceType
@@ -252,6 +243,11 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
+            /**
+             * on complete of songs reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+
             if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
                 handleStopRequest(null);
             } else if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
@@ -383,8 +379,6 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPrepare() {
-//            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
-
             super.onPrepare();
         }
     }
@@ -629,13 +623,19 @@ public class PlaybackManager implements Playback.Callback {
             handlePauseRequest();
             stopSeekbarUpdate();
             AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
-
+            /**
+             * on end of preview reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+            System.out.println("currentPositionInMS- set to 0" );
             if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                 Intent intent = new Intent();
                 intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
                 intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
                 appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
             }
+        }else{
+            saveLastPositionAudioOnForcefullyStop();
         }
     }
 

@@ -27,6 +27,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/app_cms_audio_player_thumbnail_pading"
                 android:layout_marginRight="@dimen/app_cms_audio_player_thumbnail_pading">
+
                 <ImageView
                     android:id="@+id/track_image_blurred"
                     android:layout_width="match_parent"
@@ -35,12 +36,12 @@
                     android:scaleType="fitXY"
 
                     />
+
                 <ImageView
                     android:id="@+id/track_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                  />
+                    android:layout_gravity="center" />
             </RelativeLayout>
 
             <TextView
