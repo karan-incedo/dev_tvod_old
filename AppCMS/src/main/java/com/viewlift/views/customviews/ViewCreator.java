@@ -51,6 +51,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -101,6 +102,8 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
+
+import static com.viewlift.Utils.loadJsonFromAssets;
 
 
 /*
@@ -2806,7 +2809,7 @@ public class ViewCreator {
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setId(R.id.playlist_download_id);
 
@@ -2847,7 +2850,7 @@ public class ViewCreator {
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
