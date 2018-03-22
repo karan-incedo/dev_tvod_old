@@ -40,6 +40,10 @@
         android:theme="@style/AppTheme"
         tools:replace="android:theme,android:label">
         <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc"/>
+
+        <meta-data
             android:name="com.urbanairship.autopilot"
             android:value="com.viewlift.mobile.pushnotif.AppCMSAutoPilot" />
 

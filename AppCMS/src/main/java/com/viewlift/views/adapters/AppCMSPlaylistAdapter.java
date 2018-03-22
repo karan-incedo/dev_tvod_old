@@ -34,7 +34,6 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
-import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -234,21 +233,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                             isDownloading = true;
                             if (isClickable) {
-                                if (!appCMSPresenter.isNetworkConnected()) {
-                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                                appCMSPresenter::launchBlankPage,
-                                                null);
-                                        return;
-                                    }
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                                            true,
-                                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                                    null, null, false),
-                                            null);
-                                    return;
-                                }
                                 if (data.getGist() != null) {
                                     String action = null;
                                     if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
@@ -272,6 +256,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                     }
                                     if (action == null) {
                           /*get audio details on tray click item and play song*/
+                                        if (!appCMSPresenter.isNetworkConnected()) {
+                                            appCMSPresenter.openDownloadScreenForNetworkError(false,
+                                                    () -> playPlaylistItem(data, itemView, clickPosition));
+                                            return;
+                                        }
                                         playPlaylistItem(data, itemView, clickPosition);
                                     }
                                 }
@@ -518,6 +507,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 }
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
+                    imageButton.setOnClickListener(null);
+
                     appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     try {
                         Thread.sleep(1000);
@@ -542,7 +533,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
             }  ;
         }
 

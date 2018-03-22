@@ -39,6 +39,7 @@ public class AudioPlaylistHelper {
     public static String CUSTOM_METADATA_TRACK_PARAM_LINK = "__PARAM_LINK__";
     public static String CUSTOM_METADATA_TRACK_ALBUM_YEAR = "_ALBUM_YEAR";
     public static String CUSTOM_METADATA_IS_FREE = "__IS_FREE__";
+    public static String CUSTOM_METADATA_TRACK_DIRECTOR = "_ALBUM_DIRECTOR";
 
     Activity mAct;
 
@@ -204,10 +205,12 @@ public class AudioPlaylistHelper {
         }
     }
 
-    public  void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+    public void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
         String artist = "";
+        String director = "";
+
         String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown", isFree = "true";
         long runTime = 240 * 1000;
 
@@ -216,15 +219,15 @@ public class AudioPlaylistHelper {
 
             if (appCMSAudioDetailResult.getGist().getDescription() != null)
                 album = appCMSAudioDetailResult.getGist().getDescription();
-
+            if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
+                iconUrl = appCMSAudioDetailResult.getGist().getVideoImageUrl();
+            }
             if (appCMSAudioDetailResult.getGist().getImageGist() != null) {
                 if (appCMSAudioDetailResult.getGist().getImageGist().get_1x1() != null) {
                     iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_1x1();
                 }
             }
-            if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
-                iconUrl = appCMSAudioDetailResult.getGist().getVideoImageUrl();
-            }
+
             if (appCMSAudioDetailResult.getGist().getPermalink() != null)
                 param_link = appCMSAudioDetailResult.getGist().getPermalink();
 
@@ -239,7 +242,9 @@ public class AudioPlaylistHelper {
             isFree = String.valueOf(appCMSAudioDetailResult.getGist().isFree());
 
         }
+
         artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
+        director = appCmsPresenter.getDirectorNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
 
         if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
                 && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
@@ -259,6 +264,7 @@ public class AudioPlaylistHelper {
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
                         .putString(CUSTOM_METADATA_TRACK_SOURCE, source)
                         .putString(CUSTOM_METADATA_TRACK_ALBUM_YEAR, album_year)
+                        .putString(CUSTOM_METADATA_TRACK_DIRECTOR, director)
                         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
@@ -273,7 +279,7 @@ public class AudioPlaylistHelper {
                         .build());
     }
 
-    public  MediaMetadataCompat getMetadata(String mediaId) {
+    public MediaMetadataCompat getMetadata(String mediaId) {
         MediaMetadataCompat metaDataForMediaId = null;
         if (music != null && music.size() > 0 && mediaId != null) {
             metaDataForMediaId = music.get(mediaId);
@@ -283,7 +289,7 @@ public class AudioPlaylistHelper {
         return metaDataForMediaId;
     }
 
-    public  MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
+    public MediaBrowserCompat.MediaItem getMediaMetaDataItem(String mediaId) {
         MediaMetadataCompat metaData = getMetadata(mediaId);
 
         return new MediaBrowserCompat.MediaItem(

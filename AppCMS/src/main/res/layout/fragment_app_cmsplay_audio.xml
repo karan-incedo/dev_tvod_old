@@ -20,14 +20,28 @@
             android:orientation="vertical"
             android:padding="@dimen/app_cms_audio_image_padding">
 
-            <ImageView
-                android:id="@+id/track_image"
+            <RelativeLayout
+                android:id="@+id/rl_track_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="@drawable/placeholder_audio"
+                android:layout_marginLeft="@dimen/app_cms_audio_player_thumbnail_pading"
+                android:layout_marginRight="@dimen/app_cms_audio_player_thumbnail_pading">
+                <ImageView
+                    android:id="@+id/track_image_blurred"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
 
-                android:scaleType="fitXY" />
+                    />
+                <ImageView
+                    android:id="@+id/track_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                  />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/extra_info"
@@ -49,6 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".2"
+            android:gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
@@ -76,7 +91,8 @@
                 android:singleLine="true"
                 android:text=""
                 android:textColor="@android:color/darker_gray"
-                android:textSize="20sp" />
+                android:textSize="19sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -120,18 +136,21 @@
         android:layout_above="@+id/audio_controllers"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@color/audioSeekBg" />
 
     <LinearLayout
         android:id="@+id/audio_controllers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/app_cms_audio_player_controller_padding"
+        android:layout_marginLeft="@dimen/app_cms_audio_player_controller_padding"
+        android:layout_marginRight="@dimen/app_cms_audio_player_controller_padding"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/app_cms_audio_player_controller_height"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp">
 
@@ -180,83 +199,99 @@
             android:layout_height="@dimen/app_cms_audio_play_control_height"
             android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/shuffle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/shuffle" />
-
-            <ImageButton
-                android:id="@+id/prev"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/previous_track" />
+            android:orientation="horizontal"
+            android:weightSum="10">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical">
+                android:layout_weight="2.5"
+                android:gravity="center">
 
                 <ImageButton
-                    android:id="@+id/play_pause"
-                    android:layout_width="@dimen/app_cms_audio_play_width"
-                    android:layout_height="@dimen/app_cms_audio_play_height"
+                    android:id="@+id/shuffle"
+                    android:layout_width="@dimen/app_cms_audio_shuffle_width"
+                    android:layout_height="@dimen/app_cms_audio_shuffle_height"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/pause_track" />
-
-                <ProgressBar
-                    android:id="@+id/progressBarPlayPause"
-                    style="?android:attr/progressBarStyleSmall"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_centerInParent="true"
-                    android:visibility="gone" />
+                    android:background="@drawable/shuffle" />
             </RelativeLayout>
 
-
-            <ImageButton
-                android:id="@+id/next"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/next_track" />
+                android:layout_weight="5"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/playlist"
+                <ImageButton
+                    android:id="@+id/prev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/previous_track" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <ImageButton
+                        android:id="@+id/play_pause"
+                        android:layout_width="@dimen/app_cms_audio_play_width"
+                        android:layout_height="@dimen/app_cms_audio_play_height"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/pause_track" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarPlayPause"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
+                <ImageButton
+                    android:id="@+id/next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/next_track" />
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/playlist" />
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:gravity="center">
 
+                <ImageButton
+                    android:id="@+id/playlist"
+                    android:layout_width="@dimen/app_cms_audio_playlist_width"
+                    android:layout_height="@dimen/app_cms_audio_playlist_height"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/playlist" />
+            </RelativeLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/audio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/app_cms_audio_audio_icon_width"
+                android:layout_height="@dimen/app_cms_audio_audio_icon_height"
                 android:layout_gravity="center"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/audio_speaker" />
+                android:background="@drawable/audio_speaker" />
 
             <SeekBar
                 android:id="@+id/seek_volume"

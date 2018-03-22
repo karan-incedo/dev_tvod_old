@@ -108,17 +108,17 @@ public class PlaybackControlsFragment extends Fragment {
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
 
         mMediaBrowser.connect();
-        mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
-        seek_audio = (SeekBar) rootView.findViewById(R.id.seek_audio);
+        mPlayPause = rootView.findViewById(R.id.play_pause);
+        seek_audio = rootView.findViewById(R.id.seek_audio);
 
-        progressBarPlayPause = (ProgressBar) rootView.findViewById(R.id.progressBarPlayPause);
+        progressBarPlayPause = rootView.findViewById(R.id.progressBarPlayPause);
         mPlayPause.setEnabled(true);
         seek_audio.setEnabled(false);
         seek_audio.setClickable(false);
         mPlayPause.setOnClickListener(mButtonListener);
-        extra_info = (TextView) rootView.findViewById(R.id.extra_info);
+        extra_info = rootView.findViewById(R.id.extra_info);
 
-        mTitle = (TextView) rootView.findViewById(R.id.title);
+        mTitle = rootView.findViewById(R.id.title);
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,7 +230,7 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     void audioPreview(MediaMetadataCompat metadata) {
-        if (ifPreviewEnded(metadata)) {
+        if (isPreviewEnded(metadata)) {
             stopSeekbarUpdate();
             mTitle.setText(getActivity().getResources().getString(R.string.preview_ended));
             mPlayPause.setBackground(getActivity().getDrawable(R.drawable.audio_preview_end_icon));
@@ -238,7 +238,7 @@ public class PlaybackControlsFragment extends Fragment {
         }
     }
 
-    private boolean ifPreviewEnded(MediaMetadataCompat metadataAudio) {
+    private boolean isPreviewEnded(MediaMetadataCompat metadataAudio) {
         boolean showPreview = false;
         MediaMetadataCompat metadata = null;
         if (metadataAudio == null && getActivity() != null
@@ -368,7 +368,7 @@ public class PlaybackControlsFragment extends Fragment {
                         AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
                         MediaMetadataCompat metadata = controller.getMetadata();
 
-                        if (!ifPreviewEnded(metadata)) {
+                        if (!isPreviewEnded(metadata)) {
                             playMedia();
                         } else {
                             launchAudioPlayer();

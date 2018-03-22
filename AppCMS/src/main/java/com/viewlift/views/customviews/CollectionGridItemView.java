@@ -34,7 +34,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -571,7 +570,7 @@ public class CollectionGridItemView extends BaseView {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded);
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
                         view.setOnClickListener(null);
                     } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
                         int radiusDifference = 5;
@@ -612,16 +611,11 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        String artist = "";
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-                            for (int i = 0; i < data.getCreditBlocks().size(); i++) {
-                                if (data.getCreditBlocks().get(i).getTitle().equalsIgnoreCase("Starring")) {
-                                    if (data.getCreditBlocks().get(i).getCredits() != null && data.getCreditBlocks().get(i).getCredits().size() > 0 && data.getCreditBlocks().get(i).getCredits().get(0).getTitle() != null) {
-                                        artist = data.getCreditBlocks().get(i).getCredits().get(0).getTitle();
-                                        break;
-                                    }
-                                }
-                            }
+
+                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+
+
                             ((TextView) view).setText(artist);
                         } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
