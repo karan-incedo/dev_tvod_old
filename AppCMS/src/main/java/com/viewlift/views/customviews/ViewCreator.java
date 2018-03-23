@@ -2933,7 +2933,7 @@ public class ViewCreator {
                                             if (customWebView != null) {
                                                 customWebView.loadUrl("about:blank");
                                             }
-                                        });
+                                        },false);
                             }
                         });
 
@@ -3002,7 +3002,7 @@ public class ViewCreator {
                                                 if (customWebView != null) {
                                                     customWebView.loadUrl("about:blank");
                                                 }
-                                            });
+                                            },false);
 
                                 }
 

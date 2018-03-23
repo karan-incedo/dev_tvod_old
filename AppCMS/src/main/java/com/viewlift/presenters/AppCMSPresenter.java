@@ -674,6 +674,7 @@ public class AppCMSPresenter {
     private boolean showNetworkConnectivity;
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
+    private boolean forceLoad;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
     /*private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
@@ -1348,6 +1349,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public void forceLoad() {
+        this.forceLoad = true;
+    }
+
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
@@ -1414,7 +1419,8 @@ public class AppCMSPresenter {
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null, null);
-            } else if (currentActivity != null && !loadingPage) {
+            } else if (currentActivity != null && (!loadingPage|| forceLoad)) {
+                forceLoad = false;
                 if (actionType == null) {
                     //Log.e(TAG, "Action " + action + " not found!");
                     return false;
@@ -5447,6 +5453,15 @@ public class AppCMSPresenter {
         return result;
     }
 
+    private Uri bundle;
+    public void setDeepLinnkData(Uri bundle){
+        this.bundle = bundle;
+    }
+
+    public Uri getDeepLinkData(){
+        return bundle;
+    }
+
     public boolean sendDeepLinkAction(Uri deeplinkUri) {
         //Log.d(TAG, "Sending deeplink action");
         boolean result = false;
@@ -5455,6 +5470,7 @@ public class AppCMSPresenter {
             deeplinkIntent.setData(deeplinkUri);
             currentActivity.sendBroadcast(deeplinkIntent);
             result = true;
+            setDeepLinnkData(deeplinkUri);
         }
         return result;
     }
@@ -11546,7 +11562,7 @@ public class AppCMSPresenter {
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             setCurrentArticleIndex(-1);
-            navigateToArticlePage(gistId, title, false, null);
+            navigateToArticlePage(gistId, title, false, null,false);
             return;
         }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             navigateToPhotoGalleryPage(gistId, title, null, false);
@@ -12932,7 +12948,7 @@ public class AppCMSPresenter {
     public void navigateToArticlePage(String articleId,
                                       String pageTitle,
                                       boolean launchActivity,
-                                      Action0 callback) {
+                                      Action0 callback,boolean isDeepLink) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -13007,7 +13023,7 @@ public class AppCMSPresenter {
                                 }
                             }
                         }
-                    });
+                    },isDeepLink);
 
         }
     }
@@ -13044,17 +13060,18 @@ public class AppCMSPresenter {
     private void getArticlePageContent(final String apiBaseUrl,
                                        final String siteId,
                                        String pageId,
-                                       final AppCMSArticleAPIAction articleAPIAction) {
+                                       final AppCMSArticleAPIAction articleAPIAction,boolean isDeepLink) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
+
                 appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
                     try {
                         appCMSArticleCall.call(
-                                currentActivity.getString(R.string.app_cms_article_api_url,
+                                currentActivity.getString((isDeepLink ? R.string.app_cms_article_api_url_with_perma : R.string.app_cms_article_api_url),
                                         apiBaseUrl,
                                         pageId,
                                         siteId

@@ -59,6 +59,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (getApplication() instanceof AppCMSApplication) {
             appCMSPresenterComponent =
                     ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent.appCMSPresenter().setDeepLinnkData(null);
         }
 
         handleIntent(getIntent());
@@ -109,6 +110,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
         });
+        UAirship.takeOff(getApplication());
+        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 

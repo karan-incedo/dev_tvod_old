@@ -71,6 +71,8 @@
 
     <string name="app_cms_article_api_url">%1$s/content/article?id=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
+
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
     <!--Article API-->

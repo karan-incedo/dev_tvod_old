@@ -23,6 +23,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +38,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -82,6 +84,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -460,8 +463,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
-        registerReceiver(presenterActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+        /*registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));*/
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -983,10 +986,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
 
-                String deeplinkUri = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
-                if (!TextUtils.isEmpty(deeplinkUri)) {
-                    pendingDeeplinkUri = Uri.parse(deeplinkUri);
+                if(appCMSPresenter.getDeepLinkData() != null) {
+                    String deeplinkUri = appCMSPresenter.getDeepLinkData().toString();/*intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));*/
+                    if (!TextUtils.isEmpty(deeplinkUri)) {
+                        pendingDeeplinkUri = Uri.parse(deeplinkUri);
+                    }
                 }
+
             }
         } catch (Exception e) {
             //
@@ -1072,7 +1078,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onSuccess(AppCMSBinder appCMSBinder) {
         appCMSPresenter.restartInternalEvents();
         resumeInternalEvents = true;
-
         if (appCMSBinder != null && appCMSBinder.getSearchQuery() != null) {
             //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
             //Log.d(TAG, "Processing search query for deeplink " +
@@ -1743,9 +1748,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.isPageAVideoPage(appCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
+                setCastingVisibility(false);
             } else {
                 mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
+                setCastingVisibility(true);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }
@@ -2146,9 +2153,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             pagePath.append(pathSegment);
         }
         //Log.d(TAG, "Launching deep link " +
-//                deeplinkUri.toString() +
-//                " with path: " +
-//                pagePath.toString());
+        //        deeplinkUri.toString() +
+        //         " with path: " +
+        //        pagePath.toString());
+
+        if(pagePath.toString().contains("article")){
+            appCMSPresenter.navigateToArticlePage(pagePath.toString(),title,false,null,true);
+            return;
+        }
+
+        appCMSPresenter.forceLoad();
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
         appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
                 action,
                 title,

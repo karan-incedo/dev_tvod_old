@@ -361,7 +361,7 @@ public class ArticleFeedModule extends LinearLayout {
                                                 data.getGist().getId() != null &&
                                                 data.getGist().getTitle() != null)
                                             appCMSPresenter.setCurrentArticleIndex(-1);
-                                            appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false,null);
+                                            appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false,null,false);
                                     }
                                 });
                                 break;
