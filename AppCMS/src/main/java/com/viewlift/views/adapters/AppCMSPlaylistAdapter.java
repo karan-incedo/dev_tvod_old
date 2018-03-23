@@ -155,6 +155,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 false,
                 false);
         view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(viewType,adapterData.size());
         return new ViewHolder(view);
     }
 
