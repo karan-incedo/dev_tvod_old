@@ -1,6 +1,5 @@
 package com.viewlift.views.adapters;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -616,7 +615,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 (data == null ||
                         data.getGist() == null ||
                         (data.getGist() != null && !data.getGist().getFree()))) {
-            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                     null);
             return;
         }

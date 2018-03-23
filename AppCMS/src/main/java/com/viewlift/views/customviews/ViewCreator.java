@@ -1659,8 +1659,22 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-            try {
+            try {// TODO To Be remove post development finish
+                if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "video_page.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(0);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "music_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(3);
+                }  else {
+                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+
             } catch (Exception e) {
 
             }
@@ -2809,7 +2823,7 @@ public class ViewCreator {
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setId(R.id.playlist_download_id);
 
@@ -2850,7 +2864,7 @@ public class ViewCreator {
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded_big);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
@@ -5285,14 +5299,14 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
                                             //
                                         });
                                     });
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
                                             //

@@ -16,28 +16,27 @@
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
 
-        android:padding="@dimen/app_cms_audio_image_padding">
+        android:padding="10dp">
 
 
         <RelativeLayout
             android:id="@+id/rl_track_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/app_cms_audio_player_thumbnail_pading"
-            android:layout_marginRight="@dimen/app_cms_audio_player_thumbnail_pading">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
             <ImageView
                 android:id="@+id/track_image_blurred"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="@drawable/placeholder_audio" />
+                android:scaleType="fitXY" />
             <ImageView
                 android:id="@+id/track_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/placeholder_audio" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
         </RelativeLayout>
 
         <TextView
@@ -60,13 +59,18 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/app_cms_player_track_image_height"
         android:layout_weight=".5"
+        android:layout_marginRight="20dp"
+        android:paddingTop="20dp"
+
+        android:paddingBottom="20dp"
+
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/audio_controllers"
-            android:gravity="center_vertical"
+            android:gravity="top"
             android:orientation="vertical">
 
             <TextView
@@ -134,7 +138,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp">
+                android:layout_marginRight="25dp"
+                >
 
                 <TextView
                     android:id="@+id/start_time"
@@ -181,13 +186,15 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="20dp"
                 android:weightSum="10">
 
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2.5"
-                    android:gravity="center">
+                    android:gravity="left|center_vertical">
 
                     <ImageButton
                         android:id="@+id/shuffle"
@@ -249,7 +256,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2.5"
 
-                    android:gravity="center">
+                    android:gravity="right|center_vertical">
 
                     <ImageButton
                         android:id="@+id/playlist"
@@ -263,8 +270,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 

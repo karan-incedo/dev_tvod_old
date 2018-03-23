@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -300,6 +299,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.google.android.gms.internal.zzahn.runOnUiThread;
 import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
@@ -677,7 +677,7 @@ public class AppCMSPresenter {
                                 true);
                     } else {
                         if (isAppSVOD() && isUserLoggedIn()) {
-                            showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED, null);
                         } else {
                             showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                         }
@@ -704,13 +704,13 @@ public class AppCMSPresenter {
                     } else {
                         if (isAppSVOD()) {
                             if (isUserLoggedIn()) {
-                                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                                         () -> {
                                             setAfterLoginAction(() -> {
                                             });
                                         });
                             } else {
-                                showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                                         () -> {
                                             setAfterLoginAction(() -> {
                                             });
@@ -865,9 +865,9 @@ public class AppCMSPresenter {
                     entitlementCheckActive.getRelateVideoIds());
         }, () -> {
             if (isUserLoggedIn()) {
-                showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED, null);
+                showEntitlementDialog(DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED, null);
             } else {
-                showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED, null);
             }
         });
 
@@ -3753,12 +3753,12 @@ public class AppCMSPresenter {
                     }
                     if (onRefreshFinished != null) {
                         onRefreshFinished.call();
-                        if (getAudioPlayerOpen() && isUserLoggedIn()) {
-                            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
-                        }
+//                        if (getAudioPlayerOpen() && isUserLoggedIn()) {
+//                            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+//                        }
 
                     }
-                    setAudioPlayerOpen(false);
+//                    setAudioPlayerOpen(false);
 
                 });
             });
@@ -8186,7 +8186,7 @@ public class AppCMSPresenter {
             }
             if (!networkConnected &&
                     (downloadInProgress || !onDownloadPage) &&
-                    downloadsAvailableForApp()) {
+                    downloadsAvailableForApp() && isUserLoggedIn()) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
             } else if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) &&
@@ -9246,9 +9246,9 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
                     message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
                 }
-                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
-                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
-                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
                     if (getTemplateType() == TemplateType.SPORTS) {
 
@@ -9264,10 +9264,39 @@ public class AppCMSPresenter {
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+
+
+                    /**
+                     * if showing preview ended dialog for audio then show messaege from server
+                     */
+                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                            message = getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                        }
+                        title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
+
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        }
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                            negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                        }
+                    }
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
                 if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ||
                         dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_title);
-                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_message);
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
 
                     /**
@@ -9293,7 +9322,24 @@ public class AppCMSPresenter {
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
 
+
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_required_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_required_message);
+
+
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
                 if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
                     String paymentProcessor = getActiveSubscriptionProcessor();
                     if ((!TextUtils.isEmpty(paymentProcessor) &&
@@ -9361,7 +9407,7 @@ public class AppCMSPresenter {
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
 
-                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
@@ -9405,9 +9451,10 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                                 }
                             });
-                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED ||
-                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
-                    builder.setPositiveButton(R.string.app_cms_login_button_text,
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+                    builder.setPositiveButton(negativeButtonText,
                             (dialog, which) -> {
                                 try {
                                     dialog.dismiss();
@@ -9420,7 +9467,7 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
                                 }
                             });
-                    builder.setNegativeButton(R.string.app_cms_subscription_button_text,
+                    builder.setNegativeButton(positiveButtonText,
                             (dialog, which) -> {
                                 try {
                                     dialog.dismiss();
@@ -9562,7 +9609,9 @@ public class AppCMSPresenter {
                                 }
                                 setAudioPlayerOpen(false);
                             } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
+                                    dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
                                 if (onCloseAction != null) {
                                     //if user press back key without doing login subscription ,clear saved data
                                     setEntitlementPendingVideoData(null);
@@ -10339,8 +10388,13 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
+        if (getAudioPlayerOpen() && isUserLoggedIn()) {
+            sendRefreshPageAction();
+            sendCloseOthersAction(null, true, false);
 
-        if (entitlementPendingVideoData != null) {
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+            setAudioPlayerOpen(false);
+        } else if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
@@ -10365,8 +10419,14 @@ public class AppCMSPresenter {
             }
         } else {
             sendCloseOthersAction(null, true, false);
-            cancelInternalEvents();
-            restartInternalEvents();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    cancelInternalEvents();
+                    restartInternalEvents();
+                }
+            });
+
 
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
@@ -10513,7 +10573,15 @@ public class AppCMSPresenter {
                             } else {
                                 setIsUserSubscribed(true);
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                if (entitlementPendingVideoData != null) {
+                                if (getAudioPlayerOpen() && isUserLoggedIn()) {
+
+                                    sendRefreshPageAction();
+                                    if (!loginFromNavPage) {
+                                        sendCloseOthersAction(null, true, !loginFromNavPage);
+                                    }
+                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                                    setAudioPlayerOpen(false);
+                                }else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11186,7 +11254,15 @@ public class AppCMSPresenter {
                     refreshSubscriptionData) {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
-                    if (entitlementPendingVideoData != null) {
+                    if (getAudioPlayerOpen() && isUserLoggedIn()) {
+                        sendRefreshPageAction();
+                        if (!loginFromNavPage) {
+                            sendCloseOthersAction(null, true, !loginFromNavPage);
+                        }
+                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                        setAudioPlayerOpen(false);
+                    }
+                    else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11286,7 +11362,15 @@ public class AppCMSPresenter {
             } else {
                 clearPageAPIData(() -> {
                 }, false);
-                if (entitlementPendingVideoData != null) {
+                if (getAudioPlayerOpen() && isUserLoggedIn()) {
+                    sendRefreshPageAction();
+                    if (!loginFromNavPage) {
+                        sendCloseOthersAction(null, true, !loginFromNavPage);
+                    }
+                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                    setAudioPlayerOpen(false);
+                }
+                else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -15107,13 +15191,10 @@ public class AppCMSPresenter {
      *
      * @param saveLastAudioPosition
      */
-    public void stopAudioServices(boolean saveLastAudioPosition, boolean isPreviewShow) {
+    public void stopAudioServices() {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
-        intent.putExtra(AudioServiceHelper.APP_CMS_SAVE_LAST_POSITION_MESSAGE, saveLastAudioPosition);
-        intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_iS_AUDIO_PREVIEW, isPreviewShow);
-
         currentActivity.sendBroadcast(intent);
     }
 
@@ -15326,17 +15407,20 @@ public class AppCMSPresenter {
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
-        SUBSCRIPTION_REQUIRED,
+        SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
         SUBSCRIPTION_REQUIRED_AUDIO,
+        SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
+        SUBSCRIPTION_REQUIRED,
 
         SUBSCRIPTION_REQUIRED_PLAYER,
-        LOGIN_AND_SUBSCRIPTION_REQUIRED,
+        LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+        LOGIN_AND_SUBSCRIPTION_REQUIRED,
 
         LOGIN_AND_SUBSCRIPTION_REQUIRED_PREVIEW,
         LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
         SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
-
+        LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
         LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
         LOGOUT_WITH_RUNNING_DOWNLOAD,
         EXISTING_SUBSCRIPTION,
