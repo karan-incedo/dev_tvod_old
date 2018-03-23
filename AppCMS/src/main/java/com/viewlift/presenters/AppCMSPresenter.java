@@ -5987,6 +5987,11 @@ public class AppCMSPresenter {
                                     appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
                                 }
                             }
+
+                            Intent intentUpdateList = new Intent();
+                            intentUpdateList.setAction(AudioServiceHelper.APP_CMS_UPDATE_PLAYLIST);
+                            currentActivity.sendBroadcast(intentUpdateList);
+
                             if (isPlayerScreenOpen && currentActivity != null) {
                                 Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -9335,6 +9340,22 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
+
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                        positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                    }
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                        negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                    }
 
                     //Set Firebase User Property when user is not logged in and unsubscribed
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
@@ -15189,7 +15210,7 @@ public class AppCMSPresenter {
      * Last position of playing audio item will save in following conditions:-
      * uf user kill the app , if video starts to play while audio is playing
      *
-     * @param saveLastAudioPosition
+     * @param
      */
     public void stopAudioServices() {
         Intent intent = new Intent();

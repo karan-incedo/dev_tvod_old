@@ -18,6 +18,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -518,14 +519,15 @@ public class CollectionGridItemView extends BaseView {
                         }
                         view.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.CENTER)) {
                             RequestOptions requestOptions = new RequestOptions()
                                     .override(childViewWidth,
-                                            childViewHeight);
+                                            childViewHeight).fitCenter();
                             Glide.with(context)
                                     .load(imageUrl)
                                     .apply(requestOptions)
                                     .into((ImageView) view);
+
                         }
                     }
                     if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {

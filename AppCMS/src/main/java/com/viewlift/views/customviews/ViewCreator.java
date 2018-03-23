@@ -1670,7 +1670,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "music_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                }  else {
+                } else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
@@ -3408,7 +3408,7 @@ public class ViewCreator {
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getSeason() != null) {
-                        numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+                    numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
                     if (1 < numSeasons) {
                         showTrayLabel = true;
                     }
@@ -3475,7 +3475,7 @@ public class ViewCreator {
                             !appCMSPresenter.isAppSVOD() &&
                             !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
                             (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                                    numSeasons == 0 )) {
+                                    numSeasons == 0)) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -4312,8 +4312,7 @@ public class ViewCreator {
 
                         if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
-                        } else
-                            {
+                        } else {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         }
                         break;
@@ -4419,7 +4418,7 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if ( moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
                         moduleAPI != null && moduleAPI.getContentData() != null &&
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
