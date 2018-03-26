@@ -986,7 +986,8 @@ public class ViewCreator {
                                         }
 
                                         List<String> filmIds = new ArrayList<>();
-                                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                        //TODO- below is to add episodes of shows/series
+                                       /* if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                                 moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null &&
@@ -1007,7 +1008,8 @@ public class ViewCreator {
                                                     }
                                                 }
                                             }
-                                        } else if (moduleAPI.getContentData() != null &&
+                                        } else */
+                                        if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
@@ -1016,7 +1018,7 @@ public class ViewCreator {
                                         UpdateImageIconAction updateImageIconAction =
                                                 new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
                                                         appCMSPresenter,
-                                                        filmIds);
+                                                        filmIds, moduleAPI.getContentData().get(0));
                                         boolean filmsAdded = true;
                                         for (String filmId : filmIds) {
                                             filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
@@ -1025,7 +1027,7 @@ public class ViewCreator {
                                         ((ImageButton) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                                         view.setVisibility(View.VISIBLE);
 
-                                        //as of now set visibility gone for wathclist button as this is on hold
+                                        //TODO- of now set visibility gone for wathclist button as this is on hold
                                         if (module.getBlockName().equalsIgnoreCase("playlistDetail01")) {
                                             view.setVisibility(View.GONE);
 
