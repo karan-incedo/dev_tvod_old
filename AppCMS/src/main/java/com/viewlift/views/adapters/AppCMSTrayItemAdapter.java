@@ -207,6 +207,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
+                int radiusDifference = 5;
+                if (BaseView.isTablet(holder.itemView.getContext())) {
+                    radiusDifference = 2;
+                }
+
                 if (contentDatum.getGist() != null) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
 
@@ -233,11 +238,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             Boolean filmDownloadUpdated = filmDownloadIconUpdatedMap.get(contentDatum.getGist().getId());
                             if (filmDownloadUpdated == null || !filmDownloadUpdated) {
                                 filmDownloadIconUpdatedMap.put(contentDatum.getGist().getId(), true);
-                                int radiusDifference = 5;
-                                if (BaseView.isTablet(holder.itemView.getContext())) {
-                                    radiusDifference = 2;
-                                }
 
+
+
+                                int finalRadiusDifference = radiusDifference;
                                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
@@ -1011,7 +1015,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
             //Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
-            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+            appCMSPresenter.editWatchlist(contentDatum,
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
