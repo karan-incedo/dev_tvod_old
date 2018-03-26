@@ -986,7 +986,8 @@ public class ViewCreator {
                                         }
 
                                         List<String> filmIds = new ArrayList<>();
-                                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                        //TODO- below is to add episodes of shows/series
+                                       /* if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                                 moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null &&
@@ -1007,7 +1008,8 @@ public class ViewCreator {
                                                     }
                                                 }
                                             }
-                                        } else if (moduleAPI.getContentData() != null &&
+                                        } else */
+                                        if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
@@ -1016,7 +1018,7 @@ public class ViewCreator {
                                         UpdateImageIconAction updateImageIconAction =
                                                 new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
                                                         appCMSPresenter,
-                                                        filmIds);
+                                                        filmIds, moduleAPI.getContentData().get(0));
                                         boolean filmsAdded = true;
                                         for (String filmId : filmIds) {
                                             filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
@@ -1025,7 +1027,7 @@ public class ViewCreator {
                                         ((ImageButton) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                                         view.setVisibility(View.VISIBLE);
 
-                                        //as of now set visibility gone for wathclist button as this is on hold
+                                        //TODO- of now set visibility gone for wathclist button as this is on hold
                                         if (module.getBlockName().equalsIgnoreCase("playlistDetail01")) {
                                             view.setVisibility(View.GONE);
 
@@ -1660,20 +1662,8 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {// TODO To Be remove post development finish
-                if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "video_page.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(0);
-                } else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "music_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(3);
-                } else {
+
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             } catch (Exception e) {
 
@@ -1892,7 +1882,11 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
-                                childrenContainer.addView(componentView);
+                                if(component.isHeaderView()){
+                                    pageView.addToHeaderView(componentView);
+                                }else{
+                                    childrenContainer.addView(componentView);
+                                }
                                 moduleView.setComponentHasView(i, true);
                                 moduleView.setViewMarginsFromComponent(component,
                                         componentView,
@@ -2902,7 +2896,8 @@ public class ViewCreator {
 
                         List<String> filmIds = new ArrayList<>();
 
-                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                        //TODO- below is to add episodes of shows/series
+                        /*if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                 moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2924,7 +2919,8 @@ public class ViewCreator {
                                     }
                                 }
                             }
-                        } else if (moduleAPI != null &&
+                        } else */
+                        if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
@@ -2941,7 +2937,7 @@ public class ViewCreator {
                         UpdateImageIconAction updateImageIconAction =
                                 new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
                                         appCMSPresenter,
-                                        filmIds);
+                                        filmIds, moduleAPI.getContentData().get(0));
                         updateImageIconAction.updateWatchlistResponse(filmsAdded);
                         break;
 
@@ -5173,18 +5169,22 @@ public class ViewCreator {
 
         private View.OnClickListener addClickListener;
         private View.OnClickListener removeClickListener;
+        private ContentDatum contentDatum;
 
         UpdateImageIconAction(ImageButton imageButton,
                               AppCMSPresenter presenter,
-                              List<String> filmIds) {
+                              List<String> filmIds,
+                              ContentDatum contentDatum) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.filmIds = filmIds;
+            this.contentDatum = contentDatum;
 
             addClickListener = v -> {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     for (String filmId : UpdateImageIconAction.this.filmIds) {
-                        appCMSPresenter.editWatchlist(filmId,
+                        contentDatum.getGist().setId(filmId);
+                        appCMSPresenter.editWatchlist(contentDatum,
                                 addToWatchlistResult -> {
                                     UpdateImageIconAction.this.imageButton.setImageResource(
                                             R.drawable.remove_from_watchlist);
@@ -5204,7 +5204,8 @@ public class ViewCreator {
             };
             removeClickListener = v -> {
                 for (String filmId : UpdateImageIconAction.this.filmIds) {
-                    appCMSPresenter.editWatchlist(filmId,
+                    this.contentDatum.getGist().setId(filmId);
+                    appCMSPresenter.editWatchlist(this.contentDatum,
                             addToWatchlistResult -> {
                                 UpdateImageIconAction.this.imageButton.setImageResource(
                                         R.drawable.add_to_watchlist);

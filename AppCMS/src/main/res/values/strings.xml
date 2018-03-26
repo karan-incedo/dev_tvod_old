@@ -312,6 +312,9 @@
     <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
     <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
 
+    <string name="app_cms_select_alert_title">Please Select!</string>
+    <string name="app_cms_re_download_item_message">Select your option to re-download or delete item.</string>
+
     <string name="app_cms_delete_download_alert_title">Delete Download</string>
     <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
     <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
@@ -607,6 +610,9 @@
     <string name="media_type_audio">AUDIO</string>
     <string name="media_type_video">VIDEO</string>
     <string name="content_type_audio">AUDIO</string>
+    <string name="content_type_video">VIDEO</string>
+    <string name="content_type_series">SERIES</string>
+    <string name="content_type_show">SHOW</string>
 
 
     <!-- Notificaiton Channel -->

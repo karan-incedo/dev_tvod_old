@@ -269,18 +269,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                     }
                                     if (action == null) {
                                         if (!appCMSPresenter.isNetworkConnected()) {
-                                            if (!appCMSPresenter.isUserLoggedIn()) {
-                                                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                                        appCMSPresenter::launchBlankPage,
-                                                        null);
-                                                return;
-                                            }
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                                    appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                                                    true,
-                                                    () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                                            null, null, false),
-                                                    null);
+                                            appCMSPresenter.openDownloadScreenForNetworkError(false,
+                                                    () -> playPlaylistItem(data, itemView, clickPosition));
                                             return;
                                         }
                                   /*get audio details on tray click item and play song*/

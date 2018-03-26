@@ -667,7 +667,7 @@ public class AppCMSPresenter {
                     pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                     currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
-                        editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                        editWatchlist(contentDatum, appCMSAddToWatchlistResult -> {
                                     Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
                                     stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(stopPageLoadingActionIntent);
@@ -3770,7 +3770,7 @@ public class AppCMSPresenter {
         showLoadingDialog(false);
     }
 
-    public void editWatchlist(final String filmId,
+    public void editWatchlist(final ContentDatum contentDatum,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1,
                               boolean add,
                               boolean showToast) {
@@ -3790,7 +3790,7 @@ public class AppCMSPresenter {
                 appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
                 getLoggedInUser(),
-                filmId);
+                contentDatum.getGist().getId());
 
         //Firebase Successful Login Check on WatchList Add and Remove
         mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
@@ -3798,20 +3798,28 @@ public class AppCMSPresenter {
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
             request.setUserId(getLoggedInUser());
-            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+            if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_video))) {
+                request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+            }
+            if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_series)) ||
+                    contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_show))) {
+                request.setContentType(currentActivity.getString(R.string.content_type_show).toLowerCase());
+            }
+            //TODO- in future we will pick the content type form contentDatum
+//            request.setContentType(contentDatum.getGist().getContentType());
             request.setPosition(1L);
             if (add) {
-                request.setContentId(filmId);
+                request.setContentId(contentDatum.getGist().getId());
 
-                if (!temporaryWatchlist.contains(filmId)) {
-                    temporaryWatchlist.add(filmId);
+                if (!temporaryWatchlist.contains(contentDatum.getGist().getId())) {
+                    temporaryWatchlist.add(contentDatum.getGist().getId());
                 }
 
             } else {
-                request.setContentIds(filmId);
+                request.setContentIds(contentDatum.getGist().getId());
 
-                if (temporaryWatchlist.contains(filmId)) {
-                    temporaryWatchlist.remove(filmId);
+                if (temporaryWatchlist.contains(contentDatum.getGist().getId())) {
+                    temporaryWatchlist.remove(contentDatum.getGist().getId());
                 }
             }
 
@@ -5933,18 +5941,10 @@ public class AppCMSPresenter {
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (!isNetworkConnected()) {
-            if (!isUserLoggedIn()) {
-                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                        this::launchBlankPage,
-                        null);
-                return;
-            }
-            showDialog(AppCMSPresenter.DialogType.NETWORK,
-                    getNetworkConnectivityDownloadErrorMsg(),
-                    true,
-                    () -> navigateToDownloadPage(getDownloadPageId(),
-                            null, null, false),
-                    null);
+            int count = tryCount;
+            openDownloadScreenForNetworkError(false,
+                    () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
+                            playAudio, count, appCMSAudioDetailAPIAction));
             return;
         }
         if (currentActivity != null) {
@@ -6023,18 +6023,8 @@ public class AppCMSPresenter {
     public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
         if (!isNetworkConnected()) {
-            if (!isUserLoggedIn()) {
-                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                        this::launchBlankPage,
-                        null);
-                return;
-            }
-            showDialog(AppCMSPresenter.DialogType.NETWORK,
-                    getNetworkConnectivityDownloadErrorMsg(),
-                    true,
-                    () -> navigateToDownloadPage(getDownloadPageId(),
-                            null, null, false),
-                    null);
+            openDownloadScreenForNetworkError(launchActivity,
+                    () -> navigateToPlaylistPage(playlistId, pageTitle, launchActivity));
             return;
         }
 
@@ -9340,45 +9330,45 @@ public class AppCMSPresenter {
                         message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
 
-                    //Set Firebase User Property when user is not logged in and unsubscribed
-                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                }
-                if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
-                    title = currentActivity.getString(R.string.preview_content);
-                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
-                        positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        //Set Firebase User Property when user is not logged in and unsubscribed
+                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
-                        negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
-                    }
+                    if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
+                        title = currentActivity.getString(R.string.preview_content);
+                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        }
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                            negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                        }
 
-                    //Set Firebase User Property when user is not logged in and unsubscribed
-                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                }
-                if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
-                    String paymentProcessor = getActiveSubscriptionProcessor();
-                    if ((!TextUtils.isEmpty(paymentProcessor) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
-                    } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
-                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
-                    } else {
-                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        //Set Firebase User Property when user is not logged in and unsubscribed
+                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
-                }
+                    if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
+                        String paymentProcessor = getActiveSubscriptionProcessor();
+                        if ((!TextUtils.isEmpty(paymentProcessor) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
+                        } else if (!TextUtils.isEmpty(paymentProcessor) &&
+                                ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                        || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
+                        } else {
+                            title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        }
+                    }
 
                     if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                         String paymentProcessor = getActiveSubscriptionProcessor();
@@ -9432,26 +9422,26 @@ public class AppCMSPresenter {
                         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
 
-                if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
-                    title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
-                    message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
-                    positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
-                }
+                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                        title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                        message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
+                        positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+                    }
 
-                if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                    title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
-                    message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
-                    positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
-                }
+                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                        title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                        message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
+                        positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
+                    }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
-                builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                        Integer.toHexString(textColor).substring(2),
-                        title)))
-                        .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                                Integer.toHexString(textColor).substring(2),
-                                message)));
+                    builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            title)))
+                            .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                                    Integer.toHexString(textColor).substring(2),
+                                    message)));
 
                     if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                         builder.setPositiveButton("Yes",
@@ -10614,7 +10604,7 @@ public class AppCMSPresenter {
                                     }
                                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                                     setAudioPlayerOpen(false);
-                                }else if (entitlementPendingVideoData != null) {
+                                } else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11294,8 +11284,7 @@ public class AppCMSPresenter {
                         }
                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                         setAudioPlayerOpen(false);
-                    }
-                    else if (entitlementPendingVideoData != null) {
+                    } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11402,8 +11391,7 @@ public class AppCMSPresenter {
                     }
                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                     setAudioPlayerOpen(false);
-                }
-                else if (entitlementPendingVideoData != null) {
+                } else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -12512,7 +12500,7 @@ public class AppCMSPresenter {
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -15438,6 +15426,7 @@ public class AppCMSPresenter {
         DELETE_ONE_WATCHLIST_ITEM,
         DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
+        RE_START_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
         SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
