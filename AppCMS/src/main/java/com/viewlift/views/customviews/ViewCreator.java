@@ -1132,33 +1132,84 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
                                             int viewHeight = view.getHeight();
+
                                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
                                                         viewWidth,
                                                         viewHeight);
-                                                Glide.with(context)
-                                                        .load(imageUrl)
-                                                        .apply(new RequestOptions().override(viewWidth, viewHeight))
-                                                        .into((ImageView) view);
+                                                if (imageUrl != null && !TextUtils.isEmpty(imageUrl)) {
+                                                    Glide.with(context)
+                                                            .load(imageUrl)
+                                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                            .into((ImageView) view);
+                                                } else {
+                                                    if (viewHeight > viewWidth) {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                                                    } else {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                                    }
+                                                }
                                             } else if (viewWidth > 0 && viewHeight > 0) {
                                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
                                                         viewWidth,
                                                         viewHeight);
-                                                Glide.with(context)
-                                                        .load(videoImageUrl)
-                                                        .apply(new RequestOptions().override(viewWidth, viewHeight))
-                                                        .into((ImageView) view);
+
+                                                if (videoImageUrl != null && !TextUtils.isEmpty(videoImageUrl)) {
+                                                    Glide.with(context)
+                                                            .load(videoImageUrl)
+                                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                            .into((ImageView) view);
+                                                } else {
+                                                    if (viewHeight > viewWidth) {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                                                    } else {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                                    }
+                                                }
                                             } else if (viewHeight > 0) {
-                                                Glide.with(context)
-                                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                        .apply(new RequestOptions().override(Target.SIZE_ORIGINAL, viewHeight).centerCrop())
-                                                        .into((ImageView) view);
+                                                String videoImageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
+
+                                                if (videoImageUrl != null && !TextUtils.isEmpty(videoImageUrl)) {
+                                                    Glide.with(context)
+                                                            .load(videoImageUrl)
+                                                            .apply(new RequestOptions().override(Target.SIZE_ORIGINAL, viewHeight).centerCrop())
+                                                            .into((ImageView) view);
+                                                } else {
+                                                    if (viewHeight > viewWidth) {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                                                    } else {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                                    }
+                                                }
                                             } else {
-                                                Glide.with(context)
-                                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                        .into((ImageView) view);
+                                                String videoImageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
+
+                                                if (videoImageUrl != null && !TextUtils.isEmpty(videoImageUrl)) {
+                                                    Glide.with(context)
+                                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                                            .into((ImageView) view);
+                                                } else {
+                                                    if (viewHeight > viewWidth) {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                                                    } else {
+                                                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                                        ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                                    }
+                                                }
+
                                             }
                                             view.forceLayout();
                                             view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
@@ -1662,8 +1713,31 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {// TODO To Be remove post development finish
-
+                if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "video_page.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(0);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("watchlist01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("history01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "history.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }
+//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "music_hub.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(3);
+//                }
+                else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
 
             } catch (Exception e) {
 
@@ -4102,6 +4176,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
+                        componentViewResult.componentView.setVisibility(View.GONE);
                         // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should be uncommented once that is available
 //                        componentViewResult.componentView = new ImageView(context);
 //                        ImageView imageView = (ImageView) componentViewResult.componentView;
@@ -4309,7 +4384,7 @@ public class ViewCreator {
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
-                            ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
+                            ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         } else {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         }
