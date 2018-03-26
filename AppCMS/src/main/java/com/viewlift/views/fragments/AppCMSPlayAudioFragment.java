@@ -287,6 +287,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         super.onResume();
         isVisible = true;
         audioPreview(false);
+        appCMSPresenter.setCancelAllLoads(false);
 
         getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
     }

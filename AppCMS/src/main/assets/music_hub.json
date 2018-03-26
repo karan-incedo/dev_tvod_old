@@ -625,6 +625,8 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 11,
+                  "thumbnailWidth": 150,
+                  "thumbnailHeight": 150,
                   "height": 19
                 },
                 "tabletLandscape": {
@@ -632,6 +634,8 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
+                  "thumbnailWidth": 150,
+                  "thumbnailHeight": 150,
                   "height": 28
                 },
                 "tabletPortrait": {
@@ -639,6 +643,8 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
+                  "thumbnailWidth": 150,
+                  "thumbnailHeight": 150,
                   "height": 23
                 }
               },
