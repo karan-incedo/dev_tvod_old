@@ -3,8 +3,11 @@ package com.viewlift.views.binders;
 import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import java.util.List;
 
 import rx.functions.Action1;
 
@@ -22,6 +25,10 @@ public class RetryCallBinder extends Binder {
     private ContentDatum contentDatum;
     private String pageId;
     private Action1<AppCMSAddToWatchlistResult> callback;
+    private NavigationPrimary primary;
+    private List<NavigationPrimary> items;
+    private String filmId;
+    private AppCMSPresenter.RETRY_TYPE retry_type;
 
     public String getFilmId() {
         return filmId;
@@ -31,8 +38,6 @@ public class RetryCallBinder extends Binder {
         this.filmId = filmId;
     }
 
-    private String filmId;
-
     public AppCMSPresenter.RETRY_TYPE getRetry_type() {
         return retry_type;
     }
@@ -40,8 +45,6 @@ public class RetryCallBinder extends Binder {
     public void setRetry_type(AppCMSPresenter.RETRY_TYPE retry_type) {
         this.retry_type = retry_type;
     }
-
-    private AppCMSPresenter.RETRY_TYPE retry_type;
 
     public String getPagePath() {
         return pagePath;
@@ -106,4 +109,23 @@ public class RetryCallBinder extends Binder {
     public void setCallback(Action1<AppCMSAddToWatchlistResult> action1) {
         this.callback = action1;
     }
+
+
+    public NavigationPrimary getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(NavigationPrimary primary) {
+        this.primary = primary;
+    }
+
+    public List<NavigationPrimary> getItems() {
+        return items;
+    }
+
+    public void setItems(List<NavigationPrimary> items) {
+        this.items = items;
+    }
+
+
 }

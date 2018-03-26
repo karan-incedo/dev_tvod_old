@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -731,6 +732,9 @@ public abstract class BaseView extends FrameLayout {
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+        /*if (childComponent.getKey()!=null && childComponent.getKey().equalsIgnoreCase("showTitle")) {
+            layout.getMobile().setWidth(290f);
+        }*/
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
         int parentViewWidth = (int) getViewWidth(getContext(),
@@ -957,6 +961,10 @@ public abstract class BaseView extends FrameLayout {
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
             }
+
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY) {
+                ((TextView) view).setGravity(Gravity.CENTER_VERTICAL);
+            }
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_RIGHT_KEY) {
                 ((TextView) view).setGravity(Gravity.RIGHT);
             }
@@ -966,7 +974,7 @@ public abstract class BaseView extends FrameLayout {
                 viewWidth = LayoutParams.WRAP_CONTENT;
             }
 
-             componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
@@ -1002,7 +1010,8 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_PLAY_IMAGE_KEY:
-                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                    if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY != jsonValueKeyMap.get(viewType)&&
+                            AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && componentViewType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
@@ -1201,7 +1210,7 @@ public abstract class BaseView extends FrameLayout {
             }
         }
 
-        if (useWidthOfScreen) {
+        if (useWidthOfScreen || componentKey==AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE) {
             viewWidth = DEVICE_WIDTH;
         }
 

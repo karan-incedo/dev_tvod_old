@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -38,6 +40,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             return;
         }
         setContentView(R.layout.activity_launch_tv);
+//        Log.d("TVSplashActivity" , "DeviceDetail = "+getDeviceDetail());
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
@@ -52,7 +55,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 Utils.getProperty("SiteId", getApplicationContext()),
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV,
-                false);
+                true);
         }else{
             showErrorFragment(true);
         }
@@ -90,7 +93,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                     public void run() {
                         CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
                     }
-                },2000);
+                },550);
             }
         }
     };
@@ -98,33 +101,70 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
 
     private void startLogoAnimation() {
         final ImageView logo = (ImageView) findViewById(R.id.splash_logo);
+        int logoWidth = logo.getWidth();
+        int logoHeight = logo.getHeight();
+
+        BitmapDrawable bd = (BitmapDrawable) this.getResources().getDrawable(R.drawable.app_logo);
+        int smallWidth = bd.getBitmap().getWidth();
+        int smallHeight = bd.getBitmap().getHeight();
+
+        float xScale = (float) (((smallWidth * 100) / logoWidth)) / 100;
+        float yScale = (float) (((smallHeight * 100) / logoHeight)) / 100;
+
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 ObjectAnimator translateX = ObjectAnimator.ofFloat(logo, "translationX",
-                        (( Resources.getSystem().getDisplayMetrics().widthPixels / 2
-                                - getResources().getDimension(R.dimen.footer_logo_width)/2 )
-                                - getResources().getDimension(R.dimen.footer_logo_margin_right)));
-                translateX.setDuration(1500);
+                        ((Resources.getSystem().getDisplayMetrics().widthPixels / 2) - smallWidth / 2 - getResources().getDimension(R.dimen.logo_margin)));
+                translateX.setDuration(500);
                 translateX.start();
 
                 ObjectAnimator translateY = ObjectAnimator.ofFloat(logo, "translationY",
-                        (( Resources.getSystem().getDisplayMetrics().heightPixels / 2 -
-                                getResources().getDimension(R.dimen.footer_logo_height)/2)
-                                - getResources().getDimension(R.dimen.footer_logo_margin_bottom)));
-                translateY.setDuration(1500);
+                        ((Resources.getSystem().getDisplayMetrics().heightPixels / 2) - smallHeight / 2 - getResources().getDimension(R.dimen.logo_margin)));
+                translateY.setDuration(500);
                 translateY.start();
 
-                ObjectAnimator anim = ObjectAnimator.ofFloat(logo,"scaleX",0.50f);
-                anim.setDuration(1500); // duration 3 seconds
+                ObjectAnimator anim = ObjectAnimator.ofFloat(logo, "scaleX", xScale);
+                anim.setDuration(500); // duration 3 seconds
                 anim.start();
 
-                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo,"scaleY",0.50f);
-                anim2.setDuration(1500); // duration 3 seconds
+                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo, "scaleY", yScale);
+                anim2.setDuration(500); // duration 3 seconds
                 anim2.start();
             }
         });
+    }
+
+
+    private String getDeviceDetail(){
+        StringBuffer stringBuffer = new StringBuffer();
+        try {
+            final String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
+            String AMAZON_MODEL = Build.MODEL;
+            if (getPackageManager().hasSystemFeature(AMAZON_FEATURE_FIRE_TV)) {
+                stringBuffer.append("FireTV :: ");
+            } else {
+                stringBuffer.append("NOT A FireTV :: ");
+            }
+            if (AMAZON_MODEL.matches("AFTN")) {
+                stringBuffer.append("Firetv Gen = 3rd");
+            } else if (AMAZON_MODEL.matches("AFTS")) {
+                stringBuffer.append("Firetv  Gen = 2nd");
+            } else if (AMAZON_MODEL.matches("AFTB")) {
+                stringBuffer.append("Firetv  Gen = 1st");
+            } else if (AMAZON_MODEL.matches("AFTT")) {
+                stringBuffer.append("FireStick  Gen = 2nd");
+            } else if (AMAZON_MODEL.matches("AFTM")) {
+                stringBuffer.append("FireStick  Gen = 1st");
+            } else if (AMAZON_MODEL.matches("AFTRS")) {
+                stringBuffer.append("FireTV Edition ");
+            }
+            stringBuffer.append("SDK_INT = " + Build.VERSION.SDK_INT);
+        }catch (Exception e){
+
+        }
+        return stringBuffer.toString();
     }
 
     public void showErrorFragment(boolean shouldRegisterInternetReciever){

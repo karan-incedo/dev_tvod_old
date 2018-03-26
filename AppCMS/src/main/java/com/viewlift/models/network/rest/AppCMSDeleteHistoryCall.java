@@ -13,6 +13,7 @@ import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -39,27 +40,29 @@ public class AppCMSDeleteHistoryCall {
 
     @WorkerThread
     public void call(String url, String authToken,
-                     final Action1<AppCMSDeleteHistoryResult> appCMSDeleteHistoryResultAction1,
+                     final Action1<List<AppCMSDeleteHistoryResult>> appCMSDeleteHistoryResultAction1,
                      DeleteHistoryRequest request, boolean post) throws Exception {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
-            Call<AppCMSDeleteHistoryResult> call;
+            Call<List<AppCMSDeleteHistoryResult>> call;
             if (post) {
                 call = appCMSDeleteHistoryRest.post(url, authTokenMap, request);
             } else {
                 call = appCMSDeleteHistoryRest.removeSingle(url, authTokenMap, request);
             }
 
-            call.enqueue(new Callback<AppCMSDeleteHistoryResult>() {
+            call.enqueue(new Callback<List<AppCMSDeleteHistoryResult>>() {
                 @Override
-                public void onResponse(@NonNull Call<AppCMSDeleteHistoryResult> call,
-                                       @NonNull Response<AppCMSDeleteHistoryResult> response) {
-                    Observable.just(response.body()).subscribe(appCMSDeleteHistoryResultAction1);
+                public void onResponse(@NonNull Call<List<AppCMSDeleteHistoryResult>> call,
+                                       @NonNull Response<List<AppCMSDeleteHistoryResult>> response) {
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(appCMSDeleteHistoryResultAction1);
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<AppCMSDeleteHistoryResult> call,
+                public void onFailure(@NonNull Call<List<AppCMSDeleteHistoryResult>> call,
                                       @NonNull Throwable t) {
                     //Log.e(TAG, "onFailure: " + t.getMessage());
                 }

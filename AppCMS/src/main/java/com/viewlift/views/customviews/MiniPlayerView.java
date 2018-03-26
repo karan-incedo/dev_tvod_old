@@ -1,7 +1,8 @@
 package com.viewlift.views.customviews;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
@@ -11,10 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import static com.viewlift.views.customviews.ViewCreator.getColor;
 
 /**
  * Created by sandeep.singh on 11/16/2017.
@@ -22,6 +27,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 public class MiniPlayerView extends RelativeLayout implements Animation.AnimationListener{
 
+    ImageButton closePlayer;
     private CustomVideoPlayerView videoPlayerView;
     private AppCMSPresenter appCMSPresenter;
     private Context context;
@@ -29,7 +35,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
     private int relativeLayoutEventViewId;
     private RelativeLayout.LayoutParams lpPipView;
     private RecyclerView mRecyclerView;
-    private Animation animMoveRight,animMoveLeft,animMoveUp;
+    private Animation animBottomSlide;
     private MiniPlayerView miniPlayerView;
 
     public MiniPlayerView(Context context,
@@ -60,12 +66,12 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         relativeLayoutEvent = new RelativeLayout(context);
         init();
     }
+
     public void init(AppCMSPresenter appCMSPresenter,final View recyclerView) {
         this.appCMSPresenter=appCMSPresenter;
         mRecyclerView = (RecyclerView) recyclerView;
         miniPlayerView= this;
     }
-
 
     public void init() {
 
@@ -75,20 +81,15 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
             appCMSPresenter.restrictPortraitOnly();
         }
 
-        animMoveRight = AnimationUtils.loadAnimation(context, R.anim.move_right);
-        animMoveLeft = AnimationUtils.loadAnimation(context, R.anim.move_left);
-        animMoveUp = AnimationUtils.loadAnimation(context, R.anim.move_up);
+        animBottomSlide = AnimationUtils.loadAnimation(context, R.anim.mini_player_slide_bottom);
 
-        animMoveRight.setAnimationListener(this);
-        animMoveLeft.setAnimationListener(this);
-        animMoveUp.setAnimationListener(this);
+
+        this.startAnimation(animBottomSlide);
 
         lpPipView = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_mini_player_width, context),
                 BaseView.dpToPx(R.dimen.app_cms_mini_player_height, context));
         lpPipView.rightMargin = BaseView.dpToPx(R.dimen.app_cms_mini_player_margin, context);
         lpPipView.bottomMargin = BaseView.dpToPx(R.dimen.app_cms_mini_player_margin, context);
-        relativeLayoutEventViewId = View.generateViewId();
-        relativeLayoutEvent.setId(relativeLayoutEventViewId);
         lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
         relativeLayoutEventViewId = View.generateViewId();
@@ -117,48 +118,77 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         }
 
 
-        relativeLayoutEvent.setOnTouchListener(new OnSwipeTouchListener(context) {
-            public void onSwipeTop() {
-                //Toast.makeText(context, "top", Toast.LENGTH_SHORT).show();
+//        relativeLayoutEvent.setOnTouchListener(new OnSwipeTouchListener(context) {
+//            public void onSwipeTop() {
+//                //Toast.makeText(context, "top", Toast.LENGTH_SHORT).show();
 //                mRecyclerView.smoothScrollToPosition(0);
 //                relativeLayoutEvent.startAnimation(animMoveUp);
+//
+//            }
+//
+//            public void onSwipeRight() {
+//                //Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
+//
+//                miniPlayerView.startAnimation(animMoveRight);
+//
+//            }
+//
+//            public void onSwipeLeft() {
+//                // Toast.makeText(context, "left", Toast.LENGTH_SHORT).show();
+//                miniPlayerView.startAnimation(animMoveLeft);
+//
+//            }
+//
+//            public void onSwipeBottom() {
+//                //Toast.makeText(context, "bottom", Toast.LENGTH_SHORT).show();
+//            }
+//
+//        });
 
-            }
-
-            public void onSwipeRight() {
-                //Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
-
-                miniPlayerView.startAnimation(animMoveRight);
-
-            }
-
-            public void onSwipeLeft() {
-                // Toast.makeText(context, "left", Toast.LENGTH_SHORT).show();
-                miniPlayerView.startAnimation(animMoveLeft);
-
-            }
-
-            public void onSwipeBottom() {
-                //Toast.makeText(context, "bottom", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        relativeLayoutEvent.setOnClickListener(v -> {
-            mRecyclerView.smoothScrollToPosition(0);
-            relativeLayoutEvent.startAnimation(animMoveUp);
-        });
+//        relativeLayoutEvent.setOnClickListener(v -> {
+//            mRecyclerView.smoothScrollToPosition(0);
+//            relativeLayoutEvent.startAnimation(animMoveUp);
+//        });
         this.removeAllViews();
 
         if (appCMSPresenter.videoPlayerView==null){
             setVisibility(GONE);
             return;
         }
+        addCloseButton();
+
+        appCMSPresenter.videoPlayerView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        appCMSPresenter.videoPlayerView.setClickable(false);
         addView(appCMSPresenter.videoPlayerView);
         if (findViewById(relativeLayoutEventViewId) == null) {
             addView(relativeLayoutEvent);
         }
 
+    }
+
+    private void addCloseButton() {
+        int tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+        closePlayer = new ImageButton(context);
+        closePlayer.setId(View.generateViewId());
+        RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        buttonParams.addRule(ALIGN_PARENT_TOP | ALIGN_PARENT_RIGHT);
+        closePlayer.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
+        closePlayer.getBackground().setTint(tintColor);
+        closePlayer.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+        relativeLayoutEvent.addView(closePlayer, buttonParams);
+        closePlayer.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeWithPause();
+            }
+        });
+    }
+
+
+    public void pipClick() {
+        mRecyclerView.smoothScrollToPosition(0);
+        //relativeLayoutEvent.startAnimation(animMoveUp);
     }
 
     private void removeWithPause() {
@@ -188,14 +218,10 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
 
     @Override
     public void onAnimationStart(Animation animation) {
-
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        if (animation != animMoveUp){
-            removeWithPause();
-        }
 
     }
 
@@ -215,6 +241,18 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             return gestureDetector.onTouchEvent(event);
+        }
+
+        public void onSwipeRight() {
+        }
+
+        public void onSwipeLeft() {
+        }
+
+        public void onSwipeTop() {
+        }
+
+        public void onSwipeBottom() {
         }
 
         private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -255,18 +293,6 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
                 }
                 return result;
             }
-        }
-
-        public void onSwipeRight() {
-        }
-
-        public void onSwipeLeft() {
-        }
-
-        public void onSwipeTop() {
-        }
-
-        public void onSwipeBottom() {
         }
     }
 

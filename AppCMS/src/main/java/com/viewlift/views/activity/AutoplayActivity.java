@@ -34,6 +34,11 @@ public class AutoplayActivity
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
                 String sendingPage
                         = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
@@ -81,15 +86,16 @@ public class AutoplayActivity
     @Override
     public void onCountdownFinished() {
 
-        appCMSPresenter.playNextVideo(binder,
-                binder.getCurrentPlayingVideoIndex() + 1,
-                binder.getContentData().getGist().getWatchedTime());
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
+        appCMSPresenter.playNextVideo(binder,
+                binder.getCurrentPlayingVideoIndex(),
+                binder.getContentData().getGist().getWatchedTime());
         finish();
     }
 
     @Override
     public void cancelCountdown() {
+        binder.setAutoplayCancelled(true);
         finish();
     }
 

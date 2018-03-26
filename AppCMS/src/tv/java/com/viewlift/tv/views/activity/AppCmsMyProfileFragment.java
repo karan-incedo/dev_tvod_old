@@ -98,7 +98,12 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
                         && tvModuleView.getChildrenContainer().getChildAt(i) instanceof RecyclerView) {
                     RecyclerView recyclerView = (RecyclerView) tvModuleView.getChildrenContainer().getChildAt(i);
                     ((AppCMSTVTrayAdapter) recyclerView.getAdapter()).setContentData(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData());
-
+                    if(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData().size() == 0){
+                        View view = tvModuleView.findViewById(R.id.appcms_removeall);
+                        if(null != view){
+                            view.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -110,8 +115,13 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
     @Override
     public void onResume() {
         super.onResume();
-        if (null != appCMSPresenter)
-            appCMSPresenter.sendStopLoadingPageAction(false,null);
+        if (null != appCMSPresenter) {
+            appCMSPresenter.sendStopLoadingPageAction(false, null);
+            if (appCMSPresenter.isUserLoggedIn()
+                    && mAppCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
+                updateAdapterData(mAppCMSBinder);
+            }
+        }
     }
 
     private void setSubNavigationFragment() {
@@ -139,4 +149,7 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
                 .build();
     }
 
+    public void updateBinder(AppCMSBinder appCmsBinder) {
+        mAppCMSBinder = appCmsBinder;
+    }
 }

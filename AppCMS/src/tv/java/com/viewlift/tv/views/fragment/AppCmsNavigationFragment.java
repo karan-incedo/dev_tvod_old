@@ -321,13 +321,8 @@ public class AppCmsNavigationFragment extends Fragment {
                                 Utils.pageLoading(false, getActivity());
                             } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                                     getString(R.string.profile_label)))) {
-
                                 NavigationUser navigationUser = getNavigationUser();
-                                //Log.d("","Selected Title = "+navigationUser.getTitle());
-
                                 if (navigationUser != null) {
-
-
                                     if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
                                             .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                                         appCmsPresenter.navigateToWatchlistPage(
@@ -508,7 +503,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                         appCmsPresenter.openSearch(primary.getPageId(), primary.getTitle());
                         Utils.pageLoading(false, getActivity());
-                        navigationVisibilityListener.showNavigation(false);
+                        //navigationVisibilityListener.showNavigation(false);
                     }
 
                     /*Settings*/
@@ -543,29 +538,30 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false);
                         }
                     }
-
-                    /*Teams*/
-                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))) {
-                        navigationVisibilityListener.showNavigation(false);
-                        subNavigationVisibilityListener.showSubNavigation(true, true);
-                        appCmsPresenter.sendGaScreen("Team Navigation Page");
-                        Utils.pageLoading(false, getActivity());
-
-                      /* appCmsPresenter.navigateToTeamPage(
-                               primary.getPageId(),
-                               primary.getTitle(),
-                               primary.getUrl(),
-                               primary,
-                               primary.getItems(),
-                               false
-                       );*/
+                    //This code is for SubNavigation items like Teams in MSE. So we are treating here that if primary.getItems() is not null then its a subnavigation.
+                    else if (primary.getItems() != null && primary.getItems().size() > 0) {
+                       // navigationVisibilityListener.showNavigation(false);
+//                        subNavigationVisibilityListener.showSubNavigation(true, true);
+                        appCmsPresenter.sendGaScreen(primary.getTitle() + " Navigation Page");
+//                        Utils.pageLoading(false, getActivity());
+                        if(primary.getPageId() == null){
+                            primary.setPageId(primary.getItems().get(0).getPageId());
+                        }
+                        appCmsPresenter.navigateToSubNavigationPage(
+                                primary.getPageId(),
+                                primary.getTitle(),
+                                primary.getUrl(),
+                                primary,
+                                primary.getItems(),
+                                false
+                        );
 
                     }
 
                     /*Watchlist*/
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showNavigation(false);
+                            //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToWatchlistPage(
                                     primary.getPageId(),
@@ -605,7 +601,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     /*History*/
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showNavigation(false);
+                            //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToHistoryPage(
                                     primary.getPageId(),
@@ -649,7 +645,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                 true,
                                 false,
                                 false);
-                        navigationVisibilityListener.showNavigation(false);
+                       // navigationVisibilityListener.showNavigation(false);
                     }
 
                 }, 500);

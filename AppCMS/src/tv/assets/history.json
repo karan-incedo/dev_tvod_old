@@ -1,8 +1,9 @@
 {
-  "id": "596730f6-c016-4cb8-b73e-96edda509f56",
+  "id": "08a49490-1f21-439a-8ccb-d5e99a6380f6",
   "settings": {},
-  "view": "AC History 02",
-  "type": "AC History 02",
+  "view": "AC History 01",
+  "type": "AC History 01",
+  "blockName": "history01",
   "layout": {
     "ftv": {
       "yAxis": 0,
@@ -15,50 +16,42 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 35,
-          "xAxis": 1585,
-          "width": 270,
-          "fontSize": 13,
-          "height": 70
+          "yAxis": 28,
+          "xAxis": 96,
+          "width": 255,
+          "fontSize": 12,
+          "height": 60
         }
       },
-      "borderColor": "ffffff",
-      "fontFamily": "Lato",
+      "borderColor": "#ffffff",
+      "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "clearHistory",
       "text": "CLEAR HISTORY",
       "type": "button",
       "textColor": "ffffff",
-      "fontWeight": "Bold",
+      "fontWeight": "Semibold",
       "key": "removeAll"
     },
-    /*{
+    {
       "layout": {
         "ftv": {
-          "width": 1920,
-          "height": 10
+          "yAxis": 111,
+          "leftMargin": 95,
+          "rightMargin": 4.9,
+          "fontSize": 20,
+          "height": 55
         }
       },
-      "backgroundColor": "#cf0a2c",
-      "type": "label"
-    }, */{
-      "layout": {
-        "ftv": {
-          "yAxis": 37,
-          "fontSize": 24,
-          "height": 57
-        }
-      },
-      "fontFamily": "Lato",
+      "fontFamily": "OpenSans",
       "numberOfLines": 1,
-      "textAlignment": "center_horizontal",
+      "textAlignment": "left",
       "letterSpacing": 4.5,
-      "text": "History",
+      "text": "WATCH HISTORY",
       "type": "label",
-      "fontWeight": "Regular",
-      "textColor": "ffffff",
+      "fontWeight": "Semibold",
       "key": "pageTitle"
-    },/*
+    },
     {
       "layout": {
         "ftv": {
@@ -70,17 +63,18 @@
       },
       "backgroundColor": "#808080",
       "type": "separatorView"
-    },*/
+    },
     {
       "layout": {
         "ftv": {
-          "trayPadding": 10,
+          "trayPadding": 100,
           "leftMargin": 4.9,
           "yAxis": 183,
           "rightMargin": 2.67,
-          "itemHeight": 275,
-          "itemWidth": 1676,
-          "height": 800
+          "itemHeight": 118,
+          "itemWidth": 1730,
+          "height": 757,
+          "padding" : 150
         }
       },
       "components": [
@@ -90,20 +84,21 @@
               "leftMargin": 95,
               "yAxis": 0,
               "xAxis": 0,
-              "width": 380,
-              "height": 214
+              "width": 210,
+              "height": 118
             }
           },
           "type": "image",
           "key": "thumbnailImage"
-        },{
+        },
+        {
           "layout": {
             "ftv": {
-              "leftMargin": 95,
-              "yAxis": 203,
-              "xAxis": 0,
-              "width": 380,
               "padding": 5,
+              "leftMargin": 95,
+              "yAxis": 107,
+              "xAxis": 0,
+              "width": 210,
               "height": 8
             }
           },
@@ -112,7 +107,7 @@
           "type": "progressView",
           "key": "progressView"
         },
-        /*{
+        {
           "layout": {
             "ftv": {
               "yAxis": 35,
@@ -123,53 +118,35 @@
           },
           "type": "button",
           "key": "playImage"
-        },*/
+        },
         {
           "layout": {
             "ftv": {
-              "leftMargin": 550,
-              "fontSize": 16,
-              "width" : 850
+              "leftMargin": 325,
+              "fontSize": 12.5
             }
           },
-          "numberOfLines": 1,
-          "fontFamily": "Lato",
+          "fontFamily": "OpenSans",
           "textAlignment": "left",
           "type": "label",
           "textColor": "#ffffff",
-          "fontWeight": "Heavy",
+          "fontWeight": "SemiBold",
           "key": "titleLabel"
         },
         {
           "layout": {
             "ftv": {
-              "topMargin": 45,
-              "leftMargin": 550,
-              "fontSize": 11,
-              "width": 718
+              "leftMargin": 325,
+              "topMargin": 35,
+              "width": 730,
+              "fontSize": 11.5,
+              "height": 74
             }
           },
-          "fontFamily": "Lato",
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#ffffff",
-          "fontWeight": "Bold",
-          "key": "subtitleLabel"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "topMargin": 80,
-              "leftMargin": 550,
-              "width": 1246,
-              "fontSize": 14
-            }
-          },
-          "fontFamily": "Lato",
-          "numberOfLines": 3,
+          "fontFamily": "OpenSans",
+          "numberOfLines": 2,
           "textAlignment": "left",
           "lineHeight": 36,
-          "fontWeight": "Regular",
           "type": "label",
           "textColor": "#ffffff",
           "key": "descriptionLabel"
@@ -177,50 +154,19 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 1435,
-              "topMargin" : 15,
-              "width": 50,
-              "height": 50
-            }
-          },
-          "type": "image",
-          "key": "teamIcon"
-        }/*,
-        {
-          "layout": {
-            "ftv": {
-              "leftMargin": 1585,
-              "topMargin" : 26,
-              "width": 215,
-              "height": 45
-            }
-          },
-          "borderColor" : "c70018",
-          "fillColor" : "cb0022",
-          "type": "starRating",
-          "key": "starRating"
-        }*/
-        /*,
-        {
-          "layout": {
-            "ftv": {
               "topMargin": 30,
-              "leftMargin": 1615,
-              "width": 210,
-              "fontSize": 12,
-              "height": 60
+              "rightMargin": 75,
+              "fontSize": 9
             }
           },
-          "borderColor": "66ffffff",
           "fontFamily": "OpenSans",
-          "borderWidth": 4,
-          "action": "deleteItem",
-          "text": "REMOVE",
-          "type": "button",
-          "textColor": "ffffff",
+          "textAlignment": "right",
+          "fontSize": 15,
+          "type": "label",
+          "textColor": "#7D7D7D",
           "fontWeight": "Semibold",
-          "key": "deleteItemButton"
-        }*/
+          "key": "historyLastAddedLabel"
+        }
       ],
       "itemClickAction": "watchVideo",
       "type": "tableView",

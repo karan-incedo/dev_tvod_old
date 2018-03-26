@@ -21,6 +21,11 @@ public class Features implements Serializable {
     @Expose
     boolean userContentRating;
 
+    @SerializedName("audio_preview")
+    @Expose
+    AudioPreview audioPreview;
+
+
     @SerializedName("free_preview")
     @Expose
     FreePreview freePreview;
@@ -95,5 +100,9 @@ public class Features implements Serializable {
 
     public void setTrickPlay(boolean trickPlay) {
         this.trickPlay = trickPlay;
+    }
+
+    public AudioPreview getAudioPreview() {
+        return audioPreview;
     }
 }

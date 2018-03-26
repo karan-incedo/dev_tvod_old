@@ -3,16 +3,17 @@ package com.viewlift.tv.views.fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -188,14 +189,11 @@ public class ClearDialogFragment extends AbsDialogFragment {
         }
 
         /*Set click listener*/
-        negativeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null != onNegativeButtonClicked) {
-                    onNegativeButtonClicked.call("");
-                }
-                dismiss();
+        negativeButton.setOnClickListener(v -> {
+            if(null != onNegativeButtonClicked) {
+                onNegativeButtonClicked.call("");
             }
+            dismiss();
         });
 
 
@@ -242,15 +240,21 @@ public class ClearDialogFragment extends AbsDialogFragment {
         } else {
             isFocusOnPositiveButton = true;
         }
+        Log.d("ANSA onPause" , "isFocusOnPositiveButton = "+isFocusOnPositiveButton);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (isFocusOnPositiveButton) {
-            positiveButton.requestFocus();
-        } else {
-            negativeButton.requestFocus();
-        }
+        new Handler().postDelayed(() -> {
+            if (isVisible() && isAdded()) {
+                Log.d("ANSA onResume" , "isFocusOnPositiveButton = "+isFocusOnPositiveButton);
+                if (isFocusOnPositiveButton) {
+                    positiveButton.requestFocus();
+                } else {
+                    negativeButton.requestFocus();
+                }
+            }
+        }, 500);
     }
 }

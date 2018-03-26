@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">http://dev-tools.viewlift.com</string>-->
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">62cab672-424e-4191-9066-4bb9a0993247</string>-->
+
+    <!--
+    TODO MSE id for temp dev
+    SiteId=00000151-11b4-d29b-a17d-55fdb2b80000-->
 
     <!-- x-api-key -->
-    <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
+    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">910134432450680</string>
-    <string name="fb_login_protocol_scheme">fb910134432450680</string>
+    <string name="facebook_app_id">1324523080924996</string>
+    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>
-
-    <!-- apps flyer keys --> <!-- flyer key for now, will change in the future after proper setup-->
-    <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>
+    <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
+    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>
+    <!--<string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>-->
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">3D49630B</string>
+    <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
     <bool name="use_hls">false</bool>
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
+
+    <!--AutoPlay Timer: add an extra 2000 millis because it takes roughly 2 seconds to load-->
+    <string name="app_cms_autoplay_countdown_timer">13000</string>
+
+    <bool name="display_chromecast_overlay">false</bool>
 
     <string name="search_films">Search films</string>
 
@@ -47,14 +57,31 @@
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
+
     <bool name="show_navbar">false</bool>
 
-    <bool name="enable_stream_quality_selection">false</bool>
+    <bool name="enable_stream_quality_selection">true</bool>
+
     <bool name="sort_plans_in_ascending_order">false</bool>
 
     <string name="app_cms_cached_api_user_token">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaXRlIjoiaG9pY2hvaXR2IiwiaWQiOiI0Njg0YjJiZjc2YzQyZWZkMzJiODQ1OWFmZmY1Zjg1YWQ1YTE5ZTE2Y2I2MzhmZTFhYmE3NGIyNDYxNzVjMTlkIiwidXNlcklkIjoiNDY4NGIyYmY3NmM0MmVmZDMyYjg0NTlhZmZmNWY4NWFkNWExOWUxNmNiNjM4ZmUxYWJhNzRiMjQ2MTc1YzE5ZCIsImlwYWRkcmVzcyI6IjI2MDA6MTcwMDoxOTYwOjMzYjA6MTA2MTo4YmI4OmNhODpiNzQwIiwiaXBhZGRyZXNzZXMiOiIyNjAwOjE3MDA6MTk2MDozM2IwOjEwNjE6OGJiODpjYTg6Yjc0MCwgMzQuMjAzLjE4OC4xNjMsIDU0LjI0MC4xNDQuNjUiLCJ1c2VybmFtZSI6ImFub255bW91cyIsImNvdW50cnlDb2RlIjoiVVMiLCJwcm92aWRlciI6InZpZXdsaWZ0IiwiaWF0IjoxNTExMjMwOTQwLCJleHAiOjE1NDI3NjY5NDB9.0eeLtDZtzgPqM2zJA6JzVrvfZ5mmY1yKaV2Wr_Of9V4</string>
 
+    <bool name="send_ua_user_churn_events">true</bool>
+    <string name="ua_user_logged_in_status_group">user_logged_in_status</string>
+    <string name="ua_user_logged_in_tag">logged_in</string>
+    <string name="ua_user_logged_out_tag">logged_out</string>
+    <string name="ua_user_subscription_status_group">user_subscription_status</string>
+    <string name="ua_user_subscribed_tag">subscribed</string>
+    <string name="ua_user_subscription_about_expire_tag">subscription_about_to_expire</string>
+    <string name="ua_user_unsubscribed_tag">unsubscribed</string>
+    <string name="ua_user_subscription_end_date_group">subscription_end_date</string>
+    <string name="ua_user_subscription_plan_group">plan_name</string>
+    <integer name="ua_days_before_subscription_end_notification_tag">7</integer>
+
+    <bool name="display_cancel_subscription_button">false</bool>
+
     <string name="KISWE_PLAYER_API_KEY">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJLaXN3ZSIsInN1YiI6MTM5MDk5LCJleHAiOiIyMDMwLTAzLTE0VDAwOjAwOjAwLjAwMFoifQ.ZAvxOdEAW-h7JtCOy6JJTL78EqRxu8Y5LYKLMv7-fh4</string>
+
 
 </resources>
 

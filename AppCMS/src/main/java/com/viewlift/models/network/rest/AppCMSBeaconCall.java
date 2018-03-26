@@ -42,13 +42,19 @@ public class AppCMSBeaconCall {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
+
+            Log.d(TAG,"Beacon request URL: " + url);
+            Log.d(TAG, "Beacon request headers: " + authTokenMap);
+
             Call<BeaconResponse> call;
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
             call.enqueue(new Callback<BeaconResponse>() {
 
                 @Override
                 public void onResponse(Call<BeaconResponse> call, Response<BeaconResponse> response) {
-                    Observable.just(response.body()).subscribe(action1);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(action1);
                 }
 
                 @Override
@@ -58,7 +64,7 @@ public class AppCMSBeaconCall {
             });
 
         } catch (Exception e) {
-            //Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 }
