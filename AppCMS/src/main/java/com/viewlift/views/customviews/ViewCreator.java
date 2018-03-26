@@ -3119,7 +3119,9 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            if(appCMSPresenter.getCurrentActivity()!=null ){
+                                appCMSPresenter.getCurrentActivity().onBackPressed();
+                            }else if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     closeAction,
                                     null,
                                     null,
