@@ -1956,7 +1956,11 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
-                                childrenContainer.addView(componentView);
+                                if(component.isHeaderView()){
+                                    pageView.addToHeaderView(componentView);
+                                }else{
+                                    childrenContainer.addView(componentView);
+                                }
                                 moduleView.setComponentHasView(i, true);
                                 moduleView.setViewMarginsFromComponent(component,
                                         componentView,
@@ -2966,7 +2970,8 @@ public class ViewCreator {
 
                         List<String> filmIds = new ArrayList<>();
 
-                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                        //TODO- below is to add episodes of shows/series
+                        /*if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                 moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2988,7 +2993,8 @@ public class ViewCreator {
                                     }
                                 }
                             }
-                        } else if (moduleAPI != null &&
+                        } else */
+                        if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
@@ -3005,7 +3011,7 @@ public class ViewCreator {
                         UpdateImageIconAction updateImageIconAction =
                                 new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
                                         appCMSPresenter,
-                                        filmIds);
+                                        filmIds, moduleAPI.getContentData().get(0));
                         updateImageIconAction.updateWatchlistResponse(filmsAdded);
                         break;
 
@@ -5238,18 +5244,22 @@ public class ViewCreator {
 
         private View.OnClickListener addClickListener;
         private View.OnClickListener removeClickListener;
+        private ContentDatum contentDatum;
 
         UpdateImageIconAction(ImageButton imageButton,
                               AppCMSPresenter presenter,
-                              List<String> filmIds) {
+                              List<String> filmIds,
+                              ContentDatum contentDatum) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.filmIds = filmIds;
+            this.contentDatum = contentDatum;
 
             addClickListener = v -> {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     for (String filmId : UpdateImageIconAction.this.filmIds) {
-                        appCMSPresenter.editWatchlist(filmId,
+                        contentDatum.getGist().setId(filmId);
+                        appCMSPresenter.editWatchlist(contentDatum,
                                 addToWatchlistResult -> {
                                     UpdateImageIconAction.this.imageButton.setImageResource(
                                             R.drawable.remove_from_watchlist);
@@ -5269,7 +5279,8 @@ public class ViewCreator {
             };
             removeClickListener = v -> {
                 for (String filmId : UpdateImageIconAction.this.filmIds) {
-                    appCMSPresenter.editWatchlist(filmId,
+                    this.contentDatum.getGist().setId(filmId);
+                    appCMSPresenter.editWatchlist(this.contentDatum,
                             addToWatchlistResult -> {
                                 UpdateImageIconAction.this.imageButton.setImageResource(
                                         R.drawable.add_to_watchlist);
