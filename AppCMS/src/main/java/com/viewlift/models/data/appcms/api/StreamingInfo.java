@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.audio.AudioAssets;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class StreamingInfo implements Serializable {
 
     @SerializedName("audioAssets")
     @Expose
-    Object audioAssets;
+    AudioAssets audioAssets;
 
     @SerializedName("cuePoints")
     @Expose
@@ -41,11 +42,11 @@ public class StreamingInfo implements Serializable {
         this.videoAssets = videoAssets;
     }
 
-    public Object getAudioAssets() {
+    public AudioAssets  getAudioAssets() {
         return audioAssets;
     }
 
-    public void setAudioAssets(Object audioAssets) {
+    public void setAudioAssets(AudioAssets  audioAssets) {
         this.audioAssets = audioAssets;
     }
 

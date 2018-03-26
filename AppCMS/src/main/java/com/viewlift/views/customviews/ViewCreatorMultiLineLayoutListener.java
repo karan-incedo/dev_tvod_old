@@ -17,9 +17,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.viewlift.presenters.AppCMSPresenter;
-
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 /**
  * Created by viewlift on 6/7/17.
@@ -64,7 +63,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             int lineEnd = textView.getLayout().getLineVisibleEnd(linesCompletelyVisible - 1) -
                     EXTRA_TRUNC_CHARS;
             if (0 <= lineEnd &&
-                    lineEnd < fullText.length() &&
+                    lineEnd + EXTRA_TRUNC_CHARS < fullText.length() &&
                     appCMSPresenter != null) {
                 if (0 < lineEnd) {
                     SpannableString spannableTextWithMore =

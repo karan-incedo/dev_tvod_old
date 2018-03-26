@@ -119,7 +119,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 listRowParam.width = listRowWidth;//Utils.getViewXAxisAsPerScreen(mContext , 1590);
                 listRowView.setLayoutParams(listRowParam);
 
-                horizontalGrLayoutParams.setMargins(Utils.getViewXAxisAsPerScreen(mContext , 370), 0 , 0,0);
+                horizontalGrLayoutParams.setMargins(/*Utils.getViewXAxisAsPerScreen(mContext , 370)*/100, 0 , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 return;
@@ -156,8 +156,14 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
                 horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 0, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
-                //horizontalGridView.setItemSpacing(horizontalSpacing);
+                if (customHeaderItem.getItemSpacing() != null) {
+                    try {
+                        horizontalSpacing = Integer.parseInt(customHeaderItem.getItemSpacing());
+                    } catch (NumberFormatException e) {
 
+                    }
+                }
+                horizontalGridView.setItemSpacing(horizontalSpacing);
                 headerTitleContainerLayoutParams.setMargins(paddingLeft, 0, 0, 0);
                 headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
 

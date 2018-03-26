@@ -30,6 +30,7 @@
       },
       "fontFamily": "OpenSans",
       "textAlignment": "left",
+      "textCase": "caps",
       "type": "label",
       "textColor": "#008EE0",
       "fontWeight": "Semibold",
@@ -42,13 +43,13 @@
           "height": 438
         }
       },
-      "trayClickAction": "showDetailPage",
+      "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 25,
+              "topMargin": 15,
               "width": 588,
               "height": 330
             }
@@ -60,7 +61,7 @@
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 25,
+              "topMargin": 15,
               "width": 588,
               "height": 330
             }
@@ -72,7 +73,7 @@
           "layout": {
             "ftv": {
               "leftMargin": 10,
-              "topMargin": 360,
+              "topMargin": 350,
               "rightMargin": 0,
               "fontSize": 11,
               "height": 40

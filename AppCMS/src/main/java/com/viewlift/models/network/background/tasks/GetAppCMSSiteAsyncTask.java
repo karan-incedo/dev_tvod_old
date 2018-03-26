@@ -26,12 +26,12 @@ public class GetAppCMSSiteAsyncTask {
         this.readyAction = readyAction;
     }
 
-    public void execute(String params) {
+    public void execute(String params, boolean networkDisconnected) {
         Observable
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params, 0);
+                            return call.call(params, networkDisconnected, 0);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -40,6 +40,7 @@ public class GetAppCMSSiteAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }

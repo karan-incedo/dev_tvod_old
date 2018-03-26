@@ -50,6 +50,8 @@ public class DownloadVideoRealm extends RealmObject {
     private String userId;
     private long watchedTime;
     private boolean isSyncedWithServer;
+    public String contentType;
+    public String mediaType;
     public String getVideoIdDB() {
         return videoIdDB;
     }
@@ -289,6 +291,22 @@ public class DownloadVideoRealm extends RealmObject {
         isSyncedWithServer = syncedWithServer;
     }
 
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
     public ContentDatum convertToContentDatum(String userId) {
         ContentDatum data = new ContentDatum();
         Gist gist = new Gist();
@@ -318,6 +336,8 @@ public class DownloadVideoRealm extends RealmObject {
         data.setShowQueue(true);
         data.setUserId(userId);
         data.setAddedDate(getDownloadDate());
+        gist.setContentType(getContentType());
+        gist.setMediaType(getMediaType());
         return data;
     }
     public DownloadVideoRealm createCopy(){
@@ -351,6 +371,8 @@ public class DownloadVideoRealm extends RealmObject {
         downloadVideoRealm.setPermalink(getPermalink());
         downloadVideoRealm.setPosterFileURL(getPosterFileURL());
         downloadVideoRealm.setPosterThumbId_DM(getPosterThumbId_DM());
+        downloadVideoRealm.setContentType(getContentType());
+        downloadVideoRealm.setMediaType(getMediaType());
         return downloadVideoRealm;
     }
 }

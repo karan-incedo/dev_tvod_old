@@ -64,4 +64,18 @@
     <string name="app_cms_cached_api_user_token">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaXRlIjoiaG9pY2hvaXR2IiwiaWQiOiI0Njg0YjJiZjc2YzQyZWZkMzJiODQ1OWFmZmY1Zjg1YWQ1YTE5ZTE2Y2I2MzhmZTFhYmE3NGIyNDYxNzVjMTlkIiwidXNlcklkIjoiNDY4NGIyYmY3NmM0MmVmZDMyYjg0NTlhZmZmNWY4NWFkNWExOWUxNmNiNjM4ZmUxYWJhNzRiMjQ2MTc1YzE5ZCIsImlwYWRkcmVzcyI6IjI2MDA6MTcwMDoxOTYwOjMzYjA6MTA2MTo4YmI4OmNhODpiNzQwIiwiaXBhZGRyZXNzZXMiOiIyNjAwOjE3MDA6MTk2MDozM2IwOjEwNjE6OGJiODpjYTg6Yjc0MCwgMzQuMjAzLjE4OC4xNjMsIDU0LjI0MC4xNDQuNjUiLCJ1c2VybmFtZSI6ImFub255bW91cyIsImNvdW50cnlDb2RlIjoiVVMiLCJwcm92aWRlciI6InZpZXdsaWZ0IiwiaWF0IjoxNTExMjMwOTQwLCJleHAiOjE1NDI3NjY5NDB9.0eeLtDZtzgPqM2zJA6JzVrvfZ5mmY1yKaV2Wr_Of9V4</string>
 
     <bool name="show_navbar">true</bool>
+
+    <bool name="send_ua_user_churn_events">false</bool>
+    <string name="ua_user_logged_in_status_group">user_logged_in_status</string>
+    <string name="ua_user_logged_in_tag">logged_in</string>
+    <string name="ua_user_logged_out_tag">logged_out</string>
+    <string name="ua_user_subscription_status_group">user_subscription_status</string>
+    <string name="ua_user_subscribed_tag">subscribed</string>
+    <string name="ua_user_subscription_about_expire_tag">subscription_about_to_expire</string>
+    <string name="ua_user_unsubscribed_tag">unsubscribed</string>
+    <string name="ua_user_subscription_end_date_group">subscription_end_date</string>
+    <string name="ua_user_subscription_plan_group">plan_name</string>
+    <integer name="ua_days_before_subscription_end_notification_tag">7</integer>
+
+    <bool name="display_cancel_subscription_button">false</bool>
 </resources>

@@ -22,9 +22,10 @@ public class ImageUtils {
     }
 
     public static boolean loadImage(ImageView view,
-                                 String url) {
+                                    String url,
+                                    ImageLoader.ScaleType scaleType) {
         if (registeredImageLoader != null) {
-            registeredImageLoader.loadImage(view, url);
+            registeredImageLoader.loadImage(view, url, scaleType);
             return true;
         }
         return false;

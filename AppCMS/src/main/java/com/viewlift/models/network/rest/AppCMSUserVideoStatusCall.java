@@ -36,12 +36,16 @@ public class AppCMSUserVideoStatusCall {
             @Override
             public void onResponse(@NonNull Call<UserVideoStatusResponse> call,
                                    @NonNull Response<UserVideoStatusResponse> response) {
-                Observable.just(response.body()).subscribe(readyAction1);
+                Observable.just(response.body())
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
             }
 
             @Override
             public void onFailure(@NonNull Call<UserVideoStatusResponse> call, @NonNull Throwable t) {
-                Observable.just((UserVideoStatusResponse) null).subscribe(readyAction1);
+                Observable.just((UserVideoStatusResponse) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
             }
         });
     }

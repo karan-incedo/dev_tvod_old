@@ -49,6 +49,8 @@
     <string name="resume_internal_events_key">resume_internal_events</string>
     <string name="send_to">Share Video</string>
     <string name="done">DONE</string>
+    <string name="preview_ended">Preview ended</string>
+
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
@@ -59,7 +61,9 @@
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_forgot_password_title">Forgot Password</string>
-    <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
+    <string name="app_cms_reset_password_success_description">Follow the instructions in the email we just sent you to reset your password.</string>
+    <string name="st_privacy_policy_icon_key">icon-privacy-policy</string>
+    <string name="start_watching">Start Watching</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
@@ -196,6 +200,9 @@
     <string name="related_movies_id_list">related_movies_id</string>
     <string name="loading_vid_on_casting">Loading on casting device..</string>
     <string name="app_cms_page_autoplay_key">AutoPlay Screen</string>
+    <string name="app_cms_page_autoplay_land_key">AutoPlay Screen (Landscape)</string>
+    <string name="app_cms_page_autoplay_port_key">AutoPlay Screen (Portrait)</string>
+    <string name="app_cms_page_crw_screen_key">Content Rating Warning Screen</string>
     <plurals name="countdown_seconds">
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>
@@ -235,6 +242,7 @@
     <string name="runtime_minute_abbreviation">MIN</string>
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
+    <string name="runtime_episodes_abbreviation">EPISODES</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -296,22 +304,28 @@
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
 
-    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
-    <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
+    <string name="app_cms_delete_history_alert_title">Delete History</string>
+    <string name="app_cms_delete_one_history_item_message">Do you want to delete video from history?</string>
+    <string name="app_cms_delete_all_history_items_message">Do you want to delete all videos from history?</string>
 
-    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
-    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+    <string name="app_cms_delete_watchlist_alert_title">Delete Watchlist</string>
+    <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
+    <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
 
-    <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
-    <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
+    <string name="app_cms_delete_download_alert_title">Delete Download</string>
+    <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
+    <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
+    <string name="app_cms_delete_all_download_items_message">Do you want to delete all video/audio from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
+    <string name="preview_content">Premium Content</string>
+    <string name="app_cms_login_and_subscription_audio_preview_title">Preview Ended</string>
+
+    <string name="app_cms_login_and_subscription_premium_content_required_message">You need to have a valid subscription to access this content.</string>
+
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
@@ -360,6 +374,7 @@
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
+    <string name="app_cms_download_unavailable_error_message">The download is currently unavailable. Please try again later.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
     <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
     <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
@@ -383,6 +398,7 @@
         <item quantity="one">%d EPISODE</item>
         <item quantity="other">%d EPISODES</item>
     </plurals>
+    <string name="seasons">%d SEASONS</string>
     <string name="item_shop">{0,choice,0#Added Today|1#Added 1 Day Ago|1&lt;Added {0} Days Ago}</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
@@ -417,6 +433,7 @@
     <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following content is rated: &#160;</string>
+    <string name="content_rating_description_placeholder">The following content is rated: %s</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
 
     <string name="cost_without_fraction">%.0f</string>
@@ -462,6 +479,7 @@
     <string name="app_connectivity_dialog_title">App Connectivity</string>
     <string name="no_active_subscription">NO ACTIVE SUBSCRIPTION</string>
     <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="app_cms_autoplay_finished_movie_image_key">finishedMovieImage</string>
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
 
@@ -485,7 +503,7 @@
     <string name="st_show_icon_key">icon-grid</string>
     <string name="st_teams_icon_key">icon-bracket</string>
     <string name="st_watchlist_icon_key">icon-watchlist</string>
-    <string name="st_history_icon_key" >icon-clock</string>
+    <string name="st_history_icon_key">icon-clock</string>
     <string name="st_settings_icon_key">icon-gear</string>
     <string name="st_search_icon_key">icon-search</string>
     <string name="st_autoplay_icon_key">icon-autoplay</string>
@@ -567,7 +585,6 @@
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
-
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
@@ -582,7 +599,30 @@
         <item quantity="one">SEC</item>
         <item quantity="other">SECS</item>
     </plurals>
+    <string name="season_episode_placeholders">S%d:E%d</string>
+    <string name="subscription_cancelled_in">Scheduled to be cancelled by %s</string>
 
+    <string name="audio_fragment_tag_key">audio_fragment</string>
+    <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_audio">AUDIO</string>
+    <string name="media_type_video">VIDEO</string>
+    <string name="content_type_audio">AUDIO</string>
+
+
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">UAMP_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for UAMP</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+
+    <string name="stop_casting">Stop Casting</string>
+    <string name="casting_to_device">Casting to %1$s</string>
+
+    <!-- Apptentive Messages -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
+    <string name="app_cms_apptentive_login_event_name">Login</string>
 </resources>
 
 

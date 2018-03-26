@@ -42,6 +42,7 @@ public class GetAppCMSAPIAsyncTask {
                                     currentParams.authToken);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            System.out.println("*-======* "+e.getMessage());
                         }
                     }
                     return null;
@@ -69,6 +70,16 @@ public class GetAppCMSAPIAsyncTask {
                                     currentParams.modules);
                         } catch (IOException e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            e.printStackTrace();
+                        } catch (OutOfMemoryError e) {
+                            e.printStackTrace();
+                            try {
+                                System.gc();
+                                Thread.sleep(1000);
+                                execute(params);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
                         }
                     }
                     return null;

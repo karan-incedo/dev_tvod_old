@@ -134,7 +134,13 @@ public class AppCmsSearchFragment extends Fragment {
             btnClearHistory.setTypeface(openSansSemiBoldTypeFace);
         }
 
-        moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component_sports.json"), ModuleList.class);
+        }else {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        }
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -145,7 +151,7 @@ public class AppCmsSearchFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (lastSearchedString.equals(editable.toString())) {
+                if (lastSearchedString.trim().equals(editable.toString().trim())) {
                     return;
                 }
                 if (editable.toString().trim().length() >= 3){
@@ -631,7 +637,7 @@ public class AppCmsSearchFragment extends Fragment {
         CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
-                component.getTrayBackground(),
+                component,
                 jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
@@ -666,7 +672,7 @@ public class AppCmsSearchFragment extends Fragment {
                  CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                          Integer.valueOf(component.getLayout().getTv().getHeight()),
                          Integer.valueOf(component.getLayout().getTv().getWidth()),
-                         component.getTrayBackground(),
+                         component,
                          jsonValueKeyMap
                  );
 

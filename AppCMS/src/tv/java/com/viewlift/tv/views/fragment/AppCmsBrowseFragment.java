@@ -121,8 +121,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                if (rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
-                    appCMSPresenter.launchButtonSelectedAction(rowData.contentData.getGist().getPermalink(),
+                if (null != rowData.contentData.getGist().getContentType() &&
+                        rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    appCMSPresenter.launchTVButtonSelectedAction(
+                            rowData.contentData.getGist().getPermalink(),
                             "showDetailPage",
                             rowData.contentData.getGist().getTitle(),
                             null,
@@ -177,10 +179,19 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 }
                 ContentDatum data = rowData.contentData;
 
-                String action = /*"play"*/rowData.action;
+                String action = rowData.action;
+
+                if(appCMSPresenter.getAppCMSMain().getFeatures().isTrickPlay()){
+                    action = getString(R.string.app_cms_action_watchvideo_key);
+                }
+
                 if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
                     pushedPlayKey();
                 } else {
+                    if (null != rowData.contentData.getGist().getContentType() &&
+                            rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")){
+                        action = "showDetailPage";
+                    }
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
@@ -255,6 +266,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
                                (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
+                    } else if (rowData.blockName.equalsIgnoreCase("showDetail01")){
+                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.browse_fragment_show_season_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
@@ -275,7 +290,11 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private void showMoreContentIcon(){
         if(isPlayerComponentSelected && isFirstTime && mRowsAdapter != null && mRowsAdapter.size() > 1){
             isFirstTime = false;
-            getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            } else {
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+            }
         }
         hideFooterControls();
     }
@@ -305,14 +324,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         },51);
 
         super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.pausePlayer();
-        }
-        super.onStop();
     }
 
     public CustomTVVideoPlayerView getCustomVideoVideoPlayerView(){

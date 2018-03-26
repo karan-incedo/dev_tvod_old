@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/new_version_available_parent"
@@ -75,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:background="@drawable/logo_icon"
+                    android:src="@drawable/logo_icon"
                     android:scaleType="centerInside" />
 
                 <LinearLayout
@@ -91,7 +92,7 @@
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/search"
+                        android:src="@drawable/icon_search"
                         android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
@@ -165,23 +166,54 @@
             android:id="@+id/app_cms_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/app_cms_cast_conroller"
-            android:alpha="1" />
+            android:layout_above="@+id/controls_container"
+            android:layout_alignParentTop="true"
+            android:alpha="1"
+             />
 
         <FrameLayout
             android:id="@+id/app_cms_addon_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/app_cms_cast_conroller"
+            android:layout_above="@+id/controls_container"
+            android:layout_alignParentTop="true"
             android:alpha="1"
             android:visibility="invisible" />
 
         <FrameLayout
-            android:id="@+id/app_cms_cast_conroller"
-            android:layout_width="fill_parent"
+            android:id="@+id/controls_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:visibility="visible" />
+            android:paddingTop="2dp"
+            >
+
+            <FrameLayout
+                android:id="@+id/app_cms_cast_conroller"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:visibility="visible" />
+            <fragment
+                android:id="@+id/fragment_playback_controls"
+                android:name="com.viewlift.Audio.ui.PlaybackControlsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                tools:layout="@layout/fragment_playback_controls" />
+
+        </FrameLayout>
+
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/app_cms_controller"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:background="#00000000"-->
+            <!--android:visibility="visible">-->
+
+        <!--</RelativeLayout>-->
+
 
     </RelativeLayout>
 

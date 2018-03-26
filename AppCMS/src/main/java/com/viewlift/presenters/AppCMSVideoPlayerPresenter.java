@@ -338,7 +338,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                 isTrailer,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
 
         beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -346,8 +346,9 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                 permaLink,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
     }
+
 
     private void initEntitlementCheckTask() {
         if (appCMSPresenter.isAppSVOD() &&
