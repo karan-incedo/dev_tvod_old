@@ -3,18 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     android:weightSum="1"
-    android:gravity="center_vertical"
     tools:context="com.viewlift.views.fragments.AppCMSPlayAudioFragment">
 
 
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="@dimen/app_cms_player_track_image_height"
-        android:layout_weight=".5"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
+        android:layout_weight=".5"
 
         android:padding="10dp">
 
@@ -26,17 +26,19 @@
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp">
+
             <ImageView
                 android:id="@+id/track_image_blurred"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:scaleType="fitXY" />
+
             <ImageView
                 android:id="@+id/track_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
         </RelativeLayout>
 
         <TextView
@@ -58,11 +60,11 @@
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="@dimen/app_cms_player_track_image_height"
-        android:layout_weight=".5"
         android:layout_marginRight="20dp"
-        android:paddingTop="20dp"
-
+        android:layout_weight=".5"
         android:paddingBottom="20dp"
+
+        android:paddingTop="20dp"
 
         >
 
@@ -138,8 +140,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="25dp"
-                >
+                android:layout_marginRight="22dp">
 
                 <TextView
                     android:id="@+id/start_time"
@@ -180,14 +181,15 @@
                     android:textColor="@android:color/white" />
 
             </RelativeLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/app_cms_audio_play_control_height"
                 android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:weightSum="10">
 
                 <RelativeLayout
@@ -270,8 +272,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:orientation="horizontal">
 
                 <ImageButton

@@ -1,12 +1,15 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,6 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
@@ -78,6 +83,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public static boolean isDownloading = true, isPlaylistDownloading = false;
     private List<OnInternalEvent> downloadList;
 
+    updateDataReceiver serviceReceiver;
+
     public AppCMSPlaylistAdapter(Context context,
                                  ViewCreator viewCreator,
                                  AppCMSPresenter appCMSPresenter,
@@ -128,12 +135,18 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
+        serviceReceiver = new updateDataReceiver();
     }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioServiceHelper.APP_CMS_UPDATE_PLAYLIST);
+        mContext.registerReceiver(serviceReceiver, intentFilter);
+
     }
 
     @Override
@@ -155,6 +168,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 false,
                 false);
         view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(viewType,adapterData.size());
         return new ViewHolder(view);
     }
 
@@ -166,11 +180,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             bindView(holder.componentView, adapterData.get(position), position);
             if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
                 if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId()) && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
-                    adapterData.get(position).getGist().setAudioPlaying(true);
+                    adapterData.get(position).getGist().setAudioPlaying(true)                                         ;
                 } else {
                     adapterData.get(position).getGist().setAudioPlaying(false);
                 }
             }
+
             if (adapterData.get(position).getGist().isAudioPlaying()) {
                 holder.componentView.setBackgroundColor(Color.parseColor("#4B0502"));
             } else {
@@ -336,6 +351,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
             return;
         }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        mContext.unregisterReceiver(serviceReceiver);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -643,8 +664,14 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     }
 
-    public interface IUpdateState {
-        void updateState();
+    private class updateDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("update playlist receiver");
+//            notifyDataSetChanged();
+AppCMSPlaylistAdapter.this.notifyDataSetChanged();
+        }
     }
 }
 
