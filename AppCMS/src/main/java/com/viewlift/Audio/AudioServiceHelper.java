@@ -144,10 +144,16 @@ public class AudioServiceHelper {
     }
 
     protected void hidePlaybackControls() {
-        if(mActivity!=null) {
-            mActivity.getFragmentManager().beginTransaction()
-                    .hide(mControlsFragment)
-                    .commit();
+        try {
+            if (mActivity != null && !mActivity.isFinishing()) {
+                mActivity.getFragmentManager().beginTransaction()
+                        .hide(mControlsFragment)
+                        .commit();
+            }
+        }catch(IllegalStateException e){
+
+        }catch(Exception e){
+
         }
 
     }
