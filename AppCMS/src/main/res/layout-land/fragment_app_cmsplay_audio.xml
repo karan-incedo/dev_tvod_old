@@ -195,7 +195,7 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.5"
+                    android:layout_weight="2"
                     android:gravity="left|center_vertical">
 
                     <ImageButton
@@ -209,7 +209,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="5"
+                    android:layout_weight="6"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -219,6 +219,9 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+
+                        android:layout_marginRight="@dimen/app_cms_audio_item_padding"
+
                         android:background="?selectableItemBackgroundBorderless"
                         android:src="@drawable/previous_track" />
 
@@ -249,6 +252,8 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/app_cms_audio_item_padding"
+
                         android:background="?selectableItemBackgroundBorderless"
                         android:src="@drawable/next_track" />
                 </LinearLayout>
@@ -256,7 +261,7 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.5"
+                    android:layout_weight="2"
 
                     android:gravity="right|center_vertical">
 

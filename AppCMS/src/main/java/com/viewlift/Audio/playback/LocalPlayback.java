@@ -24,7 +24,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -317,6 +316,7 @@ public final class LocalPlayback implements Playback {
     public String getCurrentId() {
         return mCurrentMediaId;
     }
+
     @Override
     public void setCurrentId(String currentMediaId) {
         mCurrentMediaId = currentMediaId;
@@ -354,7 +354,7 @@ public final class LocalPlayback implements Playback {
         //reset last save position
         AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
         //if media has changed then load new audio url
-        if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
+        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && !appCMSPresenter.isLastStatePause())) {
 
             mListener.onMetadataChanged(item);
             updatedMetaItem = item;
@@ -397,6 +397,8 @@ public final class LocalPlayback implements Playback {
             }
 
         }
+        AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);
+
         configurePlayerState();
         mCallback.onPlaybackStatusChanged(getState());
         if (appCMSPresenter.getAudioReload()) {
@@ -429,6 +431,8 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
+        AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentId(), 0);
+
         // While paused, retain the player instance, but give up audio focus.
         releaseResources(false);
         unregisterAudioNoisyReceiver();

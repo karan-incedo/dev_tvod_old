@@ -315,6 +315,7 @@ public class AudioPlaylistHelper {
         return appCmsPresenter.getLastPlaySongPosition();
     }
 
+
     public void setCurrentMediaId(String mediaId) {
         mCurrentMusicId = mediaId;
     }

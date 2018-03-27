@@ -25,7 +25,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.media.MediaRouter;
@@ -41,14 +40,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 
 
 /**
@@ -138,6 +134,11 @@ public class PlaybackManager implements Playback.Callback {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
             mServiceCallback.onPlaybackPause();
+            stopSeekbarUpdate();
+
+            AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(true);
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+
         }
     }
 
@@ -162,6 +163,8 @@ public class PlaybackManager implements Playback.Callback {
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
         setCurrentMediaId(null);
         mPlayback.setCurrentId(null);
+        AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);
+
     }
 
     /**
