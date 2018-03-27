@@ -1748,7 +1748,6 @@ public class ViewCreator {
             } catch (Exception e) {
 
             }
-
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
