@@ -123,7 +123,8 @@
     <dimen name="app_cms_audio_player_controller_padding">5dp</dimen>
     <dimen name="app_cms_audio_player_thumbnail_pading">2dp</dimen>
     <dimen name="app_cms_audio_player_sep_pading">10dp</dimen>
-
+    <dimen name="app_cms_audio_next_width">20dp</dimen>
+    <dimen name="app_cms_audio_next_height">20dp</dimen>
     <dimen name="app_cms_audio_play_width">40dp</dimen>
     <dimen name="app_cms_audio_play_height">50dp</dimen>
     <dimen name="app_cms_audio_play_control_height">70dp</dimen>
@@ -141,6 +142,7 @@
     <dimen name="app_cms_audio_playlist_width">30dp</dimen>
     <dimen name="app_cms_audio_playlist_height">22dp</dimen>
 
+    <dimen name="app_cms_audio_item_padding">30dp</dimen>
 
     <dimen name="app_cms_audio_audio_icon_width">30dp</dimen>
     <dimen name="app_cms_audio_audio_icon_height">20dp</dimen>
