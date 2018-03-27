@@ -1712,8 +1712,39 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
-            try {
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            try {// TODO To Be remove post development finish
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "video_page.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(0);
+//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("watchlist01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "watchlist.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("history01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "history.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//                }else if (moduleInfo.getBlockName().equalsIgnoreCase("downloads01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "download.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//
+//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "music_hub.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(3);
+//                }
+//                else
+                    {
+                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
+
             } catch (Exception e) {
 
             }
@@ -1931,9 +1962,9 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
-                                if (component.isHeaderView()) {
+                                if(component.isHeaderView()){
                                     pageView.addToHeaderView(componentView);
-                                } else {
+                                }else{
                                     childrenContainer.addView(componentView);
                                 }
                                 moduleView.setComponentHasView(i, true);
@@ -3164,9 +3195,9 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (appCMSPresenter.getCurrentActivity() != null) {
+                            if(appCMSPresenter.getCurrentActivity()!=null ){
                                 appCMSPresenter.getCurrentActivity().onBackPressed();
-                            } else if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            }else if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     closeAction,
                                     null,
                                     null,
@@ -5313,9 +5344,9 @@ public class ViewCreator {
         private ImageButton imageButton;
         private View.OnClickListener addClickListener;
 
-        public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum, String userId, int radiusDifference,
-                                             String id) {
+        UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                      ContentDatum contentDatum, String userId, int radiusDifference,
+                                      String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;

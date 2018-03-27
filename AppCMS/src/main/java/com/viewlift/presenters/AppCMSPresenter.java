@@ -15309,11 +15309,11 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public void setLastAudioPlayState(boolean isReload) {
+    public void setLastPauseState(boolean isReload) {
         isLastStatePlaying = isReload;
     }
 
-    public boolean getLastAudioPlayState(boolean isReload) {
+    public boolean isLastStatePause() {
         return isLastStatePlaying;
     }
 
