@@ -102,8 +102,10 @@ import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.PhotoGalleryData;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
@@ -1419,7 +1421,7 @@ public class AppCMSPresenter {
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null, null);
-            } else if (currentActivity != null && (!loadingPage|| forceLoad)) {
+            } else if (currentActivity != null && (!loadingPage || forceLoad)) {
                 forceLoad = false;
                 if (actionType == null) {
                     //Log.e(TAG, "Action " + action + " not found!");
@@ -1772,6 +1774,20 @@ public class AppCMSPresenter {
                                 }
                                 break;
 
+                           /* case ARTICLE_PAGE:
+                                appbarPresent = false;
+                                fullscreenEnabled = false;
+                                navbarPresent = false;
+                                screenName.append(currentActivity.getString(
+                                        R.string.app_cms_template_page_separator));
+                                screenName.append(filmTitle);
+                                //Todo need to manage it depend on Template
+                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
+                                    appbarPresent = true;
+                                    navbarPresent = true;
+                                }
+                                break;*/
+
                             case PLAY_VIDEO_PAGE:
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
@@ -1819,6 +1835,22 @@ public class AppCMSPresenter {
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(this.action
                                                         + BaseView.isLandscape(currentActivity));
+                                                if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_pagename_photogalleryscreen_key))) {
+                                                    convertToAppCMSPageAPI(appCMSPageAPI);
+                                                } else if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_pagename_articlescreen_key))) {
+                                                    if (getCurrentArticleIndex() == -1 && appCMSPageAPI.getModules() != null) {
+                                                        int moduleSize = appCMSPageAPI.getModules().size();
+                                                        for (int i = 0; i < moduleSize; i++) {
+                                                            if (appCMSPageAPI.getModules().get(i).getModuleType() != null && appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_page_article_detail_module))) {
+                                                                Module module = appCMSPageAPI.getModules().get(i);
+                                                                if (module.getContentData() != null && module.getContentData().get(0).getContentDetails() != null && module.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                                                                    setRelatedArticleIds(module.getContentData().get(0).getContentDetails().getRelatedArticleIds());
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                                 Bundle args = getPageActivityBundle(currentActivity,
                                                         this.appCMSPageUI,
                                                         appCMSPageAPI,
@@ -5374,8 +5406,9 @@ public class AppCMSPresenter {
                                         sendCloseAction,
                                         searchQuery);
                             },
-                            () -> {}
-                                );
+                            () -> {
+                            }
+                    );
                 }
 
                 //Firebase Event when contact us screen is opened.
@@ -5454,11 +5487,12 @@ public class AppCMSPresenter {
     }
 
     private Uri bundle;
-    public void setDeepLinnkData(Uri bundle){
+
+    public void setDeepLinnkData(Uri bundle) {
         this.bundle = bundle;
     }
 
-    public Uri getDeepLinkData(){
+    public Uri getDeepLinkData() {
         return bundle;
     }
 
@@ -6125,10 +6159,10 @@ public class AppCMSPresenter {
             }
             if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
 
-                if(isDownloadable()) {
+                if (isDownloadable()) {
                     navigateToDownloadPage(getDownloadPageId(),
                             null, null, false);
-                }else {
+                } else {
                     // Because we do not have Download functionality in App. So we navigate to Error Page Screen.
                     showDialog(DialogType.NETWORK, null, true,
                             () -> {
@@ -6139,7 +6173,7 @@ public class AppCMSPresenter {
                                 showNetworkConnectivity = false;
                             },
                             () -> {
-                                ((Activity)currentContext).finish();
+                                ((Activity) currentContext).finish();
                             });
                 }
             }
@@ -6943,7 +6977,7 @@ public class AppCMSPresenter {
         return 0;
     }
 
-    public int getBrandSecondaryCtaTextColor(){
+    public int getBrandSecondaryCtaTextColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getCta() != null &&
@@ -7430,8 +7464,9 @@ public class AppCMSPresenter {
                                 }
                                 dialog.dismiss();
                             });
-                } else if (dialogType == DialogType.OPEN_URL_IN_BROWSER){
-                    builder.setNegativeButton(currentActivity.getString(R.string.no), (dialog, which) -> {});
+                } else if (dialogType == DialogType.OPEN_URL_IN_BROWSER) {
+                    builder.setNegativeButton(currentActivity.getString(R.string.no), (dialog, which) -> {
+                    });
                     builder.setPositiveButton(positiveButtonText,
                             (dialog, which) -> {
                                 if (onCloseAction != null) {
@@ -7439,7 +7474,7 @@ public class AppCMSPresenter {
                                 }
                                 dialog.dismiss();
                             });
-                }else {
+                } else {
                     builder.setPositiveButton(positiveButtonText,
                             (dialog, which) -> {
                                 try {
@@ -8144,7 +8179,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendGaEvent(String action , String category , String label) {
+    public void sendGaEvent(String action, String category, String label) {
         if (tracker != null) {
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(category)
@@ -10312,7 +10347,7 @@ public class AppCMSPresenter {
     }
 
     private int getHomePage(List<MetaPage> metaPageList) {
-        String id=navigation.getTabBar().get(0).getPageId();
+        String id = navigation.getTabBar().get(0).getPageId();
         for (int i = 0; i < metaPageList.size(); i++) {
             if (id.equalsIgnoreCase(metaPageList.get(i).getPageId())) {
                 return i;
@@ -11557,14 +11592,14 @@ public class AppCMSPresenter {
         String runtime = searchResultClick[1];
         String mediaType = searchResultClick[4];
         String contentType = searchResultClick[5];
-        String gistId = searchResultClick[searchResultClick.length -1];
+        String gistId = searchResultClick[searchResultClick.length - 1];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             setCurrentArticleIndex(-1);
-            navigateToArticlePage(gistId, title, false, null,false);
+            navigateToArticlePage(gistId, title, false, null, false);
             return;
-        }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+        } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             navigateToPhotoGalleryPage(gistId, title, null, false);
             return;
         }
@@ -11828,7 +11863,8 @@ public class AppCMSPresenter {
         try {
             /*extracting the top (visible) page title/id from the activity's binder map.*/
             currentVisiblePageTitle = ((AppCMSPageActivity) currentActivity).getAppCMSBinderMap().keySet().iterator().next();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         /*We needed this check in order to not have the popup player on the search screen. One might
         * question that this method shouldn't be called from the AppCMSPageFragment itself, and
@@ -11842,7 +11878,7 @@ public class AppCMSPresenter {
         * search isn't created using AppCMSPageFragment), since it's homepage and homepage contains
         * the 'standAlonePlayer', the condition inside 'setMiniPlayer is satisfied and this method
         * is called, even though the current page visible is search.*/
-        if ("search".equalsIgnoreCase(currentVisiblePageTitle)){
+        if ("search".equalsIgnoreCase(currentVisiblePageTitle)) {
             dismissPopupWindowPlayer(false);
             return;
         }
@@ -12897,7 +12933,7 @@ public class AppCMSPresenter {
                                 navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
 
                                 final StringBuffer screenName = new StringBuffer();
-                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(photoGalleryPage.getPageId()))){
+                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(photoGalleryPage.getPageId()))) {
                                     screenName.append(photoGalleryPage.getPageName());
                                 }
                                 screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
@@ -12948,7 +12984,7 @@ public class AppCMSPresenter {
     public void navigateToArticlePage(String articleId,
                                       String pageTitle,
                                       boolean launchActivity,
-                                      Action0 callback,boolean isDeepLink) {
+                                      Action0 callback, boolean isDeepLink) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
@@ -12984,7 +13020,7 @@ public class AppCMSPresenter {
                                 navigationPageData.put(this.pageId, pageAPI);
 
                                 final StringBuffer screenName = new StringBuffer();
-                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))){
+                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))) {
                                     screenName.append(articlePage.getPageName());
                                 }
                                 screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
@@ -13023,7 +13059,7 @@ public class AppCMSPresenter {
                                 }
                             }
                         }
-                    },isDeepLink);
+                    }, isDeepLink);
 
         }
     }
@@ -13060,7 +13096,7 @@ public class AppCMSPresenter {
     private void getArticlePageContent(final String apiBaseUrl,
                                        final String siteId,
                                        String pageId,
-                                       final AppCMSArticleAPIAction articleAPIAction,boolean isDeepLink) {
+                                       final AppCMSArticleAPIAction articleAPIAction, boolean isDeepLink) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -13175,6 +13211,44 @@ public class AppCMSPresenter {
             drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
+        }
+    }
+
+    public void convertToAppCMSPageAPI(AppCMSPageAPI appCMSPageAPI) {
+        if (appCMSPageAPI.getModules() != null) {
+            List<ContentDatum> data = new ArrayList<>();
+            int moduleSize = appCMSPageAPI.getModules().size();
+            Module module = null;
+            for (int i = 0; i < moduleSize; i++) {
+                if (appCMSPageAPI.getModules().get(i).getModuleType() != null && appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_page_photo_gallery_detail_module))) {
+                    module = appCMSPageAPI.getModules().get(i);
+                    break;
+                }
+            }
+            if (module.getContentData() != null) {
+                ContentDatum contentDatum = module.getContentData().get(0);
+                contentDatum.setGist(contentDatum.getGist());
+                contentDatum.setId(contentDatum.getId());
+                contentDatum.setStreamingInfo(contentDatum.getStreamingInfo());
+                contentDatum.setContentDetails(contentDatum.getContentDetails());
+                contentDatum.setCategories(contentDatum.getCategories());
+                contentDatum.setTags(contentDatum.getTags());
+                data.add(contentDatum);
+
+                if (contentDatum.getStreamingInfo() != null && contentDatum.getStreamingInfo().getPhotogalleryAssets() != null) {
+                    for (int i = 0; i < contentDatum.getStreamingInfo().getPhotogalleryAssets().size(); i++) {
+                        PhotoGalleryData photoGalleryData = contentDatum.getStreamingInfo().getPhotogalleryAssets().get(i);
+                        Gist gist = new Gist();
+                        gist.setId(photoGalleryData.getId());
+                        gist.setSelectedPosition(i == 0 ? true : false);
+                        gist.setVideoImageUrl(photoGalleryData.getUrl() != null ? photoGalleryData.getUrl() : "");
+                        ContentDatum contentDatum1 = new ContentDatum();
+                        contentDatum1.setGist(gist);
+                        data.add(contentDatum1);
+                    }
+                }
+                module.setContentData(data);
+            }
         }
     }
 
