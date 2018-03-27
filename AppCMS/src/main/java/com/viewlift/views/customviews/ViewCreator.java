@@ -1741,7 +1741,7 @@ public class ViewCreator {
 //                    module = appCMSPageUI1.getModuleList().get(3);
 //                }
 //                else
-                    {
+                {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
 
@@ -1962,9 +1962,9 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
-                                if(component.isHeaderView()){
+                                if (component.isHeaderView()) {
                                     pageView.addToHeaderView(componentView);
-                                }else{
+                                } else {
                                     childrenContainer.addView(componentView);
                                 }
                                 moduleView.setComponentHasView(i, true);
@@ -3195,9 +3195,9 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if(appCMSPresenter.getCurrentActivity()!=null ){
+                            if (appCMSPresenter.getCurrentActivity() != null) {
                                 appCMSPresenter.getCurrentActivity().onBackPressed();
-                            }else if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            } else if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     closeAction,
                                     null,
                                     null,
@@ -5344,9 +5344,9 @@ public class ViewCreator {
         private ImageButton imageButton;
         private View.OnClickListener addClickListener;
 
-        UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId, int radiusDifference,
-                                      String id) {
+        public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                             ContentDatum contentDatum, String userId, int radiusDifference,
+                                             String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
