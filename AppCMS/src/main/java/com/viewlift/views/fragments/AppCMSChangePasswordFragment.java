@@ -78,9 +78,12 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
 //        newPasswordInputLayout.addView(view);
 //        confirmPasswordInputLayout.addView(view);
 
-        AppCMSPresenter.noSpaceInEditTextFilter(oldPasswordInput, getActivity());
-        AppCMSPresenter.noSpaceInEditTextFilter(newPasswordInput, getActivity());
-        AppCMSPresenter.noSpaceInEditTextFilter(confirmPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(oldPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(newPasswordInput, getActivity());
+        appCMSPresenter.noSpaceInEditTextFilter(confirmPasswordInput, getActivity());
+        appCMSPresenter.setCursorDrawableColor(oldPasswordInput);
+        appCMSPresenter.setCursorDrawableColor(newPasswordInput);
+        appCMSPresenter.setCursorDrawableColor(confirmPasswordInput);
 
         oldPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);
         newPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);
@@ -100,8 +103,7 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
             appCMSPresenter.updateUserPassword(oldPassword, newPassword, confirmPassword);
         });
 
-        confirmPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
-                buttonColor));
+        confirmPasswordButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
         confirmPasswordButton.setBackgroundColor(buttonColor);
         setBgColor(bgColor);
 

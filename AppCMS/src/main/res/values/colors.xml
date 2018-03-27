@@ -10,6 +10,7 @@
     <color name="disabledButtonColor">#9D9FA2</color>
     <color name="semiTransparentColor">#47000000</color>
     <color name="transparentColor">#00000000</color>
+    <color name="blackTransparentColor">#8F000000</color>
     <color name="audioSeekBg">#414344</color>
     <color name="volumeProgress">#B5B5B5</color>
 

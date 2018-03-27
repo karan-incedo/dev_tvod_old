@@ -93,7 +93,9 @@
 
         <service android:name=".models.network.background.services.AppCMSBackgroundService" />
 
-        <activity android:name=".views.activity.AutoplayActivity" />
+        <activity
+            android:name=".views.activity.AutoplayActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".views.activity.AppCMSDownloadQualityActivity"
             android:theme="@style/TransparentTheme" />

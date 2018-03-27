@@ -339,6 +339,9 @@
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
     <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
+    <string name="no_data_received">No response received</string>
+    <string name="there_is_a_problem_loading_data">There is a problem loading data</string>
+    <string name="open_url_in_browser_message">Open this link in a Browser?</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
 
@@ -469,6 +472,7 @@
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>
+    <string name="no">NO</string>
     <string name="sign_in_text">SIGN IN</string>
 
     <string name="blank_string"></string>
@@ -584,10 +588,20 @@
 
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
+    <string name="play_video_action">playVideo</string>
+
+    <string name="play_video_category">player-video</string>
+
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
-    <plurals name="episode_subtitle_text">
+    <string name="auto">Auto</string>
+<plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
+    </plurals>
+
+    <plurals name="no_of_photos">
+        <item quantity="one">%1$s photo</item>
+        <item quantity="other">%1$s photos</item>
     </plurals>
 
     <plurals name="minute_subtitle_text">

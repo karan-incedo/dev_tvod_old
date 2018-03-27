@@ -1,0 +1,33 @@
+#Tue Jan 16 20:33:18 IST 2018
+ApptentiveSignatureKey=d196feabafb604e3852752548638e9fd
+GcmSender=8279144370
+AppTitle=Lax Sports Network
+HostNameSuffix=*.lax.viewlift.com
+UAirshipDevelopmentAppKey=daf6iGYnT1eC5Fb2Hkw1ug
+AppName=Lax Sports Network
+AppPackageName=com.mll.laxsportsnetwork
+UAirshipProductionAppSecret=Dr2YJV2JToODp55wyVK7Hw
+TvBannerUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/tvBanner.png
+UAirshipInProduction=true
+ShortDescription=Short description will come here
+UAirshipProductionAppKey=bCUL3GBHTLO_k2SLpk_JzA
+UAirshipDevelopmentAppSecret=tF2u9s--Rvmb3T0BVof5TA
+BaseUrl=https\://appcmsprod.viewlift.com/
+AppIconUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/icon.png
+ApptentiveApiKey=ANDROID-MONSPORTSNET
+AppsFlyerDevKey=00000000000
+JsonKeyFile=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/googleplay_android.json
+FeatureGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/featureGraphic.png
+SiteId=0000014c-edbe-da12-a1fc-fdbe2f120000
+HostName=lax.viewlift.com
+AppResourcesPath=https\://appcms.viewlift.com/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources
+PromoVideoUrl=https\://www.youtube.com/watch?v\=PDhVJfEFxik
+AppsFlyerProdKey=00000000000
+Track=beta
+FullDescription=Full description will come here
+Keystorepass=hoichoi
+AppVersionName=2.0.19
+AliasName=hoichoi
+PromoGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/promoGraphic.png
+AppVersionCode=319
+FacebookAppId=1175920079092185

@@ -48,7 +48,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private volatile boolean started;
     private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
-
+    private AppCMSUIKeyType viewTypeKey;
     private String moduleId;
 
     public AppCMSCarouselItemAdapter(Context context,
@@ -85,7 +85,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.cancelled = false;
         this.started = false;
         this.scrolled = false;
-
+        this.viewTypeKey = jsonValueKeyMap.get(componentViewType);
+        if (this.viewTypeKey == null) {
+            this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
         this.listView.getLayoutManager().scrollToPosition(updatedIndex);
 
         this.carouselHandler = new Handler();
@@ -250,7 +253,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 false,
                 this.componentViewType,
                 true,
-                false);
+                false,viewTypeKey);
+
         return new ViewHolder(view);
     }
 

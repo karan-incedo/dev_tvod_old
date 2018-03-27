@@ -66,7 +66,6 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         relativeLayoutEvent = new RelativeLayout(context);
         init();
     }
-
     public void init(AppCMSPresenter appCMSPresenter,final View recyclerView) {
         this.appCMSPresenter=appCMSPresenter;
         mRecyclerView = (RecyclerView) recyclerView;

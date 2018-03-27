@@ -44,7 +44,8 @@
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
     <string name="app_cms_episodic_season_prefix">SEASON</string>
-
+    <string name="app_cms_article_key_type">ARTICLE</string>
+    <string name="app_cms_photo_gallery_key_type">PHOTOGALLERY</string>
     <integer name="number_of_tabs">4</integer>
     <integer name="home_page_index">0</integer>
     <integer name="nav_live_page_index">4</integer>
@@ -57,7 +58,6 @@
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
-
     <bool name="show_navbar">false</bool>
 
     <bool name="enable_stream_quality_selection">true</bool>

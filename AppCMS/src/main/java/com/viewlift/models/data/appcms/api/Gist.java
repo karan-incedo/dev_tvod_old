@@ -10,6 +10,8 @@ import java.io.Serializable;
 @UseStag
 public class Gist implements Serializable {
 
+    boolean selectedPosition;
+
     @SerializedName("id")
     @Expose
     String id;
@@ -110,11 +112,28 @@ public class Gist implements Serializable {
     @Expose
     String mediaType;
 
+    @SerializedName("readTime")
+    @Expose
+    String readTime;
+
+    @SerializedName("summaryText")
+    @Expose
+    String summaryText;
 
     String downloadStatus;
     boolean isAudioPlaying;
     long currentPlayingPosition;
     Boolean isCastingConnected;
+
+    public String getLandscapeImageUrl() {
+        return landscapeImageUrl;
+    }
+
+    public void setLandscapeImageUrl(String landscapeImageUrl) {
+        this.landscapeImageUrl = landscapeImageUrl;
+    }
+
+    String landscapeImageUrl;
     /**
      * This is to store the url of the downloaded file
      */
@@ -346,4 +365,33 @@ public class Gist implements Serializable {
     public void setCastingConnected(Boolean castingConnected) {
         isCastingConnected = castingConnected;
     }
+
+    public boolean isSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(boolean selectedPosition) {
+        this.selectedPosition = selectedPosition;
+    }
+
+    public String getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(String readTime) {
+        this.readTime = readTime;
+    }
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
+    }
+
+    public void setDownloadStatus(String downloadStatus) {
+        this.downloadStatus = downloadStatus;
+    }
 }
+

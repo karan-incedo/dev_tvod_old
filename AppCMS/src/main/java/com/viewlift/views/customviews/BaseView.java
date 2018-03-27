@@ -957,6 +957,10 @@ public abstract class BaseView extends FrameLayout {
             if (viewWidth < 0) {
                 viewWidth = LayoutParams.MATCH_PARENT;
             }
+            if (jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO
+                    || jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
+                viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
 
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
@@ -1035,7 +1039,10 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isLandscape(getContext()) || !isTablet(getContext())) {
+                    if ((isLandscape(getContext()) || !isTablet(getContext())) &&
+                            childComponent!=null &&
+                            childComponent.getSettings()!=null &&
+                            !childComponent.getSettings().isHidden()) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else {
@@ -1051,7 +1058,10 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isTablet(getContext())) {
+                    if (isTablet(getContext()) &&
+                            childComponent!=null &&
+                            childComponent.getSettings()!=null &&
+                            !childComponent.getSettings().isHidden()) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 9;
                         } else {
@@ -1154,6 +1164,11 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_VIDEO_AGE_LABEL_KEY:
                     viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                     view.setPadding(4, 0, 4, 0);
+                    break;
+                case PAGE_GRID_THUMBNAIL_INFO:
+                case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
+                    int padding = childComponent.getPadding();
+                    view.setPadding(padding, 0, padding, 0);
                     break;
 
                 default:

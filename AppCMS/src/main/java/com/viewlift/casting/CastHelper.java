@@ -900,6 +900,9 @@ public class CastHelper {
                         0,
                         isVideoDownloaded);
                 sentBeaconPlay = true;
+
+                appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
+                        mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
             }
         }
         switch (status) {

@@ -218,11 +218,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 true,
                 this.componentViewType,
                 false,
-                false);
-        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                false, viewTypeKey);
+
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(5,5,5,5);
+        view.setLayoutParams(lp);
+
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
-            emptyView.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
+            String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+            emptyView.setTextColor(Color.parseColor(textColor));
             emptyView.setTextSize(24f);
             if (viewTypeKey == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
                     viewTypeKey == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
@@ -241,7 +246,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         }
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -398,15 +402,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 userVideoDownloadStatus -> {
 //                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
 //                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-
-                                    /*The below code is to stop audio if user has deleted the audio file while the audio is playing*/
-                                    /*if (contentDatum.getGist() != null
-                                            && contentDatum.getGist().getContentType() != null
-                                            && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
-                                        if (contentDatum.getGist().getId().contains(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
-                                            appCMSPresenter.stopAudioServices(false,false);
-                                        }
-                                    }*/
                                     notifyItemRangeRemoved(position, getItemCount());
                                     adapterData.remove(contentDatum);
                                     notifyItemRangeChanged(position, getItemCount());
@@ -498,6 +493,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             int currentPlayingIndex = -1;
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
+                            }
+                            /*navigate to article detail page*/
+                            if (data.getGist() != null && data.getGist().getMediaType() != null
+                                    && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                                appCMSPresenter.setCurrentArticleIndex(-1);
+                                appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null,false);
+                                return;
                             }
 
                             if (action.contains(deleteSingleItemDownloadAction)) {

@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
@@ -91,6 +92,10 @@ public class LoginModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         init();
+        RecyclerView view = appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+        if(view != null){
+            view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+        }
     }
 
     public void init() {
@@ -189,9 +194,11 @@ public class LoginModule extends ModuleView {
                     } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                             (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
                                     launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                    launchType == AppCMSPresenter.LaunchType.SIGNUP)) {
                         if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                             buttonSelectors[1] = new Button(getContext());
                             LinearLayout.LayoutParams signupSelectorLayoutParams =
                                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -261,7 +268,8 @@ public class LoginModule extends ModuleView {
             if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                 selectChild(0);
                 unselectChild(1);
-            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                    launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                 selectChild(1);
                 unselectChild(0);
             }
@@ -273,7 +281,8 @@ public class LoginModule extends ModuleView {
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
             childViews[childIndex].setVisibility(VISIBLE);
-            buttonSelectors[childIndex].setAlpha(1.0f);
+//            buttonSelectors[childIndex].setAlpha(1.0f);
+            setAlphaTextColorForSelector(buttonSelectors[childIndex], 200);
             applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
             visibleEmailInputView = emailInputViews[childIndex];
             visiblePasswordInputView = passwordInputViews[childIndex];
@@ -290,7 +299,8 @@ public class LoginModule extends ModuleView {
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
             childViews[childIndex].setVisibility(GONE);
-            buttonSelectors[childIndex].setAlpha(0.6f);
+//            buttonSelectors[childIndex].setAlpha(0.6f);
+            setAlphaTextColorForSelector(buttonSelectors[childIndex], 100);
             applyUnderlineToComponent(underlineViews[childIndex], bgColor);
         }
     }
@@ -384,6 +394,7 @@ public class LoginModule extends ModuleView {
                                 case PAGE_EMAILTEXTFIELD_KEY:
                                 case PAGE_EMAILTEXTFIELD2_KEY:
                                     emailInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
+                                    appCMSPresenter.setCursorDrawableColor(emailInputViews[childIndex]);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visibleEmailInputView = emailInputViews[1];
                                     }
@@ -398,6 +409,7 @@ public class LoginModule extends ModuleView {
                                             .setImeOptions(EditorInfo.IME_ACTION_SEND | EditorInfo.IME_ACTION_GO);
                                     passwordInputViews[childIndex]
                                             .setTransformationMethod(PasswordTransformationMethod.getInstance());
+                                    appCMSPresenter.setCursorDrawableColor(passwordInputViews[childIndex]);
 
                                     passwordInputViews[childIndex].setOnEditorActionListener((v, actionId, event) -> {
                                         boolean isImeActionSent = false;
@@ -424,7 +436,7 @@ public class LoginModule extends ModuleView {
                                         return isImeActionSent;
                                     });
 
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
+                                    appCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
@@ -452,5 +464,14 @@ public class LoginModule extends ModuleView {
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
         underline.setColor(transparentColor);
+    }
+
+    void setAlphaTextColorForSelector(Button button, int alpha) {
+        String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+        int color = Color.parseColor(textColor);
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = (color >> 0) & 0xFF;
+        button.setTextColor(Color.argb(alpha, r, g, b));
     }
 }

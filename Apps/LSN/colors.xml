@@ -1,0 +1,13 @@
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#E80B0F</color>
+    <color name="backgroundColor">#1d2531</color>
+    <color name="colorNavBarText">#FFFFFF</color>
+    <color name="facebookBlue">#3b5998</color>
+    <color name="googleRed">#c04b4c</color>
+    <color name="disabledButtonColor">#9D9FA2</color>
+    <color name="semiTransparentColor">#47000000</color>
+    <color name="transparentColor">#00000000</color>
+
+</resources>

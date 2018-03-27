@@ -3,6 +3,8 @@ package com.viewlift.views.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -23,10 +25,13 @@ import com.bumptech.glide.request.target.Target;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +106,16 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.parentLayout.setOnClickListener(v -> {
             if (action != null) {
                 Observable.just("progress").subscribe(action);
+            }
+            if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                    && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false, null,false);
+                return;
+            }else if(appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                    && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+                appCMSPresenter.navigateToPhotoGalleryPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), null, false);
+                return;
+
             }
             /*get audio details on tray click item and play song*/
             if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
@@ -332,14 +347,14 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.action = action;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         FrameLayout parentLayout;
         ImageView filmThumbnail;
         ImageView gridOptions;
-        TextView filmTitle;
+        TextView filmTitle,thumbnailInfo;
         RelativeLayout titleLayout;
-
+        RelativeLayout filmThumbnailLayout;
 
         public ViewHolder(View view,
                           int imageWidth,
@@ -350,12 +365,28 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             super(view);
             this.view = view;
             this.parentLayout = (FrameLayout) view.findViewById(R.id.search_result_item_view);
+            this.filmThumbnailLayout = new RelativeLayout(view.getContext());
+            this.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
 
             this.filmThumbnail = new ImageView(view.getContext());
-            FrameLayout.LayoutParams filmImageThumbnailLayoutParams =
-                    new FrameLayout.LayoutParams(imageWidth, imageHeight);
+            RelativeLayout.LayoutParams filmImageThumbnailLayoutParams =
+                    new RelativeLayout.LayoutParams(imageWidth, imageHeight);
             this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
-            this.parentLayout.addView(this.filmThumbnail);
+
+            this.thumbnailInfo = new TextView(view.getContext());
+            this.thumbnailInfo.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.blackTransparentColor));
+            this.thumbnailInfo.setTextSize(textSize);
+            RelativeLayout.LayoutParams thumbnailInfoParams =
+                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            thumbnailInfoParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            this.thumbnailInfo.setLayoutParams(thumbnailInfoParams);
+
+            this.filmThumbnailLayout.addView(this.filmThumbnail);
+            this.filmThumbnailLayout.addView( this.thumbnailInfo);
+
+            this.parentLayout.addView(this.filmThumbnailLayout);
 
             this.titleLayout = new RelativeLayout(view.getContext());
             FrameLayout.LayoutParams titleLayoutParams =
@@ -371,8 +402,10 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.gridOptions = new ImageView(view.getContext());
             this.gridOptions.setId(View.generateViewId());
             this.gridOptions.setLayoutParams(gridLayoutParams);
-            this.gridOptions.setImageResource(R.drawable.dots_more);
-            this.gridOptions.setVisibility(View.GONE);
+            this.gridOptions.setBackground(context.getDrawable(R.drawable.dots_more));
+            this.gridOptions.getBackground().setTint(appCMSPresenter.getGeneralTextColor());
+            this.gridOptions.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+            this.gridOptions.setVisibility(View.INVISIBLE);
             this.titleLayout.addView(this.gridOptions);
 
             this.filmTitle = new TextView(view.getContext());
@@ -384,9 +417,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             filmTitleLayoutParams.addRule(RelativeLayout.LEFT_OF, this.gridOptions.getId());
             this.filmTitle.setLayoutParams(filmTitleLayoutParams);
             this.filmTitle.setTextSize(textSize);
-            this.filmTitle.setMaxLines(1);
-            this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
-                    android.R.color.white));
+            this.filmTitle.setMaxLines(2);
+
+            this.filmTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.titleLayout.addView(this.filmTitle);
 
@@ -401,8 +434,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     }
 
     void applySportsStyleDefault(ViewHolder viewHolder, Bitmap image) {
-        viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), image.getHeight()));
-
+        viewHolder.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(),image.getHeight()));
+        viewHolder.filmThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(image.getWidth(), image.getHeight()));
         viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         FrameLayout.LayoutParams titleLayoutParams = (FrameLayout.LayoutParams) viewHolder.titleLayout.getLayoutParams();
@@ -411,4 +444,42 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
         viewHolder.gridOptions.setVisibility(View.VISIBLE);
     }
+
+    private void setThumbInfoText(View view,Gist data){
+        String thumbInfo = null;
+        if (data.getPublishDate() != null) {
+            thumbInfo = getDateFormat(Long.parseLong(data.getPublishDate()), "MMM dd");
+        }
+        if (data != null && data.getReadTime() != null) {
+            StringBuilder readTimeText = new StringBuilder()
+                    .append(data.getReadTime().trim())
+                    .append("min")
+                    .append(" read ");
+
+            if (thumbInfo != null && thumbInfo.length() > 0) {
+                readTimeText.append("|")
+                        .append(" ")
+                        .append(thumbInfo);
+            }
+            ((TextView) view).setText(readTimeText);
+        } else {
+            long runtime = data.getRuntime();
+            if (thumbInfo != null) {
+                ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
+            } else {
+                ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+            }
+
+        }
+    }
+
+    private String getDateFormat(long timeMilliSeconds, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
 }

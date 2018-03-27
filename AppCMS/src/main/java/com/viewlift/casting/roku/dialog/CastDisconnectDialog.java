@@ -1,6 +1,7 @@
 package com.viewlift.casting.roku.dialog;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -58,6 +59,7 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         mDisconnectButton.setOnClickListener(this);
 
         mStopCastingButton = (Button) findViewById(BUTTON_STOP_RES_ID);
+        mStopCastingButton.setTextColor(Color.BLACK);
         mStopCastingButton.setText(getContext().getString(R.string.mr_controller_stop_casting));
         mStopCastingButton.setOnClickListener(this);
 
