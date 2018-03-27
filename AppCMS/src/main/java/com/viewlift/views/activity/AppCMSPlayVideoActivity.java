@@ -232,7 +232,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (((binder != null &&
+                    if (((binder != null && !isDownloaded &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -249,7 +249,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         onResumeVideo.onResumeVideo();
                     }
                 } catch (Exception e) {
-                    if ((binder != null &&
+                    if ((binder != null && !isDownloaded &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -270,6 +270,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    public boolean isDownloaded = false;
     public void launchVideoPlayer(Gist gist,
                                   String[] extra,
                                   boolean useHls,
@@ -290,6 +291,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && extra[1] != null
                 && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+            isDownloaded=true;
         }
                 /*If the video is already downloaded, play if from there, even if Internet is
                 * available*/
@@ -300,6 +302,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
             videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
+            isDownloaded= true;
             if(binder.getContentData().getStreamingInfo() != null) {
                 if (binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                     VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
@@ -435,7 +438,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onResume();
 
         // This is to enable offline video playback even when Internet is not available.
-        if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
+        if (binder != null && !isDownloaded &&
+                !binder.isOffline() &&
+                !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,

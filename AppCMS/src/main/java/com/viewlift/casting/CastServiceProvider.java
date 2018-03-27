@@ -1,7 +1,6 @@
 package com.viewlift.casting;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,9 +22,12 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.cast.CastDevice;
+import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.AppCMSApplication;
+
 import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
 import com.viewlift.casting.roku.RokuDevice;
@@ -35,6 +37,9 @@ import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -49,14 +54,18 @@ public class CastServiceProvider {
     private static CastServiceProvider objMain;
 
     private String TAG = "CastServiceProvider";
+    public String currentCastingUrl = "";
     private FragmentActivity mActivity;
-    private ImageButton mMediaRouteButton;
+    private ImageButton mMediaRouteButton, mPlayerMediaRouteButton;
     private CastHelper mCastHelper;
     private RokuWrapper rokuWrapper;
     private boolean isHomeScreen = false;
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
+
+    public static final String CAST_STATUS = "com.viewlift.casting.CASTING_STATUS";
+
     private String pageName;
 
     /**
@@ -85,9 +94,20 @@ public class CastServiceProvider {
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
     private boolean allowFreePlay;
+    private CastCallBackListener castCallBackListener;
+
     /**
      * callBackCastHelper gets the calls related to chromecast devices selections
      */
+
+    public static interface CastCallBackListener {
+        void onCastStatusUpdate();
+    }
+
+    public void setCastCallBackListener(CastCallBackListener castCallBackListener) {
+        this.castCallBackListener = castCallBackListener;
+    }
+
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
@@ -95,12 +115,23 @@ public class CastServiceProvider {
                     (mActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                             appCMSPresenter.isPageAVideoPage(pageName)))) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+            } else {
+
+                if (castCallBackListener != null) {
+                    castCallBackListener.onCastStatusUpdate();
+                }
             }
+
             stopRokuDiscovery();
         }
 
         @Override
         public void onApplicationDisconnected() {
+
+            currentCastingUrl = "";
+            if (castCallBackListener != null) {
+                castCallBackListener.onCastStatusUpdate();
+            }
         }
 
         @Override
@@ -112,7 +143,9 @@ public class CastServiceProvider {
             mCastHelper.onFilterRoutes(mCastHelper.routes);
             mCastHelper.isCastDeviceAvailable = mCastHelper.routes.size() > 0;
             refreshCastMediaIcon();
-            castChooserDialog.setRoutes(mCastHelper.routes);
+            if (castChooserDialog != null && mCastHelper != null && mCastHelper.routes != null) {
+                castChooserDialog.setRoutes(mCastHelper.routes);
+            }
         }
 
         @Override
@@ -201,18 +234,18 @@ public class CastServiceProvider {
                 }
             };
 
-    private CastServiceProvider(Activity activity) {
+    private CastServiceProvider(Context activity) {
         this.mContext = activity;
         setCasting();
 
-        appCMSPresenter = ((AppCMSApplication) activity.getApplication())
+        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
         allowFreePlay = false;
     }
 
-    public static synchronized CastServiceProvider getInstance(Activity activity) {
+    public static synchronized CastServiceProvider getInstance(Context activity) {
         if (objMain == null) {
             objMain = new CastServiceProvider(activity);
         }
@@ -261,6 +294,12 @@ public class CastServiceProvider {
         mCastHelper.setInstance(mActivity);
         mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
+    }
+
+    public void setVideoPlayerMediaButton(ImageButton mediaRouterView) {
+        this.mPlayerMediaRouteButton = mediaRouterView;
+        mPlayerMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
+        castAnimDrawable = (AnimationDrawable) mPlayerMediaRouteButton.getDrawable();
 
     }
 
@@ -273,6 +312,7 @@ public class CastServiceProvider {
         }
         mCastHelper.setCastSessionManager();
 
+
         createMediaChooserDialog();
         mCastHelper.setCastDiscovery();
 
@@ -284,6 +324,43 @@ public class CastServiceProvider {
             mCastHelper.isCastDeviceAvailable = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
         }
+    }
+
+    public boolean shouldCastMiniControllerVisible() {
+        boolean shouldControllerVisible = true;
+        RemoteMediaClient mRemoteMediaClient = null;
+        mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
+                .getCurrentCastSession();
+        if (mCastSession != null && mCastSession.isConnected()) {
+            mRemoteMediaClient = mCastSession.getRemoteMediaClient();
+        }
+        try {
+            if (mRemoteMediaClient != null) {
+                MediaInfo mediaInfo = mRemoteMediaClient.getMediaInfo();
+                if (mediaInfo == null) {
+                    return false;
+                }
+                String appPackageName = mContext.getPackageName();
+
+                JSONObject customData = mediaInfo.getCustomData();
+                if (customData != null && customData.has(CastingUtils.ITEM_TYPE)) {
+                    String remoteItemType = customData.getString(CastingUtils.ITEM_TYPE);
+                    if (remoteItemType.equalsIgnoreCase(appPackageName + "" + CastingUtils.ITEM_TYPE_AUDIO)) {
+                        shouldControllerVisible = false;
+                    } else {
+                        shouldControllerVisible = true;
+                    }
+                } else if (customData != null && customData.has("video_title")) {
+                    shouldControllerVisible = true;
+                } else {
+                    shouldControllerVisible = false;
+                }
+            } else {
+                shouldControllerVisible = false;
+            }
+        } catch (JSONException e) {
+        }
+        return shouldControllerVisible;
     }
 
     //if user comes from player screen and Remote devices already connected launch remote playback
@@ -356,7 +433,7 @@ public class CastServiceProvider {
         stopRokuDiscovery();
     }
 
-    private void launchChromecastRemotePlayback(int castingModeChromecast) {
+    public void launchChromecastRemotePlayback(int castingModeChromecast) {
         if (callRemoteMediaPlayback != null) {
             callRemoteMediaPlayback.setRemotePlayBack(castingModeChromecast);
         }
@@ -441,6 +518,7 @@ public class CastServiceProvider {
      * refreshCastMediaIcon invalidate the media icon view on the basis of casting status i.e disconnected/Connected
      */
     private void refreshCastMediaIcon() {
+        refreshLivePlayerCastMediaIcon();
         if (mMediaRouteButton == null)
             return;
 
@@ -477,8 +555,8 @@ public class CastServiceProvider {
 
         mMediaRouteButton.setOnClickListener(v -> {
             if (!allowFreePlay &&
-                    ((!appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserLoggedIn()) ||
-                    (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
+                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
+                            (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
@@ -493,6 +571,77 @@ public class CastServiceProvider {
                             });
                 } else if (!appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                    mActivity.finish();
+                                }
+                            });
+                }
+            } else
+
+            {
+                try {
+                    castDisconnectDialog = new CastDisconnectDialog(mActivity);
+
+                    if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                        castChooserDialog.setRoutes(mCastHelper.routes);
+                        castChooserDialog.show();
+                    } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null
+                            && mActivity != null) {
+                        castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                        castDisconnectDialog.show();
+                    }
+                } catch (Exception e) {
+                    //
+                }
+            }
+        });
+    }
+
+    private void refreshLivePlayerCastMediaIcon() {
+        if (mPlayerMediaRouteButton == null)
+            return;
+
+        mPlayerMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.GONE);
+
+        //Setting the Casting Overlay for Casting
+        if (mCastHelper.isCastDeviceAvailable)
+            if (!appCMSPresenter.isCastOverLayShown()
+                    && mContext.getResources().getBoolean(R.bool.display_chromecast_overlay)) {
+                appCMSPresenter.setCastOverLay();
+                showIntroOverLay();
+            }
+
+        if (!mCastHelper.isCastDeviceAvailable && castChooserDialog != null && castChooserDialog.isShowing()) {
+            castChooserDialog.dismiss();
+        }
+
+        if (mCastHelper.isCastDeviceAvailable) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
+                castAnimDrawable.stop();
+                Drawable selectedImageDrawable = mActivity.getResources()
+                        .getDrawable(R.drawable.toolbar_cast_connected, null);
+                int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+                selectedImageDrawable.setColorFilter(new PorterDuffColorFilter(fillColor,
+                        PorterDuff.Mode.MULTIPLY));
+                mPlayerMediaRouteButton.setImageDrawable(selectedImageDrawable);
+            } else {
+                castAnimDrawable.stop();
+                mPlayerMediaRouteButton.setImageDrawable(mActivity.getResources()
+                        .getDrawable(R.drawable.toolbar_cast_disconnected, null));
+            }
+        }
+
+        mPlayerMediaRouteButton.setOnClickListener(v -> {
+            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
+                CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
+                        .getSessionManager().endCurrentSession(true);
+                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            null);
+                } else if (appCMSPresenter.isAppSVOD()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
@@ -518,7 +667,6 @@ public class CastServiceProvider {
         });
     }
 
-
     public void setRemotePlaybackCallback(ILaunchRemoteMedia onLaunchRemotePLayback) {
         this.callRemoteMediaPlayback = onLaunchRemotePLayback;
     }
@@ -529,12 +677,28 @@ public class CastServiceProvider {
 
     }
 
+    public void launchSingeRemoteMedia(String title, String paramLink, String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
+        if (mCastHelper != null)
+            mCastHelper.launchSingeRemoteMedia(title, paramLink, imageUrl, videoPlayUrl, filmId, currentPosition, false);
+    }
+
     public void setPageName(String pageName) {
         this.pageName = pageName;
     }
 
     public boolean castDeviceConnected() {
         return mCastHelper.isCastDeviceConnected;
+    }
+
+    public String getConnectedDeviceName() {
+        try {
+            if (mCastSession == null)
+                return "";
+            return mCastSession.getCastDevice().getFriendlyName();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
     }
 }
 

@@ -238,6 +238,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean libsThreadExecuted;
 
+    private  Bundle currentBundle;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -266,6 +268,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         initPageActivity();
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
+        currentBundle=args;
         if (args != null) {
             try {
                 updatedAppCMSBinder =
@@ -296,6 +299,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
 
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+                    currentBundle = args;
                     try {
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
@@ -387,6 +391,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity(),
                                         AppCMSPageActivity.class);
                                 appCMSIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+
+                                appCMSIntent.putExtra(getString(R.string.app_cms_bundle_key), currentBundle);
+
                                 appCMSIntent.putExtra(getString(R.string.deeplink_uri_extra_key), deeplinkUrl);
                                 appCMSPresenter.getCurrentActivity().startActivity(appCMSIntent);
                             } catch (Exception e) {
@@ -981,6 +989,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             appCMSPresenter.cancelCustomToast();
         }
+
+
     }
 
     @Override
@@ -2534,6 +2544,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 0,
                 null);
         appCMSPresenter.resetDeeplinkQuery();
+        if (updatedAppCMSBinder != null) {
+            updatedAppCMSBinder.clearSearchQuery();
+        }
     }
 
     private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
@@ -2783,6 +2796,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } catch (Exception e) {
                 //
+            }
+            if (CastServiceProvider.getInstance(this).shouldCastMiniControllerVisible()) {
+                appCMSCastController.setVisibility(View.VISIBLE);
+            } else {
+                appCMSCastController.setVisibility(View.GONE);
+
             }
         }
     }

@@ -691,7 +691,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 isTrailer,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
 
         beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -699,7 +699,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 permaLink,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,onUpdateContentDatumEvent.getCurrentContentDatum());
+
 
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);

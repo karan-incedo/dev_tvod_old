@@ -1,6 +1,7 @@
 package com.viewlift.models.data.appcms.beacon;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
@@ -24,7 +25,8 @@ public class BeaconPing extends Thread {
                       boolean isTrailer,
                       String parentScreenName,
                       VideoPlayerView videoPlayerView,
-                      String streamId) {
+                      String streamId,
+                      ContentDatum contentDatum) {
         this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
         this.appCMSPresenter = appCMSPresenter;
         this.filmId = filmId;

@@ -163,8 +163,10 @@ public class ViewCreator {
 
             subtitleSb.append(context.getString(R.string.text_separator));
 
-            if (!TextUtils.isEmpty(primaryCategory)) {
+            if (!TextUtils.isEmpty(primaryCategory) && totalEpisodes>0) {
                 subtitleSb.append(primaryCategory.toUpperCase());
+            }else{
+                subtitleSb =new StringBuilder("");
             }
         }
 
@@ -211,18 +213,20 @@ public class ViewCreator {
 
         StringBuilder infoText = new StringBuilder();
 
-        if (runtime / 60L < 1) {
-            infoText.append(runtime)
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_seconds_abbreviation));
-        } else if (runtime / 60L < 2) {
-            infoText.append(runtime / 60L)
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_minute_abbreviation));
-        } else {
-            infoText.append(runtime / 60L)
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_minutes_abbreviation));
+        if( runtime != 0){
+            if (runtime / 60L < 1) {
+                infoText.append(runtime)
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_seconds_abbreviation));
+            } else if (runtime / 60L < 2) {
+                infoText.append(runtime / 60L)
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_minute_abbreviation));
+            } else {
+                infoText.append(runtime / 60L)
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_minutes_abbreviation));
+            }
         }
 
         if (appendFirstSep) {
@@ -1988,7 +1992,8 @@ public class ViewCreator {
         }
 
         int tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+               // appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
@@ -2893,7 +2898,9 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            if (appCMSPresenter.getCurrentActivity()!=null){  // Added for handling DeepLink issue
+                                appCMSPresenter.getCurrentActivity().onBackPressed();
+                            } else if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     new AppCMSActionPresenter.Builder().action(closeAction).build(),
                                     null,
                                     null,
@@ -3142,13 +3149,14 @@ public class ViewCreator {
 
                 boolean showTrayLabel = false;
 
+                int numSeasons = 0;
                 if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY &&
                         moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
                         moduleAPI != null && moduleAPI.getContentData() != null &&
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getSeason() != null) {
-                    int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+                     numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
                     if (1 < numSeasons) {
                         showTrayLabel = true;
                     }
@@ -3156,7 +3164,7 @@ public class ViewCreator {
 
                 if (showTrayLabel) {
                     List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
-                    int numSeasons = seasons.size();
+                     numSeasons = seasons.size();
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
                     try {
@@ -3210,9 +3218,11 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView = new TextView(context);
 
-                    if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
+                    if ((jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) ||
+                            (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                                    numSeasons == 0 )) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -3332,6 +3342,8 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                                    ((TextView) componentViewResult.componentView).setMaxLines(1);
                                 }
                                 break;
 
@@ -4067,6 +4079,17 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
+
+                if ( moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                        moduleAPI != null && moduleAPI.getContentData() != null &&
+                        !moduleAPI.getContentData().isEmpty() &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getSeason() != null &&
+                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                    componentViewResult.shouldHideComponent = true;
+                }
+
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,
