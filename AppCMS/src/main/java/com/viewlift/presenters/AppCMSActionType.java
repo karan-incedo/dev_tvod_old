@@ -12,6 +12,8 @@ public enum AppCMSActionType {
     WATCHLIST_PAGE,
     VIDEO_PAGE,
     SHOW_PAGE,
+    ARTICLE_PAGE,
+    PHOTO_GALLERY_PAGE,
     PLAY_VIDEO_PAGE,
     WATCH_TRAILER,
     SHARE,

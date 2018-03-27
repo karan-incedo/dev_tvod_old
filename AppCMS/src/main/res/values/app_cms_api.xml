@@ -344,10 +344,11 @@
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
-    <string name="app_cms_pagename_articlescreen_key">Article Page</string>
+
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
+    <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
@@ -362,6 +363,8 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_action_articlepage_key">articleDetailPage</string>
+    <string name="app_cms_action_photo_gallerypage_key">PhotoGalleryDetailPage</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
@@ -599,4 +602,8 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
+    <string name="app_cms_page_path_article">article</string>
+    <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
+    <string name="app_cms_page_article_detail_module">ArticleDetailModule</string>
+    <string name="app_cms_page_photo_gallery_detail_module">PhotogalleryDetailModule</string>
 </resources>
