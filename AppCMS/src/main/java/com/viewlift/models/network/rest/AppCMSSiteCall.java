@@ -36,10 +36,13 @@ public class AppCMSSiteCall {
     }
 
     @WorkerThread
-    public AppCMSSite call(String url, int numberOfTries) throws IOException {
+    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries) throws IOException {
         try {
             //Log.d(TAG, "Attempting to retrieve site JSON: " + url);
-            AppCMSSite appCMSSite = appCMSSiteRest.get(url).execute().body();
+            AppCMSSite appCMSSite = null;
+            if (!networkDisconnected) {
+                appCMSSite = appCMSSiteRest.get(url).execute().body();
+            }
             if (appCMSSite == null) {
                 appCMSSite = readAppCMSSiteFromFile(getResourceFilename());
             } else {
@@ -54,7 +57,7 @@ public class AppCMSSiteCall {
         }
 
         if (numberOfTries == 0) {
-            return call(url, numberOfTries + 1);
+            return call(url, networkDisconnected, numberOfTries + 1);
         } else {
             try {
                 return readAppCMSSiteFromFile(getResourceFilename());

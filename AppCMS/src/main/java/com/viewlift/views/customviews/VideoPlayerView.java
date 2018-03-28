@@ -76,6 +76,8 @@ import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -213,7 +215,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 streamingQualitySelector != null) {
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (0 < availableStreamingQualities.size()) {
-                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+                String videoStreamingUrl = streamingQualitySelector.getVideoStreamingUrl();
+                if(TextUtils.isEmpty(videoStreamingUrl)){
+                    videoStreamingUrl = videoUri.toString();
+                }
+                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoStreamingUrl);
                 if (0 <= streamingQualityIndex) {
                     currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
                     setSelectedStreamingQualityIndex();
@@ -524,6 +530,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     try {
                         long currentPosition = getCurrentPosition();
                         if (listViewAdapter.selectedIndex != listViewAdapter.getDownloadQualityPosition()) {
+                            streamingQualitySelector.setVideoStreaming(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
                             setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
                                     closedCaptionUri);
                         }
@@ -548,7 +555,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             int updatedIndex = -1;
             try {
                 currentIndex = listViewAdapter.selectedIndex;
-                updatedIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString());
+                String videoUrl = streamingQualitySelector.getVideoStreamingUrl();
+                if(TextUtils.isEmpty(videoUrl)){
+                    videoUrl = uri.toString();
+                }
+                    updatedIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUrl);
                 if (updatedIndex != -1) {
                     listViewAdapter.setSelectedIndex(updatedIndex);
                 }
@@ -639,9 +650,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new DefaultHttpDataSourceFactory(userAgent, bandwidthMeter);
     }
 
+
+
     @Override
-    public void onTimelineChanged(Timeline timeline, Object o) {
-        //
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+
     }
 
     @Override
@@ -899,6 +912,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         String getStreamingQualityUrl(String streamingQuality);
         String getMpegResolutionFromUrl(String mpegUrl);
         int getMpegResolutionIndexFromUrl(String mpegUrl);
+        String getVideoStreamingUrl();
+        void setVideoStreaming(String videoStreamingUrl);
     }
 
     public static class PlayerState {

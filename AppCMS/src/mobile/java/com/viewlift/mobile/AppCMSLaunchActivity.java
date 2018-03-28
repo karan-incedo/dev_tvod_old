@@ -26,7 +26,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private Uri searchQuery;
-    private CastHelper mCastHelper;
+//    private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
 
     private ConnectivityManager connectivityManager;
@@ -51,6 +51,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (getApplication() instanceof AppCMSApplication) {
             appCMSPresenterComponent =
                     ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent.appCMSPresenter().resetLaunched();
         }
 
         handleIntent(getIntent());
@@ -89,14 +90,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            true);
+                            false);
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
             }
         };
 
-        setCasting();
+//        setCasting();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
@@ -115,14 +116,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
     }
 
-    private void setCasting() {
-        try {
-            mCastHelper = CastHelper.getInstance(getApplicationContext());
-            mCastHelper.initCastingObj();
-        } catch (Exception e) {
-            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
-        }
-    }
+//    private void setCasting() {
+//        try {
+//            mCastHelper = CastHelper.getInstance(getApplicationContext());
+//            mCastHelper.initCastingObj();
+//        } catch (Exception e) {
+//            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
+//        }
+//    }
 
     public void handleIntent(Intent intent) {
         if (intent != null) {
@@ -154,6 +155,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Log.w(TAG, "Resuming launch activity");
+
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         appStartWithNetworkConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
@@ -166,13 +169,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (appCMSPresenterComponent != null) {
             try {
                 if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
+                    Log.w(TAG, "Sending close others action");
                     appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
                 } else {
+                    Log.w(TAG, "Retrieving main.json");
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            true);
+                            false);
                 }
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());

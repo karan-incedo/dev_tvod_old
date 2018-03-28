@@ -273,6 +273,10 @@
     <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
     <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
 
+    <string name="app_cms_select_alert_title">Please Select!</string>
+    <string name="app_cms_re_download_item_message">Select your option to re-download or delete item.</string>
+
+
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
@@ -453,6 +457,10 @@
     <string name="existing_subscription_does_not_exist_toast_message">Existing subscription does not exist</string>
     <string name="logging_in_using_existing_subscription">Logging in using existing subscription</string>
 
+
+    <string name="app_cms_touch_to_cast_msg">Touch to cast the video on your \n Chromecast device.</string>
+
+
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
@@ -467,6 +475,14 @@
         <item quantity="one">SEC</item>
         <item quantity="other">SECS</item>
     </plurals>
+
+    <string name="app_cms_play_lecture_text">Play</string>
+    <string name="app_cms_resume_lecture_text">Resume</string>
+    <string name="app_cms_percent_complete_text">%1$d\%% Complete</string>
+
+    <!-- Apptentive Messages -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
+    <string name="app_cms_apptentive_login_event_name">Login</string>
 
 </resources>
 

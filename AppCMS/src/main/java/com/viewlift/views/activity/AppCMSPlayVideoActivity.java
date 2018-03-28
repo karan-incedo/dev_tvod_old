@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -74,7 +76,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     private Map<String, String> availableStreamingQualityMap;
     private List<String> availableStreamingQualities;
-
+    private String videoStreamingUrl;
     private OnResumeVideo onResumeVideo;
 
     @Override
@@ -230,7 +232,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (((binder != null &&
+                    if (((binder != null && !isDownloaded &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -247,7 +249,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         onResumeVideo.onResumeVideo();
                     }
                 } catch (Exception e) {
-                    if ((binder != null &&
+                    if ((binder != null && !isDownloaded &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -268,6 +270,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    public boolean isDownloaded = false;
     public void launchVideoPlayer(Gist gist,
                                   String[] extra,
                                   boolean useHls,
@@ -288,6 +291,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && extra[1] != null
                 && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+            isDownloaded=true;
         }
                 /*If the video is already downloaded, play if from there, even if Internet is
                 * available*/
@@ -297,12 +301,19 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
+            videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
+            isDownloaded= true;
+            if(binder.getContentData().getStreamingInfo() != null) {
+                if (binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
+                    VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+                    initializeStreamingQualityValues(videoAssets);
+                }
+            }
+
         } else if (binder.getContentData() != null &&
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-
-            initializeStreamingQualityValues(videoAssets);
 
             if (useHls) {
                 videoUrl = videoAssets.getHls();
@@ -328,6 +339,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
                 }
             }
+            videoStreamingUrl = videoUrl;
+            initializeStreamingQualityValues(videoAssets);
         }
 
         // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -425,7 +438,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onResume();
 
         // This is to enable offline video playback even when Internet is not available.
-        if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
+        if (binder != null && !isDownloaded &&
+                !binder.isOffline() &&
+                !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,
@@ -462,13 +477,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
-
         super.onDestroy();
     }
 
-
     @Override
     public void closePlayer() {
+
         finish();
     }
 
@@ -626,6 +640,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         return 0;
+    }
+
+    @Override
+    public String getVideoStreamingUrl() {
+        return videoStreamingUrl;
+    }
+
+    @Override
+    public void setVideoStreaming(String videoStreamingUrl) {
+        this.videoStreamingUrl = videoStreamingUrl;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {

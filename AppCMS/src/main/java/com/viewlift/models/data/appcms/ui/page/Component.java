@@ -6,42 +6,57 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
 public class Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose
-    String text;
+    String text = "";
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
+    String textColor = "";
 
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
+    String backgroundColor = "";
 
     @SerializedName("layout")
     @Expose
-    Layout layout;
+    Layout layout = new Layout();
 
     @SerializedName("backgroundSelectedColor")
     @Expose
-    String backgroundSelectedColor;
+    String backgroundSelectedColor = "";
 
     @SerializedName("action")
     @Expose
-    String action;
+    String action = "";
 
     @SerializedName("type")
     @Expose
-    String type;
+    String type = "";
 
     @SerializedName("key")
     @Expose
-    String key;
+    String key = "";
+
+    @SerializedName("settings")
+    @Expose
+    Settings settings = new Settings();
+
+    @SerializedName("camelCase")
+    @Expose
+    boolean camelCase;
+
+    @SerializedName("minLines")
+    @Expose
+    int minLines;
+
+    @SerializedName("hdEnabled")
+    @Expose
+    boolean hdEnabled;
 
     public int getOpacity() {
         return opacity;
@@ -106,6 +121,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("supportPagination")
     @Expose
     boolean supportPagination;
+
+    @SerializedName("headerView")
+    @Expose
+    boolean headerView;
 
     @SerializedName("trayClickAction")
     @Expose
@@ -218,6 +237,14 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
+    @SerializedName("alwaysVisible")
+    @Expose
+    boolean alwaysVisible;
+
+    @SerializedName("iconColor")
+    @Expose
+    String iconColor;
+
     boolean yAxisSetManually;
 
     boolean widthModified;
@@ -282,6 +309,7 @@ public class Component implements ModuleWithComponents, Serializable {
     }
     @Override
     public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
     public String getKey() {
@@ -464,6 +492,14 @@ public class Component implements ModuleWithComponents, Serializable {
         return fontWeight;
     }
 
+    public String getIconColor() {
+        return iconColor;
+    }
+
+    public void setIconColor(String iconColor) {
+        this.iconColor = iconColor;
+    }
+
     public void setFontWeight(String fontWeight) {
         this.fontWeight = fontWeight;
     }
@@ -490,7 +526,7 @@ public class Component implements ModuleWithComponents, Serializable {
 
     @Override
     public Settings getSettings() {
-        return null;
+        return settings;
     }
 
     public void setView(String view) {
@@ -559,5 +595,45 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setWidthModified(boolean widthModified) {
         this.widthModified = widthModified;
+    }
+
+    public boolean isCamelCase() {
+        return camelCase;
+    }
+
+    public void setCamelCase(boolean camelCase) {
+        this.camelCase = camelCase;
+    }
+
+    public int getMinLines() {
+        return minLines;
+    }
+
+    public void setMinLines(int minLines) {
+        this.minLines = minLines;
+    }
+
+    public boolean isHdEnabled() {
+        return hdEnabled;
+    }
+
+    public void setHdEnabled(boolean hdEnabled) {
+        this.hdEnabled = hdEnabled;
+    }
+
+    public boolean isAlwaysVisible() {
+        return alwaysVisible;
+    }
+
+    public void setAlwaysVisible(boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
+    }
+
+    public boolean isHeaderView() {
+        return headerView;
+    }
+
+    public void setHeaderView(boolean headerView) {
+        this.headerView = headerView;
     }
 }

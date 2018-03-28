@@ -44,7 +44,8 @@ public class AppCMSAndroidModuleCall {
     private final File storageDirectory;
 
     private static final String[][] jsonFromAssets = {
-            {"trayXX", "trayXX.json"}
+            {"trayXX", "trayXX.json"},
+            {"continueWatching01", "continueWatching03.json"}
     };
 
     @Inject
@@ -69,8 +70,8 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(bundleUrl,
                 version,
-                bustCache,
                 forceLoadFromNetwork,
+                bustCache,
                 (moduleDataMap) -> {
                     addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
@@ -85,6 +86,7 @@ public class AppCMSAndroidModuleCall {
         if (assetManager != null && moduleListMap != null) {
             for (String[] jsonFromAssetsVal : jsonFromAssets) {
                 if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
+                    // TODO: Uncomment after module is available from AppCMS
                     if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
                         try {
                             InputStream inputStream = assetManager.open(jsonFromAssetsVal[1]);

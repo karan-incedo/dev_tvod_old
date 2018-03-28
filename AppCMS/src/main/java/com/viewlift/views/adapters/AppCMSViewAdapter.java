@@ -12,8 +12,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -165,7 +167,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 true,
                 this.componentViewType,
                 false,
-                useRoundedCorners());
+                useRoundedCorners() ||
+                        component.getSettings().isRoundedCorners());
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
             applyBgColorToChildren(view, selectedColor);
@@ -197,7 +200,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     private boolean useRoundedCorners() {
-        return "AC SelectPlan 02".equals(componentViewType);
+        return "AC SelectPlan 02".equals(componentViewType) ||
+                "AC ContinueWatching 01".equals(componentViewType);
     }
 
     private void applyBgColorToChildren(ViewGroup viewGroup, int bgColor) {
@@ -570,7 +574,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = videoAction;
+                    String action = component.getTrayClickAction();
 
                     String contentType = "";
 
@@ -728,6 +732,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
                                 .getStrikeThroughPrice());
                     });
+        }
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+        int childCount = holder.componentView.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = holder.componentView.getChild(i);
+            if (child instanceof ImageView) {
+                Glide.with(child.getContext()).clear(child);
+            }
         }
     }
 

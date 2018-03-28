@@ -10,6 +10,9 @@ import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoRest;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSVideoDetailRest;
+import com.viewlift.models.network.rest.UANamedUserEventCall;
+import com.viewlift.models.network.rest.UANamedUserEventRest;
+import com.viewlift.presenters.UrbanAirshipEventPresenter;
 import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
@@ -35,12 +38,34 @@ public class AppCMSAPIModule {
     private final File storageDirectory;
     private final long defaultConnectionTimeout;
 
+    private final String loggedInStatusGroup;
+    private final String loggedInStatusTag;
+    private final String loggedOutStatusTag;
+    private final String subscriptionStatusGroup;
+    private final String subscribedTag;
+    private final String subscriptionAboutToExpireTag;
+    private final String subscriptionEndDateGroup;
+    private final String subscriptionPlanGroup;
+    private final String unsubscribedTag;
+    private final int daysBeforeSubscriptionEndForNotification;
+
     public AppCMSAPIModule(Context context, String baseUrl, String apiKey) {
         this.baseUrl = baseUrl;
         this.apiKey = apiKey;
         this.storageDirectory = context.getFilesDir();
         this.defaultConnectionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_default_connection_timeout_msec);
+
+        this.loggedInStatusGroup =  context.getString(R.string.ua_user_logged_in_status_group);
+        this.loggedInStatusTag = context.getString(R.string.ua_user_logged_in_tag);
+        this.loggedOutStatusTag = context.getString(R.string.ua_user_logged_out_tag);
+        this.subscriptionStatusGroup = context.getString(R.string.ua_user_subscription_status_group);
+        this.subscribedTag = context.getString(R.string.ua_user_subscribed_tag);
+        this.subscriptionAboutToExpireTag = context.getString(R.string.ua_user_subscription_about_expire_tag);
+        this.unsubscribedTag = context.getString(R.string.ua_user_unsubscribed_tag);
+        this.subscriptionEndDateGroup = "";
+        this.subscriptionPlanGroup = "";
+        this.daysBeforeSubscriptionEndForNotification = context.getResources().getInteger(R.integer.ua_days_before_subscription_end_notification_tag);
     }
 
     @Provides
@@ -92,6 +117,12 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public UANamedUserEventRest providesUANamedUserEventRest(Retrofit retrofit) {
+        return retrofit.create(UANamedUserEventRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI,
                                                        Gson gson,
                                                        File storageDirectory) {
@@ -108,5 +139,27 @@ public class AppCMSAPIModule {
     @Singleton
     public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest){
         return new AppCMSVideoDetailCall(appCMSVideoDetailRest);
+    }
+
+    @Provides
+    @Singleton
+    public UANamedUserEventCall providesUANamedUserEventCall(UANamedUserEventRest uaNamedUserEventRest,
+                                                             Gson gson) {
+        return new UANamedUserEventCall(uaNamedUserEventRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public UrbanAirshipEventPresenter providesUrbanAirshipEventPresenter() {
+        return new UrbanAirshipEventPresenter(loggedInStatusGroup,
+                loggedInStatusTag,
+                loggedOutStatusTag,
+                subscriptionStatusGroup,
+                subscribedTag,
+                subscriptionAboutToExpireTag,
+                unsubscribedTag,
+                subscriptionEndDateGroup,
+                subscriptionPlanGroup,
+                daysBeforeSubscriptionEndForNotification);
     }
 }

@@ -26,6 +26,10 @@ public class CastingUtils {
 
     public static String MEDIA_KEY = "media_key";
     public static String PARAM_KEY = "param_key";
+    public static String VIDEO_TITLE = "video_title";
+    public static final String ITEM_TYPE = "item_type";
+    public static final String ITEM_TYPE_AUDIO = "item_type_audio";
+    public static final String ITEM_TYPE_VIDEO = "item_type_video";
 
     public static boolean isRemoteMediaControllerOpen = false;
     public static boolean isMediaQueueLoaded = true;
@@ -46,6 +50,7 @@ public class CastingUtils {
                                                           Context context) {
 
         MediaQueueItem[] queueItemsArray;
+        String appPackageName=context.getPackageName();
 
         if (detailsRelatedVideoData != null && detailsRelatedVideoData.size() > 0) {
 
@@ -56,12 +61,13 @@ public class CastingUtils {
                 try {
                     seasonObj.put(MEDIA_KEY, detailsRelatedVideoData.get(i).getGist().getId());
                     seasonObj.put(PARAM_KEY, detailsRelatedVideoData.get(i).getGist().getPermalink());
+                    seasonObj.put(ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
 
                 } catch (Exception e) {
                     //Log.e(TAG, "Error create session JSON object: " + e.getMessage());
                 }
 
-                int watchTime= (int) detailsRelatedVideoData.get(i).getGist().getWatchedTime();
+                int watchTime = (int) detailsRelatedVideoData.get(i).getGist().getWatchedTime();
                 //Log.e(TAG, "Added watched Time: " + watchTime);
 
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
@@ -91,11 +97,13 @@ public class CastingUtils {
         String subTitleMediaInfo = "";
         String imageMediaInfo = "";
         String urlMediaInfo = "";
+        String appPackageName=context.getPackageName();
 
         JSONObject medoaInfoCustomData = new JSONObject();
         try {
             medoaInfoCustomData.put(MEDIA_KEY, contentData.getGist().getId());
             medoaInfoCustomData.put(PARAM_KEY, contentData.getGist().getPermalink());
+            medoaInfoCustomData.put(ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
 
         } catch (JSONException e) {
             //Log.e(TAG, "Error retrieving media information: " + e.getMessage());
@@ -190,16 +198,23 @@ public class CastingUtils {
         return remoteMediaId;
     }
 
-    public static String getRemoteParamKey(Context mContext) {
+    public static String getCurrentPlayingVideoName(Context mContext) {
         JSONObject getRemoteObject = null;
         String remoteParamKey = "";
         try {
-            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
-            remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
+            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
+            remoteParamKey = getRemoteObject.getString(CastingUtils.VIDEO_TITLE);
         } catch (Exception e) {
+            remoteParamKey = mContext.getResources().getString(R.string.app_cms_touch_to_cast_msg);
             //Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
+        return remoteParamKey;
+    }
 
+
+    public static String getRemoteParamKey(Context mContext) {
+        JSONObject getRemoteObject = null;
+        String remoteParamKey = "";
         try {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
             remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);

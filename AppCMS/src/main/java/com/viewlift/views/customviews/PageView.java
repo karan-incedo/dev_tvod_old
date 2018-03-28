@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,9 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -49,6 +48,11 @@ public class PageView extends BaseView {
 
     private boolean reparentChromecastButton;
 
+    private OnScrollChangeListener onScrollChangeListener;
+
+    private boolean ignoreScroll;
+    private FrameLayout headerView;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -60,6 +64,7 @@ public class PageView extends BaseView {
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter(context);
         this.shouldRefresh = true;
+        this.ignoreScroll = false;
         init();
     }
 
@@ -101,7 +106,13 @@ public class PageView extends BaseView {
                         FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         adapterList = new CopyOnWriteArrayList<>();
+        createHeaderView();
+    }
 
+    private void createHeaderView() {
+        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerView = new FrameLayout(getContext());
+        headerView.setLayoutParams(layoutParams);
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
@@ -201,6 +212,29 @@ public class PageView extends BaseView {
 //                        }
 //                    });
 //        });
+
+        ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                    if (onScrollChangeListener != null &&
+                        recyclerView.isLaidOut() &&
+                        !ignoreScroll) {
+                    onScrollChangeListener.onScroll(dx, dy);
+                    int currentPosition =
+                            ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                    if (currentPosition < 0) {
+                        currentPosition =
+                                ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    }
+                    if (0 <= currentPosition) {
+                        onScrollChangeListener.setCurrentPosition(currentPosition);
+                    }
+                }
+
+                ignoreScroll = false;
+            }
+        });
 
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
@@ -306,5 +340,39 @@ public class PageView extends BaseView {
 
     public void setReparentChromecastButton(boolean reparentChromecastButton) {
         this.reparentChromecastButton = reparentChromecastButton;
+    }
+
+    public interface OnScrollChangeListener {
+        void onScroll(int dx, int dy);
+        void setCurrentPosition(int position);
+    }
+
+    public OnScrollChangeListener getOnScrollChangeListener() {
+        return onScrollChangeListener;
+    }
+
+    public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {
+        this.onScrollChangeListener = onScrollChangeListener;
+    }
+
+    public void scrollToPosition(int dx, int dy) {
+        if (childrenContainer != null) {
+            ignoreScroll = true;
+            childrenContainer.scrollBy(dx, dy);
+        }
+    }
+
+    public void scrollToPosition(int position) {
+        if (childrenContainer != null) {
+            ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+        }
+    }
+
+    public void addToHeaderView(View view){
+        headerView.addView(view);
+        if(headerView.getParent() == null){
+            addView(headerView);
+            headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        }
     }
 }

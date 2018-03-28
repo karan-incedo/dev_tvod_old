@@ -103,6 +103,7 @@
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_view_all_key">viewAll</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
@@ -150,6 +151,9 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
+
+    <string name="app_cms_page_resume_watching_key">resumeWatching</string>
+    <string name="app_cms_page_percentage_watched_key">percentageWatched</string>
 
     <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
@@ -363,6 +367,9 @@
     <!-- AppCMS Get Current Subscription API -->
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
+    <!-- AppCMS Validate Google Play Subscription API -->
+    <string name="app_cms_google_play_subscription_validation_api_url">%1$s/subscription/android/validate_android_receipt?site=%2$s</string>
+
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
@@ -415,6 +422,8 @@
     <string name="app_cms_title_label">titleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>
     <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_delete_history_item_button">deleteHistory</string>
+    <string name="app_cms_delete_watchlist_item_button">deleteWatchlist</string>
     <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
     <string name="app_cms_signup_footer_label_key">signupfooterview</string>
     <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
@@ -466,4 +475,10 @@
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_text_alignment_right">right</string>
+
+    <string name="app_cms_view_all_text">View All</string>
+
+    <!-- AppCMS Content Types -->
+    <string name="app_cms_video_content_type">VIDEO</string>
+    <string name="app_cms_series_content_type">SERIES</string>
 </resources>

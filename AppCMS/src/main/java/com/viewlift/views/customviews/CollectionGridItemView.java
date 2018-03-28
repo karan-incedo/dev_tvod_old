@@ -3,24 +3,32 @@ package com.viewlift.views.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -34,6 +42,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -112,16 +121,11 @@ public class CollectionGridItemView extends BaseView {
 
         FrameLayout.LayoutParams layoutParams;
         int paddingHorizontal = 0;
-        int paddingVertical = 0;
         if (component.getStyles() != null) {
             paddingHorizontal = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
-            paddingVertical = (int) convertVerticalValue(getContext(), component.getStyles().getPadding());
-            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
             paddingHorizontal = (int) convertHorizontalValue(getContext(), trayPadding);
-            paddingVertical = (int) convertVerticalValue(getContext(), trayPadding);
-            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         }
         int horizontalMargin = paddingHorizontal;
         int verticalMargin = 0;
@@ -186,6 +190,9 @@ public class CollectionGridItemView extends BaseView {
             if (createRoundedCorners) {
                 ((CardView) childrenContainer).setRadius(14);
                 setBackgroundResource(android.R.color.transparent);
+                if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                    childrenContainer.setBackgroundResource(android.R.color.transparent);
+                }
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
@@ -283,9 +290,12 @@ public class CollectionGridItemView extends BaseView {
                                         defaultHeight));
                     }
 
-                    if (childViewWidth < 0 &&
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
-                        childViewWidth = (16 * childViewHeight) / 9;
+                    if (0 < childViewWidth && 0 < childViewHeight) {
+                        if (childViewWidth < childViewHeight) {
+                            childViewHeight = (int) ((float) childViewWidth * 4.0f / 3.0f);
+                        } else {
+                            childViewHeight = (int) ((float) childViewWidth * 9.0f / 16.0f);
+                        }
                     }
 
                     if (childViewHeight > childViewWidth &&
@@ -304,7 +314,8 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -327,9 +338,9 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight);
-                                requestOptions.centerCrop();
-
+                                        .override(childViewWidth, childViewHeight)
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -344,7 +355,7 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                childViewWidth,
+                                deviceWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
@@ -363,7 +374,9 @@ public class CollectionGridItemView extends BaseView {
 
                                 RequestOptions requestOptions = new RequestOptions()
                                         .transform(gradientTransform)
-                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .override(imageWidth, imageHeight);
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -389,7 +402,8 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -405,7 +419,8 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -432,6 +447,55 @@ public class CollectionGridItemView extends BaseView {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
+                    int progress = getPercentageWatched(appCMSPresenter, data);
+                    Bitmap compoundDrawableImage;
+                    int viewHeight = (int) BaseView.getLeftDrawableHeight(context,
+                            childComponent.getLayout(),
+                            0.0f);
+                    if (0 < progress) {
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_resume_lecture_text));
+                        compoundDrawableImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_replay_white_24dp);
+                    } else {
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_play_lecture_text));
+                        compoundDrawableImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_play_circle_outline_white_24dp);
+                    }
+
+                    Bitmap scaledDrawableImage = Bitmap.createScaledBitmap(compoundDrawableImage,
+                            viewHeight,
+                            viewHeight,
+                            true);
+                    Rect compoundBounds = new Rect(0, 0, viewHeight, viewHeight);
+                    Drawable compoundDrawable =
+                            new BitmapDrawable(context.getResources(), scaledDrawableImage);
+                    compoundDrawable.setBounds(compoundBounds);
+                    ((TextView) view).setCompoundDrawables(compoundDrawable,
+                            null,
+                            null,
+                            null);
+                    ((TextView) view).setCompoundDrawablePadding(16);
+
+                    if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                        int textColor =
+                                Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor()));
+                        ((TextView) view).setTextColor(textColor);
+                    }
+
+                    if (!TextUtils.isEmpty(childComponent.getIconColor())) {
+                        int iconColor =
+                                Color.parseColor(ViewCreator.getColor(context, childComponent.getIconColor()));
+                        ViewCreator.applyTintToCompoundDrawables((TextView) view, iconColor);
+                    }
+
+                    if (childComponent.getFontSize() > 0) {
+                        ((TextView) view).setTextSize(childComponent.getFontSize());
+                    } else if (BaseView.getFontSize(getContext(), childComponent.getLayout()) > 0) {
+                        ((TextView) view).setTextSize(BaseView.getFontSize(getContext(), childComponent.getLayout()));
+                    }
+
+                    ((TextView) view).setGravity(Gravity.TOP | Gravity.START);
+                    view.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
+                    ((Button) view).setAllCaps(false);
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
@@ -457,6 +521,8 @@ public class CollectionGridItemView extends BaseView {
                     } catch (Exception e) {
 
                     }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
+                    view.setOnClickListener(v -> onClickHandler.play(childComponent, data));
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data));
@@ -480,7 +546,39 @@ public class CollectionGridItemView extends BaseView {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
-                        ((TextView) view).setText(data.getGist().getTitle());
+                        if (childComponent.isHdEnabled() && data.isHdEnabled()) {
+                            Spannable spannable = new SpannableString(" " + data.getGist().getTitle());
+                            //Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_black_24dp);
+                            Drawable hdImage = context.getResources().getDrawable(R.drawable.ic_hd_24dp);
+                            hdImage.setColorFilter(Color.parseColor(appCMSPresenter.getAppTextColor()), PorterDuff.Mode.MULTIPLY);
+
+                            int spanImageHeight = ((TextView) view).getLineHeight();
+                            ImageSpan image = new ImageSpan(hdImage, ImageSpan.ALIGN_BOTTOM);
+                            hdImage.setBounds(0, 0, spanImageHeight,spanImageHeight);
+                            spannable.setSpan(image, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                            ((TextView) view).setText(spannable);
+
+                        } else {
+                            ((TextView) view).setText(data.getGist().getTitle());
+                        }
+
+                        if (0 < childComponent.getMinLines()) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMinLines(childComponent.getMinLines());
+                            ((TextView) view).setMaxLines(childComponent.getMinLines());
+                        }
+
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            ((TextView) view).setTextColor(
+                                    Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));
+                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PERCENTAGE_WATCHED_KEY) {
+                        int progress = getPercentageWatched(appCMSPresenter, data);
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_percent_complete_text, progress));
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            ((TextView) view).setTextColor(
+                                    Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
 
@@ -635,33 +733,10 @@ public class CollectionGridItemView extends BaseView {
                 view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 if (view instanceof ProgressBar) {
-                    ContentDatum historyData = null;
-                    if (data != null && data.getGist() != null && data.getGist().getId() != null) {
-                        historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
-                    }
-
-                    int progress = 0;
-
-                    if (historyData != null) {
-                        data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
-                        data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
-                        if (historyData.getGist().getWatchedPercentage() > 0) {
-                            progress = historyData.getGist().getWatchedPercentage();
-                            view.setVisibility(View.VISIBLE);
-                            ((ProgressBar) view).setProgress(progress);
-                        } else {
-                            long watchedTime = historyData.getGist().getWatchedTime();
-                            long runTime = historyData.getGist().getRuntime();
-                            if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
-                                progress = (int) percentageWatched;
-                                ((ProgressBar) view).setProgress(progress);
-                                view.setVisibility(View.VISIBLE);
-                            } else {
-                                view.setVisibility(View.INVISIBLE);
-                                ((ProgressBar) view).setProgress(0);
-                            }
-                        }
+                    int progress = getPercentageWatched(appCMSPresenter, data);
+                    ((ProgressBar) view).setProgress(progress);
+                    if (childComponent.isAlwaysVisible() || 0 < progress) {
+                        view.setVisibility(View.VISIBLE);
                     } else {
                         view.setVisibility(View.INVISIBLE);
                     }
@@ -730,6 +805,34 @@ public class CollectionGridItemView extends BaseView {
                 return itemContainer;
             }
         }
+    }
+
+    private int getPercentageWatched(AppCMSPresenter appCMSPresenter,
+                                     ContentDatum data) {
+        ContentDatum historyData = null;
+
+        if (data != null && data.getGist() != null && data.getGist().getId() != null) {
+            historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
+        }
+
+        int progress = 0;
+
+        if (historyData != null) {
+            data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
+            data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
+            if (historyData.getGist().getWatchedPercentage() > 0) {
+                progress = historyData.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = historyData.getGist().getWatchedTime();
+                long runTime = historyData.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                    progress = (int) percentageWatched;
+                }
+            }
+        }
+
+        return progress;
     }
 
     private static class GradientTransformation extends BitmapTransformation {

@@ -37,6 +37,10 @@ public class AppCMSBinder extends Binder {
     private boolean sendCloseAction;
     private Uri searchQuery;
     private AppCMSSearchCall appCMSSearchCall;
+    private int xScroll;
+    private int yScroll;
+    private boolean scrollOnLandscape;
+    private int currentScrollPosition;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
@@ -176,5 +180,37 @@ public class AppCMSBinder extends Binder {
 
     public AppCMSPresenter.ExtraScreenType getExtraScreenType() {
         return extraScreenType;
+    }
+
+    public int getxScroll() {
+        return xScroll;
+    }
+
+    public void setxScroll(int xScroll) {
+        this.xScroll = xScroll;
+    }
+
+    public int getyScroll() {
+        return yScroll;
+    }
+
+    public void setyScroll(int yScroll) {
+        this.yScroll = yScroll;
+    }
+
+    public boolean isScrollOnLandscape() {
+        return scrollOnLandscape;
+    }
+
+    public void setScrollOnLandscape(boolean scrollOnLandscape) {
+        this.scrollOnLandscape = scrollOnLandscape;
+    }
+
+    public int getCurrentScrollPosition() {
+        return currentScrollPosition;
+    }
+
+    public void setCurrentScrollPosition(int currentScrollPosition) {
+        this.currentScrollPosition = currentScrollPosition;
     }
 }
