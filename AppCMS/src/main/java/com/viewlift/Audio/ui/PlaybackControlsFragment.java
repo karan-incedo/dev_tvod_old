@@ -95,6 +95,7 @@ public class PlaybackControlsFragment extends Fragment {
             if (metadata == null) {
                 return;
             }
+            currentProgess=0;
             updateDuration(metadata);
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }

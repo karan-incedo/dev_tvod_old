@@ -701,6 +701,8 @@ public class CastHelper {
                                 0d,
                                 0,
                                 isVideoDownloaded);
+                        appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
+                                mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
                     }
 
                 }
