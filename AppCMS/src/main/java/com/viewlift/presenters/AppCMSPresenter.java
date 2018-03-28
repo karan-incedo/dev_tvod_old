@@ -3869,6 +3869,73 @@ public class AppCMSPresenter {
         }
     }
 
+    public void reStartDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1,
+                                      final ImageButton downloadStatus,int radiusDifference) {
+
+        reStartDownload(filmId, resultAction1);
+        updateDownloadingStatus(filmId,downloadStatus,this,resultAction1,getLoggedInUser(),true,radiusDifference,getLoggedInUser());
+
+
+    }
+
+    public synchronized void reStartDownload(String filmId,final Action1<UserVideoDownloadStatus> resultAction1) {
+        String userId = getLoggedInUser();
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(filmId, userId);
+        if (downloadVideoRealm == null) {
+            System.out.println("  updated rows ar downloadVideoRealm null ");
+            return;
+        }
+        try {
+
+
+            DownloadStatus status = downloadVideoRealm.getDownloadStatus();
+            int id = (int) downloadVideoRealm.getVideoId_DM();
+            String mediaURL = downloadVideoRealm.getVideoWebURL();
+            //boolean isValidURL = isValidURL(mediaURL);
+            System.out.println( " : " + id + " : " + status + " updated rows are =:- " + mediaURL);
+            refreshVideoData(downloadVideoRealm.getVideoId(), contentDatum -> {
+                if (contentDatum != null && contentDatum.getGist() != null && contentDatum.getGist().getId() != null) {
+
+                    getAppCMSSignedURL(contentDatum.getGist().getId(), appCMSSignedURLResult ->
+                    {
+                        String downloadURL = getDownloadURL(contentDatum);
+                        try {
+                            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                                    .setTitle(contentDatum.getGist().getTitle())
+                                    .setDescription(contentDatum.getGist().getDescription())
+                                    .setAllowedOverRoaming(false)
+                                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                                    .setVisibleInDownloadsUi(false)
+                                    .setShowRunningNotification(true);
+                            long idDownload = getDownloadManager().enqueue(downloadRequest);
+                            currentActivity.runOnUiThread(() -> {
+
+                                DownloadVideoRealm editObj = realmController.getRealm()
+                                        .copyFromRealm(realmController.getDownloadByIdBelongstoUser(downloadVideoRealm.getVideoId(),userId));
+                                editObj.setVideoId_DM(idDownload);
+                                editObj.setVideoWebURL(downloadURL);
+                                editObj.setDownloadStatus(DownloadStatus.STATUS_RUNNING);
+                                realmController.updateDownload(editObj);
+
+                                appCMSUserDownloadVideoStatusCall.call(filmId, this, resultAction1,
+                                        getLoggedInUser());
+
+                            });
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
     public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
         removeDownloadedFile(filmId);
 
@@ -9832,7 +9899,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
                     break;
-
+                case RE_START_DOWNLOAD_ITEM:
+                    title = currentActivity.getString(R.string.app_cms_download_retry_alert_title);
+                    message = optionalMessage;
+                    break;
                 case DELETE_ONE_DOWNLOAD_ITEM:
                 case DELETE_ALL_DOWNLOAD_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_download_alert_title);
@@ -9904,6 +9974,9 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.NETWORK && optionalMessage == null) {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
+                }else if (dialogType ==DialogType.RE_START_DOWNLOAD_ITEM){
+                    okText=currentActivity.getString(R.string.app_cms_retry_text);
+                    cancelText=currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
                 }
                 builder.setPositiveButton(okText,
                         (dialog, which) -> {
