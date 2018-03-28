@@ -273,8 +273,8 @@
     <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
     <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
 
-    <string name="app_cms_select_alert_title">Please Select!</string>
-    <string name="app_cms_re_download_item_message">Select your option to re-download or delete item.</string>
+    <string name="app_cms_download_retry_alert_title">Download could not finish</string>
+    <string name="app_cms_re_download_item_message">A network issue occurred, would you like to cancel this download or retry?</string>
 
 
     <string name="app_cms_subscription_title">Subscription</string>
