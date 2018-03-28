@@ -8207,8 +8207,7 @@ public class AppCMSPresenter {
                             showNetworkConnectivity = false;
                         },
                         () -> {
-                            //((Activity)currentContext).finish();
-                            System.exit(0);
+                            ((Activity)currentContext).finish();
                         });
             }
 
