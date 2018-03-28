@@ -314,13 +314,13 @@
                   "height": 16
                 },
                 "tabletLandscape": {
-                  "topMargin": 7.9,
+                  "topMargin": 7.5,
                   "width": 125,
                   "fontSize": 13,
                   "height": 15
                 },
                 "tabletPortrait": {
-                  "topMargin": 6.5,
+                  "topMargin": 6.3,
                   "width": 125,
                   "fontSize": 13,
                   "height": 15
@@ -424,13 +424,13 @@
                 },
                 "tabletLandscape": {
                   "leftMargin": 1.8,
-                  "topMargin": 10.2,
+                  "topMargin": 10,
                   "width": 125,
                   "height": 5
                 },
                 "tabletPortrait": {
                   "leftMargin": 1.8,
-                  "topMargin": 8,
+                  "topMargin": 7.8,
                   "width": 125,
                   "height": 5
                 }

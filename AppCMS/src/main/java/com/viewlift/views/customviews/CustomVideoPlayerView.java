@@ -640,6 +640,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
+                            appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                                    getContext().getResources().getString(R.string.play_video_category), videoDataId);
 
                         }
                     }
@@ -671,6 +673,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     isVideoDownloaded);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+            appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                    getContext().getResources().getString(R.string.play_video_category), videoDataId);
+
         }
     }
 
