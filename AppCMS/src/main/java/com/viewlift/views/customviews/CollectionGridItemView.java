@@ -539,7 +539,7 @@ public class CollectionGridItemView extends BaseView {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setMaxLines(1);
+                        ((TextView) view).setMaxLines(3);
                         //((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
