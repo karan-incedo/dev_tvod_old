@@ -1390,7 +1390,7 @@ public class AppCMSPresenter {
             result = true;
 
             /*When content details are null it means video player is launched from somewhere
-            * other than video detail fragment*/
+             * other than video detail fragment*/
 
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -4153,7 +4153,7 @@ public class AppCMSPresenter {
             //Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
         } else {
 
-            String downloadURL ="";
+            String downloadURL = "";
             long file_size = 0L;
             try {
                 if (contentDatum.getGist() != null &&
@@ -4791,9 +4791,9 @@ public class AppCMSPresenter {
                     contentDatum.getGist().getId());
         }
 
-                        /*
-                         * Inserting data in realm data object
-                         */
+        /*
+         * Inserting data in realm data object
+         */
         createLocalEntry(
                 enqueueId,
                 thumbEnqueueId,
@@ -7343,6 +7343,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
     public void sendChromecastDisconnectedAction() {
         if (currentActivity != null) {
             Intent chromecastDisconnected = new Intent(AppCMSPresenter.PRESENTER_CHROMECAST_DISCONNECTED_ACTION);
@@ -7366,6 +7367,7 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(clearKeepScreenOnAction);
         }
     }
+
     public boolean sendDeepLinkAction(Uri deeplinkUri) {
         //Log.d(TAG, "Sending deeplink action");
         boolean result = false;
@@ -8196,7 +8198,7 @@ public class AppCMSPresenter {
                 closeSoftKeyboard();
                 sendCloseOthersAction(null, true, true);
                 navigateToHomePage();
-            }else if (!networkConnected && !downloadsAvailableForApp()){
+            } else if (!networkConnected && !downloadsAvailableForApp()) {
                 // Because we do not have Download functionality in App. So we navigate to Error Page Screen.
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
@@ -8207,7 +8209,7 @@ public class AppCMSPresenter {
                             showNetworkConnectivity = false;
                         },
                         () -> {
-                            ((Activity)currentContext).finish();
+                            ((Activity) currentContext).finish();
                         });
             }
 
@@ -9044,7 +9046,7 @@ public class AppCMSPresenter {
         return 0;
     }
 
-    public int getBrandSecondaryCtaTextColor(){
+    public int getBrandSecondaryCtaTextColor() {
         if (getAppCMSMain() != null &&
                 getAppCMSMain().getBrand() != null &&
                 getAppCMSMain().getBrand().getCta() != null &&
@@ -9358,98 +9360,98 @@ public class AppCMSPresenter {
                 String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                 String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
-                    if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
-                        title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
-                        message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
-                    }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
-                        title = currentActivity.getString(R.string.preview_content);
-                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
+                    title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
+                    message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
+                }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
-                        if (getTemplateType() == TemplateType.SPORTS) {
+                    if (getTemplateType() == TemplateType.SPORTS) {
 
-                            message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
-                            if (subscriptionFlowContent != null &&
-                                    subscriptionFlowContent.getOverlayMessage() != null &&
-                                    !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
-                                message = subscriptionFlowContent.getOverlayMessage();
-                            }
-
+                        message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+                        if (subscriptionFlowContent != null &&
+                                subscriptionFlowContent.getOverlayMessage() != null &&
+                                !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
+                            message = subscriptionFlowContent.getOverlayMessage();
                         }
-                        //Set Firebase User Property when user is not logged in and unsubscribed
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+
                     }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
-                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
-                        title = currentActivity.getString(R.string.preview_content);
-                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
 
-                        /**
-                         * if showing preview ended dialog for audio then show messaege from server
-                         */
-                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
-                                message = getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
-                            }
-                            title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
-
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
-                                positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
-                            }
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
-                                negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
-                            }
+                    /**
+                     * if showing preview ended dialog for audio then show messaege from server
+                     */
+                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                            message = getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
                         }
-                        //Set Firebase User Property when user is not logged in and unsubscribed
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                    }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ||
-                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                        title = currentActivity.getString(R.string.preview_content);
-                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                        title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
 
-
-                        /**
-                         * if showing preview ended dialog for audio then show messaege from server
-                         */
-                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
-                                message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
-                            }
-                            title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
-
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
-                                positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
-                            }
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
-                                negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
-                            }
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
                         }
-                        //Set Firebase User Property when user is not logged in and unsubscribed
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                            negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                        }
                     }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
-                        title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
-                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                    title = currentActivity.getString(R.string.preview_content);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
 
-                        //Set Firebase User Property when user is not logged in and unsubscribed
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                    /**
+                     * if showing preview ended dialog for audio then show messaege from server
+                     */
+                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
+                            message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
+                        }
+                        title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
+
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        }
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                            negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                        }
                     }
-                    if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_required_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_required_message);
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
+
+
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
+                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_required_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
 
                     //Set Firebase User Property when user is not logged in and unsubscribed
@@ -9492,57 +9494,57 @@ public class AppCMSPresenter {
                     }
                 }
 
-                    if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
-                        String paymentProcessor = getActiveSubscriptionProcessor();
-                        if ((!TextUtils.isEmpty(paymentProcessor) &&
-                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
-                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
-                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
-                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
-                        } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                                ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
-                                        || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
-                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_ios_user_dialog);
-                        } else {
-                            if (!TextUtils.isEmpty(paymentProcessor) &&
-                                    TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
-                                title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                                message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
-                            }
+                if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
+                    String paymentProcessor = getActiveSubscriptionProcessor();
+                    if ((!TextUtils.isEmpty(paymentProcessor) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
+                    } else if (!TextUtils.isEmpty(paymentProcessor) &&
+                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_ios_user_dialog);
+                    } else {
+                        if (!TextUtils.isEmpty(paymentProcessor) &&
+                                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
                         }
                     }
+                }
 
-                    if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
-                    }
+                if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
+                }
 
-                    if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE) {
-                        title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_title);
-                        message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_text);
-                    }
+                if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE) {
+                    title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_title);
+                    message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_text);
+                }
 
-                    if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
-                        title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_title);
-                        message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_text);
-                    }
+                if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
+                    title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_title);
+                    message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_text);
+                }
 
-                    if (dialogType == DialogType.LOGIN_REQUIRED) {
-                        title = currentActivity.getString(R.string.app_cms_login_required_title);
-                        message = currentActivity.getString(R.string.app_cms_login_required_message);
-                        positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
-                        //Set Firebase User Property when user is not logged in and unsubscribed
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                    }
+                if (dialogType == DialogType.LOGIN_REQUIRED) {
+                    title = currentActivity.getString(R.string.app_cms_login_required_title);
+                    message = currentActivity.getString(R.string.app_cms_login_required_message);
+                    positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
 
-                    if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
-                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                    }
+                if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
 
                 if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
                     title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
@@ -9567,7 +9569,7 @@ public class AppCMSPresenter {
 
                 }
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
                 builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                         Integer.toHexString(textColor).substring(2),
@@ -9576,229 +9578,229 @@ public class AppCMSPresenter {
                                 Integer.toHexString(textColor).substring(2),
                                 message)));
 
-                    if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
-                        builder.setPositiveButton("Yes",
-                                (dialog, which) -> {
-                                    try {
-                                        removeDownloadAndLogout();
-                                        dialog.dismiss();
-                                        isDialogShown = false;
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error displaying dialog while logging out with running download: " + e.getMessage());
-                                    }
-                                });
-                        builder.setNegativeButton("Cancel",
-                                (dialog, which) -> {
-                                    try {
-                                        dialog.dismiss();
-                                        isDialogShown = false;
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
-                                    }
-                                });
-                    } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED ||
-                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
-                        builder.setPositiveButton(negativeButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        dialog.dismiss();
-                                        isDialogShown = false;
-                                        launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToLoginPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
-                                    }
-                                });
-                        builder.setNegativeButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToSubscriptionPlansPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
-                                    }
-                                });
-                    } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-
-
-                        builder.setPositiveButton(negativeButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                        launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToLoginPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
-                                    }
-                                });
-                        builder.setNegativeButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToSubscriptionPlansPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
-                                    }
-                                });
-                    } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION ||
-                            dialogType == DialogType.UPGRADE_UNAVAILABLE) {
-                        builder.setPositiveButton("OK", null);
-                    } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
-                        builder.setPositiveButton("OK", null);
-                    } else if (dialogType == DialogType.LOGIN_REQUIRED) {
-                        builder.setPositiveButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToLoginPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());
-                                    }
-                                });
-                    } else if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE ||
-                            dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
-                        builder.setPositiveButton("OK",
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
-                                    }
-                                });
-                    } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
-                        builder.setPositiveButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    if (onCloseAction != null) {
-                                        onCloseAction.call();
-                                    }
-                                    isDialogShown = false;
+                if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
+                    builder.setPositiveButton("Yes",
+                            (dialog, which) -> {
+                                try {
+                                    removeDownloadAndLogout();
                                     dialog.dismiss();
-                                });
-                    } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                        builder.setPositiveButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    if (onCloseAction != null) {
-                                        onCloseAction.call();
-                                    }
                                     isDialogShown = false;
-                                    dialog.dismiss();
-                                });
-                    } else {
-                        builder.setPositiveButton(positiveButtonText,
-                                (dialog, which) -> {
-                                    try {
-                                        isDialogShown = false;
-                                        dialog.dismiss();
-                                        if (onCloseAction != null) {
-                                            onCloseAction.call();
-                                        }
-                                        navigateToSubscriptionPlansPage(false);
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
-                                    }
-                                });
-                    }
-
-
-                    currentActivity.runOnUiThread(() -> {
-                        AlertDialog dialog = builder.create();
-
-                        if (onCloseAction != null) {
-                            dialog.setCanceledOnTouchOutside(false);
-
-                            dialog.setOnCancelListener(dialogInterface -> {
-                                if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
-                                        dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                                    sendCloseOthersAction(null, true, false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error displaying dialog while logging out with running download: " + e.getMessage());
                                 }
                             });
-                        }
-
-                        dialog.setOnShowListener(arg0 -> {
-                            loginDialogPopupOpen = true;
-                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
-                            if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
-                            }
-                        });
-
-                        dialog.setOnDismissListener(arg0 -> {
-                            loginDialogPopupOpen = false;
-                        });
-
-                        dialog.setOnCancelListener(arg0 -> {
-                            loginDialogPopupOpen = false;
-                        });
-
-                        dialog.setOnKeyListener((arg0, keyCode, event) -> {
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                loginDialogPopupOpen = false;
-                                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
-                                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW ||
-                                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                                    if (onCloseAction != null) {
-                                        //if user press back key without doing login subscription ,clear saved data
-                                        onCloseAction.call();
-                                    }
-                                    setAudioPlayerOpen(false);
-                                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
-                                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
-                                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW ||
-                                        dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
-                                    if (onCloseAction != null) {
-                                        //if user press back key without doing login subscription ,clear saved data
-                                        setEntitlementPendingVideoData(null);
-                                        onCloseAction.call();
-                                        //if user press back key without doing login subscription ,clear saved data
-                                        setEntitlementPendingVideoData(null);
-                                    }
-                                }
-
-                                dialog.dismiss();
-                                isDialogShown = false;
-                            }
-                            return true;
-                        });
-                        if (dialog.getWindow() != null) {
-                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                                    Color.parseColor(getAppBackgroundColor())));
-                            if (currentActivity.getWindow().isActive()) {
+                    builder.setNegativeButton("Cancel",
+                            (dialog, which) -> {
                                 try {
-                                    dialog.show();
-                                    isDialogShown = true;
+                                    dialog.dismiss();
+                                    isDialogShown = false;
                                 } catch (Exception e) {
-                                    //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
-//                                + e.toString());
+                                    //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                                 }
-                            }
-                        }
+                            });
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                        dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+                    builder.setPositiveButton(negativeButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    isDialogShown = false;
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToLoginPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
+                                }
+                            });
+                    builder.setNegativeButton(positiveButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToSubscriptionPlansPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
+                                }
+                            });
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
 
+
+                    builder.setPositiveButton(negativeButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToLoginPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
+                                }
+                            });
+                    builder.setNegativeButton(positiveButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToSubscriptionPlansPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
+                                }
+                            });
+                } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION ||
+                        dialogType == DialogType.UPGRADE_UNAVAILABLE) {
+                    builder.setPositiveButton("OK", null);
+                } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
+                    builder.setPositiveButton("OK", null);
+                } else if (dialogType == DialogType.LOGIN_REQUIRED) {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToLoginPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());
+                                }
+                            });
+                } else if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE ||
+                        dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
+                    builder.setPositiveButton("OK",
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
+                                }
+                            });
+                } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
+                                isDialogShown = false;
+                                dialog.dismiss();
+                            });
+                } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
+                                isDialogShown = false;
+                                dialog.dismiss();
+                            });
+                } else {
+                    builder.setPositiveButton(positiveButtonText,
+                            (dialog, which) -> {
+                                try {
+                                    isDialogShown = false;
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToSubscriptionPlansPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
+                                }
+                            });
+                }
+
+
+                currentActivity.runOnUiThread(() -> {
+                    AlertDialog dialog = builder.create();
+
+                    if (onCloseAction != null) {
+                        dialog.setCanceledOnTouchOutside(false);
+
+                        dialog.setOnCancelListener(dialogInterface -> {
+                            if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
+                                    dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                                sendCloseOthersAction(null, true, false);
+                            }
+                        });
+                    }
+
+                    dialog.setOnShowListener(arg0 -> {
+                        loginDialogPopupOpen = true;
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                        if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                        }
                     });
 
-                } catch (Exception e) {
-                    System.out.println("Excep e -" + e.toString());
-                }
+                    dialog.setOnDismissListener(arg0 -> {
+                        loginDialogPopupOpen = false;
+                    });
+
+                    dialog.setOnCancelListener(arg0 -> {
+                        loginDialogPopupOpen = false;
+                    });
+
+                    dialog.setOnKeyListener((arg0, keyCode, event) -> {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            loginDialogPopupOpen = false;
+                            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                                if (onCloseAction != null) {
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    onCloseAction.call();
+                                }
+                                setAudioPlayerOpen(false);
+                            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER ||
+                                    dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW ||
+                                    dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                                if (onCloseAction != null) {
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    setEntitlementPendingVideoData(null);
+                                    onCloseAction.call();
+                                    //if user press back key without doing login subscription ,clear saved data
+                                    setEntitlementPendingVideoData(null);
+                                }
+                            }
+
+                            dialog.dismiss();
+                            isDialogShown = false;
+                        }
+                        return true;
+                    });
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                                Color.parseColor(getAppBackgroundColor())));
+                        if (currentActivity.getWindow().isActive()) {
+                            try {
+                                dialog.show();
+                                isDialogShown = true;
+                            } catch (Exception e) {
+                                //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+//                                + e.toString());
+                            }
+                        }
+                    }
+
+                });
+
+            } catch (Exception e) {
+                System.out.println("Excep e -" + e.toString());
+            }
         }
     }
 
@@ -10434,7 +10436,7 @@ public class AppCMSPresenter {
             return;
         }
 
-                                /*Get playlist data and open playlist page*/
+        /*Get playlist data and open playlist page*/
         if (mediaType != null
                 && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
             navigateToPlaylistPage(gistId, title, false);
@@ -10536,7 +10538,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendGaEvent(String action , String category , String label) {
+    public void sendGaEvent(String action, String category, String label) {
         if (tracker != null) {
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(category)
@@ -10750,7 +10752,7 @@ public class AppCMSPresenter {
                                     }
                                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                                     setAudioPlayerOpen(false);
-                                }else if (entitlementPendingVideoData != null) {
+                                } else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11430,8 +11432,7 @@ public class AppCMSPresenter {
                         }
                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                         setAudioPlayerOpen(false);
-                    }
-                    else if (entitlementPendingVideoData != null) {
+                    } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11538,8 +11539,7 @@ public class AppCMSPresenter {
                     }
                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                     setAudioPlayerOpen(false);
-                }
-                else if (entitlementPendingVideoData != null) {
+                } else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -12646,7 +12646,7 @@ public class AppCMSPresenter {
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -12754,7 +12754,12 @@ public class AppCMSPresenter {
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                        == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
+                        ( navigation!=null &&
+                                navigation.getTabBar() !=null &&
+                                navigation.getTabBar().get(0) !=null &&
+                                navigation.getTabBar().get(0).getPageId() !=null &&
+                                metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
                     homePage = metaPage;
                     new SoftReference<Object>(homePage, referenceQueue);
                 }
@@ -13098,7 +13103,7 @@ public class AppCMSPresenter {
     }
 
     private int getHomePage(List<MetaPage> metaPageList) {
-        String id=navigation.getTabBar().get(0).getPageId();
+        String id = navigation.getTabBar().get(0).getPageId();
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
@@ -13433,7 +13438,7 @@ public class AppCMSPresenter {
                                                                             appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
                                                                     historyAPI.getModules().get(0).setId(module.getId());
                                                                     historyAPI.getModules().get(0).setTitle(module.getTitle());
-                                                                   /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
+                                                                    /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
                                                                     modules.set(finalI, historyAPI.getModules().get(0));
                                                                     populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
                                                                 }
@@ -13685,7 +13690,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-       // sendCloseOthersAction(null, true, false);
+        // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -14533,18 +14538,18 @@ public class AppCMSPresenter {
         String runtime = searchResultClick[1];
         String mediaType = searchResultClick[4];
         String contentType = searchResultClick[5];
-        String gistId = searchResultClick[searchResultClick.length -1];
+        String gistId = searchResultClick[searchResultClick.length - 1];
 
         if (contentType.contains(currentActivity.getString(R.string.app_cms_series_content_type))) {
             action = currentActivity.getString(R.string.app_cms_action_showvideopage_key);
         }
-          //Log.d(TAG, "Launching " + permalink + ":" + action);
+        //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             setCurrentArticleIndex(-1);
-            navigateToArticlePage(gistId, title, false, null,false);
+            navigateToArticlePage(gistId, title, false, null, false);
             return;
-        }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+        } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             navigateToPhotoGalleryPage(gistId, title, null, false);
             return;
         }
@@ -14795,23 +14800,23 @@ public class AppCMSPresenter {
     public void showPopupWindowPlayer(View scrollView, ViewGroup group) {
         String currentVisiblePageTitle = null;
         /*try {
-            *//*extracting the top (visible) page title/id from the activity's binder map.*//*
+         *//*extracting the top (visible) page title/id from the activity's binder map.*//*
             currentVisiblePageTitle = ((AppCMSPageActivity) currentActivity).getAppCMSBinderMap().keySet().iterator().next();
         } catch (Exception e) {}*/
 
         /*We needed this check in order to not have the popup player on the search screen. One might
-        * question that this method shouldn't be called from the AppCMSPageFragment itself, and
-        * that's correct, had the Search fragment created using AppCMSPageFragment this method
-        * wouldn't have been called because inside the setMiniPlayer method in the
-        * AppCMSPageFragment we check if the AppCMSPageUI contains a 'standAlonePlayer', if that
-        * exist only then this method is called, and as said before the search fragment isn't
-        * created using AppCMSPageFragment. So at the time when user rotates the tablet,
-        * handleLaunchPageAction is called in AppCMSPageActivity, which in turn recreats
-        * AppCMSPageFragment, here AppCMSPageFragment contains homepage (instead of search, since
-        * search isn't created using AppCMSPageFragment), since it's homepage and homepage contains
-        * the 'standAlonePlayer', the condition inside 'setMiniPlayer is satisfied and this method
-        * is called, even though the current page visible is search.*/
-        if ("search".equalsIgnoreCase(currentVisiblePageTitle)){
+         * question that this method shouldn't be called from the AppCMSPageFragment itself, and
+         * that's correct, had the Search fragment created using AppCMSPageFragment this method
+         * wouldn't have been called because inside the setMiniPlayer method in the
+         * AppCMSPageFragment we check if the AppCMSPageUI contains a 'standAlonePlayer', if that
+         * exist only then this method is called, and as said before the search fragment isn't
+         * created using AppCMSPageFragment. So at the time when user rotates the tablet,
+         * handleLaunchPageAction is called in AppCMSPageActivity, which in turn recreats
+         * AppCMSPageFragment, here AppCMSPageFragment contains homepage (instead of search, since
+         * search isn't created using AppCMSPageFragment), since it's homepage and homepage contains
+         * the 'standAlonePlayer', the condition inside 'setMiniPlayer is satisfied and this method
+         * is called, even though the current page visible is search.*/
+        if ("search".equalsIgnoreCase(currentVisiblePageTitle)) {
             dismissPopupWindowPlayer(false);
             return;
         }
@@ -16412,7 +16417,7 @@ public class AppCMSPresenter {
         }
     }
 
-   public int getCurrentArticleIndex() {
+    public int getCurrentArticleIndex() {
         return currentArticleIndex;
     }
 
@@ -16436,7 +16441,6 @@ public class AppCMSPresenter {
         return this.relatedPhotoGalleryIds;
     }
 
-
     public void navigateToPhotoGalleryPage(String photoGalleryId, String pageTitle, List<ContentDatum> relatedPhotoGallery,
                                            boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(photoGalleryId)) {
@@ -16444,75 +16448,101 @@ public class AppCMSPresenter {
             pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingActionIntent);
             AppCMSPageUI appCMSPageUI = navigationPages.get(photoGalleryPage.getPageId());
-            getPhotoGalleryPageContent(appCMSMain.getApiBaseUrl(),
-                    appCMSSite.getGist().getSiteInternalName(),
-                    photoGalleryId, new AppCMSArticlePhotoGalleryAPIAction(true,
-                            false,
-                            true,
-                            appCMSPageUI,
-                            photoGalleryId,
-                            photoGalleryId,
-                            pageTitle,
-                            photoGalleryId,
-                            launchActivity, null) {
-                        @Override
-                        public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
-                            if (appCMSPhotoGalleryResult != null) {
-                                cancelInternalEvents();
-                                pushActionInternalEvents(photoGalleryPage.getPageId()
-                                        + BaseView.isLandscape(currentActivity));
 
-                                AppCMSPageAPI pageAPI = null;
-                                if (appCMSPhotoGalleryResult != null) {
-                                    pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
-                                    if (relatedPhotoGallery != null && relatedPhotoGallery.size() > 0) {
-                                        List<String> relatedPhotoGalleryIds = new ArrayList<>();
-                                        for (int index = 0; index < relatedPhotoGallery.size(); index++) {
-                                            relatedPhotoGalleryIds.add(relatedPhotoGallery.get(index).getGist().getId());
-                                        }
-                                        setRelatedPhotoGalleryIds(relatedPhotoGalleryIds);
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(photoGalleryPage.getPageId());
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
                                     }
+                                    navigateToArticlePage(photoGalleryId, pageTitle, launchActivity, null, false);
                                 }
+                            },
+                            loadFromFile,
+                            false);
+                }
 
-                                navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
+            } else {
+                getPhotoGalleryPageContent(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        photoGalleryId, new AppCMSArticlePhotoGalleryAPIAction(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                photoGalleryId,
+                                photoGalleryId,
+                                pageTitle,
+                                photoGalleryId,
+                                launchActivity, null) {
+                            @Override
+                            public void call(AppCMSPhotoGalleryResult appCMSPhotoGalleryResult) {
+                                if (appCMSPhotoGalleryResult != null) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(photoGalleryPage.getPageId()
+                                            + BaseView.isLandscape(currentActivity));
 
-                                final StringBuffer screenName = new StringBuffer();
-                                if (!TextUtils.isEmpty(pageIdToPageNameMap.get(photoGalleryPage.getPageId()))) {
-                                    screenName.append(photoGalleryPage.getPageName());
+                                    AppCMSPageAPI pageAPI = null;
+                                    if (appCMSPhotoGalleryResult != null) {
+                                        pageAPI = appCMSPhotoGalleryResult.convertToAppCMSPageAPI(photoGalleryPage.getPageId());
+                                        if (relatedPhotoGallery != null && relatedPhotoGallery.size() > 0) {
+                                            List<String> relatedPhotoGalleryIds = new ArrayList<>();
+                                            for (int index = 0; index < relatedPhotoGallery.size(); index++) {
+                                                relatedPhotoGalleryIds.add(relatedPhotoGallery.get(index).getGist().getId());
+                                            }
+                                            setRelatedPhotoGalleryIds(relatedPhotoGalleryIds);
+                                        }
+                                    }
+
+                                    navigationPageData.put(photoGalleryPage.getPageId(), pageAPI);
+
+                                    final StringBuffer screenName = new StringBuffer();
+                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(photoGalleryPage.getPageId()))) {
+                                        screenName.append(photoGalleryPage.getPageName());
+                                    }
+                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                                    screenName.append(pageTitle);
+
+                                    Bundle args = getPageActivityBundle(currentActivity,
+                                            this.appCMSPageUI,
+                                            pageAPI,
+                                            photoGalleryPage.getPageId(),
+                                            this.pageTitle,
+                                            this.pagePath,
+                                            screenName.toString(),
+                                            loadFromFile,
+                                            this.appbarPresent,
+                                            this.fullscreenEnabled,
+                                            this.navbarPresent,
+                                            false,
+                                            null,
+                                            ExtraScreenType.NONE);
+                                    if (args != null) {
+                                        Intent pageIntent =
+                                                new Intent(AppCMSPresenter
+                                                        .PRESENTER_NAVIGATE_ACTION);
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                        currentActivity.sendBroadcast(pageIntent);
+                                    }
+                                    Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                    pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                    currentActivity.sendBroadcast(pageLoadingActionIntent);
+
+                                } else {
+                                    Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                    pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                    currentActivity.sendBroadcast(pageLoadingActionIntent);
+                                    showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 }
-                                screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-                                screenName.append(pageTitle);
-
-                                Bundle args = getPageActivityBundle(currentActivity,
-                                        this.appCMSPageUI,
-                                        pageAPI,
-                                        photoGalleryPage.getPageId(),
-                                        this.pageTitle,
-                                        this.pagePath,
-                                        screenName.toString(),
-                                        loadFromFile,
-                                        this.appbarPresent,
-                                        this.fullscreenEnabled,
-                                        this.navbarPresent,
-                                        false,
-                                        null,
-                                        ExtraScreenType.NONE);
-                                if (args != null) {
-                                    Intent pageIntent =
-                                            new Intent(AppCMSPresenter
-                                                    .PRESENTER_NAVIGATE_ACTION);
-                                    pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                                    currentActivity.sendBroadcast(pageIntent);
-                                }
-                                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-                                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                                currentActivity.sendBroadcast(pageLoadingActionIntent);
-
                             }
-                        }
-                    });
+                        });
+            }
 
         }
     }
@@ -16528,7 +16558,7 @@ public class AppCMSPresenter {
     public void navigateToArticlePage(String articleId,
                                       String pageTitle,
                                       boolean launchActivity,
-                                      Action0 callback,boolean isDeepLink) {
+                                      Action0 callback, boolean isDeepLink) {
 
         if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
             Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
@@ -16548,7 +16578,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToArticlePage(articleId, pageTitle, launchActivity,null,false);
+                                    navigateToArticlePage(articleId, pageTitle, launchActivity, null, false);
                                 }
                             },
                             loadFromFile,
@@ -16584,7 +16614,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(this.pageId, pageAPI);
 
                                     final StringBuffer screenName = new StringBuffer();
-                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))){
+                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))) {
                                         screenName.append(articlePage.getPageName());
                                     }
                                     screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
@@ -16627,7 +16657,7 @@ public class AppCMSPresenter {
                                     }
                                 }
                             }
-                        },isDeepLink);
+                        }, isDeepLink);
             }
         }
     }
@@ -16664,7 +16694,7 @@ public class AppCMSPresenter {
     private void getArticlePageContent(final String apiBaseUrl,
                                        final String siteId,
                                        String pageId,
-                                       final AppCMSArticleAPIAction articleAPIAction,boolean isDeepLink) {
+                                       final AppCMSArticleAPIAction articleAPIAction, boolean isDeepLink) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
