@@ -69,11 +69,11 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
-/*import com.facebook.AccessToken;
+import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;*/
+import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -2503,13 +2503,13 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             isSignupFromFacebook = true;
             waithingFor3rdPartyLogin = true;
-            //LoginManager.getInstance().logOut();
+            LoginManager.getInstance().logOut();
             Intent pageLoadingIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.thrid_party_login_intent_extra_key), true);
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingIntent);
-            /*LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "email", "user_friends"));*/
+            LoginManager.getInstance().logInWithReadPermissions(currentActivity,
+                    Arrays.asList("public_profile", "email", "user_friends"));
         }
     }
 
@@ -7360,7 +7360,7 @@ public class AppCMSPresenter {
             }
 
             showLoadingDialog(true);
-            /*GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
+            GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
                     getLoggedInUser() + "/permissions/", null,
                     HttpMethod.DELETE, response -> {
                 try {
@@ -7375,8 +7375,8 @@ public class AppCMSPresenter {
                 }
             });
 
-            revokePermissions.executeAsync();*/
-            //LoginManager.getInstance().logOut();
+            revokePermissions.executeAsync();
+            LoginManager.getInstance().logOut();
             //Send Firebase Logout Event
             sendFireBaseLogOutEvent();
 
@@ -8257,7 +8257,7 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
                 case RE_START_DOWNLOAD_ITEM:
-                    title = currentActivity.getString(R.string.app_cms_select_alert_title);
+                    title = currentActivity.getString(R.string.app_cms_download_retry_alert_title);
                     message = optionalMessage;
                     break;
                 case DELETE_ONE_DOWNLOAD_ITEM:
@@ -8332,8 +8332,8 @@ public class AppCMSPresenter {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
                 }else if (dialogType ==DialogType.RE_START_DOWNLOAD_ITEM){
-                    okText="Re-Start";
-                    cancelText="Delete";
+                    okText=currentActivity.getString(R.string.app_cms_retry_text);
+                    cancelText=currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
                 }
                 builder.setPositiveButton(okText,
                         (dialog, which) -> {
