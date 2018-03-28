@@ -8196,7 +8196,7 @@ public class AppCMSPresenter {
                 closeSoftKeyboard();
                 sendCloseOthersAction(null, true, true);
                 navigateToHomePage();
-            }else {
+            }else if (!networkConnected && !downloadsAvailableForApp()){
                 // Because we do not have Download functionality in App. So we navigate to Error Page Screen.
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
@@ -8207,7 +8207,8 @@ public class AppCMSPresenter {
                             showNetworkConnectivity = false;
                         },
                         () -> {
-                            ((Activity)currentContext).finish();
+                            //((Activity)currentContext).finish();
+                            System.exit(0);
                         });
             }
 

@@ -46,3 +46,7 @@ htmlspanner/build/
 AppCMS/.idea/
 AppCMS/local.properties
 AppCMS/gradle/
+
+*.gradle
+AppCMS/*.gradle
+Apps/*.gradle
