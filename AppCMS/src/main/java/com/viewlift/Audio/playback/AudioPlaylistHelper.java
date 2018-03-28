@@ -117,7 +117,7 @@ public class AudioPlaylistHelper {
         Collections.shuffle(currentAudioPlaylist);
 
         //reset current Media Id
-        if (getCurrentMediaId() != null && TextUtils.isEmpty(getCurrentMediaId())) {
+        if (getCurrentMediaId() != null && !TextUtils.isEmpty(getCurrentMediaId())) {
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(getCurrentMediaId());
         } else {
             indexAudioFromPlaylist = 0;
@@ -125,6 +125,7 @@ public class AudioPlaylistHelper {
     }
 
     public void undoShufflePlaylist() {
+        currentAudioPlaylist.clear();
         currentAudioPlaylist.addAll(copyOfAudioPlaylistID);
         //reset current Media Id
         if (getCurrentMediaId() != null) {
