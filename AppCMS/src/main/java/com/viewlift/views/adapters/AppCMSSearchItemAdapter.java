@@ -218,7 +218,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
                                 Bitmap bitmap = resource;
-                                viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
+                                viewHolder.filmThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
                                 viewHolder.filmThumbnail.setImageBitmap(bitmap);
 
                                 viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -229,7 +229,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
                                 viewHolder.gridOptions.setVisibility(View.VISIBLE);
                             }
-
                             return false;
                         }
                     })
@@ -258,6 +257,15 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                    .load(imageUrl)
                    .into(viewHolder.filmThumbnail);
        }
+        if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                && (appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())
+                || appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase()))) {
+            if (appCMSPresenter.getIsMoreOptionsAvailable()) {
+                applySportsStyleDefault(viewHolder, createEmptyBitmap());
+            }
+            viewHolder.gridOptions.setVisibility(View.INVISIBLE);
+        }
         viewHolder.gridOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

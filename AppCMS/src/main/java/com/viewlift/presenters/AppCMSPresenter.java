@@ -11626,6 +11626,18 @@ public class AppCMSPresenter {
                                             false
                                     );
                                 }
+                            }else {
+                                if (loginFromNavPage) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            true,
+                                            deeplinkSearchQuery);
+                                }
                             }
                             if (currentActivity != null) {
                                 Apptentive.engage(currentActivity, currentActivity.getString(R.string.app_cms_apptentive_login_event_name));
@@ -16468,7 +16480,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToArticlePage(photoGalleryId, pageTitle, launchActivity, null, false);
+                                    navigateToPhotoGalleryPage(photoGalleryId, pageTitle, relatedPhotoGallery, false);
                                 }
                             },
                             loadFromFile,

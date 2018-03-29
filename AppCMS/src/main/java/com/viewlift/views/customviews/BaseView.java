@@ -3,7 +3,6 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -1039,10 +1038,18 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if ((isLandscape(getContext()) || !isTablet(getContext())) &&
-                            childComponent!=null &&
+                    if (childComponent!=null &&
                             childComponent.getSettings()!=null &&
                             !childComponent.getSettings().isHidden()) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight * 5;
+                        } else if (isTablet(getContext()) && !isLandscape(getContext())) {
+                            tm -= viewHeight * 3;
+                        } else {
+                            tm -= viewHeight * 2;
+                        }
+                        viewHeight *= 2;
+                    }else if ((isLandscape(getContext()) || !isTablet(getContext()))) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else {
@@ -1180,7 +1187,10 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
-        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
+            int padding = childComponent.getPadding();
+            view.setPadding(0,0, 0, (int) convertDpToPixel(padding, getContext()));
+        }else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
