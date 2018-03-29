@@ -4537,7 +4537,8 @@ public class ViewCreator {
                             break;
 
                             case PAGE_VIDEO_PUBLISHDATE_KEY:
-                                if (moduleAPI.getContentData() != null &&
+                                if (moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
