@@ -727,7 +727,7 @@ public class ViewCreator {
                                 if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
-
+                                    component.setBlockName(module.getBlockName());
                                     AppCMSUIKeyType moduleType = jsonValueKeyMap.get(module.getView());
                                     if (moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY) {
                                         pageView.updateDataList(moduleAPI.getContentData(),
@@ -2268,6 +2268,10 @@ public class ViewCreator {
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
+            if(viewType!= null &&
+                    viewType.equalsIgnoreCase(AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY.toString())) {
+                childComponent.setView(viewType);
+            }
 
             View componentView = componentViewResult.componentView;
             if (componentView != null) {
@@ -2964,6 +2968,9 @@ public class ViewCreator {
                 boolean loop = false;
                 if (settings.getLoop()) {
                     loop = settings.getLoop();
+                }
+                if(viewType.equalsIgnoreCase(AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY.toString())) {
+                    component.setView(viewType);
                 }
                 AppCMSCarouselItemAdapter appCMSCarouselItemAdapter = new AppCMSCarouselItemAdapter(context,
                         this,

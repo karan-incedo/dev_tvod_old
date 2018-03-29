@@ -3,7 +3,6 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -1039,10 +1038,18 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if ((isLandscape(getContext()) || !isTablet(getContext())) &&
-                            childComponent!=null &&
+                    if (childComponent!=null &&
                             childComponent.getSettings()!=null &&
                             !childComponent.getSettings().isHidden()) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight * 5;
+                        } else if (isTablet(getContext()) && !isLandscape(getContext())) {
+                            tm -= viewHeight * 3;
+                        } else {
+                            tm -= viewHeight * 2;
+                        }
+                        viewHeight *= 2;
+                    }else if ((isLandscape(getContext()) || !isTablet(getContext()))) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else {

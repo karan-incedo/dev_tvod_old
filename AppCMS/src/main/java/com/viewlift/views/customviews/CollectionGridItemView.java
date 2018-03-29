@@ -669,15 +669,18 @@ public class CollectionGridItemView extends BaseView {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setMaxLines(1);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
-                            setBorder(((TextView) view));
-                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        } else {
-                            ((TextView) view).setBackgroundColor(Color.parseColor("#e4e4e4"));
-                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                        }
+
+                        //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                         /*if(childComponent != null ) {
+
+                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
+                                setBorder(((TextView) view));
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            } else {
+                                ((TextView) view).setBackgroundColor(Color.parseColor("#e4e4e4"));
+                                ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                            }
+                        }*/
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
 
