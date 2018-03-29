@@ -688,7 +688,7 @@ public class AppCMSPresenter {
                     pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                     currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
-                        editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                        editWatchlist(contentDatum.getGist().getId() != null ? contentDatum.getGist().getId() : contentDatum.getId(), appCMSAddToWatchlistResult -> {
                                     Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
                                     stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(stopPageLoadingActionIntent);
@@ -9201,6 +9201,14 @@ public class AppCMSPresenter {
     public boolean isArticlePage(String pageId) {
         if (pageId != null && articlePage != null && articlePage.getPageId() != null &&
                 pageId.equalsIgnoreCase(articlePage.getPageId())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isHomePage(String pageId){
+        if (pageId != null && homePage != null && homePage.getPageId() != null &&
+                pageId.equalsIgnoreCase(homePage.getPageId())) {
             return true;
         }
         return false;

@@ -2204,7 +2204,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isPagePrimary(pageId) &&
                     !appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.GONE);
-            } else {
+            } else if(appCMSPresenter.isViewPlanPage(pageId)){
+                closeButton.setVisibility(View.VISIBLE);
+                setCastingVisibility(false);
+            }else {
                 closeButton.setVisibility(View.VISIBLE);
             }
 
@@ -2219,14 +2222,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
-                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) ||
+                    appCMSPresenter.isPageNavigationPage(updatedAppCMSBinder.getPageId())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
             } else {
                 mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
-                setCastingVisibility(true);
+                if(appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()) )
+                 setCastingVisibility(true);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }
