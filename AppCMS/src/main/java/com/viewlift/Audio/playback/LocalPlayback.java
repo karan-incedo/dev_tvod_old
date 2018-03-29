@@ -145,6 +145,8 @@ public final class LocalPlayback implements Playback {
     private boolean sentBeaconFirstFrame;
     private ContentDatum audioData;
     private long mStartBufferMilliSec = 0l;
+    private long mStopBufferMilliSec;
+    private static double ttfirstframe = 0d;
 
     public static LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
         if (localPlaybackInstance == null) {
@@ -197,6 +199,11 @@ public final class LocalPlayback implements Playback {
                 null,
                 null);
         audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+        sentBeaconPlay = false;
+        sentBeaconFirstFrame = false;
+        if (beaconBuffer != null) {
+            beaconBuffer.sendBeaconBuffering = false;
+        }
     }
 
     @Override
@@ -231,7 +238,9 @@ public final class LocalPlayback implements Playback {
             mProgressHandler.removeCallbacks(mProgressRunnable);
             mProgressHandler = null;
         }
-
+        sentBeaconPlay = false;
+        sentBeaconFirstFrame = false;
+        mStartBufferMilliSec = new Date().getTime();
     }
 
     @Override
@@ -341,7 +350,12 @@ public final class LocalPlayback implements Playback {
 
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
-
+            sentBeaconPlay = false;
+            sentBeaconFirstFrame = false;
+            mStartBufferMilliSec = new Date().getTime();
+            if (beaconBuffer != null) {
+                beaconBuffer.sendBeaconBuffering = false;
+            }
         }
         audioData.getGist().setAudioPlaying(true);
         appCMSPresenter.notifyDownloadHasCompleted();
@@ -404,6 +418,25 @@ public final class LocalPlayback implements Playback {
         if (appCMSPresenter.getAudioReload()) {
             relaodAudioItem();
         }
+        if (!sentBeaconPlay && appCMSPresenter != null) {
+            appCMSPresenter.sendBeaconMessage(audioData.getGist().getId(),
+                    audioData.getGist().getPermalink(),
+                    null,
+                    mExoPlayer.getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.PLAY,
+                    audioData.getGist().getMediaType(),
+                    null,
+                    null,
+                    null,
+                    getStreamId(),
+                    0d,
+                    0,
+                    appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
+            sentBeaconPlay = true;
+            mStartBufferMilliSec = new Date().getTime();
+        }
+
 
     }
 
@@ -439,8 +472,11 @@ public final class LocalPlayback implements Playback {
         if (beaconPing != null) {
             beaconPing.sendBeaconPing = false;
         }
+        sentBeaconPlay = false;
         if (beaconBuffer != null) {
             beaconBuffer.sendBeaconBuffering = false;
+            beaconBuffer.runBeaconBuffering = false;
+            beaconBuffer = null;
         }
     }
 
@@ -592,6 +628,7 @@ public final class LocalPlayback implements Playback {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
             setBeaconBufferValues();
             setBeaconPingValues();
             if (playbackState == ExoPlayer.STATE_READY && mExoPlayer != null) {
@@ -650,8 +687,8 @@ public final class LocalPlayback implements Playback {
                             if (mProgressHandler != null)
                                 mProgressHandler.post(mProgressRunnable);
                             if (!sentBeaconFirstFrame && appCMSPresenter != null) {
-//                                mStopBufferMilliSec = new Date().getTime();
-//                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                                mStopBufferMilliSec = new Date().getTime();
+                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                                 appCMSPresenter.sendBeaconMessage(audioData.getGist().getId(),
                                         audioData.getGist().getPermalink(),
                                         null,
@@ -663,11 +700,10 @@ public final class LocalPlayback implements Playback {
                                         null,
                                         null,
                                         getStreamId(),
-                                        10,
+                                        ttfirstframe,
                                         0,
                                         appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
                                 sentBeaconFirstFrame = true;
-
                             }
                         }
                     }
@@ -680,24 +716,7 @@ public final class LocalPlayback implements Playback {
                     }
                     break;
                 default:
-                    if (!sentBeaconPlay && appCMSPresenter != null) {
-                        appCMSPresenter.sendBeaconMessage(audioData.getGist().getId(),
-                                audioData.getGist().getPermalink(),
-                                null,
-                                mExoPlayer.getCurrentPosition(),
-                                false,
-                                AppCMSPresenter.BeaconEvent.PLAY,
-                                audioData.getGist().getMediaType(),
-                                null,
-                                null,
-                                null,
-                                getStreamId(),
-                                0d,
-                                0,
-                                appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
-                        sentBeaconPlay = true;
-                        mStartBufferMilliSec = new Date().getTime();
-                    }
+
                     break;
             }
         }
@@ -805,7 +824,7 @@ public final class LocalPlayback implements Playback {
         return mStreamId;
     }
 
-    void setBeaconPingValues() {
+    public void setBeaconPingValues() {
         if (beaconPing == null) {
             beaconPing = new BeaconPing(beaconMsgTimeoutMsec,
                     appCMSPresenter,

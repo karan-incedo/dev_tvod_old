@@ -46,6 +46,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.viewlift.Audio.playback.LocalPlayback.localPlaybackInstance;
+
 
 /**
  * Manage the interactions among the container service, localplayback ,audio cast playback and the actual playback.
@@ -595,6 +597,12 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void run() {
             updateProgress();
+            if (!isCastConnected) {
+                localPlaybackInstance.setBeaconPingValues();
+            }
+            if (isCastConnected) {
+                AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
+            }
         }
     };
 
@@ -630,14 +638,14 @@ public class PlaybackManager implements Playback.Callback {
              * on end of preview reset position to 0
              */
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
-            System.out.println("currentPositionInMS- set to 0" );
+            System.out.println("currentPositionInMS- set to 0");
             if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                 Intent intent = new Intent();
                 intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
                 intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
                 appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
             }
-        }else{
+        } else {
             saveLastPositionAudioOnForcefullyStop();
         }
     }
