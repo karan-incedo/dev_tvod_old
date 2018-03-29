@@ -2974,7 +2974,7 @@ public class ViewCreator {
                 if (settings.getLoop()) {
                     loop = settings.getLoop();
                 }
-                if(viewType.equalsIgnoreCase(AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY.toString())) {
+                if(viewType.equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
                     component.setView(viewType);
                 }
                 AppCMSCarouselItemAdapter appCMSCarouselItemAdapter = new AppCMSCarouselItemAdapter(context,

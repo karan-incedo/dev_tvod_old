@@ -251,7 +251,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 defaultHeight,
                 useMarginsAsPercentages,
                 false,
-                this.componentViewType.trim().length()>0?this.componentViewType:component.getView(),
+                this.componentViewType.trim().length()>2?this.componentViewType:component.getView(),
                 true,
                 false,viewTypeKey);
 
