@@ -12,10 +12,14 @@ module Fastlane
        error_callback = proc do |error|
          new_name = params[:apk_path].gsub('.apk', '-unaligned.apk')
          rename_command = ["mv -n",params[:apk_path],new_name]
-         Fastlane::Actions.sh(rename_command, log: false)
+
+         Fastlane::Actions.sh(rename_command.join(" "))
+         #Fastlane::Actions.sh(rename_command, log: false)
 
          aligncmd = ["zipalign -v -f 4", new_name , " ", params[:apk_path] ]
-         Fastlane::Actions.sh(aligncmd, log: true)
+
+         Fastlane::Actions.sh(aligncmd.join(" "))
+         #Fastlane::Actions.sh(aligncmd, log: true)
 
          return
         end
