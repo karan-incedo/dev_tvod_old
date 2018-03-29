@@ -397,13 +397,13 @@
                   "height": 16
                 },
                 "tabletLandscape": {
-                  "topMargin": 8.2,
+                  "topMargin": 7.8,
                   "width": 125,
                   "fontSize": 13,
                   "height": 16
                 },
                 "tabletPortrait": {
-                  "topMargin": 6.5,
+                  "topMargin": 6.1,
                   "width": 125,
                   "fontSize": 13,
                   "height": 16
