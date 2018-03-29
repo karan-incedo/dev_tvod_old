@@ -5,79 +5,12 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: Verifying required fastlane version" time="0.001175">
+      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.001728">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: default_platform" time="0.000916">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="02: ../../../PostBuildStatus.sh 681 http://staging4.partners.viewlift.com/dev-jukinvideo/android/appcms/build/status CLEAN_PROJECT ''" time="0.07968">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="03: gradle" time="15.388054">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="04: ../../../PostBuildStatus.sh 681 http://staging4.partners.viewlift.com/dev-jukinvideo/android/appcms/build/status BUILD_INPROGRESS ''" time="0.081083">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="05: gradle" time="106.632048">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="06: gradle" time="87.478811">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="07: Switch to android tv_screenshots lane" time="0.001248">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="08: screengrab" time="10.64991">
-        
-          <failure message="/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/actions/actions_helper.rb:48:in `execute_action'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:230:in `block in execute_action'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:226:in `chdir'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:226:in `execute_action'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:148:in `trigger_action_by_name'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/fast_file.rb:146:in `method_missing'&#10;Fastfile:191:in `block (2 levels) in parsing_binding'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/lane.rb:33:in `call'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:201:in `try_switch_to_lane'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:156:in `trigger_action_by_name'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/fast_file.rb:146:in `method_missing'&#10;Fastfile:121:in `block (2 levels) in parsing_binding'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/lane.rb:33:in `call'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:49:in `block in execute'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:45:in `chdir'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/runner.rb:45:in `execute'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/lane_manager.rb:52:in `cruise_lane'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/command_line_handler.rb:30:in `handle'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/commands_generator.rb:104:in `block (2 levels) in run'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/commander-fastlane-4.4.5/lib/commander/command.rb:178:in `call'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/commander-fastlane-4.4.5/lib/commander/command.rb:153:in `run'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/commander-fastlane-4.4.5/lib/commander/runner.rb:476:in `run_active_command'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:64:in `run!'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/commander-fastlane-4.4.5/lib/commander/delegates.rb:15:in `run!'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/commands_generator.rb:303:in `run'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/commands_generator.rb:42:in `start'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/fastlane/lib/fastlane/cli_tools_distributor.rb:66:in `take_off'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1@global/gems/fastlane-2.61.0/bin/fastlane:20:in `&lt;top (required)&gt;'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1/bin/fastlane:23:in `load'&#10;/Users/chandan/.rvm/gems/ruby-2.4.1/bin/fastlane:23:in `&lt;main&gt;'&#10;&#10;No screenshots were detected 📷❌" />
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="09: ../../../PostBuildStatus.sh 681 http://staging4.partners.viewlift.com/dev-jukinvideo/android/appcms/build/status SCREEN_SHOT_CAPTURED ''" time="0.212524">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="10: gradle" time="162.594285">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="11: ../../../PostBuildStatus.sh 681 http://staging4.partners.viewlift.com/dev-jukinvideo/android/appcms/build/status RELEASE_SIGNING_AND_ZIPALIGN ''" time="0.644704">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="12: sign_apk" time="6.807865">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="13: zipalign" time="0.269304">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="14: gradle" time="27.228012">
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.001034">
         
       </testcase>
     
