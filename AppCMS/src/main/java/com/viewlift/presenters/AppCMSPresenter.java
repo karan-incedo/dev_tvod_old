@@ -16460,7 +16460,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToArticlePage(photoGalleryId, pageTitle, launchActivity, null, false);
+                                    navigateToPhotoGalleryPage(photoGalleryId, pageTitle, relatedPhotoGallery, false);
                                 }
                             },
                             loadFromFile,
