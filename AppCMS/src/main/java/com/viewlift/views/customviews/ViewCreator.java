@@ -1739,7 +1739,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "music_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                } else {
+                } else
+                    {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
 

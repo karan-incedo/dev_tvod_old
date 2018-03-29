@@ -82,7 +82,11 @@ public class AudioCastPlayback implements Playback {
         mAppContext = context.getApplicationContext();
         this.mListener = callBackLocalPlaybackListener;
 
-        initRemoteClient();
+        try {
+            initRemoteClient();
+        }catch(Exception e){
+
+        }
         mRemoteMediaClientListener = new CastMediaClientListener();
         initProgressListeners();
 

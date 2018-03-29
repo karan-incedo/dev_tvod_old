@@ -182,7 +182,11 @@ public class PlaybackControlsFragment extends Fragment {
             updateDuration(controller.getMetadata());
 
         }
-        updateCastInfo();
+        try {
+            updateCastInfo();
+        }catch(NullPointerException e){
+
+        }
         audioPreview(null);
     }
 
