@@ -280,7 +280,8 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
+                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
                     int placeholder=0;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
