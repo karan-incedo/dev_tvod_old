@@ -631,31 +631,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    if (appCMSPresenter.getCurrentActivity().getResources()
-                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
-                                            !showAction.equals(action)) {
-                                        if (!appCMSPresenter.launchVideoPlayer(data,
-                                                data.getGist().getId(),
-                                                currentPlayingIndex,
-                                                relatedVideoIds,
-                                                -1,
-                                                action)) {
-                                            //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                        }
-                                    } else {
-                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                                action,
-                                                title,
-                                                null,
-                                                null,
-                                                false,
-                                                currentPlayingIndex,
-                                                relatedVideoIds)) {
-                                            //Log.e(TAG, "Could not launch action: " +
+                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            action.equalsIgnoreCase("openOptionDialog") ? data : null,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds)) {
+                                        //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
@@ -665,7 +649,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 }
                             }
                         }
-                    }
+
 
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
@@ -711,10 +695,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     component, data, position));
         }
 
-        if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY
-                || viewTypeKey != AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
-
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY
+                || viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
+            //
+        } else {
             itemView.setOnTouchListener((View v, MotionEvent event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     lastTouchDownEvent = event;
@@ -908,6 +893,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
+    public boolean isClickable() {
+        return isClickable;
+    }
+
     @Override
     public void setClickable(boolean clickable) {
         isClickable = clickable;
@@ -954,6 +943,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             itemView.setPadding(7,7,7,7);
         }
         planBorder.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.transparent));
+
         itemView.setBackground(planBorder);
     }
 
