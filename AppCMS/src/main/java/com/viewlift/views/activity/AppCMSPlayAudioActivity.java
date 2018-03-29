@@ -1,9 +1,11 @@
 package com.viewlift.views.activity;
 
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaMetadataCompat;
@@ -24,7 +26,10 @@ import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPlayAudioFragment;
+
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -119,7 +124,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
-
+    public void startDownloadPlaylist() {
+        appCMSPresenter.askForPermissionToDownloadForPlaylist(true, new Action1<Boolean>() {
+            @Override
+            public void call(Boolean isStartDownload) {
+                if (isStartDownload) {
+                    isDownloading = true;
+                    audioDownload(downloadAudio, currentAudio);
+                }
+            }
+        });
+    }
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -131,8 +146,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
-            isDownloading = true;
-            audioDownload(downloadAudio, currentAudio);
+            startDownloadPlaylist();
         }
         if (view == shareAudio) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -188,25 +202,41 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
+                        download.performClick();
+
                     }
                 });
 
 
     }
-
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
-        int radiusDifference = 5;
-        if (BaseView.isTablet(this)) {
-            radiusDifference = 2;
-        }
+        Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
+                appCMSPresenter.getUpdateDownloadImageIconActionMap();
+        try {
+            int radiusDifference = 5;
+            if (BaseView.isTablet(getApplicationContext())) {
+                radiusDifference = 2;
+            }
+            ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                    updateDownloadImageIconActionMap.get(contentDatum.getGist().getId());
+            if (updateDownloadImageIconAction == null) {
+                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) downloadView, appCMSPresenter,
+                        contentDatum, userId, radiusDifference, userId);
+                updateDownloadImageIconActionMap.put(contentDatum.getGist().getId(), updateDownloadImageIconAction);
+            }
 
-        appCMSPresenter.getUserVideoDownloadStatus(
-                contentDatum.getGist().getId(),
-                new UpdateDownloadImageIconAction(downloadView,
-                        appCMSPresenter,
-                        contentDatum, userId, radiusDifference, userId), userId);
+            downloadView.setTag(contentDatum.getGist().getId());
+
+            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+
+            appCMSPresenter.getUserVideoDownloadStatus(
+                    contentDatum.getGist().getId(), updateDownloadImageIconAction, userId);
+        } catch (Exception e) {
+
+        }
     }
+
 
     /**
      * This class has been created to updated the Download Image Action and Status
@@ -340,5 +370,22 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             this.imageButton = imageButton;
         }
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case AppCMSPresenter.REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    appCMSPresenter.resumeDownloadAfterPermissionGranted();
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }
