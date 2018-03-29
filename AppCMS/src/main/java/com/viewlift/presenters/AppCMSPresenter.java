@@ -688,7 +688,7 @@ public class AppCMSPresenter {
                     pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                     currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
-                        editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                        editWatchlist(contentDatum.getGist().getId() != null ? contentDatum.getGist().getId() : contentDatum.getId(), appCMSAddToWatchlistResult -> {
                                     Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
                                     stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(stopPageLoadingActionIntent);
@@ -11617,6 +11617,18 @@ public class AppCMSPresenter {
                                             false,
                                             false
                                     );
+                                }
+                            }else {
+                                if (loginFromNavPage) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            true,
+                                            deeplinkSearchQuery);
                                 }
                             }
                             if (currentActivity != null) {
