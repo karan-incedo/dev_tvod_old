@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -559,20 +560,18 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
 
                         if (context instanceof Activity && !((Activity) context).isFinishing()) {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl,ImageLoader.ScaleType.START)) {
+                            //if (!ImageUtils.loadImage((ImageView) view, imageUrl,ImageLoader.ScaleType.START)) {
 
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .placeholder(R.drawable.img_placeholder)
-                                        .fitCenter()
-                                      .override(childViewWidth, childViewHeight);
+                                        .placeholder(R.drawable.img_placeholder);
 
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
                                 ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            }
+                            //}
                         } else {
                             Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
                         }
