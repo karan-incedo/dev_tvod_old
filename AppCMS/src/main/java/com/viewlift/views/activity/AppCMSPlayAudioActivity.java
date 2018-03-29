@@ -95,6 +95,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+        appCMSPresenter.sendGaScreen("Music");
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         if (appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
             downloadAudio.setImageResource(R.drawable.ic_downloaded_big);

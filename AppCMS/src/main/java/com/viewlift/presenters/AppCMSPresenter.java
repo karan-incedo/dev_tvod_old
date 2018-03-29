@@ -6041,6 +6041,8 @@ public class AppCMSPresenter {
                             AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
                             /*check to play audio*/
                             if (playAudio) {
+                                sendGaEvent(currentContext.getResources().getString(R.string.play_audio_action),
+                                        currentContext.getResources().getString(R.string.play_audio_category), appCMSAudioDetailResult.getGist().getId());
                                 AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
                                 PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
                                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
@@ -6134,6 +6136,7 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
                                 if (appCMSPlaylistResult != null) {
+
                                     setPlayListData(appCMSPlaylistResult, this);
                                 }
                             }
@@ -6198,6 +6201,17 @@ public class AppCMSPresenter {
         }
         navigationPages.put(appCMSPlaylistAPIAction.pageId, appCMSPageUI);
         navigationPageData.put(appCMSPlaylistAPIAction.pageId, pageAPI);
+
+        final StringBuffer screenName = new StringBuffer();
+        if (!TextUtils.isEmpty(pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId))) {
+            screenName.append(appCMSPlaylistAPIAction.pageTitle);
+        }
+        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+        if (pageAPI.getModules() != null && pageAPI.getModules().get(0) != null && pageAPI.getModules().get(0).getContentData() != null
+                && pageAPI.getModules().get(0).getContentData().get(0) != null && pageAPI.getModules().get(0).getContentData().get(0).getGist() != null && pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle() != null) {
+            screenName.append(pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle());
+
+        }
 
         if (appCMSPlaylistAPIAction.launchActivity) {
             launchPageActivity(currentActivity,
@@ -10469,6 +10483,16 @@ public class AppCMSPresenter {
             //Log.d(TAG, "Sending GA screen tracking event: " + screenName);
             tracker.setScreenName(screenName);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+    }
+
+    public void sendGaEvent(String action, String category, String label) {
+        if (tracker != null) {
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(category)
+                    .setAction(action)
+                    .setLabel(label)
+                    .build());
         }
     }
 
