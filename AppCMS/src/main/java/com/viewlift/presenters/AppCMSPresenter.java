@@ -9274,6 +9274,14 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isHomePage(String pageId){
+        if (pageId != null && homePage != null && homePage.getPageId() != null &&
+                pageId.equalsIgnoreCase(homePage.getPageId())) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isPhotoGalleryPage(String pageId) {
         if (pageId != null && photoGalleryPage != null && photoGalleryPage.getPageId() != null &&
                 pageId.equalsIgnoreCase(photoGalleryPage.getPageId())) {
@@ -14019,11 +14027,17 @@ public class AppCMSPresenter {
                         break;
 
                     case VIDEO_PAGE:
-                        appbarPresent = true;
+                        appbarPresent = false;
                         fullscreenEnabled = false;
                         navbarPresent = false;
-                        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                        screenName.append(currentActivity.getString(
+                                R.string.app_cms_template_page_separator));
                         screenName.append(filmTitle);
+                        //Todo need to manage it depend on Template
+                        if (isSportsTemplate()) {
+                            appbarPresent = true;
+                            navbarPresent = true;
+                        }
                         break;
 
                     case PLAY_VIDEO_PAGE:

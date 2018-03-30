@@ -50,4 +50,4 @@ AppCMS/gradle/
 *.gradle
 AppCMS/*.gradle
 Apps/*.gradle
-../*.gradle
+

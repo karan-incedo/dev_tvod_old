@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -283,7 +284,7 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
-                    int placeholder=0;
+                    int placeholder = R.drawable.vid_image_placeholder_square;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -316,8 +317,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if(componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY || componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY
-                            ||componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ) {
+                    if(componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -334,23 +336,7 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getContentType() != null &&
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_audio))
                             && appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
-                        int size = childViewWidth;
-                        if (childViewWidth < childViewHeight) {
-                            size = childViewHeight;
-                        }
-                        int horizontalMargin = 0;
-                        horizontalMargin = (int) getHorizontalMargin(getContext(), childComponent.getLayout());
-                        int verticalMargin = (int) getVerticalMargin(getContext(), parentLayout, size, 0);
-                        if (verticalMargin < 0) {
-                            verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
-                        }
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                        LayoutParams llParams = new LayoutParams(size, size);
-                        llParams.setMargins(horizontalMargin,
-                                verticalMargin,
-                                horizontalMargin,
-                                verticalMargin);
-                        view.setLayoutParams(llParams);
+
                         if (data.getGist() != null &&
                                 data.getGist().getImageGist() != null &&
                                 data.getGist().getImageGist().get_1x1() != null && (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) {
@@ -360,12 +346,28 @@ public class CollectionGridItemView extends BaseView {
                                     imageUrl = data.getGist().getVideoImageUrl();
                                 }
                             }
-                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+                            int size = childViewWidth;
+                            if (childViewWidth < childViewHeight) {
+                                size = childViewHeight;
+                            }
+
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
 
-
+                                int horizontalMargin = 0;
+                                horizontalMargin = (int) getHorizontalMargin(getContext(), childComponent.getLayout());
+                                int verticalMargin = (int) getVerticalMargin(getContext(), parentLayout, size, 0);
+                                if (verticalMargin < 0) {
+                                    verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
+                                }
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                LayoutParams llParams = new LayoutParams(size, size);
+                                llParams.setMargins(horizontalMargin,
+                                        verticalMargin,
+                                        horizontalMargin,
+                                        verticalMargin);
+                                view.setLayoutParams(llParams);
                                 Glide.with(context.getApplicationContext())
-                                        .load(imageUrl).apply(requestOptions)
+                                        .load(imageUrl)
 //                                        .override(size,size)
                                         .into(((ImageView) view));
                             }
@@ -387,7 +389,6 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        System.out.println("image dimen1- width"+childViewHeight+" width"+childViewWidth);
                         if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                             if (data.getGist().getVideoImageUrl() != null) {
                                 imageUrl = data.getGist().getVideoImageUrl();
@@ -404,7 +405,6 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
-                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             } else {
                                 ((ImageView) view).setBackgroundResource(R.drawable.img_placeholder);
                             }
@@ -415,28 +415,38 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             data != null &&
                             data.getGist() != null &&
-                            data.getGist().getVideoImageUrl() != null &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            ((data.getGist().getVideoImageUrl() != null &&
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
+                                    (data.getGist().getImageGist().get_16x9() != null &&
+                                            !TextUtils.isEmpty(data.getGist().getImageGist().get_16x9()))) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
-                        System.out.println("image dimen2- width"+childViewHeight+" width"+childViewWidth);
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
 
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         bringToFront = false;
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                childViewWidth,
-                                childViewHeight);
-                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                            if (data.getGist().getVideoImageUrl() != null) {
-                                imageUrl = data.getGist().getVideoImageUrl();
+                        String imageUrl = null;
+                        if(data.getGist().getVideoImageUrl() != null) {
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                if (data.getGist().getVideoImageUrl() != null) {
+                                    imageUrl = data.getGist().getVideoImageUrl();
+                                }
                             }
+                        }else{
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getImageGist().get_16x9(),
+                                    childViewWidth,
+                                    childViewHeight);
                         }
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                        .override(childViewWidth, childViewHeight)
+                                        .placeholder(placeholder)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
@@ -444,6 +454,8 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
+
+                                ((ImageView)view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (Exception e) {
                             //
@@ -451,9 +463,6 @@ public class CollectionGridItemView extends BaseView {
                     } else if (data != null &&
                             data.getGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
-                        System.out.println("image dimen3- width"+childViewHeight+" width"+childViewWidth);
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
-
                         bringToFront = false;
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         String imageUrl = "";
@@ -485,8 +494,8 @@ public class CollectionGridItemView extends BaseView {
                                         imageUrl);
 
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .transform(gradientTransform)
-                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE).placeholder(placeholder)
+                                        .transform(gradientTransform).placeholder(placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                                         .override(imageWidth, imageHeight);
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
@@ -494,6 +503,7 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
@@ -519,8 +529,8 @@ public class CollectionGridItemView extends BaseView {
 
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
-                                        .fitCenter();
+                                        .override(childViewWidth, childViewHeight)
+                                        .fitCenter().placeholder(placeholder);
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -542,7 +552,8 @@ public class CollectionGridItemView extends BaseView {
                             }
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                        .override(childViewWidth, childViewHeight)
+                                        .placeholder(R.drawable.img_placeholder)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
@@ -561,9 +572,13 @@ public class CollectionGridItemView extends BaseView {
                         String imageUrl = data.getGist().getVideoImageUrl();
                         ImageView imageView = (ImageView) view;
                         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        RequestOptions requestOptions = new RequestOptions()
+                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
                         Glide.with(context)
                                 .load(imageUrl)
-                                // .override(childViewWidth, childViewHeight)
+                                .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     }
@@ -608,6 +623,22 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                if (data.getGist().getVideoImageUrl() != null) {
+                                    imageUrl = data.getGist().getVideoImageUrl();
+                                }
+                            }
+                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
+                                Glide.with(context.getApplicationContext())
+                                        .load(imageUrl).apply(requestOptions)
+//                                        .override(size,size)
+                                        .into(((ImageView) view));
+                            }
+                        } else {
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                         }
                     }
                     if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
@@ -618,6 +649,7 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
+
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
@@ -700,9 +732,9 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
 
                         //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                         if(component != null &&
-                                 component.getView() != null &&
-                                 component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                        if (component != null &&
+                                component.getView() != null &&
+                                component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
 
                             if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
                                 setBorder(((TextView) view));
@@ -864,22 +896,22 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
 
-                        if(data.getGist().getMediaType() != null && data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())){
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
                             StringBuilder thumbInfo = new StringBuilder();
                             if (data.getGist().getPublishDate() != null) {
                                 thumbInfo.append(getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd"));
                             }
                             int noOfPhotos = 0;
                             if (data.getStreamingInfo() != null && data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
-                                if(thumbInfo.length() > 0) {
+                                if (thumbInfo.length() > 0) {
                                     thumbInfo.append(" | ");
                                 }
-                                noOfPhotos =  data.getStreamingInfo().getPhotogalleryAssets().size();
+                                noOfPhotos = data.getStreamingInfo().getPhotogalleryAssets().size();
                                 thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
                             }
 
                             ((TextView) view).setText(thumbInfo);
-                        }else {
+                        } else {
                             String thumbInfo = null;
                             if (data.getGist().getPublishDate() != null) {
                                 thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
@@ -913,10 +945,10 @@ public class CollectionGridItemView extends BaseView {
                         }
                         int noOfPhotos = 0;
                         if (data.getStreamingInfo() != null && data.getStreamingInfo().getPhotogalleryAssets() != null && data.getStreamingInfo().getPhotogalleryAssets().size() > 0) {
-                            if(thumbInfo.length() > 0) {
+                            if (thumbInfo.length() > 0) {
                                 thumbInfo.append(" | ");
                             }
-                            noOfPhotos =  data.getStreamingInfo().getPhotogalleryAssets().size();
+                            noOfPhotos = data.getStreamingInfo().getPhotogalleryAssets().size();
                             thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
                         }
 
@@ -1100,7 +1132,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(childComponent.getText());
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
-                    } else{
+                    } else {
                         ((TextView) view).setTextColor(Color.parseColor("#000000"));
                     }
                 }
