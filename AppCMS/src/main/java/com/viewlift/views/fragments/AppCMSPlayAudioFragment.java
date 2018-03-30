@@ -548,10 +548,15 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             directorName = " (" + directorName + ")";
         }
         artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST) + "" + directorName);
-        String albumInfo = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + " | " + metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
-        trackYear.setText(albumInfo);
-        trackYear.setLetterSpacing(0.3f);
-        trackYear.setAllCaps(true);
+        String trackYearValue = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + "";
+        if (TextUtils.isEmpty(trackYearValue)) {
+            trackYear.setVisibility(View.GONE);
+        } else {
+            trackYear.setVisibility(View.VISIBLE);
+            trackYear.setText(trackYearValue);
+            trackYear.setLetterSpacing(0.3f);
+            trackYear.setAllCaps(true);
+        }
         fetchImageAsync(metaData.getDescription());
     }
 
@@ -572,7 +577,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 if (appCMSPresenter.isUserLoggedIn()) {
                     if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
                         appCMSPresenter.dialog.dismiss();
-                        appCMSPresenter.isDialogShown=false;
+                        appCMSPresenter.isDialogShown = false;
                     }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
@@ -589,7 +594,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 } else {
                     if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
                         appCMSPresenter.dialog.dismiss();
-                        appCMSPresenter.isDialogShown=false;
+                        appCMSPresenter.isDialogShown = false;
 
                     }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
