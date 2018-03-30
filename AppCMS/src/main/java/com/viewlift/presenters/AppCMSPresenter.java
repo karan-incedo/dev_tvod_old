@@ -15465,7 +15465,7 @@ public class AppCMSPresenter {
             }
         }
         if (TextUtils.isEmpty(artist.toString())) {
-            artist.append("Unknown");
+            artist.append("");
         }
         return artist.toString();
     }
@@ -15491,7 +15491,7 @@ public class AppCMSPresenter {
             }
         }
         if (TextUtils.isEmpty(artist.toString())) {
-            artist.append("Unknown");
+            artist.append("");
         }
         return artist.toString();
     }
