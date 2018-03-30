@@ -3870,15 +3870,15 @@ public class AppCMSPresenter {
     }
 
     public void reStartDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1,
-                                      final ImageButton downloadStatus,int radiusDifference) {
+                                      final ImageButton downloadStatus, int radiusDifference) {
 
         reStartDownload(filmId, resultAction1);
-        updateDownloadingStatus(filmId,downloadStatus,this,resultAction1,getLoggedInUser(),true,radiusDifference,getLoggedInUser());
+        updateDownloadingStatus(filmId, downloadStatus, this, resultAction1, getLoggedInUser(), true, radiusDifference, getLoggedInUser());
 
 
     }
 
-    public synchronized void reStartDownload(String filmId,final Action1<UserVideoDownloadStatus> resultAction1) {
+    public synchronized void reStartDownload(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
         String userId = getLoggedInUser();
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(filmId, userId);
         if (downloadVideoRealm == null) {
@@ -3892,7 +3892,7 @@ public class AppCMSPresenter {
             int id = (int) downloadVideoRealm.getVideoId_DM();
             String mediaURL = downloadVideoRealm.getVideoWebURL();
             //boolean isValidURL = isValidURL(mediaURL);
-            System.out.println( " : " + id + " : " + status + " updated rows are =:- " + mediaURL);
+            System.out.println(" : " + id + " : " + status + " updated rows are =:- " + mediaURL);
             refreshVideoData(downloadVideoRealm.getVideoId(), contentDatum -> {
                 if (contentDatum != null && contentDatum.getGist() != null && contentDatum.getGist().getId() != null) {
 
@@ -3911,7 +3911,7 @@ public class AppCMSPresenter {
                             currentActivity.runOnUiThread(() -> {
 
                                 DownloadVideoRealm editObj = realmController.getRealm()
-                                        .copyFromRealm(realmController.getDownloadByIdBelongstoUser(downloadVideoRealm.getVideoId(),userId));
+                                        .copyFromRealm(realmController.getDownloadByIdBelongstoUser(downloadVideoRealm.getVideoId(), userId));
                                 editObj.setVideoId_DM(idDownload);
                                 editObj.setVideoWebURL(downloadURL);
                                 editObj.setDownloadStatus(DownloadStatus.STATUS_RUNNING);
@@ -3936,6 +3936,7 @@ public class AppCMSPresenter {
         }
 
     }
+
     public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
         removeDownloadedFile(filmId);
 
@@ -6071,11 +6072,9 @@ public class AppCMSPresenter {
                             }
 
                         } else {
-                            System.out.println("on failed try count-" + finalTryCount);
                             if (finalTryCount < 3) {
                                 getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
-                            } else
-                                Toast.makeText(currentContext, "Failed to load Audio Content.Try Again", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         if (currentActivity != null) {
@@ -9298,7 +9297,7 @@ public class AppCMSPresenter {
         }
     }
 
-    boolean isDialogShown = false;
+    public boolean isDialogShown = false;
 
     /**
      * This displays a dialog message based upon entitlement options and the current user subscription status
@@ -9306,6 +9305,7 @@ public class AppCMSPresenter {
      * @param dialogType    An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
+    public AlertDialog dialog=null;
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
             if (!isDialogShown)
@@ -9670,7 +9670,7 @@ public class AppCMSPresenter {
 
 
                     currentActivity.runOnUiThread(() -> {
-                        AlertDialog dialog = builder.create();
+                         dialog = builder.create();
 
                         if (onCloseAction != null) {
                             dialog.setCanceledOnTouchOutside(false);
@@ -9693,15 +9693,21 @@ public class AppCMSPresenter {
 
                         dialog.setOnDismissListener(arg0 -> {
                             loginDialogPopupOpen = false;
+                            isDialogShown = false;
+
                         });
 
                         dialog.setOnCancelListener(arg0 -> {
                             loginDialogPopupOpen = false;
+                            isDialogShown = false;
+
                         });
 
                         dialog.setOnKeyListener((arg0, keyCode, event) -> {
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
                                 loginDialogPopupOpen = false;
+                                isDialogShown = false;
+
                                 if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
                                         dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW ||
                                         dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
@@ -9988,9 +9994,9 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.NETWORK && optionalMessage == null) {
                     okText = currentActivity.getString(R.string.app_cms_retry_text);
                     cancelText = currentActivity.getString(R.string.app_cms_close_text);
-                }else if (dialogType ==DialogType.RE_START_DOWNLOAD_ITEM){
-                    okText=currentActivity.getString(R.string.app_cms_retry_text);
-                    cancelText=currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
+                } else if (dialogType == DialogType.RE_START_DOWNLOAD_ITEM) {
+                    okText = currentActivity.getString(R.string.app_cms_retry_text);
+                    cancelText = currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
                 }
                 builder.setPositiveButton(okText,
                         (dialog, which) -> {
