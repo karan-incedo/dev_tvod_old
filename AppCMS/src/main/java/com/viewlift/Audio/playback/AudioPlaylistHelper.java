@@ -214,7 +214,7 @@ public class AudioPlaylistHelper {
         String artist = "";
         String director = "";
 
-        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown", isFree = "true";
+        String album = "", iconUrl = "", source = "", param_link = "", album_year = "", isFree = "true";
         long runTime = 240 * 1000;
 
         if (appCMSAudioDetailResult.getGist() != null) {
