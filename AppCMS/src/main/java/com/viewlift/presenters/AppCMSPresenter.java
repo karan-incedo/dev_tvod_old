@@ -10431,6 +10431,15 @@ public class AppCMSPresenter {
         //Log.d(TAG, "Launching " + permalink + ":" + action);
 
         /*get audio details on tray click item and play song*/
+        if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            setCurrentArticleIndex(-1);
+            navigateToArticlePage(gistId, title, false, null, false);
+            return;
+        } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+            navigateToPhotoGalleryPage(gistId, title, null, false);
+            return;
+        }
+
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                 contentType != null &&
                 contentType.toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {

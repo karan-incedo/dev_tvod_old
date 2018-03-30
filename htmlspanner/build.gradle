@@ -3,9 +3,10 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url 'https://maven.google.com' }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
     }
 }
 
@@ -16,15 +17,15 @@ repositories {
 }
 
 dependencies {
-    compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
-    compile('com.osbcp:cssparser:1.5') {
+    implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
+    implementation('com.osbcp:cssparser:1.5') {
         exclude group: 'junit', module: 'junit'
     }
 }
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 7

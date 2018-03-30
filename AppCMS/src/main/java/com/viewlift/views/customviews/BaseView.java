@@ -1038,15 +1038,15 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    if (childComponent!=null &&
-                            childComponent.getSettings()!=null &&
-                            !childComponent.getSettings().isHidden()) {
+                    if (viewType != null &&
+                            viewType.equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))
+                            ) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else if (isTablet(getContext()) && !isLandscape(getContext())) {
-                            tm -= viewHeight * 3;
-                        } else {
                             tm -= viewHeight * 2;
+                        } else {
+                            tm -= viewHeight * 3;
                         }
                         viewHeight *= 2;
                     }else if ((isLandscape(getContext()) || !isTablet(getContext()))) {

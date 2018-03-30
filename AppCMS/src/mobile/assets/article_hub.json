@@ -1547,9 +1547,9 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "topMargin": 395,
+                  "topMargin": 466,
                   "fontSize": 18,
-                  "height": 14
+                  "height": 34
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
@@ -1570,7 +1570,7 @@
               },
               "backgroundColor": "#80000000",
               "fontFamily": "OpenSans",
-              "numberOfLines": 1,
+              "numberOfLines": 3,
               "textAlignment": "center",
               "type": "label",
               "textColor": "#ffffff",

@@ -281,7 +281,8 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
+                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
                     int placeholder=0;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
@@ -701,7 +702,9 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
 
                         //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                         /*if(childComponent != null ) {
+                         if(component != null &&
+                                 component.getView() != null &&
+                                 component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
 
                             if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
                                 setBorder(((TextView) view));
@@ -710,7 +713,7 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setBackgroundColor(Color.parseColor("#e4e4e4"));
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
-                        }*/
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
 

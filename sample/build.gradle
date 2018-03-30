@@ -22,7 +22,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
     }
 
 }
@@ -38,16 +38,16 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':library')
-    //compile 'com.github.amlcurran.showcaseview:library:5.0.0-SNAPSHOT'
-    compile 'com.android.support:support-v4:26.1.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    implementation project(':library')
+    //implementation 'com.github.amlcurran.showcaseview:library:5.0.0-SNAPSHOT'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 }
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         versionName "5.4.3"
