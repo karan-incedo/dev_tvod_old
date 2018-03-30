@@ -283,7 +283,7 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
-                    int placeholder = 0;
+                    int placeholder = R.drawable.vid_image_placeholder_square;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -396,7 +396,7 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight)
+                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
@@ -517,7 +517,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .fitCenter();
+                                        .fitCenter().placeholder(placeholder);
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -558,9 +558,13 @@ public class CollectionGridItemView extends BaseView {
                         String imageUrl = data.getGist().getVideoImageUrl();
                         ImageView imageView = (ImageView) view;
                         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        RequestOptions requestOptions = new RequestOptions()
+                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
                         Glide.with(context)
                                 .load(imageUrl)
-                                // .override(childViewWidth, childViewHeight)
+                                .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     }

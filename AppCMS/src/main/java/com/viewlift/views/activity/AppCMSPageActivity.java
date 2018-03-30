@@ -2223,8 +2223,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
-                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) ||
-                    appCMSPresenter.isPageNavigationPage(updatedAppCMSBinder.getPageId())) {
+                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
@@ -2233,6 +2232,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 mSearchTopButton.setVisibility(View.GONE);
                 if(appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()) )
                  setCastingVisibility(true);
+                else
+                 setCastingVisibility(false);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }

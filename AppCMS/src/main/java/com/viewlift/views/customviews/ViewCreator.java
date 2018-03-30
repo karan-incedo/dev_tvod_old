@@ -1179,6 +1179,8 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                                        int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                        ((ImageView) view).setImageResource(placeHolderImage);
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
@@ -4980,7 +4982,8 @@ public class ViewCreator {
                                         component.getLayout(),
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                                ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.vid_image_placeholder_land);
+                                int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                ((ImageView) componentViewResult.componentView).setImageResource(placeHolderImage);
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -4991,7 +4994,7 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(R.drawable.vid_image_placeholder_land))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else if (viewWidth > 0) {
@@ -5004,7 +5007,7 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(videoImageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(R.drawable.vid_image_placeholder_port))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else {
@@ -5013,7 +5016,7 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                .apply(new RequestOptions().fitCenter().placeholder(R.drawable.vid_image_placeholder_port))
+                                                .apply(new RequestOptions().fitCenter().placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 }
