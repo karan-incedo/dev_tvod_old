@@ -660,8 +660,10 @@ public class AudioCastPlayback implements Playback {
         beaconPing.setFilmId(audioData.getGist().getId());
         beaconPing.setPermaLink(audioData.getGist().getPermalink());
         beaconPing.setStreamId(getStreamId());
-        audioData.getGist().setCastingConnected(true);
-        audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+        if (audioData != null && audioData.getGist() != null) {
+            audioData.getGist().setCastingConnected(true);
+            audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+        }
         beaconPing.setContentDatum(audioData);
     }
 
