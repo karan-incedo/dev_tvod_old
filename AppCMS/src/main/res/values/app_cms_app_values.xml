@@ -18,19 +18,19 @@
     <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">1324523080924996</string>
+    <!--<string name="facebook_app_id">1324523080924996</string>-->
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
-    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>
+   <!-- <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
+    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>-->
     <!--<string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>-->
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
-    <bool name="use_hls">false</bool>
+    <!--<bool name="use_hls">false</bool>-->
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
@@ -40,7 +40,7 @@
 
     <bool name="display_chromecast_overlay">false</bool>
 
-    <string name="search_films">Search films</string>
+    <string name="search_films">Search Films/Shows</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>

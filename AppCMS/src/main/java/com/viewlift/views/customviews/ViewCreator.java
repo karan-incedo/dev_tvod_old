@@ -3039,6 +3039,7 @@ public class ViewCreator {
 
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY
@@ -3589,7 +3590,11 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
-                        componentViewResult.componentView.setBackgroundResource(R.drawable.share);
+
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_share);
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageButton)componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(appCMSPresenter.getGeneralTextColor(), PorterDuff.Mode.MULTIPLY));
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
                         final String shareAction = component.getAction();
 
@@ -3669,8 +3674,6 @@ public class ViewCreator {
                                 mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                                 mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
                                 mMediaRouteButton.setPadding(8, 8, 8, 8);
-                                mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
-
                                 setCasting(false, /** TODO: Replace with actual value from API response */
                                         appCMSPresenter,
                                         mMediaRouteButton,
