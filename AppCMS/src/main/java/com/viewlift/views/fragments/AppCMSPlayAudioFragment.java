@@ -570,6 +570,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 isDialogVisible = true;
                 appCMSPresenter.setAudioPlayerOpen(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown=false;
+                    }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
@@ -583,6 +587,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                 }
                             });
                 } else {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown=false;
+
+                    }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
