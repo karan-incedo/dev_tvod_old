@@ -435,6 +435,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
+                                        .placeholder(placeholder)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
@@ -480,7 +481,7 @@ public class CollectionGridItemView extends BaseView {
                                         imageUrl);
 
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .transform(gradientTransform)
+                                        .transform(gradientTransform).placeholder(placeholder)
                                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                                         .override(imageWidth, imageHeight);
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
@@ -549,33 +550,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                         view.setVisibility(VISIBLE);
                         bringToFront = true;
-                    } /*else if (data.getGist().getImageGist() != null &&
-                            data.getGist().getImageGist().get_16x9() != null &&
-                            componentKey != AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
-                        if (!(childViewWidth > 0)) {
-                            childViewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-                        } else if (!(childViewHeight > 0)) {
-                            childViewHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-                        }
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getImageGist().get_16x9(),
-                                childViewWidth,
-                                childViewHeight);
-
-                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
-                                RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight)
-                                        .placeholder(R.drawable.img_placeholder);
-
-                                Glide.with(context)
-                                        .load(imageUrl)
-                                        .apply(requestOptions)
-                                        .into((ImageView) view);
-                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                        } else {
-                            Log.e(TAG, "Can't invoke Glide. " + context.getClass().getCanonicalName() + " is finishing");
-                        }
-                    } */ else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                    }else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                         view.setVisibility(GONE);
                         bringToFront = false;
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
