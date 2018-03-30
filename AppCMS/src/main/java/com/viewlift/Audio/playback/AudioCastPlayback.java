@@ -661,12 +661,17 @@ public class AudioCastPlayback implements Playback {
                     null,
                     null);
         }
-        beaconPing.setFilmId(audioData.getGist().getId());
-        beaconPing.setPermaLink(audioData.getGist().getPermalink());
-        beaconPing.setStreamId(getStreamId());
-        audioData.getGist().setCastingConnected(true);
-        audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
-        beaconPing.setContentDatum(audioData);
+
+
+        if (audioData != null && audioData.getGist() != null) {
+            beaconPing.setStreamId(getStreamId());
+            beaconPing.setFilmId(audioData.getGist().getId());
+            beaconPing.setPermaLink(audioData.getGist().getPermalink());
+            audioData.getGist().setCastingConnected(true);
+            audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+            beaconPing.setContentDatum(audioData);
+        }
+
     }
 
     @Override
@@ -685,11 +690,13 @@ public class AudioCastPlayback implements Playback {
                     null,
                     null);
         }
-        beaconBuffer.setFilmId(audioData.getGist().getId());
-        beaconBuffer.setPermaLink(audioData.getGist().getPermalink());
-        beaconBuffer.setStreamId(getStreamId());
-        audioData.getGist().setCastingConnected(true);
-        audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
-        beaconBuffer.setContentDatum(audioData);
+        if (audioData != null && audioData.getGist() != null) {
+            beaconBuffer.setStreamId(getStreamId());
+            beaconBuffer.setFilmId(audioData.getGist().getId());
+            beaconBuffer.setPermaLink(audioData.getGist().getPermalink());
+            audioData.getGist().setCastingConnected(true);
+            audioData.getGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+            beaconBuffer.setContentDatum(audioData);
+        }
     }
 }
