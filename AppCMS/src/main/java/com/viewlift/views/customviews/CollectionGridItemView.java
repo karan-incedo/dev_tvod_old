@@ -414,21 +414,31 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             data != null &&
                             data.getGist() != null &&
-                            data.getGist().getVideoImageUrl() != null &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            ((data.getGist().getVideoImageUrl() != null &&
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
+                                    (data.getGist().getImageGist().get_16x9() != null &&
+                                            !TextUtils.isEmpty(data.getGist().getImageGist().get_16x9()))) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
 
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         bringToFront = false;
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                childViewWidth,
-                                childViewHeight);
-                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                            if (data.getGist().getVideoImageUrl() != null) {
-                                imageUrl = data.getGist().getVideoImageUrl();
+                        String imageUrl = null;
+                        if(data.getGist().getVideoImageUrl() != null) {
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                if (data.getGist().getVideoImageUrl() != null) {
+                                    imageUrl = data.getGist().getVideoImageUrl();
+                                }
                             }
+                        }else{
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getImageGist().get_16x9(),
+                                    childViewWidth,
+                                    childViewHeight);
                         }
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
@@ -443,6 +453,8 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
+
+                                ((ImageView)view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (Exception e) {
                             //
