@@ -1146,7 +1146,7 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
-                        Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
+                        Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.ic_share);
                         componentViewResult.componentView.setBackground(shareDrawable);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override

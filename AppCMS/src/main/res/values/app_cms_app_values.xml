@@ -17,7 +17,7 @@
     <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">1324523080924996</string>
+    <!--<string name="facebook_app_id">1324523080924996</string>-->
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
