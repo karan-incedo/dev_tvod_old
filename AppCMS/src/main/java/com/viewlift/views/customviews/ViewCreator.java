@@ -1179,6 +1179,8 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                                        int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                        ((ImageView) view).setImageResource(placeHolderImage);
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
@@ -3039,6 +3041,7 @@ public class ViewCreator {
 
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY
@@ -3589,7 +3592,11 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
-                        componentViewResult.componentView.setBackgroundResource(R.drawable.share);
+
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_share);
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageButton)componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(appCMSPresenter.getGeneralTextColor(), PorterDuff.Mode.MULTIPLY));
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
                         final String shareAction = component.getAction();
 
@@ -3669,8 +3676,6 @@ public class ViewCreator {
                                 mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                                 mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
                                 mMediaRouteButton.setPadding(8, 8, 8, 8);
-                                mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
-
                                 setCasting(false, /** TODO: Replace with actual value from API response */
                                         appCMSPresenter,
                                         mMediaRouteButton,
@@ -4899,6 +4904,7 @@ public class ViewCreator {
                         break;
                     case PAGE_VIDEO_IMAGE_KEY:
                         String videoUrl = null;
+
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 component.getKey() != null &&
                                 !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
@@ -4975,6 +4981,8 @@ public class ViewCreator {
                                         component.getLayout(),
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
+                                int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                ((ImageView) componentViewResult.componentView).setImageResource(placeHolderImage);
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -4985,7 +4993,7 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else if (viewWidth > 0) {
@@ -4998,7 +5006,7 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(videoImageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else {
@@ -5007,11 +5015,10 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                .apply(new RequestOptions().fitCenter())
+                                                .apply(new RequestOptions().fitCenter().placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 }
-
                                 componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                             }
                         }

@@ -77,6 +77,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -1003,7 +1004,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void setToolItemsUIColor() {
-        int fillColor = appCMSPresenter.getBrandPrimaryCtaColor();
+        int fillColor = appCMSPresenter.getGeneralTextColor();
 
         //Changing color of SVG image
         mMediaRouteButton.setColorFilter(fillColor, PorterDuff.Mode.SRC_IN);
@@ -1092,11 +1093,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 sendBroadcast(initReceivers);
 
                 Fabric.with(getApplication(), new Crashlytics());
-                Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
-                        getString(R.string.app_cms_apptentive_signature_key));
+                Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey",AppCMSPageActivity.this),
+                        Utils.getProperty("ApptentiveSignatureKey",AppCMSPageActivity.this));
                 AndroidThreeTen.init(this);
                 AppsFlyerLib.getInstance().startTracking(getApplication());
-                FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId",AppCMSPageActivity.this));
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().registerCallback(callbackManager,
@@ -2204,7 +2205,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isPagePrimary(pageId) &&
                     !appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.GONE);
-            } else {
+            } else if(appCMSPresenter.isViewPlanPage(pageId)){
+                closeButton.setVisibility(View.VISIBLE);
+                setCastingVisibility(false);
+            }else {
                 closeButton.setVisibility(View.VISIBLE);
             }
 
@@ -2226,7 +2230,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
-                setCastingVisibility(true);
+                if(appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()) )
+                 setCastingVisibility(true);
+                else
+                 setCastingVisibility(false);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }

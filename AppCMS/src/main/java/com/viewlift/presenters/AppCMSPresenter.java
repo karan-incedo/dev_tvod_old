@@ -9204,6 +9204,14 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isHomePage(String pageId){
+        if (pageId != null && homePage != null && homePage.getPageId() != null &&
+                pageId.equalsIgnoreCase(homePage.getPageId())) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isPhotoGalleryPage(String pageId) {
         if (pageId != null && photoGalleryPage != null && photoGalleryPage.getPageId() != null &&
                 pageId.equalsIgnoreCase(photoGalleryPage.getPageId())) {
