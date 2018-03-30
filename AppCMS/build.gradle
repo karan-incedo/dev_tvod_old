@@ -30,13 +30,13 @@ repositories {
     maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
     maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
-    /*maven {
+    maven {
         url "s3://sdkv1.kiswe.com/snapshot"
         credentials(AwsCredentials) {
             accessKey 'AKIAIST5GLZEHZKM57SQ'
             secretKey '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'
         }
-    }*/
+    }
 
     maven {
         url "s3://sdkv1.kiswe.com/stable"
@@ -138,7 +138,7 @@ android {
             dimension = "blue"
         }
     }
-        configurations.mobileImplementation  {
+        /*configurations.mobileImplementation  {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 def requested = details.requested
                 if (requested.group == 'com.android.support') {
@@ -158,7 +158,7 @@ android {
                     }
                 }
             }
-        }
+        }*/
 
     defaultConfig {
         javaCompileOptions {
@@ -256,6 +256,7 @@ android {
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
     }
+
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -404,12 +405,14 @@ dependencies {
     implementation  "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    implementation  project(':exoplayer-library')
+    compile  project(':exoplayer-library')
     implementation  project(':library')
     implementation  project(':htmlspanner')
     implementation  project(path: ':exoplayer-extension-vp9')
-   // kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'

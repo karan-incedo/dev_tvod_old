@@ -111,6 +111,8 @@ import rx.functions.Action1;
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
 
+//import org.htmlcleaner.TagNode;
+
 
 /*
  * Created by viewlift on 5/5/17.
@@ -5715,7 +5717,7 @@ public class ViewCreator {
                             appCMSPresenter.restrictPortraitOnly();
                         }
 
-                        appCMSPresenter.sendExitFullScreenAction(false);
+                       // appCMSPresenter.sendExitFullScreenAction(false);
                     }
                 }
             };
@@ -6326,13 +6328,13 @@ public class ViewCreator {
             super(style);
         }
 
-        @Override
+       /* @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
             if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);
-        }
+        }*/
     }
 
     /**
