@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
 
                 <!--<View-->
                 <!--android:layout_width="1dp"-->
@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -137,9 +137,9 @@
         android:layout_height="1dp"
         android:layout_above="@+id/audio_controllers"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="@dimen/app_cms_audio_player_sep_pading"
         android:layout_marginRight="@dimen/app_cms_audio_player_sep_pading"
+        android:layout_marginTop="10dp"
         android:background="@color/audioSeekBg" />
 
     <LinearLayout
@@ -150,10 +150,10 @@
         android:layout_marginBottom="@dimen/app_cms_audio_player_controller_padding"
         android:layout_marginLeft="@dimen/app_cms_audio_player_controller_padding"
         android:layout_marginRight="@dimen/app_cms_audio_player_controller_padding"
+        android:orientation="vertical"
         android:paddingLeft="30dp"
-        android:paddingRight="30dp"
 
-        android:orientation="vertical">
+        android:paddingRight="30dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -213,7 +213,7 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2.5"
+                android:layout_weight="2"
                 android:gravity="left|center_vertical">
 
                 <ImageButton
@@ -227,15 +227,17 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="5"
+                android:layout_weight="6"
                 android:gravity="center_vertical"
+
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/prev"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginRight="@dimen/app_cms_audio_item_padding"
                     android:layout_weight="1"
                     android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/previous_track" />
@@ -243,7 +245,8 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical">
+
+                    android:gravity="center">
 
                     <ImageButton
                         android:id="@+id/play_pause"
@@ -258,6 +261,8 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_centerInParent="true"
+
+                        android:layout_gravity="center_vertical"
                         android:visibility="gone" />
                 </RelativeLayout>
 
@@ -265,7 +270,8 @@
                     android:id="@+id/next"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginLeft="@dimen/app_cms_audio_item_padding"
                     android:layout_weight="1"
                     android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/next_track" />
@@ -274,7 +280,7 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2.5"
+                android:layout_weight="2"
                 android:gravity="right|center_vertical">
 
                 <ImageButton
