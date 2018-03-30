@@ -9117,9 +9117,7 @@ public class AppCMSPresenter {
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
-                // NOTE: Replaced with Utils.getProperty()
-                //setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
-                setAppsFlyerKey(Utils.getProperty("AppsFlyerDevKey", currentContext));
+                return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
             }

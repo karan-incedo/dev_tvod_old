@@ -21,8 +21,8 @@
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
-    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>
+   <!-- <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
+    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>-->
     <!--<string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>-->
 
     <!-- cast receiver -->
@@ -39,7 +39,7 @@
 
     <bool name="display_chromecast_overlay">false</bool>
 
-    <string name="search_films">Search films</string>
+    <string name="search_films">Search Films/Shows</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
