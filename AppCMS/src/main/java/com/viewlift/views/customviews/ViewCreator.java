@@ -1858,50 +1858,28 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } else if (moduleInfo.getBlockName().contains("tray02")) {
+                } /*else if (moduleInfo.getBlockName().contains("tray02")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "video_page.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(0);
-                } else if (moduleInfo.getBlockName().equalsIgnoreCase("audioTray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "music_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(3);
-                } else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
+                } */else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("tray03")) {
+                } /*else if (moduleInfo.getBlockName().contains("tray03")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }*/else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("history02")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "my_history.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().contains("watchlist02")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 }else if (moduleInfo.getBlockName().contains("bannerAd01")) {

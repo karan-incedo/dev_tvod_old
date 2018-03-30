@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -46,8 +45,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
-
-import net.nightwhistler.htmlspanner.TextUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -623,23 +620,8 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
-                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                                if (data.getGist().getVideoImageUrl() != null) {
-                                    imageUrl = data.getGist().getVideoImageUrl();
-                                }
-                            }
-                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
-
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
-                                Glide.with(context.getApplicationContext())
-                                        .load(imageUrl).apply(requestOptions)
-//                                        .override(size,size)
-                                        .into(((ImageView) view));
-                            }
-                        } else {
-                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                         }
+
                     }
                     if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
