@@ -9117,9 +9117,7 @@ public class AppCMSPresenter {
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
-                // NOTE: Replaced with Utils.getProperty()
-                //setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
-                setAppsFlyerKey(Utils.getProperty("AppsFlyerDevKey", currentContext));
+                return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
             }
@@ -13949,11 +13947,17 @@ public class AppCMSPresenter {
                         break;
 
                     case VIDEO_PAGE:
-                        appbarPresent = true;
+                        appbarPresent = false;
                         fullscreenEnabled = false;
                         navbarPresent = false;
-                        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                        screenName.append(currentActivity.getString(
+                                R.string.app_cms_template_page_separator));
                         screenName.append(filmTitle);
+                        //Todo need to manage it depend on Template
+                        if (isSportsTemplate()) {
+                            appbarPresent = true;
+                            navbarPresent = true;
+                        }
                         break;
 
                     case PLAY_VIDEO_PAGE:

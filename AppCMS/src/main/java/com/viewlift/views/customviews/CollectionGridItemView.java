@@ -413,32 +413,44 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             data != null &&
                             data.getGist() != null &&
-                            data.getGist().getVideoImageUrl() != null &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            ((data.getGist().getVideoImageUrl() != null &&
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
+                                    (data.getGist().getImageGist().get_16x9() != null &&
+                                            !TextUtils.isEmpty(data.getGist().getImageGist().get_16x9()))) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         bringToFront = false;
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                childViewWidth,
-                                childViewHeight);
-                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                            if (data.getGist().getVideoImageUrl() != null) {
-                                imageUrl = data.getGist().getVideoImageUrl();
+                        String imageUrl = null;
+                        if(data.getGist().getVideoImageUrl() != null) {
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                                if (data.getGist().getVideoImageUrl() != null) {
+                                    imageUrl = data.getGist().getVideoImageUrl();
+                                }
                             }
+                        }else{
+                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getImageGist().get_16x9(),
+                                    childViewWidth,
+                                    childViewHeight);
                         }
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight)
-                                        .fitCenter();
+                                        .override(childViewWidth, childViewHeight);
+                                        //.fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
+
+                                ((ImageView)view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (Exception e) {
                             //
@@ -670,7 +682,8 @@ public class CollectionGridItemView extends BaseView {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
-
+                        //((TextView) view).setText("\n" +
+                               // "If you've got an Android app or game, Android TV can bring it to your users in their living room. Android TV apps use the same architecture as those for phones and tablets. This approach means you can build new TV apps based on what you already know about building apps for Android, or extend your existing apps to also run on TV devices.");
                         //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                          if(component != null &&
                                  component.getView() != null &&
