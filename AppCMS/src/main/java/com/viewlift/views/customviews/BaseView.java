@@ -54,6 +54,30 @@ public abstract class BaseView extends FrameLayout {
         return 0.0f;
     }
 
+    public static float convertWidthDpToPixel(Layout layout, Context context) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                return convertDpToPixel(layout.getTabletLandscape().getWidth(), context);
+            } else {
+                return convertDpToPixel(layout.getTabletPortrait().getWidth(), context);
+            }
+        } else {
+            return convertDpToPixel(layout.getMobile().getWidth(), context);
+        }
+    }
+
+    public static float convertHeightDpToPixel(Layout layout, Context context) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                return convertDpToPixel(layout.getTabletLandscape().getHeight(), context);
+            } else {
+                return convertDpToPixel(layout.getTabletPortrait().getHeight(), context);
+            }
+        } else {
+            return convertDpToPixel(layout.getMobile().getHeight(), context);
+        }
+    }
+
     public static float convertPixelsToDp(float px, Context context) {
         if (context != null) {
             Resources resources = context.getResources();
@@ -94,6 +118,48 @@ public abstract class BaseView extends FrameLayout {
     public static boolean isLandscape(Context context) {
         return context != null
                 && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static float getLeftDrawableHeight(Context context,
+                                              Layout layout,
+                                              float defaultValue) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                if (0 < layout.getTabletLandscape().getLeftDrawableHeight()) {
+                    return convertVerticalValue(context, layout.getTabletLandscape().getLeftDrawableHeight());
+                }
+            } else {
+                if (0 < layout.getTabletPortrait().getLeftDrawableHeight()) {
+                    return convertVerticalValue(context, layout.getTabletPortrait().getLeftDrawableHeight());
+                }
+            }
+        } else {
+            if (0 < layout.getMobile().getLeftDrawableHeight()) {
+                return convertVerticalValue(context, layout.getMobile().getLeftDrawableHeight());
+            }
+        }
+        return defaultValue;
+    }
+
+    public static float getLeftDrawableWidth(Context context,
+                                              Layout layout,
+                                              float defaultValue) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                if (0 < layout.getTabletLandscape().getLeftDrawableWidth()) {
+                    return convertVerticalValue(context, layout.getTabletLandscape().getLeftDrawableWidth());
+                }
+            } else {
+                if (0 < layout.getTabletPortrait().getLeftDrawableWidth()) {
+                    return convertVerticalValue(context, layout.getTabletPortrait().getLeftDrawableWidth());
+                }
+            }
+        } else {
+            if (0 < layout.getMobile().getLeftDrawableWidth()) {
+                return convertVerticalValue(context, layout.getMobile().getLeftDrawableWidth());
+            }
+        }
+        return defaultValue;
     }
 
     public static float convertHorizontalValue(Context context, float value) {
@@ -731,11 +797,27 @@ public abstract class BaseView extends FrameLayout {
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-        /*if (childComponent.getKey()!=null && childComponent.getKey().equalsIgnoreCase("showTitle")) {
-            layout.getMobile().setWidth(290f);
-        }*/
+
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        if (componentType == null) {
+            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+            viewWidth = (int) convertWidthDpToPixel(layout, getContext());
+            if (viewWidth == 0) {
+                viewWidth = LayoutParams.MATCH_PARENT;
+            }
+            viewHeight = (int) convertHeightDpToPixel(layout, getContext());
+            if (viewHeight == 0) {
+                viewHeight = LayoutParams.WRAP_CONTENT;
+            }
+        }
+
         int parentViewWidth = (int) getViewWidth(getContext(),
                 parentLayout,
                 parentView.getMeasuredWidth());
@@ -894,6 +976,10 @@ public abstract class BaseView extends FrameLayout {
                 } else if (mobile.getLeftMargin() != 0f) {
                     float scaledLm = DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX);
                     lm = Math.round(scaledLm);
+                    if (mobile.getRightMargin() != 0f) {
+                        float scaledRm = DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX);
+                        rm = Math.round(scaledRm);
+                    }
                 } else if (mobile.getRightMargin() != 0f) {
                     int lmDiff = viewWidth;
                     if (lmDiff < 0) {
@@ -945,7 +1031,7 @@ public abstract class BaseView extends FrameLayout {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        componentType = jsonValueKeyMap.get(childComponent.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1158,12 +1244,14 @@ public abstract class BaseView extends FrameLayout {
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-                        if (thumbnailHeight < thumbnailWidth) {
-                            int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
-                            tm = heightByRatio + 4;
-                        } else {
-                            int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
-                            tm = heightByRatio + 4;
+                        if (0 < thumbnailHeight && 0 < thumbnailWidth) {
+                            if (thumbnailHeight < thumbnailWidth) {
+                                int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                                tm = heightByRatio + 4;
+                            } else {
+                                int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                                tm = heightByRatio + 4;
+                            }
                         }
                     }
                     break;
@@ -1196,12 +1284,14 @@ public abstract class BaseView extends FrameLayout {
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                     int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-                    int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
-                    if (thumbnailHeight < thumbnailWidth) {
-                        heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
-                    }
+                    if (0 < thumbnailHeight && 0 < thumbnailWidth) {
+                        int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                        if (thumbnailHeight < thumbnailWidth) {
+                            heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                        }
 
-                    tm = heightByRatio - viewHeight;
+                        tm = heightByRatio - viewHeight;
+                    }
                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                     viewWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     gravity = Gravity.CENTER_HORIZONTAL;
