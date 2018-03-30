@@ -57,6 +57,7 @@ android {
     def hostName
     def final hostNameSuffix
     def final facebookAppId
+    def final useHLS
     def appVersionCode
     def appVersionName
     //def minsdkversion
@@ -74,6 +75,7 @@ android {
         hostName = versionProps['HostName'].toString()
         hostNameSuffix = versionProps['HostNameSuffix'].toString()
         facebookAppId = versionProps['FacebookAppId'].toString()
+        useHLS = versionProps['UseHLS'].toBoolean()
         appVersionCode = versionProps['AppVersionCode'].toInteger()
         appVersionName = versionProps['AppVersionName'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
@@ -84,6 +86,7 @@ android {
         versionProps['HostName'] = hostName.toString()
         versionProps['HostNameSuffix'] = hostNameSuffix.toString()
         versionProps['FacebookAppId'] = facebookAppId.toString()
+        versionProps['UseHLS'] = useHLS.toString()
         versionProps['AppVersionCode'] = appVersionCode.toString()
         versionProps['AppVersionName'] = appVersionName.toString()
         //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
@@ -216,6 +219,7 @@ android {
             resValue "string", "app_cms_app_host_name", "${hostName}"
             resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "facebook_app_id", "${facebookAppId}"
+            resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -230,6 +234,7 @@ android {
             resValue "string", "app_cms_app_host_name", "${hostName}"
             resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "facebook_app_id", "${facebookAppId}"
+            resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
