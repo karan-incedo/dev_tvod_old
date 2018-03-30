@@ -404,18 +404,18 @@ public class AudioCastPlayback implements Playback {
                                                  JSONObject customData) {
         MediaMetadata mediaMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK);
         mediaMetadata.putString(MediaMetadata.KEY_TITLE,
-                track.getDescription().getTitle() == null ? "Unknown" :
+                track.getDescription().getTitle() == null ? "" :
                         track.getDescription().getTitle().toString());
         mediaMetadata.putString(MediaMetadata.KEY_SUBTITLE,
-                track.getDescription().getSubtitle() == null ? "Unknown" :
+                track.getDescription().getSubtitle() == null ? "" :
                         track.getDescription().getSubtitle().toString());
 
         mediaMetadata.putString(MediaMetadata.KEY_ALBUM_ARTIST,
-                track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST) == null ? "Unknown" :
+                track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST) == null ? "" :
                         track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST));
 
         mediaMetadata.putString(MediaMetadata.KEY_ALBUM_ARTIST,
-                track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM) == null ? "Unknown" :
+                track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM) == null ? "" :
                         track.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
 
         WebImage image = new WebImage(
