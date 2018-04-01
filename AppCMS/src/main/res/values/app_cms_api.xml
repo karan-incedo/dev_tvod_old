@@ -354,6 +354,7 @@
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
 
     <!-- AppCMS Action names -->
+    <string name="app_cms_action_subscribe_go">subscribeGo</string>
     <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_authpage_key">Authentication Screen</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
@@ -563,7 +564,7 @@
     
      <string name="icon_image_key">iconImage</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
-
+    <string name="app_cms_page_subscribeEditText_key">subscribeEditText</string>
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
     <!--watchlist / history / queue UI json keys-->

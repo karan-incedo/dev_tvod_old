@@ -5,6 +5,8 @@ import android.content.res.AssetManager;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
+import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.io.File;
@@ -46,8 +48,9 @@ public class AppCMSPageUICall {
         AppCMSPageUI appCMSPageUI = null;
         if (loadFromFile) {
             try {
-                appCMSPageUI = readPageFromFile(filename);
-                appCMSPageUI.setLoadedFromNetwork(false);
+                appCMSPageUI = readJsonFromAssets();
+//                appCMSPageUI = readPageFromFile(filename);
+//                appCMSPageUI.setLoadedFromNetwork(false);
             } catch (Exception e) {
                 //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
                 try {
@@ -58,9 +61,28 @@ public class AppCMSPageUICall {
                 }
             }
         } else {
-            appCMSPageUI = loadFromNetwork(url, filename);
+            appCMSPageUI = readJsonFromAssets();
+            //appCMSPageUI = loadFromNetwork(url, filename);
         }
         return appCMSPageUI;
+    }
+
+    private AppCMSPageUI readJsonFromAssets() {
+        String json = null;
+        try {
+            InputStream inputStream = AppCMSApplication.getContext().getAssets().open("home_page.json");
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            json = new String(buffer, "UTF-8");
+
+            Gson gson = new Gson();
+            return gson.fromJson(json, AppCMSPageUI.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private AppCMSPageUI loadFromNetwork(String url, String filename) {

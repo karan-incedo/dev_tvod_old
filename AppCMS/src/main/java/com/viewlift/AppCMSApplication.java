@@ -2,6 +2,7 @@ package com.viewlift;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
@@ -35,8 +36,19 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private int openActivities;
 
+    private static AppCMSApplication instance;
+
+    public static AppCMSApplication getInstance() {
+        return instance;
+    }
+
+    public static Context getContext(){
+        return instance;
+    }
+
     @Override
     public void onCreate() {
+        instance = this;
         super.onCreate();
 
         openActivities = 0;

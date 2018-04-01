@@ -19,6 +19,7 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 
 /**
@@ -54,7 +55,8 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI == null) {
             try {
-                appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                appCMSAndroidUI = readJsonFromAssets();
+               // appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
 //                    e.getMessage());
@@ -72,6 +74,24 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI != null) {
             return writeAndroidToFile(filename, appCMSAndroidUI);
+        }
+        return null;
+    }
+
+    private AppCMSAndroidUI readJsonFromAssets() {
+        String json = null;
+        try {
+            InputStream inputStream = AppCMSApplication.getContext().getAssets().open("android.json");
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            json = new String(buffer, "UTF-8");
+
+            Gson gson = new Gson();
+            return gson.fromJson(json, AppCMSAndroidUI.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

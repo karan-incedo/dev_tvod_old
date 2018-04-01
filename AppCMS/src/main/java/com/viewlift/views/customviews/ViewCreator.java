@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -98,6 +99,7 @@ import java.util.Map;
 import rx.functions.Action1;
 
 import static com.viewlift.Utils.loadJsonFromAssets;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -3741,6 +3743,16 @@ public class ViewCreator {
                         }
                     }
                     ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                }
+
+                if (componentKey == PAGE_SUBSCRIBE_EMAIL_KEY) {
+                    componentViewResult.componentView = new EditText(context);
+
+                    EditText t = new EditText(context);
+                    t = ((EditText) componentViewResult.componentView);
+
+                    t.setText("Enter email here");
+                    t.setId(R.id.subscribe_edit_text_id);
                 }
 
                 break;

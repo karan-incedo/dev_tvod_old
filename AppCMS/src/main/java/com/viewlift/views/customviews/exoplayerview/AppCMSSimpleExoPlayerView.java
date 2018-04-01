@@ -108,28 +108,28 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
         int controllerShowTimeoutMs = CustomPlaybackControlView.DEFAULT_SHOW_TIMEOUT_MS;
         boolean controllerHideOnTouch = true;
         boolean controllerAutoShow = true;
-        if (attrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                    com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView, 0, 0);
-            try {
-                playerLayoutId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_player_layout_id,
-                        playerLayoutId);
-                useArtwork = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_use_artwork, useArtwork);
-                defaultArtworkId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_default_artwork,
-                        defaultArtworkId);
-                useController = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_use_controller, useController);
-                surfaceType = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_surface_type, surfaceType);
-                resizeMode = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_resize_mode, resizeMode);
-                controllerShowTimeoutMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_show_timeout,
-                        controllerShowTimeoutMs);
-                controllerHideOnTouch = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_hide_on_touch,
-                        controllerHideOnTouch);
-                controllerAutoShow = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_auto_show,
-                        controllerAutoShow);
-            } finally {
-                a.recycle();
-            }
-        }
+//        if (attrs != null) {
+//            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+//                    com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView, 0, 0);
+//            try {
+//                playerLayoutId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_player_layout_id,
+//                        playerLayoutId);
+//                useArtwork = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_use_artwork, useArtwork);
+//                defaultArtworkId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_default_artwork,
+//                        defaultArtworkId);
+//                useController = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_use_controller, useController);
+//                surfaceType = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_surface_type, surfaceType);
+//                resizeMode = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_resize_mode, resizeMode);
+//                controllerShowTimeoutMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_show_timeout,
+//                        controllerShowTimeoutMs);
+//                controllerHideOnTouch = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_hide_on_touch,
+//                        controllerHideOnTouch);
+//                controllerAutoShow = a.getBoolean(com.google.android.exoplayer2.ui.R.styleable.SimpleExoPlayerView_auto_show,
+//                        controllerAutoShow);
+//            } finally {
+//                a.recycle();
+//            }
+//        }
 
         LayoutInflater.from(context).inflate(playerLayoutId, this);
         componentListener = new ComponentListener();
@@ -746,6 +746,11 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
         }
 
         @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
+        }
+
+        @Override
         public void onTracksChanged(TrackGroupArray tracks, TrackSelectionArray selections) {
             updateForCurrentTrackSelections();
         }
@@ -793,11 +798,6 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
         @Override
         public void onSeekProcessed() {
 
-        }
-
-        @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            // Do nothing.
         }
 
     }

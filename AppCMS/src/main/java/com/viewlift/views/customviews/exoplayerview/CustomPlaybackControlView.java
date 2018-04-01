@@ -230,21 +230,21 @@ public class CustomPlaybackControlView extends FrameLayout {
         fastForwardMs = DEFAULT_FAST_FORWARD_MS;
         showTimeoutMs = DEFAULT_SHOW_TIMEOUT_MS;
         repeatToggleModes = DEFAULT_REPEAT_TOGGLE_MODES;
-        if (playbackAttrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(playbackAttrs,
-                    com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView, 0, 0);
-            try {
-                rewindMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_rewind_increment, rewindMs);
-                fastForwardMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_fastforward_increment,
-                        fastForwardMs);
-                showTimeoutMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_show_timeout, showTimeoutMs);
-                controllerLayoutId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_controller_layout_id,
-                        controllerLayoutId);
-                repeatToggleModes = getRepeatToggleModes(a, repeatToggleModes);
-            } finally {
-                a.recycle();
-            }
-        }
+//        if (playbackAttrs != null) {
+//            TypedArray a = context.getTheme().obtainStyledAttributes(playbackAttrs,
+//                    com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView, 0, 0);
+//            try {
+//                rewindMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_rewind_increment, rewindMs);
+//                fastForwardMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_fastforward_increment,
+//                        fastForwardMs);
+//                showTimeoutMs = a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_show_timeout, showTimeoutMs);
+//                controllerLayoutId = a.getResourceId(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_controller_layout_id,
+//                        controllerLayoutId);
+//                repeatToggleModes = getRepeatToggleModes(a, repeatToggleModes);
+//            } finally {
+//                a.recycle();
+//            }
+//        }
         period = new Timeline.Period();
         window = new Timeline.Window();
         formatBuilder = new StringBuilder();
@@ -311,7 +311,7 @@ public class CustomPlaybackControlView extends FrameLayout {
     private static @RepeatModeUtil.RepeatToggleModes
     int getRepeatToggleModes(TypedArray a,
                              @RepeatModeUtil.RepeatToggleModes int repeatToggleModes) {
-        return a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_repeat_toggle_modes, repeatToggleModes);
+        return 0;
     }
 
     /**
@@ -998,15 +998,15 @@ public class CustomPlaybackControlView extends FrameLayout {
         }
 
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            updateNavigation();
-            updateTimeBarMode();
-            updateProgress();
+        public void onLoadingChanged(boolean isLoading) {
+            // Do nothing.
         }
 
         @Override
-        public void onLoadingChanged(boolean isLoading) {
-            // Do nothing.
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+            updateNavigation();
+            updateTimeBarMode();
+            updateProgress();
         }
 
         @Override

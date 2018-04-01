@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -126,6 +128,7 @@ import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.AppCMSPhotoGalleryResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscribeForLatestNewsPojo.ResponsePojo;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
@@ -193,6 +196,7 @@ import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
@@ -466,6 +470,7 @@ public class AppCMSPresenter {
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
+    private final AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall;
     private final String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -695,6 +700,8 @@ public class AppCMSPresenter {
     };*/
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
+    private ResponsePojo responsePojo;
+    private String subscribeEmail;
 
     @Inject
     public AppCMSPresenter(Gson gson, AppCMSArticleCall appCMSArticleCall,
@@ -746,7 +753,10 @@ public class AppCMSPresenter {
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                           ReferenceQueue<Object> referenceQueue) {
+                           ReferenceQueue<Object> referenceQueue,
+                           AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall) {
+
+        this.appCMSSubscribeForLatestNewsCall = appCMSSubscribeForLatestNewsCall;
         this.gson = gson;
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
@@ -1676,6 +1686,11 @@ public class AppCMSPresenter {
                     //Log.d(TAG, "Google signup selected");
                     loginGoogle();
                     sendSignUpGoogleFirebase();
+                } else if (actionType == AppCMSActionType.SUBSCRIBEGO) {
+                    EditText subscribeEditText = currentActivity.findViewById(R.id.subscribe_edit_text_id);
+                    subscribeEditText.setText("holaaaa@ok.com");
+                    subscribeEmail = subscribeEditText.getText().toString();
+                    new StartEmailSubscripction().execute(subscribeEmail);
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
                         //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
@@ -1895,6 +1910,48 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class StartEmailSubscripction extends AsyncTask<String, Void, ResponsePojo> {
+        ProgressDialog progressDialog = null;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            progressDialog = new ProgressDialog(currentActivity);
+            progressDialog.setMessage("Subscribing...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected ResponsePojo doInBackground(String... params) {return appCMSSubscribeForLatestNewsCall.call(params[0]);}
+
+        @Override
+        protected void onPostExecute(ResponsePojo result) {
+            if (progressDialog!=null) {
+                try {
+                    if (progressDialog.isShowing()) {
+                        progressDialog.hide();
+                        progressDialog.dismiss();
+                        progressDialog = null ;
+                    }
+                } catch (Exception ex) {
+                    Log.e(TAG, ex.getMessage());
+                }
+            }
+            responsePojo = result;
+            if(result != null){
+                if(result.getUserExist() == null){//success
+                    showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_SUCCESS, null);
+                }else{//exist
+                    showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_EXIST, null);
+                }
+            }else{//fail
+                showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_FAIL, null);
+            }
+        }
     }
 
     public void setVideoPlayerHasStarted() {
@@ -7265,6 +7322,21 @@ public class AppCMSPresenter {
                 String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                 String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
+                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS){
+                    title = "THANK YOU FOR SUBSCRIBING!";
+                    message = "#WATERCOOLERREADY";
+                }
+
+                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST){
+                    title = responsePojo.getUserExist().getTitle();
+                    message = subscribeEmail + " is already subscribed to list Sports.";
+                }
+
+                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL){
+                    title = "FAILED TO SUBSCRIBE!";
+                    message = "TRY AGAIN LATER!";
+                }
+
                 if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                     title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
                     message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
@@ -7473,6 +7545,17 @@ public class AppCMSPresenter {
                                     onCloseAction.call();
                                 }
                                 dialog.dismiss();
+                            });
+                } else if ((dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS) ||
+                        (dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST) ||
+                        (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL)) {
+                    builder.setPositiveButton("OK",
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
+                                }
                             });
                 } else {
                     builder.setPositiveButton(positiveButtonText,
@@ -12307,6 +12390,9 @@ public class AppCMSPresenter {
     }
 
     public enum DialogType {
+        SUBSCRIPTION_EMAIL_SUCCESS,
+        SUBSCRIPTION_EMAIL_EXIST,
+        SUBSCRIPTION_EMAIL_FAIL,
         NETWORK,
         SIGNIN,
         SIGNUP_BLANK_EMAIL_PASSWORD,
