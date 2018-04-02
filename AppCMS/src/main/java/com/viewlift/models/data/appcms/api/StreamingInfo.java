@@ -32,6 +32,7 @@ public class StreamingInfo implements Serializable {
     String cuePoints;
 
     @SerializedName("photogalleryAssets")
+    @Expose
     List<PhotoGalleryData> photogalleryAssets;
 
     public List<PhotoGalleryData> getPhotogalleryAssets() {
