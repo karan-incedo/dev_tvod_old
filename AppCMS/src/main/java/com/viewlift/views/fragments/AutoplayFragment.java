@@ -134,8 +134,8 @@ public class AutoplayFragment extends Fragment {
         if (pageView != null) {
             tvCountdown = (TextView) pageView.findChildViewById(R.id.countdown_id);
             Button playButton = (Button) pageView.findChildViewById(R.id.autoplay_play_button);
-
             if (playButton != null) {
+                playButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                 playButton.setOnClickListener(v -> {
                     if (isAdded() && isVisible()) {
                         fragmentInteractionListener.onCountdownFinished();
@@ -209,7 +209,7 @@ public class AutoplayFragment extends Fragment {
                 RequestOptions requestOptions = new RequestOptions()
                         .transform(new AutoplayBlurTransformation(getContext(), imageUrl));
                 Glide.with(getContext()).load(imageUrl)
-//                        .apply(requestOptions)
+                       .apply(requestOptions)
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {

@@ -554,7 +554,8 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
-
+                            appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                                    getContext().getResources().getString(R.string.play_video_category), filmId);
                         }
                     }
                 }

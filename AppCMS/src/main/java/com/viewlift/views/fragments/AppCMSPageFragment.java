@@ -13,9 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -363,14 +362,12 @@ public class AppCMSPageFragment extends Fragment {
 
                     appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
                     appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
-                }else{
-                    //getActivity().onBackPressed();
                 }
             }
         }
-       // if (!appCMSPresenter.isFullScreenVisible) {
-            handleOrientation(newConfig.orientation);
-       // }
+        // if (!appCMSPresenter.isFullScreenVisible) {
+        handleOrientation(newConfig.orientation);
+        // }
     }
 
     private void handleOrientation(int orientation) {
@@ -384,7 +381,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-       String screenName = appCMSBinder.getScreenName();
+        String screenName = appCMSBinder.getScreenName();
         /* if (!appCMSPresenter.isPageAVideoPage(screenName)) {
             screenName = appCMSBinder.getPageId();
         }*/
@@ -526,12 +523,12 @@ public class AppCMSPageFragment extends Fragment {
         /**
          * if current activity is video player then restrict to landscape only
          */
-        if(appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity){
+        if (appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) {
             appCMSPresenter.restrictLandscapeOnly();
             return;
         }
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                appCMSPresenter.isAutoRotate() ) {
+                appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(getContext())) {
             System.out.println("config from setPageOriantationForVideoPage fragment");
@@ -649,8 +646,8 @@ public class AppCMSPageFragment extends Fragment {
             }, 10);
         }
     }
-	
-	private void removeAllViews(ViewGroup viewGroup) {
+
+    private void removeAllViews(ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
                 removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
@@ -682,7 +679,7 @@ public class AppCMSPageFragment extends Fragment {
         @Override
         public void onGlobalLayout() {
             if (pageView != null) {
-                if (appCMSBinder != null) {
+                if (appCMSBinder != null && appCMSBinder.getPageId()!=null) {
 
                     if (appCMSBinder.isScrollOnLandscape() != BaseView.isLandscape(pageView.getContext())) {
                         appCMSBinder.setxScroll(0);

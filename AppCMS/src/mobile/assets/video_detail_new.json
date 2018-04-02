@@ -775,7 +775,7 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 80,
+                  "yAxis": 75,
                   "leftMargin": 0,
                   "fontSize": 12,
                   "height": 20

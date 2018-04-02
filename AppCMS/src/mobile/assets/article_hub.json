@@ -1387,14 +1387,12 @@
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 20
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1411,21 +1409,18 @@
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 15
-
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 30,
                   "rightMargin": 0,
                   "fontSize": 22
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1444,21 +1439,18 @@
                   "leftMargin": 15,
                   "rightMargin": 0,
                   "fontSize": 12
-
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
                   "fontSize": 14
-
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 20,
                   "rightMargin": 0,
                   "fontSize": 14
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -1496,7 +1488,7 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 280
+          "height": 305
         },
         "tabletLandscape": {
           "yAxis": 0,
@@ -1522,7 +1514,7 @@
               "leftMargin": 0,
               "xAxis": 0,
               "rightMargin": 0,
-              "height": 280
+              "height": 305
             },
             "tabletLandscape": {
               "yAxis": 0,
@@ -1547,25 +1539,25 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "topMargin": 466,
-                  "fontSize": 18,
-                  "height": 34
+                  "topMargin": 520,
+                  "fontSize": 17,
+                  "height": 43
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin": 484,
-                  "fontSize": 23,
+                  "topMargin": 550,
+                  "fontSize": 20,
                   "height": 32
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin": 490,
-                  "fontSize": 23,
-                  "height": 40
+                  "topMargin": 450,
+                  "fontSize": 20,
+                  "height": 70
                 }
               },
               "backgroundColor": "#80000000",
@@ -1591,14 +1583,14 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 388
+                  "height": 388
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 465
+                  "height": 465
                 }
               },
               "type": "image",
@@ -1618,14 +1610,14 @@
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 388
+                  "height": 388
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "height" : 465
+                  "height": 465
                 }
               },
               "type": "image",

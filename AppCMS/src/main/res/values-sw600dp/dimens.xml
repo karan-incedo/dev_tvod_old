@@ -13,5 +13,6 @@
     <dimen name="app_cms_audio_play_width">55dp</dimen>
     <dimen name="app_cms_audio_play_height">65dp</dimen>
     <dimen name="app_cms_audio_play_control_height">70dp</dimen>
-    
+    <dimen name="app_cms_audio_item_padding">50dp</dimen>
+
 </resources>
