@@ -9468,18 +9468,21 @@ public class AppCMSPresenter {
                         /**
                          * if showing preview ended dialog for audio then show messaege from server
                          */
-                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
+                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW ||
+                                dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW) {
                             if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
                                 message = getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
                             }
                             title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
 
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                    && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            if (getAppCMSAndroid() != null &&
+                                    getAppCMSAndroid().getSubscriptionAudioFlowContent() != null &&
+                                    getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
                                 positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
                             }
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            if (getAppCMSAndroid() != null &&
+                                    getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
                                 negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
                             }
@@ -9498,17 +9501,17 @@ public class AppCMSPresenter {
                          * if showing preview ended dialog for audio then show messaege from server
                          */
                         if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
                                 message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
                             }
                             title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
 
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
                                 positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
                             }
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
                                 negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
                             }
@@ -9538,11 +9541,11 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
                     title = currentActivity.getString(R.string.preview_content);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                             && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
                         positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
                     }
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionFlowContent() != null
+                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                             && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
                         negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
                     }
