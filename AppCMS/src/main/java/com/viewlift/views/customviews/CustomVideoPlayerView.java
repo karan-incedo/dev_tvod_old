@@ -51,6 +51,8 @@ import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.gms.internal.zzahn;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
@@ -640,6 +642,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
+                            appCMSPresenter.sendGaEvent(mContext.getResources().getString(R.string.play_video_action),
+                                    mContext.getResources().getString(R.string.play_video_category), videoDataId);
 
                         }
                     }
@@ -671,6 +675,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     isVideoDownloaded);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+
+            appCMSPresenter.sendGaEvent(mContext.getResources().getString(R.string.play_video_action),
+                    mContext.getResources().getString(R.string.play_video_category), videoDataId);
         }
     }
 
@@ -1031,7 +1038,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             @Override
             public void onClick(View view) {
 
-                AppCMSPresenter.isExitFullScreen = !AppCMSPresenter.isFullScreenVisible;
+                if (!appCMSPresenter.isFullScreenVisible) {
+                    appCMSPresenter.isExitFullScreen = true;
+                } else {
+                    appCMSPresenter.isExitFullScreen = false;
+
+                }
             }
         });
         mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

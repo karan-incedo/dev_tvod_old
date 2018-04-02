@@ -69,6 +69,15 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                     .append(" ")
                     .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
         }
+        String[] searchHintResult = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_DATA)).split(",");
+        String mediaType = searchHintResult[4];
+        String contentType = searchHintResult[5];
+        if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            runtime.setText("");
+        }else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+            runtime.setText("");
+        }
+
     }
 
     @Override
@@ -123,7 +132,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         }
 
         if (limit > 0) {
-            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
+            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT,
+                    String.valueOf(limit));
         }
 
         Uri uri = uriBuilder.build();

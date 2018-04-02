@@ -95,6 +95,7 @@ public class PlaybackControlsFragment extends Fragment {
             if (metadata == null) {
                 return;
             }
+//            currentProgess=0;
             updateDuration(metadata);
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }
@@ -181,7 +182,11 @@ public class PlaybackControlsFragment extends Fragment {
             updateDuration(controller.getMetadata());
 
         }
-        updateCastInfo();
+        try {
+            updateCastInfo();
+        }catch(NullPointerException e){
+
+        }
         audioPreview(null);
     }
 
@@ -219,7 +224,11 @@ public class PlaybackControlsFragment extends Fragment {
         }
 
         updateDuration(metadata);
-        mTitle.setText(metadata.getDescription().getTitle());
+        if (!isPreviewEnded(metadata)){
+            mTitle.setText(metadata.getDescription().getTitle());
+            System.out.println("title text");
+
+        }
         checkSubscription(metadata);
     }
 
@@ -233,6 +242,8 @@ public class PlaybackControlsFragment extends Fragment {
         if (isPreviewEnded(metadata)) {
             stopSeekbarUpdate();
             mTitle.setText(getActivity().getResources().getString(R.string.preview_ended));
+            System.out.println("title preview");
+
             mPlayPause.setBackground(getActivity().getDrawable(R.drawable.audio_preview_end_icon));
 
         }
@@ -331,7 +342,7 @@ public class PlaybackControlsFragment extends Fragment {
                 progressBarPlayPause.setVisibility(GONE);
                 updateProgress();
                 stopSeekbarUpdate();
-
+                audioPreview(null);
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:

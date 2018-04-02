@@ -1,6 +1,7 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -92,7 +93,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             navItemsList.setAdapter(appCMSNavItemsAdapter);
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
-            }else{
+            } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
 
@@ -137,12 +138,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavLoginButton.setBackground(loginBorder);
 
                 Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
-                if (appCMSPresenter.getNavigation() != null &&
-                        appCMSPresenter.getNavigation().getSettings() != null &&
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
-                    appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                }
+
                 if (appCMSPresenter.getAppCMSMain()
                         .getServiceType()
                         .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
@@ -157,11 +153,31 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 } else {
                     appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
                 }
+                if (appCMSPresenter.getNavigation() != null &&
+                        appCMSPresenter.getNavigation().getSettings() != null &&
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
+                    appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                    appCMSNavFreeTrialButton.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                    appCMSNavFreeTrialButton.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                    appCMSNavFreeTrialButton.setVisibility(View.VISIBLE);
+                    appCMSNavFreeTrialButton.setOnClickListener(v -> {
+                        if (appCMSPresenter != null) {
+                            if (appCMSPresenter.getAppCMSMain()
+                                    .getServiceType()
+                                    .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                                appCMSPresenter.navigateToSubscriptionPlansPage(true);
+                            } else {
+                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SIGNUP);
+                                appCMSPresenter.navigateToLoginPage(false);
+                            }
+                        }
+                    });
+                }
             }
         }
-
         setBgColor(bgColor, view);
-
         return view;
     }
 
@@ -182,7 +198,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         super.onDestroyView();
         if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
-        }else{
+        } else {
             appCMSPresenter.restrictPortraitOnly();
 
         }

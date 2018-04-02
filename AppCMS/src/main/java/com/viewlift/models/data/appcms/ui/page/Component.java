@@ -18,8 +18,6 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String textColor;
 
-
-
     @SerializedName("isSelectable")
     @Expose
     boolean isSelectable;
@@ -234,6 +232,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("lineSpacingMultiplier")
     @Expose
     float lineSpacingMultiplier;
+
+    @SerializedName("headerView")
+    @Expose
+    boolean headerView;
 
     boolean yAxisSetManually;
 
@@ -606,5 +608,14 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
         this.lineSpacingMultiplier = lineSpacingMultiplier;
+    }
+
+
+    public boolean isHeaderView() {
+        return headerView;
+    }
+
+    public void setHeaderView(boolean headerView) {
+        this.headerView = headerView;
     }
 }

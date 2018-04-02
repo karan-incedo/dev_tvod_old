@@ -21,27 +21,31 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_gravity="center"
                 android:padding="@dimen/nav_item_container_padding">
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/nav_items_list"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layoutManager="LinearLayoutManager">
 
                 </android.support.v7.widget.RecyclerView>
             </FrameLayout>
+
+            <View
+                android:id="@+id/app_cms_nav_items_separator_view"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:padding="@dimen/nav_item_container_padding"/>
             <LinearLayout
                 android:id="@+id/app_cms_nav_login_container"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
-                <View
-                    android:id="@+id/app_cms_nav_items_separator_view"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:padding="@dimen/nav_item_container_padding"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

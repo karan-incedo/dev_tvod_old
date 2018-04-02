@@ -1,7 +1,6 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,9 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -238,7 +236,7 @@ public class AppCMSPageFragment extends Fragment {
                 public void run() {
 
                     setPageOriantationForVideoPage();
-                    //appCMSPresenter.unrestrictPortraitOnly();
+
                 }
             }, 3000);
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
@@ -247,9 +245,7 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
-        } else if (!BaseView.isTablet(getContext()) && appCMSPresenter!=null) {
-            System.out.println("config from onresume fragment");
-
+        } else if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.restrictPortraitOnly();
         }
         setMiniPlayer();
@@ -369,9 +365,9 @@ public class AppCMSPageFragment extends Fragment {
                 }
             }
         }
-       // if (!appCMSPresenter.isFullScreenVisible) {
-            handleOrientation(newConfig.orientation);
-       // }
+        // if (!appCMSPresenter.isFullScreenVisible) {
+        handleOrientation(newConfig.orientation);
+        // }
     }
 
     private void handleOrientation(int orientation) {
@@ -385,7 +381,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-       String screenName = appCMSBinder.getScreenName();
+        String screenName = appCMSBinder.getScreenName();
         /* if (!appCMSPresenter.isPageAVideoPage(screenName)) {
             screenName = appCMSBinder.getPageId();
         }*/
@@ -421,7 +417,7 @@ public class AppCMSPageFragment extends Fragment {
         viewCreator.setIgnoreBinderUpdate(true);
         List<String> modulesToIgnore = getModulesToIgnore();
 
-        if (modulesToIgnore != null) {
+        if (viewCreator != null && modulesToIgnore != null) {
             boolean updatePage = false;
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
@@ -527,12 +523,12 @@ public class AppCMSPageFragment extends Fragment {
         /**
          * if current activity is video player then restrict to landscape only
          */
-        if(appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity){
+        if (appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) {
             appCMSPresenter.restrictLandscapeOnly();
             return;
         }
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                appCMSPresenter.isAutoRotate() ) {
+                appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(getContext())) {
             System.out.println("config from setPageOriantationForVideoPage fragment");
@@ -541,7 +537,6 @@ public class AppCMSPageFragment extends Fragment {
         } else if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-
     }
 
     RecyclerView.OnScrollListener scrollListenerForMiniPlayer = new RecyclerView.OnScrollListener() {
@@ -652,7 +647,7 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-	private void removeAllViews(ViewGroup viewGroup) {
+    private void removeAllViews(ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
                 removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
@@ -684,7 +679,7 @@ public class AppCMSPageFragment extends Fragment {
         @Override
         public void onGlobalLayout() {
             if (pageView != null) {
-                if (appCMSBinder != null) {
+                if (appCMSBinder != null && appCMSBinder.getPageId()!=null) {
 
                     if (appCMSBinder.isScrollOnLandscape() != BaseView.isLandscape(pageView.getContext())) {
                         appCMSBinder.setxScroll(0);

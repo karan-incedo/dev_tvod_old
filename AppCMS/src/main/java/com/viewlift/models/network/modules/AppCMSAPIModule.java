@@ -5,6 +5,8 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.models.network.rest.AppCMSContentDetailCall;
+import com.viewlift.models.network.rest.AppCMSContentDetailRest;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
@@ -114,6 +116,11 @@ public class AppCMSAPIModule {
     @Singleton
     public AppCMSVideoDetailRest providesAppCMSVideoDetailRest(Retrofit retrofit) {
         return retrofit.create(AppCMSVideoDetailRest.class);
+    }
+    @Provides
+    @Singleton
+    public AppCMSContentDetailRest providesAppCMSContentDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSContentDetailRest.class);
     }
 
     @Provides

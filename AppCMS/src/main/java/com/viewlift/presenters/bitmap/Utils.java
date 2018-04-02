@@ -47,7 +47,7 @@ public class Utils {
 
     public static boolean hasFroyo() {
         // Can use static final constants like FROYO, declared in later versions
-        // of the OS since they are inlined at compile time. This is guaranteed behavior.
+        // of the OS since they are inlined at implementation  time. This is guaranteed behavior.
         return Build.VERSION.SDK_INT >= VERSION_CODES.FROYO;
     }
 

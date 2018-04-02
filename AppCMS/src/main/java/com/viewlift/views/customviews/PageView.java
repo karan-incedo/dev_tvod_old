@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,7 +59,7 @@ public class PageView extends BaseView {
     private OnScrollChangeListener onScrollChangeListener;
 
     private boolean ignoreScroll;
-
+    private FrameLayout headerView;
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -128,9 +129,13 @@ public class PageView extends BaseView {
                         FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         adapterList = new CopyOnWriteArrayList<>();
-
+        createHeaderView();
     }
-
+    private void createHeaderView() {
+        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerView = new FrameLayout(getContext());
+        headerView.setLayoutParams(layoutParams);
+    }
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
         for (ListWithAdapter listWithAdapter1 : adapterList) {
             if (listWithAdapter.id.equals(listWithAdapter1.id)) {
@@ -196,6 +201,8 @@ public class PageView extends BaseView {
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new RecyclerView(getContext());
         childrenContainer.setId(R.id.home_nested_scroll_view);
+        childrenContainer.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
+        childrenContainer.setFocusableInTouchMode(true);
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
@@ -355,5 +362,13 @@ public class PageView extends BaseView {
     private static class ViewDimensions {
         int width;
         int height;
+    }
+
+    public void addToHeaderView(View view){
+        headerView.addView(view);
+        if(headerView.getParent() == null){
+            addView(headerView);
+            headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        }
     }
 }

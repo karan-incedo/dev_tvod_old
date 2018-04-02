@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+     <!--PROD-->
+   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
     <!--<string name="app_cms_baseurl">http://dev-tools.viewlift.com</string>-->
 
@@ -11,25 +12,29 @@
 
     <!--
     TODO MSE id for temp dev
-    SiteId=00000151-11b4-d29b-a17d-55fdb2b80000-->
+    SiteId=00000151-11b4-d29b-a17d-55fdb2b80000
+    TODO TampaBAy id for temp dev
+    SiteId=6fef71e8-3185-432f-8431-106c2be042c8
+    -->
+
 
     <!-- x-api-key -->
-    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
+    <!--<string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>-->
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">1324523080924996</string>
+    <!--<string name="facebook_app_id">1324523080924996</string>-->
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
-    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>
+   <!-- <string name="app_cms_apptentive_api_key">ANDROID-HOICHOI-66327f3df1e2</string>
+    <string name="app_cms_apptentive_signature_key">9558f679dfd7135ffbc274f1a07b3e29</string>-->
     <!--<string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>-->
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
-    <bool name="use_hls">false</bool>
+    <!--<bool name="use_hls">false</bool>-->
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
@@ -39,12 +44,13 @@
 
     <bool name="display_chromecast_overlay">false</bool>
 
-    <string name="search_films">Search films</string>
+    <string name="search_films">Search Films/Shows</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
     <string name="app_cms_episodic_season_prefix">SEASON</string>
-
+    <string name="app_cms_article_key_type">ARTICLE</string>
+    <string name="app_cms_photo_gallery_key_type">PHOTOGALLERY</string>
     <integer name="number_of_tabs">4</integer>
     <integer name="home_page_index">0</integer>
     <integer name="nav_live_page_index">4</integer>
@@ -57,7 +63,6 @@
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
-
     <bool name="show_navbar">false</bool>
 
     <bool name="enable_stream_quality_selection">true</bool>

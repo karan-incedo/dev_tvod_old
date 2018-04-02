@@ -148,7 +148,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-    private boolean showEntitlementDialog=false;
+    private boolean showEntitlementDialog = false;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -554,7 +554,8 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
-
+                            appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                                    getContext().getResources().getString(R.string.play_video_category), filmId);
                         }
                     }
                 }
@@ -577,12 +578,12 @@ public class AppCMSInnerPlayerFragment extends Fragment
                 if (appCMSPresenter.isAppSVOD() &&
                         !isTrailer &&
                         !freeContent &&
-                        !appCMSPresenter.isUserSubscribed()&& !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
-                    showEntitlementDialog=true;
+                        !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
+                    showEntitlementDialog = true;
                 }
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
 
-                            // tell the activity that the movie is finished
+                    // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
                 if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
@@ -625,6 +626,10 @@ public class AppCMSInnerPlayerFragment extends Fragment
                         isVideoDownloaded);
                 sentBeaconPlay = true;
                 mStartBufferMilliSec = new Date().getTime();
+
+                appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                        getContext().getResources().getString(R.string.play_video_category), filmId);
+
             }
         });
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
@@ -1551,7 +1556,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
                                 videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
                             bufferCount++;
-                            if (bufferCount>=5) {
+                            if (bufferCount >= 5) {
 
                                 appCMSPresenter.sendBeaconMessage(filmId,
                                         permaLink,
@@ -1567,7 +1572,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                         0d,
                                         0,
                                         isVideoDownloaded);
-                                bufferCount=0;
+                                bufferCount = 0;
 
                             }
 

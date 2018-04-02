@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -310,10 +311,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
 
-            initializeStreamingQualityValues(videoAssets);
-
             if (useHls) {
                 videoUrl = videoAssets.getHls();
+                /*for hls streaming quality values are extracted in the VideoPlayerView class*/
+            } else {
+                initializeStreamingQualityValues(videoAssets);
             }
             if (TextUtils.isEmpty(videoUrl)) {
                 if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
@@ -379,10 +381,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
         }
 
-        if (!TextUtils.isEmpty(bgColor)) {
-            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
-        }
-
         boolean freeContent = false;
         if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
                 binder.getContentData().getGist().getFree()) {
@@ -442,7 +440,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        System.out.println("config from playvideo");
 
         appCMSPresenter.restrictLandscapeOnly();
 
@@ -671,7 +668,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Collections.sort(availableStreamingQualities, (q1, q2) -> {
             int i1 = Integer.valueOf(q1.replace("p", ""));
             int i2 = Integer.valueOf(q2.replace("p", ""));
-            if (i2 < i1) {
+            if (i2 > i1) {
                 return -1;
             } else if (i1 == i2) {
                 return 0;
@@ -688,5 +685,23 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void registerOnResumeVideo(OnResumeVideo onResumeVideo) {
         this.onResumeVideo = onResumeVideo;
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (BaseView.isTablet(this)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Making sure video is always played in Landscape
+        appCMSPresenter.restrictLandscapeOnly();
     }
 }

@@ -123,7 +123,11 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         contentType +
                                         "," +
                                         gistId;
-                                Object[] rowResult = {i, title, runtime, searchHintResult};
+
+                                Object[] rowResult = {i,
+                                        searchResultList.get(i).getGist().getTitle(),
+                                        searchResultList.get(i).getGist().getRuntime()/ 60,
+                                        searchHintResult};
 
                                 cursor.addRow(rowResult);
                                 //Log.d(TAG, searchResultList.get(i).getGist().getTitle());

@@ -40,10 +40,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
+   implementation 'com.android.support:support-annotations:' + supportLibraryVersion
+    androidTestImplementation 'com.google.dexmaker:dexmaker:' + dexmakerVersion
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
+    androidTestImplementation 'org.mockito:mockito-core:' + mockitoVersion
 }
 
 ext {

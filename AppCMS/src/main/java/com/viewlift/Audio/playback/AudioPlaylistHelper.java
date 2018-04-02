@@ -117,7 +117,7 @@ public class AudioPlaylistHelper {
         Collections.shuffle(currentAudioPlaylist);
 
         //reset current Media Id
-        if (getCurrentMediaId() != null && TextUtils.isEmpty(getCurrentMediaId())) {
+        if (getCurrentMediaId() != null && !TextUtils.isEmpty(getCurrentMediaId())) {
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(getCurrentMediaId());
         } else {
             indexAudioFromPlaylist = 0;
@@ -125,6 +125,7 @@ public class AudioPlaylistHelper {
     }
 
     public void undoShufflePlaylist() {
+        currentAudioPlaylist.clear();
         currentAudioPlaylist.addAll(copyOfAudioPlaylistID);
         //reset current Media Id
         if (getCurrentMediaId() != null) {
@@ -213,7 +214,7 @@ public class AudioPlaylistHelper {
         String artist = "";
         String director = "";
 
-        String album = "Unknown", iconUrl = "", source = "", param_link = "", album_year = "Unknown", isFree = "true";
+        String album = "", iconUrl = "", source = "", param_link = "", album_year = "", isFree = "true";
         long runTime = 240 * 1000;
 
         if (appCMSAudioDetailResult.getGist() != null) {
@@ -314,6 +315,7 @@ public class AudioPlaylistHelper {
     public LastPlayAudioDetail getLastPlayPositionDetails() {
         return appCmsPresenter.getLastPlaySongPosition();
     }
+
 
     public void setCurrentMediaId(String mediaId) {
         mCurrentMusicId = mediaId;

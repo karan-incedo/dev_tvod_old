@@ -60,6 +60,10 @@ public class Settings implements Serializable {
     @Expose
     ArrayList<Links> links;
 
+    @SerializedName("isHidden")
+    @Expose
+    boolean isHidden;
+
     public String getBackgroundColor() {
         return backgroundColor;
     }
@@ -150,5 +154,13 @@ public class Settings implements Serializable {
 
     public void setShowTabBar(boolean showTabBar) {
         this.showTabBar = showTabBar;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        isHidden = hidden;
     }
 }

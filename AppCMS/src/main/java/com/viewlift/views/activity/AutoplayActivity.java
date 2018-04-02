@@ -11,11 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AutoplayFragment;
-
-import com.viewlift.R;
 
 public class AutoplayActivity
         extends AppCompatActivity

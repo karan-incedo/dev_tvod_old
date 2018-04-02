@@ -215,7 +215,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         System.out.println("TAsk Stopped stop on task removed");
-//        mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
+        mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
 

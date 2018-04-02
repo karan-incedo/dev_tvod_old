@@ -11,6 +11,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -47,6 +48,7 @@ import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +61,7 @@ import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RU
 
 public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserWatHisDowAdapter.ViewHolder>
         implements AppCMSBaseAdapter, OnInternalEvent {
-    private static final String TAG = "AppCMSUserWatHisDowAdapter";
+    private static final String TAG = "UserWatHisDowAdapter";
 
 
     protected Context mContext;
@@ -96,6 +98,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private boolean isHistory;
     private boolean isDownload;
     private boolean isWatchlist;
+    private Map<String, Boolean> filmDownloadIconUpdatedMap;
 
     public AppCMSUserWatHisDowAdapter(Context context,
                                       ViewCreator viewCreator,
@@ -167,6 +170,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 break;
 
             case PAGE_DOWNLOAD_MODULE_KEY:
+                this.filmDownloadIconUpdatedMap = new HashMap<>();
                 this.isDownload = true;
                 break;
 
@@ -218,11 +222,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 true,
                 this.componentViewType,
                 false,
-                false);
-        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                false, viewTypeKey);
+
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(5,5,5,5);
+        view.setLayoutParams(lp);
+
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
-            emptyView.setTextColor(ContextCompat.getColor(mContext, android.R.color.white));
+            String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+            emptyView.setTextColor(Color.parseColor(textColor));
             emptyView.setTextSize(24f);
             if (viewTypeKey == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
                     viewTypeKey == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
@@ -241,7 +250,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         }
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -285,11 +293,32 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         if (videoSize != null && deleteDownloadButton != null && thumbnailImage != null) {
             videoSize.setVisibility(View.VISIBLE);
             videoSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
-
+            int radiusDifference = 5;
+            if (BaseView.isTablet(componentView.getContext())) {
+                radiusDifference = 2;
+            }
             if (contentDatum.getGist() != null) {
+                deleteDownloadButton.setTag(contentDatum.getGist().getId());
+                final  ImageButton deleteButton=deleteDownloadButton;
+                appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
+                        videoDownloadStatus -> {
+                            if (videoDownloadStatus != null &&
+                                    (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                            videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                            (!appCMSPresenter.isNetworkConnected() &&
+                                                    videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                                    videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
+                                deleteButton.setImageBitmap(null);
+                                deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                        R.drawable.ic_download_queued));
+                            }
+                        },
+                        appCMSPresenter.getLoggedInUser());
+
                 switch (contentDatum.getGist().getDownloadStatus()) {
                     case STATUS_PENDING:
                     case STATUS_RUNNING:
+                       int finalRadiusDifference = radiusDifference;
                         if (contentDatum.getGist() != null && deleteDownloadButton != null) {
                             if (deleteDownloadButton.getBackground() != null) {
                                 deleteDownloadButton.getBackground().setTint(ContextCompat.getColor(mContext, R.color.transparentColor));
@@ -300,51 +329,59 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             ImageView finalThumbnailImage = thumbnailImage;
                             TextView finalVideoSize = videoSize;
 
-                            int radiusDifference = 5;
-                            if (BaseView.isTablet(componentView.getContext())) {
-                                radiusDifference = 2;
-                            }
+                            Log.e(TAG, "Film downloading: " + contentDatum.getGist().getId());
 
-                            appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                    deleteDownloadButton,
-                                    appCMSPresenter,
-                                    userVideoDownloadStatus -> {
-                                        if (userVideoDownloadStatus != null) {
-                                            if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                finalDeleteDownloadButton.setImageBitmap(null);
-                                                finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.ic_deleteicon));
-                                                finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
-                                                finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                                                finalDeleteDownloadButton.invalidate();
-                                                loadImage(mContext, userVideoDownloadStatus.getThumbUri(), finalThumbnailImage);
-                                                finalVideoSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                            Boolean filmDownloadUpdated = filmDownloadIconUpdatedMap.get(contentDatum.getGist().getId());
+                            if (filmDownloadUpdated == null || !filmDownloadUpdated) {
+                                filmDownloadIconUpdatedMap.put(contentDatum.getGist().getId(), true);
 
-                                                contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
-                                                try {
-                                                    if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
-                                                            contentDatum.getContentDetails() != null &&
-                                                            contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
-                                                        contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+                                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                                        deleteDownloadButton,
+                                        appCMSPresenter,
+                                        userVideoDownloadStatus -> {
+                                            if (userVideoDownloadStatus != null) {
+                                                if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                    finalDeleteDownloadButton.setImageBitmap(null);
+                                                    finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.ic_deleteicon));
+                                                    finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
+                                                            appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                                                    finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                    finalDeleteDownloadButton.invalidate();
+                                                    loadImage(mContext, userVideoDownloadStatus.getThumbUri(), finalThumbnailImage);
+                                                    finalVideoSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+
+                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
+                                                    try {
+                                                        if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
+                                                                contentDatum.getContentDetails() != null &&
+                                                                contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
+                                                            contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+                                                        }
+                                                    } catch (Exception e) {
+                                                        //Log.e(TAG, e.getMessage());
                                                     }
-                                                } catch (Exception e) {
-                                                    //Log.e(TAG, e.getMessage());
+
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
+                                                    finalDeleteDownloadButton.setImageBitmap(null);
+                                                    finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
+                                                            android.R.drawable.stat_sys_warning));
+                                                    finalVideoSize.setText("Re-Try".toUpperCase());
+                                                    finalVideoSize.setOnClickListener(v -> restartDownloadVideo(contentDatum, position,finalDeleteDownloadButton,finalRadiusDifference));
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == STATUS_RUNNING) {
+                                                    finalVideoSize.setText("Cancel");
+                                                }else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+                                                    finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
+                                                            R.drawable.ic_download_queued));
                                                 }
-
-                                            } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
-                                                finalDeleteDownloadButton.setImageBitmap(null);
-                                                finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
-                                                        android.R.drawable.stat_sys_warning));
-                                                finalVideoSize.setText("Remove".toUpperCase());
-                                                finalVideoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-                                            } else if (userVideoDownloadStatus.getDownloadStatus() == STATUS_RUNNING) {
-                                                finalVideoSize.setText("Cancel");
+                                                contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                             }
-                                            contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
-                                        }
-                                    },
-                                    userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
-
+                                        },
+                                        userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
+                            }else {
+                                appCMSPresenter.updateDownloadTimerTask(contentDatum.getGist().getId(),
+                                        appCMSPresenter.getDownloadPageId(),
+                                        deleteDownloadButton);
+                            }
                             finalVideoSize.setText("Cancel".toUpperCase());
                             finalVideoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
 
@@ -352,10 +389,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                         break;
 
                     case STATUS_FAILED:
-                        //
+                        Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
+                        deleteDownloadButton.setImageBitmap(null);
+                        deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                android.R.drawable.stat_notify_error));
                         break;
 
                     case STATUS_SUCCESSFUL:
+                        Log.e(TAG, "Film download successful: " + contentDatum.getGist().getId());
+                        deleteDownloadButton.setImageBitmap(null);
                         deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                 R.drawable.ic_deleteicon));
                         deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
@@ -365,13 +407,29 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                         break;
 
                     case STATUS_INTERRUPTED:
+                        Log.e(TAG, "Film download interrupted: " + contentDatum.getGist().getId());
+                        deleteDownloadButton.setImageBitmap(null);
                         deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                 android.R.drawable.stat_sys_warning));
-                        videoSize.setText("Remove".toUpperCase());
-                        videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
+                        videoSize.setText("Re-Try".toUpperCase());
+                        int finalRadiusDifference1 = radiusDifference;
+                        ImageButton finaldeleteDownloadButton1 = deleteDownloadButton;
+                        videoSize.setOnClickListener(v -> restartDownloadVideo(contentDatum, position,
+                                finaldeleteDownloadButton1, finalRadiusDifference1));
+
+//                        videoSize.setText("Remove".toUpperCase());
+//                        videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
+                        break;
+
+                    case STATUS_PAUSED:
+                        deleteDownloadButton.setImageBitmap(null);
+                        deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                R.drawable.ic_download_queued));
                         break;
 
                     default:
+                        Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
+                        deleteDownloadButton.setImageBitmap(null);
                         break;
                 }
                 DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
@@ -382,6 +440,43 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     }
                 }
             }
+        }
+    }
+
+    private synchronized void restartDownloadVideo(final ContentDatum contentDatum, int position,
+                                                   final ImageButton downloadProgressImage,final int radiusDifference) {
+
+
+        if ((isDownload) && (contentDatum.getGist() != null)) {
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.RE_START_DOWNLOAD_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_re_download_item_message),
+                    true, () ->
+                            appCMSPresenter.reStartDownloadedFile(contentDatum.getGist().getId(),
+                                    userVideoDownloadStatus -> {
+                                        notifyItemChanged(position);
+                                        //notifyItemRangeChanged(position, getItemCount());
+                                        if (adapterData.size() == 0) {
+                                            sendEvent(hideRemoveAllButtonEvent);
+                                            notifyItemRangeChanged(position,getItemCount());
+                                            notifyDataSetChanged();
+                                            updateData(mRecyclerView, adapterData);
+                                        }
+                                    },downloadProgressImage,radiusDifference)
+                    ,
+                    () ->  // cancelButton Action code
+                            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
+                                    userVideoDownloadStatus -> {
+//                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
+//                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                        notifyItemRangeRemoved(position, getItemCount());
+                                        adapterData.remove(contentDatum);
+                                        notifyItemRangeChanged(position, getItemCount());
+                                        if (adapterData.size() == 0) {
+                                            sendEvent(hideRemoveAllButtonEvent);
+                                            notifyDataSetChanged();
+                                            updateData(mRecyclerView, adapterData);
+                                        }
+                                    }));
         }
     }
 
@@ -398,15 +493,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 userVideoDownloadStatus -> {
 //                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
 //                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-
-                                    /*The below code is to stop audio if user has deleted the audio file while the audio is playing*/
-                                    /*if (contentDatum.getGist() != null
-                                            && contentDatum.getGist().getContentType() != null
-                                            && contentDatum.getGist().getContentType().toLowerCase().equalsIgnoreCase(mContext.getString(R.string.media_type_audio).toLowerCase())) {
-                                        if (contentDatum.getGist().getId().contains(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
-                                            appCMSPresenter.stopAudioServices(false,false);
-                                        }
-                                    }*/
                                     notifyItemRangeRemoved(position, getItemCount());
                                     adapterData.remove(contentDatum);
                                     notifyItemRangeChanged(position, getItemCount());
@@ -499,6 +585,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
+                            /*navigate to article detail page*/
+                            if (data.getGist() != null && data.getGist().getMediaType() != null
+                                    && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                                appCMSPresenter.setCurrentArticleIndex(-1);
+                                appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null,false);
+                                return;
+                            }
 
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
@@ -509,7 +602,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
                                         appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_watchlist_item_message),
                                         true, () ->
-                                                appCMSPresenter.editWatchlist(data.getGist().getId(),
+                                                appCMSPresenter.editWatchlist(data,
                                                         addToWatchlistResult -> {
                                                             adapterData.remove(data);
 

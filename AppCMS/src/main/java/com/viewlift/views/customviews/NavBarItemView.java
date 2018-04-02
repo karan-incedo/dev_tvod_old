@@ -9,7 +9,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -86,7 +85,7 @@ public class NavBarItemView extends LinearLayout {
         if (hasFocus) {
             color = highlightColor;
             if (navigationTabBar.getNavigationModuleItem().isBackgroundSelectable()) {
-                setTabBg();
+                //setTabBg();
             }
         } else {
             this.setBackgroundResource(0);
@@ -122,6 +121,7 @@ public class NavBarItemView extends LinearLayout {
         for (int i = 0; i < navTabBar.getComponents().size(); i++) {
 
             String componentType = navTabBar.getComponents().get(i).getType();
+            int colorTint =appCMSPresenter.getGeneralTextColor();
             switch (componentType) {
                 case "image":
                     navImage = new ImageView(getContext());
@@ -209,7 +209,7 @@ public class NavBarItemView extends LinearLayout {
                 navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Missing tab icon image resource: " + drawableName);
+
         }
     }
 

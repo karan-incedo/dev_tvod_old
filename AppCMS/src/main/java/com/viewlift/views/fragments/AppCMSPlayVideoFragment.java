@@ -160,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
+
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
@@ -182,6 +183,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -470,7 +472,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
-
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(ViewCreator.getColorWithOpacity(getContext(),
                     fontColor,
@@ -491,6 +492,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(getContext(),
                 appCMSPresenter.getAppCtaBackgroundColor())));
+
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
 
         if (streamingQualitySelector != null) {
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
@@ -542,15 +547,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
 
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
-                long updatedRunTime = 0;
-
+               long updatedRunTime = 0;
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 setCurrentWatchProgress(updatedRunTime, watchedTime);
 
                 if (!isVideoLoaded) {
@@ -601,7 +603,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 0,
                                 isVideoDownloaded);
                         sentBeaconFirstFrame = true;
-
+                        appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                                getContext().getResources().getString(R.string.play_video_category), filmId);
                     }
                 }
 
@@ -672,6 +675,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         isVideoDownloaded);
                 sentBeaconPlay = true;
                 mStartBufferMilliSec = new Date().getTime();
+
+                appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                        getContext().getResources().getString(R.string.play_video_category), filmId);
             }
         });
 
@@ -688,7 +694,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
-
 
         initViewForCRW(rootView);
         if (!shouldRequestAds) {
@@ -727,8 +732,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         }*/
 
         return rootView;
-    }
 
+    }
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
 
@@ -1143,6 +1148,23 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             adsLoader.requestAds(request);
             apod += 1;
+
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendBeaconMessage(filmId,
+                        permaLink,
+                        parentScreenName,
+                        videoPlayerView.getCurrentPosition(),
+                        false,
+                        AppCMSPresenter.BeaconEvent.AD_REQUEST,
+                        "Video",
+                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                        String.valueOf(videoPlayerView.getVideoHeight()),
+                        String.valueOf(videoPlayerView.getVideoWidth()),
+                        mStreamId,
+                        0d,
+                        apod,
+                        isVideoDownloaded);
+            }
         }
     }
 
