@@ -268,7 +268,7 @@ public class ArticleFeedModule extends LinearLayout {
 
 
     public void bindChild(Context context, View view, ContentDatum data, Map<String, AppCMSUIKeyType> jsonValueKeyMap, AppCMSPresenter appCMSPresenter, int position) {
-        if (component != null) {
+        if (component != null && data != null ) {
             for (Component childComponent : component.getComponents()) {
                 AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
 
@@ -313,7 +313,7 @@ public class ArticleFeedModule extends LinearLayout {
                                         publishInfo.addView(publishDate);
                                     }else{*/
 
-                                   // }
+                                    // }
 
                                 }
                                 break;
@@ -361,7 +361,7 @@ public class ArticleFeedModule extends LinearLayout {
                                                 data.getGist().getId() != null &&
                                                 data.getGist().getTitle() != null)
                                             appCMSPresenter.setCurrentArticleIndex(-1);
-                                            appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false,null,false);
+                                        appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false,null,false);
                                     }
                                 });
                                 break;
