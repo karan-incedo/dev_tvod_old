@@ -5,6 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.gson.internal.LinkedTreeMap;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -42,6 +47,9 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     private String defaultAction;
     private AppCMSUIKeyType viewTypeKey;
     private boolean isSelected;
+    ArticleFeedModule articleFeedModuleAd;
+
+    private int ADS_TYPE, FEED_TYPE;
 
     public AppCMSArticleFeedViewAdapter(Context context,
                                         ViewCreator viewCreator,
@@ -69,6 +77,25 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
             this.adapterData = new ArrayList<>();
         }
 
+        if (moduleAPI != null &&
+                moduleAPI.getMetadataMap() != null &&
+                moduleAPI.getMetadataMap() instanceof LinkedTreeMap &&
+                this.adapterData.size() > 0) {
+            AdView adView = new AdView(context);
+            adView.setFocusable(false);
+            adView.setEnabled(false);
+            adView.setClickable(false);
+            LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
+            MobileAds.initialize(context, admap.get("adTag"));
+            adView.setAdUnitId(admap.get("adTag"));
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.loadAd(adRequest);
+            articleFeedModuleAd = new ArticleFeedModule(context, adView);
+            this.adapterData.add(this.adapterData.size() - 2, new ContentDatum());
+            ADS_TYPE = this.adapterData.size() - 2;
+
+        }
         this.componentViewType = viewType;
         this.viewTypeKey = jsonValueKeyMap.get(componentViewType);
         if (this.viewTypeKey == null) {
@@ -80,18 +107,34 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        ArticleFeedModule view = new ArticleFeedModule(parent.getContext(),
-                parentLayout,
-                component,
-                defaultWidth,
-                defaultHeight,
-                false,
-                false,
-                viewTypeKey,
-                appCMSPresenter,
-                jsonValueKeyMap);
+        ArticleFeedModule view= null;
+        if (ADS_TYPE !=0 && ADS_TYPE==viewType) {
+            view = new ArticleFeedModule(parent.getContext(),articleFeedModuleAd);
+            view.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+        }else {
+            view = new ArticleFeedModule(parent.getContext(),
+                    parentLayout,
+                    component,
+                    defaultWidth,
+                    defaultHeight,
+                    false,
+                    false,
+                    viewTypeKey,
+                    appCMSPresenter,
+                    jsonValueKeyMap);
+        }
 
         return new ViewHolder(view);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+         super.getItemViewType(position);
+         if (articleFeedModuleAd != null &&
+                 position== (this.adapterData.size()-2)){
+             return ADS_TYPE;
+         }
+         return position;
     }
 
     @Override
@@ -114,12 +157,13 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     }
 
     void bindView(ArticleFeedModule articleFeedModule, ContentDatum data, int position) {
-        articleFeedModule.bindChild(articleFeedModule.getContext(),
-                articleFeedModule,
-                data,
-                jsonValueKeyMap,
-                appCMSPresenter,
-                position);
+       if (position != ADS_TYPE)
+            articleFeedModule.bindChild(articleFeedModule.getContext(),
+                    articleFeedModule,
+                    data,
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    position);
     }
 
 }

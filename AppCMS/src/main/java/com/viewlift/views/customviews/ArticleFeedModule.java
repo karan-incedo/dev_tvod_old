@@ -79,6 +79,11 @@ public class ArticleFeedModule extends LinearLayout {
         init();
     }
 
+    public ArticleFeedModule(Context context, View view ){
+        super(context);
+        addView(view);
+    }
+
 
     public void init() {
 
