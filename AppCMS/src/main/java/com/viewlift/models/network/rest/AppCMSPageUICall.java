@@ -48,9 +48,9 @@ public class AppCMSPageUICall {
         AppCMSPageUI appCMSPageUI = null;
         if (loadFromFile) {
             try {
-                appCMSPageUI = readJsonFromAssets();
-//                appCMSPageUI = readPageFromFile(filename);
-//                appCMSPageUI.setLoadedFromNetwork(false);
+              //  appCMSPageUI = readJsonFromAssets();
+                appCMSPageUI = readPageFromFile(filename);
+                appCMSPageUI.setLoadedFromNetwork(false);
             } catch (Exception e) {
                 //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
                 try {
@@ -61,8 +61,8 @@ public class AppCMSPageUICall {
                 }
             }
         } else {
-            appCMSPageUI = readJsonFromAssets();
-            //appCMSPageUI = loadFromNetwork(url, filename);
+           // appCMSPageUI = readJsonFromAssets();
+            appCMSPageUI = loadFromNetwork(url, filename);
         }
         return appCMSPageUI;
     }
