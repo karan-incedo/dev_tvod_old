@@ -48,8 +48,10 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     private AppCMSUIKeyType viewTypeKey;
     private boolean isSelected;
     ArticleFeedModule articleFeedModuleAd;
+    AdView adView;
+    private static String adURL;
 
-    private int ADS_TYPE, FEED_TYPE;
+    private int ADS_TYPE=-1, FEED_TYPE;
 
     public AppCMSArticleFeedViewAdapter(Context context,
                                         ViewCreator viewCreator,
@@ -76,24 +78,33 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
         } else {
             this.adapterData = new ArrayList<>();
         }
+        for (int i=0; i<this.adapterData.size();i++){
+            if (adapterData.get(i).getId().equalsIgnoreCase("adTag")) {
+                ADS_TYPE = i;
+            }
+        }
 
         if (moduleAPI != null &&
                 moduleAPI.getMetadataMap() != null &&
                 moduleAPI.getMetadataMap() instanceof LinkedTreeMap &&
-                this.adapterData.size() > 0) {
-            AdView adView = new AdView(context);
-            adView.setFocusable(false);
-            adView.setEnabled(false);
-            adView.setClickable(false);
+                this.adView == null &&
+                !this.adapterData.get(this.adapterData.size()-2).getId().equalsIgnoreCase("adTag") &&
+                ADS_TYPE == -1
+                ) {
+
+            adView = new AdView(context);
+            ContentDatum data=new ContentDatum();
+            data.setId("adTag");
+            this.adapterData.add(this.adapterData.size() - 1, data);
+
             LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
-            MobileAds.initialize(context, admap.get("adTag"));
-            adView.setAdUnitId(admap.get("adTag"));
-            AdRequest adRequest = new AdRequest.Builder().build();
-            adView.setAdSize(AdSize.SMART_BANNER);
-            adView.loadAd(adRequest);
-            articleFeedModuleAd = new ArticleFeedModule(context, adView);
-            this.adapterData.add(this.adapterData.size() - 2, new ContentDatum());
+
+            adURL = admap.get("adTag");
+            //articleFeedModuleAd = new ArticleFeedModule(context, adView);
+
+
             ADS_TYPE = this.adapterData.size() - 2;
+
 
         }
         this.componentViewType = viewType;
@@ -107,11 +118,15 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        ArticleFeedModule view= null;
-        if (ADS_TYPE !=0 && ADS_TYPE==viewType) {
-            view = new ArticleFeedModule(parent.getContext(),articleFeedModuleAd);
-            view.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
-        }else {
+        ArticleFeedModule view = null;
+        if (ADS_TYPE != 0 && ADS_TYPE == viewType
+                ) {
+            if (adView == null){
+                adView = new AdView(mContext);
+            }
+            return new ViewHolder(adView);
+
+        } else {
             view = new ArticleFeedModule(parent.getContext(),
                     parentLayout,
                     component,
@@ -129,17 +144,30 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
 
     @Override
     public int getItemViewType(int position) {
-         super.getItemViewType(position);
-         if (articleFeedModuleAd != null &&
-                 position== (this.adapterData.size()-2)){
-             return ADS_TYPE;
-         }
-         return position;
+        super.getItemViewType(position);
+        if (adView != null &&
+                position == ADS_TYPE) {
+            return ADS_TYPE;
+        }
+        return position;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        bindView(holder.componentView, adapterData.get(position), position);
+        if (position != ADS_TYPE) {
+            bindView(holder.componentView, adapterData.get(position), position);
+        } else if (adView != null) {
+
+            adView.setFocusable(false);
+            adView.setEnabled(false);
+            adView.setClickable(false);
+            MobileAds.initialize(this.mContext, adURL);
+            adView.setAdUnitId(adURL);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.loadAd(adRequest);
+        }
+
     }
 
     @Override
@@ -149,21 +177,25 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ArticleFeedModule componentView;
+        AdView adsView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.componentView = (ArticleFeedModule) itemView;
+            if (itemView instanceof AdView) {
+                this.adsView = (AdView) itemView;
+            } else {
+                this.componentView = (ArticleFeedModule) itemView;
+            }
         }
     }
 
     void bindView(ArticleFeedModule articleFeedModule, ContentDatum data, int position) {
-       if (position != ADS_TYPE)
-            articleFeedModule.bindChild(articleFeedModule.getContext(),
-                    articleFeedModule,
-                    data,
-                    jsonValueKeyMap,
-                    appCMSPresenter,
-                    position);
+        articleFeedModule.bindChild(articleFeedModule.getContext(),
+                articleFeedModule,
+                data,
+                jsonValueKeyMap,
+                appCMSPresenter,
+                position);
     }
 
 }
