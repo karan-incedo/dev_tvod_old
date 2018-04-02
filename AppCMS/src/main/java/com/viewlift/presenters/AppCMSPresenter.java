@@ -9491,8 +9491,10 @@ public class AppCMSPresenter {
                         mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ||
-                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO ||
+                            dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ||
+                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW ||
+                            dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
                         title = currentActivity.getString(R.string.preview_content);
                         message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
@@ -9500,7 +9502,8 @@ public class AppCMSPresenter {
                         /**
                          * if showing preview ended dialog for audio then show messaege from server
                          */
-                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
+                        if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW ||
+                                dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW) {
                             if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
                                 message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
