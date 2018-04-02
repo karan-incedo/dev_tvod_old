@@ -1,7 +1,6 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,7 +137,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
 
                 Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
 
-                if (appCMSPresenter.getAppCMSMain()
+                /*if (appCMSPresenter.getAppCMSMain()
                         .getServiceType()
                         .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
                     appCMSNavFreeTrialButton.setTextColor(textColor);
@@ -152,14 +150,14 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                     appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
                 } else {
                     appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
-                }
+                }*/
                 if (appCMSPresenter.getNavigation() != null &&
                         appCMSPresenter.getNavigation().getSettings() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
                     appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                    appCMSNavFreeTrialButton.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-                    appCMSNavFreeTrialButton.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                    appCMSNavFreeTrialButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                    appCMSNavFreeTrialButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                     appCMSNavFreeTrialButton.setVisibility(View.VISIBLE);
                     appCMSNavFreeTrialButton.setOnClickListener(v -> {
                         if (appCMSPresenter != null) {
