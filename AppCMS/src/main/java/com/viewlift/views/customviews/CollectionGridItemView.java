@@ -347,7 +347,10 @@ public class CollectionGridItemView extends BaseView {
                                     imageUrl = data.getGist().getVideoImageUrl();
                                 }
                             }
-                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                    .fitCenter();
+//                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
 
 
@@ -572,8 +575,10 @@ public class CollectionGridItemView extends BaseView {
                                     imageUrl = data.getGist().getVideoImageUrl();
                                 }
                             }
-                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
-
+//                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                    .fitCenter();
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
                                 Glide.with(context.getApplicationContext())
                                         .load(imageUrl).apply(requestOptions)
@@ -669,16 +674,17 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") && data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-
-                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
-                            ((TextView) view).setMaxLines(1);
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) view).setText(artist);
-                            ((TextView) view).setPadding(10,
-                                    0,
-                                    10,
-                                    0);
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") ) {
+                            if(data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null){
+                                String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+                                ((TextView) view).setMaxLines(1);
+                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                                ((TextView) view).setText(artist);
+                                ((TextView) view).setPadding(10,
+                                        0,
+                                        10,
+                                        0);
+                            }
 
                         } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                             ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);

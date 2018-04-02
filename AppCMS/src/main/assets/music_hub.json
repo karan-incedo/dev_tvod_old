@@ -630,7 +630,7 @@
                   "height": 19
                 },
                 "tabletLandscape": {
-                  "yAxis": 154,
+                  "yAxis": 140,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
@@ -639,7 +639,7 @@
                   "height": 28
                 },
                 "tabletPortrait": {
-                  "yAxis": 154,
+                  "yAxis": 170,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
@@ -658,21 +658,23 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 168,
+                  "yAxis": 150,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 11,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 174,
+                  "yAxis": 229,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
                   "height": 28
                 },
                 "tabletPortrait": {
-                  "yAxis": 174,
+                  "yAxis": 180,
+                  "thumbnailWidth": 150,
+                  "thumbnailHeight": 150,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 14,
