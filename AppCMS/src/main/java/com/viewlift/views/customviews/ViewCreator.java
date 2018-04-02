@@ -1713,12 +1713,13 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {// TODO To Be remove post development finish
-//                if (moduleInfo.getBlockName().equalsIgnoreCase("showDetail01")) {
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("playlistDetail01")) {
 //                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-//                            loadJsonFromAssets(context, "video_page.json"),
+//                            loadJsonFromAssets(context, "playlist.json"),
 //                            AppCMSPageUI.class);
-//                    module = appCMSPageUI1.getModuleList().get(0);
-//                } else if (moduleInfo.getBlockName().equalsIgnoreCase("watchlist01")) {
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//                }
+// else if (moduleInfo.getBlockName().equalsIgnoreCase("watchlist01")) {
 //                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
 //                            loadJsonFromAssets(context, "watchlist.json"),
 //                            AppCMSPageUI.class);
@@ -1739,7 +1740,8 @@ public class ViewCreator {
 //                            loadJsonFromAssets(context, "music_hub.json"),
 //                            AppCMSPageUI.class);
 //                    module = appCMSPageUI1.getModuleList().get(3);
-//                } else
+//                }
+// else
                     {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
@@ -1847,7 +1849,18 @@ public class ViewCreator {
                     this,
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
-        } else {
+        }
+//        else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+//            moduleView = new DownloadModule(context,
+//                    module,
+//                    moduleAPI,
+//                    jsonValueKeyMap,
+//                    appCMSPresenter,
+//                    this,
+//                    appCMSAndroidModules);
+//            pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
+//        }
+        else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
