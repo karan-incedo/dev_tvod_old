@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -198,7 +197,6 @@ public class CollectionGridItemView extends BaseView {
             } else {
                 childrenContainer.setBackgroundResource(android.R.color.transparent);
             }
-
         }
         addView(childrenContainer);
         return childrenContainer;
@@ -316,8 +314,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY || componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY
-                            || componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -406,7 +405,6 @@ public class CollectionGridItemView extends BaseView {
                             } else {
                                 ((ImageView) view).setBackgroundResource(R.drawable.img_placeholder);
                             }
-
                         } catch (Exception e) {
                             //
                         }
@@ -415,8 +413,9 @@ public class CollectionGridItemView extends BaseView {
                             data != null &&
                             data.getGist() != null &&
                             ((data.getGist().getVideoImageUrl() != null &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
-                                    (data.getGist().getImageGist() != null && data.getGist().getImageGist().get_16x9() != null &&
+                                    !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
+                                    (data.getGist().getImageGist() != null &&
+                                            data.getGist().getImageGist().get_16x9() != null &&
                                             !TextUtils.isEmpty(data.getGist().getImageGist().get_16x9()))) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -424,8 +423,8 @@ public class CollectionGridItemView extends BaseView {
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         bringToFront = false;
                         String imageUrl = null;
-                        if(data.getGist().getVideoImageUrl() != null) {
-                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                        if (data.getGist().getVideoImageUrl() != null) {
+                            imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                     data.getGist().getVideoImageUrl(),
                                     childViewWidth,
                                     childViewHeight);
@@ -434,8 +433,8 @@ public class CollectionGridItemView extends BaseView {
                                     imageUrl = data.getGist().getVideoImageUrl();
                                 }
                             }
-                        }else{
-                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                        } else {
+                            imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                     data.getGist().getImageGist().get_16x9(),
                                     childViewWidth,
                                     childViewHeight);
@@ -454,7 +453,7 @@ public class CollectionGridItemView extends BaseView {
                                         .apply(requestOptions)
                                         .into((ImageView) view);
 
-                                ((ImageView)view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (Exception e) {
                             //
@@ -503,7 +502,7 @@ public class CollectionGridItemView extends BaseView {
                                         .load(imageUrl)
                                         .apply(requestOptions)
                                         .into((ImageView) view);
-                                // ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             }
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
@@ -543,6 +542,7 @@ public class CollectionGridItemView extends BaseView {
                                     data.getGist().getBadgeImages().get_16x9(),
                                     childViewWidth,
                                     childViewHeight);
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                             if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                                 if (data.getGist().getVideoImageUrl() != null) {
@@ -563,7 +563,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                         view.setVisibility(VISIBLE);
                         bringToFront = true;
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                         view.setVisibility(GONE);
                         bringToFront = false;
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
@@ -1120,7 +1120,6 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(Color.parseColor("#000000"));
                     }
                 }
-
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);

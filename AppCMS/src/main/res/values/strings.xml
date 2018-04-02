@@ -312,6 +312,10 @@
     <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
     <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
 
+    <string name="app_cms_download_retry_alert_title">Download could not finish</string>
+    <string name="app_cms_re_download_item_message">A network issue occurred, would you like to cancel this download or retry?</string>
+
+
     <string name="app_cms_delete_download_alert_title">Delete Download</string>
     <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
     <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
@@ -588,10 +592,6 @@
 
     <string name="storage_permission_denied">Permission to access storage was denied</string>
 
-    <string name="play_video_action">playVideo</string>
-
-    <string name="play_video_category">player-video</string>
-
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="auto">Auto</string>
 <plurals name="episode_subtitle_text">
@@ -621,6 +621,9 @@
     <string name="media_type_audio">AUDIO</string>
     <string name="media_type_video">VIDEO</string>
     <string name="content_type_audio">AUDIO</string>
+    <string name="content_type_video">VIDEO</string>
+    <string name="content_type_series">SERIES</string>
+    <string name="content_type_show">SHOW</string>
 
 
     <!-- Notificaiton Channel -->
@@ -637,6 +640,15 @@
     <!-- Apptentive Messages -->
     <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
     <string name="app_cms_apptentive_login_event_name">Login</string>
+
+    <string name="play_video_action">playVideo</string>
+
+    <string name="play_video_category">player-video</string>
+
+
+    <string name="play_audio_action">playAudio</string>
+
+    <string name="play_audio_category">player-audio</string>
 </resources>
 
 

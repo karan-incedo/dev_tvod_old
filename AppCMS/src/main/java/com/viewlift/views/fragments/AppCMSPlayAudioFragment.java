@@ -47,6 +47,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.cast.Cast;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.MusicService;
@@ -153,7 +156,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             if (metadata != null) {
-//                currentProgess = 0;
+                currentProgess = 0;
                 updateMediaDescription(metadata);
                 updateDuration(metadata);
                 onUpdateMetaChange.updateMetaData(metadata);
@@ -250,7 +253,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         setPlaylistVisibility();
 
         final AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int initVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         seekVolume.setMax(maxVolume);
@@ -258,7 +260,22 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         seekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
+                        .getCurrentCastSession();
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+
+//                if (castSession != null && castSession.isConnected()) {
+////                    audioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, i, AudioManager.ADJUST_SAME);
+//
+//                    audioManager.adjustSuggestedStreamVolume(AudioManager.ADJUST_RAISE,
+//                            AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.FLAG_SHOW_UI);
+////                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+//
+//                } else {
+//                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+//
+//                }
+
             }
 
             @Override
@@ -276,7 +293,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         setTypeFace(getContext(), trackName, getContext().getString(R.string.opensans_bold_ttf));
         setTypeFace(getContext(), artistName, getContext().getString(R.string.opensans_bold_ttf));
-        setTypeFace(getContext(), trackYear, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), trackYear, getContext().getString(R.string.opensans_semibold_ttf));
         setTypeFace(getContext(), albumName, getContext().getString(R.string.opensans_bold_ttf));
 
         return rootView;
@@ -531,9 +548,15 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             directorName = " (" + directorName + ")";
         }
         artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST) + "" + directorName);
-        String albumInfo = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + " | " + metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
-        trackYear.setText(albumInfo);
-
+        String trackYearValue = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + "";
+        if (TextUtils.isEmpty(trackYearValue)) {
+            trackYear.setVisibility(View.GONE);
+        } else {
+            trackYear.setVisibility(View.VISIBLE);
+            trackYear.setText(trackYearValue);
+            trackYear.setLetterSpacing(0.3f);
+            trackYear.setAllCaps(true);
+        }
         fetchImageAsync(metaData.getDescription());
     }
 
@@ -550,9 +573,12 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             stopSeekbarUpdate();
             if (!isDialogVisible && isVisible && getActivity() != null) {
                 isDialogVisible = true;
-                System.out.println("isVisible -" + isVisible);
                 appCMSPresenter.setAudioPlayerOpen(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown = false;
+                    }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
@@ -566,6 +592,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                                 }
                             });
                 } else {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown = false;
+
+                    }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
                             new Action0() {
                                 @Override
@@ -699,7 +730,15 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         @Override
         public void onChange(boolean selfChange) {
-            seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
+                    .getCurrentCastSession();
+            if (castSession != null && castSession.isConnected()) {
+                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+            } else {
+                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+            }
 
         }
     }
@@ -712,7 +751,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         public void onReceive(Context arg0, Intent arg1) {
 
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE)) {
-                System.out.println("in recever");
                 audioPreview(false);
             }
         }

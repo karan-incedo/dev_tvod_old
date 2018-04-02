@@ -534,7 +534,7 @@
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
-    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
+    <!--<string name="app_cms_autoplay_toggle_switch_key">autoplayToggle</string>-->
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
     <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
