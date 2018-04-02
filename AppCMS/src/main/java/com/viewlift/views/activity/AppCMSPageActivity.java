@@ -2679,6 +2679,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        if(pagePath.toString().contains(getString(R.string.app_cms_page_path_article))){
+            appCMSPresenter.setCurrentArticleIndex(-1);
+            action = getString(R.string.app_cms_action_articlepage_key);
+        }else if(pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))){
+            action = getString(R.string.app_cms_action_photo_gallerypage_key);
+        }
+
         appCMSPresenter.forceLoad();
 
         //Log.d(TAG, "Launching deep link " +

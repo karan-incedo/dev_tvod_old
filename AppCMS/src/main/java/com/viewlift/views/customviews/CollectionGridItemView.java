@@ -416,7 +416,7 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist() != null &&
                             ((data.getGist().getVideoImageUrl() != null &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) ||
-                                    (data.getGist().getImageGist().get_16x9() != null &&
+                                    (data.getGist().getImageGist() != null && data.getGist().getImageGist().get_16x9() != null &&
                                             !TextUtils.isEmpty(data.getGist().getImageGist().get_16x9()))) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -467,7 +467,8 @@ public class CollectionGridItemView extends BaseView {
                         String imageUrl = "";
                         if (data.getGist() != null &&
                                 data.getGist().getContentType() != null &&
-                                data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())
+                                ((data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) ||
+                                (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
                                 && data.getGist().getImageGist() != null
                                 && data.getGist().getImageGist().get_16x9() != null) {
                             imageUrl = data.getGist().getImageGist().get_16x9();

@@ -112,8 +112,10 @@ import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.PhotoGalleryData;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
@@ -2378,6 +2380,11 @@ public class AppCMSPresenter {
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(this.action
                                                         + BaseView.isLandscape(currentActivity));
+                                                if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_pagename_photogalleryscreen_key))) {
+                                                    convertToAppCMSPageAPI(appCMSPageAPI);
+                                                } else if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_pagename_articlescreen_key))) {
+                                                    processRelatedArticleDeepLink(appCMSPageAPI);
+                                                }
                                                 Bundle args = getPageActivityBundle(currentActivity,
                                                         this.appCMSPageUI,
                                                         appCMSPageAPI,
@@ -16842,6 +16849,59 @@ public class AppCMSPresenter {
             drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
+        }
+    }
+
+    private void processRelatedArticleDeepLink(AppCMSPageAPI appCMSPageAPI){
+        if (getCurrentArticleIndex() == -1 && appCMSPageAPI.getModules() != null) {
+            int moduleSize = appCMSPageAPI.getModules().size();
+            for (int i = 0; i < moduleSize; i++) {
+                if (appCMSPageAPI.getModules().get(i).getModuleType() != null && appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_page_article_detail_module))) {
+                    Module module = appCMSPageAPI.getModules().get(i);
+                    if (module.getContentData() != null && module.getContentData().get(0).getContentDetails() != null && module.getContentData().get(0).getContentDetails().getRelatedArticleIds() != null) {
+                        setRelatedArticleIds(module.getContentData().get(0).getContentDetails().getRelatedArticleIds());
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public void convertToAppCMSPageAPI(AppCMSPageAPI appCMSPageAPI) {
+        if (appCMSPageAPI.getModules() != null) {
+            List<ContentDatum> data = new ArrayList<>();
+            int moduleSize = appCMSPageAPI.getModules().size();
+            Module module = null;
+            for (int i = 0; i < moduleSize; i++) {
+                if (appCMSPageAPI.getModules().get(i).getModuleType() != null && appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase(currentActivity.getResources().getString(R.string.app_cms_page_photo_gallery_detail_module))) {
+                    module = appCMSPageAPI.getModules().get(i);
+                    break;
+                }
+            }
+            if (module.getContentData() != null) {
+                ContentDatum contentDatum = module.getContentData().get(0);
+                contentDatum.setGist(contentDatum.getGist());
+                contentDatum.setId(contentDatum.getId());
+                contentDatum.setStreamingInfo(contentDatum.getStreamingInfo());
+                contentDatum.setContentDetails(contentDatum.getContentDetails());
+                contentDatum.setCategories(contentDatum.getCategories());
+                contentDatum.setTags(contentDatum.getTags());
+                data.add(contentDatum);
+
+                if (contentDatum.getStreamingInfo() != null && contentDatum.getStreamingInfo().getPhotogalleryAssets() != null) {
+                    for (int i = 0; i < contentDatum.getStreamingInfo().getPhotogalleryAssets().size(); i++) {
+                        PhotoGalleryData photoGalleryData = contentDatum.getStreamingInfo().getPhotogalleryAssets().get(i);
+                        Gist gist = new Gist();
+                        gist.setId(photoGalleryData.getId());
+                        gist.setSelectedPosition(i == 0 ? true : false);
+                        gist.setVideoImageUrl(photoGalleryData.getUrl() != null ? photoGalleryData.getUrl() : "");
+                        ContentDatum contentDatum1 = new ContentDatum();
+                        contentDatum1.setGist(gist);
+                        data.add(contentDatum1);
+                    }
+                }
+                module.setContentData(data);
+            }
         }
     }
 

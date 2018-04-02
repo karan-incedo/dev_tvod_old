@@ -76,6 +76,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
+    private int placeHolderImg = 0;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -89,6 +90,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.textSize = (int) getTextSize(context);
         this.textWidth = (int) getTextWidth(context);
         this.textTopMargin = (int) getTextTopMargin(context);
+        this.placeHolderImg = BaseView.isLandscape(context)? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
     }
 
     @Override
@@ -168,6 +170,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
+
+        ((ImageView)viewHolder.filmThumbnail).setBackgroundResource(placeHolderImg);
 
        if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
                 appCMSSearchResults.get(adapterPosition).getGist().getPosterImageUrl() != null &&

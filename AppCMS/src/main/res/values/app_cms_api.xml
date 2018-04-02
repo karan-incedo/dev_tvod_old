@@ -391,6 +391,8 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_action_articlepage_key">articleDetailPage</string>
+    <string name="app_cms_action_photo_gallerypage_key">PhotoGalleryDetailPage</string>
     <string name="app_cms_action_moviespage_key">showMoviesPage</string>
     <string name="app_cms_module_showdetail_key">ShowDetailModule</string>
     <string name="app_cms_action_historypage_key">My History</string>
@@ -639,7 +641,10 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
-
+    <string name="app_cms_page_path_article">article</string>
+    <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
+    <string name="app_cms_page_article_detail_module">ArticleDetailModule</string>
+    <string name="app_cms_page_photo_gallery_detail_module">PhotogalleryDetailModule</string>
     <!-- AppCMS Content Types -->
     <string name="app_cms_video_content_type">VIDEO</string>
     <string name="app_cms_series_content_type">SERIES</string>
