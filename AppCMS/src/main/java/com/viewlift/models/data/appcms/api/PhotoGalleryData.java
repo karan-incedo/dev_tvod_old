@@ -1,18 +1,28 @@
 package com.viewlift.models.data.appcms.api;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Created by ram.kailash on 2/14/2018.
  */
 
 public class PhotoGalleryData {
 
+    @Expose
     private String id;
+    @Expose
     private String secureUrl;
+    @Expose
     private String name;
+    @Expose
     private String alt;
+    @Expose
     private String caption;
+    @Expose
     private String description;
+    @Expose
     private String imageType;
+    @Expose
     private String url;
 
     public String getId() {

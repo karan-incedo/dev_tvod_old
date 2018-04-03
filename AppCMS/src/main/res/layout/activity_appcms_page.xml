@@ -10,33 +10,34 @@
         android:id="@+id/new_version_available_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:textColor="@android:color/white"
-        tools:background="@android:color/black"
+        android:elevation="@dimen/new_version_available_elevation"
         android:visibility="gone"
-        android:elevation="@dimen/new_version_available_elevation">
+        tools:background="@android:color/black"
+        tools:textColor="@android:color/white">
+
         <TextView
             android:id="@+id/new_version_available_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:singleLine="false"
-            android:layout_marginStart="@dimen/app_cms_upgrade_now_text_margin"
             android:layout_marginEnd="@dimen/app_cms_upgrade_now_text_margin"
+            android:layout_marginStart="@dimen/app_cms_upgrade_now_text_margin"
+            android:singleLine="false"
+            android:textAlignment="center"
             android:textSize="@dimen/a_new_version_of_the_app_is_available_textsize" />
 
         <ImageButton
             android:id="@+id/new_version_available_close_button"
             android:layout_width="@dimen/new_version_available_close_button_size"
             android:layout_height="@dimen/new_version_available_close_button_size"
-            android:layout_marginTop="0dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/close_button_margin"
             android:layout_marginEnd="0dp"
             android:layout_marginStart="@dimen/close_button_margin"
-            android:layout_marginBottom="@dimen/close_button_margin"
+            android:layout_marginTop="0dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
             android:padding="0dp"
-            android:src="@drawable/cancel"
-            android:layout_gravity="end"/>
+            android:scaleType="fitCenter"
+            android:src="@drawable/cancel" />
 
     </FrameLayout>
 
@@ -72,13 +73,14 @@
                     android:padding="5dp"
                     android:src="@drawable/profile"
                     android:visibility="gone" />
+
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:src="@drawable/logo_icon"
-                    android:scaleType="centerInside" />
+                    android:scaleType="centerInside"
+                    android:src="@drawable/logo_icon" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -86,6 +88,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:orientation="horizontal">
+
                     <ImageButton
                         android:id="@+id/app_cms_search_button"
                         android:layout_width="@dimen/close_button_size"
@@ -94,7 +97,8 @@
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
                         android:src="@drawable/icon_search"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
+
                     <ImageButton
                         android:id="@+id/app_cms_share_button"
                         android:layout_width="@dimen/close_button_size"
@@ -144,10 +148,9 @@
             android:id="@+id/app_cms_start_free_trial_tool"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:textSize="16sp"
             android:gravity="center"
-            android:visibility="gone"
-            />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -178,8 +181,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/controls_container"
             android:layout_alignParentTop="true"
-            android:alpha="1"
-             />
+            android:alpha="1" />
 
         <FrameLayout
             android:id="@+id/app_cms_addon_fragment"
@@ -195,8 +197,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:paddingTop="2dp"
-            >
+            android:paddingTop="2dp">
 
             <FrameLayout
                 android:id="@+id/app_cms_cast_conroller"
@@ -204,6 +205,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:visibility="visible" />
+
             <fragment
                 android:id="@+id/fragment_playback_controls"
                 android:name="com.viewlift.Audio.ui.PlaybackControlsFragment"
@@ -215,12 +217,12 @@
         </FrameLayout>
 
         <!--<RelativeLayout-->
-            <!--android:id="@+id/app_cms_controller"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:background="#00000000"-->
-            <!--android:visibility="visible">-->
+        <!--android:id="@+id/app_cms_controller"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="#00000000"-->
+        <!--android:visibility="visible">-->
 
         <!--</RelativeLayout>-->
 

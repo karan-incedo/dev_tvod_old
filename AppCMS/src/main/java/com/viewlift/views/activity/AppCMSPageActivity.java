@@ -826,7 +826,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         manageTopBar();
         createTabBar();
         startFreeTrialTool();
-
+        setToolItemsUIColor();
 
         //Settings The Firebase Analytics for Android
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -835,7 +835,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
 
-        setToolItemsUIColor();
+
 
         closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
@@ -2475,7 +2475,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-        if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getRight() != null && appCMSPresenter.getNavigation().getRight().size() > 0) {
+        if (appCMSPresenter.getNavigation() != null
+                && appCMSPresenter.getNavigation().getRight() != null &&
+                appCMSPresenter.getNavigation().getRight().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getRight().size(); i++) {
                 if (appCMSPresenter.getNavigation().getRight().get(i).getDisplayedPath().equalsIgnoreCase("Search Screen")) {
                     mSearchTopButton.setVisibility(View.VISIBLE);
@@ -2677,6 +2679,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (pathSegment.contains(getString(R.string.app_cms_shows_deeplink_path_name))) {
                 action = getString(R.string.app_cms_action_showvideopage_key);
             }
+        }
+
+        if(pagePath.toString().contains(getString(R.string.app_cms_page_path_article))){
+            appCMSPresenter.setCurrentArticleIndex(-1);
+            action = getString(R.string.app_cms_action_articlepage_key);
+        }else if(pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))){
+            action = getString(R.string.app_cms_action_photo_gallerypage_key);
         }
 
         appCMSPresenter.forceLoad();
