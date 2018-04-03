@@ -1,9 +1,9 @@
-#Thu Feb 08 10:53:08 IST 2018
+#Mon Apr 02 23:29:03 IST 2018
 ApptentiveSignatureKey=eae409e7107d8a84977a67d4fa67b037
-GcmSender=525148171038
+GcmSender=206154365343
 AppTitle=IdentityTB
-HostNameSuffix=*.theidentitytb.viewlift.com
-UAirshipDevelopmentAppKey=KGYZyts8S6-Y1pwbL88k0w
+HostNameSuffix=*.www.theidentitytb.com/
+UAirshipDevelopmentAppKey=vI-FgreGSN6T46e_W96DpA
 AppName=IdentityTB
 AppPackageName=com.tb.theidentitytb
 UAirshipProductionAppSecret=bWW_SJJHS6SOrBMXwBEexw
@@ -11,23 +11,23 @@ TvBannerUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b1
 UAirshipInProduction=true
 ShortDescription=Short description will come here
 UAirshipProductionAppKey=vI-FgreGSN6T46e_W96DpA
-UAirshipDevelopmentAppSecret=8TUYYq3sQnK6HfbcMkToyg
-BaseUrl=https\://appcms.viewlift.com/
+UAirshipDevelopmentAppSecret=bWW_SJJHS6SOrBMXwBEexw
+BaseUrl=https\://appcmsprod.viewlift.com/
 AppIconUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/icon.png
 ApptentiveApiKey=ANDROID-IDENTITYTB-73a800eadacf
 AppsFlyerDevKey=00000000000
 JsonKeyFile=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/googleplay_android.json
 FeatureGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/featureGraphic.png
-SiteId=3f6f15c7-8454-462f-917e-2c427c95fa1d
-HostName=theidentitytb.viewlift.com
+SiteId=6fef71e8-3185-432f-8431-106c2be042c8
+HostName=www.theidentitytb.com
 AppResourcesPath=https\://appcms.viewlift.com/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources
 PromoVideoUrl=https\://www.youtube.com/watch?v\=PDhVJfEFxik
 AppsFlyerProdKey=00000000000
 Track=beta
 FullDescription=Full description will come here
-Keystorepass=hoichoi
-AppVersionName=1.0.1
-AliasName=hoichoi
+Keystorepass=tampabay123
+AppVersionName=1.0.15
+AliasName=tampabay
 PromoGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/promoGraphic.png
 AppVersionCode=1
 FacebookAppId=2137708136458067
