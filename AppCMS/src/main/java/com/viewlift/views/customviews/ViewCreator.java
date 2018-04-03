@@ -1741,8 +1741,9 @@ public class ViewCreator {
 //                            AppCMSPageUI.class);
 //                    module = appCMSPageUI1.getModuleList().get(3);
 //                }
-// else
-                    {
+
+//                else
+                {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
 
@@ -1892,18 +1893,22 @@ public class ViewCreator {
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
 
-                        createComponentView(context,
-                                component,
-                                module.getLayout(),
-                                moduleAPI,
-                                appCMSAndroidModules,
-                                pageView,
-                                module.getSettings(),
-                                jsonValueKeyMap,
-                                appCMSPresenter,
-                                false,
-                                module.getView(),
-                                module.getId());
+                        try {
+                            createComponentView(context,
+                                    component,
+                                    module.getLayout(),
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    pageView,
+                                    module.getSettings(),
+                                    jsonValueKeyMap,
+                                    appCMSPresenter,
+                                    false,
+                                    module.getView(),
+                                    module.getId());
+                        }catch (NullPointerException e){
+
+                        }
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
@@ -3563,9 +3568,7 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
-                            (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                                    numSeasons == 0)) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -3782,8 +3785,9 @@ public class ViewCreator {
                                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                    if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&
+
+                                    if (moduleAPI != null &&
+                                            moduleAPI.getContentData() != null &&
                                             moduleAPI.getContentData().get(0) != null &&
                                             moduleAPI.getContentData().get(0).getSeason() != null &&
                                             !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
@@ -4509,15 +4513,15 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                        moduleAPI != null && moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getSeason() != null &&
-                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
-                    componentViewResult.componentView.setVisibility(View.GONE);
-                    componentViewResult.shouldHideComponent = true;
-                }
+//                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+//                        moduleAPI != null && moduleAPI.getContentData() != null &&
+//                        !moduleAPI.getContentData().isEmpty() &&
+//                        moduleAPI.getContentData().get(0) != null &&
+//                        moduleAPI.getContentData().get(0).getSeason() != null &&
+//                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
+//                    componentViewResult.componentView.setVisibility(View.GONE);
+//                    componentViewResult.shouldHideComponent = true;
+//                }
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,

@@ -740,6 +740,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(data.getGist().getTitle());
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
