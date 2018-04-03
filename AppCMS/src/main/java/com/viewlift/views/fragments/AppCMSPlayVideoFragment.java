@@ -17,6 +17,7 @@ import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -434,7 +435,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     cancel();
                                     entitlementCheckCancelled = true;
                                 } else {
-                                    //Log.d(TAG, "User is subscribed - resuming video");
+                                    Log.d(TAG, "User is subscribed - resuming video");
                                 }
                                 playedVideoSecs++;
                                 appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
