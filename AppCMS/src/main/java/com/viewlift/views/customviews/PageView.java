@@ -354,7 +354,11 @@ public class PageView extends BaseView {
 
     public void scrollToPosition(int position) {
         if (childrenContainer != null) {
-            ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+            if (position==0) {
+                childrenContainer.scrollBy(position, position);
+            }else {
+                 ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+            }
         }
     }
     private static class ViewDimensions {
