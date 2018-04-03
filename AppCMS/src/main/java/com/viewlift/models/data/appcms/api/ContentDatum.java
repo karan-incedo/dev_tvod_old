@@ -3,7 +3,6 @@ package com.viewlift.models.data.appcms.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.audio.AudioAssets;
-import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.vimeo.stag.UseStag;
 
@@ -105,6 +104,9 @@ public class ContentDatum implements Serializable {
     @SerializedName("creditBlocks")
     @Expose
     List<CreditBlock> creditBlocks = null;
+    @SerializedName("showDetails")
+    @Expose
+    ShowDetails showDetails;
 
     @SerializedName("parentalRating")
     @Expose
@@ -165,6 +167,7 @@ public class ContentDatum implements Serializable {
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
 
     public Gist getGist() {
         return gist;
@@ -358,6 +361,14 @@ public class ContentDatum implements Serializable {
         this.planDetails = planDetails;
     }
 
+    public ShowDetails getShowDetails() {
+        return showDetails;
+    }
+
+    public void setShowDetails(ShowDetails showDetails) {
+        this.showDetails = showDetails;
+    }
+
     public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
@@ -372,8 +383,7 @@ public class ContentDatum implements Serializable {
         return appCMSPageAPI;
     }
 
-    @SerializedName("audioList")
-    @Expose
+
     List<AudioList> audioList = null;
 
     public List<AudioList> getAudioList() {
@@ -384,8 +394,6 @@ public class ContentDatum implements Serializable {
         this.audioList = audioList;
     }
 
-    @SerializedName("audioAssets")
-    @Expose
     AudioAssets audioAssets = null;
 
     public AudioAssets getAudioAssets() {
@@ -394,16 +402,6 @@ public class ContentDatum implements Serializable {
 
     public void setAudioAssets(AudioAssets audioAssets) {
         this.audioAssets = audioAssets;
-    }
-
-    AudioGist audioGist;
-
-    public AudioGist getAudioGist() {
-        return audioGist;
-    }
-
-    public void setAudioGist(AudioGist audioGist) {
-        this.audioGist = audioGist;
     }
 
 

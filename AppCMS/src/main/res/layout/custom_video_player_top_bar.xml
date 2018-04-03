@@ -44,7 +44,7 @@
             android:visibility="invisible" />
 
         <com.viewlift.views.customviews.AlwaysSelectedTextView
-            android:id="@+id/app_cms_video_player_title_view"
+            android:id="@+id/app_cms_mini_video_player_title_view"
             android:layout_width="352dp"
             android:layout_height="56dp"
             android:layout_gravity="center"

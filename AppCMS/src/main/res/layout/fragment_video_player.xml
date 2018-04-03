@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:background="#CC000000"
             android:orientation="horizontal">
 
             <Button
@@ -100,6 +101,7 @@
             android:visibility="gone">
 
             <ProgressBar
+                android:id="@+id/video_loading_progress_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />

@@ -48,6 +48,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public void setmRowsAdapter(ArrayObjectAdapter rowsAdapter) {
         this.mRowsAdapter = rowsAdapter;
+        //mRowsAdapter.notifyItemRangeChanged(0, rowsAdapter.size());
+        // todo check anas azeem
     }
 
     @Override
@@ -119,10 +121,23 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                        -1,
-                        null,
-                        rowData.contentData.getGist().getWatchedTime());
+                if (null != rowData.contentData.getGist().getContentType() &&
+                        rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    appCMSPresenter.launchTVButtonSelectedAction(
+                            rowData.contentData.getGist().getPermalink(),
+                            "showDetailPage",
+                            rowData.contentData.getGist().getTitle(),
+                            null,
+                            rowData.contentData,
+                            false,
+                            -1,
+                            null);
+                } else {
+                    appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                            -1,
+                            rowData.relatedVideoIds,
+                            rowData.contentData.getGist().getWatchedTime());
+                }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
             }
@@ -138,7 +153,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if(appCMSPresenter.isFullScreenVisible){
+            if(AppCMSPresenter.isFullScreenVisible){
                 return;
             }
             if (null != item && item instanceof BrowseFragmentRowData) {
@@ -164,10 +179,19 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 }
                 ContentDatum data = rowData.contentData;
 
-                String action = /*"play"*/rowData.action;
+                String action = rowData.action;
+
+                if(appCMSPresenter.getAppCMSMain().getFeatures().isTrickPlay()){
+                    action = getString(R.string.app_cms_action_watchvideo_key);
+                }
+
                 if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
                     pushedPlayKey();
                 } else {
+                    if (null != rowData.contentData.getGist().getContentType() &&
+                            rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")){
+                        action = "showDetailPage";
+                    }
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
@@ -215,7 +239,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if(appCMSPresenter.isFullScreenVisible){
+            if(AppCMSPresenter.isFullScreenVisible){
                 return;
             }
 
@@ -242,6 +266,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
                                (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
+                    } else if (rowData.blockName.equalsIgnoreCase("showDetail01")){
+                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.browse_fragment_show_season_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
@@ -262,7 +290,11 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private void showMoreContentIcon(){
         if(isPlayerComponentSelected && isFirstTime && mRowsAdapter != null && mRowsAdapter.size() > 1){
             isFirstTime = false;
-            getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            } else {
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+            }
         }
         hideFooterControls();
     }
@@ -292,14 +324,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         },51);
 
         super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.pausePlayer();
-        }
-        super.onStop();
     }
 
     public CustomTVVideoPlayerView getCustomVideoVideoPlayerView(){

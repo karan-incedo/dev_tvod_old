@@ -42,8 +42,12 @@ public class StreamingInfo implements Serializable {
         this.videoAssets = videoAssets;
     }
 
-    public AudioAssets getAudioAssets() {
+    public AudioAssets  getAudioAssets() {
         return audioAssets;
+    }
+
+    public void setAudioAssets(AudioAssets  audioAssets) {
+        this.audioAssets = audioAssets;
     }
 
     public String getCuePoints() {
@@ -52,9 +56,5 @@ public class StreamingInfo implements Serializable {
 
     public void setCuePoints(String cuePoints) {
         this.cuePoints = cuePoints;
-    }
-
-    public void setAudioAssets(AudioAssets audioAssets) {
-        this.audioAssets = audioAssets;
     }
 }

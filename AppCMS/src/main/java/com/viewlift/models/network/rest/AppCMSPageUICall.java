@@ -3,9 +3,11 @@ package com.viewlift.models.network.rest;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -41,7 +44,20 @@ public class AppCMSPageUICall {
     }
 
     @WorkerThread
-    public AppCMSPageUI call(String url, long timeStamp, boolean loadFromFile) throws IOException {
+    public boolean writeToFile(AppCMSPageUI appCMSPageUI, String url) {
+        String filename = getResourceFilename(url);
+        try {
+            writePageToFile(filename, appCMSPageUI);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to write AppCMSPageUI file: " +
+                    url);
+        }
+        return false;
+    }
+
+    @WorkerThread
+    public AppCMSPageUI call(String url, boolean bustCache, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
         if (loadFromFile) {
@@ -49,16 +65,39 @@ public class AppCMSPageUICall {
                 appCMSPageUI = readPageFromFile(filename);
                 appCMSPageUI.setLoadedFromNetwork(false);
             } catch (Exception e) {
-                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
                 try {
-                    loadFromNetwork(url, filename);
+                    if (bustCache) {
+                        StringBuilder urlWithCacheBuster = new StringBuilder(url);
+                        urlWithCacheBuster.append("&x=");
+                        urlWithCacheBuster.append(new Date().getTime());
+                        appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename);
+                    } else {
+                        appCMSPageUI = loadFromNetwork(url, filename);
+                    }
                 } catch (Exception e2) {
                     //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
 //                        e2.getMessage());
                 }
             }
         } else {
-            appCMSPageUI = loadFromNetwork(url, filename);
+            if (bustCache) {
+                StringBuilder urlWithCacheBuster = new StringBuilder(url);
+                urlWithCacheBuster.append("&x=");
+                urlWithCacheBuster.append(new Date().getTime());
+                appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename);
+            } else {
+                appCMSPageUI = loadFromNetwork(url, filename);
+            }
+
+            if (appCMSPageUI == null) {
+                try {
+                    appCMSPageUI = readPageFromFile(filename);
+                    appCMSPageUI.setLoadedFromNetwork(false);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                }
+            }
         }
         return appCMSPageUI;
     }
@@ -71,7 +110,7 @@ public class AppCMSPageUICall {
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {
-
+            Log.e(TAG, "Error receiving network data " + url + ": " + e.getMessage());
         }
         return appCMSPageUI;
     }

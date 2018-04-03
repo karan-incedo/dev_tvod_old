@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -26,21 +29,29 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.cast.Cast;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
@@ -50,6 +61,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -57,6 +70,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import rx.functions.Action0;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -67,11 +82,21 @@ import static android.view.View.VISIBLE;
  * A simple {@link Fragment} subclass.
  */
 public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickListener {
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+    private final Handler mHandler = new Handler();
+    private final ScheduledExecutorService mExecutorService =
+            Executors.newSingleThreadScheduledExecutor();
     @BindView(R.id.track_image)
     ImageView trackImage;
+
+    @BindView(R.id.track_image_blurred)
+    ImageView track_image_blurred;
+
     @BindView(R.id.track_name)
     TextView trackName;
     @BindView(R.id.artist_name)
+
     TextView artistName;
     @BindView(R.id.track_year)
     TextView trackYear;
@@ -83,6 +108,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     TextView trackEndTime;
     @BindView(R.id.seek_audio)
     SeekBar seekAudio;
+    @BindView(R.id.seek_volume)
+    SeekBar seekVolume;
     @BindView(R.id.shuffle)
     ImageButton shuffle;
     @BindView(R.id.prev)
@@ -95,24 +122,22 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     ImageButton playlist;
     @BindView(R.id.extra_info)
     TextView extra_info;
-
     @BindView(R.id.progressBarLoading)
     ProgressBar progressBarLoading;
-
-
     @BindView(R.id.progressBarPlayPause)
     ProgressBar progressBarPlayPause;
-
-
-
-    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
-    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
-    private final Handler mHandler = new Handler();
+    int currentProgess;
+    VolumeObserver volumeObserver;
+    boolean isVisible = true;
+    long duration = 0;
     private MediaBrowserCompat mMediaBrowser;
     private Drawable mPauseDrawable;
     private Drawable mPlayDrawable;
     private String mCurrentArtUrl;
     private OnUpdateMetaChange onUpdateMetaChange;
+    private ScheduledFuture<?> mScheduleFuture;
+    private PlaybackStateCompat mLastPlaybackState;
+    boolean isDialogVisible = false;
 
     private final Runnable mUpdateProgressTask = new Runnable() {
         @Override
@@ -120,14 +145,36 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             updateProgress();
         }
     };
-
-    private final ScheduledExecutorService mExecutorService =
-            Executors.newSingleThreadScheduledExecutor();
-
-    private ScheduledFuture<?> mScheduleFuture;
-    private PlaybackStateCompat mLastPlaybackState;
-
     private AppCMSPresenter appCMSPresenter;
+    private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
+        @Override
+        public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+            System.out.println("update playback state in fullscreen" + state);
+            updatePlaybackState(state);
+        }
+
+        @Override
+        public void onMetadataChanged(MediaMetadataCompat metadata) {
+            if (metadata != null) {
+                currentProgess = 0;
+                updateMediaDescription(metadata);
+                updateDuration(metadata);
+                onUpdateMetaChange.updateMetaData(metadata);
+//                checkSubscription(metadata);
+            }
+        }
+    };
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    try {
+                        connectToSession(mMediaBrowser.getSessionToken());
+                    } catch (RemoteException e) {
+                    }
+                }
+            };
+
 
     public static AppCMSPlayAudioFragment newInstance(Context context) {
         AppCMSPlayAudioFragment appCMSPlayAudioFragment = new AppCMSPlayAudioFragment();
@@ -149,41 +196,17 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     }
 
-    private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
-        @Override
-        public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-            System.out.println("update playback state in fullscreen" + state);
-            updatePlaybackState(state);
-        }
-
-        @Override
-        public void onMetadataChanged(MediaMetadataCompat metadata) {
-            if (metadata != null) {
-                updateMediaDescription(metadata);
-                updateDuration(metadata);
-                onUpdateMetaChange.updateMetaData(metadata);
-            }
-        }
-    };
-
-    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
-            new MediaBrowserCompat.ConnectionCallback() {
-                @Override
-                public void onConnected() {
-                    try {
-                        connectToSession(mMediaBrowser.getSessionToken());
-                    } catch (RemoteException e) {
-                    }
-                }
-            };
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMediaBrowser = new MediaBrowserCompat(getActivity(),
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
-
+        recevierPreview = new PreviewReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
+        getActivity().registerReceiver(recevierPreview, intentFilter);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -198,7 +221,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         playlist.setOnClickListener(this);
         mPauseDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.pause_track);
         mPlayDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.play_track);
-
+        isDialogVisible = false;
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication()).
                 getAppCMSPresenterComponent().appCMSPresenter();
         if (!BaseView.isTablet(getActivity())) {
@@ -207,6 +230,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         seekAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                currentProgess = (progress / 1000);
                 trackStartTime.setText(DateUtils.formatElapsedTime(progress / 1000));
             }
 
@@ -221,36 +245,69 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 scheduleSeekbarUpdate();
             }
         });
-        if (savedInstanceState == null) {
-            updateFromParams(getActivity().getIntent());
-        }
+        updateFromParams(getActivity().getIntent());
+
         setProgress();
         updataeShuffleState();
-        getActivity().registerReceiver(mMessageReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_ACTION));
 
-        getActivity().registerReceiver(mMessageReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION));
+        setPlaylistVisibility();
+
+        final AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int initVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        seekVolume.setMax(maxVolume);
+        seekVolume.setProgress(initVolume);
+        seekVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
+                        .getCurrentCastSession();
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+
+//                if (castSession != null && castSession.isConnected()) {
+////                    audioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, i, AudioManager.ADJUST_SAME);
+//
+//                    audioManager.adjustSuggestedStreamVolume(AudioManager.ADJUST_RAISE,
+//                            AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.FLAG_SHOW_UI);
+////                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+//
+//                } else {
+//                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+//
+//                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        volumeObserver = new VolumeObserver(getActivity(), new Handler());
+
+        setTypeFace(getContext(), trackName, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), artistName, getContext().getString(R.string.opensans_bold_ttf));
+        setTypeFace(getContext(), trackYear, getContext().getString(R.string.opensans_semibold_ttf));
+        setTypeFace(getContext(), albumName, getContext().getString(R.string.opensans_bold_ttf));
+
         return rootView;
     }
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_ACTION)) {
-                progressBarPlayPause.setVisibility(VISIBLE);
-                playPauseTrack.setVisibility(GONE);
-            }
-            if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION)) {
-                progressBarPlayPause.setVisibility(INVISIBLE);
-                playPauseTrack.setVisibility(VISIBLE);
+    @Override
+    public void onResume() {
+        super.onResume();
+        isVisible = true;
+        audioPreview(false);
+        appCMSPresenter.setCancelAllLoads(false);
 
-
-            }
-            // Get extra data included in the Intent
-
-        }
-    };
+        getActivity().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, volumeObserver);
+    }
 
     private void setProgress() {
         if (progressBarLoading != null) {
@@ -258,7 +315,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 progressBarLoading.getIndeterminateDrawable().setTint(Color.parseColor(appCMSPresenter.getAppCMSMain()
                         .getBrand().getCta().getPrimary().getBackgroundColor()));
             } catch (Exception e) {
-//                //Log.w(TAG, "Failed to set color for loader: " + e.getMessage());
                 progressBarLoading.getIndeterminateDrawable().setTint(ContextCompat.getColor(getActivity(), R.color.colorAccent));
             }
         }
@@ -268,11 +324,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (appCMSPresenter.getAudioShuffledPreference()) {
             int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-            applyTintToDrawable(shuffle.getDrawable(), tintColor);
+            applyTintToDrawable(shuffle.getBackground(), tintColor);
         } else {
 
             int tintColor = (getActivity().getResources().getColor(android.R.color.darker_gray));
-            applyTintToDrawable(shuffle.getDrawable(), tintColor);
+            applyTintToDrawable(shuffle.getBackground(), tintColor);
         }
     }
 
@@ -314,6 +370,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     case PlaybackStateCompat.STATE_STOPPED:
                         controls.play();
                         scheduleSeekbarUpdate();
+                        audioPreview(true);
                         break;
                     default:
                 }
@@ -331,6 +388,42 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             } else {
                 Toast.makeText(getActivity(), getString(R.string.not_item_available_inqueue), Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+
+    void audioPreview(boolean isPlay) {
+        if (getActivity() != null
+                && MediaControllerCompat.getMediaController(getActivity()) != null
+                && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
+            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+            MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
+            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+            if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+                if (isPlay) {
+                    controls.play();
+                }
+                scheduleSeekbarUpdate();
+            } else {
+                if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+                        && appCMSPresenter.getAppCMSMain().getFeatures() != null
+                        && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                    if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                        if ((currentProgess) >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                            stopSeekbarUpdate();
+                            showEntitleMentDialog();
+                        }
+                    }
+                } else {
+                    showEntitleMentDialog();
+                }
+            }
+        }
+    }
+
+    private void setPlaylistVisibility() {
+        if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() == null) {
+            playlist.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -356,6 +449,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
             scheduleSeekbarUpdate();
         }
+        checkSubscription(metadata);
     }
 
     private void updateFromParams(Intent intent) {
@@ -406,6 +500,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mCallback);
         }
+        isVisible = false;
     }
 
     @Override
@@ -413,22 +508,31 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         super.onDestroy();
         stopSeekbarUpdate();
         mExecutorService.shutdown();
-        getActivity().unregisterReceiver(mMessageReceiver);
+        getActivity().unregisterReceiver(recevierPreview);
+        getActivity().getContentResolver().unregisterContentObserver(volumeObserver);
+
     }
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
         if (description.getIconUri() == null) {
-            return;
+            track_image_blurred.setImageResource(R.drawable.placeholder_audio);
+            mCurrentArtUrl = "";
+        } else {
+            mCurrentArtUrl = description.getIconUri().toString();
+
         }
-        String artUrl = description.getIconUri().toString();
-        mCurrentArtUrl = artUrl;
 
 
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
+            RequestOptions requestOptions = new RequestOptions().centerInside().error(R.drawable.placeholder_audio)
+                    .transform(new ImageBlurTransformation(getContext(), mCurrentArtUrl));
             Glide.with(getActivity())
-                    .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.logo)
+                    .load(mCurrentArtUrl).apply(new RequestOptions().centerInside()
+                    .fitCenter())
                     .into(trackImage);
+            Glide.with(getActivity())
+                    .load(mCurrentArtUrl).apply(requestOptions)
+                    .into(track_image_blurred);
         }
 
     }
@@ -437,16 +541,79 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (metaData == null) {
             return;
         }
+        String directorName = "";
         trackName.setText(metaData.getDescription().getTitle());
-        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        String albumInfo=metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR)+" | "+metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
-        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
-        trackYear.setText(albumInfo);
-
+        if (metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR) != null && !TextUtils.isEmpty(metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR))) {
+            directorName = (String) metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR);
+            directorName = " (" + directorName + ")";
+        }
+        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST) + "" + directorName);
+        String trackYearValue = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + "";
+        if (TextUtils.isEmpty(trackYearValue)) {
+            trackYear.setVisibility(View.GONE);
+        } else {
+            trackYear.setVisibility(View.VISIBLE);
+            trackYear.setText(trackYearValue);
+            trackYear.setLetterSpacing(0.3f);
+            trackYear.setAllCaps(true);
+        }
         fetchImageAsync(metaData.getDescription());
     }
 
-    long duration = 0;
+    public void checkSubscription(MediaMetadataCompat metadata) {
+        if (getActivity() != null) {
+            audioPreview(false);
+        }
+    }
+
+    private void showEntitleMentDialog() {
+        MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+        if (!((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn())) {
+            controls.pause();
+            stopSeekbarUpdate();
+            if (!isDialogVisible && isVisible && getActivity() != null) {
+                isDialogVisible = true;
+                appCMSPresenter.setAudioPlayerOpen(true);
+                if (appCMSPresenter.isUserLoggedIn()) {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown = false;
+                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    isDialogVisible = false;
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                        appCMSPresenter.stopAudioServices();
+                                        stopSeekbarUpdate();
+                                    }
+                                }
+                            });
+                } else {
+                    if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
+                        appCMSPresenter.dialog.dismiss();
+                        appCMSPresenter.isDialogShown = false;
+
+                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    isDialogVisible = false;
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                        appCMSPresenter.stopAudioServices();
+                                        stopSeekbarUpdate();
+
+                                    }
+                                }
+                            });
+                }
+            }
+        }
+    }
 
     private void updateDuration(MediaMetadataCompat metadata) {
         if (metadata == null) {
@@ -476,26 +643,26 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         } else {
             extra_info.setVisibility(View.GONE);
         }
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        MediaMetadataCompat metadata = controller.getMetadata();
+//        checkSubscription(metadata);
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPauseDrawable);
                 progressBarPlayPause.setVisibility(GONE);
                 scheduleSeekbarUpdate();
+
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-//                mControllers.setVisibility(VISIBLE);
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
-
+                updateProgress();
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
-//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
                 progressBarPlayPause.setVisibility(GONE);
@@ -505,9 +672,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
             case PlaybackStateCompat.STATE_BUFFERING:
                 playPauseTrack.setVisibility(INVISIBLE);
-//                progressBarLoading.setVisibility(VISIBLE);
                 progressBarPlayPause.setVisibility(View.VISIBLE);
                 stopSeekbarUpdate();
+
                 break;
             default:
         }
@@ -533,6 +700,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
         seekAudio.setProgress((int) currentPosition);
+        currentProgess = (int) (currentPosition / 1000);
+        audioPreview(false);
+
     }
 
     @Override
@@ -545,4 +715,90 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         void updateMetaData(MediaMetadataCompat metadata);
     }
 
+    public class VolumeObserver extends ContentObserver {
+        private AudioManager audioManager;
+
+        public VolumeObserver(Context context, Handler handler) {
+            super(handler);
+            audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return false;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
+                    .getCurrentCastSession();
+            if (castSession != null && castSession.isConnected()) {
+                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+            } else {
+                seekVolume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+            }
+
+        }
+    }
+
+    private PreviewReceiver recevierPreview;
+
+    private class PreviewReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+
+            if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE)) {
+                audioPreview(false);
+            }
+        }
+    }
+
+    private void setTypeFace(Context context,
+                             TextView view, String fontType) {
+        if (null != context && null != view && null != fontType) {
+            try {
+                Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
+                view.setTypeface(face);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static class ImageBlurTransformation extends BlurTransformation {
+        private final String ID;
+
+        public ImageBlurTransformation(Context context, String imageUrl) {
+            super(context);
+            this.ID = imageUrl;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ImageBlurTransformation;
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            try {
+                byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
+                messageDigest.update(ID_BYTES);
+            } catch (UnsupportedEncodingException e) {
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return ID.hashCode();
+        }
+
+        @NonNull
+        @Override
+        public Resource<Bitmap> transform(@NonNull Context context, @NonNull Resource<Bitmap> resource, int outWidth, int outHeight) {
+            return super.transform(resource, outWidth, outHeight);
+        }
+    }
 }

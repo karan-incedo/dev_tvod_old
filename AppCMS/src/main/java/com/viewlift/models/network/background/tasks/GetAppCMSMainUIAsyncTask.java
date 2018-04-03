@@ -35,7 +35,8 @@ public class GetAppCMSMainUIAsyncTask {
                             return call.call(params.context,
                                     params.siteId,
                                     0,
-                                    params.forceReloadFromNetwork);
+                                    params.bustCache,
+                                    params.networkDisconnected);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -44,13 +45,15 @@ public class GetAppCMSMainUIAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 
     public static class Params {
         Context context;
         String siteId;
-        boolean forceReloadFromNetwork;
+        boolean bustCache;
+        boolean networkDisconnected;
 
         public static class Builder {
             Params params;
@@ -69,8 +72,13 @@ public class GetAppCMSMainUIAsyncTask {
                 return this;
             }
 
-            public Builder forceReloadFromNetwork(boolean forceReloadFromNetwork) {
-                params.forceReloadFromNetwork = forceReloadFromNetwork;
+            public Builder bustCache(boolean bustCache) {
+                params.bustCache = bustCache;
+                return this;
+            }
+
+            public Builder networkDisconnected(boolean networkDisconnected) {
+                params.networkDisconnected = networkDisconnected;
                 return this;
             }
 

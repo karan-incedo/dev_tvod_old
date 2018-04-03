@@ -54,7 +54,7 @@ android {
         versionCode 78
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 26
+        renderscriptTargetApi 27
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }

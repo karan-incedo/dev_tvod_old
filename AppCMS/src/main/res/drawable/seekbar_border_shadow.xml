@@ -6,9 +6,9 @@
                 android:radius="5dp" />
             <gradient
                 android:angle="270"
-                android:startColor="@android:color/darker_gray"
-                android:centerColor="@android:color/darker_gray"
-                android:endColor="@android:color/darker_gray"
+                android:startColor="@color/audioSeekBg"
+                android:centerColor="@color/audioSeekBg"
+                android:endColor="@color/audioSeekBg"
                 android:centerY="0.2"
                 android:type="linear"
                 />

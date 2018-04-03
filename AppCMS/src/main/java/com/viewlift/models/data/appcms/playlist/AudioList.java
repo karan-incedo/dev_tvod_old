@@ -3,10 +3,12 @@ package com.viewlift.models.data.appcms.playlist;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.ImageGist;
-import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.vimeo.stag.UseStag;
+
+import java.util.List;
 
 /**
  * Created by wishy.gupta on 09-01-2018.
@@ -15,28 +17,34 @@ import com.vimeo.stag.UseStag;
 public class AudioList {
     @SerializedName("gist")
     @Expose
-    AudioGist gist;
+    Gist gist;
 
-    public AudioGist getGist() {
+
+    @SerializedName("creditBlocks")
+    @Expose
+    List<CreditBlock> creditBlocks = null;
+
+    public List<CreditBlock> getCreditBlocks() {
+        return creditBlocks;
+    }
+
+    public void setCreditBlocks(List<CreditBlock> creditBlocks) {
+        this.creditBlocks = creditBlocks;
+    }
+
+
+    public Gist getGist() {
         return gist;
     }
 
-    public void setGist(AudioGist gist) {
+    public void setGist(Gist gist) {
         this.gist = gist;
     }
 
     public ContentDatum convertToContentDatum() {
         ContentDatum contentDatum = new ContentDatum();
-        Gist gist=new Gist();
-        gist.setId(this.gist.getId());
-        gist.setPermalink(this.gist.getPermalink());
-        gist.setTitle(this.gist.getTitle());
-        gist.setDescription(this.gist.getDescription());
-        gist.setRuntime(this.gist.getRuntime());
-        gist.setImageGist(this.gist.getImageGist());
-        gist.setContentType(this.gist.getContentType());
-        gist.setMediaType(this.gist.getMediaType());
-        contentDatum.setGist(gist);
+        contentDatum.setCreditBlocks(this.creditBlocks);
+        contentDatum.setGist(this.gist);
         return contentDatum;
     }
 

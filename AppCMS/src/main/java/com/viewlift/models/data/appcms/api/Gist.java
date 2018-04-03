@@ -40,11 +40,19 @@ public class Gist implements Serializable {
 
     @SerializedName("publishDate")
     @Expose
-    long publishDate;
+    String publishDate;
 
     @SerializedName("runtime")
     @Expose
     long runtime;
+
+    public boolean isFree() {
+        return isFree;
+    }
+
+    @SerializedName("isFree")
+    @Expose
+    boolean isFree;
 
     @SerializedName("posterImageUrl")
     @Expose
@@ -64,11 +72,11 @@ public class Gist implements Serializable {
 
     @SerializedName("addedDate")
     @Expose
-    long addedDate;
+    String addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
+    String updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
@@ -98,19 +106,19 @@ public class Gist implements Serializable {
     @Expose
     String kisweEventId;
 
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
+
     String downloadStatus;
+    boolean isAudioPlaying;
+    long currentPlayingPosition;
+    Boolean isCastingConnected;
     /**
      * This is to store the url of the downloaded file
      */
     String localFileUrl;
-
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    @SerializedName("mediaType")
-    @Expose
-    String mediaType;
 
     public String getId() {
         return id;
@@ -168,11 +176,11 @@ public class Gist implements Serializable {
         this.free = free;
     }
 
-    public long getPublishDate() {
+    public String getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(long publishDate) {
+    public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -208,19 +216,19 @@ public class Gist implements Serializable {
         this.badgeImages = badgeImages;
     }
 
-    public long getAddedDate() {
+    public String getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(long addedDate) {
+    public void setAddedDate(String addedDate) {
         this.addedDate = addedDate;
     }
 
-    public long getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -307,7 +315,35 @@ public class Gist implements Serializable {
         this.kisweEventId = kisweEventId;
     }
 
+    public String getMediaType() {
+        return mediaType;
+    }
+
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public boolean isAudioPlaying() {
+        return isAudioPlaying;
+    }
+
+    public void setAudioPlaying(boolean audioPlaying) {
+        isAudioPlaying = audioPlaying;
+    }
+
+    public long getCurrentPlayingPosition() {
+        return currentPlayingPosition;
+    }
+
+    public void setCurrentPlayingPosition(long currentPlayingPosition) {
+        this.currentPlayingPosition = currentPlayingPosition;
+    }
+
+    public Boolean getCastingConnected() {
+        return isCastingConnected;
+    }
+
+    public void setCastingConnected(Boolean castingConnected) {
+        isCastingConnected = castingConnected;
     }
 }

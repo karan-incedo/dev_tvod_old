@@ -92,10 +92,15 @@ public class AppCMSDownloadQualityFragment extends Fragment
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-            if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
+
+            try {
+                if (!BaseView.isTablet(getContext())) {
+                    appCMSPresenter.restrictPortraitOnly();
+                } else {
+                    appCMSPresenter.unrestrictPortraitOnly();
+                }
+            } catch (Exception e) {
+
             }
         }
 

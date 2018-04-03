@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +13,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -42,7 +41,10 @@ public class AppCMSAndroidUICall {
     }
 
     @WorkerThread
-    public AppCMSAndroidUI call(String url, boolean loadFromFile, int tryCount) throws IOException {
+    public AppCMSAndroidUI call(String url,
+                                boolean loadFromFile,
+                                boolean bustCache,
+                                int tryCount) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSAndroidUI appCMSAndroidUI = null;
         if (loadFromFile) {
@@ -54,14 +56,27 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI == null) {
             try {
-                appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                if (bustCache) {
+                    StringBuilder urlWithCacheBuster = new StringBuilder(url);
+                    urlWithCacheBuster.append("&x=");
+                    urlWithCacheBuster.append(new Date().getTime());
+                    appCMSAndroidUI = appCMSAndroidUIRest.get(urlWithCacheBuster.toString()).execute().body();
+                } else {
+                    long start = System.currentTimeMillis();
+                    Log.d(TAG, "Start android.json request: " + start);
+                    appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                    long end = System.currentTimeMillis();
+                    Log.d(TAG, "End android.json request: " + end);
+                    Log.d(TAG, "android.json URL: " + url);
+                    Log.d(TAG, "Total Time android.json request: " + (end - start));
+                }
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
 //                    e.getMessage());
             }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
-            return call(url, loadFromFile, tryCount + 1);
+            return call(url, loadFromFile, bustCache, tryCount + 1);
         } else if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);

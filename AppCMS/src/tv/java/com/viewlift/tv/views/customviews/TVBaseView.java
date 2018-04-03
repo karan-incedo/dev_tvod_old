@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -41,8 +42,8 @@ public abstract class TVBaseView extends FrameLayout {
 
     public TVBaseView(@NonNull Context context) {
         super(context);
-        DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
-        DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
+        DEVICE_WIDTH = Utils.getDeviceWidth(getContext());
+        DEVICE_HEIGHT = Utils.getDeviceHeight(getContext());
     }
 
 
@@ -53,10 +54,31 @@ public abstract class TVBaseView extends FrameLayout {
     protected abstract Layout getLayout();
 
 
+    static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int number = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        if(data.getSeason() != null && data.getSeason().size() > 1){
+            number = data.getSeason().size();
+            stringBuilder.append(context.getResources().getString(R.string.seasons, number));
+        } else {
+            for (Season_ season : data.getSeason()) {
+                number += season.getEpisodes().size();
+            }
+            stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
+        }
+        //SVFA-3323
+        if(data.getGist().getPrimaryCategory().getTitle() != null) {
+            stringBuilder.append(" | ");
+            stringBuilder.append(data.getGist().getPrimaryCategory().getTitle() != null ? data.getGist().getPrimaryCategory().getTitle().toUpperCase() : "");
+        }
+        ((TextView) view).setText(stringBuilder);
+        ((TextView) view).setLetterSpacing(LETTER_SPACING);
+    }
+
     /**
      * Fix for JM-26
      */
-    static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+    static void setVideoViewWithSubtitle(Context context, ContentDatum data, View view) {
 
         long durationInSeconds = data.getGist().getRuntime();
 
@@ -78,18 +100,18 @@ public abstract class TVBaseView extends FrameLayout {
         if (minutes == 1) {
             infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
         } else if (minutes > 1 && minutes < 10) {
-            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append("0").append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         } else if (minutes >= 10) {
-            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         }
 
-        if (seconds == 1) {
+        /*if (seconds == 1) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
         } else if (seconds > 1 && seconds < 10) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         } else if (seconds >= 10) {
             infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
-        }
+        }*/
 
         if (!TextUtils.isEmpty(year)) {
             infoText.append(context.getString(R.string.text_separator));
@@ -102,7 +124,6 @@ public abstract class TVBaseView extends FrameLayout {
         }
 
         ((TextView) view).setText(infoText.toString());
-         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
@@ -145,6 +166,7 @@ public abstract class TVBaseView extends FrameLayout {
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+//        int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
         int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
 
@@ -212,7 +234,8 @@ public abstract class TVBaseView extends FrameLayout {
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
                         gravity = Gravity.RIGHT ;
-                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY
+                                || componentKey == AppCMSUIKeyType.PAGE_SHOW_SUBTITLE_KEY){
                             gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
                         }
                         break;
@@ -240,9 +263,11 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_TRAY_TITLE_KEY:
                     break;
                 case PAGE_PLAY_IMAGE_KEY:
-                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                    if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
-                            && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
+                            && AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
                         gravity = Gravity.CENTER;
                         tm = 0;
                         lm = 0;
@@ -270,8 +295,8 @@ public abstract class TVBaseView extends FrameLayout {
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
                   //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-                  //     viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
-                  //  }
+//                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+                    //  }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
@@ -298,6 +323,25 @@ public abstract class TVBaseView extends FrameLayout {
         }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
             viewHeight = DEVICE_HEIGHT;
             viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY) {
+            int padding = Utils.getViewXAxisAsPerScreen(getContext(), childComponent.getPadding());
+            view.setPadding(padding, padding, padding, padding);
+        } else if (componentType.equals(AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY)) {
+            Integer padding = Integer.valueOf(
+                    childComponent.getLayout().getTv().getPadding() != null
+                            ? childComponent.getLayout().getTv().getPadding()
+                            : "0");
+            view.setPadding(0, 0, 0, padding);
+            if (childComponent.getTextAlignment() != null) {
+                AppCMSUIKeyType textAlignment = jsonValueKeyMap.get(childComponent.getTextAlignment());
+                switch (textAlignment) {
+                    case PAGE_TEXTALIGNMENT_CENTER_KEY:
+                        gravity = Gravity.CENTER;
+                        break;
+                    default:
+                        gravity = Gravity.NO_GRAVITY;
+                }
+            }
         }
 
         if (useWidthOfScreen) {
@@ -311,7 +355,8 @@ public abstract class TVBaseView extends FrameLayout {
         layoutParams.height = viewHeight;
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             layoutParams.gravity = gravity;
         }
         view.setLayoutParams(layoutParams);

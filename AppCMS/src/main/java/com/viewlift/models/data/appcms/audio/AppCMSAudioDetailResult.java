@@ -20,15 +20,14 @@ import java.util.List;
 @UseStag
 public class AppCMSAudioDetailResult {
 
-
-
     @SerializedName("id")
     @Expose
-    String  id;
+    String id;
 
     @SerializedName("gist")
     @Expose
-    AudioGist gist;
+    Gist gist;
+
     public String getId() {
         return id;
     }
@@ -36,7 +35,8 @@ public class AppCMSAudioDetailResult {
     public void setId(String id) {
         this.id = id;
     }
-    public AudioGist getGist() {
+
+    public Gist getGist() {
         return gist;
     }
 
@@ -63,17 +63,8 @@ public class AppCMSAudioDetailResult {
 
         ContentDatum contentDatum = new ContentDatum();
         contentDatum.setStreamingInfo(this.streamingInfo);
-        contentDatum.setAudioGist(this.gist);
+        contentDatum.setGist(this.gist);
         contentDatum.setCreditBlocks(this.creditBlocks);
-        Gist gist=new Gist();
-        gist.setId(this.gist.getId());
-        gist.setMediaType(this.gist.getMediaType());
-        gist.setContentType(this.gist.getContentType());
-        gist.setTitle(this.gist.getTitle());
-        gist.setDescription(this.gist.getDescription());
-        gist.setRuntime(this.gist.getRuntime());
-        gist.setPosterImageUrl(this.gist.getPosterImageUrl());
-        contentDatum.setGist(gist);
         data.add(contentDatum);
 
         module.setContentData(data);
@@ -85,7 +76,7 @@ public class AppCMSAudioDetailResult {
         return appCMSPageAPI;
     }
 
-    public void setGist(AudioGist gist) {
+    public void setGist(Gist gist) {
         this.gist = gist;
     }
 

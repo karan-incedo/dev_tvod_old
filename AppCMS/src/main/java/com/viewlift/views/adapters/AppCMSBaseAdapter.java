@@ -14,5 +14,6 @@ public interface AppCMSBaseAdapter {
     void resetData(RecyclerView listView);
 
     void updateData(RecyclerView listView, List<ContentDatum> contentData);
+
     void setClickable(boolean clickable);
 }

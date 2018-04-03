@@ -18,6 +18,7 @@ package com.viewlift.Audio.playback;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -28,6 +29,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
@@ -36,6 +38,15 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static com.viewlift.Audio.playback.LocalPlayback.localPlaybackInstance;
 
 
 /**
@@ -58,6 +69,15 @@ public class PlaybackManager implements Playback.Callback {
     private static boolean isCastConnected = false;
     MediaSessionCompat msession;
 
+    /**
+     * create constructor for PlaybackManager. initialize castsession manager , cast listener , and callback methods
+     *
+     * @param serviceCallback
+     * @param playback
+     * @param applicationContext
+     * @param callBackLocalPlaybackListener
+     * @param mSession
+     */
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
                            Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener, MediaSessionCompat mSession) {
         mServiceCallback = serviceCallback;
@@ -90,13 +110,19 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     /**
-     * Handle a request to play music
+     * This will initiate the audio play  whenever any controller send request to play
      *
      * @param currentPosition
      */
     public void handlePlayRequest(long currentPosition) {
-        mServiceCallback.onPlaybackStart();
-        mServiceCallback.switchPlayback(currentPosition);
+        /**
+         * check if audio item is playable
+         */
+        if (!isPreviewEnded()) {
+            mServiceCallback.onPlaybackStart();
+            mServiceCallback.switchPlayback(currentPosition);
+            scheduleSeekbarUpdate();
+        }
     }
 
     public void setActivity(Activity mAct) {
@@ -109,7 +135,12 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePauseRequest() {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
-            mServiceCallback.onPlaybackStop();
+            mServiceCallback.onPlaybackPause();
+            stopSeekbarUpdate();
+
+            AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(true);
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+
         }
     }
 
@@ -121,13 +152,34 @@ public class PlaybackManager implements Playback.Callback {
      *                  MediaController clients.
      */
     public void handleStopRequest(String withError) {
+        System.out.println("TAsk Stopped stop playback");
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
-
+        if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null && AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist() != null) {
+            AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().setAudioPlaying(false);
+        }
+        AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
+        currentProgess = 0;
+        stopSeekbarUpdate();
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
+        setCurrentMediaId(null);
+        mPlayback.setCurrentId(null);
+        AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);
+
     }
 
+    /**
+     * save the last position of playing audio content
+     */
+    public void saveLastPositionAudioOnForcefullyStop() {
+        if (mPlayback.getCurrentStreamPosition() > 0) {
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mPlayback.getCurrentId(), mPlayback.getCurrentStreamPosition());
+        } else {
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), currentPositionInMS);
+        }
+
+    }
 
     /**
      * Update the current media player state, optionally showing an error message.
@@ -151,12 +203,12 @@ public class PlaybackManager implements Playback.Callback {
 
 
         updatePlaybackStatus(state, position, error);
+        MediaMetadataCompat currentMusic = getCurrentMediaData();
+        mServiceCallback.onNotificationRequired();
 
-        if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
-                state == PlaybackStateCompat.STATE_PAUSED) {
-            mServiceCallback.onNotificationRequired();
-        }
+
     }
+
 
     private void updatePlaybackStatus(int playBackState, long position, String error) {
         //noinspection ResourceType
@@ -170,6 +222,7 @@ public class PlaybackManager implements Playback.Callback {
         }
         stateBuilder.setState(playBackState, position, 1.0f, SystemClock.elapsedRealtime());
 
+        mLastPlaybackState = stateBuilder.build();
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
     }
 
@@ -195,10 +248,21 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
+            /**
+             * on complete of songs reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+
             if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
                 handleStopRequest(null);
+            } else if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+//                getPlayback().setCurrentId(AudioPlaylistHelper.getInstance().getNextItemId());
             } else {
+                stopSeekbarUpdate();
                 AudioPlaylistHelper.getInstance().autoPlayNextItemFromPLaylist(callBackPlaylistHelper);
+
             }
         }
     }
@@ -260,8 +324,11 @@ public class PlaybackManager implements Playback.Callback {
 
 
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mPlayback.getCurrentId());
-            if (mediaHasChanged) {
+            currentProgess = 0;
+            if (mediaHasChanged || AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload()) {
                 long currentPosition = 0;
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(false);
+
                 if (extras != null) {
                     currentPosition = extras.getLong("CURRENT_POSITION");
                 }
@@ -282,13 +349,27 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            AudioPlaylistHelper.getInstance().skipToNextItem(callBackPlaylistHelper);
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
+
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+
+            } else {
+                AudioPlaylistHelper.getInstance().skipToNextItem(callBackPlaylistHelper);
+            }
         }
 
         @Override
         public void onSkipToPrevious() {
-            AudioPlaylistHelper.getInstance().skipToPreviousItem(callBackPlaylistHelper);
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+                onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+                AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
 
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            } else {
+                AudioPlaylistHelper.getInstance().skipToPreviousItem(callBackPlaylistHelper);
+            }
         }
 
         @Override
@@ -303,8 +384,6 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPrepare() {
-//            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
-
             super.onPrepare();
         }
     }
@@ -343,8 +422,18 @@ public class PlaybackManager implements Playback.Callback {
             mPlayback.setCallback(this);
             mServiceCallback.onPlaybackStart();
             mPlayback.play(currentMusic, currentPosition);
+            mServiceCallback.onNotificationRequired();
+
+//            //if content not free than dont show notification
+//            if (mServiceCallback != null && isContentPlayable(currentMusic)) {
+//                mServiceCallback.onNotificationRequired();
+//
+//            } else {
+//                mServiceCallback.stopNotification();
+//            }
         }
     }
+
 
     /**
      * Switch to a different Playback instance, maintaining all playback state, if possible.
@@ -358,9 +447,11 @@ public class PlaybackManager implements Playback.Callback {
 
         long pos = getPlayback().getCurrentStreamPosition();
         String currentMediaId = AudioPlaylistHelper.getInstance().getCurrentMediaId();
-        AudioPlaylistHelper.getInstance().stopPlayback();
+        AudioPlaylistHelper.getInstance().pausePlayback();
         this.mPlayback.stopPlayback(true);
         AudioPlaylistHelper.getInstance().setCurrentMediaId(currentMediaId);
+        AudioPlaylistHelper.getInstance().setLastMediaId(currentMediaId);
+
         setCurrentMediaId(currentMediaId);
         updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, 0, null);
         new Handler().postDelayed(new Runnable() {
@@ -380,7 +471,11 @@ public class PlaybackManager implements Playback.Callback {
 
         void onNotificationRequired();
 
+        void stopNotification();
+
         void onPlaybackStop();
+
+        void onPlaybackPause();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
     }
@@ -467,4 +562,118 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    private final ScheduledExecutorService mExecutorService =
+            Executors.newSingleThreadScheduledExecutor();
+    private final Handler mHandler = new Handler();
+    private ScheduledFuture<?> mScheduleFuture;
+
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+    private PlaybackStateCompat mLastPlaybackState;
+    int currentProgess;
+    long currentPositionInMS;
+
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
+        }
+    }
+
+    private final Runnable mUpdateProgressTask = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+            if (!isCastConnected) {
+                localPlaybackInstance.setBeaconPingValues();
+            }
+            if (isCastConnected) {
+                AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
+            }
+        }
+    };
+
+    private void updateProgress() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+
+        currentProgess = (int) (currentPosition / 1000);
+
+        currentPositionInMS = currentPosition;
+        System.out.println("currentPositionInMS- " + currentPositionInMS);
+        audioPreview();
+    }
+
+
+    void audioPreview() {
+        if (isPreviewEnded()) {
+            handlePauseRequest();
+            stopSeekbarUpdate();
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+            /**
+             * on end of preview reset position to 0
+             */
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
+            System.out.println("currentPositionInMS- set to 0");
+            if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                Intent intent = new Intent();
+                intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
+                intent.putExtra(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_MESSAGE, true);
+                appCMSPresenter.getCurrentActivity().sendBroadcast(intent);
+            }
+        } else {
+            saveLastPositionAudioOnForcefullyStop();
+        }
+    }
+
+    public boolean isPreviewEnded() {
+        boolean previewEnd = false;
+        if (AudioPlaylistHelper.getInstance() != null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
+            MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());
+            AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+            String isFree = "true";
+            if (metadata != null) {
+                isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+
+                if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+                    previewEnd = false;
+                } else {
+                    if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                        if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                            if (currentProgess >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                                previewEnd = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return previewEnd;
+    }
 }

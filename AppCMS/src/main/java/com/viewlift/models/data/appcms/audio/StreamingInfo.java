@@ -22,7 +22,7 @@ public class StreamingInfo {
 
     public ContentDatum convertToContentDatum() {
         ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setAudioAssets(this.audioAssets);
+        //contentDatum.setAudioAssets(this.audioAssets);
         return contentDatum;
     }
 }

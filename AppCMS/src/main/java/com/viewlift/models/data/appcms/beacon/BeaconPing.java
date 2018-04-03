@@ -55,14 +55,18 @@ public class BeaconPing extends Thread {
                             && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
                             && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
 
+                        if (contentDatum != null && contentDatum.getMediaType() == null) {
+                            contentDatum.setMediaType("video");
+                        }
                         //Log.d(TAG, "Beacon Message Request position: " + currentTime);
+
                         appCMSPresenter.sendBeaconMessage(filmId,
                                 permaLink,
                                 parentScreenName,
                                 videoPlayerView.getCurrentPosition(),
                                 false,
                                 AppCMSPresenter.BeaconEvent.PING,
-                                contentDatum.getMediaType(),
+                                contentDatum != null ? contentDatum.getMediaType() : "Video",
                                 videoPlayerView.getBitrate() != 0 ?
                                         String.valueOf(videoPlayerView.getBitrate()) : null,
                                 String.valueOf(videoPlayerView.getVideoHeight()),
@@ -77,25 +81,29 @@ public class BeaconPing extends Thread {
                                     videoPlayerView.getCurrentPosition() / 1000);
                         }
                     }
-                    if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&
-                            contentDatum.getAudioGist() != null &&
-                            contentDatum.getAudioGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
-                            contentDatum.getAudioGist().getContentType() != null &&
-                            contentDatum.getAudioGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {
-                        appCMSPresenter.sendBeaconMessage(contentDatum.getAudioGist().getId(),
-                                contentDatum.getAudioGist().getPermalink(),
-                                null,
-                                contentDatum.getAudioGist().getCurrentPlayingPosition(),
-                                contentDatum.getAudioGist().getCastingConnected(),
-                                AppCMSPresenter.BeaconEvent.PING,
-                                contentDatum.getAudioGist().getMediaType(),
-                                null,
-                                null,
-                                null,
-                                streamId,
-                                0d,
-                                0,
-                                appCMSPresenter.isVideoDownloaded(contentDatum.getAudioGist().getId()));
+                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && contentDatum != null &&
+                            contentDatum.getGist() != null && contentDatum.getGist().getMediaType() != null &&
+                            contentDatum.getGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
+                            contentDatum.getGist().getContentType() != null &&
+                            contentDatum.getGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {
+                        currentTime = contentDatum.getGist().getCurrentPlayingPosition() / 1000;
+                        if (30 <= currentTime
+                                && currentTime % 30 == 0) {
+                            appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                                    contentDatum.getGist().getPermalink(),
+                                    null,
+                                    contentDatum.getGist().getCurrentPlayingPosition(),
+                                    contentDatum.getGist().getCastingConnected(),
+                                    AppCMSPresenter.BeaconEvent.PING,
+                                    contentDatum.getGist().getMediaType(),
+                                    null,
+                                    null,
+                                    null,
+                                    streamId,
+                                    0d,
+                                    0,
+                                    appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()));
+                        }
                     }
                 }
             } catch (InterruptedException e) {

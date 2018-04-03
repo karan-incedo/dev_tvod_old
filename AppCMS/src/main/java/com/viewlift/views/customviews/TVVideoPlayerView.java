@@ -2,6 +2,8 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 
+import com.viewlift.presenters.AppCMSPresenter;
+
 /**
  * Created by viewlift on 5/31/17.
  */
@@ -13,8 +15,8 @@ public class TVVideoPlayerView
     private boolean isHardPause;
     public boolean isLiveStream;
 
-    public TVVideoPlayerView(Context context) {
-        super(context);
+    public TVVideoPlayerView(Context context, AppCMSPresenter presenter) {
+        super(context, presenter);
     }
 
 

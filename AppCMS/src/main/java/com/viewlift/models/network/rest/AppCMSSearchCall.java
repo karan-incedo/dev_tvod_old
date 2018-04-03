@@ -3,7 +3,6 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 
 import java.io.IOException;

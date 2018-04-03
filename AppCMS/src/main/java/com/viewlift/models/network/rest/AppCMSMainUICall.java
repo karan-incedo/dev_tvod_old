@@ -9,8 +9,6 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,17 +17,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -62,81 +50,74 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
+    public AppCMSMain call(Context context,
+                           String siteId,
+                           int tryCount,
+                           boolean bustCache,
+                           boolean networkDisconnected) {
         Date now = new Date();
-        final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
+
+        StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
                 Utils.getProperty("BaseUrl", context),
-                siteId,
-                now.getTime());
+                siteId));
+        if (bustCache) {
+            appCMSMainUrlSb.append("?x=");
+            appCMSMainUrlSb.append(now.getTime());
+        }
+        final String appCMSMainUrl = appCMSMainUrlSb.toString();
+
         AppCMSMain main = null;
-        AppCMSMain mainInStorage = null;
         try {
             Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            final String hostName = new URL(appCMSMainUrl).getHost();
-            ExecutorService executor = Executors.newCachedThreadPool();
-            Future<List<InetAddress>> future = executor.submit(()
-                    -> okHttpClient.dns().lookup(hostName));
-            try {
-                future.get(connectionTimeout, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
-                //Log.e(TAG, "Connection timed out: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
-                }
-                return null;
-            } catch (InterruptedException e) {
-                //Log.e(TAG, "Connection interrupted: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
-                }
-                return null;
-            } catch (ExecutionException e) {
-                //Log.e(TAG, "Execution error: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
-                }
+            if (!networkDisconnected) {
                 try {
-                    return readMainFromFile(getResourceFilename(appCMSMainUrl));
-                } catch (Exception e1) {
-                    //Log.e(TAG, "Could not retrieve main.json from file: " +
-//                        e1.getMessage());
-                }
-                return null;
-            } finally {
-                future.cancel(true);
-            }
-
-            try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
-                main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                    long start = System.currentTimeMillis();
+                    Log.d(TAG, "Start main.json request: " + start);
+                    main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
+                    long end = System.currentTimeMillis();
+                    Log.d(TAG, "End main.json request: " + end);
+                    Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
+                    Log.d(TAG, "Total Time main.json request: " + (end - start));
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                }
             }
 
-            String filename = getResourceFilename(appCMSMainUrl);
+            final AppCMSMain mainFromNetwork = main;
+            AppCMSMain mainInStorage = null;
+            String filename = getResourceFilename(appCMSMainUrlSb.toString());
             try {
                 mainInStorage = readMainFromFile(filename);
             } catch (Exception exception) {
                 Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
-            if (main != null && mainInStorage != null) {
+            if (mainFromNetwork != null && mainInStorage != null) {
                 Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
-                main.setLoadFromFile(main.getVersion().equals(mainInStorage.getVersion()));
+                mainFromNetwork.setLoadFromFile(mainFromNetwork.getVersion().equals(mainInStorage.getVersion()));
             }
 
+            if (mainFromNetwork != null) {
+                Log.d(TAG, "Read main.json version: " + mainFromNetwork.getVersion());
+            }
             if (main != null) {
-                Log.d(TAG, "Read main.json version: " + main.getVersion());
-            }
+                try {
+                    main = writeMainToFile(filename, mainFromNetwork);
+                } catch (Exception e) {
 
-            main = writeMainToFile(filename, main);
+                }
+            } else if (mainInStorage != null) {
+                main = mainInStorage;
+                main.setLoadFromFile(true);
+            }
         } catch (Exception e) {
-            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            Log.e(TAG, "A serious error has occurred: " + e.getMessage());
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+            return call(context, siteId, tryCount + 1, bustCache, networkDisconnected);
         }
 
         return main;

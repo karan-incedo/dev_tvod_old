@@ -63,7 +63,9 @@ public class CastServiceProvider {
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
+
     public static final String CAST_STATUS = "com.viewlift.casting.CASTING_STATUS";
+
     private String pageName;
 
     /**
@@ -109,7 +111,9 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-            if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
+            if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
+                    (mActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                            appCMSPresenter.isPageAVideoPage(pageName)))) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             } else {
 
@@ -179,6 +183,8 @@ public class CastServiceProvider {
             if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
                 //
             }
+
+            appCMSPresenter.sendChromecastDisconnectedAction();
         }
     };
     /**
@@ -477,8 +483,7 @@ public class CastServiceProvider {
 
                 Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
                 TextPaint textPaint = new TextPaint();
-                textPaint.setColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getCta().getPrimary().getTextColor()));
+                textPaint.setColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
                 textPaint.setTextSize(scaledSizeInPixels);
 
                 mShowCaseView = new ShowcaseView.Builder(mActivity)
@@ -488,12 +493,9 @@ public class CastServiceProvider {
                         .build();
 
                 mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
-                mShowCaseView.setShowcaseColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getBackgroundColor()));
-                mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getBackgroundColor()));
-                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getTextColor()));
+                mShowCaseView.setShowcaseColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+                mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
                 mShowCaseView.show();
                 mShowCaseView.invalidate();
@@ -569,6 +571,13 @@ public class CastServiceProvider {
                                     mActivity.finish();
                                 }
                             });
+                } else if (!appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                    mActivity.finish();
+                                }
+                            });
                 }
             } else
 
@@ -631,10 +640,10 @@ public class CastServiceProvider {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                             null);
                 } else if (appCMSPresenter.isAppSVOD()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
@@ -693,7 +702,5 @@ public class CastServiceProvider {
             return "";
         }
     }
-
-
 }
 

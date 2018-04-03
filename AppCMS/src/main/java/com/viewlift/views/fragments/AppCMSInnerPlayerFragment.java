@@ -445,7 +445,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
 
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
-        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_mini_video_player_title_view);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
@@ -554,7 +554,8 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                     0,
                                     isVideoDownloaded);
                             sentBeaconFirstFrame = true;
-
+                            appCMSPresenter.sendGaEvent(getContext().getResources().getString(R.string.play_video_action),
+                                    getContext().getResources().getString(R.string.play_video_category), filmId);
                         }
                     }
                 }

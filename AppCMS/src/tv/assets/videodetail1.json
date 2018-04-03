@@ -1,0 +1,188 @@
+{
+  "id": "fd948c90-efc9-469a-ae67-725d4d5ccfe9",
+  "settings": {
+    "fileType": "mp4"
+  },
+  "view": "AC VideoPlayerWithInfo 01",
+  "type": "AC VideoPlayerWithInfo 01",
+  "blockName": "videoPlayerInfo01",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "height": 683
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 100
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 95,
+              "topMargin": 20,
+              "fontSize": 30
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "opacity": 1,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Bold",
+          "key": "videoTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "rightMargin": 100,
+              "width": 590,
+              "fontSize": 16,
+              "height": 36,
+              "topMargin": 20
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "right",
+          "opacity": 0.5,
+          "type": "label",
+          "textColor": "#ffffff",
+          "key": "videoSubTitle"
+        }
+      ],
+      "textAlignment": "left",
+      "type": "headerView",
+      "key": "videoDetailHeader"
+    },
+    /* {
+       "layout": {
+         "ftv": {
+           "padding": 4,
+           "yAxis": 120,
+           "xAxis": 1080,
+           "width": 747,
+           "height": 420
+         }
+       },
+       "action": "watchVideo",
+       "type": "image",
+       "key": "videoImage"
+     },
+     {
+       "layout": {
+         "ftv": {
+           "yAxis": 260,
+           "xAxis": 1410,
+           "width": 113,
+           "height": 130
+         }
+       },
+       "type": "button",
+       "key": "playButton"
+     },*/
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 606,
+          "leftMargin": 95,
+          "width": 255,
+          "fontSize": 10.5,
+          "height": 60
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "watchVideo",
+      "text": "START WATCHING",
+      "type": "button",
+      "textColor": "ffffff",
+      "key": "startWatching",
+      "fontWeight": "Bold"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 389,
+          "yAxis": 606,
+          "width": 260,
+          "fontSize": 10.5,
+          "height": 60
+        }
+      },
+      "padding": 15,
+      "borderColor": "#ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "addToWatchlist",
+      "text": "ADD TO WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "addToWatchlist"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 683,
+          "yAxis": 606,
+          "width": 255,
+          "fontSize": 10.5,
+          "height": 60
+        }
+      },
+      "padding": 15,
+      "borderColor": "#ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "letterSpacing": 0.12,
+      "action": "watchTrailer",
+      "text": "WATCH TRAILER",
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "watchTrailer"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 188,
+          "xAxis": 95,
+          "width": 768,
+          "fontSize": 15,
+          "height": 180
+        }
+      },
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#ffffff",
+      "key": "videoDescriptionText"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "fontSizeKey": 11.5,
+          "yAxis": 409,
+          "xAxis": 95,
+          "width": 768,
+          "height": 170,
+          "fontSizeValue": 11.5
+        }
+      },
+      "fontFamilyKey": "OpenSans-ExtraBold",
+      "fontFamilyValue": "OpenSans",
+      "type": "castView",
+      "textColor": "#ffffff",
+      "key": "castView"
+    }
+  ]
+}

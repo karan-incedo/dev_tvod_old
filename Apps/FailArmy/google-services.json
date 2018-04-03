@@ -1,43 +1,27 @@
 {
   "project_info": {
-    "project_number": "000000000000",
-    "firebase_url": "https://failarmy-00000.firebaseio.com",
-    "project_id": "failarmy-00000",
-    "storage_bucket": "failarmy-00000.appspot.com"
+    "project_number": "506186280240",
+    "firebase_url": "https://failarmy-2f308.firebaseio.com",
+    "project_id": "failarmy-2f308",
+    "storage_bucket": "failarmy-2f308.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "mobilesdk_app_id": "1:506186280240:android:bfa334e6ffbe12f7",
         "android_client_info": {
           "package_name": "com.viewlift.failarmy"
         }
       },
       "oauth_client": [
         {
-          "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.viewlift.failarmy",
-            "certificate_hash": "0000000000000000000000000000000000000000"
-          }
-        },
-        {
-          "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.viewlift.failarmy",
-            "certificate_hash": "0000000000000000000000000000000000000000"
-          }
-        },
-        {
-          "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
+          "client_id": "506186280240-t5r1v4der7oaguigpg7c71ghjlkp88c6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIza00000000000000000000000000000000000"
+          "current_key": "AIzaSyCXqWvdDk8EBc0SKmIj9N2_8l08Df0sWmc"
         }
       ],
       "services": {
@@ -45,71 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.viewlift.failarmy"
-              }
-            },
-            {
-              "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:00000000000:android:0000000000000000",
-        "android_client_info": {
-          "package_name": "com.viewlift.failarmy"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.viewlift.failarmy",
-            "certificate_hash": "0000000000000000000000000000000000000000"
-          }
-        },
-        {
-          "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIza00000000000000000000000000000000000"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.viewlift.failarmy"
-              }
-            },
-            {
-              "client_id": "000000000000-00000000000000000000000000000000.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

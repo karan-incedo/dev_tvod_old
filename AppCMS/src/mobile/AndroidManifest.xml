@@ -11,7 +11,7 @@
 
 
     <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Allows for storing and retrieving screenshots -->
@@ -23,8 +23,8 @@
 
 
     <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Allows for storing and retrieving screenshots -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -39,13 +39,13 @@
         android:roundIcon="@mipmap/app_logo"
         android:theme="@style/AppTheme"
         tools:replace="android:theme,android:label">
+
+
         <meta-data
             android:name="com.urbanairship.autopilot"
             android:value="com.viewlift.mobile.pushnotif.AppCMSAutoPilot" />
 
-        <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
+
         <receiver
             android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
             android:exported="true">
@@ -60,6 +60,40 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
+
+        <!--
+        <receiver
+            android:name=".mobile.pushnotif.AppCMSAirshipReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.urbanairship.push.CHANNEL_UPDATED" />
+                <action android:name="com.urbanairship.push.OPENED" />
+                <action android:name="com.urbanairship.push.RECEIVED" />
+                <action android:name="com.urbanairship.push.DISMISSED" />
+
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+        -->
+
+        <receiver
+            android:name=".mobile.initialization.UrbanAirshipInitReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="INITIALIZATION" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".mobile.initialization.GMSInitReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="INITIALIZATION" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.appsflyer.InstanceIDListener"
             android:exported="false">
@@ -70,16 +104,18 @@
 
         <activity
             android:name="com.viewlift.mobile.AppCMSLaunchActivity"
-            android:theme="@style/AppThemeTransparent"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppThemeTransparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="@string/app_cms_app_host_name"
                     android:pathPrefix="/videos"
@@ -89,24 +125,52 @@
                     android:pathPrefix="/videos"
                     android:scheme="https" />
                 <data
-                    android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/films/title"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films"
                     android:scheme="http" />
                 <data
-                    android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/films/title"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films"
                     android:scheme="https" />
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title"
+                    android:scheme="http" />
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title"
+                    android:scheme="https" />
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/"
+                    android:scheme="http" />
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/"
+                    android:scheme="https" />
+
             </intent-filter>
         </activity>
 
         <activity
             android:name="com.viewlift.casting.roku.RokuCastingOverlay"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
 
         <meta-data
             android:name="com.kiswe.apiKey"
             android:value="@string/KISWE_PLAYER_API_KEY" />
+
+        <!-- A receiver that will receive media buttons and send as
+    intents to your MediaBrowserServiceCompat implementation.
+    Required on pre-Lollipop. More information at
+    http://developer.android.com/reference/android/support/v4/media/session/MediaButtonReceiver.html -->
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

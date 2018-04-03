@@ -1,0 +1,94 @@
+{
+  "id": "4d634550-8a37-4d5a-9833-d5c2cf02f529",
+  "settings": {
+    "loop": false,
+    "columns": {
+      "tablet": 3,
+      "desktop": 3,
+      "mobile": 2,
+      "ott": 3
+    },
+    "thumbnailType": "landscape"
+  },
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray04",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 438
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "fontSize": 18
+        }
+      },
+      "fontFamily": "OpenSans",
+      "textAlignment": "left",
+      "textCase": "caps",
+      "type": "label",
+      "textColor": "#008EE0",
+      "fontWeight": "Semibold",
+      "key": "trayTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "width": 590,
+          "height": 438
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 15,
+              "width": 588,
+              "height": 330
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 15,
+              "width": 588,
+              "height": 330
+            }
+          },
+          "type": "image",
+          "key": "badgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 10,
+              "topMargin": 350,
+              "rightMargin": 0,
+              "fontSize": 11,
+              "height": 40
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "thumbnailTitle"
+        }
+      ],
+      "type": "collectionGrid",
+      "key": "collectionGrid"
+    }
+  ]
+}

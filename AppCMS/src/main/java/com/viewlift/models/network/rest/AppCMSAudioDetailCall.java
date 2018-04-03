@@ -38,14 +38,15 @@ public class AppCMSAudioDetailCall {
     }
 
     @WorkerThread
-    public void call(String url,
-                     final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
+    public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
         try {
             appCMSAudioDetailRest.get(url).enqueue(new Callback<AppCMSAudioDetailResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSAudioDetailResult> call,
                                        @NonNull Response<AppCMSAudioDetailResult> response) {
                     Observable.just(response.body()).subscribe(audioDetailResultAction);
+
+
                 }
 
                 @Override

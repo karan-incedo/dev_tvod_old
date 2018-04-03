@@ -36,8 +36,10 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.presenters.UrbanAirshipEventPresenter;
 
 import java.lang.ref.ReferenceQueue;
 import java.util.Map;
