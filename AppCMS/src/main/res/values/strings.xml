@@ -649,6 +649,9 @@
     <string name="play_audio_action">playAudio</string>
 
     <string name="play_audio_category">player-audio</string>
+     <string name="app_cms_link_your_account_action">linkAccount</string>
+    <string name="app_cms_sign_up_page_action">signUpPageAction</string>
+    
 </resources>
 
 

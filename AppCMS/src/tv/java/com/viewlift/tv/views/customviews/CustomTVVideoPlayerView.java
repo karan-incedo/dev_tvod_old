@@ -587,6 +587,11 @@ public class CustomTVVideoPlayerView
                     false);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+
+            appCMSPresenter.sendGaEvent(getResources().getString(R.string.play_video_action),
+                    getResources().getString(R.string.play_video_category),
+                    videoDataId);
+
         }
     }
 
