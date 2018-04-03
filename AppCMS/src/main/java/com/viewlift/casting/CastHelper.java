@@ -381,6 +381,11 @@ public class CastHelper {
             if (videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
+        } else {
+            if (binderPlayScreen.getContentData().getGist() != null && binderPlayScreen.getContentData().getGist().getTitle() != null) {
+                title = binderPlayScreen.getContentData().getGist().getTitle();
+            }
+            videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
         }
 
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
@@ -415,12 +420,12 @@ public class CastHelper {
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
-      String appPackageName=mAppContext.getPackageName();
+        String appPackageName = mAppContext.getPackageName();
 
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
             customData.put(CastingUtils.VIDEO_TITLE, title);
-            customData.put(CastingUtils.ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
+            customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_VIDEO);
 
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
@@ -452,12 +457,12 @@ public class CastHelper {
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
-        String appPackageName=mAppContext.getPackageName();
+        String appPackageName = mAppContext.getPackageName();
 
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
             customData.put(CastingUtils.VIDEO_TITLE, title);
-            customData.put(CastingUtils.ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
+            customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_VIDEO);
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
@@ -657,7 +662,7 @@ public class CastHelper {
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
+                    if (listCompareRelatedVideosId != null && playIndexPosition < listCompareRelatedVideosId.size()) {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
                                 binderPlayScreen.getCurrentPlayingVideoIndex(),
                                 castCurrentMediaPosition);
