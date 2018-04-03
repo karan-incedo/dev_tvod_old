@@ -466,7 +466,8 @@ public class CollectionGridItemView extends BaseView {
                         String imageUrl = "";
                         if (data.getGist() != null &&
                                 data.getGist().getContentType() != null &&
-                                data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())
+                                ((data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) ||
+                                (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
                                 && data.getGist().getImageGist() != null
                                 && data.getGist().getImageGist().get_16x9() != null) {
                             imageUrl = data.getGist().getImageGist().get_16x9();
