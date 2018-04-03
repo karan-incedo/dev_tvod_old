@@ -5839,7 +5839,9 @@ public class AppCMSPresenter {
                             for (ModuleList moduleList :
                                     appCMSPageUI.getModuleList()) {
                                 if (moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_01))) {
+                                        .getString(R.string.app_cms_page_autoplay_module_key_01)) || moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||  moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
                                     pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                             moduleList.getType());
                                     break;
@@ -16294,4 +16296,11 @@ public class AppCMSPresenter {
         }
     }
 
+    String videoId=null;
+    public void setCurrentPlayingVideo(String videoId){
+        this.videoId=videoId;
+    }
+    public String getCurrentPlayingVideo(){
+        return videoId;
+    }
 }
