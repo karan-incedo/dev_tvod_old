@@ -117,7 +117,7 @@
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
-    <string name="app_cms_page_info_key">info</string>d
+    <string name="app_cms_page_info_key">info</string>
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>

@@ -39,14 +39,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
-    String componentViewType;
     private List<OnInternalEvent> receivers;
     private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
+
     private MotionEvent lastTouchDownEvent;
+
+    String componentViewType;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,

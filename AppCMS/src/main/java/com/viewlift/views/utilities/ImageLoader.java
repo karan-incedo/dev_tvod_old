@@ -16,6 +16,7 @@ public interface ImageLoader {
 
     ImageView createImageView(Context context);
     void loadImage(ImageView view, String url, ScaleType scaleType);
+
     void loadImageWithLinearGradient(ImageView view,
                                      String url,
                                      int imageWidth,
