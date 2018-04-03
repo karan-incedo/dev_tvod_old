@@ -78,9 +78,15 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
         } else {
             this.adapterData = new ArrayList<>();
         }
-        for (int i=0; i<this.adapterData.size();i++){
-            if (adapterData.get(i).getId().equalsIgnoreCase("adTag")) {
-                ADS_TYPE = i;
+
+        if (adapterData!= null &&
+                adapterData.size()>0) {
+            for (int i = 0; i < this.adapterData.size(); i++) {
+                if (adapterData.get(i)!= null  &&
+                        adapterData.get(i).getId() != null &&
+                        adapterData.get(i).getId().equalsIgnoreCase("adTag")) {
+                    ADS_TYPE = i;
+                }
             }
         }
 
