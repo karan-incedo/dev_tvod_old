@@ -1850,18 +1850,7 @@ public class ViewCreator {
                     this,
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
-        }
-//        else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
-//            moduleView = new DownloadModule(context,
-//                    module,
-//                    moduleAPI,
-//                    jsonValueKeyMap,
-//                    appCMSPresenter,
-//                    this,
-//                    appCMSAndroidModules);
-//            pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
-//        }
-        else {
+        } else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -1906,8 +1895,8 @@ public class ViewCreator {
                                     false,
                                     module.getView(),
                                     module.getId());
-                        }catch (NullPointerException e){
-
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
                         }
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
@@ -3568,7 +3557,7 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -5426,6 +5415,7 @@ public class ViewCreator {
                                 });
                     }
                 }
+                imageButton.setOnClickListener(null);
             };
 
 //            imageButton.setOnClickListener(addClickListener);
