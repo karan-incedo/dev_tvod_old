@@ -31,6 +31,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.List;
 
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
@@ -330,7 +331,15 @@ public class AppCmsNavigationFragment extends Fragment {
                                                 navigationUser.getTitle(),
                                                 navigationUser.getUrl(),
                                                 false);
-                                    } else {
+                                    }  else if (ANDROID_HISTORY_NAV_KEY.equals(appCmsBinder.getJsonValueKeyMap()
+                                            .get(navigationUser.getTitle()))) {
+                                        // appCmsPresenter.showLoadingDialog(true);
+                                        appCmsPresenter.navigateToHistoryPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false);
+                                    }else {
                                         appCmsPresenter.navigateToTVPage(
                                                 navigationUser.getPageId(),
                                                 navigationUser.getTitle(),

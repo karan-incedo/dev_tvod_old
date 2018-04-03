@@ -53,4 +53,7 @@
     <dimen name="text_clear_dialog_height">130.5dp</dimen>
     <dimen name="text_add_to_watchlist_sign_in_dialog_height">200dp</dimen>
 
+    <dimen name="link_account_overlay_dialog_width">815dp</dimen>
+    <dimen name="link_account_overlay_dialog_height">278dp</dimen>
+
 </resources>

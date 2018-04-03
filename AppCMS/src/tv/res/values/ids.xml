@@ -21,4 +21,11 @@
     <item name="autoplay_rotating_loader_view_id" type="id">autoplay_rotating_loader_view_id</item>
     <item name="up_next_text_view_id" type="id">up_next_text_view_id</item>
     <item name="countdown_cancelled_text_view_id" type="id">countdown_cancelled_text_view_id</item>
+
+    <item name="dialog_cancel_button" type="id">dialog_cancel_button</item>
+    <item name="request_new_code" type="id">request_new_code</item>
+    <item name="code_sync_text_line_1" type="id">code_sync_text_line_1</item>
+    <item name="code_sync_text_line_2" type="id">code_sync_text_line_2</item>
+    <item name="code_sync_text_line_3" type="id">code_sync_text_line_3</item>
+
 </resources>

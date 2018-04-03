@@ -41,7 +41,7 @@ public class GetAppCMSContentDetailTask {
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
-                    if (result != null && readyAction != null) {
+                    if (readyAction != null) {
                         Observable.just(result).subscribe(readyAction);
                     }
                 });
