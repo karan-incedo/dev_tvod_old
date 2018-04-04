@@ -1741,7 +1741,13 @@ public class ViewCreator {
 //                            AppCMSPageUI.class);
 //                    module = appCMSPageUI1.getModuleList().get(3);
 //                }
-
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("downloads01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "download.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//
+//                }
 //                else
                 {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
