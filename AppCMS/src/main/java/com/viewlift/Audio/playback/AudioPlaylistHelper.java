@@ -177,18 +177,37 @@ public class AudioPlaylistHelper {
         appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, 0, null);
     }
 
+    /**
+     * if user click on next item and reach to the end of playlist then it will play 1st item from the playlist
+     *
+     * @param callBackPlaylistHelper
+     */
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
+
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist + 1) && indexAudioFromPlaylist + 1 >= 0) {
             indexAudioFromPlaylist++;
-            String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            //pause current item while loading next item
-            callBackPlaylistHelper.updatePlayStateOnSkip();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
         } else {
-            Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
+
+            //if playlist item size is greater than 1 then reset index to 0
+            if (currentAudioPlaylist.size() > 1) {
+                indexAudioFromPlaylist = 0;
+            } else {
+                Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
+        String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
+        //pause current item while loading next item
+        callBackPlaylistHelper.updatePlayStateOnSkip();
+        appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
+
     }
 
+    /**
+     * if user click on previous item and reach to the end of playlist then it will play 1st item from the playlist
+     *
+     * @param callBackPlaylistHelper
+     */
     public void skipToPreviousItem(IPlaybackCall callBackPlaylistHelper) {
 
         if (!appCmsPresenter.isNetworkConnected()) {
@@ -197,15 +216,22 @@ public class AudioPlaylistHelper {
         }
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist - 1) && indexAudioFromPlaylist - 1 >= 0) {
             indexAudioFromPlaylist--;
-            String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-
-            //pause current item while loading next item
-            callBackPlaylistHelper.updatePlayStateOnSkip();
-
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
         } else {
-            Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
+            //if playlist item size is greater than 1 then reset index to last position of playlist items
+            if (currentAudioPlaylist.size() > 1) {
+                indexAudioFromPlaylist = currentAudioPlaylist.size() - 1;
+            } else {
+                Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
+        String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
+
+        //pause current item while loading next item
+        callBackPlaylistHelper.updatePlayStateOnSkip();
+
+        appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, false, true, 0, null);
+
     }
 
     public void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {

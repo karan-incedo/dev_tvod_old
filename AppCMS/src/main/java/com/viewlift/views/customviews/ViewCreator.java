@@ -95,12 +95,15 @@ import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
+import net.nightwhistler.htmlspanner.SpanStack;
 import net.nightwhistler.htmlspanner.TagNodeHandler;
 import net.nightwhistler.htmlspanner.handlers.StyledTextHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
+
+import org.htmlcleaner.TagNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -659,7 +662,7 @@ public class ViewCreator {
             try {
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
-
+                //
             }
             if (module == null) {
                 module = moduleInfo;
@@ -1905,7 +1908,7 @@ public class ViewCreator {
                 } else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
                 }
-                //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+
             } catch (Exception e) {
 
             }
@@ -2049,18 +2052,22 @@ public class ViewCreator {
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
 
-                        createComponentView(context,
-                                component,
-                                module.getLayout(),
-                                moduleAPI,
-                                appCMSAndroidModules,
-                                pageView,
-                                module.getSettings(),
-                                jsonValueKeyMap,
-                                appCMSPresenter,
-                                false,
-                                module.getView(),
-                                module.getId());
+                        try {
+                            createComponentView(context,
+                                    component,
+                                    module.getLayout(),
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    pageView,
+                                    module.getSettings(),
+                                    jsonValueKeyMap,
+                                    appCMSPresenter,
+                                    false,
+                                    module.getView(),
+                                    module.getId());
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
@@ -4174,7 +4181,9 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
+                            (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                                    numSeasons == 0)) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -4385,6 +4394,8 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                                    ((TextView) componentViewResult.componentView).setMaxLines(1);
                                 }
                                 break;
 
@@ -4422,8 +4433,9 @@ public class ViewCreator {
                                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                    if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&
+
+                                    if (moduleAPI != null &&
+                                            moduleAPI.getContentData() != null &&
                                             moduleAPI.getContentData().get(0) != null &&
                                             moduleAPI.getContentData().get(0).getSeason() != null &&
                                             !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
@@ -5042,7 +5054,8 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight)
+                                                        .placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else if (viewWidth > 0) {
@@ -5055,7 +5068,8 @@ public class ViewCreator {
                                             ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(videoImageUrl)
-                                                .apply(new RequestOptions().override(viewWidth, viewHeight).placeholder(placeHolderImage))
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight)
+                                                        .placeholder(placeHolderImage))
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 } else {
@@ -5247,15 +5261,15 @@ public class ViewCreator {
 
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                        moduleAPI != null && moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getSeason() != null &&
-                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
-                    componentViewResult.componentView.setVisibility(View.GONE);
-                    componentViewResult.shouldHideComponent = true;
-                }
+//                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+//                        moduleAPI != null && moduleAPI.getContentData() != null &&
+//                        !moduleAPI.getContentData().isEmpty() &&
+//                        moduleAPI.getContentData().get(0) != null &&
+//                        moduleAPI.getContentData().get(0).getSeason() != null &&
+//                        moduleAPI.getContentData().get(0).getSeason().size() == 0) {
+//                    componentViewResult.componentView.setVisibility(View.GONE);
+//                    componentViewResult.shouldHideComponent = true;
+//                }
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,
@@ -6126,7 +6140,11 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+
                     imageButton.setOnClickListener(null);
+                    /**
+                     * Handling Quality screen for Audio media type
+                     */
                     if (contentDatum.getGist() != null &&
                             contentDatum.getGist().getMediaType() != null &&
                             contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
@@ -6164,6 +6182,7 @@ public class ViewCreator {
                                 });
                     }
                 }
+                imageButton.setOnClickListener(null);
             };
 
 //            imageButton.setOnClickListener(addClickListener);
