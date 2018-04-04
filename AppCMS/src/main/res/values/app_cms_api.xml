@@ -478,6 +478,7 @@
     <string name="app_cms_autoplay_countdown_cancelled_label_key">countdownCancelledLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
+    <string name="app_cms_download_multi_event_detected_message_message">Muliple action detected for downloading %1$s, single download allowd for one content.</string>
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>
     <string name="app_cms_download_available_already_message">%1$s has already been downloaded to this device by another user.  The same copy of this video will be played instead of downloading another copy.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
