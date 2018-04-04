@@ -4962,7 +4962,6 @@ public class ViewCreator {
                         break;
                     case PAGE_VIDEO_IMAGE_KEY:
                         String videoUrl = null;
-
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 component.getKey() != null &&
                                 !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
@@ -5079,6 +5078,7 @@ public class ViewCreator {
                                                 .into((ImageView) componentViewResult.componentView);
                                     }
                                 }
+
                                 componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                             }
                         }
@@ -5251,11 +5251,6 @@ public class ViewCreator {
                 break;
 
             case PAGE_SEPARATOR_VIEW_KEY:
-//                componentViewResult.componentView = new View(context);
-//                    componentViewResult.componentView.
-//                            setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-//                break;
-
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
 //                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&

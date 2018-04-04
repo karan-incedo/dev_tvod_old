@@ -3857,25 +3857,45 @@ public class AppCMSPresenter {
 
     public void restrictPortraitOnly() {
         if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            try {
+                currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void rotateToLandscape() {
         if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            /**
+             * due to api issue if targetSdkVersion is >=27 then sometime illegal argument exception (only fullscreen activities can request orientation error)occur
+             * Handled this for these cases
+             */
+            try {
+                currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void restrictLandscapeOnly() {
         if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            try {
+                currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void unrestrictPortraitOnly() {
         if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            try {
+                currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -4772,6 +4792,7 @@ public class AppCMSPresenter {
         return uriLocal == null ? "data" : uriLocal;
     }
 
+
     public boolean isDownloadUnfinished() {
         if (getRealmController() != null) {
             try {
@@ -4930,6 +4951,7 @@ public class AppCMSPresenter {
 
     private synchronized void startDownload(ContentDatum contentDatum,
                                Action1<UserVideoDownloadStatus> resultAction1) {
+
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
                     updateContentDatum.getGist().getId() != null) {
@@ -6032,7 +6054,7 @@ public class AppCMSPresenter {
                                     appCMSPageUI.getModuleList()) {
                                 if (moduleList.getType().equals(currentActivity
                                         .getString(R.string.app_cms_page_autoplay_module_key_01)) || moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||  moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) || moduleList.getType().equals(currentActivity
                                         .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
                                     pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                             moduleList.getType());
@@ -9600,7 +9622,8 @@ public class AppCMSPresenter {
      * @param dialogType    An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
-    public AlertDialog dialog=null;
+    public AlertDialog dialog = null;
+
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
             if (!isDialogShown)
@@ -9651,7 +9674,7 @@ public class AppCMSPresenter {
                             }
                             title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
 
-                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null &&  getAppCMSAndroid().getSubscriptionAudioFlowContent()!=null
+                            if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
                                 positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
                             }
@@ -9980,7 +10003,7 @@ public class AppCMSPresenter {
 
 
                     currentActivity.runOnUiThread(() -> {
-                         dialog = builder.create();
+                        dialog = builder.create();
 
                         if (onCloseAction != null) {
                             dialog.setCanceledOnTouchOutside(false);
@@ -10723,20 +10746,21 @@ public class AppCMSPresenter {
             navigateToPlaylistPage(gistId, title, false);
             return;
         }
-        if (!launchButtonSelectedAction(permalink,
-                action,
-                title,
-                null,
-                null,
-                false,
-                0,
-                null)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " permalink: " +
-//                    permalink +
-//                    " action: " +
-//                    action);
-        }
+        openVideoPageFromSearch(searchResultClick);
+//        if (!launchButtonSelectedAction(permalink,
+//                action,
+//                title,
+//                null,
+//                null,
+//                false,
+//                0,
+//                null)) {
+//            //Log.e(TAG, "Could not launch action: " +
+////                    " permalink: " +
+////                    permalink +
+////                    " action: " +
+////                    action);
+//        }
     }
 
     private String getEnvironment() {
@@ -13466,21 +13490,28 @@ public class AppCMSPresenter {
 
     private String getAutoplayPageId(String mediaType) {
         String autoPlayKey = null;
+//        for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
+//            String key = entry.getKey();
+//            String value = entry.getValue();
+//            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
+//                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
+//                    autoPlayKey = key;
+//                    return autoPlayKey;
+//                } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+//                    autoPlayKey = key;
+//                }
+//            } else {
+//                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+//                    autoPlayKey = key;
+//                    return autoPlayKey;
+//                }
+//            }
+//        }
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
-                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
-                    autoPlayKey = key;
-                    return autoPlayKey;
-                } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey = key;
-                }
-            } else {
-                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey = key;
-                    return autoPlayKey;
-                }
+            if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                return key;
             }
         }
         return autoPlayKey;
@@ -16717,6 +16748,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
 
     public int getCurrentArticleIndex() {
         return currentArticleIndex;
