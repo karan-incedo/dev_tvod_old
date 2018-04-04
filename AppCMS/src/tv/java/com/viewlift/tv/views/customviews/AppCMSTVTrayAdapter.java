@@ -290,7 +290,7 @@ public class AppCMSTVTrayAdapter
                 public void delete(Component childComponent, ContentDatum data) {
                     //Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
                     if (appCMSPresenter.isNetworkConnected()) {
-                        appCMSPresenter.editWatchlist(data.getGist().getId(),
+                        appCMSPresenter.editWatchlist(data,
                                 addToWatchlistResult -> {
                                     adapterData.remove(data);
                                     View view = null;
@@ -308,7 +308,7 @@ public class AppCMSTVTrayAdapter
                                     notifyDataSetChanged();
                                 }, false, true);
                     } else {
-                        appCMSPresenter.openErrorDialog(data.getGist().getId(),
+                        appCMSPresenter.openErrorDialog(data,
                                 true,
                                 appCMSAddToWatchlistResult -> {
                                     adapterData.remove(data);

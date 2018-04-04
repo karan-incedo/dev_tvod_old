@@ -37,6 +37,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
@@ -173,7 +174,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             if (null != navigationSubItemList && navigationSubItemList.size() > 0) {
                 for (int i = 0; i < navigationSubItemList.size(); i++) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(i);
-                    if (navigationSubItem.pageId == mSelectedPageId) {
+                    if (Objects.equals(navigationSubItem.pageId, mSelectedPageId)) {
                         return i;
                     }
                 }
@@ -300,21 +301,23 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 return;
             }*/
 
-        for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
-            NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
-            {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationFooter.getPageId();
-                navigationSubItem.title = navigationFooter.getTitle();
-                navigationSubItem.url = navigationFooter.getUrl();
-                navigationSubItem.icon = navigationFooter.getIcon();
-                navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
-                if (null == navigationSubItemList) {
-                    navigationSubItemList = new ArrayList<>();
+            if(null != mNavigation && null != mNavigation.getNavigationFooter()) {
+                for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
+                    NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
+                    {
+                        NavigationSubItem navigationSubItem = new NavigationSubItem();
+                        navigationSubItem.pageId = navigationFooter.getPageId();
+                        navigationSubItem.title = navigationFooter.getTitle();
+                        navigationSubItem.url = navigationFooter.getUrl();
+                        navigationSubItem.icon = navigationFooter.getIcon();
+                        navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
+                        if (null == navigationSubItemList) {
+                            navigationSubItemList = new ArrayList<>();
+                        }
+                        navigationSubItemList.add(navigationSubItem);
+                    }
                 }
-                navigationSubItemList.add(navigationSubItem);
             }
-        }
         navigationSubItem1 = new NavigationSubItem();
         if (appCMSPresenter.isUserLoggedIn()) {
             navigationSubItem1.title = "SIGN OUT";
