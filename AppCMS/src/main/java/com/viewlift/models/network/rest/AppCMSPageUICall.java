@@ -46,24 +46,29 @@ public class AppCMSPageUICall {
     public AppCMSPageUI call(String url, long timeStamp, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
-        if (loadFromFile) {
-            try {
-              //  appCMSPageUI = readJsonFromAssets();
-                appCMSPageUI = readPageFromFile(filename);
-                appCMSPageUI.setLoadedFromNetwork(false);
-            } catch (Exception e) {
-                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
-                try {
-                    loadFromNetwork(url, filename);
-                } catch (Exception e2) {
-                    //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-//                        e2.getMessage());
-                }
-            }
-        } else {
-           // appCMSPageUI = readJsonFromAssets();
-            appCMSPageUI = loadFromNetwork(url, filename);
-        }
+         if(url.contains("https://appcmsprod.viewlift.com/6fef71e8-3185-432f-8431-106c2be042c8/android/d1cc55ca-1947-4401-a290-696d31881186.json")) {
+             appCMSPageUI = readJsonFromAssets();
+         }else{
+             //             if (loadFromFile) {
+//                 try {
+//                appCMSPageUI = readPageFromFile(filename);
+//                appCMSPageUI.setLoadedFromNetwork(false);
+//                 } catch (Exception e) {
+//                     //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+//                     try {
+//                         loadFromNetwork(url, filename);
+//                     } catch (Exception e2) {
+//                         //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+////                        e2.getMessage());
+//                     }
+//                 }
+//             } else {
+//                  appCMSPageUI = loadFromNetwork(url, filename);
+//             }
+             appCMSPageUI = loadFromNetwork(url, filename);
+            // appCMSPageUI = readJsonFromAssets();
+         }
+
         return appCMSPageUI;
     }
 

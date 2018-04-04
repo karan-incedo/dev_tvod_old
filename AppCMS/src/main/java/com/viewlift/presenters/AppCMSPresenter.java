@@ -40,6 +40,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -1687,10 +1688,14 @@ public class AppCMSPresenter {
                     loginGoogle();
                     sendSignUpGoogleFirebase();
                 } else if (actionType == AppCMSActionType.SUBSCRIBEGO) {
-                    EditText subscribeEditText = currentActivity.findViewById(R.id.subscribe_edit_text_id);
-                    subscribeEditText.setText("holaaaa@ok.com");
+                    TextInputEditText subscribeEditText = currentActivity.findViewById(R.id.subscribe_edit_text_id);
                     subscribeEmail = subscribeEditText.getText().toString();
-                    new StartEmailSubscripction().execute(subscribeEmail);
+                        if (emailValid(subscribeEmail)) {
+                            new StartEmailSubscripction().execute(subscribeEmail);
+                        }else{
+                            showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_INVALID, null);
+                        }
+
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
                         //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
@@ -1910,6 +1915,14 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    private boolean emailValid(String email) {
+        if (TextUtils.isEmpty(email)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -7322,19 +7335,30 @@ public class AppCMSPresenter {
                 String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                 String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
+                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID){
+                    title = currentActivity.getString(R.string.invalid_email);
+                    message = currentActivity.getString(R.string.quote_separator) +
+                            subscribeEmail +
+                            currentActivity.getString(R.string.quote_separator) +
+                            currentActivity.getString(R.string.not_valid_email);
+                }
+
                 if(dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS){
-                    title = "THANK YOU FOR SUBSCRIBING!";
-                    message = "#WATERCOOLERREADY";
+                    title = currentActivity.getString(R.string.thank_you_for_subscribing);
+                    message = currentActivity.getString(R.string.watercoolerready);
                 }
 
                 if(dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST){
                     title = responsePojo.getUserExist().getTitle();
-                    message = subscribeEmail + " is already subscribed to list Sports.";
+                    message = currentActivity.getString(R.string.quote_separator) +
+                            subscribeEmail +
+                            currentActivity.getString(R.string.quote_separator) +
+                            currentActivity.getString(R.string.is_already_subscribed);
                 }
 
                 if(dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL){
-                    title = "FAILED TO SUBSCRIBE!";
-                    message = "TRY AGAIN LATER!";
+                    title = currentActivity.getString(R.string.failed_to_subscribe);
+                    message = currentActivity.getString(R.string.try_again_later);
                 }
 
                 if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
@@ -7548,7 +7572,8 @@ public class AppCMSPresenter {
                             });
                 } else if ((dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS) ||
                         (dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST) ||
-                        (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL)) {
+                        (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL) ||
+                        (dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID)) {
                     builder.setPositiveButton("OK",
                             (dialog, which) -> {
                                 try {
@@ -12393,6 +12418,7 @@ public class AppCMSPresenter {
         SUBSCRIPTION_EMAIL_SUCCESS,
         SUBSCRIPTION_EMAIL_EXIST,
         SUBSCRIPTION_EMAIL_FAIL,
+        SUBSCRIPTION_EMAIL_INVALID,
         NETWORK,
         SIGNIN,
         SIGNUP_BLANK_EMAIL_PASSWORD,

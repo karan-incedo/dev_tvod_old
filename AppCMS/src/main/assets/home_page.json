@@ -2528,15 +2528,14 @@
               "fontSize": 22
             }
           },
-          "borderColor": "#4764AA",
-          "borderWidth": 1,
-          "opacity": 100,
+          "backgroundColor": "#ffffff",
           "fontFamily": "OpenSans",
-          "numberOfLines": 1,
+          "protected": false,
           "textAlignment": "left",
+          "opacity": 46,
+          "type": "textfield",
+          "textColor": "#162732",
           "text": "Enter email here",
-          "type": "label",
-          "textColor": "#000000",
           "fontWeight": "Normal",
           "key": "subscribeEditText"
         },

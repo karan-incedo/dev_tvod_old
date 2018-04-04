@@ -1,5 +1,7 @@
 package com.viewlift.views.customviews;
 
+import android.app.Activity;
+import android.app.FragmentBreadCrumbs;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -30,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -72,6 +75,7 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
@@ -3745,16 +3749,6 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 }
 
-                if (componentKey == PAGE_SUBSCRIBE_EMAIL_KEY) {
-                    componentViewResult.componentView = new EditText(context);
-
-                    EditText t = new EditText(context);
-                    t = ((EditText) componentViewResult.componentView);
-
-                    t.setText("Enter email here");
-                    t.setId(R.id.subscribe_edit_text_id);
-                }
-
                 break;
 
             case PAGE_IMAGE_KEY:
@@ -4136,6 +4130,11 @@ public class ViewCreator {
 
                     case PAGE_MOBILETEXTFIELD_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                        break;
+
+                    case PAGE_SUBSCRIBE_EMAIL_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                        textInputEditText.setId(R.id.subscribe_edit_text_id);
                         break;
 
                     default:
