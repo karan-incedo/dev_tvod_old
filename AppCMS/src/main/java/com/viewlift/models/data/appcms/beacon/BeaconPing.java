@@ -53,7 +53,7 @@ public class BeaconPing extends Thread {
                     }
                     if (appCMSPresenter != null && videoPlayerView != null
                             && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                            && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
+                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
 
                         if (contentDatum != null && contentDatum.getMediaType() == null) {
                             contentDatum.setMediaType("video");

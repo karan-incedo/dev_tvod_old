@@ -156,30 +156,47 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
-                component != null &&
-                component.getSettings() != null &&
-                !component.getSettings().isHidden()) {
-            childrenContainer = new LinearLayout(getContext());
-            ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams childContainerLayoutParams =
-                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT);
-            childrenContainer.setLayoutParams(childContainerLayoutParams);
-            CardView imageChildView = new CardView(getContext());
-            LinearLayout.LayoutParams imageChildViewLayoutParams =
-                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-            imageChildViewLayoutParams.weight = 2;
-            imageChildView.setLayoutParams(imageChildViewLayoutParams);
-            imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            childrenContainer.addView(imageChildView);
-            CardView detailsChildView = new CardView(getContext());
-            LinearLayout.LayoutParams detailsChildViewLayoutParams =
-                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-            detailsChildViewLayoutParams.weight = 1;
-            detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
-            detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            childrenContainer.addView(detailsChildView);
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ){
+               if( component != null &&
+                component.getView() != null &&
+                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                   childrenContainer = new CardView(getContext());
+                   CardView.LayoutParams childContainerLayoutParams =
+                           new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                   ViewGroup.LayoutParams.MATCH_PARENT);
+                   childrenContainer.setLayoutParams(childContainerLayoutParams);
+
+                   if (createRoundedCorners) {
+                       ((CardView) childrenContainer).setRadius(14);
+                       setBackgroundResource(android.R.color.transparent);
+                       if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                           childrenContainer.setBackgroundResource(android.R.color.transparent);
+                       }
+                   } else {
+                       childrenContainer.setBackgroundResource(android.R.color.transparent);
+                   }
+               }else {
+                   childrenContainer = new LinearLayout(getContext());
+                   ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+                   LinearLayout.LayoutParams childContainerLayoutParams =
+                           new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                   ViewGroup.LayoutParams.MATCH_PARENT);
+                   childrenContainer.setLayoutParams(childContainerLayoutParams);
+                   CardView imageChildView = new CardView(getContext());
+                   LinearLayout.LayoutParams imageChildViewLayoutParams =
+                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                   imageChildViewLayoutParams.weight = 2;
+                   imageChildView.setLayoutParams(imageChildViewLayoutParams);
+                   imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                   childrenContainer.addView(imageChildView);
+                   CardView detailsChildView = new CardView(getContext());
+                   LinearLayout.LayoutParams detailsChildViewLayoutParams =
+                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                   detailsChildViewLayoutParams.weight = 1;
+                   detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
+                   detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                   childrenContainer.addView(detailsChildView);
+               }
         } else {
 
             childrenContainer = new CardView(getContext());
@@ -213,11 +230,12 @@ public class CollectionGridItemView extends BaseView {
         }
         childItems.add(itemContainer);
 
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) &&
-                component != null &&
-                component.getSettings() != null &&
-                !component.getSettings().isHidden()) {
-            if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ) {
+             if (component != null &&
+                component.getView() != null &&
+                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                 childrenContainer.addView(itemContainer.childView);
+             } else if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
                 ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
             } else {
                 ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);

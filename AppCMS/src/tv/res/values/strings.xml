@@ -71,4 +71,13 @@
     <string name="text_case_sentence">sentence</string>
     <string name="text_case_small">small</string>
     <string name="text_case_caps">caps</string>
+
+  
+    <string name="header">If you are currently a member of $App$, follow these instructions to link your device to membership account:</string>
+    <string name="code_sync_dialog_text_line_1">1. Sign in to $App$ from your desktop.</string>
+    <string name="code_sync_dialog_text_line_2">2. Go to My Account and enter code XXXXXX to link this device to your account.</string>
+    <string name="code_sync_dialog_text_line_3">3. Upon linking your device, you can start streaming $App$ on your Apple TV immediately.</string>
+
+    <string name="default_code">XXXXXX</string>
+
 </resources>

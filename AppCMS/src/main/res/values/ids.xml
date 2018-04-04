@@ -43,5 +43,7 @@
     <item name="article_publish_date" type="id"/>
     <item name="article_feed_ads_id" type="id" />
 
+    <item name="code_sync_text_line_header" type="id">code_sync_text_line_header</item>
+
 
 </resources>
