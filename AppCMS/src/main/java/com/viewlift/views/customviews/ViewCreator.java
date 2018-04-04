@@ -95,15 +95,12 @@ import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
-import net.nightwhistler.htmlspanner.SpanStack;
 import net.nightwhistler.htmlspanner.TagNodeHandler;
 import net.nightwhistler.htmlspanner.handlers.StyledTextHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
-
-import org.htmlcleaner.TagNode;
 
 import java.util.ArrayList;
 import java.util.List;
