@@ -171,108 +171,115 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                           final ContentDatum data,
                           int position) {
         if (onClickHandler == null) {
-                onClickHandler = new CollectionGridItemView.OnClickHandler() {
-                    @Override
-                    public void click(CollectionGridItemView collectionGridItemView,
-                                      Component childComponent,
-                                      ContentDatum data,
-                                      int position) {
-                        if (isClickable) {
-                            if (data.getGist() != null) {
-                                //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                                String permalink = data.getGist().getPermalink();
-                                String action = defaultAction;
-                                if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
-                                    action = childComponent.getAction();
-                                }
-                                String title = data.getGist().getTitle();
-                                String hlsUrl = getHlsUrl(data);
+            onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                @Override
+                public void click(CollectionGridItemView collectionGridItemView,
+                                  Component childComponent,
+                                  ContentDatum data,
+                                  int position) {
+                    if (isClickable) {
+                        AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+                        /**
+                         * if click happened from description text then no need to show play screen as more fragment open
+                         */
+                        if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
+                            return;
+                        }
+                        if (data.getGist() != null) {
+                            //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                            String permalink = data.getGist().getPermalink();
+                            String action = defaultAction;
+                            if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
+                                action = childComponent.getAction();
+                            }
+                            String title = data.getGist().getTitle();
+                            String hlsUrl = getHlsUrl(data);
 
-                                @SuppressWarnings("MismatchedReadAndWriteOfArray")
-                                String[] extraData = new String[3];
-                                extraData[0] = permalink;
-                                extraData[1] = hlsUrl;
-                                extraData[2] = data.getGist().getId();
-                                //Log.d(TAG, "Launching " + permalink + ": " + action);
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
-
-                                if (data.getGist() == null ||
-                                        data.getGist().getContentType() == null) {
-                                    if (!appCMSPresenter.launchVideoPlayer(data,
-                                            data.getGist().getId(),
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-    //                                                " permalink: " +
-    //                                                permalink +
-    //                                                " action: " +
-    //                                                action);
-                                    }
-                                } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            data,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-    //                                                " permalink: " +
-    //                                                permalink +
-    //                                                " action: " +
-    //                                                action);
-                                    }
+                            @SuppressWarnings("MismatchedReadAndWriteOfArray")
+                            String[] extraData = new String[3];
+                            extraData[0] = permalink;
+                            extraData[1] = hlsUrl;
+                            extraData[2] = data.getGist().getId();
+                            //Log.d(TAG, "Launching " + permalink + ": " + action);
+                            List<String> relatedVideoIds = allEpisodeIds;
+                            int currentPlayingIndex = -1;
+                            if (allEpisodeIds != null) {
+                                int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                    currentPlayingIndex = currentEpisodeIndex;
                                 }
                             }
-                        }
-                    }
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
 
-                    @Override
-                    public void play(Component childComponent, ContentDatum data) {
-                        if (isClickable) {
-                            if (data.getGist() != null) {
-                                //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
+                            if (data.getGist() == null ||
+                                    data.getGist().getContentType() == null) {
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch play action: " +
-    //                                            " filmId: " +
-    //                                            filmId +
-    //                                            " permaLink: " +
-    //                                            permaLink +
-    //                                            " title: " +
-    //                                            title);
+                                        action)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+                                    //                                                " permalink: " +
+                                    //                                                permalink +
+                                    //                                                " action: " +
+                                    //                                                action);
+                                }
+                            } else {
+                                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                        action,
+                                        title,
+                                        null,
+                                        data,
+                                        false,
+                                        currentPlayingIndex,
+                                        relatedVideoIds)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+                                    //                                                " permalink: " +
+                                    //                                                permalink +
+                                    //                                                " action: " +
+                                    //                                                action);
                                 }
                             }
                         }
                     }
+                }
+
+                @Override
+                public void play(Component childComponent, ContentDatum data) {
+                    if (isClickable) {
+                        if (data.getGist() != null) {
+                            //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                            List<String> relatedVideoIds = allEpisodeIds;
+                            int currentPlayingIndex = -1;
+                            if (allEpisodeIds != null) {
+                                int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                    currentPlayingIndex = currentEpisodeIndex;
+                                }
+                            }
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    data.getGist().getId(),
+                                    currentPlayingIndex,
+                                    relatedVideoIds,
+                                    -1,
+                                    null)) {
+                                //Log.e(TAG, "Could not launch play action: " +
+                                //                                            " filmId: " +
+                                //                                            filmId +
+                                //                                            " permaLink: " +
+                                //                                            permaLink +
+                                //                                            " title: " +
+                                //                                            title);
+                            }
+                        }
+                    }
+                }
             };
         }
 
