@@ -77,6 +77,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
+    private int placeHolderImg = 0;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -90,6 +91,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.textSize = (int) getTextSize(context);
         this.textWidth = (int) getTextWidth(context);
         this.textTopMargin = (int) getTextTopMargin(context);
+        this.placeHolderImg = BaseView.isLandscape(context)? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
     }
 
     @Override
@@ -398,7 +400,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
             this.thumbnailInfo = new TextView(view.getContext());
             this.thumbnailInfo.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-            this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.blackTransparentColor));
+            this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.apptentive_brand_red));
             this.thumbnailInfo.setTextSize(textSize);
             RelativeLayout.LayoutParams thumbnailInfoParams =
                     new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,

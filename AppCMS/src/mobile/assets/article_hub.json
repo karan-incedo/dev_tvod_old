@@ -969,31 +969,31 @@
         {
           "layout": {
             "mobile": {
-              "gridHeight": 247,
+              "gridHeight": 241,
               "trayPadding": 5,
               "leftMargin": 2.67,
               "topMargin": 10,
               "rightMargin": 2.67,
               "bottomMargin": 0,
-              "gridWidth": 238
+              "gridWidth": 228
             },
             "tabletLandscape": {
-              "gridHeight": 247,
+              "gridHeight": 241,
               "trayPadding": 10,
               "leftMargin": 0.98,
               "topMargin": 13.67,
               "rightMargin": 0.98,
               "bottomMargin": 0,
-              "gridWidth": 238
+              "gridWidth": 228
             },
             "tabletPortrait": {
-              "gridHeight": 247,
+              "gridHeight": 241,
               "trayPadding": 10,
               "leftMargin": 1.3,
               "topMargin": 13.67,
               "rightMargin": 1.3,
               "bottomMargin": 0,
-              "gridWidth": 238
+              "gridWidth": 228
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -1003,20 +1003,20 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 230,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 228,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 228,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 }
               },
               "type": "image",
@@ -1027,20 +1027,20 @@
                 "mobile": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 230,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 228,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
-                  "width": 228,
-                  "height": 134
+                  "width": 227.62,
+                  "height": 128
                 }
               },
               "type": "image",
@@ -1049,23 +1049,17 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 140,
-                  "leftMargin": 5,
-                  "rightMargin": 37,
+                  "yAxis": 134,
                   "fontSize": 15,
                   "height": 50
                 },
                 "tabletLandscape": {
-                  "yAxis": 140,
-                  "leftMargin": 5,
-                  "rightMargin": 50,
+                  "yAxis": 134,
                   "fontSize": 16,
                   "height": 50
                 },
                 "tabletPortrait": {
-                  "yAxis": 140,
-                  "leftMargin": 5,
-                  "rightMargin": 50,
+                  "yAxis": 134,
                   "fontSize": 16,
                   "height": 50
                 }
@@ -1080,23 +1074,17 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 190,
-                  "leftMargin": 5,
-                  "rightMargin": 37,
+                  "yAxis": 184,
                   "fontSize": 11,
                   "height": 60
                 },
                 "tabletLandscape": {
-                  "yAxis": 190,
-                  "leftMargin": 5,
-                  "rightMargin": 37,
+                  "yAxis": 184,
                   "fontSize": 12,
                   "height": 60
                 },
                 "tabletPortrait": {
-                  "yAxis": 190,
-                  "leftMargin": 5,
-                  "rightMargin": 37,
+                  "yAxis": 184,
                   "fontSize": 12,
                   "height": 60
                 }
@@ -1111,21 +1099,21 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 114,
+                  "yAxis": 107,
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 114,
+                  "yAxis": 107,
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "yAxis": 114,
+                  "yAxis": 107,
                   "xAxis": 0,
                   "fontSize": 12,
                   "height": 20
@@ -1203,7 +1191,7 @@
               "leftMargin": 0.97,
               "rightMargin": 0.97,
               "fontSize": 24,
-              "height": 10
+              "height": 33
             },
             "tabletPortrait": {
               "yAxis": 0,
@@ -1230,7 +1218,7 @@
               "yAxis": 33,
               "rightMargin": 0,
               "bottomMargin": 0,
-              "topMargin": 3
+              "topMargin": 5
             },
             "tabletLandscape": {
               "gridHeight": 635,
@@ -1241,7 +1229,7 @@
               "xAxis": 0,
               "rightMargin": 0,
               "bottomMargin": 5,
-              "topMargin": 3
+              "topMargin": 5
             },
             "tabletPortrait": {
               "gridHeight": 315,
@@ -1252,7 +1240,7 @@
               "yAxis": 0,
               "xAxis": 0,
               "bottomMargin": 5,
-              "topMargin": 3
+              "topMargin": 5
             }
           },
           "trayClickAction": "articleDetailPage",
@@ -1723,7 +1711,7 @@
               "leftMargin": 2.67,
               "rightMargin": 2.67,
               "fontSize": 16,
-              "height": 40,
+              "height": 25,
               "width": 0
             },
             "tabletLandscape": {
@@ -1757,7 +1745,7 @@
               "gridHeight": 38,
               "trayPadding": 5,
               "leftMargin": 2.67,
-              "topMargin": 20
+              "topMargin": 15
             },
             "tabletLandscape": {
               "gridHeight": 38,
@@ -1783,21 +1771,21 @@
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 33
                 },
                 "tabletLandscape": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 33
                 },
                 "tabletPortrait": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 33
                 }
               },
               "fontFamily": "OpenSans",
