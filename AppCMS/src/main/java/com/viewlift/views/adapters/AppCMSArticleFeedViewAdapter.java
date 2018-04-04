@@ -128,7 +128,7 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
             if (linearLayout == null) {
                 adView = new AdView(mContext);
                 linearLayout = new LinearLayout(mContext);
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,80);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
                 linearLayout.setLayoutParams(params);
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
                 linearLayout.addView(adView);
