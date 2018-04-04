@@ -1741,7 +1741,13 @@ public class ViewCreator {
 //                            AppCMSPageUI.class);
 //                    module = appCMSPageUI1.getModuleList().get(3);
 //                }
-
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("downloads01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "download.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//
+//                }
 //                else
                 {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
@@ -4126,9 +4132,7 @@ public class ViewCreator {
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                moduleAPI.getContentData().get(0).getGist() != null ) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
