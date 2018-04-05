@@ -3656,8 +3656,12 @@ public class AppCMSPresenter {
     }
 
     public void restrictPortraitOnly() {
-        if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        try {
+            if (currentActivity != null) {
+                currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 

@@ -4877,6 +4877,11 @@ public class ViewCreator {
                         jsonValueKeyMap.get(module.getType()) ==
                                 jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
+                }else if(jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        module.getType().equalsIgnoreCase("AC AutoPlayLandscape 01")){
+
+                    return moduleAPI;
                 }
             }
 
