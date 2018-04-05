@@ -130,12 +130,12 @@ public class ViewCreator {
     private static AppCMSVideoPlayerPresenter appCMSVideoPlayerPresenter;
     private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
     AppCMSPlaylistAdapter appCMSPlaylistAdapter;
+    PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
     private CastServiceProvider castProvider;
     private boolean isCastConnected;
-    PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -555,20 +555,6 @@ public class ViewCreator {
         return webView;
     }
 
-    private void enablePhotoGalleryButtons(Boolean prevButton, boolean nextButton, PageView pageView, AppCMSPresenter appCMSPresenter, String position) {
-        if ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(nextButton);
-        }
-        if ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setEnabled(prevButton);
-        }
-        if ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
-            ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count)).setText("" + position);
-        }
-    }
-
     /**
      * This will prepend a '#' character to the beginning of a color string if one is missing.
      *
@@ -596,6 +582,20 @@ public class ViewCreator {
             return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
         }
         return baseColorCode;
+    }
+
+    private void enablePhotoGalleryButtons(Boolean prevButton, boolean nextButton, PageView pageView, AppCMSPresenter appCMSPresenter, String position) {
+        if ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(nextButton);
+        }
+        if ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setEnabled(prevButton);
+        }
+        if ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
+            ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count)).setText("" + position);
+        }
     }
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
@@ -4031,7 +4031,7 @@ public class ViewCreator {
                     adView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
-                            adView.setAdSize(AdSize.SMART_BANNER);
+                            adView.setAdSize(AdSize.BANNER);
                             break;
                         case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
                             adView.setAdSize(AdSize.MEDIUM_RECTANGLE);

@@ -46,8 +46,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
-import net.nightwhistler.htmlspanner.TextUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -73,12 +71,12 @@ public class CollectionGridItemView extends BaseView {
     private final String moduleId;
     protected int defaultWidth;
     protected int defaultHeight;
+    AppCMSUIKeyType viewTypeKey;
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
     private boolean selectable;
     private boolean createMultipleContainersForChildren;
     private boolean createRoundedCorners;
-    AppCMSUIKeyType viewTypeKey;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -958,10 +956,14 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setText(readTimeText);
                             } else {
                                 long runtime = data.getGist().getRuntime();
-                                if (thumbInfo != null) {
+                                if (thumbInfo != null && runtime > 0) {
                                     ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
-                                } else {
-                                    ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+                                } else{
+                                    if (thumbInfo != null) {
+                                        ((TextView) view).setText(thumbInfo);
+                                    } else if (runtime > 0) {
+                                        ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+                                    }
                                 }
 
                             }
@@ -1252,6 +1254,22 @@ public class CollectionGridItemView extends BaseView {
         return childItems;
     }
 
+    private String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    public String getSubstring(String value, int maxLength) {
+        if (!TextUtils.isEmpty(value)) {
+            if (value.length() >= maxLength) {
+                return value.substring(0, maxLength) + "...";
+            }
+        }
+        return value;
+    }
+
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
@@ -1380,22 +1398,6 @@ public class CollectionGridItemView extends BaseView {
         public int hashCode() {
             return ID.hashCode();
         }
-    }
-
-    private String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    public String getSubstring(String value, int maxLength) {
-        if (!TextUtils.isEmpty(value)) {
-            if (value.length() >= maxLength) {
-                return value.substring(0, maxLength) + "...";
-            }
-        }
-        return value;
     }
 
 }
