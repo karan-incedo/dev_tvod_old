@@ -665,7 +665,7 @@ public class PlaybackManager implements Playback.Callback {
                     if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures() != null
                             && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
-                        if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                        if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview() ) {
                             if (currentProgess >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
                                 previewEnd = true;
                             }

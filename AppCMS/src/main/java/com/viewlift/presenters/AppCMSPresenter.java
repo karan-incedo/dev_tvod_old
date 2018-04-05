@@ -10555,8 +10555,14 @@ public class AppCMSPresenter {
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
+            int previewTime=0;
+            if (getAppCMSMain() != null
+                    && getAppCMSMain().getFeatures() != null
+                    && getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                  previewTime=(Integer.parseInt(getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier()))*1000 ;
 
-            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+            }
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
             setAudioPlayerOpen(false);
         } else if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
@@ -10743,7 +10749,14 @@ public class AppCMSPresenter {
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
                                     }
-                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                                    int previewTime=0;
+                                    if (getAppCMSMain() != null
+                                            && getAppCMSMain().getFeatures() != null
+                                            && getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                                        previewTime=(Integer.parseInt(getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier()))*1000 ;
+
+                                    }
+                                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                                     setAudioPlayerOpen(false);
                                 } else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
@@ -11423,7 +11436,14 @@ public class AppCMSPresenter {
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
                         }
-                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                        int previewTime=0;
+                        if (getAppCMSMain() != null
+                                && getAppCMSMain().getFeatures() != null
+                                && getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                            previewTime=(Integer.parseInt(getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier()))*1000 ;
+
+                        }
+                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                         setAudioPlayerOpen(false);
                     } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
@@ -11530,7 +11550,14 @@ public class AppCMSPresenter {
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
                     }
-                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
+                    int previewTime=0;
+                    if (getAppCMSMain() != null
+                            && getAppCMSMain().getFeatures() != null
+                            && getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                        previewTime=(Integer.parseInt(getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier()))*1000 ;
+
+                    }
+                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                     setAudioPlayerOpen(false);
                 } else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
