@@ -839,8 +839,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
 
-
-
         closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
                     if (view != null) {
@@ -953,7 +951,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getAppCMSPageAPI() != null &&
                 updatedAppCMSBinder.getAppCMSPageAPI().getModules() != null) {
             int moduleSize = updatedAppCMSBinder.getAppCMSPageAPI().getModules().size();
-            for (int i = 0; i < moduleSize ; i++) {
+            for (int i = 0; i < moduleSize; i++) {
                 if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i) != null &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData() != null &&
                         !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().isEmpty() &&
@@ -1097,11 +1095,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 sendBroadcast(initReceivers);
 
                 Fabric.with(getApplication(), new Crashlytics());
-                Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey",AppCMSPageActivity.this),
-                        Utils.getProperty("ApptentiveSignatureKey",AppCMSPageActivity.this));
+                if (Utils.getProperty("ApptentiveApiKey", AppCMSPageActivity.this) != null
+                        && Utils.getProperty("ApptentiveSignatureKey", AppCMSPageActivity.this) != null) {
+                    Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey", AppCMSPageActivity.this),
+                            Utils.getProperty("ApptentiveSignatureKey", AppCMSPageActivity.this));
+                }
                 AndroidThreeTen.init(this);
                 AppsFlyerLib.getInstance().startTracking(getApplication());
-                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId",AppCMSPageActivity.this));
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", AppCMSPageActivity.this));
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().registerCallback(callbackManager,
@@ -2141,7 +2142,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void setSelectedMenuTabIndex(int selectedMenuTabIndex) {
-       // navMenuPageIndex = selectedMenuTabIndex;
+        // navMenuPageIndex = selectedMenuTabIndex;
     }
 
     @Override
@@ -2209,10 +2210,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isPagePrimary(pageId) &&
                     !appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.GONE);
-            } else if(appCMSPresenter.isViewPlanPage(pageId)){
+            } else if (appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
-            }else {
+            } else {
                 closeButton.setVisibility(View.VISIBLE);
             }
 
@@ -2234,10 +2235,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
-                if(appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()) )
-                 setCastingVisibility(true);
+                if (appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()))
+                    setCastingVisibility(true);
                 else
-                 setCastingVisibility(false);
+                    setCastingVisibility(false);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }
@@ -2685,10 +2686,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if(pagePath.toString().contains(getString(R.string.app_cms_page_path_article))){
+        if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
             appCMSPresenter.setCurrentArticleIndex(-1);
             action = getString(R.string.app_cms_action_articlepage_key);
-        }else if(pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))){
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
         }
 
