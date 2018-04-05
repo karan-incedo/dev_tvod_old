@@ -99,7 +99,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 Log.e(TAG, "Created new history tray");
                 break;
 
-            case PAGE_DOWNLOAD_MODULE_KEY:
+            case PAGE_DOWNLOAD_01_MODULE_KEY:
+            case PAGE_DOWNLOAD_02_MODULE_KEY:
                 Log.e(TAG, "Created new download tray");
                 this.isDownload = true;
                 break;
@@ -487,7 +488,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (isHistory) {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_history_list_message));
             } else if (isDownload) {
-                holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_download_message));
+                holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_download_video_message));
             } else {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_watchlist_message));
             }

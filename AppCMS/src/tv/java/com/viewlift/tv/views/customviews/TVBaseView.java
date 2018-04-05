@@ -260,6 +260,10 @@ public abstract class TVBaseView extends FrameLayout {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
             switch (componentKey) {
+                case PAGE_LINK_YOUR_ACCOUNT_TEXT_KEY:
+                    ((TextView) view).setGravity(Gravity.CENTER_HORIZONTAL);
+                    gravity = Gravity.NO_GRAVITY;
+                    break;
                 case PAGE_TRAY_TITLE_KEY:
                     break;
                 case PAGE_PLAY_IMAGE_KEY:

@@ -4,12 +4,16 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.internal.LinkedTreeMap;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -51,7 +55,7 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     AdView adView;
     private static String adURL;
 
-    private int ADS_TYPE=-1, FEED_TYPE;
+    private int ADS_TYPE = -1, FEED_TYPE;
 
     public AppCMSArticleFeedViewAdapter(Context context,
                                         ViewCreator viewCreator,
@@ -78,11 +82,10 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
         } else {
             this.adapterData = new ArrayList<>();
         }
-
-        if (adapterData!= null &&
-                adapterData.size()>0) {
+        if (adapterData != null &&
+                adapterData.size() > 0) {
             for (int i = 0; i < this.adapterData.size(); i++) {
-                if (adapterData.get(i)!= null  &&
+                if (adapterData.get(i) != null &&
                         adapterData.get(i).getId() != null &&
                         adapterData.get(i).getId().equalsIgnoreCase("adTag")) {
                     ADS_TYPE = i;
@@ -94,21 +97,17 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
                 moduleAPI.getMetadataMap() != null &&
                 moduleAPI.getMetadataMap() instanceof LinkedTreeMap &&
                 this.adView == null &&
-                !this.adapterData.get(this.adapterData.size()-2).getId().equalsIgnoreCase("adTag") &&
-                ADS_TYPE == -1
-                ) {
+                !this.adapterData.get(this.adapterData.size() - 2).getId().equalsIgnoreCase("adTag") &&
+                ADS_TYPE == -1) {
 
             adView = new AdView(context);
-            ContentDatum data=new ContentDatum();
+            ContentDatum data = new ContentDatum();
             data.setId("adTag");
             this.adapterData.add(this.adapterData.size() - 1, data);
 
             LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
-
             adURL = admap.get("adTag");
             //articleFeedModuleAd = new ArticleFeedModule(context, adView);
-
-
             ADS_TYPE = this.adapterData.size() - 2;
 
 
@@ -123,14 +122,23 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        LinearLayout linearLayout = null;
         ArticleFeedModule view = null;
-        if (ADS_TYPE != 0 && ADS_TYPE == viewType
-                ) {
-            if (adView == null){
+        if (ADS_TYPE != 0 && ADS_TYPE == viewType) {
+            if (linearLayout == null) {
                 adView = new AdView(mContext);
+                linearLayout = new LinearLayout(mContext);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                linearLayout.setLayoutParams(params);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                linearLayout.addView(adView);
+
+                TextView textView = new TextView(mContext);
+                textView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,20));
+                linearLayout.addView(textView);
+                linearLayout.setId(R.id.article_feed_ads_id);
             }
-            return new ViewHolder(adView);
+            return new ViewHolder(linearLayout);
 
         } else {
             view = new ArticleFeedModule(parent.getContext(),
@@ -163,17 +171,15 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
         if (position != ADS_TYPE) {
             bindView(holder.componentView, adapterData.get(position), position);
         } else if (adView != null) {
-
             adView.setFocusable(false);
             adView.setEnabled(false);
             adView.setClickable(false);
             MobileAds.initialize(this.mContext, adURL);
             adView.setAdUnitId(adURL);
             AdRequest adRequest = new AdRequest.Builder().build();
-            adView.setAdSize(AdSize.SMART_BANNER);
+            adView.setAdSize(AdSize.BANNER);
             adView.loadAd(adRequest);
         }
-
     }
 
     @Override
@@ -184,11 +190,17 @@ public class AppCMSArticleFeedViewAdapter extends RecyclerView.Adapter<AppCMSArt
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ArticleFeedModule componentView;
         AdView adsView;
+        LinearLayout linearLayout = null;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            if (itemView instanceof AdView) {
-                this.adsView = (AdView) itemView;
+
+            if(itemView == null){
+                return;
+            }
+
+            if (itemView instanceof LinearLayout && itemView.getId()== R.id.article_feed_ads_id) {
+                this.linearLayout = (LinearLayout) itemView;
             } else {
                 this.componentView = (ArticleFeedModule) itemView;
             }

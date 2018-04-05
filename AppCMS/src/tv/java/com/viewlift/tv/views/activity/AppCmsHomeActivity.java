@@ -52,6 +52,7 @@ import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.RetryCallBinder;
+import com.viewlift.tv.views.fragment.AppCmsLinkYourAccountFragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +89,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private FrameLayout subNavHolder;
     private BroadcastReceiver updateWatchListDataReceiver;
+    private AppCmsLinkYourAccountFragment appCmsLinkYourAccountFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -257,7 +259,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     openErrorDialog(intent);
                 } else if (intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)) {
                     openResetPasswordScreen(intent);
-                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)) {
+                }else if (intent.getAction().equals(AppCMSPresenter.ACTION_LINK_YOUR_ACCOUNT)) {
+                    openLinkYourAccountScreen(intent);
+                }  else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)) {
 
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
@@ -411,6 +415,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
+        registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_LINK_YOUR_ACCOUNT));
+
     }
 
     @Override
@@ -620,11 +626,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
                 case EDIT_WATCHLIST:
                     if (appCMSPresenter.isNetworkConnected()) {
-                        appCMSPresenter.editWatchlist(retryCallBinder.getFilmId(),
+                        appCMSPresenter.editWatchlist(retryCallBinder.getContentDatum(),
                                 retryCallBinder.getCallback(),
                                 !bundle.getBoolean("queued"), true);
                     } else {
-                        appCMSPresenter.openErrorDialog(retryCallBinder.getFilmId(),
+                        appCMSPresenter.openErrorDialog(retryCallBinder.getContentDatum(),
                                 bundle.getBoolean("queued"),
                                 retryCallBinder.getCallback());
                     }
@@ -1220,5 +1226,20 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
         }
     }
+
+    private void openLinkYourAccountScreen(Intent intent) {
+        if (null != intent) {
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if (null != bundle) {
+                AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                appCmsLinkYourAccountFragment = AppCmsLinkYourAccountFragment.newInstance(
+                        appCMSBinder);
+                appCmsLinkYourAccountFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                Utils.pageLoading(false, this);
+            }
+        }
+    }
+
 
 }

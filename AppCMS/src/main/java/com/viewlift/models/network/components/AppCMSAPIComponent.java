@@ -7,6 +7,8 @@ import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.presenters.UrbanAirshipEventPresenter;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
 
 import javax.inject.Singleton;
 
@@ -25,5 +27,6 @@ public interface AppCMSAPIComponent {
     AppCMSContentDetailCall appCMSContentDetailCall();
     UANamedUserEventCall uaNamedUserEventCall();
     UrbanAirshipEventPresenter urbanAirshipEventPresenter();
-
+    AppCMSDeviceCodeApiCall appCmsGetSyncCodeAPICall();
+    AppCMSSyncDeviceCodeApiCall appCmsSyncDeviceCodeAPICall();
 }

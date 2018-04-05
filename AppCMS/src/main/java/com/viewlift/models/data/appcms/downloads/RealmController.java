@@ -98,6 +98,17 @@ public class RealmController {
         return null;
     }
 
+    public RealmResults<DownloadVideoRealm> getDownloadsByUserIdAndMedia(String userId,String contentType) {
+        try {
+            return realm.where(DownloadVideoRealm.class)
+                    .equalTo("userId", userId)
+                    .equalTo("contentType", contentType)
+                    .findAll();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return null;
+    }
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
