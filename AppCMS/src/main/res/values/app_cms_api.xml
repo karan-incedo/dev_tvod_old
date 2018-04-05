@@ -192,6 +192,8 @@
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
+    <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
+    <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>

@@ -240,6 +240,7 @@ import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
+import com.viewlift.views.customviews.DownloadModule;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -681,6 +682,17 @@ public class AppCMSPresenter {
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
     private boolean isAudioPlayerOpen;
+
+
+    public int getDownloadTabSelected() {
+        return DOWNLOAD_TAB_SELECTED;
+    }
+
+    public void setDownloadTabSelected(int downloadTabSelected) {
+        DOWNLOAD_TAB_SELECTED = downloadTabSelected;
+    }
+
+    private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -5077,11 +5089,19 @@ public class AppCMSPresenter {
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
+        String contentType = currentContext.getString(R.string.content_type_video);
+        String deleteMsg = currentActivity.getString(R.string.app_cms_delete_all_video_download_items_message);
+        if (getDownloadTabSelected() == DownloadModule.AUDIO_TAB) {
+            contentType = currentContext.getString(R.string.content_type_audio);
+            deleteMsg = currentActivity.getString(R.string.app_cms_delete_all_audio_download_items_message);
+        }
+
+        final String content = contentType;
         showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
-                currentActivity.getString(R.string.app_cms_delete_all_download_items_message),
+                deleteMsg,
                 true, () -> {
                     for (DownloadVideoRealm downloadVideoRealm :
-                            realmController.getDownloadesByUserId(getLoggedInUser())) {
+                            realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
                         removeDownloadedFile(downloadVideoRealm.getVideoId());
                     }
                     appCMSUserDownloadVideoStatusCall.call("", this,
@@ -5161,6 +5181,14 @@ public class AppCMSPresenter {
             return appCMSMain.getFeatures().isMobileAppDownloads();
         }
         return false;
+    }
+
+    public List<ContentDatum> getDownloadedMedia(String mediaType) {
+        List<ContentDatum> contentData = new ArrayList<>();
+        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), mediaType)) {
+            contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+        }
+        return contentData;
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
@@ -9281,7 +9309,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public boolean isHomePage(String pageId){
+    public boolean isHomePage(String pageId) {
         if (pageId != null && homePage != null && homePage.getPageId() != null &&
                 pageId.equalsIgnoreCase(homePage.getPageId())) {
             return true;
@@ -9432,7 +9460,8 @@ public class AppCMSPresenter {
      * @param dialogType    An enumerated value to select the message from a set of preexisting messages
      * @param onCloseAction The action to take when the user closes the dialog
      */
-    public AlertDialog dialog=null;
+    public AlertDialog dialog = null;
+
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
             if (!isDialogShown)
@@ -9544,45 +9573,45 @@ public class AppCMSPresenter {
                         message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
 
-                    //Set Firebase User Property when user is not logged in and unsubscribed
-                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                }
-                if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
-                    title = currentActivity.getString(R.string.preview_content);
-                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
-                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
-                        positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        //Set Firebase User Property when user is not logged in and unsubscribed
+                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
-                    if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
-                            && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
-                        negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
-                    }
+                    if (dialogType == DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED) {
+                        title = currentActivity.getString(R.string.preview_content);
+                        message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText() != null) {
+                            positiveButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getSubscriptionButtonText();
+                        }
+                        if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
+                                && getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText() != null) {
+                            negativeButtonText = getAppCMSAndroid().getSubscriptionAudioFlowContent().getLoginButtonText();
+                        }
 
-                    //Set Firebase User Property when user is not logged in and unsubscribed
-                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
-                }
-                if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
-                    String paymentProcessor = getActiveSubscriptionProcessor();
-                    if ((!TextUtils.isEmpty(paymentProcessor) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
-                    } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
-                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
-                    } else {
-                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        //Set Firebase User Property when user is not logged in and unsubscribed
+                        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
-                }
+                    if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
+                        String paymentProcessor = getActiveSubscriptionProcessor();
+                        if ((!TextUtils.isEmpty(paymentProcessor) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
+                        } else if (!TextUtils.isEmpty(paymentProcessor) &&
+                                ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                        || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
+                        } else {
+                            title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        }
+                    }
 
                     if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                         String paymentProcessor = getActiveSubscriptionProcessor();
@@ -9636,37 +9665,37 @@ public class AppCMSPresenter {
                         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                     }
 
-                if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
-                    title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
-                    message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
-                    positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
-                }
+                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                        title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                        message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
+                        positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+                    }
 
-                if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                    title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
-                    message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
-                    positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
-                }
-                if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
-                    title = currentActivity.getString(R.string.no_data_received);
-                    message = currentActivity.getString(R.string.there_is_a_problem_loading_data);
-                    positiveButtonText = currentActivity.getString(R.string.ok);
-                }
-                if (dialogType == DialogType.OPEN_URL_IN_BROWSER) {
-                    title = "";
-                    message = currentActivity.getString(R.string.open_url_in_browser_message);
-                    positiveButtonText = currentActivity.getString(R.string.yes);
+                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                        title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                        message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
+                        positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
+                    }
+                    if (dialogType == DialogType.ARTICLE_API_RESPONSE_ERROR) {
+                        title = currentActivity.getString(R.string.no_data_received);
+                        message = currentActivity.getString(R.string.there_is_a_problem_loading_data);
+                        positiveButtonText = currentActivity.getString(R.string.ok);
+                    }
+                    if (dialogType == DialogType.OPEN_URL_IN_BROWSER) {
+                        title = "";
+                        message = currentActivity.getString(R.string.open_url_in_browser_message);
+                        positiveButtonText = currentActivity.getString(R.string.yes);
 
-                }
+                    }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
 
-                builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                        Integer.toHexString(textColor).substring(2),
-                        title)))
-                        .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                                Integer.toHexString(textColor).substring(2),
-                                message)));
+                    builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            title)))
+                            .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                                    Integer.toHexString(textColor).substring(2),
+                                    message)));
 
                     if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                         builder.setPositiveButton("Yes",
@@ -10318,6 +10347,7 @@ public class AppCMSPresenter {
         beaconMessageRunnable.setUrl(url);
         beaconMessageThread.run();
     }
+
 
     private ArrayList<BeaconRequest> getBeaconRequestList() {
         String uid = getInstanceId();
@@ -11543,8 +11573,7 @@ public class AppCMSPresenter {
                         }
                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
                         setAudioPlayerOpen(false);
-                    }
-                    else if (entitlementPendingVideoData != null) {
+                    } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -12758,7 +12787,7 @@ public class AppCMSPresenter {
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -12867,10 +12896,10 @@ public class AppCMSPresenter {
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
-                        ( navigation!=null &&
-                                navigation.getTabBar() !=null &&
-                                navigation.getTabBar().get(0) !=null &&
-                                navigation.getTabBar().get(0).getPageId() !=null &&
+                        (navigation != null &&
+                                navigation.getTabBar() != null &&
+                                navigation.getTabBar().get(0) != null &&
+                                navigation.getTabBar().get(0).getPageId() != null &&
                                 metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
                     homePage = metaPage;
                     new SoftReference<Object>(homePage, referenceQueue);
@@ -16931,7 +16960,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void processRelatedArticleDeepLink(AppCMSPageAPI appCMSPageAPI){
+    private void processRelatedArticleDeepLink(AppCMSPageAPI appCMSPageAPI) {
         if (getCurrentArticleIndex() == -1 && appCMSPageAPI.getModules() != null) {
             int moduleSize = appCMSPageAPI.getModules().size();
             for (int i = 0; i < moduleSize; i++) {

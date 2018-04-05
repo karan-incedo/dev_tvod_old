@@ -515,11 +515,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
                 AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key2),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
@@ -629,6 +629,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_video_tab_component_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_audio_tab_component_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_removeall_key),
