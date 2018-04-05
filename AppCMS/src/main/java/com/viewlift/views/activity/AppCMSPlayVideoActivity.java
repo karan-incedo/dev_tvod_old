@@ -236,6 +236,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     return;
                 }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                if ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    return;
+                }
                 try {
                     if (((binder != null &&
                             binder.getContentData() != null &&
@@ -363,6 +366,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             filmId = binder.getContentData().getGist().getId();
             videoRunTime = binder.getContentData().getGist().getRuntime();
         }
+
+        appCMSPresenter.setCurrentPlayingVideo(filmId);
         String adsUrl = binder.getAdsUrl();
         String bgColor = binder.getBgColor();
         int playIndex = binder.getCurrentPlayingVideoIndex();
@@ -467,6 +472,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
+        appCMSPresenter.setCurrentPlayingVideo(null);
 
         super.onDestroy();
     }

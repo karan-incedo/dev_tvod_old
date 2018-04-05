@@ -79,6 +79,15 @@
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
+    
+        <!-- AppCMS Content Detail API -->
+    <string name="app_cms_content_detail_api_url">%1$s/content/videos/%2$s?site=%3$s</string>
+
+    <!--Get Sync Code and Code Sync API-->
+    <string name="app_cms_get_code_api_url">%1$s/user/device/code?deviceId=%2$s&amp;platform=%3$s&amp;site=%4$s&amp;deviceName=%5$s</string>
+    <string name="app_cms_sync_code_api_url">%1$s/user/device/details?deviceId=%2$s&amp;platform=%3$s&amp;site=%4$s&amp;deviceName=%5$s</string>
+    <string name="app_cms_desync_device_api_url">%1$s/user/device/desync?deviceId=%2$s&amp;platform=%3$s&amp;site=%4$s</string>
+
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
@@ -133,7 +142,7 @@
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
-    <string name="app_cms_page_info_key">info</string>d
+    <string name="app_cms_page_info_key">info</string>
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
@@ -193,6 +202,11 @@
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
+
+
+    <string name="app_cms_page_video_download_tab_component_key">AC Video Component</string>
+    <string name="app_cms_page_audio_download_tab_component_key">AC Audio Component</string>
+
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_event_carousel_module_key">AC EventCarousel 01</string>
@@ -380,6 +394,8 @@
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
+    <string name="app_cms_pagename_sign_up_key">Sign Up</string>
+    <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>
@@ -440,9 +456,6 @@
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
-
-    <!-- AppCMS Content Detail API -->
-    <string name="app_cms_content_detail_api_url">%1$s/content/videos/%2$s?site=%3$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
@@ -528,6 +541,7 @@
     <string name="app_cms_autoplay_countdown_cancelled_label_key">countdownCancelledLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
+    <string name="app_cms_download_multi_event_detected_message_message">Muliple action detected for downloading %1$s, single download allowd for one content.</string>
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>
     <string name="app_cms_download_available_already_message">%1$s has already been downloaded to this device by another user.  The same copy of this video will be played instead of downloading another copy.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
@@ -666,5 +680,15 @@
     <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
     <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
 
+    <string name="app_cms_page_link_your_account_btn_key">link_your_account_button</string>
+    <string name="app_cms_page_link_your_account_text_key">linkAccountTextLabel</string>
+    <string name="app_cms_page_open_sign_up_button_key">openSignUpPageButtonKey</string>
+    <string name="app_cms_page_link_your_account_module">AC LinkAccount 01</string>
+    <string name="app_cms_request_new_code_btn_key">request_new_code</string>
+    <string name="app_cms_code_sync_text_line_1">link_account_dialog_text_line_1</string>
+    <string name="app_cms_code_sync_text_line_2">link_account_dialog_text_line_2</string>
+    <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
+    <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
+    <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
 
 </resources>

@@ -519,6 +519,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     false);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+
+            appCMSPresenter.sendGaEvent(getString(R.string.play_video_action),
+                    getString(R.string.play_video_category),
+                    filmId);
+
         }
 
         beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
