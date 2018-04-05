@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.widget.CursorAdapter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,13 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
     @SuppressWarnings("StringBufferReplaceableByString")
     public void bindView(View view, Context context, Cursor cursor) {
         ButterKnife.bind(this, view);
+        String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
+        String mediaType = searchHintResult[4];
+        String songCount = searchHintResult[7];
+        String songYear="";
+        if(searchHintResult.length>=9 && searchHintResult[8]!=null){
+            songYear = searchHintResult[8];
+        }
 
         filmTitle.setText(cursor.getString(1));
         int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
@@ -68,6 +76,13 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
             runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
                     .append(" ")
                     .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
+        }
+        if (mediaType != null
+                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())){
+            runtime.setText(songCount+" "+context.getString(R.string.songs_abbreviation));
+        }else if (mediaType != null
+                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)){
+            runtime.append(" | "+songYear);
         }
     }
 
