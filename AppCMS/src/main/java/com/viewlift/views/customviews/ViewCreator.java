@@ -111,6 +111,7 @@ import rx.functions.Action1;
 
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY;
 
 
 /*
@@ -2062,22 +2063,22 @@ public class ViewCreator {
                         for (int i = 0; i < size; i++) {
                             Component component = module.getComponents().get(i);
 
-                        try {
-                            createComponentView(context,
-                                    component,
-                                    module.getLayout(),
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    pageView,
-                                    module.getSettings(),
-                                    jsonValueKeyMap,
-                                    appCMSPresenter,
-                                    false,
-                                    module.getView(),
-                                    module.getId());
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                        }
+                            try {
+                                createComponentView(context,
+                                        component,
+                                        module.getLayout(),
+                                        moduleAPI,
+                                        appCMSAndroidModules,
+                                        pageView,
+                                        module.getSettings(),
+                                        jsonValueKeyMap,
+                                        appCMSPresenter,
+                                        false,
+                                        module.getView(),
+                                        module.getId());
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
 
                             if (adjustOthers == AdjustOtherState.INITIATED) {
                                 adjustOthers = AdjustOtherState.ADJUST_OTHERS;
@@ -3779,6 +3780,10 @@ public class ViewCreator {
 
                             @Override
                             public void onClick(final View v) {
+                                boolean deleteAllFiles = false;
+                                if (jsonValueKeyMap.get(viewType) == PAGE_DOWNLOAD_01_MODULE_KEY) {
+                                    deleteAllFiles = true;
+                                }
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
@@ -3791,10 +3796,9 @@ public class ViewCreator {
                                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                                     case PAGE_DOWNLOAD_02_MODULE_KEY:
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
-                                            DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
-                                        });
+                                        },deleteAllFiles);
                                         break;
 
                                     case PAGE_WATCHLIST_01_MODULE_KEY:

@@ -3062,7 +3062,7 @@ public class AppCMSPresenter {
     }
 
     private void launchResetPasswordTVPage(AppCMSPageUI appCMSPageUI, String action) {
-        if (currentActivity != null ) {
+        if (currentActivity != null) {
             if (appCMSPageUI == null) {
                 showLoader();
 
@@ -3153,14 +3153,14 @@ public class AppCMSPresenter {
     }
 
 
-    private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI , String action) {
-        if (currentActivity != null ) {
-            if(appCMSPageUI == null){
+    private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI, String action) {
+        if (currentActivity != null) {
+            if (appCMSPageUI == null) {
                 showLoader();
 
                 AppCMSActionType actionType = actionToActionTypeMap.get(action);
                 MetaPage metaPage = actionTypeToMetaPageMap.get(actionType);
-                if(metaPage != null){
+                if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             new Action1<AppCMSPageUI>() {
                                 @Override
@@ -3170,9 +3170,9 @@ public class AppCMSPresenter {
                                     if (action1 != null && actionToPageMap.containsKey(action1)) {
                                         actionToPageMap.put(action1, appCMSPageUI);
                                     }
-                                    launchLinkYourAccountPage(appCMSPageUI,action1);
+                                    launchLinkYourAccountPage(appCMSPageUI, action1);
                                 }
-                            },loadFromFile,false);
+                            }, loadFromFile, false);
                 }
                 return;
             }
@@ -3208,8 +3208,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getDeviceLinkCode(final Action1<GetLinkCode> getSyncCodeAction1){
-        try{
+    public void getDeviceLinkCode(final Action1<GetLinkCode> getSyncCodeAction1) {
+        try {
             showLoader();
             appCMSGetSyncCodeApiCall.call(
                     currentActivity.getString(R.string.app_cms_get_code_api_url,
@@ -3220,12 +3220,12 @@ public class AppCMSPresenter {
                     getAuthToken(),
                     getSyncCodeAction1
             );
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    public void deSyncDevice(){
+    public void deSyncDevice() {
         try {
             appCmsSyncDeviceCodeAPICall.call(
                     currentActivity.getString(R.string.app_cms_desync_device_api_url,
@@ -3237,20 +3237,20 @@ public class AppCMSPresenter {
                     new Action1<SyncDeviceCode>() {
                         @Override
                         public void call(SyncDeviceCode syncDeviceCode) {
-                           // Log.d(TAG , "DesyncDevice status = "+syncDeviceCode.getStatus());
+                            // Log.d(TAG , "DesyncDevice status = "+syncDeviceCode.getStatus());
                         }
                     }
             );
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    public void syncCode(final Action1<SyncDeviceCode> getSyncCodeAction1){
-        try{
-            if(!isSyncCodeAPIRunning()) {
-                Log.d("TAG","syncCode.........1");
+    public void syncCode(final Action1<SyncDeviceCode> getSyncCodeAction1) {
+        try {
+            if (!isSyncCodeAPIRunning()) {
+                Log.d("TAG", "syncCode.........1");
                 startSyncCodeAPI();
                 appCmsSyncDeviceCodeAPICall.call(
                         currentActivity.getString(R.string.app_cms_sync_code_api_url,
@@ -3273,7 +3273,7 @@ public class AppCMSPresenter {
                                     sendSignInEmailFirebase();
                                     setLoggedInUserName(syncDeviceCode.getName());
                                     setLoggedInUserEmail(syncDeviceCode.getEmail());
-                                   // boolean isSubscribed = syncDeviceCode.getIsSubscribed() != null ? Boolean.parseBoolean(syncDeviceCode.getIsSubscribed()) : false;
+                                    // boolean isSubscribed = syncDeviceCode.getIsSubscribed() != null ? Boolean.parseBoolean(syncDeviceCode.getIsSubscribed()) : false;
                                     showLoader();
                                     finalizeLogin(false,
                                             syncDeviceCode.getIsSubscribed(),
@@ -3281,8 +3281,8 @@ public class AppCMSPresenter {
                                             true);
                                     getSyncCodeAction1.call(syncDeviceCode);
                                 } else {
-                                    if(isSyncCodeAPIRunning()) {
-                                        Log.d("TAG","syncCode.........3");
+                                    if (isSyncCodeAPIRunning()) {
+                                        Log.d("TAG", "syncCode.........3");
                                         stopSyncCodeAPI();
                                         syncCode(getSyncCodeAction1);
                                     }
@@ -3291,20 +3291,22 @@ public class AppCMSPresenter {
                         }
                 );
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     private boolean isSyncCodeApiRunning = false;
-    public void startSyncCodeAPI(){
+
+    public void startSyncCodeAPI() {
         isSyncCodeApiRunning = true;
     }
-    public void stopSyncCodeAPI(){
+
+    public void stopSyncCodeAPI() {
         isSyncCodeApiRunning = false;
     }
 
-    public boolean isSyncCodeAPIRunning(){
+    public boolean isSyncCodeAPIRunning() {
         return isSyncCodeApiRunning;
     }
 
@@ -4395,7 +4397,7 @@ public class AppCMSPresenter {
      */
 
     public synchronized void editDownload(final ContentDatum contentDatum,
-                             final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
             showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
                     currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
@@ -4962,7 +4964,7 @@ public class AppCMSPresenter {
     }
 
     private synchronized void startDownload(ContentDatum contentDatum,
-                               Action1<UserVideoDownloadStatus> resultAction1) {
+                                            Action1<UserVideoDownloadStatus> resultAction1) {
 
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
@@ -5076,16 +5078,16 @@ public class AppCMSPresenter {
         /*
          * Inserting data in realm data object
          */
-        createLocalEntry(
-                enqueueId,
-                thumbEnqueueId,
-                posterEnqueueId,
-                ccEnqueueId,
-                contentDatum,
-                downloadURL);
-        showToast(
-                currentActivity.getString(R.string.app_cms_download_started_message,
-                        contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+            createLocalEntry(
+                    enqueueId,
+                    thumbEnqueueId,
+                    posterEnqueueId,
+                    ccEnqueueId,
+                    contentDatum,
+                    downloadURL);
+            showToast(
+                    currentActivity.getString(R.string.app_cms_download_started_message,
+                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
 
         }
@@ -5286,7 +5288,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
+    public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
         String contentType = currentContext.getString(R.string.content_type_video);
         String deleteMsg = currentActivity.getString(R.string.app_cms_delete_all_video_download_items_message);
         if (getDownloadTabSelected() == DownloadModule.AUDIO_TAB) {
@@ -5298,9 +5300,17 @@ public class AppCMSPresenter {
         showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
                 deleteMsg,
                 true, () -> {
-                    for (DownloadVideoRealm downloadVideoRealm :
-                            realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
-                        removeDownloadedFile(downloadVideoRealm.getVideoId());
+                    if (deleteAllFiles) {
+                        for (DownloadVideoRealm downloadVideoRealm :
+                                realmController.getDownloadesByUserId(getLoggedInUser())) {
+                            removeDownloadedFile(downloadVideoRealm.getVideoId());
+                        }
+                    } else {
+                        for (DownloadVideoRealm downloadVideoRealm :
+                                realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
+                            removeDownloadedFile(downloadVideoRealm.getVideoId());
+                        }
+
                     }
                     appCMSUserDownloadVideoStatusCall.call("", this,
                             resultAction1, getLoggedInUser());
@@ -6136,7 +6146,7 @@ public class AppCMSPresenter {
                             String autoplayPageId = getAutoplayPageId(binder.getContentData().getGist().getMediaType());
                             final AppCMSPageUI[] appCMSPageUI = {navigationPages.get(autoplayPageId)};
 
-                            if(null == appCMSPageUI[0]){
+                            if (null == appCMSPageUI[0]) {
                                 MetaPage metaPage = pageIdToMetaPageMap.get(autoplayPageId);
                                 if (metaPage != null) {
                                     getAppCMSPage(metaPage.getPageUI(),
@@ -6180,7 +6190,7 @@ public class AppCMSPresenter {
                                             loadFromFile,
                                             false);
                                 }
-                            }else{
+                            } else {
                                 for (ModuleList moduleList : appCMSPageUI[0].getModuleList()) {
                                     if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                             jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
@@ -7074,7 +7084,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToSignUpPage(){
+    public void navigateToSignUpPage() {
         if (signupPage != null) {
             navigateToTVPage(signupPage.getPageId(),
                     signupPage.getPageName(),
@@ -8114,8 +8124,6 @@ public class AppCMSPresenter {
     }
 
 
-
-
     private boolean isLoginWithLinkYourAccount() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LOGIN_WITH_LINK_ACCOUNT_PREF_NAME, 0);
@@ -9084,7 +9092,7 @@ public class AppCMSPresenter {
         }
 
         if (currentActivity != null) {
-            if(isLoginWithLinkYourAccount()){
+            if (isLoginWithLinkYourAccount()) {
                 deSyncDevice();
             }
             setLoginWithLinkYourAccount(false);
@@ -12897,7 +12905,7 @@ public class AppCMSPresenter {
                                 });
                     } catch (Exception e) {
                     }
-                } else{
+                } else {
                     getUserData(userIdentity -> {
                         try {
                             if (userIdentity != null) {
@@ -12914,7 +12922,7 @@ public class AppCMSPresenter {
                             launchBlankPage();
                         }
                     });
-            }
+                }
                 populateUserHistoryData();
             } else {
                 signinAnonymousUser();
@@ -13095,13 +13103,13 @@ public class AppCMSPresenter {
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY){
+                        == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY) {
                     linkAccountPage = metaPage;
                     new SoftReference<Object>(linkAccountPage, referenceQueue);
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
-                               == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY){
+                        == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
                     tosPage = metaPage;
                     new SoftReference<Object>(privacyPolicyPage, referenceQueue);
                 }
@@ -14257,10 +14265,10 @@ public class AppCMSPresenter {
                 //Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 launchResetPasswordTVPage(appCMSPageUI, action);
-            }else if (actionType == AppCMSActionType.LINK_YOUR_ACCOUNT) {
+            } else if (actionType == AppCMSActionType.LINK_YOUR_ACCOUNT) {
                 //Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                launchLinkYourAccountPage(appCMSPageUI , action);
+                launchLinkYourAccountPage(appCMSPageUI, action);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 //Log.d(TAG, "Login Facebook selected");
                 loginFacebook();
@@ -14669,7 +14677,8 @@ public class AppCMSPresenter {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
 
-           /* if (contentDatum.getContentDetails() == null)*/ {
+           /* if (contentDatum.getContentDetails() == null)*/
+            {
                 String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
@@ -14706,7 +14715,7 @@ public class AppCMSPresenter {
                                                         for (ClosedCaptions closedCaption :
                                                                 appCMSContentDetail.getContentDetails().getClosedCaptions()) {
                                                             if (null != closedCaption && null != closedCaption.getFormat()
-                                                                && closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                                    && closedCaption.getFormat().equalsIgnoreCase("SRT")) {
                                                                 extraData[3] = closedCaption.getUrl();
                                                                 break;
                                                             }
@@ -17162,7 +17171,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private String getDeviceDetail(){
+    private String getDeviceDetail() {
         StringBuffer stringBuffer = new StringBuffer();
         try {
             final String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
@@ -17186,14 +17195,14 @@ public class AppCMSPresenter {
                 stringBuffer.append("FireTV_Edition ");
             }
             //stringBuffer.append("SDK_INT = " + Build.VERSION.SDK_INT);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return stringBuffer.toString();
     }
 
 
-    private void processRelatedArticleDeepLink(AppCMSPageAPI appCMSPageAPI){
+    private void processRelatedArticleDeepLink(AppCMSPageAPI appCMSPageAPI) {
         if (getCurrentArticleIndex() == -1 && appCMSPageAPI.getModules() != null) {
             int moduleSize = appCMSPageAPI.getModules().size();
             for (int i = 0; i < moduleSize; i++) {
@@ -17245,11 +17254,14 @@ public class AppCMSPresenter {
             }
         }
     }
-    String videoId=null;
-    public void setCurrentPlayingVideo(String videoId){
-        this.videoId=videoId;
+
+    String videoId = null;
+
+    public void setCurrentPlayingVideo(String videoId) {
+        this.videoId = videoId;
     }
-    public String getCurrentPlayingVideo(){
+
+    public String getCurrentPlayingVideo() {
         return videoId;
     }
 }
