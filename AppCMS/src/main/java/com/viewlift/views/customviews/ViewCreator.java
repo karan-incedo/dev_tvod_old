@@ -1741,7 +1741,13 @@ public class ViewCreator {
 //                            AppCMSPageUI.class);
 //                    module = appCMSPageUI1.getModuleList().get(3);
 //                }
-
+//                if (moduleInfo.getBlockName().equalsIgnoreCase("downloads01")) {
+//                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "download.json"),
+//                            AppCMSPageUI.class);
+//                    module = appCMSPageUI1.getModuleList().get(1);
+//
+//                }
 //                else
                 {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
@@ -1850,18 +1856,7 @@ public class ViewCreator {
                     this,
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
-        }
-//        else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
-//            moduleView = new DownloadModule(context,
-//                    module,
-//                    moduleAPI,
-//                    jsonValueKeyMap,
-//                    appCMSPresenter,
-//                    this,
-//                    appCMSAndroidModules);
-//            pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
-//        }
-        else {
+        } else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -1906,8 +1901,8 @@ public class ViewCreator {
                                     false,
                                     module.getView(),
                                     module.getId());
-                        }catch (NullPointerException e){
-
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
                         }
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
@@ -3568,7 +3563,7 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             !appCMSPresenter.isAppSVOD() &&
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -4137,9 +4132,7 @@ public class ViewCreator {
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                moduleAPI.getContentData().get(0).getGist() != null ) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -5393,7 +5386,11 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+
                     imageButton.setOnClickListener(null);
+                    /**
+                     * Handling Quality screen for Audio media type
+                     */
                     if (contentDatum.getGist() != null &&
                             contentDatum.getGist().getMediaType() != null &&
                             contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
@@ -5431,6 +5428,7 @@ public class ViewCreator {
                                 });
                     }
                 }
+                imageButton.setOnClickListener(null);
             };
 
 //            imageButton.setOnClickListener(addClickListener);

@@ -537,6 +537,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
+
+                    if ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                        return;
+                    }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
                         appCMSPresenter.setShowNetworkConnectivity(true);
                         appCMSPresenter.showNoNetworkConnectivityToast();
