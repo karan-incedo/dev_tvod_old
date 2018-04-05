@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.view.ViewGroup;
 import android.app.Activity;
 import android.app.FragmentBreadCrumbs;
 import android.content.Context;
@@ -102,6 +103,7 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
+import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY;
 
@@ -4135,6 +4137,10 @@ public class ViewCreator {
                     case PAGE_SUBSCRIBE_EMAIL_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         textInputEditText.setId(R.id.subscribe_edit_text_id);
+                        RecyclerView view = appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+                        if(view != null){
+                            view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+                        }
                         break;
 
                     default:

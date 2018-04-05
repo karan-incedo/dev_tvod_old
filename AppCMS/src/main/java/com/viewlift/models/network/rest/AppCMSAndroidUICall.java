@@ -55,8 +55,8 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI == null) {
             try {
-                appCMSAndroidUI = readJsonFromAssets();
-               // appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+               // appCMSAndroidUI = readJsonFromAssets();
+                appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
 //                    e.getMessage());

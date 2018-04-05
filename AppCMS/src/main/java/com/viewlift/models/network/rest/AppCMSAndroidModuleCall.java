@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
@@ -128,7 +129,34 @@ public class AppCMSAndroidModuleCall {
             //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
         }
         return moduleDataMap;
+       // return readModuleListFromNetworkTest(moduleDataMap,blocksBaseUrl,version);
     }
+
+    private ModuleDataMap readModuleListFromNetworkTest(ModuleDataMap moduleDataMap,
+                                                        String blocksBaseUrl,
+                                                        String version) {
+        try {
+            String json = null;
+            InputStream inputStream = AppCMSApplication.getContext().getAssets().open("androidModule.json");
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            json = new String(buffer, "UTF-8");
+
+            moduleDataMap.appCMSAndroidModule = gson.fromJson(json,
+                    new TypeToken<Map<String, ModuleList>>() {
+                    }.getType());
+            moduleDataMap.loadedFromNetwork = true;
+            new Thread(() -> {
+                deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
+                writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+            }).run();
+        } catch (Exception e1) {
+        }
+        return moduleDataMap;
+    }
+
 
     private void readModuleListFromFile(String blocksBaseUrl,
                                         String version,

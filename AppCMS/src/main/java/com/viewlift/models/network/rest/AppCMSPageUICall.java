@@ -46,28 +46,29 @@ public class AppCMSPageUICall {
     public AppCMSPageUI call(String url, long timeStamp, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
-         if(url.contains("https://appcmsprod.viewlift.com/6fef71e8-3185-432f-8431-106c2be042c8/android/d1cc55ca-1947-4401-a290-696d31881186.json")) {
-             appCMSPageUI = readJsonFromAssets();
-         }else{
-             //             if (loadFromFile) {
-//                 try {
-//                appCMSPageUI = readPageFromFile(filename);
-//                appCMSPageUI.setLoadedFromNetwork(false);
-//                 } catch (Exception e) {
-//                     //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
-//                     try {
-//                         loadFromNetwork(url, filename);
-//                     } catch (Exception e2) {
-//                         //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-////                        e2.getMessage());
-//                     }
-//                 }
-//             } else {
-//                  appCMSPageUI = loadFromNetwork(url, filename);
-//             }
-             appCMSPageUI = loadFromNetwork(url, filename);
-            // appCMSPageUI = readJsonFromAssets();
-         }
+//         if(url.contains("https://appcms.viewlift.com/3f6f15c7-8454-462f-917e-2c427c95fa1d/android/d6b39aa6-44bc-418a-9945-02b3a1bf245e.json")) {
+//             //appCMSPageUI = readJsonFromAssets();
+//             appCMSPageUI = loadFromNetwork(url, filename);
+//         }else{
+        if (loadFromFile) {
+            try {
+                appCMSPageUI = readPageFromFile(filename);
+                appCMSPageUI.setLoadedFromNetwork(false);
+            } catch (Exception e) {
+                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                try {
+                    loadFromNetwork(url, filename);
+                } catch (Exception e2) {
+                    //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+//                        e2.getMessage());
+                }
+            }
+        } else {
+            appCMSPageUI = loadFromNetwork(url, filename);
+        }
+//             appCMSPageUI = loadFromNetwork(url, filename);
+//            // appCMSPageUI = readJsonFromAssets();
+//         }
 
         return appCMSPageUI;
     }
