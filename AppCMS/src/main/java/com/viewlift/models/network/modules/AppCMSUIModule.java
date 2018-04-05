@@ -643,6 +643,13 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_download_tab_component_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_COMPONENT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_download_tab_component_key),
+                AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_COMPONENT_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_removeall_key),

@@ -39,17 +39,12 @@
         android:roundIcon="@mipmap/app_logo"
         android:theme="@style/AppTheme"
         tools:replace="android:theme,android:label">
-        <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc"/>
+
 
         <meta-data
             android:name="com.urbanairship.autopilot"
             android:value="com.viewlift.mobile.pushnotif.AppCMSAutoPilot" />
 
-        <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
 
         <receiver
             android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
@@ -109,7 +104,7 @@
 
         <activity
             android:name="com.viewlift.mobile.AppCMSLaunchActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/AppThemeTransparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
