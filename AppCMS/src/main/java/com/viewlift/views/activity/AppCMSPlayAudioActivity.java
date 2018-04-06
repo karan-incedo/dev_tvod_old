@@ -102,7 +102,10 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         appCMSPresenter.sendGaScreen("Music");
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
-        if (appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
+        if (currentAudio != null &&
+                currentAudio.getGist() != null &&
+                currentAudio.getGist().getId() != null &&
+                appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
             downloadAudio.setImageResource(R.drawable.ic_downloaded_big);
             downloadAudio.setOnClickListener(null);
         }
@@ -124,6 +127,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
+
     public void startDownloadPlaylist() {
         appCMSPresenter.askForPermissionToDownloadForPlaylist(true, new Action1<Boolean>() {
             @Override
@@ -135,6 +139,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             }
         });
     }
+
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -209,6 +214,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
 
     }
+
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
