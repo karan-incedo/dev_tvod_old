@@ -624,7 +624,7 @@ public class PlaybackManager implements Playback.Callback {
         currentProgess = (int) (currentPosition / 1000);
 
         currentPositionInMS = currentPosition;
-        System.out.println("currentPositionInMS- " + currentPositionInMS);
+        //System.out.println("currentPositionInMS- " + currentPositionInMS);
         audioPreview();
     }
 
@@ -638,7 +638,7 @@ public class PlaybackManager implements Playback.Callback {
              * on end of preview reset position to 0
              */
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
-            System.out.println("currentPositionInMS- set to 0");
+            //System.out.println("currentPositionInMS- set to 0");
             if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                 Intent intent = new Intent();
                 intent.setAction(AudioServiceHelper.APP_CMS_SHOW_PREVIEW_ACTION);
