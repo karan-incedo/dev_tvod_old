@@ -2905,9 +2905,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
                     currentActivity.findViewById(R.id.app_cms_addon_fragment);
-            if (additionalFragmentView != null) {
-                return true;
-            }
+            return additionalFragmentView != null;
         }
         return false;
     }
@@ -9326,9 +9324,7 @@ public class AppCMSPresenter {
                     maxDuration = MAX_ANONYMOUS_SESSIONS_DURATION_IN_MINUTES;
                 }
 
-                if (minutesSinceLogin >= maxDuration) {
-                    return true;
-                }
+                return minutesSinceLogin >= maxDuration;
             }
         }
         return false;
@@ -10893,10 +10889,8 @@ public class AppCMSPresenter {
 
     public boolean isActionFacebook(String action) {
         if (!TextUtils.isEmpty(action)) {
-            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
-                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK) {
-                return true;
-            }
+            return actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK;
         }
 
         return false;
@@ -10904,10 +10898,8 @@ public class AppCMSPresenter {
 
     public boolean isActionGoogle(String action) {
         if (!TextUtils.isEmpty(action)) {
-            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_GOOGLE ||
-                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_GOOGLE) {
-                return true;
-            }
+            return actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_GOOGLE ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_GOOGLE;
         }
 
         return false;
