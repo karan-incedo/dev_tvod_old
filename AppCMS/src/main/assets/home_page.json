@@ -2965,7 +2965,7 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 135
+          "height": 140
         },
         "tabletLandscape": {
           "yAxis": 0,
@@ -3077,12 +3077,13 @@
           "text": "SUBSCRIBE",
           "type": "label",
           "textColor": "#008EE0",
-          "fontWeight": "Regular",
+          "fontWeight": "Semibold",
           "key": "emailSubscriptionTitle"
         },
         {
           "layout": {
             "mobile": {
+              "topMargin":71,
               "leftMargin": 2.13,
               "bottomMargin": 2.22,
               "width": 300,
@@ -3118,10 +3119,11 @@
         {
           "layout": {
             "mobile": {
+              "topMargin":71,
               "rightMargin": 2.13,
               "bottomMargin": 2.22,
-              "width": 32,
-              "height": 32
+              "width": 60,
+              "height": 38
             },
             "tabletLandscape": {
               "rightMargin": 0,
@@ -3145,171 +3147,6 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "goButton"
-        }
-      ]
-    },
-    {
-      "id": "12a8ccc4-c660-460f-95a5-4593d19563e6",
-      "settings": {
-        "showTabBar": true
-      },
-      "view": "AC Footer 01",
-      "type": "AC Footer 01",
-      "blockName": "footer01",
-      "components": [
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 0,
-              "xAxis": 0,
-              "width": 16,
-              "height": 16
-            },
-            "tabletLandscape": {
-              "yAxis": 0,
-              "xAxis": 0,
-              "width": 16,
-              "height": 16
-            },
-            "tabletPortrait": {
-              "yAxis": 0,
-              "xAxis": 0,
-              "width": 16,
-              "height": 16
-            }
-          },
-          "isSelectable": true,
-          "type": "image",
-          "key": "tabImage"
-        },
-        {
-          "layout": {
-            "mobile": {
-              "leftMargin": 0,
-              "topMargin": 0,
-              "rightMargin": 0,
-              "fontSize": 12,
-              "height": 12
-            },
-            "tabletLandscape": {
-              "leftMargin": 0.98,
-              "topMargin": 0.91,
-              "rightMargin": 4.69,
-              "fontSize": 18,
-              "height": 24
-            },
-            "tabletPortrait": {
-              "leftMargin": 1.3,
-              "topMargin": 0.68,
-              "rightMargin": 6.25,
-              "fontSize": 18,
-              "height": 24
-            }
-          },
-          "fontFamily": "Lato",
-          "numberOfLines": 1,
-          "textAlignment": "center",
-          "isSelectable": true,
-          "type": "label",
-          "textColor": "#ffffff",
-          "fontWeight": "normal",
-          "key": "tabName"
-        }
-      ],
-      "isTabSeparator": false,
-      "tabSeparator-color": "#cf0a2b",
-      "isBackgroundSelectable": false
-    },
-    {
-      "id": "a9226ca6-36da-41ae-8ee9-5981dde22c62",
-      "settings": {},
-      "view": "AC WebFrame 01",
-      "type": "AC WebFrame 01",
-      "blockName": "webFrame01",
-      "layout": {
-        "mobile": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "rightMargin": 0,
-          "height": 300
-        },
-        "tabletLandscape": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "xAxis": 0,
-          "rightMargin": 0,
-          "height": 300
-        },
-        "tabletPortrait": {
-          "yAxis": 0,
-          "leftMargin": 0,
-          "xAxis": 0,
-          "rightMargin": 0,
-          "height": 310
-        }
-      },
-      "components": [
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 0,
-              "leftMargin": 4.27,
-              "rightMargin": 4.27,
-              "fontSize": 18,
-              "height": 25
-            },
-            "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 2.93,
-              "rightMargin": 2.93,
-              "fontSize": 18,
-              "height": 25
-            },
-            "tabletPortrait": {
-              "yAxis": 0,
-              "leftMargin": 3.91,
-              "rightMargin": 3.91,
-              "fontSize": 18,
-              "height": 25
-            }
-          },
-          "fontFamily": "Lato",
-          "numberOfLines": 1,
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#008EE0",
-          "fontWeight": "Bold",
-          "key": "trayTitle"
-        },
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 0,
-              "leftMargin": 4.27,
-              "topMargin": 9.89,
-              "rightMargin": 4.27,
-              "bottomMargin": 0,
-              "height": 285
-            },
-            "tabletLandscape": {
-              "yAxis": 0,
-              "leftMargin": 2.93,
-              "topMargin": 9.89,
-              "rightMargin": 2.93,
-              "bottomMargin": 0,
-              "height": 285
-            },
-            "tabletPortrait": {
-              "yAxis": 0,
-              "leftMargin": 3.91,
-              "topMargin": 9.89,
-              "rightMargin": 3.91,
-              "bottomMargin": 0,
-              "height": 285
-            }
-          },
-          "type": "web_view",
-          "key": "web_view"
         }
       ]
     }

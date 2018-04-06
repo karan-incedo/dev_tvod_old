@@ -140,6 +140,8 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribe_email_go_button_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribeEditText_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ratingbar_key),

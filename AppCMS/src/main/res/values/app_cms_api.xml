@@ -565,6 +565,7 @@
      <string name="icon_image_key">iconImage</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
     <string name="app_cms_page_subscribeEditText_key">mailChimpEmailTextField</string>
+    <string name="app_cms_page_subscribe_email_go_button_key">goButton</string>
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
     <!--watchlist / history / queue UI json keys-->
