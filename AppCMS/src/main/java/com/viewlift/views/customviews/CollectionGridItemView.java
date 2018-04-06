@@ -37,6 +37,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -604,7 +605,8 @@ public class CollectionGridItemView extends BaseView {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
-                } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
                     String userId = appCMSPresenter.getLoggedInUser();
 
                     try {
@@ -626,12 +628,26 @@ public class CollectionGridItemView extends BaseView {
 
                         appCMSPresenter.getUserVideoDownloadStatus(
                                 data.getGist().getId(), updateDownloadImageIconAction, userId);
+                        /*appCMSPresenter.getUserVideoDownloadStatus(data.getGist().getId(),
+                                videoDownloadStatus -> {
+                                    if (videoDownloadStatus != null &&
+                                            (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                                    videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                                    (!appCMSPresenter.isNetworkConnected() &&
+                                                            videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                                            videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
+                                        ((ImageButton)view).setImageBitmap(null);
+                                        view.setBackground(ContextCompat.getDrawable(view.getContext(),
+                                                R.drawable.ic_download_queued));
+                                    }
+                                },
+                                userId);*/
                     } catch (Exception e) {
 
                     }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
-                    view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data, position));
+                } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
+                    *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                            childComponent, data, position));*//*
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                         ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
                         view.setOnClickListener(null);
@@ -657,7 +673,7 @@ public class CollectionGridItemView extends BaseView {
                                 moduleId);
                         view.setOnClickListener(null);
                     }
-                } else {
+                } */else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));
                 }
@@ -680,7 +696,7 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setMaxLines(1);
                                 ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                                 ((TextView) view).setText(artist);
-                                ((TextView) view).setPadding(10,
+                                view.setPadding(10,
                                         0,
                                         10,
                                         0);
@@ -756,7 +772,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(data.getGist().getTitle());
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) view).setVisibility(View.VISIBLE);
+                            view.setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||

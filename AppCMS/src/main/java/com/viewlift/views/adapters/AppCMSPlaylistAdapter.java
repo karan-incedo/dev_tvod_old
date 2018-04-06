@@ -180,8 +180,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
             allViews[position] = holder.componentView;
+            System.out.println("playlist adapter onBindViewHolder" );
             bindView(holder.componentView, adapterData.get(position), position);
-            downloadView(adapterData.get(position), holder.componentView);
+           // downloadView(adapterData.get(position), holder.componentView);
             if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
                 if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId()) && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
                     adapterData.get(position).getGist().setAudioPlaying(true);
@@ -551,6 +552,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                 @Override
                                 public void run() {
                                     audioDownload(download, adapterData.get(pos));
+                                    //updateDownloadImageAndStartDownloadProcess(adapterData.get(pos),download);
                                 }
                             }, 400);
 
@@ -579,20 +581,23 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
-//                        if ((boolean) download.getTag()) {
-//                            DownloadUpdate downloadTag = new DownloadUpdate();
-//                            downloadTag.setClick(true);
-//                            download.setTag(downloadTag);
-//                            download.setTag(false);
-//                            download.performClick();
-//                        }
+                        download.performClick();
+                       /* DownloadUpdate downloadTag = (DownloadUpdate) download.getTag();
 
+                        if (!downloadTag.isClick && !downloadTag.isDowloading()) {
+                            DownloadUpdate downloadTag1 = new DownloadUpdate();
+                            downloadTag1.setClick(true);
+                            downloadTag1.setDowloading(true);
+                            download.setTag(downloadTag1);
+                            download.setTag(false);
+                            download.performClick();
+                        }*/
                     }
                 });
 
     }
 
-    void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
+    synchronized void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
                 appCMSPresenter.getUpdateDownloadImageIconActionMap();
@@ -604,17 +609,33 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                     updateDownloadImageIconActionMap.get(contentDatum.getGist().getId());
             if (updateDownloadImageIconAction == null) {
-                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) downloadView, appCMSPresenter,
+                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction(downloadView, appCMSPresenter,
                         contentDatum, userId, radiusDifference, moduleId);
                 updateDownloadImageIconActionMap.put(contentDatum.getGist().getId(), updateDownloadImageIconAction);
             }
 
-//            downloadView.setTag(contentDatum.getGist().getId());
+            downloadView.setTag(contentDatum.getGist().getId());
 
-            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+            updateDownloadImageIconAction.updateDownloadImageButton(downloadView);
+            updateDownloadImageIconAction.updateContentData(contentDatum);
 
             appCMSPresenter.getUserVideoDownloadStatus(
                     contentDatum.getGist().getId(), updateDownloadImageIconAction, userId);
+            /*appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
+                    videoDownloadStatus -> {
+                        if (videoDownloadStatus != null &&
+                                (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                        videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                        (!appCMSPresenter.isNetworkConnected() &&
+                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
+                            downloadView.setImageBitmap(null);
+                            downloadView.setBackground(ContextCompat.getDrawable(downloadView.getContext(),
+                                    R.drawable.ic_download_queued));
+                        }
+                    },
+                    userId);*/
+
         } catch (Exception e) {
 
         }

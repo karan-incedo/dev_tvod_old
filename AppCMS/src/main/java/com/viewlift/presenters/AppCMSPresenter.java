@@ -2905,9 +2905,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
                     currentActivity.findViewById(R.id.app_cms_addon_fragment);
-            if (additionalFragmentView != null) {
-                return true;
-            }
+            return additionalFragmentView != null;
         }
         return false;
     }
@@ -4239,6 +4237,7 @@ public class AppCMSPresenter {
                         contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                         contentDatum.getGist().getContentType() != null &&
                         contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+
                     downloadURL = contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl();
                 } else {
                     downloadURL = getDownloadURL(contentDatum);
@@ -4253,7 +4252,12 @@ public class AppCMSPresenter {
             } catch (Exception e) {
                 Log.e(TAG, "Error trying to download: " + e.getMessage());
             }
-            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+            if (isVideoDownloaded(contentDatum.getGist().getId())) {
+                showToast(
+                        currentActivity.getString(R.string.app_cms_download_available_already_message,
+                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+
+            } else if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
                 try {
@@ -4273,7 +4277,7 @@ public class AppCMSPresenter {
 
 //                        startNextDownload = false;
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             } else {
                 currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
@@ -4364,7 +4368,7 @@ public class AppCMSPresenter {
                                         Action1<UserVideoDownloadStatus> resultAction1) {
         currentActivity.runOnUiThread(() -> {
             showToast(
-                    currentActivity.getString(R.string.app_cms_download_available_already_message,
+                    currentActivity.getString(R.string.app_cms_download_available_already_message_other_user,
                             contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
             DownloadVideoRealm videoDownloaded = getVideoDownloadedByOtherUser(contentDatum.getGist().getId());
             DownloadVideoRealm downloadVideoRealm = videoDownloaded.createCopy();
@@ -4836,6 +4840,7 @@ public class AppCMSPresenter {
     }
 
     private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId) {
+        if (!isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
         String mediaPrefix = MEDIA_SURFIX_MP4;
         if (contentDatum.getGist() != null &&
                 contentDatum.getGist().getMediaType() != null &&
@@ -4845,7 +4850,7 @@ public class AppCMSPresenter {
             mediaPrefix = MEDIA_SURFIX_MP3;
         }
         // cancelDownloadIconTimerTask(contentDatum.getGist().getId());
-        if (!isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+
 
             DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
@@ -9339,9 +9344,7 @@ public class AppCMSPresenter {
                     maxDuration = MAX_ANONYMOUS_SESSIONS_DURATION_IN_MINUTES;
                 }
 
-                if (minutesSinceLogin >= maxDuration) {
-                    return true;
-                }
+                return minutesSinceLogin >= maxDuration;
             }
         }
         return false;
@@ -10911,10 +10914,8 @@ public class AppCMSPresenter {
 
     public boolean isActionFacebook(String action) {
         if (!TextUtils.isEmpty(action)) {
-            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
-                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK) {
-                return true;
-            }
+            return actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK;
         }
 
         return false;
@@ -10922,10 +10923,8 @@ public class AppCMSPresenter {
 
     public boolean isActionGoogle(String action) {
         if (!TextUtils.isEmpty(action)) {
-            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_GOOGLE ||
-                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_GOOGLE) {
-                return true;
-            }
+            return actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_GOOGLE ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_GOOGLE;
         }
 
         return false;
