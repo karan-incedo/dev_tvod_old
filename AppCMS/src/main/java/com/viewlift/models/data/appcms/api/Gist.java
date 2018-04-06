@@ -110,6 +110,24 @@ public class Gist implements Serializable {
     @Expose
     String mediaType;
 
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getDirectorName() {
+        return directorName;
+    }
+
+    public void setDirectorName(String directorName) {
+        this.directorName = directorName;
+    }
+
+    String artistName;
+    String directorName;
 
     String downloadStatus;
     boolean isAudioPlaying;

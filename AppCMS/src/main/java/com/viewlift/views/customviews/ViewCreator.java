@@ -5398,7 +5398,7 @@ public class ViewCreator {
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
 
-                    imageButton.setOnClickListener(null);
+//                    imageButton.setOnClickListener(null);
                     /**
                      * Handling Quality screen for Audio media type
                      */
@@ -5547,6 +5547,9 @@ public class ViewCreator {
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.requestLayout();
                 imageButton.setOnClickListener(addClickListener);
+                if(contentDatum.getGist().getMediaType()!=null && contentDatum.getGist().getMediaType().equalsIgnoreCase("AUDIO")){
+                    addClickListener.onClick(imageButton);
+                }
             }
         }
 

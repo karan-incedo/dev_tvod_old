@@ -295,7 +295,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             }
             if (contentDatum.getGist() != null) {
                 deleteDownloadButton.setTag(contentDatum.getGist().getId());
-                final  ImageButton deleteButton=deleteDownloadButton;
+                final ImageButton deleteButton = deleteDownloadButton;
                 appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
                         videoDownloadStatus -> {
                             if (videoDownloadStatus != null &&
@@ -314,7 +314,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 switch (contentDatum.getGist().getDownloadStatus()) {
                     case STATUS_PENDING:
                     case STATUS_RUNNING:
-                       int finalRadiusDifference = radiusDifference;
+                        int finalRadiusDifference = radiusDifference;
                         if (contentDatum.getGist() != null && deleteDownloadButton != null) {
                             if (deleteDownloadButton.getBackground() != null) {
                                 deleteDownloadButton.getBackground().setTint(ContextCompat.getColor(mContext, R.color.transparentColor));
@@ -362,10 +362,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                     finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                             android.R.drawable.stat_sys_warning));
                                                     finalVideoSize.setText("Re-Try".toUpperCase());
-                                                    finalVideoSize.setOnClickListener(v -> restartDownloadVideo(contentDatum, position,finalDeleteDownloadButton,finalRadiusDifference));
+                                                    finalVideoSize.setOnClickListener(v -> restartDownloadVideo(contentDatum, position, finalDeleteDownloadButton, finalRadiusDifference));
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == STATUS_RUNNING) {
                                                     finalVideoSize.setText("Cancel");
-                                                }else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
                                                     finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                             R.drawable.ic_download_queued));
                                                 }
@@ -373,7 +373,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             }
                                         },
                                         userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
-                            }else {
+                            } else {
                                 appCMSPresenter.updateDownloadTimerTask(contentDatum.getGist().getId(),
                                         appCMSPresenter.getDownloadPageId(),
                                         deleteDownloadButton);
@@ -440,7 +440,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private synchronized void restartDownloadVideo(final ContentDatum contentDatum, int position,
-                                                   final ImageButton downloadProgressImage,final int radiusDifference) {
+                                                   final ImageButton downloadProgressImage, final int radiusDifference) {
 
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
@@ -453,11 +453,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         //notifyItemRangeChanged(position, getItemCount());
                                         if (adapterData.size() == 0) {
                                             sendEvent(hideRemoveAllButtonEvent);
-                                            notifyItemRangeChanged(position,getItemCount());
+                                            notifyItemRangeChanged(position, getItemCount());
                                             notifyDataSetChanged();
                                             updateData(mRecyclerView, adapterData);
                                         }
-                                    },downloadProgressImage,radiusDifference)
+                                    }, downloadProgressImage, radiusDifference)
                     ,
                     () ->  // cancelButton Action code
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
