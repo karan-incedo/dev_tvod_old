@@ -9418,6 +9418,8 @@ public class AppCMSPresenter {
                             if (getAppCMSAndroid() != null && getAppCMSAndroid().getSubscriptionAudioFlowContent() != null
                                     && getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage() != null) {
                                 message = getAppCMSAndroid().getSubscriptionAudioFlowContent().getOverlayMessage();
+                            }else{
+                                message = currentActivity.getString(R.string.app_cms_audio_preview_end_message);
                             }
                             title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_preview_title);
 
@@ -14511,7 +14513,11 @@ public class AppCMSPresenter {
     }
 
     public String getNetworkConnectivityDownloadErrorMsg() {
-        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
+        if(currentActivity!=null) {
+            return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
+        }else{
+            return "Please connect your device to a network and try again, or click OK for go to My Downloads";
+        }
     }
 
     public String getSignOutErrorMsg() {

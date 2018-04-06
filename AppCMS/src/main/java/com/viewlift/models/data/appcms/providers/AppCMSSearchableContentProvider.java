@@ -110,6 +110,16 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                 String mediaType = searchResultList.get(i).getGist().getMediaType();
                                 String contentType = searchResultList.get(i).getGist().getContentType();
                                 String gistId = searchResultList.get(i).getGist().getId();
+
+                                String audioCount="0";
+                                if(searchResultList.get(i).getAudioList()!=null && searchResultList.get(i).getAudioList().size()>0){
+                                     audioCount = searchResultList.get(i).getAudioList().size()+"";
+                                }
+                                String yearSong="";
+                                if(searchResultList.get(i).getGist()!=null && searchResultList.get(i).getGist().getYear()!=null){
+                                    yearSong = searchResultList.get(i).getGist().getYear();
+                                }
+
                                 String searchHintResult = searchResultList.get(i).getGist().getTitle() +
                                         "," +
                                         runtime +
@@ -122,7 +132,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         "," +
                                         contentType +
                                         "," +
-                                        gistId;
+                                        gistId+","+audioCount+","+yearSong;
                                 Object[] rowResult = {i, title, runtime, searchHintResult};
 
                                 cursor.addRow(rowResult);

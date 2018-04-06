@@ -1225,7 +1225,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
-        if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
+        if (updatedAppCMSBinder!=null && updatedAppCMSBinder.getExtraScreenType()!=null &&
+                updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
                 if (appCMSPresenter.isAppBelowMinVersion()) {
                     appCMSPresenter.launchUpgradeAppActivity();
