@@ -195,8 +195,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_watchlistscreen_key),
+                AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_articlescreen_key),
                 AppCMSUIKeyType.ANDROID_ARTICLE_SCREEN_KEY);
 
