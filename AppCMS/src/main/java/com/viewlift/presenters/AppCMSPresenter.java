@@ -4252,7 +4252,7 @@ public class AppCMSPresenter {
                 file_size = ((file_size / 1000) / 1000);
 
             } catch (Exception e) {
-                //Log.e(TAG, "Error trying to download: " + e.getMessage());
+                Log.e(TAG, "Error trying to download: " + e.getMessage());
             }
             if (isVideoDownloaded(contentDatum.getGist().getId())) {
                 showToast(
@@ -10123,8 +10123,12 @@ public class AppCMSPresenter {
     }
 
     public void cancelAlertDialog() {
-        if (dialogAlert != null && dialogAlert.isShowing()) {
-            dialogAlert.dismiss();
+        try {
+            if (dialogAlert != null && dialogAlert.isShowing()) {
+                dialogAlert.dismiss();
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
