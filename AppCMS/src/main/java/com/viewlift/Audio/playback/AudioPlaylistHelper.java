@@ -335,10 +335,13 @@ public class AudioPlaylistHelper {
     }
 
     public void saveLastPlayPositionDetails(String id, long pos) {
-        appCmsPresenter.saveLastPlaySongPosition(id, pos);
+        if (appCmsPresenter!=null) {
+            appCmsPresenter.saveLastPlaySongPosition(id, pos);
+        }
     }
 
     public LastPlayAudioDetail getLastPlayPositionDetails() {
+
         return appCmsPresenter.getLastPlaySongPosition();
     }
 
