@@ -270,7 +270,7 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
-                    int placeholder=0;
+                    int placeholder = 0;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -303,8 +303,8 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if(componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY || componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY
-                            ||componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY || componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY
+                            || componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -377,7 +377,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        System.out.println("image dimen1- width"+childViewHeight+" width"+childViewWidth);
+                        System.out.println("image dimen1- width" + childViewHeight + " width" + childViewWidth);
                         if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                             if (data.getGist().getVideoImageUrl() != null) {
                                 imageUrl = data.getGist().getVideoImageUrl();
@@ -406,7 +406,7 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
-                        System.out.println("image dimen2- width"+childViewHeight+" width"+childViewWidth);
+                        System.out.println("image dimen2- width" + childViewHeight + " width" + childViewWidth);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                         bringToFront = false;
@@ -438,7 +438,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (data != null &&
                             data.getGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
-                        System.out.println("image dimen3- width"+childViewHeight+" width"+childViewWidth);
+                        System.out.println("image dimen3- width" + childViewHeight + " width" + childViewWidth);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                         bringToFront = false;
@@ -503,7 +503,7 @@ public class CollectionGridItemView extends BaseView {
                                     data.getGist().getBadgeImages().get_3x4(),
                                     childViewWidth,
                                     childViewHeight);
-                            System.out.println("image dimen1- width"+childViewHeight+" width"+childViewWidth);
+                            System.out.println("image dimen1- width" + childViewHeight + " width" + childViewWidth);
 
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
@@ -674,8 +674,8 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") ) {
-                            if(data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null){
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
+                            if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
                                 String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                                 ((TextView) view).setMaxLines(1);
                                 ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -699,7 +699,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getLastWatchedTime(data));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DURATION_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DURATION_KEY ) {
+                            componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DURATION_KEY) {
                         final int SECONDS_PER_MINS = 60;
                         if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                             StringBuilder runtimeText = new StringBuilder()
@@ -714,21 +714,21 @@ public class CollectionGridItemView extends BaseView {
                                     .append(context.getString(R.string.mins_abbreviation));
                             ((TextView) view).setText(runtimeText);
                         }
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         final int SECONDS_PER_MINS = 60;
                         if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                             StringBuilder runtimeText = new StringBuilder()
                                     .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ");
-                            //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
-                            //unit abbrevation from here .Its causing double visibilty of time unit
-                            // .append(context.getString(R.string.min_abbreviation));
+                                    .append(" ")
+                                    //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
+                                    //unit abbrevation from here .Its causing double visibilty of time unit
+                                    .append(context.getString(R.string.min_abbreviation));
                             ((TextView) view).setText(runtimeText);
                         } else {
                             StringBuilder runtimeText = new StringBuilder()
                                     .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ");
-                            //.append(context.getString(R.string.mins_abbreviation));
+                                    .append(" ")
+                                    .append(context.getString(R.string.mins_abbreviation));
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
@@ -745,9 +745,9 @@ public class CollectionGridItemView extends BaseView {
                             view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo="";
-                        if(data.getGist().getPublishDate()!=null && !TextUtils.isEmpty(data.getGist().getPublishDate())){
-                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        String thumbInfo = "";
+                        if (data.getGist().getPublishDate() != null && !TextUtils.isEmpty(data.getGist().getPublishDate())) {
+                            thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
                         }
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
