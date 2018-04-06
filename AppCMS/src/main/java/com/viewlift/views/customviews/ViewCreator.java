@@ -1881,8 +1881,6 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
                 }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
-                }*/ else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
-
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
