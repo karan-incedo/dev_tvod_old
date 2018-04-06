@@ -56,6 +56,7 @@ public class AppCMSUserDownloadVideoStatusCall {
             query.setFilterById(downloadVideoRealm.getVideoId_DM());
 
             cursor = downloadManager.query(query);
+            Log.e("DownloadManager", "Reason: " + cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON)));
             if (cursor.moveToFirst()) {
                 int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
 
