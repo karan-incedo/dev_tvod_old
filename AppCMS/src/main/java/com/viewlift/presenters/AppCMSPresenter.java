@@ -4389,6 +4389,10 @@ public class AppCMSPresenter {
                                   ContentDatum contentDatum,
                                   String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
+        String artist="";
+        String director="";
+        String album_year="";
+
         if (contentDatum != null && contentDatum.getGist() != null) {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
@@ -4404,10 +4408,24 @@ public class AppCMSPresenter {
             if (contentDatum.getGist().getTitle() != null) {
                 downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
             }
-            if (contentDatum.getGist().getDescription() != null) {
+
+            if(contentDatum.getCreditBlocks()!=null && contentDatum.getCreditBlocks().size()>0){
+
+                artist = getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks());
+                director = getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks());
+                downloadVideoRealm.setArtistName(artist);
+                downloadVideoRealm.setDirectorName(director);
+
+            }
+            if (contentDatum.getGist().getYear() != null) {
+                album_year = contentDatum.getGist().getYear();
+                downloadVideoRealm.setSongYear(album_year);
+            }
+            if (contentDatum.getGist().getMediaType().equalsIgnoreCase(currentContext.getResources().getString(R.string.media_type_audio))) {
+                downloadVideoRealm.setVideoDescription(artist);
+            }else if (contentDatum.getGist().getDescription() != null) {
                 downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
             }
-
             try {
                 if (!TextUtils.isEmpty(downloadVideoRealm.getVideoTitle())) {
                     downloadVideoRealm.setVideoIdDB(getStreamingId(downloadVideoRealm.getVideoTitle()));
@@ -8843,6 +8861,8 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
 
             AudioPlaylistHelper.getInstance().stopPlayback();
+            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(AudioPlaylistHelper.getInstance().getCurrentMediaId(), 0);
+
         }
     }
 
@@ -10554,6 +10574,7 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
+        updatePlaybackControl();
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
@@ -10565,6 +10586,7 @@ public class AppCMSPresenter {
 
             }
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
+
             setAudioPlayerOpen(false);
         } else if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
@@ -10745,6 +10767,7 @@ public class AppCMSPresenter {
                             } else {
                                 setIsUserSubscribed(true);
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                updatePlaybackControl();
                                 if (getAudioPlayerOpen() && isUserLoggedIn()) {
 
                                     sendRefreshPageAction();
@@ -10760,6 +10783,8 @@ public class AppCMSPresenter {
                                     }
                                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                                     setAudioPlayerOpen(false);
+
+
                                 } else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
@@ -11433,6 +11458,7 @@ public class AppCMSPresenter {
                     refreshSubscriptionData) {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
+                   updatePlaybackControl();
                     if (getAudioPlayerOpen() && isUserLoggedIn()) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
@@ -11447,6 +11473,7 @@ public class AppCMSPresenter {
                         }
                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                         setAudioPlayerOpen(false);
+
                     } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
@@ -11547,6 +11574,7 @@ public class AppCMSPresenter {
             } else {
                 clearPageAPIData(() -> {
                 }, false);
+                updatePlaybackControl();
                 if (getAudioPlayerOpen() && isUserLoggedIn()) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
@@ -11561,6 +11589,7 @@ public class AppCMSPresenter {
                     }
                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                     setAudioPlayerOpen(false);
+
                 } else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
@@ -15399,7 +15428,12 @@ public class AppCMSPresenter {
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
         currentActivity.sendBroadcast(intent);
     }
-
+    public void updatePlaybackControl() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
+        intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
+        currentActivity.sendBroadcast(intent);
+    }
     public String audioDuration(int totalSeconds) {
 
         final int MINUTES_IN_AN_HOUR = 60;

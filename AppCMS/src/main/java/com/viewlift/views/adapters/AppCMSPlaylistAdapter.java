@@ -376,11 +376,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             if (itemContainer.getComponent().getKey() != null) {
                                                 if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
                                                     download = (ImageButton) itemContainer.getChildView();
-//                                                    download.setTag(true);
-                                                    DownloadUpdate downloadTag = new DownloadUpdate();
-                                                    downloadTag.setClick(false);
-//                                                    downloadTag.setDowloading(false);
-                                                    download.setTag(downloadTag);
+                                                    download.setTag(true);
                                                 }
                                             }
                                         }
@@ -545,8 +541,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                             ImageButton download = (ImageButton) itemContainer.getChildView();
                             DownloadUpdate downloadTag = new DownloadUpdate();
-                            downloadTag.setClick(false);
-//                            downloadTag.setDowloading(false);
+                            downloadTag.setClick(true);
+                            downloadTag.setDowloading(false);
                             download.setTag(downloadTag);
                             isDownloading = true;
                             Handler handler = new Handler();
@@ -583,16 +579,13 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
-                        DownloadUpdate downloadTag = (DownloadUpdate) download.getTag();
-
-                        if (!downloadTag.isClick && !downloadTag.isDowloading()) {
-                            DownloadUpdate downloadTag1 = new DownloadUpdate();
-                            downloadTag1.setClick(true);
-                            downloadTag1.setDowloading(true);
-                            download.setTag(downloadTag1);
+//                        if ((boolean) download.getTag()) {
+//                            DownloadUpdate downloadTag = new DownloadUpdate();
+//                            downloadTag.setClick(true);
+//                            download.setTag(downloadTag);
 //                            download.setTag(false);
-                            download.performClick();
-                        }
+//                            download.performClick();
+//                        }
 
                     }
                 });
@@ -639,9 +632,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     }
-
     public class DownloadUpdate {
-        private boolean isClick = false;
+        private boolean isClick;
 
         public boolean isClick() {
             return isClick;
@@ -659,7 +651,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             isDowloading = dowloading;
         }
 
-        private boolean isDowloading = false;
+        private boolean isDowloading;
 
     }
 }

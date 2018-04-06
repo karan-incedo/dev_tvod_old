@@ -52,6 +52,35 @@ public class DownloadVideoRealm extends RealmObject {
     private boolean isSyncedWithServer;
     public String contentType;
     public String mediaType;
+    public String artistName;
+    public String directorName;
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getDirectorName() {
+        return directorName;
+    }
+
+    public void setDirectorName(String directorName) {
+        this.directorName = directorName;
+    }
+
+    public String getSongYear() {
+        return songYear;
+    }
+
+    public void setSongYear(String songYear) {
+        this.songYear = songYear;
+    }
+
+    public String songYear;
+
     public String getVideoIdDB() {
         return videoIdDB;
     }
@@ -315,6 +344,9 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setDescription(getVideoDescription());
         gist.setPosterImageUrl(getPosterFileURL());
         gist.setVideoImageUrl(getVideoFileURL());
+        gist.setYear(getSongYear());
+        gist.setArtistName(getArtistName());
+        gist.setDirectorName(getDirectorName());
         gist.setLocalFileUrl(getLocalURI());
 
         if (!TextUtils.isEmpty(getSubtitlesFileURL())) {
