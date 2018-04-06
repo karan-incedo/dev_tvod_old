@@ -272,12 +272,27 @@ public class AudioPlaylistHelper {
 
         }
 
-        artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
-        director = appCmsPresenter.getDirectorNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
 
         if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
                 && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
             source = appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl();
+
+        artist = appCmsPresenter.getArtistNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
+        director = appCmsPresenter.getDirectorNameFromCreditBlocks(appCMSAudioDetailResult.getCreditBlocks());
+
+        if (appCmsPresenter.isVideoDownloaded(appCMSAudioDetailResult.getGist().getId())) {
+            if(appCMSAudioDetailResult.getGist().getArtistName()!=null && !TextUtils.isEmpty(appCMSAudioDetailResult.getGist().getArtistName())){
+                artist = appCMSAudioDetailResult.getGist().getArtistName();
+            }
+            if(appCMSAudioDetailResult.getGist().getDirectorName()!=null && !TextUtils.isEmpty(appCMSAudioDetailResult.getGist().getDirectorName())){
+                director = appCMSAudioDetailResult.getGist().getDirectorName();
+            }
+            if (appCMSAudioDetailResult.getGist().getYear() != null)
+                album_year = appCMSAudioDetailResult.getGist().getYear();
+
+
+        }
+
 
         String genre = "";
         int trackNumber = 0;
@@ -335,6 +350,9 @@ public class AudioPlaylistHelper {
     }
 
     public void saveLastPlayPositionDetails(String id, long pos) {
+        System.out.println("save last postion id - "+id);
+        System.out.println("save last postion pos - "+pos);
+
         appCmsPresenter.saveLastPlaySongPosition(id, pos);
     }
 

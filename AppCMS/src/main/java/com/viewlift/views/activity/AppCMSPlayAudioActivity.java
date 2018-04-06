@@ -124,7 +124,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
-
     public void startDownloadPlaylist() {
         appCMSPresenter.askForPermissionToDownloadForPlaylist(true, new Action1<Boolean>() {
             @Override
@@ -138,7 +137,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             }
         });
     }
-
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -212,13 +210,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                             download.setTag(false);
                             download.performClick();
                         }*/
-
                     }
                 });
 
 
     }
-
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
