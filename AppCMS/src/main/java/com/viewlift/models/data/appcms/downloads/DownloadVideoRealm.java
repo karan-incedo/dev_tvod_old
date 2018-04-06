@@ -52,8 +52,10 @@ public class DownloadVideoRealm extends RealmObject {
     private boolean isSyncedWithServer;
     public String contentType;
     public String mediaType;
+
     public String artistName;
     public String directorName;
+    public String songYear;
 
     public String getArtistName() {
         return artistName;
@@ -79,7 +81,7 @@ public class DownloadVideoRealm extends RealmObject {
         this.songYear = songYear;
     }
 
-    public String songYear;
+
 
     public String getVideoIdDB() {
         return videoIdDB;

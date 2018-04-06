@@ -52,7 +52,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -102,11 +101,8 @@ import org.htmlcleaner.TagNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 import rx.functions.Action1;
-
-import static com.viewlift.Utils.loadJsonFromAssets;
 
 
 /*
@@ -5398,7 +5394,7 @@ public class ViewCreator {
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
 
-//                    imageButton.setOnClickListener(null);
+                    imageButton.setOnClickListener(null);
                     /**
                      * Handling Quality screen for Audio media type
                      */
@@ -5547,9 +5543,6 @@ public class ViewCreator {
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.requestLayout();
                 imageButton.setOnClickListener(addClickListener);
-                if(contentDatum.getGist().getMediaType()!=null && contentDatum.getGist().getMediaType().equalsIgnoreCase("AUDIO")){
-                    addClickListener.onClick(imageButton);
-                }
             }
         }
 

@@ -4250,9 +4250,9 @@ public class AppCMSPresenter {
                 file_size = ((file_size / 1000) / 1000);
 
             } catch (Exception e) {
-                Log.e(TAG, "Error trying to download: " + e.getMessage());
+                //Log.e(TAG, "Error trying to download: " + e.getMessage());
             }
-            if (isVideoDownloaded(contentDatum.getGist().getId())) {
+            if (isVideoDownloadedByUser(contentDatum.getGist().getId())) {
                 showToast(
                         currentActivity.getString(R.string.app_cms_download_available_already_message,
                                 contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
@@ -4393,10 +4393,6 @@ public class AppCMSPresenter {
                                   ContentDatum contentDatum,
                                   String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
-        String artist="";
-        String director="";
-        String album_year="";
-
         if (contentDatum != null && contentDatum.getGist() != null) {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
@@ -4412,22 +4408,7 @@ public class AppCMSPresenter {
             if (contentDatum.getGist().getTitle() != null) {
                 downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
             }
-
-            if(contentDatum.getCreditBlocks()!=null && contentDatum.getCreditBlocks().size()>0){
-
-                artist = getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks());
-                director = getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks());
-                downloadVideoRealm.setArtistName(artist);
-                downloadVideoRealm.setDirectorName(director);
-
-            }
-            if (contentDatum.getGist().getYear() != null) {
-                album_year = contentDatum.getGist().getYear();
-                downloadVideoRealm.setSongYear(album_year);
-            }
-            if (contentDatum.getGist().getMediaType().equalsIgnoreCase(currentContext.getResources().getString(R.string.media_type_audio))) {
-                downloadVideoRealm.setVideoDescription(artist);
-            }else if (contentDatum.getGist().getDescription() != null) {
+            if (contentDatum.getGist().getDescription() != null) {
                 downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
             }
             try {
@@ -4708,7 +4689,19 @@ public class AppCMSPresenter {
         }
         return false;
     }
+    @UiThread
+    private boolean isVideoDownloadedByUser(String videoId) {
+        if (realmController != null) {
+            try {
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                        getLoggedInUser());
+                return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
+            } catch (Exception e) {
 
+            }
+        }
+        return false;
+    }
     @UiThread
     private boolean isVideoDownloadedByOtherUser(String videoId) {
         if (realmController != null) {
@@ -8866,8 +8859,6 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
 
             AudioPlaylistHelper.getInstance().stopPlayback();
-            AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(AudioPlaylistHelper.getInstance().getCurrentMediaId(), 0);
-
         }
     }
 
@@ -10581,7 +10572,6 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
-        updatePlaybackControl();
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
@@ -10593,7 +10583,6 @@ public class AppCMSPresenter {
 
             }
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
-
             setAudioPlayerOpen(false);
         } else if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
@@ -10774,7 +10763,6 @@ public class AppCMSPresenter {
                             } else {
                                 setIsUserSubscribed(true);
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                updatePlaybackControl();
                                 if (getAudioPlayerOpen() && isUserLoggedIn()) {
 
                                     sendRefreshPageAction();
@@ -10790,8 +10778,6 @@ public class AppCMSPresenter {
                                     }
                                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                                     setAudioPlayerOpen(false);
-
-
                                 } else if (entitlementPendingVideoData != null) {
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
@@ -11461,7 +11447,6 @@ public class AppCMSPresenter {
                     refreshSubscriptionData) {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
-                   updatePlaybackControl();
                     if (getAudioPlayerOpen() && isUserLoggedIn()) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
@@ -11476,7 +11461,6 @@ public class AppCMSPresenter {
                         }
                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                         setAudioPlayerOpen(false);
-
                     } else if (entitlementPendingVideoData != null) {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
@@ -11577,7 +11561,6 @@ public class AppCMSPresenter {
             } else {
                 clearPageAPIData(() -> {
                 }, false);
-                updatePlaybackControl();
                 if (getAudioPlayerOpen() && isUserLoggedIn()) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
@@ -11592,7 +11575,6 @@ public class AppCMSPresenter {
                     }
                     AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), previewTime);
                     setAudioPlayerOpen(false);
-
                 } else if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {

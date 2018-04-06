@@ -377,7 +377,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             if (itemContainer.getComponent().getKey() != null) {
                                                 if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
                                                     download = (ImageButton) itemContainer.getChildView();
-                                                    download.setTag(true);
+//                                                    download.setTag(true);
+                                                    DownloadUpdate downloadTag = new DownloadUpdate();
+                                                    downloadTag.setClick(false);
+//                                                    downloadTag.setDowloading(false);
+                                                    download.setTag(downloadTag);
                                                 }
                                             }
                                         }
@@ -542,8 +546,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                             ImageButton download = (ImageButton) itemContainer.getChildView();
                             DownloadUpdate downloadTag = new DownloadUpdate();
-                            downloadTag.setClick(true);
-                            downloadTag.setDowloading(false);
+                            downloadTag.setClick(false);
+//                            downloadTag.setDowloading(false);
                             download.setTag(downloadTag);
                             isDownloading = true;
                             Handler handler = new Handler();
@@ -653,8 +657,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     }
+
     public class DownloadUpdate {
-        private boolean isClick;
+        private boolean isClick = false;
 
         public boolean isClick() {
             return isClick;
@@ -672,7 +677,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             isDowloading = dowloading;
         }
 
-        private boolean isDowloading;
+        private boolean isDowloading = false;
 
     }
 }

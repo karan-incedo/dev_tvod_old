@@ -163,7 +163,6 @@ public class PlaybackManager implements Playback.Callback {
         currentProgess = 0;
         stopSeekbarUpdate();
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
-        AudioPlaylistHelper.getInstance().setCurrentPlaylistId(null);
         setCurrentMediaId(null);
         mPlayback.setCurrentId(null);
         AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);

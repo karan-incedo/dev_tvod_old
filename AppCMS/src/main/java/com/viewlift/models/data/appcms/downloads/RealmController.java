@@ -33,7 +33,9 @@ public class RealmController {
         Realm.init(application.getApplicationContext());
         RealmConfiguration config = new RealmConfiguration
                 .Builder()
-                .deleteRealmIfMigrationNeeded()
+                .schemaVersion(1)
+                .migration(new DownloadMediaMigration())
+//                .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
     }
