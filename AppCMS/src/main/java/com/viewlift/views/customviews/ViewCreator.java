@@ -1181,7 +1181,7 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
-                                        int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                        int placeHolderImage = /*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*/R.drawable.vid_image_placeholder_land;
                                         ((ImageView) view).setImageResource(placeHolderImage);
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty()) {
@@ -1875,8 +1875,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }*/ else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
-
+                }*/else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(6);
+                }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -4049,7 +4053,7 @@ public class ViewCreator {
                     adView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
-                            adView.setAdSize(AdSize.SMART_BANNER);
+                            adView.setAdSize(AdSize.BANNER);
                             break;
                         case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
                             adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
@@ -4195,7 +4199,7 @@ public class ViewCreator {
                     }
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
-                            !appCMSPresenter.isAppSVOD() &&
+                            /*!appCMSPresenter.isAppSVOD() &&*/
                             !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
                             (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
                                     numSeasons == 0)) {
@@ -5054,7 +5058,7 @@ public class ViewCreator {
                                         component.getLayout(),
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                                int placeHolderImage = BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
+                                int placeHolderImage = R.drawable.vid_image_placeholder_land;/*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*/
                                 ((ImageView) componentViewResult.componentView).setImageResource(placeHolderImage);
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,

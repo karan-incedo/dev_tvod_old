@@ -46,8 +46,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
-import net.nightwhistler.htmlspanner.TextUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -73,12 +71,12 @@ public class CollectionGridItemView extends BaseView {
     private final String moduleId;
     protected int defaultWidth;
     protected int defaultHeight;
+    AppCMSUIKeyType viewTypeKey;
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
     private boolean selectable;
     private boolean createMultipleContainersForChildren;
     private boolean createRoundedCorners;
-    AppCMSUIKeyType viewTypeKey;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -300,7 +298,7 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
-                    int placeholder = R.drawable.vid_image_placeholder_square;
+                    int placeholder = R.drawable.vid_image_placeholder_land;
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -337,9 +335,9 @@ public class CollectionGridItemView extends BaseView {
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
-                            placeholder = R.drawable.vid_image_placeholder_port;
+                            placeholder = R.drawable.vid_image_placeholder_land;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
 
                         } else {
                             placeholder = R.drawable.vid_image_placeholder_land;
@@ -750,7 +748,7 @@ public class CollectionGridItemView extends BaseView {
                                 setBorder(((TextView) view));
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                             } else {
-                                ((TextView) view).setBackgroundColor(Color.parseColor("#e4e4e4"));
+                                ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
                         }
@@ -958,10 +956,14 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setText(readTimeText);
                             } else {
                                 long runtime = data.getGist().getRuntime();
-                                if (thumbInfo != null) {
+                                if (thumbInfo != null && runtime > 0) {
                                     ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
-                                } else {
-                                    ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+                                } else{
+                                    if (thumbInfo != null) {
+                                        ((TextView) view).setText(thumbInfo);
+                                    } else if (runtime > 0) {
+                                        ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime));
+                                    }
                                 }
 
                             }
@@ -1150,8 +1152,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
                         ((TextView) view).setText(childComponent.getText());
@@ -1162,7 +1163,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
                     } else {
-                        ((TextView) view).setTextColor(Color.parseColor("#000000"));
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
@@ -1250,6 +1251,22 @@ public class CollectionGridItemView extends BaseView {
 
     public List<ItemContainer> getChildItems() {
         return childItems;
+    }
+
+    private String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    public String getSubstring(String value, int maxLength) {
+        if (!TextUtils.isEmpty(value)) {
+            if (value.length() >= maxLength) {
+                return value.substring(0, maxLength) + "...";
+            }
+        }
+        return value;
     }
 
     public interface OnClickHandler {
@@ -1380,22 +1397,6 @@ public class CollectionGridItemView extends BaseView {
         public int hashCode() {
             return ID.hashCode();
         }
-    }
-
-    private String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    public String getSubstring(String value, int maxLength) {
-        if (!TextUtils.isEmpty(value)) {
-            if (value.length() >= maxLength) {
-                return value.substring(0, maxLength) + "...";
-            }
-        }
-        return value;
     }
 
 }
