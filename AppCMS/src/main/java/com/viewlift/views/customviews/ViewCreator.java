@@ -11,6 +11,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -100,6 +101,7 @@ import org.htmlcleaner.TagNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import rx.functions.Action1;
 
@@ -2941,8 +2943,16 @@ public class ViewCreator {
                                             });
                                 } else {
                                     if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
-                                        appCMSPlaylistAdapter.startDownloadPlaylist();
 
+                                        if (!appCMSPresenter.getDownloadOverCellularEnabled() && appCMSPresenter.getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                    context.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+                                                    false,
+                                                    null,
+                                                    null);
+                                            return;
+                                        }
+                                        appCMSPlaylistAdapter.startDownloadPlaylist();
                                     }
                                 }
                             }
@@ -4869,6 +4879,11 @@ public class ViewCreator {
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
                         jsonValueKeyMap.get(module.getType()) ==
                                 jsonValueKeyMap.get(moduleAPI.getModuleType())) {
+                    return moduleAPI;
+                }else if(jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        module.getType().equalsIgnoreCase("AC AutoPlayLandscape 01")){
+
                     return moduleAPI;
                 }
             }
