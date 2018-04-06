@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.view.ViewGroup;
 import android.app.Activity;
 import android.app.FragmentBreadCrumbs;
@@ -1761,6 +1762,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
+    @SuppressLint("RestrictedApi")
     @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
                              final Component component,
@@ -4141,6 +4143,8 @@ public class ViewCreator {
                         if(view != null){
                             view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
                         }
+                       // ColorStateList colorStateList = ColorStateList.valueOf("#162732");
+                      //  textInputEditText.setSupportBackgroundTintList(colorStateList);
                         break;
 
                     default:

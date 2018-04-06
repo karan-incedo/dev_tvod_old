@@ -745,8 +745,9 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
             }
         }
 
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
 
         }
 
