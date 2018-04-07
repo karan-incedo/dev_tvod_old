@@ -4722,19 +4722,7 @@ public class AppCMSPresenter {
         }
         return false;
     }
-    @UiThread
-    private boolean isVideoDownloadedByUser(String videoId) {
-        if (realmController != null) {
-            try {
-                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
-                        getLoggedInUser());
-                return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
-            } catch (Exception e) {
 
-            }
-        }
-        return false;
-    }
     @UiThread
     private boolean isVideoDownloadedByOtherUser(String videoId) {
         if (realmController != null) {
