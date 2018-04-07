@@ -133,7 +133,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     isDownloading = true;
                     downloadAudio.setTag(true);
                     audioDownload(downloadAudio, currentAudio);
-                    //updateDownloadImageAndStartDownloadProcess(currentAudio,downloadAudio);
                 }
             }
         });
@@ -212,13 +211,11 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                             download.setTag(false);
                             download.performClick();
                         }*/
-
                     }
                 });
 
 
     }
-
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =

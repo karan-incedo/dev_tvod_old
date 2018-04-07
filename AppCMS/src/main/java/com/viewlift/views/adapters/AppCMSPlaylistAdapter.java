@@ -180,7 +180,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
             allViews[position] = holder.componentView;
-            System.out.println("playlist adapter onBindViewHolder" );
             bindView(holder.componentView, adapterData.get(position), position);
            // downloadView(adapterData.get(position), holder.componentView);
             if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
@@ -377,11 +376,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             if (itemContainer.getComponent().getKey() != null) {
                                                 if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
                                                     download = (ImageButton) itemContainer.getChildView();
-//                                                    download.setTag(true);
-                                                    DownloadUpdate downloadTag = new DownloadUpdate();
-                                                    downloadTag.setClick(false);
-//                                                    downloadTag.setDowloading(false);
-                                                    download.setTag(downloadTag);
+                                                    //download.setTag(true);
                                                 }
                                             }
                                         }
@@ -556,7 +551,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                 @Override
                                 public void run() {
                                     audioDownload(download, adapterData.get(pos));
-                                    //updateDownloadImageAndStartDownloadProcess(adapterData.get(pos),download);
                                 }
                             }, 400);
 
@@ -625,21 +619,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
             appCMSPresenter.getUserVideoDownloadStatus(
                     contentDatum.getGist().getId(), updateDownloadImageIconAction, userId);
-            /*appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
-                    videoDownloadStatus -> {
-                        if (videoDownloadStatus != null &&
-                                (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
-                                        videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
-                                        (!appCMSPresenter.isNetworkConnected() &&
-                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
-                            downloadView.setImageBitmap(null);
-                            downloadView.setBackground(ContextCompat.getDrawable(downloadView.getContext(),
-                                    R.drawable.ic_download_queued));
-                        }
-                    },
-                    userId);*/
-
         } catch (Exception e) {
 
         }
@@ -657,9 +636,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     }
-
     public class DownloadUpdate {
-        private boolean isClick = false;
+        private boolean isClick;
 
         public boolean isClick() {
             return isClick;
@@ -677,7 +655,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             isDowloading = dowloading;
         }
 
-        private boolean isDowloading = false;
+        private boolean isDowloading;
 
     }
 }

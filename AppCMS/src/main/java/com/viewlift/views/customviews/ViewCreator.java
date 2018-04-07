@@ -101,6 +101,7 @@ import org.htmlcleaner.TagNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import rx.functions.Action1;
 
@@ -5366,8 +5367,8 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum, String userId, int radiusDifference,
-                                             String id) {
+                                      ContentDatum contentDatum, String userId, int radiusDifference,
+                                      String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
