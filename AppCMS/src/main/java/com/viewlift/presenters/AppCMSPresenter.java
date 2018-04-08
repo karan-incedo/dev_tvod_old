@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.StaleDataException;
 import android.graphics.Bitmap;
@@ -3657,7 +3658,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             try {
                 currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -4685,6 +4686,14 @@ public class AppCMSPresenter {
 
     @UiThread
     public boolean isVideoDownloaded(String videoId) {
+
+        if(realmController == null) {
+            try {
+                this.realmController = RealmController.with(currentActivity);
+            } catch (Exception e) {
+                return false;
+            }
+        }
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
                 getLoggedInUser());
         return downloadVideoRealm != null &&
