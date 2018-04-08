@@ -52,7 +52,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -64,6 +63,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -104,8 +104,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import rx.functions.Action1;
-
-import static com.viewlift.Utils.loadJsonFromAssets;
 
 
 /*
@@ -2959,10 +2957,10 @@ public class ViewCreator {
                         });
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                      /*  ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-                        break;
+                        break;*/
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
@@ -5361,7 +5359,7 @@ public class ViewCreator {
      */
     public static class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
         private final AppCMSPresenter appCMSPresenter;
-        private final ContentDatum contentDatum;
+        private ContentDatum contentDatum;
         private final String userId;
         private final int radiusDifference;
         private final String id;
@@ -5369,8 +5367,8 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum, String userId, int radiusDifference,
-                                             String id) {
+                                      ContentDatum contentDatum, String userId, int radiusDifference,
+                                      String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
@@ -5406,7 +5404,35 @@ public class ViewCreator {
                             contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(imageButton.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                        appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+
+                        if (contentDatum.getStreamingInfo() == null ||
+                                contentDatum.getStreamingInfo().getAudioAssets()== null ||
+                                contentDatum.getStreamingInfo().getAudioAssets().getMp3()== null ||
+                                contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl()== null ||
+                                TextUtils.isEmpty(contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl() )) {
+                            appCMSPresenter.getAudioDetail(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
+                                    0, null, false, false, 0,
+                                    new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
+                                            false,
+                                            false,
+                                            null,
+                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
+                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
+                                            null,
+                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
+                                            false, null) {
+                                        @Override
+                                        public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId());
+                                            if (audioApiDetail.getModules().get(0).getContentData().get(0) != null) {
+
+                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true);
+                                            }
+                                        }
+                                    });
+                        }else {
+                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                        }
                     } else {
                         if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
                             appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
@@ -5523,6 +5549,9 @@ public class ViewCreator {
 
         public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
+        }
+        public void updateContentData(final ContentDatum data) {
+            this.contentDatum = data;
         }
 
         public View.OnClickListener getAddClickListener() {

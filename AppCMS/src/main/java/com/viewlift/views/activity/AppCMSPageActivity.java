@@ -76,6 +76,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -1084,11 +1085,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 sendBroadcast(initReceivers);
 
                 Fabric.with(getApplication(), new Crashlytics());
-                Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
-                        getString(R.string.app_cms_apptentive_signature_key));
+                Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey",getApplicationContext()),
+                        Utils.getProperty("ApptentiveSignatureKey",getApplicationContext()));
                 AndroidThreeTen.init(this);
                 AppsFlyerLib.getInstance().startTracking(getApplication());
-                FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId",getApplicationContext()));
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().registerCallback(callbackManager,

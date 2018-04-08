@@ -205,19 +205,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
-
-                        if ((boolean) download.getTag()) {
+                        download.performClick();
+                        /*if ((boolean) download.getTag()) {
                             isDownloading = false;
                             download.setTag(false);
                             download.performClick();
-                        }
-
+                        }*/
                     }
                 });
 
 
     }
-
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
@@ -230,14 +228,15 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                     updateDownloadImageIconActionMap.get(contentDatum.getGist().getId());
             if (updateDownloadImageIconAction == null) {
-                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) downloadView, appCMSPresenter,
+                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction(downloadView, appCMSPresenter,
                         contentDatum, userId, radiusDifference, userId);
                 updateDownloadImageIconActionMap.put(contentDatum.getGist().getId(), updateDownloadImageIconAction);
             }
 
-//            downloadView.setTag(contentDatum.getGist().getId());
+            downloadView.setTag(contentDatum.getGist().getId());
 
-            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+            updateDownloadImageIconAction.updateDownloadImageButton(downloadView);
+            updateDownloadImageIconAction.updateContentData(contentDatum);
 
             appCMSPresenter.getUserVideoDownloadStatus(
                     contentDatum.getGist().getId(), updateDownloadImageIconAction, userId);
