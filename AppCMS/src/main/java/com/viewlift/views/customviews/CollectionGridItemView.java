@@ -1041,8 +1041,9 @@ public class CollectionGridItemView extends BaseView {
                                             true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
-
+                            e.printStackTrace();
                         }
+                        ((TextView) view).setVisibility(View.VISIBLE);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
                         if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||
