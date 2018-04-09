@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "555758730103",
+    "firebase_url": "https://arena-football-league-78910.firebaseio.com",
+    "project_id": "arena-football-league-78910",
+    "storage_bucket": "arena-football-league-78910.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555758730103:android:7db6715029eab47c",
+        "android_client_info": {
+          "package_name": "com.afl.arenafootballleague"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "555758730103-99j5s055aaulstd510g6iip3jfn7p13o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdSfEMlQAfeT-YgkmIlGI_uj6d9EoYTKQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -26,6 +26,14 @@ public class RealmController {
     private static final String TAG = "RealmController";
 
     public RealmController() {
+
+      /*  RealmConfiguration config = new RealmConfiguration
+                .Builder()
+                .schemaVersion(1)
+                .migration(new DownloadMediaMigration())
+                //               .deleteRealmIfMigrationNeeded()
+                .build();
+        realm = Realm.getInstance(config);*/
         realm = Realm.getDefaultInstance();
     }
 
@@ -33,6 +41,8 @@ public class RealmController {
         Realm.init(application.getApplicationContext());
         RealmConfiguration config = new RealmConfiguration
                 .Builder()
+                /*.schemaVersion(1)
+                .migration(new DownloadMediaMigration())*/
                 .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
@@ -113,7 +123,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+            Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
         }
         return null;
     }
