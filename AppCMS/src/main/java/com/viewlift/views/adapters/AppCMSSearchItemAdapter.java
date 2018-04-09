@@ -77,7 +77,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
-    private int placeHolderImg = 0;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -91,7 +90,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.textSize = (int) getTextSize(context);
         this.textWidth = (int) getTextWidth(context);
         this.textTopMargin = (int) getTextTopMargin(context);
-        this.placeHolderImg = BaseView.isLandscape(context)? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;
     }
 
     @Override
@@ -142,29 +140,28 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 appCMSPresenter.navigateToPlaylistPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false);
                 return;
             }
-            String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
-            String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
-            if (permalink.contains(viewHolder.view.getContext().getString(R.string.app_cms_shows_deeplink_path_name))) {
-                action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
-            }
-            String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
 
-            //Log.d(TAG, "Launching " + permalink + ":" + action);
-            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                    action,
-                    title,
-                    null,
-                    null,
-                    false,
-                    0,
-                    null)) {
-//                    //Log.e(TAG, "Could not launch action: " +
-//                            " permalink: " +
-//                            permalink +
-//                            " action: " +
-//                            action);
+            try {
+                String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
+                String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
+                if (permalink.contains(viewHolder.view.getContext().getString(R.string.app_cms_shows_deeplink_path_name))) {
+                    action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
+                }
+                String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
+
+                //Log.d(TAG, "Launching " + permalink + ":" + action);
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        null,
+                        null,
+                        true,
+                        0,
+                        null)) {
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
             }
-            //context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         });
 
         if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
@@ -248,8 +245,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     .into(viewHolder.filmThumbnail);
 
         } else if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
-                appCMSSearchResults.get(adapterPosition).getGist().getImageGist() != null
-                ) {
+                appCMSSearchResults.get(adapterPosition).getGist().getImageGist() != null &&
+                appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_16x9() != null) {
 
             String url = "";
             if (appCMSSearchResults.get(adapterPosition).getGist().getImageGist().get_16x9() != null) {

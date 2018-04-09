@@ -20,6 +20,18 @@ public class AppCMSSearchResult {
     @SerializedName("contentDetails")
     ContentDetails contentDetails;
 
+    public List<String> getAudioList() {
+        return audioList;
+    }
+
+    public void setAudioList(List<String> audioList) {
+        this.audioList = audioList;
+    }
+
+    @SerializedName("audioList")
+    @Expose
+    List<String> audioList = null;
+
     public Gist getGist() {
         return gist;
     }

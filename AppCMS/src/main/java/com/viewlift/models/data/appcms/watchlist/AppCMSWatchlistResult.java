@@ -61,7 +61,9 @@ public class AppCMSWatchlistResult {
 
         if (getRecords() != null) {
             for (Record records : getRecords()) {
-                data.add(records.convertToContentDatum());
+                if (records.getContentResponse() !=null) {
+                    data.add(records.convertToContentDatum());
+                }
             }
         }
 

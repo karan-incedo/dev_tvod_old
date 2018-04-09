@@ -138,27 +138,27 @@ android {
             dimension = "blue"
         }
     }
-        /*configurations.mobileImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '27.0.3'
-                    }
+    /*configurations.mobileImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '27.0.3'
                 }
             }
         }
+    }
 
-       configurations.tvImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '25.4.0'
-                    }
+   configurations.tvImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '25.4.0'
                 }
             }
-        }*/
+        }
+    }*/
 
     defaultConfig {
         javaCompileOptions {
@@ -407,8 +407,8 @@ dependencies {
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     compile  project(':exoplayer-library')
     implementation  project(':library')
-    implementation  project(':htmlspanner')
-    implementation  project(path: ':exoplayer-extension-vp9')
+    compile  project(':htmlspanner')
+    compile  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
 
