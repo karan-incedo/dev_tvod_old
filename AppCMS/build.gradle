@@ -50,7 +50,7 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     def packageName
     def customApplicationId
@@ -138,27 +138,27 @@ android {
             dimension = "blue"
         }
     }
-        /*configurations.mobileImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '27.0.3'
-                    }
+    /*configurations.mobileImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '27.0.3'
                 }
             }
         }
+    }
 
-       configurations.tvImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '25.4.0'
-                    }
+   configurations.tvImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '25.4.0'
                 }
             }
-        }*/
+        }
+    }*/
 
     defaultConfig {
         javaCompileOptions {
@@ -288,25 +288,25 @@ afterEvaluate {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile "junit:junit:$rootProject.ext.junitVersion"
-    testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    implementation  fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation "junit:junit:$rootProject.ext.junitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.0') {
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'
     }
-    androidTestCompile("tools.fastlane:screengrab:1.0.3", {
+    androidTestImplementation("tools.fastlane:screengrab:1.0.3", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation "com.google.dexmaker:dexmaker:$rootProject.ext.dexmakerVersion"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$rootProject.ext.dexmakerVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation "junit:junit:$rootProject.ext.junitVersion"
-    implementation "com.android.support:multidex:$rootProject.ext.multiDexVersion"
+    implementation  "com.android.support:multidex:$rootProject.ext.multiDexVersion"
     implementation("com.android.support:support-compat:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
@@ -323,7 +323,7 @@ dependencies {
     implementation("com.android.support:support-fragment:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
-    implementation "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
+    implementation  "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
     implementation("com.android.support:animated-vector-drawable:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
@@ -402,15 +402,17 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
-    mobileCompile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    compile project(':exoplayer-library')
-    compile project(':library')
-    compile project(':htmlspanner')
-    compile project(path: ':exoplayer-extension-vp9')
-    kisweCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
-    compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+    implementation  "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+    implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+    mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
+    compile  project(':exoplayer-library')
+    implementation  project(':library')
+    compile  project(':htmlspanner')
+    compile  project(path: ':exoplayer-extension-vp9')
+    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
+    implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'
