@@ -1239,7 +1239,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
-        if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
+        if (updatedAppCMSBinder!=null && updatedAppCMSBinder.getExtraScreenType()!=null &&
+                updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
                 if (appCMSPresenter.isAppBelowMinVersion()) {
                     appCMSPresenter.launchUpgradeAppActivity();
@@ -2251,6 +2252,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         if (!BaseView.isTablet(this)) {
+            System.out.println("config from handleLaunchPageAction");
             appCMSPresenter.restrictPortraitOnly();
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -2475,7 +2477,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getLeft() != null && appCMSPresenter.getNavigation().getLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
-
                     mProfileTopButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -2671,7 +2672,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             selectNavItem(menuNavBarItemView);
         }*/
     }
-
 
     public void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
@@ -3290,7 +3290,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             appCMSTabNavContainer.setVisibility(View.GONE);
             appBarLayout.setVisibility(View.GONE);
-
         }
     }
 

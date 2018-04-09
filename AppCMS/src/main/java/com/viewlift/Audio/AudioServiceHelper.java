@@ -29,9 +29,11 @@ public class AudioServiceHelper {
     public static String APP_CMS_STOP_AUDIO_SERVICE_MESSAGE = "app_cms_stop_audio_service_message";
     public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION = "app_cms_stop_audio_service_action";
     public static String APP_CMS_SHOW_PREVIEW_MESSAGE = "app_cms_show_preview_message";
-    public static String APP_CMS_SHOW_PREVIEW_ACTION= "app_cms_show_preview_action";
+    public static String APP_CMS_SHOW_PREVIEW_ACTION = "app_cms_show_preview_action";
     public static String APP_CMS_SHOW_iS_AUDIO_PREVIEW = "app_cms_show_is_audio_preview";
     public static String APP_CMS_UPDATE_PLAYLIST = "app_cms_update_playlist";
+    public static String APP_CMS_PLAYBACK_UPDATE = "app_cms_playback_update";
+    public static String APP_CMS_PLAYBACK_UPDATE_MESSAGE = "app_cms_playback_update_message";
 
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
@@ -143,6 +145,8 @@ public class AudioServiceHelper {
 
     }
 
+
+
     protected void hidePlaybackControls() {
         try {
             if (mActivity != null && !mActivity.isFinishing()) {
@@ -150,9 +154,9 @@ public class AudioServiceHelper {
                         .hide(mControlsFragment)
                         .commit();
             }
-        }catch(IllegalStateException e){
+        } catch (IllegalStateException e) {
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -265,6 +269,7 @@ public class AudioServiceHelper {
 
     public interface IaudioServiceCallBack {
         void getAudioPlaybackControlVisibility(boolean isControllerShowing);
+
         void onConnect();
 
     }

@@ -239,16 +239,20 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onDestroy() {
 
-        unregisterCarConnectionReceiver();
-        // Service is being killed, so make sure we release our resources
-        mPlaybackManager.handleStopRequest(null);
-        mMediaNotificationManager.stopNotification();
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mSession.release();
-        LocalPlayback.localPlaybackInstance = null;
-        AudioCastPlayback.castPlaybackInstance = null;
-        unregisterReceiver(serviceReceiver);
-        unregisterReceiver(networkConnectedReceiver);
+        try {
+            unregisterCarConnectionReceiver();
+            // Service is being killed, so make sure we release our resources
+            mPlaybackManager.handleStopRequest(null);
+            mMediaNotificationManager.stopNotification();
+            mDelayedStopHandler.removeCallbacksAndMessages(null);
+            mSession.release();
+            LocalPlayback.localPlaybackInstance = null;
+            AudioCastPlayback.castPlaybackInstance = null;
+            unregisterReceiver(serviceReceiver);
+            unregisterReceiver(networkConnectedReceiver);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 

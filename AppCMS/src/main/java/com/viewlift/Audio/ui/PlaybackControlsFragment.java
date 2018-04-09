@@ -16,8 +16,11 @@
 package com.viewlift.Audio.ui;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -100,15 +103,13 @@ public class PlaybackControlsFragment extends Fragment {
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }
     };
+    UpdateDataReceiver serviceReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
-        mMediaBrowser = new MediaBrowserCompat(getActivity(),
-                new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
-
-        mMediaBrowser.connect();
+        connectMediaService();
         mPlayPause = rootView.findViewById(R.id.play_pause);
         seek_audio = rootView.findViewById(R.id.seek_audio);
 
@@ -118,6 +119,10 @@ public class PlaybackControlsFragment extends Fragment {
         seek_audio.setClickable(false);
         mPlayPause.setOnClickListener(mButtonListener);
         extra_info = rootView.findViewById(R.id.extra_info);
+        serviceReceiver = new UpdateDataReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
+        getActivity().registerReceiver(serviceReceiver, intentFilter);
 
         mTitle = rootView.findViewById(R.id.title);
         rootView.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +134,13 @@ public class PlaybackControlsFragment extends Fragment {
 
         scheduleSeekbarUpdate();
         return rootView;
+    }
+
+    private void connectMediaService() {
+        mMediaBrowser = new MediaBrowserCompat(getActivity(),
+                new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
+
+        mMediaBrowser.connect();
     }
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
@@ -184,7 +196,7 @@ public class PlaybackControlsFragment extends Fragment {
         }
         try {
             updateCastInfo();
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
 
         }
         audioPreview(null);
@@ -224,7 +236,7 @@ public class PlaybackControlsFragment extends Fragment {
         }
 
         updateDuration(metadata);
-        if (!isPreviewEnded(metadata)){
+        if (!isPreviewEnded(metadata)) {
             mTitle.setText(metadata.getDescription().getTitle());
             System.out.println("title text");
 
@@ -433,6 +445,8 @@ public class PlaybackControlsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         stopSeekbarUpdate();
+        getActivity().unregisterReceiver(serviceReceiver);
+
     }
 
     private void updateProgress() {
@@ -476,4 +490,15 @@ public class PlaybackControlsFragment extends Fragment {
         }
     }
 
+    private class UpdateDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("TAsk Stopped stop on receiver");
+            if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE)) {
+                connectMediaService();
+//                playMedia();
+            }
+        }
+    }
 }
