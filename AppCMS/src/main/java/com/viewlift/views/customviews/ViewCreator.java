@@ -3772,7 +3772,7 @@ public class ViewCreator {
                                 .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
-
+                        componentViewResult.componentView.setId(R.id.remove_all_download_id);
                         componentViewResult.onInternalEvent = new OnRemoveAllInternalEvent(moduleId,
                                 componentViewResult.componentView);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
@@ -3798,7 +3798,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
-                                        },deleteAllFiles);
+                                        }, deleteAllFiles);
                                         break;
 
                                     case PAGE_WATCHLIST_01_MODULE_KEY:

@@ -568,11 +568,17 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         listView.setAdapter(this);
         listView.invalidate();
         notifyDataSetChanged();
-
         if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
+            if (isDonwloadPage)
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id) != null)
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id).setVisibility(View.GONE);
         } else {
             sendEvent(showRemoveAllButtonEvent);
+            if (isDonwloadPage)
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id) != null)
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id).setVisibility(View.VISIBLE);
+
         }
     }
 

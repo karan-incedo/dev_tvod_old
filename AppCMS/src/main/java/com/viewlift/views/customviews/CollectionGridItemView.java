@@ -158,47 +158,47 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ){
-               if( component != null &&
-                component.getView() != null &&
-                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                   childrenContainer = new CardView(getContext());
-                   CardView.LayoutParams childContainerLayoutParams =
-                           new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                   ViewGroup.LayoutParams.MATCH_PARENT);
-                   childrenContainer.setLayoutParams(childContainerLayoutParams);
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (component != null &&
+                    component.getView() != null &&
+                    component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                childrenContainer = new CardView(getContext());
+                CardView.LayoutParams childContainerLayoutParams =
+                        new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                childrenContainer.setLayoutParams(childContainerLayoutParams);
 
-                   if (createRoundedCorners) {
-                       ((CardView) childrenContainer).setRadius(14);
-                       setBackgroundResource(android.R.color.transparent);
-                       if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
-                           childrenContainer.setBackgroundResource(android.R.color.transparent);
-                       }
-                   } else {
-                       childrenContainer.setBackgroundResource(android.R.color.transparent);
-                   }
-               }else {
-                   childrenContainer = new LinearLayout(getContext());
-                   ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
-                   LinearLayout.LayoutParams childContainerLayoutParams =
-                           new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                   ViewGroup.LayoutParams.MATCH_PARENT);
-                   childrenContainer.setLayoutParams(childContainerLayoutParams);
-                   CardView imageChildView = new CardView(getContext());
-                   LinearLayout.LayoutParams imageChildViewLayoutParams =
-                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                   imageChildViewLayoutParams.weight = 2;
-                   imageChildView.setLayoutParams(imageChildViewLayoutParams);
-                   imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-                   childrenContainer.addView(imageChildView);
-                   CardView detailsChildView = new CardView(getContext());
-                   LinearLayout.LayoutParams detailsChildViewLayoutParams =
-                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                   detailsChildViewLayoutParams.weight = 1;
-                   detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
-                   detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-                   childrenContainer.addView(detailsChildView);
-               }
+                if (createRoundedCorners) {
+                    ((CardView) childrenContainer).setRadius(14);
+                    setBackgroundResource(android.R.color.transparent);
+                    if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                        childrenContainer.setBackgroundResource(android.R.color.transparent);
+                    }
+                } else {
+                    childrenContainer.setBackgroundResource(android.R.color.transparent);
+                }
+            } else {
+                childrenContainer = new LinearLayout(getContext());
+                ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams childContainerLayoutParams =
+                        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                childrenContainer.setLayoutParams(childContainerLayoutParams);
+                CardView imageChildView = new CardView(getContext());
+                LinearLayout.LayoutParams imageChildViewLayoutParams =
+                        new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                imageChildViewLayoutParams.weight = 2;
+                imageChildView.setLayoutParams(imageChildViewLayoutParams);
+                imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                childrenContainer.addView(imageChildView);
+                CardView detailsChildView = new CardView(getContext());
+                LinearLayout.LayoutParams detailsChildViewLayoutParams =
+                        new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                detailsChildViewLayoutParams.weight = 1;
+                detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
+                detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                childrenContainer.addView(detailsChildView);
+            }
         } else {
             childrenContainer = new CardView(getContext());
             CardView.LayoutParams childContainerLayoutParams =
@@ -231,12 +231,12 @@ public class CollectionGridItemView extends BaseView {
         }
         childItems.add(itemContainer);
 
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ) {
-             if (component != null &&
-                component.getView() != null &&
-                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                 childrenContainer.addView(itemContainer.childView);
-             } else if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (component != null &&
+                    component.getView() != null &&
+                    component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                childrenContainer.addView(itemContainer.childView);
+            } else if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
                 ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
             } else {
                 ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
@@ -490,7 +490,7 @@ public class CollectionGridItemView extends BaseView {
                         if (data.getGist() != null &&
                                 data.getGist().getContentType() != null &&
                                 ((data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) ||
-                                (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
+                                        (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
                                 && data.getGist().getImageGist() != null
                                 && data.getGist().getImageGist().get_16x9() != null) {
                             imageUrl = data.getGist().getImageGist().get_16x9();
@@ -755,8 +755,8 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO") ) {
-                            if(data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null){
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
+                            if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
                                 String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                                 ((TextView) view).setMaxLines(1);
                                 ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -877,7 +877,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getLastWatchedTime(data));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DURATION_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DURATION_KEY ) {
+                            componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DURATION_KEY) {
                         final int SECONDS_PER_MINS = 60;
                         if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                             StringBuilder runtimeText = new StringBuilder()
@@ -892,22 +892,24 @@ public class CollectionGridItemView extends BaseView {
                                     .append(context.getString(R.string.mins_abbreviation));
                             ((TextView) view).setText(runtimeText);
                         }
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
-                        final int SECONDS_PER_MINS = 60;
-                        if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
-                            StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ");
-                            //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
-                            //unit abbrevation from here .Its causing double visibilty of time unit
-                            // .append(context.getString(R.string.min_abbreviation));
-                            ((TextView) view).setText(runtimeText);
-                        } else {
-                            StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ");
-                            //.append(context.getString(R.string.mins_abbreviation));
-                            ((TextView) view).setText(runtimeText);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
+                        if (data.getGist() != null) {
+                            final int SECONDS_PER_MINS = 60;
+                            if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                                StringBuilder runtimeText = new StringBuilder()
+                                        .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
+                                        .append(" ");
+                                //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
+                                //unit abbrevation from here .Its causing double visibilty of time unit
+                                // .append(context.getString(R.string.min_abbreviation));
+                                ((TextView) view).setText(runtimeText);
+                            } else {
+                                StringBuilder runtimeText = new StringBuilder()
+                                        .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
+                                        .append(" ");
+                                //.append(context.getString(R.string.mins_abbreviation));
+                                ((TextView) view).setText(runtimeText);
+                            }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
@@ -992,23 +994,25 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                        ((TextView) view).setSingleLine(false);
-                        ((TextView) view).setMaxLines(2);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setText(data.getGist().getDescription());
+                        if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(2);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(data.getGist().getDescription());
 
-                        try {
-                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
-                                            data.getGist().getTitle(),
-                                            data.getGist().getDescription(),
-                                            appCMSPresenter,
-                                            true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                                            false);
-                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                        } catch (Exception e) {
+                            try {
+                                ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener((TextView) view,
+                                                data.getGist().getTitle(),
+                                                data.getGist().getDescription(),
+                                                appCMSPresenter,
+                                                true,
+                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                                false);
+                                titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            } catch (Exception e) {
+                            }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
