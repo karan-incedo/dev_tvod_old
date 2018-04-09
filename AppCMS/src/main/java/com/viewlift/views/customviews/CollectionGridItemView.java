@@ -159,47 +159,47 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ){
-               if( component != null &&
-                component.getView() != null &&
-                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                   childrenContainer = new CardView(getContext());
-                   CardView.LayoutParams childContainerLayoutParams =
-                           new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                   ViewGroup.LayoutParams.MATCH_PARENT);
-                   childrenContainer.setLayoutParams(childContainerLayoutParams);
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (component != null &&
+                    component.getView() != null &&
+                    component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                childrenContainer = new CardView(getContext());
+                CardView.LayoutParams childContainerLayoutParams =
+                        new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                childrenContainer.setLayoutParams(childContainerLayoutParams);
 
-                   if (createRoundedCorners) {
-                       ((CardView) childrenContainer).setRadius(14);
-                       setBackgroundResource(android.R.color.transparent);
-                       if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
-                           childrenContainer.setBackgroundResource(android.R.color.transparent);
-                       }
-                   } else {
-                       childrenContainer.setBackgroundResource(android.R.color.transparent);
-                   }
-               }else {
-                   childrenContainer = new LinearLayout(getContext());
-                   ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
-                   LinearLayout.LayoutParams childContainerLayoutParams =
-                           new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                   ViewGroup.LayoutParams.MATCH_PARENT);
-                   childrenContainer.setLayoutParams(childContainerLayoutParams);
-                   CardView imageChildView = new CardView(getContext());
-                   LinearLayout.LayoutParams imageChildViewLayoutParams =
-                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                   imageChildViewLayoutParams.weight = 2;
-                   imageChildView.setLayoutParams(imageChildViewLayoutParams);
-                   imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-                   childrenContainer.addView(imageChildView);
-                   CardView detailsChildView = new CardView(getContext());
-                   LinearLayout.LayoutParams detailsChildViewLayoutParams =
-                           new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                   detailsChildViewLayoutParams.weight = 1;
-                   detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
-                   detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-                   childrenContainer.addView(detailsChildView);
-               }
+                if (createRoundedCorners) {
+                    ((CardView) childrenContainer).setRadius(14);
+                    setBackgroundResource(android.R.color.transparent);
+                    if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                        childrenContainer.setBackgroundResource(android.R.color.transparent);
+                    }
+                } else {
+                    childrenContainer.setBackgroundResource(android.R.color.transparent);
+                }
+            } else {
+                childrenContainer = new LinearLayout(getContext());
+                ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams childContainerLayoutParams =
+                        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                childrenContainer.setLayoutParams(childContainerLayoutParams);
+                CardView imageChildView = new CardView(getContext());
+                LinearLayout.LayoutParams imageChildViewLayoutParams =
+                        new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                imageChildViewLayoutParams.weight = 2;
+                imageChildView.setLayoutParams(imageChildViewLayoutParams);
+                imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                childrenContainer.addView(imageChildView);
+                CardView detailsChildView = new CardView(getContext());
+                LinearLayout.LayoutParams detailsChildViewLayoutParams =
+                        new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                detailsChildViewLayoutParams.weight = 1;
+                detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
+                detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                childrenContainer.addView(detailsChildView);
+            }
         } else {
             childrenContainer = new CardView(getContext());
             CardView.LayoutParams childContainerLayoutParams =
@@ -232,12 +232,12 @@ public class CollectionGridItemView extends BaseView {
         }
         childItems.add(itemContainer);
 
-        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext()) ) {
-             if (component != null &&
-                component.getView() != null &&
-                component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                 childrenContainer.addView(itemContainer.childView);
-             } else if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (component != null &&
+                    component.getView() != null &&
+                    component.getView().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                childrenContainer.addView(itemContainer.childView);
+            } else if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
                 ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
             } else {
                 ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
@@ -485,7 +485,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (data != null &&
                             data.getGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
-                        System.out.println("image dimen3- width"+childViewHeight+" width"+childViewWidth);
+                        System.out.println("image dimen3- width" + childViewHeight + " width" + childViewWidth);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                         bringToFront = false;
@@ -494,7 +494,7 @@ public class CollectionGridItemView extends BaseView {
                         if (data.getGist() != null &&
                                 data.getGist().getContentType() != null &&
                                 ((data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) ||
-                                (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
+                                        (data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())))
                                 && data.getGist().getImageGist() != null
                                 && data.getGist().getImageGist().get_16x9() != null) {
                             imageUrl = data.getGist().getImageGist().get_16x9();
@@ -702,7 +702,7 @@ public class CollectionGridItemView extends BaseView {
 
                     }
                 } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
-                    *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                 *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));*//*
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                         ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
@@ -729,7 +729,7 @@ public class CollectionGridItemView extends BaseView {
                                 moduleId);
                         view.setOnClickListener(null);
                     }
-                } */else {
+                } */ else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));
                 }
@@ -963,7 +963,7 @@ public class CollectionGridItemView extends BaseView {
                                 long runtime = data.getGist().getRuntime();
                                 if (thumbInfo != null && runtime > 0) {
                                     ((TextView) view).setText(AppCMSPresenter.convertSecondsToTime(runtime) + " | " + thumbInfo);
-                                } else{
+                                } else {
                                     if (thumbInfo != null) {
                                         ((TextView) view).setText(thumbInfo);
                                     } else if (runtime > 0) {
