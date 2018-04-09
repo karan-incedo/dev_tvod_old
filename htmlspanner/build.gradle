@@ -3,7 +3,6 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url 'https://maven.google.com' }
-        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.0'
@@ -17,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
+    compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.21'
     compile('com.osbcp:cssparser:1.5') {
         exclude group: 'junit', module: 'junit'
     }

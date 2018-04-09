@@ -383,7 +383,7 @@ public class Gist implements Serializable {
     public void setDirectorName(String directorName) {
         this.directorName = directorName;
     }
-}
+
 
 
     public boolean isSelectedPosition() {
