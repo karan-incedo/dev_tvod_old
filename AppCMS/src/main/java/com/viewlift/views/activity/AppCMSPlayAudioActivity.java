@@ -108,6 +108,9 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                 appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
             downloadAudio.setImageResource(R.drawable.ic_downloaded_big);
             downloadAudio.setOnClickListener(null);
+        }else{
+            updateDownloadImageAndStartDownloadProcess(currentAudio,downloadAudio);
+
         }
     }
 

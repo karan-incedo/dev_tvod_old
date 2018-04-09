@@ -6179,51 +6179,10 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-
-                    imageButton.setOnClickListener(null);
-                    /**
-                     * Handling Quality screen for Audio media type
-                     */
-                    if (contentDatum.getGist() != null &&
-                            contentDatum.getGist().getMediaType() != null &&
-                            contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                            contentDatum.getGist().getContentType() != null &&
-                            contentDatum.getGist().getContentType().toLowerCase().contains(imageButton.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-
-                        if (contentDatum.getStreamingInfo() == null ||
-                                contentDatum.getStreamingInfo().getAudioAssets()== null ||
-                                contentDatum.getStreamingInfo().getAudioAssets().getMp3()== null ||
-                                contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl()== null ||
-                                TextUtils.isEmpty(contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl() )) {
-                            appCMSPresenter.getAudioDetail(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
-                                    0, null, false, false, 0,
-                                    new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
-                                            false,
-                                            false,
-                                            null,
-                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
-                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
-                                            null,
-                                            UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
-                                            false, null) {
-                                        @Override
-                                        public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
-                                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId());
-                                            if (audioApiDetail.getModules().get(0).getContentData().get(0) != null) {
-
-                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true);
-                                            }
-                                        }
-                                    });
-                        }else {
-                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                        }
+                    if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
+                        appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
-                        if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
-                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                        } else {
-                            appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
-                        }
+                        appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                     }
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
@@ -6346,10 +6305,12 @@ public class ViewCreator {
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
+        private final String moduleId;
         private List<OnInternalEvent> receivers;
         private String internalEventModuleId;
 
         OnRemoveAllInternalEvent(String moduleId, View removeAllButton) {
+            this.moduleId = moduleId;
             this.removeAllButton = removeAllButton;
             receivers = new ArrayList<>();
             internalEventModuleId = moduleId;
