@@ -71,7 +71,6 @@
           "fontWeight": "Bold",
           "key": "title"
         },
-
         {
           "layout": {
             "mobile": {
@@ -190,16 +189,16 @@
                 "tabletLandscape": {
                   "gridHeight": 100,
                   "leftMargin": 0,
-                  "topMargin": 4.82,
+                  "topMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 7.81
+                  "bottomMargin": 0
                 },
                 "tabletPortrait": {
                   "gridHeight": 100,
                   "leftMargin": 0,
-                  "topMargin": 3.61,
+                  "topMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 5.86
+                  "bottomMargin": 0
                 }
               },
               "trayClickAction": "lectureDetailPage",
@@ -321,7 +320,7 @@
                   "type": "label",
                   "textColor": "#ffffff",
                   "fontWeight": "Semibold",
-                  "key": "duration"
+                  "key": "downloadDuration"
                 },
                 {
                   "layout": {
@@ -496,16 +495,16 @@
                 "tabletLandscape": {
                   "gridHeight": 100,
                   "leftMargin": 0,
-                  "topMargin": 4.82,
+                  "topMargin": 0,
                   "rightMargin": 0,
-                  "bottomMargin": 7.81
+                  "bottomMargin": 0
                 },
                 "tabletPortrait": {
                   "gridHeight": 100,
                   "leftMargin": 0,
-                  "topMargin": 3.61,
+                  "topMargin":0,
                   "rightMargin": 0,
-                  "bottomMargin": 5.86
+                  "bottomMargin": 0
                 }
               },
               "trayClickAction": "lectureDetailPage",
@@ -627,7 +626,7 @@
                   "type": "label",
                   "textColor": "#ffffff",
                   "fontWeight": "Semibold",
-                  "key": "duration"
+                  "key": "downloadDuration"
                 },
                 {
                   "layout": {

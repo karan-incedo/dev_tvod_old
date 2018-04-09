@@ -78,8 +78,12 @@ public class Record {
         contentDatum.setShowQueue(this.showQueue);
         contentDatum.setAddedDate(this.addedDate);
         contentDatum.setUpdateDate(this.updateDate);
-        contentDatum.setGist(this.contentResponse.getGist());
-        contentDatum.setGrade(this.contentResponse.getGrade());
+        if (this.contentResponse != null && this.contentResponse.getGist() != null) {
+            contentDatum.setGist(this.contentResponse.getGist());
+        }
+        if (this.contentResponse != null && this.contentResponse.getGrade() != null) {
+            contentDatum.setGrade(this.contentResponse.getGrade());
+        }
         return contentDatum;
     }
 }

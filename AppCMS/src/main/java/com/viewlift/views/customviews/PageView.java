@@ -7,23 +7,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
-import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 
 import java.util.ArrayList;
@@ -131,18 +126,19 @@ public class PageView extends BaseView {
         adapterList = new CopyOnWriteArrayList<>();
         createHeaderView();
     }
+
     private void createHeaderView() {
         FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         headerView = new FrameLayout(getContext());
         headerView.setLayoutParams(layoutParams);
     }
+
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
         for (ListWithAdapter listWithAdapter1 : adapterList) {
             if (listWithAdapter.id.equals(listWithAdapter1.id)) {
                 adapterList.remove(listWithAdapter1);
             }
         }
-
         adapterList.add(listWithAdapter);
     }
 
@@ -283,10 +279,10 @@ public class PageView extends BaseView {
 
     public void addModuleViewWithModuleId(String moduleId,
                                           ModuleView moduleView,
-                                          boolean userModuleViewAsHeader) {
+                                          boolean useModuleViewAsHeader) {
         moduleViewMap.put(moduleId, moduleView);
         appCMSPageViewAdapter.addView(moduleView);
-        if (userModuleViewAsHeader) {
+        if (useModuleViewAsHeader) {
             addView(moduleView);
         }
     }
@@ -301,6 +297,7 @@ public class PageView extends BaseView {
     public AppCMSPageUI getAppCMSPageUI() {
         return appCMSPageUI;
     }
+
     public void removeAllAddOnViews() {
         int index = 0;
         boolean removedChild = false;
@@ -314,11 +311,13 @@ public class PageView extends BaseView {
             index++;
         }
     }
+
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
             appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
+
     public View findChildViewById(int id) {
         if (appCMSPageViewAdapter != null) {
             return appCMSPageViewAdapter.findChildViewById(id);
@@ -363,6 +362,7 @@ public class PageView extends BaseView {
             }
         }
     }
+
     private static class ViewDimensions {
         int width;
         int height;
