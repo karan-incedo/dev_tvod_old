@@ -706,7 +706,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             return;
                                         }
                                     }
-                                    if (action.contains(trayAction) && permalink.contains("/show"))
+                                    if (action.contains(trayAction)  &&
+                                            data.getContentType() != null &&
+                                            data.getContentType().equalsIgnoreCase("SERIES") )
                                     {
                                         action= "showDetailPage";
                                     }
