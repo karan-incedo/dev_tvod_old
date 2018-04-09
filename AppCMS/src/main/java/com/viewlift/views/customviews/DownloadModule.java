@@ -65,6 +65,7 @@ public class DownloadModule extends ModuleView {
     PageView pageView;
     public static final int AUDIO_TAB = 259;
     public static final int VIDEO_TAB = 260;
+    View downloadSeparator;
 
     @SuppressWarnings("unchecked")
     public DownloadModule(Context context,
@@ -108,29 +109,29 @@ public class DownloadModule extends ModuleView {
 
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
-            childContainer.setBackgroundColor(bgColor);
+            childContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
             LinearLayout topLayoutContainer = new LinearLayout(getContext());
             MarginLayoutParams topLayoutContainerLayoutParams =
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            topLayoutContainerLayoutParams.setMargins(0, 185, 0, 0);
+            topLayoutContainerLayoutParams.setMargins(0, 0, 0, 0);
             topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
-            LinearLayout loginModuleSwitcherContainer = new LinearLayout(getContext());
-            loginModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
-            MarginLayoutParams loginModuleContainerLayoutParams =
+            LinearLayout downloadModuleSwitcherContainer = new LinearLayout(getContext());
+            downloadModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
+            MarginLayoutParams downloadModuleContainerLayoutParams =
                     new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            loginModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+            downloadModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
                     0,
                     (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
                     0);
-            loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
-            loginModuleSwitcherContainer.setBackgroundColor(bgColor);
-            loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
+            downloadModuleSwitcherContainer.setLayoutParams(downloadModuleContainerLayoutParams);
+            downloadModuleSwitcherContainer.setBackgroundColor(bgColor);
+            downloadModuleSwitcherContainer.setPadding(0, 0, 0, 0);
 
-            topLayoutContainer.addView(loginModuleSwitcherContainer);
+            topLayoutContainer.addView(downloadModuleSwitcherContainer);
 
             ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             //TODO : remove local json once we recieve from API
@@ -162,13 +163,13 @@ public class DownloadModule extends ModuleView {
                     Component component = module.getComponents().get(i);
                     if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY) {
                         buttonSelectors[0] = new Button(getContext());
-                        LinearLayout.LayoutParams loginSelectorLayoutParams =
+                        LinearLayout.LayoutParams videoSelectorLayoutParams =
                                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        loginSelectorLayoutParams.weight = 1;
+                        videoSelectorLayoutParams.weight = 1;
                         buttonSelectors[0].setText(R.string.app_cms_download_tab_video_title);
                         buttonSelectors[0].setTextColor(textColor);
                         buttonSelectors[0].setBackgroundColor(bgColor);
-                        buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
+                        buttonSelectors[0].setLayoutParams(videoSelectorLayoutParams);
                         buttonSelectors[0].setTransformationMethod(null);
 
                         buttonSelectors[0].setOnClickListener((v) -> {
@@ -193,7 +194,7 @@ public class DownloadModule extends ModuleView {
                                 textBounds.bottom);
                         underlineViews[0].setBounds(bounds);
                         buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
-                        loginModuleSwitcherContainer.addView(buttonSelectors[0]);
+                        downloadModuleSwitcherContainer.addView(buttonSelectors[0]);
 
                         ModuleView moduleView = new ModuleView<>(getContext(), component, false);
                         setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
@@ -203,15 +204,15 @@ public class DownloadModule extends ModuleView {
                     } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY) {
 
                         buttonSelectors[1] = new Button(getContext());
-                        LinearLayout.LayoutParams signupSelectorLayoutParams =
+                        LinearLayout.LayoutParams audioSelectorLayoutParams =
                                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signupSelectorLayoutParams.weight = 1;
+                        audioSelectorLayoutParams.weight = 1;
                         buttonSelectors[1].setText(R.string.app_cms_download_tab_audio_title);
                         buttonSelectors[1].setTransformationMethod(null);
                         buttonSelectors[1].setTextColor(textColor);
                         buttonSelectors[1].setBackgroundColor(bgColor);
-                        signupSelectorLayoutParams.gravity = Gravity.END;
-                        buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
+                        audioSelectorLayoutParams.gravity = Gravity.END;
+                        buttonSelectors[1].setLayoutParams(audioSelectorLayoutParams);
                         buttonSelectors[1].setOnClickListener((v) -> {
                             selectChild(1);
                             unselectChild(0);
@@ -234,7 +235,7 @@ public class DownloadModule extends ModuleView {
                                 textBounds.bottom);
                         underlineViews[1].setBounds(bounds);
                         buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
-                        loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+                        downloadModuleSwitcherContainer.addView(buttonSelectors[1]);
 
                         ModuleView moduleView = new ModuleView<>(getContext(), component, false);
                         setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
@@ -242,8 +243,6 @@ public class DownloadModule extends ModuleView {
                         addChildComponents(moduleView, component, appCMSAndroidModules);
                         topLayoutContainer.addView(moduleView);
                     } else {
-
-
                         viewCreator.createComponentView(getContext(),
                                 component,
                                 component.getLayout(),
@@ -260,6 +259,10 @@ public class DownloadModule extends ModuleView {
                         View componentView = componentViewResult.componentView;
 
                         if (componentView != null) {
+                            if (component.getType() != null &&
+                                    component.getType().contains(context.getString(R.string.app_cms_page_separator_key))) {
+                                downloadSeparator = componentView;
+                            }
                             if (componentViewResult.onInternalEvent != null) {
                                 appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                             }
@@ -293,8 +296,13 @@ public class DownloadModule extends ModuleView {
                     }
                 }
             }
-
-            childContainer.addView(topLayoutContainer);
+            if (downloadSeparator != null) {
+                LayoutParams lp = (LayoutParams) downloadSeparator.getLayoutParams();
+                topLayoutContainerLayoutParams.setMargins(0, lp.topMargin + 5, 0, 0);
+                topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
+            }
+            pageView.addToHeaderView(topLayoutContainer);
+            childContainer.addView(pageView);
             DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
             if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
                 selectChild(0);
