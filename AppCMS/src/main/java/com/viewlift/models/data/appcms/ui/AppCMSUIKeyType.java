@@ -5,6 +5,8 @@ package com.viewlift.models.data.appcms.ui;
  */
 
 public enum AppCMSUIKeyType {
+    PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY,
+    PAGE_SUBSCRIBE_EMAIL_KEY,
     PAGE_RATINGBAR,
     PAGE_VIDEO_TYPE_KEY,
     MAIN_SVOD_SERVICE_TYPE,
