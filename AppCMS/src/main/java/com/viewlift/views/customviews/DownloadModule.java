@@ -76,7 +76,7 @@ public class DownloadModule extends ModuleView {
                           ViewCreator viewCreator,
                           AppCMSAndroidModules appCMSAndroidModules, PageView pageView) {
         super(context, moduleInfo, false);
-//        this.moduleInfo = moduleInfo;
+        this.moduleInfo = moduleInfo;
         this.moduleAPI = moduleAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
@@ -88,11 +88,6 @@ public class DownloadModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         this.pageView = pageView;
-        //TODO : remove local json once we recieve from API
-        AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                loadJsonFromAssets(context, "download.json"),
-                AppCMSPageUI.class);
-        this.moduleInfo = appCMSPageUI1.getModuleList().get(1);
         init();
     }
 
@@ -134,11 +129,6 @@ public class DownloadModule extends ModuleView {
             topLayoutContainer.addView(downloadModuleSwitcherContainer);
 
             ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-            //TODO : remove local json once we recieve from API
-            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "download.json"),
-                    AppCMSPageUI.class);
-            module = appCMSPageUI1.getModuleList().get(1);
 
             if (module == null) {
                 module = moduleInfo;

@@ -2026,7 +2026,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else //TODO: need to change to PAGE_DOWNLOAD_02_MODULE_KEY once we recieve from JSON
+        } else
             if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY) {
                 moduleView = new DownloadModule(context,
                         module,
