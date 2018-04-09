@@ -3147,7 +3147,7 @@ public class ViewCreator {
                     componentViewResult.componentView.setClickable(false);
                     switch (jsonValueKeyMap.get(viewType)) {
                         case PAGE_BANNER_AD_MODULE_KEY:
-                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.SMART_BANNER);
+                            ((AdView) componentViewResult.componentView).setAdSize(AdSize.BANNER);
                             break;
                         case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
                             ((AdView) componentViewResult.componentView).setAdSize(AdSize.MEDIUM_RECTANGLE);

@@ -1203,7 +1203,7 @@
               "leftMargin": 0.97,
               "rightMargin": 0.97,
               "fontSize": 24,
-              "height": 10
+              "height": 33
             },
             "tabletPortrait": {
               "yAxis": 0,
@@ -1496,7 +1496,7 @@
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 280
+          "height": 305
         },
         "tabletLandscape": {
           "yAxis": 0,
@@ -1522,7 +1522,7 @@
               "leftMargin": 0,
               "xAxis": 0,
               "rightMargin": 0,
-              "height": 280
+              "height": 305
             },
             "tabletLandscape": {
               "yAxis": 0,
@@ -1547,30 +1547,30 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "topMargin": 466,
+                  "topMargin": 495,
                   "fontSize": 18,
-                  "height": 34
+                  "height": 40
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin": 484,
+                  "topMargin": 515,
                   "fontSize": 23,
-                  "height": 32
+                  "height": 48
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 1,
-                  "topMargin": 490,
+                  "topMargin": 525,
                   "fontSize": 23,
-                  "height": 40
+                  "height": 70
                 }
               },
               "backgroundColor": "#80000000",
               "fontFamily": "OpenSans",
-              "numberOfLines": 1,
+              "numberOfLines": 3,
               "textAlignment": "center",
               "type": "label",
               "textColor": "#ffffff",
@@ -1791,21 +1791,21 @@
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 35
                 },
                 "tabletLandscape": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 35
                 },
                 "tabletPortrait": {
                   "leftMargin": 10,
                   "rightMargin": 0,
                   "bottomMargin": 0,
                   "fontSize": 11,
-                  "height": 30
+                  "height": 35
                 }
               },
               "fontFamily": "OpenSans",
