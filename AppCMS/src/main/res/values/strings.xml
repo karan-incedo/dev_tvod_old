@@ -559,6 +559,14 @@
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="auto">Auto</string>
+    <string name="invalid_email">Invalid email!</string>
+    <string name="not_valid_email">\u0020\u0020is not a valid email! Please enter a valid email!</string>
+    <string name="quote_separator">\'</string>
+    <string name="thank_you_for_subscribing">THANK YOU FOR SUBSCRIBING!</string>
+    <string name="watercoolerready">#WATERCOOLERREADY</string>
+    <string name="is_already_subscribed">\u0020\u0020is already subscribed to list Sports.</string>
+    <string name="failed_to_subscribe">Failed to subscribe!</string>
+    <string name="try_again_later">Try again later!</string>
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>

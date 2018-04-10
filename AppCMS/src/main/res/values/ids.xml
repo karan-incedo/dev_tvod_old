@@ -6,7 +6,7 @@
     <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
 
 
-
+    <item name="subscribe_edit_text_id" type="id">subscribe_edit_text_id</item>
     <item name="download_quality_selection_list" type="id" />
     <item name="download_quality_continue_button" type="id" />
     <item name="download_quality_cancel_button" type="id" />

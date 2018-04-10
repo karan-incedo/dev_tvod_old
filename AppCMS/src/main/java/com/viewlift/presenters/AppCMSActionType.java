@@ -5,6 +5,7 @@ package com.viewlift.presenters;
  */
 
 public enum AppCMSActionType {
+    SUBSCRIBEGO,
     SPLASH_PAGE,
     AUTH_PAGE,
     HOME_PAGE,

@@ -50,6 +50,8 @@ import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLRest;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
@@ -138,6 +140,10 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribe_email_go_button_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribeEditText_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ratingbar_key),
                 AppCMSUIKeyType.PAGE_RATINGBAR);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_type_key),
@@ -876,6 +882,9 @@ public class AppCMSUIModule {
     }
 
     private void createActionToActionTypeMap(Context context) {
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_subscribe_go),
+                AppCMSActionType.SUBSCRIBEGO);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.SPLASH_PAGE);
 
@@ -1202,6 +1211,18 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSSignedURLRest providesAppCMSSignedURLRest(Retrofit retrofit) {
         return retrofit.create(AppCMSSignedURLRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscribeForLatestNewsRest appCMSSubscribeForLatestNewsRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscribeForLatestNewsRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall(AppCMSSubscribeForLatestNewsRest appCMSSubscribeForLatestNewsRest, Gson gson) {
+        return new AppCMSSubscribeForLatestNewsCall(appCMSSubscribeForLatestNewsRest, gson);
     }
 
     @Provides
