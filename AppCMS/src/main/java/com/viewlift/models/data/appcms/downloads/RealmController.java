@@ -104,6 +104,17 @@ public class RealmController {
         }
         return null;
     }
+    public boolean getDownloadMediaType(String contentType) {
+        try {
+             return realm.where(DownloadVideoRealm.class)
+                    .equalTo("contentType", contentType)
+                    .findAll().size()>0? true:false;
+
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return false;
+    }
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {

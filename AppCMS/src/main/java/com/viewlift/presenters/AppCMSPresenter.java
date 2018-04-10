@@ -17374,4 +17374,11 @@ public class AppCMSPresenter {
         else
             return false;
     }
+
+    public boolean isDownloadedMediaType(String mediaType){
+        if (realmController!=null ){
+         return   realmController.getDownloadMediaType(mediaType);
+        }
+        return  false;
+    }
 }
