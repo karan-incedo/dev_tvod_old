@@ -653,7 +653,7 @@
     <string name="plan_type_day">Month</string>
 
     <string name="app_cms_page_download_size_key">videoSize</string>
-    <string name="app_cms_page_download_duration_key">downloadDuration</string>
+    <string name="app_cms_page_download_duration_key">duration</string>
     <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
     <string name="app_cms_delete_single_download_action">deleteSingleItemDownload</string>
