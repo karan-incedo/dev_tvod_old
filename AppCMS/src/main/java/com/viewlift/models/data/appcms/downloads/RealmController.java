@@ -86,9 +86,21 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloads() {
         try {
-            return realm.where(DownloadVideoRealm.class).findAll();
+            return realm.where(DownloadVideoRealm.class).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get downloads: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public RealmResults<DownloadVideoRealm> getDownloadsByUserIdAndMedia(String userId,String contentType) {
+        try {
+            return realm.where(DownloadVideoRealm.class)
+                    .equalTo("userId", userId)
+                    .equalTo("contentType", contentType)
+                    .findAll();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
         }
         return null;
     }
@@ -118,7 +130,7 @@ public class RealmController {
                     String.valueOf(DownloadStatus.STATUS_PENDING),
                     String.valueOf(DownloadStatus.STATUS_RUNNING)};
             return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                    .equalTo("userId", userId).findAll();
+                    .equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
         }

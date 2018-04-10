@@ -1,4 +1,5 @@
 <resources>
+    <color name="blackTransparentColor">#8F000000</color>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#f4181c</color>
@@ -12,5 +13,4 @@
     <color name="transparentColor">#00000000</color>
     <color name="audioSeekBg">#414344</color>
     <color name="volumeProgress">#B5B5B5</color>
-
 </resources>

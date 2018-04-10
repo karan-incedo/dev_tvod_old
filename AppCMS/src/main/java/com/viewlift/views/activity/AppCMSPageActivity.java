@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -266,6 +267,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
 
         setContentView(R.layout.activity_appcms_page);
 
@@ -839,8 +843,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
 
-
-
         closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
                     if (view != null) {
@@ -953,7 +955,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getAppCMSPageAPI() != null &&
                 updatedAppCMSBinder.getAppCMSPageAPI().getModules() != null) {
             int moduleSize = updatedAppCMSBinder.getAppCMSPageAPI().getModules().size();
-            for (int i = 0; i < moduleSize ; i++) {
+            for (int i = 0; i < moduleSize; i++) {
                 if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i) != null &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData() != null &&
                         !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().isEmpty() &&
@@ -1097,11 +1099,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 sendBroadcast(initReceivers);
 
                 Fabric.with(getApplication(), new Crashlytics());
-                Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey",AppCMSPageActivity.this),
-                        Utils.getProperty("ApptentiveSignatureKey",AppCMSPageActivity.this));
+                if (Utils.getProperty("ApptentiveApiKey", AppCMSPageActivity.this) != null
+                        && Utils.getProperty("ApptentiveSignatureKey", AppCMSPageActivity.this) != null) {
+                    Apptentive.register(getApplication(), Utils.getProperty("ApptentiveApiKey", AppCMSPageActivity.this),
+                            Utils.getProperty("ApptentiveSignatureKey", AppCMSPageActivity.this));
+                }
                 AndroidThreeTen.init(this);
                 AppsFlyerLib.getInstance().startTracking(getApplication());
-                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId",AppCMSPageActivity.this));
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", AppCMSPageActivity.this));
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().registerCallback(callbackManager,
@@ -1238,7 +1243,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
-        if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
+        if (updatedAppCMSBinder!=null && updatedAppCMSBinder.getExtraScreenType()!=null &&
+                updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
                 if (appCMSPresenter.isAppBelowMinVersion()) {
                     appCMSPresenter.launchUpgradeAppActivity();
@@ -2141,7 +2147,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void setSelectedMenuTabIndex(int selectedMenuTabIndex) {
-       // navMenuPageIndex = selectedMenuTabIndex;
+        // navMenuPageIndex = selectedMenuTabIndex;
     }
 
     @Override
@@ -2209,10 +2215,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isPagePrimary(pageId) &&
                     !appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.GONE);
-            } else if(appCMSPresenter.isViewPlanPage(pageId)){
+            } else if (appCMSPresenter.isViewPlanPage(pageId)) {
                 closeButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
-            }else {
+            } else {
                 closeButton.setVisibility(View.VISIBLE);
             }
 
@@ -2234,10 +2240,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 mShareTopButton.setVisibility(View.GONE);
                 mSearchTopButton.setVisibility(View.GONE);
-                if(appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()) )
-                 setCastingVisibility(true);
+                if (appCMSPresenter.isHomePage(updatedAppCMSBinder.getPageId()))
+                    setCastingVisibility(true);
                 else
-                 setCastingVisibility(false);
+                    setCastingVisibility(false);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }
@@ -2250,6 +2256,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         if (!BaseView.isTablet(this)) {
+            System.out.println("config from handleLaunchPageAction");
             appCMSPresenter.restrictPortraitOnly();
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
@@ -2474,7 +2481,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getNavigation() != null && appCMSPresenter.getNavigation().getLeft() != null && appCMSPresenter.getNavigation().getLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
-
                     mProfileTopButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -2671,7 +2677,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }*/
     }
 
-
     public void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
         String action = getString(R.string.app_cms_action_detailvideopage_key);
@@ -2685,10 +2690,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if(pagePath.toString().contains(getString(R.string.app_cms_page_path_article))){
+        if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
             appCMSPresenter.setCurrentArticleIndex(-1);
             action = getString(R.string.app_cms_action_articlepage_key);
-        }else if(pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))){
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
         }
 
@@ -3289,7 +3294,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             appCMSTabNavContainer.setVisibility(View.GONE);
             appBarLayout.setVisibility(View.GONE);
-
         }
     }
 

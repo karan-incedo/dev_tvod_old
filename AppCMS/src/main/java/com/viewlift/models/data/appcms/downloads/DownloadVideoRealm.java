@@ -52,13 +52,10 @@ public class DownloadVideoRealm extends RealmObject {
     private boolean isSyncedWithServer;
     public String contentType;
     public String mediaType;
+
     public String artistName;
     public String directorName;
     public String songYear;
-
-    public void setDownloadStatus(String downloadStatus) {
-        this.downloadStatus = downloadStatus;
-    }
 
     public String getArtistName() {
         return artistName;
@@ -83,6 +80,8 @@ public class DownloadVideoRealm extends RealmObject {
     public void setSongYear(String songYear) {
         this.songYear = songYear;
     }
+
+
 
     public String getVideoIdDB() {
         return videoIdDB;
@@ -347,6 +346,9 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setDescription(getVideoDescription());
         gist.setPosterImageUrl(getPosterFileURL());
         gist.setVideoImageUrl(getVideoFileURL());
+        gist.setYear(getSongYear());
+        gist.setArtistName(getArtistName());
+        gist.setDirectorName(getDirectorName());
         gist.setLocalFileUrl(getLocalURI());
 
         if (!TextUtils.isEmpty(getSubtitlesFileURL())) {

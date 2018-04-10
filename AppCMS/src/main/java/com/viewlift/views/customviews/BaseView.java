@@ -142,8 +142,8 @@ public abstract class BaseView extends FrameLayout {
     }
 
     public static float getLeftDrawableWidth(Context context,
-                                              Layout layout,
-                                              float defaultValue) {
+                                             Layout layout,
+                                             float defaultValue) {
         if (BaseView.isTablet(context)) {
             if (BaseView.isLandscape(context)) {
                 if (0 < layout.getTabletLandscape().getLeftDrawableWidth()) {
@@ -1099,9 +1099,13 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_PLAY_IMAGE_KEY:
-                    if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY != jsonValueKeyMap.get(viewType)&&
-                            AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY != jsonValueKeyMap.get(viewType)&&AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
-                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                    if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY != jsonValueKeyMap.get(viewType) &&
+                            AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY != jsonValueKeyMap.get(viewType) &&
+                            AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY != jsonValueKeyMap.get(viewType) &&
+                            AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY != jsonValueKeyMap.get(viewType) &&
+                            AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && componentViewType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         gravity = Gravity.CENTER;
@@ -1135,7 +1139,7 @@ public abstract class BaseView extends FrameLayout {
                             tm -= viewHeight * 3;
                         }
                         viewHeight *= 2;
-                    }else if ((isLandscape(getContext()) || !isTablet(getContext()))) {
+                    } else if ((isLandscape(getContext()) || !isTablet(getContext()))) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else {
@@ -1152,8 +1156,8 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isTablet(getContext()) &&
-                            childComponent!=null &&
-                            childComponent.getSettings()!=null &&
+                            childComponent != null &&
+                            childComponent.getSettings() != null &&
                             !childComponent.getSettings().isHidden()) {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 9;
@@ -1293,8 +1297,8 @@ public abstract class BaseView extends FrameLayout {
             viewHeight *= 1.2;
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
-            view.setPadding(0,0, 0, (int) convertDpToPixel(padding, getContext()));
-        }else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+            view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
@@ -1341,7 +1345,7 @@ public abstract class BaseView extends FrameLayout {
             }
         }
 
-        if (useWidthOfScreen || componentKey==AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE) {
+        if (useWidthOfScreen || componentKey == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE) {
             viewWidth = DEVICE_WIDTH;
         }
 
@@ -1358,7 +1362,7 @@ public abstract class BaseView extends FrameLayout {
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;

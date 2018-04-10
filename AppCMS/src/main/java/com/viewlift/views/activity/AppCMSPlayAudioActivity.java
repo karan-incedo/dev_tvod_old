@@ -102,9 +102,15 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         appCMSPresenter.sendGaScreen("Music");
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
-        if (appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
+        if (currentAudio != null &&
+                currentAudio.getGist() != null &&
+                currentAudio.getGist().getId() != null &&
+                appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
             downloadAudio.setImageResource(R.drawable.ic_downloaded_big);
             downloadAudio.setOnClickListener(null);
+        } else {
+            updateDownloadImageAndStartDownloadProcess(currentAudio, downloadAudio);
+
         }
     }
 
@@ -124,17 +130,20 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
+
     public void startDownloadPlaylist() {
         appCMSPresenter.askForPermissionToDownloadForPlaylist(true, new Action1<Boolean>() {
             @Override
             public void call(Boolean isStartDownload) {
                 if (isStartDownload) {
                     isDownloading = true;
+                    downloadAudio.setTag(true);
                     audioDownload(downloadAudio, currentAudio);
                 }
             }
         });
     }
+
     @Override
     public void onClick(View view) {
         if (view == casting) {
@@ -203,12 +212,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
                         download.performClick();
-
+                        /*if ((boolean) download.getTag()) {
+                            isDownloading = false;
+                            download.setTag(false);
+                            download.performClick();
+                        }*/
                     }
                 });
 
 
     }
+
     void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
         String userId = appCMSPresenter.getLoggedInUser();
         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
@@ -221,14 +235,15 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                     updateDownloadImageIconActionMap.get(contentDatum.getGist().getId());
             if (updateDownloadImageIconAction == null) {
-                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) downloadView, appCMSPresenter,
+                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction(downloadView, appCMSPresenter,
                         contentDatum, userId, radiusDifference, userId);
                 updateDownloadImageIconActionMap.put(contentDatum.getGist().getId(), updateDownloadImageIconAction);
             }
 
             downloadView.setTag(contentDatum.getGist().getId());
 
-            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) downloadView);
+            updateDownloadImageIconAction.updateDownloadImageButton(downloadView);
+            updateDownloadImageIconAction.updateContentData(contentDatum);
 
             appCMSPresenter.getUserVideoDownloadStatus(
                     contentDatum.getGist().getId(), updateDownloadImageIconAction, userId);

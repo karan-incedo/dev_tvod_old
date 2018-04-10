@@ -201,6 +201,8 @@
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
+    <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
+    <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
 
 
@@ -385,7 +387,8 @@
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
-    <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
+    <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
+    <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
@@ -543,7 +546,8 @@
 
     <string name="app_cms_download_multi_event_detected_message_message">Muliple action detected for downloading %1$s, single download allowd for one content.</string>
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>
-    <string name="app_cms_download_available_already_message">%1$s has already been downloaded to this device by another user.  The same copy of this video will be played instead of downloading another copy.</string>
+    <string name="app_cms_download_available_already_message_other_user">%1$s has already been downloaded to this device by another user.  The same copy of this video will be played instead of downloading another copy.</string>
+    <string name="app_cms_download_available_already_message">%1$s has already been downloaded to this device.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 

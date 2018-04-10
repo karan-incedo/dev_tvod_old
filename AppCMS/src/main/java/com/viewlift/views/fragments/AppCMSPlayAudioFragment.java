@@ -593,7 +593,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                             });
                 } else {
                     if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
-                        appCMSPresenter.dialog.dismiss();
+                        try {
+                            appCMSPresenter.dialog.dismiss();
+                        }catch(IllegalArgumentException e){
+                            e.printStackTrace();
+                        }
                         appCMSPresenter.isDialogShown = false;
 
                     }
