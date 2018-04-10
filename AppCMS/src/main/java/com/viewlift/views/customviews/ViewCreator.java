@@ -111,6 +111,7 @@ import net.nightwhistler.htmlspanner.style.Style;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 import rx.functions.Action1;
