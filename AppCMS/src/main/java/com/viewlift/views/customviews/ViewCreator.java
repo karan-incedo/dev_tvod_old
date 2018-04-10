@@ -6178,7 +6178,6 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-
                     imageButton.setOnClickListener(null);
                     /**
                      * Handling Quality screen for Audio media type
@@ -6188,7 +6187,6 @@ public class ViewCreator {
                             contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(imageButton.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-
                         if (contentDatum.getStreamingInfo() == null ||
                                 contentDatum.getStreamingInfo().getAudioAssets() == null ||
                                 contentDatum.getStreamingInfo().getAudioAssets().getMp3() == null ||
@@ -6346,10 +6344,12 @@ public class ViewCreator {
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
+        private final String moduleId;
         private List<OnInternalEvent> receivers;
         private String internalEventModuleId;
 
         OnRemoveAllInternalEvent(String moduleId, View removeAllButton) {
+            this.moduleId = moduleId;
             this.removeAllButton = removeAllButton;
             receivers = new ArrayList<>();
             internalEventModuleId = moduleId;

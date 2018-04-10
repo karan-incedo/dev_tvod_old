@@ -16221,6 +16221,11 @@ public class AppCMSPresenter {
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                     //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
+                   /* if(downloadPercent>=0 && downloaded<=0){
+                        imageView.setBackground(ContextCompat.getDrawable(appCMSPresenter.currentContext,
+                                R.drawable.ic_download_queued));
+                    }
+                    else*/
                     if (onRunOnUIThread != null &&
                             appCMSPresenter.runUpdateDownloadIconTimer &&
                             appCMSPresenter.isUserLoggedIn()) {
@@ -16323,6 +16328,8 @@ public class AppCMSPresenter {
         }
 
         private void circularImageBar(ImageView iv2, int i, int radiusDifference) {
+            System.out.println("sowload percent-" + i);
+
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
                 Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);
