@@ -5773,6 +5773,9 @@ public class AppCMSPresenter {
     public void getWatchlistData(final Action1<AppCMSWatchlistResult> appCMSWatchlistResultAction) {
         if (currentActivity != null) {
             MetaPage watchlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.WATCHLIST_PAGE);
+            if (watchlistMetaPage== null){
+                watchlistMetaPage= watchlistPage;
+            }
             AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistMetaPage.getPageId());
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     watchlistMetaPage.getPageAPI(),
