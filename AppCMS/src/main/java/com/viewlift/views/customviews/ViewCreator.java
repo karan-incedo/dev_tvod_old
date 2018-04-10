@@ -3802,9 +3802,6 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = false;
-                                if (appCMSPresenter.isAudioAvailable()) {
-                                    deleteAllFiles = false;
-                                }
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
@@ -3816,6 +3813,12 @@ public class ViewCreator {
 
                                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                                     case PAGE_DOWNLOAD_02_MODULE_KEY:
+                                        if(appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video)) &&
+                                                appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio))){
+                                            deleteAllFiles = false;
+                                        }else {
+                                            deleteAllFiles = true;
+                                        }
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
