@@ -165,6 +165,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
+import com.viewlift.models.network.background.tasks.StartEmailSubscripctionAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
@@ -703,6 +704,7 @@ public class AppCMSPresenter {
     private boolean isTeamPAgeVisible = false;
     private ResponsePojo responsePojo;
     private String subscribeEmail;
+    ProgressDialog progressDialog = null;
 
     @Inject
     public AppCMSPresenter(Gson gson, AppCMSArticleCall appCMSArticleCall,
@@ -1690,11 +1692,14 @@ public class AppCMSPresenter {
                 } else if (actionType == AppCMSActionType.SUBSCRIBEGO) {
                     TextInputEditText subscribeEditText = currentActivity.findViewById(R.id.subscribe_edit_text_id);
                     subscribeEmail = subscribeEditText.getText().toString();
-                        if (emailValid(subscribeEmail)) {
-                            new StartEmailSubscripction().execute(subscribeEmail);
-                        }else{
-                            showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_INVALID, null);
-                        }
+                    if (emailValid(subscribeEmail)) {
+                        // Showing progress dialog
+                        showProgressDialog();
+                        StartEmailSubscripctionAsyncTask startEmailSubscripctionAsyncTask = new StartEmailSubscripctionAsyncTask(this, appCMSSubscribeForLatestNewsCall);
+                        startEmailSubscripctionAsyncTask.execute(subscribeEmail);
+                    } else {
+                        showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_INVALID, null);
+                    }
 
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
@@ -1917,6 +1922,13 @@ public class AppCMSPresenter {
         return result;
     }
 
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(currentActivity);
+        progressDialog.setMessage("Subscribing...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
     private boolean emailValid(String email) {
         if (TextUtils.isEmpty(email)) {
             return false;
@@ -1925,45 +1937,27 @@ public class AppCMSPresenter {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class StartEmailSubscripction extends AsyncTask<String, Void, ResponsePojo> {
-        ProgressDialog progressDialog = null;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            progressDialog = new ProgressDialog(currentActivity);
-            progressDialog.setMessage("Subscribing...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+    public void emailSubscriptionResponse(ResponsePojo result) {
+        if (progressDialog != null) {
+            try {
+                if (progressDialog.isShowing()) {
+                    progressDialog.hide();
+                    progressDialog.dismiss();
+                    progressDialog = null;
+                }
+            } catch (Exception ex) {
+
+            }
         }
-
-        @Override
-        protected ResponsePojo doInBackground(String... params) {return appCMSSubscribeForLatestNewsCall.call(params[0]);}
-
-        @Override
-        protected void onPostExecute(ResponsePojo result) {
-            if (progressDialog!=null) {
-                try {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.hide();
-                        progressDialog.dismiss();
-                        progressDialog = null ;
-                    }
-                } catch (Exception ex) {
-                    Log.e(TAG, ex.getMessage());
-                }
+        this.responsePojo = result;
+        if (result != null) {
+            if (result.getUserExist() == null) {//success
+                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_SUCCESS, null);
+            } else {//exist
+                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_EXIST, null);
             }
-            responsePojo = result;
-            if(result != null){
-                if(result.getUserExist() == null){//success
-                    showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_SUCCESS, null);
-                }else{//exist
-                    showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_EXIST, null);
-                }
-            }else{//fail
-                showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_FAIL, null);
-            }
+        } else {//fail
+            showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_FAIL, null);
         }
     }
 
@@ -7335,7 +7329,7 @@ public class AppCMSPresenter {
                 String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                 String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
-                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID){
+                if (dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID) {
                     title = currentActivity.getString(R.string.invalid_email);
                     message = currentActivity.getString(R.string.quote_separator) +
                             subscribeEmail +
@@ -7343,12 +7337,12 @@ public class AppCMSPresenter {
                             currentActivity.getString(R.string.not_valid_email);
                 }
 
-                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS){
+                if (dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS) {
                     title = currentActivity.getString(R.string.thank_you_for_subscribing);
                     message = currentActivity.getString(R.string.watercoolerready);
                 }
 
-                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST){
+                if (dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST) {
                     title = responsePojo.getUserExist().getTitle();
                     message = currentActivity.getString(R.string.quote_separator) +
                             subscribeEmail +
@@ -7356,7 +7350,7 @@ public class AppCMSPresenter {
                             currentActivity.getString(R.string.is_already_subscribed);
                 }
 
-                if(dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL){
+                if (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL) {
                     title = currentActivity.getString(R.string.failed_to_subscribe);
                     message = currentActivity.getString(R.string.try_again_later);
                 }
