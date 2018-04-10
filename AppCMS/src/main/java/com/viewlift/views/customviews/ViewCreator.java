@@ -1882,12 +1882,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }*/else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
+                }*/ else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                }else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                } else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -4465,7 +4465,7 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
                                 } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
-                                } */else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                } */ else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
                                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
@@ -5659,9 +5659,9 @@ public class ViewCreator {
                         jsonValueKeyMap.get(module.getType()) ==
                                 jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
-                }else if(jsonValueKeyMap.get(module.getType()) != null &&
+                } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
-                        module.getType().equalsIgnoreCase("AC AutoPlayLandscape 01")){
+                        module.getType().equalsIgnoreCase("AC AutoPlayLandscape 01")) {
 
                     return moduleAPI;
                 }
@@ -6152,8 +6152,8 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId, int radiusDifference,
-                                      String id) {
+                                             ContentDatum contentDatum, String userId, int radiusDifference,
+                                             String id) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
@@ -6179,7 +6179,6 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-
                     imageButton.setOnClickListener(null);
                     /**
                      * Handling Quality screen for Audio media type
@@ -6189,12 +6188,11 @@ public class ViewCreator {
                             contentDatum.getGist().getMediaType().toLowerCase().contains(imageButton.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(imageButton.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-
                         if (contentDatum.getStreamingInfo() == null ||
-                                contentDatum.getStreamingInfo().getAudioAssets()== null ||
-                                contentDatum.getStreamingInfo().getAudioAssets().getMp3()== null ||
-                                contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl()== null ||
-                                TextUtils.isEmpty(contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl() )) {
+                                contentDatum.getStreamingInfo().getAudioAssets() == null ||
+                                contentDatum.getStreamingInfo().getAudioAssets().getMp3() == null ||
+                                contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl() == null ||
+                                TextUtils.isEmpty(contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl())) {
                             appCMSPresenter.getAudioDetail(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId(),
                                     0, null, false, false, 0,
                                     new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
@@ -6215,7 +6213,7 @@ public class ViewCreator {
                                             }
                                         }
                                     });
-                        }else {
+                        } else {
                             appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                         }
                     } else {
@@ -6335,6 +6333,7 @@ public class ViewCreator {
         public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
         }
+
         public void updateContentData(final ContentDatum data) {
             this.contentDatum = data;
         }
@@ -6346,10 +6345,12 @@ public class ViewCreator {
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
+        private final String moduleId;
         private List<OnInternalEvent> receivers;
         private String internalEventModuleId;
 
         OnRemoveAllInternalEvent(String moduleId, View removeAllButton) {
+            this.moduleId = moduleId;
             this.removeAllButton = removeAllButton;
             receivers = new ArrayList<>();
             internalEventModuleId = moduleId;
