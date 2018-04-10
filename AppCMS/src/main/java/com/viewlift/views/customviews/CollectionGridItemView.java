@@ -911,6 +911,7 @@ public class CollectionGridItemView extends BaseView {
                                     .append(" ")
                                     .append(context.getString(R.string.mins_abbreviation));
                             ((TextView) view).setText(runtimeText);
+                            ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());

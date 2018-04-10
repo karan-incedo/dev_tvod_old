@@ -12,6 +12,7 @@ import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
@@ -249,6 +250,7 @@ public class RealmController {
         } catch (Exception e) {
             //Log.e(TAG, "Failed to add download: " + e.getMessage());
         }
+
     }
 
     public void updateDownload(DownloadVideoRealm downloadVideoRealm) {
