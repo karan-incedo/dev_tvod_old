@@ -371,6 +371,10 @@ public class CastHelper {
     public void launchTrailer(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+        if(binder == null || binder.getContentData() == null){
+            Toast.makeText(mAppContext, mAppContext.getString(R.string.app_cms_download_stream_info_error_title), Toast.LENGTH_SHORT).show();
+            return;
+        }
         this.appCMSPresenterComponenet = appCMSPresenter;
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null

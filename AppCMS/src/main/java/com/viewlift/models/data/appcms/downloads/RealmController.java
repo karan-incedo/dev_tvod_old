@@ -21,7 +21,7 @@ import io.realm.RealmResults;
 
 public class RealmController {
     private static RealmController instance;
-    private final Realm realm;
+    private Realm realm;
 
     private static final String TAG = "RealmController";
 
@@ -30,12 +30,7 @@ public class RealmController {
     }
 
     public RealmController(Application application) {
-        Realm.init(application.getApplicationContext());
-        RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);
+        realm = Realm.getDefaultInstance();
     }
 
     public static RealmController with(Fragment fragment) {
@@ -100,9 +95,10 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
+            Log.e("RealmController","LoggedIn user ID :"+userId);
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

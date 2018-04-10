@@ -52,6 +52,38 @@ public class DownloadVideoRealm extends RealmObject {
     private boolean isSyncedWithServer;
     public String contentType;
     public String mediaType;
+    public String artistName;
+    public String directorName;
+    public String songYear;
+
+    public void setDownloadStatus(String downloadStatus) {
+        this.downloadStatus = downloadStatus;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getDirectorName() {
+        return directorName;
+    }
+
+    public void setDirectorName(String directorName) {
+        this.directorName = directorName;
+    }
+
+    public String getSongYear() {
+        return songYear;
+    }
+
+    public void setSongYear(String songYear) {
+        this.songYear = songYear;
+    }
+
     public String getVideoIdDB() {
         return videoIdDB;
     }

@@ -934,6 +934,11 @@ public class AppCMSPresenter {
         this.pageIdToMetaPageMap = new HashMap<>();
 
         clearMaps();
+        try {
+            this.realmController = RealmController.with(currentActivity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1514,6 +1519,7 @@ public class AppCMSPresenter {
      * Updates the watched time parameter for all downloaded (offline) videos.
      */
     private void updateAllOfflineWatchTime() {
+        realmController = RealmController.with(currentActivity);
         if (getLoggedInUser() != null) {
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(() -> {
@@ -1548,6 +1554,8 @@ public class AppCMSPresenter {
      */
     public void updateWatchedTime(String filmId, long watchedTime) {
         if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
+
+            realmController = RealmController.with(currentActivity);
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
             updateHistoryRequest.setUserId(getLoggedInUser());
             updateHistoryRequest.setWatchedTime(watchedTime);
@@ -4093,6 +4101,7 @@ public class AppCMSPresenter {
     }
 
     public synchronized void reStartDownload(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
+        realmController = RealmController.with(currentActivity);
         String userId = getLoggedInUser();
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(filmId, userId);
         if (downloadVideoRealm == null) {
@@ -4160,6 +4169,8 @@ public class AppCMSPresenter {
 
     @SuppressWarnings("ConstantConditions")
     private void removeDownloadedFile(String filmId) {
+
+        realmController = RealmController.with(currentActivity);
         List<DownloadVideoRealm> downloadVideoRealmList = realmController.getDownloadsById(filmId);
         if (downloadVideoRealmList == null && downloadVideoRealmList.get(0) == null) {
             //
@@ -4185,6 +4196,8 @@ public class AppCMSPresenter {
     }
 
     private void removeDownloadAndLogout() {
+
+        realmController = RealmController.with(currentActivity);
         Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
         pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         getCurrentActivity().sendBroadcast(pageLoadingActionIntent);
@@ -4302,6 +4315,8 @@ public class AppCMSPresenter {
     }
 
     private long getRemainingDownloadSize() {
+
+        realmController = RealmController.with(currentActivity);
         if (getRealmController() != null) {
             List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
             long bytesRemainDownload = 0L;
@@ -4520,6 +4535,8 @@ public class AppCMSPresenter {
         if (contentDatum != null && contentDatum.getGist() != null) {
             Cursor c = null;
             try {
+
+                realmController = RealmController.with(currentActivity);
                 DownloadManager.Query query = new DownloadManager.Query();
                 long videoId = realmController.getDownloadByIdBelongstoUser(contentDatum.getGist().getId(),
                         getLoggedInUser()).getVideoId_DM();
@@ -4555,6 +4572,7 @@ public class AppCMSPresenter {
             showToast(
                     currentActivity.getString(R.string.app_cms_download_available_already_message,
                             contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+            realmController = RealmController.with(currentActivity);
             DownloadVideoRealm videoDownloaded = getVideoDownloadedByOtherUser(contentDatum.getGist().getId());
             DownloadVideoRealm downloadVideoRealm = videoDownloaded.createCopy();
             try {
@@ -4852,6 +4870,15 @@ public class AppCMSPresenter {
 
     @UiThread
     public boolean isVideoDownloaded(String videoId) {
+
+        if(realmController == null) {
+            try {
+                this.realmController = RealmController.with(currentActivity);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
                 getLoggedInUser());
         return downloadVideoRealm != null &&
@@ -5393,6 +5420,8 @@ public class AppCMSPresenter {
                             false);
                 }
             } else {
+
+                realmController = RealmController.with(currentActivity);
 
                 AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
                 appCMSPageAPI.setId(pageId);
@@ -10509,6 +10538,7 @@ public class AppCMSPresenter {
     }
 
     private ArrayList<BeaconRequest> getBeaconRequestList() {
+        realmController = RealmController.with(currentActivity);
         String uid = getInstanceId();
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -10565,7 +10595,7 @@ public class AppCMSPresenter {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
 
-
+                realmController = RealmController.with(currentActivity);
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
@@ -12071,11 +12101,6 @@ public class AppCMSPresenter {
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);
         this.serverClientId = activity.getString(R.string.server_client_id);
-        try {
-            this.realmController = RealmController.with(currentActivity);
-        } catch (Exception e) {
-            //
-        }
     }
 
     public void setBitmapCachePresenter(BitmapCachePresenter bitmapCachePresenter) {
@@ -14107,6 +14132,7 @@ public class AppCMSPresenter {
                         appCMSSite.getGist().getSiteInternalName());
             }
         } else {
+            realmController = RealmController.with(currentActivity);
             ContentDatum contentDatum = realmController.getDownloadById(
                     binder.getRelateVideoIds().get(
                             binder.getCurrentPlayingVideoIndex() + 1))
