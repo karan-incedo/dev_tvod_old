@@ -182,14 +182,17 @@ public class DownloadModule extends ModuleView {
             }
             pageView.addToHeaderView(topLayoutContainer);
             childContainer.addView(pageView);
-            DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
-            if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
-                selectChild(0);
-                unselectChild(1);
-            }
-            if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
-                selectChild(1);
-                unselectChild(0);
+
+            if (isVideoDownloaded && isAudioDownloaded) {
+                DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
+                if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
+                    selectChild(0);
+                    unselectChild(1);
+                }
+                if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
+                    selectChild(1);
+                    unselectChild(0);
+                }
             }
         }
     }
