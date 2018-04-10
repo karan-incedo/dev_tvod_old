@@ -66,6 +66,7 @@ public class DownloadModule extends ModuleView {
     public static final int AUDIO_TAB = 259;
     public static final int VIDEO_TAB = 260;
     View downloadSeparator;
+    private boolean isVideoDownloaded,isAudioDownloaded;
 
     @SuppressWarnings("unchecked")
     public DownloadModule(Context context,
@@ -148,19 +149,24 @@ public class DownloadModule extends ModuleView {
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView1, false);
             }
 
+            isVideoDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video));
+            isAudioDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio));
+
             if (module != null && module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
                     if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
-                        if (appCMSPresenter.isAudioAvailable()) {
+                        if (appCMSPresenter.isAudioAvailable() && (isVideoDownloaded && isAudioDownloaded)) {
                             component.getLayout().getMobile().setTopMargin(0);
                             component.getLayout().getTabletLandscape().setTopMargin(0);
                             component.getLayout().getTabletPortrait().setTopMargin(0);
                             component.getLayout().getMobile().setBottomMargin(0);
                             component.getLayout().getTabletLandscape().setBottomMargin(0);
                             component.getLayout().getTabletPortrait().setBottomMargin(0);
+
                             createVideoTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
                             createAudioTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
+
                         } else {
                             addChildComponents(moduleView1, component, appCMSAndroidModules, i);
                         }
