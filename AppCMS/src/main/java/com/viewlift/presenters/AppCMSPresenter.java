@@ -4899,12 +4899,12 @@ public class AppCMSPresenter {
         }*/
         if (realmController != null) {
             try {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
-                getLoggedInUser());
-        return downloadVideoRealm != null &&
-                downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
-                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                        getLoggedInUser());
+                return downloadVideoRealm != null &&
+                        downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
+                        (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
             } catch (Exception e) {
 
             }
@@ -16221,6 +16221,11 @@ public class AppCMSPresenter {
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                     //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
+                   /* if(downloadPercent>=0 && downloaded<=0){
+                        imageView.setBackground(ContextCompat.getDrawable(appCMSPresenter.currentContext,
+                                R.drawable.ic_download_queued));
+                    }
+                    else*/
                     if (onRunOnUIThread != null &&
                             appCMSPresenter.runUpdateDownloadIconTimer &&
                             appCMSPresenter.isUserLoggedIn()) {
@@ -16265,11 +16270,11 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Updating film download progress: " + filmId);
                             } else if (downloadStatus == DownloadManager.STATUS_FAILED ||
                                     //downloadStatus == DownloadManager.STATUS_PAUSED ||
-                                    downloadStatus==403 ||
-                                    downloadStatus==195) {
+                                    downloadStatus == 403 ||
+                                    downloadStatus == 195) {
                                 Log.e(TAG, "Failed to download film: " + filmId);
                                 updateDownloadStatusException();
-                            }else if(downloadStatus == DownloadManager.STATUS_PAUSED){
+                            } else if (downloadStatus == DownloadManager.STATUS_PAUSED) {
                                 appCMSPresenter.appCMSUserDownloadVideoStatusCall
                                         .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
                             }
@@ -16291,7 +16296,8 @@ public class AppCMSPresenter {
 
 
         }
-        private void updateDownloadStatusException(){
+
+        private void updateDownloadStatusException() {
             this.cancel();
             UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
             statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
@@ -16322,6 +16328,8 @@ public class AppCMSPresenter {
         }
 
         private void circularImageBar(ImageView iv2, int i, int radiusDifference) {
+            System.out.println("sowload percent-" + i);
+
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
                 Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);

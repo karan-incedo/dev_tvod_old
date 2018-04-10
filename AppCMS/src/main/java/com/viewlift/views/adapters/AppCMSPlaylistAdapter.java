@@ -118,7 +118,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             if (moduleAPI.getContentData().get(0).getGist() != null) {
                 mCurrentPlayListId = moduleAPI.getContentData().get(0).getGist().getId();
             }
-             /*removing 1st data in the list since it contains playlist GIST*/
+            /*removing 1st data in the list since it contains playlist GIST*/
             if (moduleAPI.getContentData().get(0).getGist() != null &&
                     moduleAPI.getContentData().get(0).getGist().getMediaType() != null
                     && moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
@@ -182,7 +182,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         if (0 <= position && position < adapterData.size()) {
             allViews[position] = holder.componentView;
             bindView(holder.componentView, adapterData.get(position), position);
-           // downloadView(adapterData.get(position), holder.componentView);
+            // downloadView(adapterData.get(position), holder.componentView);
             if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
                 if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId()) && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null) {
                     adapterData.get(position).getGist().setAudioPlaying(true);
@@ -390,7 +390,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                                     () -> playPlaylistItem(data, itemView, clickPosition));
                                             return;
                                         }
-                                  /*get audio details on tray click item and play song*/
+                                        /*get audio details on tray click item and play song*/
                                         playPlaylistItem(data, itemView, clickPosition);
                                     }
                                 }
@@ -637,6 +637,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     }
+
     public class DownloadUpdate {
         private boolean isClick;
 

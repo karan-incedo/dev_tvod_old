@@ -7,9 +7,9 @@
         android:name=".AppCMSApplication"
         android:allowBackup="true"
         android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:node="merge">
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -20,6 +20,7 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
         <activity
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -35,8 +36,8 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".views.activity.AppCMSPlayVideoActivity"
-            android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".views.activity.AppCMSSearchActivity"
@@ -51,8 +52,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".views.activity.AppCMSUpgradeActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".views.activity.AppCMSUpgradeActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".casting.ExpandedControlsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
@@ -123,8 +125,7 @@
         -->
         <activity
             android:name=".views.activity.AppCMSPlayAudioActivity"
-            android:launchMode="singleTask"
-         >
+            android:launchMode="singleTask">
 
             <!--<intent-filter>-->
             <!--<action android:name="com.viewlift.Audio.MediaNotificationManager" />-->
@@ -132,12 +133,11 @@
             <!--</intent-filter>-->
 
             <intent-filter>
-                <action android:name=
-                    "android.media.action.MEDIA_PLAY_FROM_SEARCH" />
-                <category android:name=
-                    "android.intent.category.DEFAULT" />
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
 
         <service
             android:name="com.viewlift.Audio.MusicService"
