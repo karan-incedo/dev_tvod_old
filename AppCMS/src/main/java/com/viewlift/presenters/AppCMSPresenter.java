@@ -17351,4 +17351,11 @@ public class AppCMSPresenter {
     public String getCurrentPlayingVideo() {
         return videoId;
     }
+
+    public Boolean isAudioAvailable() {
+        if (appCMSMain != null && appCMSMain.getFeatures() != null && appCMSMain.getFeatures().getAudioPreview() != null)
+            return true;
+        else
+            return false;
+    }
 }
