@@ -896,23 +896,22 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
-                        if (data.getGist() != null) {
-                            final int SECONDS_PER_MINS = 60;
-                            if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
-                                StringBuilder runtimeText = new StringBuilder()
-                                        .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                        .append(" ");
-                                //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
-                                //unit abbrevation from here .Its causing double visibilty of time unit
-                                // .append(context.getString(R.string.min_abbreviation));
-                                ((TextView) view).setText(runtimeText);
-                            } else {
-                                StringBuilder runtimeText = new StringBuilder()
-                                        .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                        .append(" ");
-                                //.append(context.getString(R.string.mins_abbreviation));
-                                ((TextView) view).setText(runtimeText);
-                            }
+                        final int SECONDS_PER_MINS = 60;
+                        if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                            StringBuilder runtimeText = new StringBuilder()
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
+                                    .append(" ")
+                                    //min value is being set in unit tag under PAGE_WATCHLIST_DURATION_UNIT_KEY component key so removing
+                                    //unit abbrevation from here .Its causing double visibilty of time unit
+                                    .append(context.getString(R.string.min_abbreviation));
+                            ((TextView) view).setText(runtimeText);
+                        } else {
+                            StringBuilder runtimeText = new StringBuilder()
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
+                                    .append(" ")
+                                    .append(context.getString(R.string.mins_abbreviation));
+                            ((TextView) view).setText(runtimeText);
+                            ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
