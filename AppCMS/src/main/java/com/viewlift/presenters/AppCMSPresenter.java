@@ -4899,12 +4899,12 @@ public class AppCMSPresenter {
         }*/
         if (realmController != null) {
             try {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
-                getLoggedInUser());
-        return downloadVideoRealm != null &&
-                downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
-                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                        getLoggedInUser());
+                return downloadVideoRealm != null &&
+                        downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
+                        (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
             } catch (Exception e) {
 
             }
@@ -16265,11 +16265,11 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Updating film download progress: " + filmId);
                             } else if (downloadStatus == DownloadManager.STATUS_FAILED ||
                                     //downloadStatus == DownloadManager.STATUS_PAUSED ||
-                                    downloadStatus==403 ||
-                                    downloadStatus==195) {
+                                    downloadStatus == 403 ||
+                                    downloadStatus == 195) {
                                 Log.e(TAG, "Failed to download film: " + filmId);
                                 updateDownloadStatusException();
-                            }else if(downloadStatus == DownloadManager.STATUS_PAUSED){
+                            } else if (downloadStatus == DownloadManager.STATUS_PAUSED) {
                                 appCMSPresenter.appCMSUserDownloadVideoStatusCall
                                         .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
                             }
@@ -16291,7 +16291,8 @@ public class AppCMSPresenter {
 
 
         }
-        private void updateDownloadStatusException(){
+
+        private void updateDownloadStatusException() {
             this.cancel();
             UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
             statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
@@ -17342,5 +17343,12 @@ public class AppCMSPresenter {
 
     public String getCurrentPlayingVideo() {
         return videoId;
+    }
+
+    public Boolean isAudioAvailable() {
+        if (appCMSMain != null && appCMSMain.getFeatures() != null && appCMSMain.getFeatures().getAudioPreview() != null)
+            return true;
+        else
+            return false;
     }
 }
