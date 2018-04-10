@@ -43,6 +43,8 @@ public class AppCMSWatchlistCall {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+            System.out.println("====== "+authTokenMap.toString());
+            System.out.println(url);
             appCMSWatchlistRest.get(url, authTokenMap).enqueue(new Callback<AppCMSWatchlistResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSWatchlistResult> call,
