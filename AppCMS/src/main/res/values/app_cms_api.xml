@@ -401,6 +401,7 @@
     <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 
     <!-- AppCMS Action names -->
+    <string name="app_cms_action_subscribe_go">mailChimpSubscriptionGoButton</string>
     <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_authpage_key">Authentication Screen</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
@@ -621,6 +622,8 @@
      <string name="icon_label_key">iconLabel</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
 
+    <string name="app_cms_page_subscribeEditText_key">mailChimpEmailTextField</string>
+    <string name="app_cms_page_subscribe_email_go_button_key">goButton</string>
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
     <!--watchlist / history / queue UI json keys-->
@@ -650,7 +653,7 @@
     <string name="plan_type_day">Month</string>
 
     <string name="app_cms_page_download_size_key">videoSize</string>
-    <string name="app_cms_page_download_duration_key">downloadDuration</string>
+    <string name="app_cms_page_download_duration_key">duration</string>
     <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
     <string name="app_cms_delete_single_download_action">deleteSingleItemDownload</string>
@@ -694,5 +697,8 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
+
+
+
 
 </resources>
