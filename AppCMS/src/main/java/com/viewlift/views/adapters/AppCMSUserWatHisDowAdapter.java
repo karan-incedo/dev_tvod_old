@@ -630,6 +630,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
                                 deleteDownloadVideo(data, position);
+                                return;
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
