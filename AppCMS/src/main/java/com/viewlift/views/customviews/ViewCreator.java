@@ -4192,11 +4192,7 @@ public class ViewCreator {
                         textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
 
                         if (BaseView.isTablet(context)) {
-                            if (BaseView.isLandscape(context)) {
                                 textInputEditTextLayoutParams.setMargins(0,0,100,0);
-                            } else {
-                                textInputEditTextLayoutParams.setMargins(0,0,100,0);
-                            }
                         }
                         break;
 
