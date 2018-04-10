@@ -65,6 +65,8 @@ public class DownloadModule extends ModuleView {
     PageView pageView;
     public static final int AUDIO_TAB = 259;
     public static final int VIDEO_TAB = 260;
+    View downloadSeparator;
+    private boolean isVideoDownloaded,isAudioDownloaded;
 
     @SuppressWarnings("unchecked")
     public DownloadModule(Context context,
@@ -75,7 +77,7 @@ public class DownloadModule extends ModuleView {
                           ViewCreator viewCreator,
                           AppCMSAndroidModules appCMSAndroidModules, PageView pageView) {
         super(context, moduleInfo, false);
-//        this.moduleInfo = moduleInfo;
+        this.moduleInfo = moduleInfo;
         this.moduleAPI = moduleAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
@@ -87,11 +89,6 @@ public class DownloadModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         this.pageView = pageView;
-        //TODO : remove local json once we recieve from API
-        AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                loadJsonFromAssets(context, "download.json"),
-                AppCMSPageUI.class);
-        this.moduleInfo = appCMSPageUI1.getModuleList().get(1);
         init();
     }
 
@@ -108,36 +105,31 @@ public class DownloadModule extends ModuleView {
 
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
-            childContainer.setBackgroundColor(bgColor);
+            childContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
             LinearLayout topLayoutContainer = new LinearLayout(getContext());
             MarginLayoutParams topLayoutContainerLayoutParams =
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            topLayoutContainerLayoutParams.setMargins(0, 185, 0, 0);
+            topLayoutContainerLayoutParams.setMargins(0, 0, 0, 0);
             topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
-            LinearLayout loginModuleSwitcherContainer = new LinearLayout(getContext());
-            loginModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
-            MarginLayoutParams loginModuleContainerLayoutParams =
+            LinearLayout downloadModuleSwitcherContainer = new LinearLayout(getContext());
+            downloadModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
+            MarginLayoutParams downloadModuleContainerLayoutParams =
                     new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            loginModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+            downloadModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
                     0,
                     (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
                     0);
-            loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
-            loginModuleSwitcherContainer.setBackgroundColor(bgColor);
-            loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
+            downloadModuleSwitcherContainer.setLayoutParams(downloadModuleContainerLayoutParams);
+            downloadModuleSwitcherContainer.setBackgroundColor(bgColor);
+            downloadModuleSwitcherContainer.setPadding(0, 0, 0, 0);
 
-            topLayoutContainer.addView(loginModuleSwitcherContainer);
+            topLayoutContainer.addView(downloadModuleSwitcherContainer);
 
             ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-            //TODO : remove local json once we recieve from API
-            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "download.json"),
-                    AppCMSPageUI.class);
-            module = appCMSPageUI1.getModuleList().get(1);
 
             if (module == null) {
                 module = moduleInfo;
@@ -157,154 +149,193 @@ public class DownloadModule extends ModuleView {
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView1, false);
             }
 
+            isVideoDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video));
+            isAudioDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio));
+
             if (module != null && module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
-                    if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY) {
-                        buttonSelectors[0] = new Button(getContext());
-                        LinearLayout.LayoutParams loginSelectorLayoutParams =
-                                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        loginSelectorLayoutParams.weight = 1;
-                        buttonSelectors[0].setText(R.string.app_cms_download_tab_video_title);
-                        buttonSelectors[0].setTextColor(textColor);
-                        buttonSelectors[0].setBackgroundColor(bgColor);
-                        buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
-                        buttonSelectors[0].setTransformationMethod(null);
+                    if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
+                        if (appCMSPresenter.isAudioAvailable() && (isVideoDownloaded && isAudioDownloaded)) {
+                            component.getLayout().getMobile().setTopMargin(0);
+                            component.getLayout().getTabletLandscape().setTopMargin(0);
+                            component.getLayout().getTabletPortrait().setTopMargin(0);
+                            component.getLayout().getMobile().setBottomMargin(0);
+                            component.getLayout().getTabletLandscape().setBottomMargin(0);
+                            component.getLayout().getTabletPortrait().setBottomMargin(0);
 
-                        buttonSelectors[0].setOnClickListener((v) -> {
-                            selectChild(0);
-                            unselectChild(1);
-                            DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
-                            appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
-                        });
+                            createVideoTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
+                            createAudioTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
 
-                        underlineViews[0] = new GradientDrawable();
-                        underlineViews[0].setShape(GradientDrawable.LINE);
-                        buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
-                        Rect textBounds = new Rect();
-                        Paint textPaint = buttonSelectors[0].getPaint();
-                        textPaint.getTextBounds(buttonSelectors[0].getText().toString(),
-                                0,
-                                buttonSelectors[0].getText().length(),
-                                textBounds);
-                        Rect bounds = new Rect(0,
-                                textBounds.top,
-                                textBounds.width() + loginBorderPadding,
-                                textBounds.bottom);
-                        underlineViews[0].setBounds(bounds);
-                        buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
-                        loginModuleSwitcherContainer.addView(buttonSelectors[0]);
-
-                        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
-                        setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
-                        childViews[0] = moduleView;
-                        addChildComponents(moduleView, component, appCMSAndroidModules);
-                        topLayoutContainer.addView(moduleView);
-                    } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY) {
-
-                        buttonSelectors[1] = new Button(getContext());
-                        LinearLayout.LayoutParams signupSelectorLayoutParams =
-                                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signupSelectorLayoutParams.weight = 1;
-                        buttonSelectors[1].setText(R.string.app_cms_download_tab_audio_title);
-                        buttonSelectors[1].setTransformationMethod(null);
-                        buttonSelectors[1].setTextColor(textColor);
-                        buttonSelectors[1].setBackgroundColor(bgColor);
-                        signupSelectorLayoutParams.gravity = Gravity.END;
-                        buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
-                        buttonSelectors[1].setOnClickListener((v) -> {
-                            selectChild(1);
-                            unselectChild(0);
-                            DownloadTabSelectorBus.instanceOf().setTab(AUDIO_TAB);
-                            appCMSPresenter.setDownloadTabSelected(AUDIO_TAB);
-                        });
-
-                        underlineViews[1] = new GradientDrawable();
-                        underlineViews[1].setShape(GradientDrawable.LINE);
-                        buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
-                        Rect textBounds = new Rect();
-                        Paint textPaint = buttonSelectors[1].getPaint();
-                        textPaint.getTextBounds(buttonSelectors[1].getText().toString(),
-                                0,
-                                buttonSelectors[1].getText().length(),
-                                textBounds);
-                        Rect bounds = new Rect(0,
-                                textBounds.top,
-                                textBounds.width() + loginBorderPadding,
-                                textBounds.bottom);
-                        underlineViews[1].setBounds(bounds);
-                        buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
-                        loginModuleSwitcherContainer.addView(buttonSelectors[1]);
-
-                        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
-                        setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
-                        childViews[1] = moduleView;
-                        addChildComponents(moduleView, component, appCMSAndroidModules);
-                        topLayoutContainer.addView(moduleView);
-                    } else {
-
-
-                        viewCreator.createComponentView(getContext(),
-                                component,
-                                component.getLayout(),
-                                moduleAPI,
-                                appCMSAndroidModules,
-                                pageView,
-                                module.getSettings(),
-                                jsonValueKeyMap,
-                                appCMSPresenter,
-                                false,
-                                module.getView(),
-                                module.getId());
-                        ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
-                        View componentView = componentViewResult.componentView;
-
-                        if (componentView != null) {
-                            if (componentViewResult.onInternalEvent != null) {
-                                appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
-                            }
-                            if (componentViewResult.addToPageView) {
-                                pageView.addView(componentView);
-                            } else {
-                                if (component.isHeaderView()) {
-                                    pageView.addToHeaderView(componentView);
-                                } else {
-                                    childrenContainer.addView(componentView);
-                                }
-                                moduleView1.setComponentHasView(i, true);
-                                moduleView1.setViewMarginsFromComponent(component,
-                                        componentView,
-                                        moduleView1.getLayout(),
-                                        childrenContainer,
-                                        false,
-                                        jsonValueKeyMap,
-                                        componentViewResult.useMarginsAsPercentagesOverride,
-                                        componentViewResult.useWidthOfScreen,
-                                        module.getView());
-                                if ((adjustOthers == ViewCreator.AdjustOtherState.IGNORE &&
-                                        componentViewResult.shouldHideComponent) ||
-                                        adjustOthers == ViewCreator.AdjustOtherState.ADJUST_OTHERS) {
-                                    moduleView1.addChildComponentAndView(component, componentView);
-                                } else {
-                                    moduleView1.setComponentHasView(i, false);
-                                }
-                            }
+                        } else {
+                            addChildComponents(moduleView1, component, appCMSAndroidModules, i);
                         }
+                    } else {
+                        addComponentsToView(component, module, moduleView1, adjustOthers, i);
                     }
                 }
             }
-
-            childContainer.addView(topLayoutContainer);
-            DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
-            if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
-                selectChild(0);
-                unselectChild(1);
+            if (downloadSeparator != null) {
+                LayoutParams lp = (LayoutParams) downloadSeparator.getLayoutParams();
+                topLayoutContainerLayoutParams.setMargins(0, lp.topMargin + 5, 0, 0);
+                topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             }
-            if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
-                selectChild(1);
-                unselectChild(0);
+            pageView.addToHeaderView(topLayoutContainer);
+            childContainer.addView(pageView);
+
+            if (isVideoDownloaded && isAudioDownloaded) {
+                DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
+                if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
+                    selectChild(0);
+                    unselectChild(1);
+                }
+                if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
+                    selectChild(1);
+                    unselectChild(0);
+                }
             }
         }
+    }
+
+    void addComponentsToView(Component component, ModuleWithComponents module, ModuleView moduleView1, ViewCreator.AdjustOtherState adjustOthers, int i) {
+
+        viewCreator.createComponentView(getContext(),
+                component,
+                component.getLayout(),
+                moduleAPI,
+                appCMSAndroidModules,
+                pageView,
+                module.getSettings(),
+                jsonValueKeyMap,
+                appCMSPresenter,
+                false,
+                module.getView(),
+                module.getId());
+        ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
+        View componentView = componentViewResult.componentView;
+
+        if (componentView != null) {
+            if (component.getType() != null &&
+                    component.getType().contains(context.getString(R.string.app_cms_page_separator_key))) {
+                downloadSeparator = componentView;
+            }
+            if (componentViewResult.onInternalEvent != null) {
+                appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+            }
+            if (componentViewResult.addToPageView) {
+                pageView.addView(componentView);
+            } else {
+                if (component.isHeaderView()) {
+                    pageView.addToHeaderView(componentView);
+                } else {
+                    childrenContainer.addView(componentView);
+                }
+                moduleView1.setComponentHasView(i, true);
+                moduleView1.setViewMarginsFromComponent(component,
+                        componentView,
+                        moduleView1.getLayout(),
+                        childrenContainer,
+                        false,
+                        jsonValueKeyMap,
+                        componentViewResult.useMarginsAsPercentagesOverride,
+                        componentViewResult.useWidthOfScreen,
+                        module.getView());
+                if ((adjustOthers == ViewCreator.AdjustOtherState.IGNORE &&
+                        componentViewResult.shouldHideComponent) ||
+                        adjustOthers == ViewCreator.AdjustOtherState.ADJUST_OTHERS) {
+                    moduleView1.addChildComponentAndView(component, componentView);
+                } else {
+                    moduleView1.setComponentHasView(i, false);
+                }
+            }
+        }
+    }
+
+    void createVideoTab(int textColor, LinearLayout downloadModuleSwitcherContainer, Component component, LinearLayout topLayoutContainer, int i) {
+        buttonSelectors[0] = new Button(getContext());
+        LinearLayout.LayoutParams videoSelectorLayoutParams =
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        videoSelectorLayoutParams.weight = 1;
+        buttonSelectors[0].setText(R.string.app_cms_download_tab_video_title);
+        buttonSelectors[0].setTextColor(textColor);
+        buttonSelectors[0].setBackgroundColor(bgColor);
+        buttonSelectors[0].setLayoutParams(videoSelectorLayoutParams);
+        buttonSelectors[0].setTransformationMethod(null);
+
+        buttonSelectors[0].setOnClickListener((v) -> {
+            selectChild(0);
+            unselectChild(1);
+            DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
+            appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
+        });
+
+        underlineViews[0] = new GradientDrawable();
+        underlineViews[0].setShape(GradientDrawable.LINE);
+        buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
+        Rect textBounds = new Rect();
+        Paint textPaint = buttonSelectors[0].getPaint();
+        textPaint.getTextBounds(buttonSelectors[0].getText().toString(),
+                0,
+                buttonSelectors[0].getText().length(),
+                textBounds);
+        Rect bounds = new Rect(0,
+                textBounds.top,
+                textBounds.width() + loginBorderPadding,
+                textBounds.bottom);
+        underlineViews[0].setBounds(bounds);
+        buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
+        downloadModuleSwitcherContainer.addView(buttonSelectors[0]);
+
+        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+        setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
+        childViews[0] = moduleView;
+        addChildComponents(moduleView, component, appCMSAndroidModules, i);
+        topLayoutContainer.addView(moduleView);
+    }
+
+
+    void createAudioTab(int textColor, LinearLayout downloadModuleSwitcherContainer, Component component, LinearLayout topLayoutContainer, int i) {
+
+
+        buttonSelectors[1] = new Button(getContext());
+        LinearLayout.LayoutParams audioSelectorLayoutParams =
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        audioSelectorLayoutParams.weight = 1;
+        buttonSelectors[1].setText(R.string.app_cms_download_tab_audio_title);
+        buttonSelectors[1].setTransformationMethod(null);
+        buttonSelectors[1].setTextColor(textColor);
+        buttonSelectors[1].setBackgroundColor(bgColor);
+        audioSelectorLayoutParams.gravity = Gravity.END;
+        buttonSelectors[1].setLayoutParams(audioSelectorLayoutParams);
+        buttonSelectors[1].setOnClickListener((v) -> {
+            selectChild(1);
+            unselectChild(0);
+            DownloadTabSelectorBus.instanceOf().setTab(AUDIO_TAB);
+            appCMSPresenter.setDownloadTabSelected(AUDIO_TAB);
+        });
+
+        underlineViews[1] = new GradientDrawable();
+        underlineViews[1].setShape(GradientDrawable.LINE);
+        buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
+        Rect textBounds = new Rect();
+        Paint textPaint = buttonSelectors[1].getPaint();
+        textPaint.getTextBounds(buttonSelectors[1].getText().toString(),
+                0,
+                buttonSelectors[1].getText().length(),
+                textBounds);
+        Rect bounds = new Rect(0,
+                textBounds.top,
+                textBounds.width() + loginBorderPadding,
+                textBounds.bottom);
+        underlineViews[1].setBounds(bounds);
+        buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
+        downloadModuleSwitcherContainer.addView(buttonSelectors[1]);
+
+        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+        setViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
+        childViews[1] = moduleView;
+        addChildComponents(moduleView, component, appCMSAndroidModules, i);
+        topLayoutContainer.addView(moduleView);
     }
 
     private void selectChild(int childIndex) {
@@ -330,7 +361,7 @@ public class DownloadModule extends ModuleView {
 
     private void addChildComponents(ModuleView moduleView,
                                     Component subComponent,
-                                    final AppCMSAndroidModules appCMSAndroidModules) {
+                                    final AppCMSAndroidModules appCMSAndroidModules, int i) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         if (componentViewResult.onInternalEvent != null) {
             appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
@@ -338,54 +369,43 @@ public class DownloadModule extends ModuleView {
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
         float parentYAxis = 2 * getYAxis(getContext(), subComponent.getLayout(), 0.0f);
         if (componentViewResult != null && subComponentChildContainer != null) {
-            for (int i = 0; i < subComponent.getComponents().size(); i++) {
-                final Component component = subComponent.getComponents().get(i);
-                viewCreator.createComponentView(getContext(),
-                        component,
-                        component.getLayout(),
-                        moduleAPI,
-                        appCMSAndroidModules,
-                        null,
-                        moduleInfo.getSettings(),
-                        jsonValueKeyMap,
-                        appCMSPresenter,
-                        false,
-                        moduleInfo.getView(),
-                        moduleInfo.getId());
-                View componentView = componentViewResult.componentView;
-                if (componentView != null) {
+            viewCreator.createComponentView(getContext(),
+                    subComponent,
+                    subComponent.getLayout(),
+                    moduleAPI,
+                    appCMSAndroidModules,
+                    null,
+                    moduleInfo.getSettings(),
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    false,
+                    moduleInfo.getView(),
+                    moduleInfo.getId());
+            View componentView = componentViewResult.componentView;
+            if (componentView != null) {
 
-                    float componentYAxis = getYAxis(getContext(),
-                            component.getLayout(),
-                            0.0f);
-                    if (!component.isyAxisSetManually()) {
-                        setYAxis(getContext(),
-                                component.getLayout(),
-                                componentYAxis - parentYAxis);
-                        component.setyAxisSetManually(true);
-                    }
-                    subComponentChildContainer.addView(componentView);
-                    moduleView.setComponentHasView(i, true);
-                    moduleView.setViewMarginsFromComponent(component,
-                            componentView,
+                float componentYAxis = getYAxis(getContext(),
+                        subComponent.getLayout(),
+                        0.0f);
+                if (!subComponent.isyAxisSetManually()) {
+                    setYAxis(getContext(),
                             subComponent.getLayout(),
-                            subComponentChildContainer,
-                            false,
-                            jsonValueKeyMap,
-                            componentViewResult.useMarginsAsPercentagesOverride,
-                            componentViewResult.useWidthOfScreen,
-                            "");
-                    AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
-                    if (componentType == null) {
-                        componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                    }
-                    AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
-                    if (componentKey == null) {
-                        componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                    }
-                } else {
-                    moduleView.setComponentHasView(i, false);
+                            componentYAxis - parentYAxis);
+                    subComponent.setyAxisSetManually(true);
                 }
+                subComponentChildContainer.addView(componentView);
+                moduleView.setComponentHasView(i, true);
+                moduleView.setViewMarginsFromComponent(subComponent,
+                        componentView,
+                        subComponent.getLayout(),
+                        subComponentChildContainer,
+                        false,
+                        jsonValueKeyMap,
+                        componentViewResult.useMarginsAsPercentagesOverride,
+                        componentViewResult.useWidthOfScreen,
+                        "");
+            } else {
+                moduleView.setComponentHasView(i, false);
             }
         }
     }

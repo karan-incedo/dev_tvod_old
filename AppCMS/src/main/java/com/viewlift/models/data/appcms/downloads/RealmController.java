@@ -22,31 +22,16 @@ import io.realm.RealmResults;
 
 public class RealmController {
     private static RealmController instance;
-    private final Realm realm;
+    private Realm realm;
 
     private static final String TAG = "RealmController";
 
     public RealmController() {
-
-      /*  RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                .schemaVersion(1)
-                .migration(new DownloadMediaMigration())
-                //               .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);*/
         realm = Realm.getDefaultInstance();
     }
 
     public RealmController(Application application) {
-        Realm.init(application.getApplicationContext());
-        RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                /*.schemaVersion(1)
-                .migration(new DownloadMediaMigration())*/
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);
+        realm = Realm.getDefaultInstance();
     }
 
     public static RealmController with(Fragment fragment) {
@@ -102,7 +87,7 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloads() {
         try {
-            return realm.where(DownloadVideoRealm.class).findAll();
+            return realm.where(DownloadVideoRealm.class).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get downloads: " + e.getMessage());
         }
@@ -120,11 +105,24 @@ public class RealmController {
         }
         return null;
     }
+    public boolean getDownloadMediaType(String contentType) {
+        try {
+             return realm.where(DownloadVideoRealm.class)
+                    .equalTo("contentType", contentType)
+                    .findAll().size()>0? true:false;
+
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return false;
+    }
+
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
+            Log.e("RealmController","LoggedIn user ID :"+userId);
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
@@ -144,7 +142,7 @@ public class RealmController {
                     String.valueOf(DownloadStatus.STATUS_PENDING),
                     String.valueOf(DownloadStatus.STATUS_RUNNING)};
             return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                    .equalTo("userId", userId).findAll();
+                    .equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
         }

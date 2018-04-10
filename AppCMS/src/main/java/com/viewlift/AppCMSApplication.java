@@ -6,6 +6,7 @@ import android.support.multidex.MultiDexApplication;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
+import com.viewlift.models.data.appcms.downloads.DownloadMediaMigration;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -14,6 +15,8 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import java.util.Map;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import rx.functions.Action0;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
@@ -33,10 +36,23 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private Action0 onActivityResumedAction;
 
+    private void initRealmonfig(){
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration
+                .Builder()
+                .schemaVersion(1)
+                .migration(new DownloadMediaMigration())
+//                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        initRealmonfig();
         openActivities = 0;
 
         new Thread(() -> {

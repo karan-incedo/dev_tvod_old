@@ -19,11 +19,14 @@ import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -183,6 +186,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
                                     appCMSPresenter.showLoadingDialog(true);
+                                    DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
+                                    appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
@@ -231,7 +236,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                                 default:
 
-                                    if (!appCMSPresenter.isNetworkConnected() && titleKey !=AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY) {
+                                    if (!appCMSPresenter.isNetworkConnected() && titleKey != AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                                     null,
@@ -313,9 +318,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
-                                    !TextUtils.isEmpty(navigationFooter.getTitle())){
-                               appCMSPresenter.openChromeTab(navigationFooter.getUrl());
-                            }else if(navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.contact_us)) && !TextUtils.isEmpty(Utils.getProperty("ApptentiveApiKey", viewHolder.itemView.getContext()))){
+                                    !TextUtils.isEmpty(navigationFooter.getTitle())) {
+                                appCMSPresenter.openChromeTab(navigationFooter.getUrl());
+                            } else if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.contact_us)) && !TextUtils.isEmpty(Utils.getProperty("ApptentiveApiKey", viewHolder.itemView.getContext()))) {
                                 if (appCMSPresenter.isNetworkConnected()) {
                                     //Firebase Event when contact us screen is opened.
                                     appCMSPresenter.sendFireBaseContactUsEvent();
@@ -326,10 +331,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                             null,
                                             false,
-                                            () -> {},
-                                            () -> {});
+                                            () -> {
+                                            },
+                                            () -> {
+                                            });
                                 }
-                            }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                            } else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,
@@ -354,14 +361,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
-                    if (!appCMSPresenter.isNetworkConnected()){
+                    if (!appCMSPresenter.isNetworkConnected()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                                 true,
                                 () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
                                         null, null, false),
                                 null);
-                    }else {
+                    } else {
                         if (appCMSPresenter.isDownloadUnfinished()) {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD, null);
                         } else {

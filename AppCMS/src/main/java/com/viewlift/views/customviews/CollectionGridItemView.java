@@ -1000,23 +1000,25 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                        ((TextView) view).setSingleLine(false);
-                        ((TextView) view).setMaxLines(2);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setText(data.getGist().getDescription());
+                        if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(2);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(data.getGist().getDescription());
 
-                        try {
-                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
-                                            data.getGist().getTitle(),
-                                            data.getGist().getDescription(),
-                                            appCMSPresenter,
-                                            true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                                            false);
-                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                        } catch (Exception e) {
+                            try {
+                                ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener((TextView) view,
+                                                data.getGist().getTitle(),
+                                                data.getGist().getDescription(),
+                                                appCMSPresenter,
+                                                true,
+                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                                false);
+                                titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            } catch (Exception e) {
+                            }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());

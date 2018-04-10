@@ -6,6 +6,7 @@
 
     <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
 
+    <item name="subscribe_edit_text_id" type="id">subscribe_edit_text_id</item>
     <item name="download_quality_selection_list" type="id">download_quality_selection_list</item>
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
@@ -26,6 +27,7 @@
     <item name="exo_controller_container" type="id"/>
     <item name="seek_bar_parent" type="id"/>
     <item name="playlist_download_id" type="id">playlist_download_id</item>
+    <item name="remove_all_download_id" type="id">remove_all_download_id</item>
 
     <item name="article_prev_button" type="id">article_prev_button</item>
     <item name="article_next_button" type="id">article_next_button</item>
