@@ -149,8 +149,8 @@
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
     <!--<string name="empty_download_message">Your download is currently empty.</string>-->
-    <string name="empty_download_video_message">You haven’t downloaded any movies yet.</string>
-    <string name="empty_download_audio_message">You haven’t downloaded any audio yet.</string>
+    <string name="empty_download_video_message">You haven’t downloaded anything yet.</string>
+    <string name="empty_download_audio_message">You haven’t downloaded anything yet.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
