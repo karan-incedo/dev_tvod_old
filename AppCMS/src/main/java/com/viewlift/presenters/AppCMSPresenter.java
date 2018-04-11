@@ -13821,19 +13821,32 @@ public class AppCMSPresenter {
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
-                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
-                    autoPlayKey = key;
-                    return autoPlayKey;
-                } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey = key;
+            if (getPlatformType() == PlatformType.TV) {
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
+                    if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
+                        autoPlayKey = key;
+                        return autoPlayKey;
+                    } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                        autoPlayKey = key;
+                    }
+                } else {
+                    if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                        autoPlayKey = key;
+                        return autoPlayKey;
+                    }
                 }
-            } else {
+            } else if(getPlatformType() == PlatformType.ANDROID) {
                 if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    autoPlayKey = key;
-                    return autoPlayKey;
+                    return key;
                 }
             }
+        }
+
+
+        for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
         }
         return autoPlayKey;
     }

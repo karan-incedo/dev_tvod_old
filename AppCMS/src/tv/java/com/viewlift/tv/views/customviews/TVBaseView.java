@@ -270,7 +270,6 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_PLAY_IMAGE_KEY:
                     if (AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY != jsonValueKeyMap.get(viewType)
-                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
                         gravity = Gravity.CENTER;
