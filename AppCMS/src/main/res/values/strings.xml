@@ -149,7 +149,8 @@
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
     <!--<string name="empty_download_message">Your download is currently empty.</string>-->
-    <string name="empty_download_message">You haven’t downloaded any movies yet.</string>
+    <string name="empty_download_video_message">You haven’t downloaded anything yet.</string>
+    <string name="empty_download_audio_message">You haven’t downloaded anything yet.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
@@ -213,6 +214,10 @@
         <item quantity="other">MINS</item>
     </plurals>
 
+    <!-- Download tab -->
+    <string name="app_cms_download_tab_video_title">Video</string>
+    <string name="app_cms_download_tab_audio_title">Audio</string>
+
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
     <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
@@ -243,6 +248,7 @@
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
     <string name="runtime_episodes_abbreviation">EPISODES</string>
+    <string name="songs_abbreviation">SONGS</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -319,7 +325,8 @@
     <string name="app_cms_delete_download_alert_title">Delete Download</string>
     <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
     <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
-    <string name="app_cms_delete_all_download_items_message">Do you want to delete all video/audio from downloads?</string>
+    <string name="app_cms_delete_all_video_download_items_message">Do you want to delete all video from downloads?</string>
+    <string name="app_cms_delete_all_audio_download_items_message">Do you want to delete all audio from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -348,6 +355,7 @@
     <string name="open_url_in_browser_message">Open this link in a Browser?</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
+    <string name="app_cms_audio_preview_end_message">To listen to this complete audio and get access to so much more, subscribe or Login now!</string>
 
     <string name="app_cms_subscription_upgrade_unavailable_title">Upgrade Unavailable</string>
     <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
@@ -594,7 +602,17 @@
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="auto">Auto</string>
-<plurals name="episode_subtitle_text">
+
+    <string name="invalid_email">Invalid email!</string>
+    <string name="not_valid_email">\u0020\u0020is not a valid email! Please enter a valid email!</string>
+    <string name="quote_separator">\'</string>
+    <string name="thank_you_for_subscribing">THANK YOU FOR SUBSCRIBING!</string>
+    <string name="watercoolerready">#WATERCOOLERREADY</string>
+    <string name="is_already_subscribed">\u0020\u0020is already subscribed to list Sports.</string>
+    <string name="failed_to_subscribe">Failed to subscribe!</string>
+    <string name="try_again_later">Try again later!</string>
+
+    <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
     </plurals>

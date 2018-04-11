@@ -22,21 +22,21 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 53
+          "height": 55
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 90
+          "height": 55
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 90
+          "height": 55
         }
       },
       "components": [

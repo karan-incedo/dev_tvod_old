@@ -68,6 +68,8 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
@@ -147,6 +149,11 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribe_email_go_button_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscribeEditText_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ratingbar_key),
                 AppCMSUIKeyType.PAGE_RATINGBAR);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_type_key),
@@ -185,7 +192,7 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
-		jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
                 AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
@@ -199,6 +206,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_articlescreen_key),
                 AppCMSUIKeyType.ANDROID_ARTICLE_SCREEN_KEY);
 
@@ -531,11 +539,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
                 AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key2),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
@@ -645,6 +653,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_video_tab_component_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_audio_tab_component_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_removeall_key),
@@ -941,8 +953,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
 
 
-
-
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -971,7 +981,7 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
-				this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 context.getString(R.string.app_cms_link_your_account_action));
     }
 
@@ -1007,6 +1017,9 @@ public class AppCMSUIModule {
     }
 
     private void createActionToActionTypeMap(Context context) {
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_subscribe_go),
+                AppCMSActionType.SUBSCRIBEGO);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.SPLASH_PAGE);
 
@@ -1156,7 +1169,7 @@ public class AppCMSUIModule {
     public Gson providesGson() {
         return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
                 .create();
-       // return new Gson();
+        // return new Gson();
     }
 
     @Provides
@@ -1209,16 +1222,19 @@ public class AppCMSUIModule {
     public AppCMSWatchlistRest providesAppCMSWatchlistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSWatchlistRest.class);
     }
+
     @Provides
     @Singleton
     public AppCMSPlaylistRest providesAppCMSPlaylistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSPlaylistRest.class);
     }
+
     @Provides
     @Singleton
     public AppCMSAudioDetailRest providesAppCMSAudioDetailRest(Retrofit retrofit) {
         return retrofit.create(AppCMSAudioDetailRest.class);
     }
+
     @Provides
     @Singleton
     public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
@@ -1233,7 +1249,7 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSPhotoGalleryRest providesAppCMSPhotoGalleryRest(Retrofit retrofit){
+    public AppCMSPhotoGalleryRest providesAppCMSPhotoGalleryRest(Retrofit retrofit) {
 
         return retrofit.create(AppCMSPhotoGalleryRest.class);
     }
@@ -1406,16 +1422,19 @@ public class AppCMSUIModule {
     public AppCMSWatchlistCall providesAppCMSWatchlistCall(AppCMSWatchlistRest appCMSWatchlistRest, Gson gson) {
         return new AppCMSWatchlistCall(appCMSWatchlistRest, gson);
     }
+
     @Provides
     @Singleton
     public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
         return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
     }
+
     @Provides
     @Singleton
     public AppCMSAudioDetailCall providesAppCMSAudioDetailCall(AppCMSAudioDetailRest appCMSAudioDetailRest, Gson gson) {
         return new AppCMSAudioDetailCall(appCMSAudioDetailRest, gson);
     }
+
     @Provides
     @Singleton
     public AppCMSHistoryCall providesAppCMSHistoryCall(AppCMSHistoryRest appCMSHistoryRest, Gson gson) {
@@ -1430,8 +1449,8 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSPhotoGalleryCall providesAppCMSPhotoGalleryCall(AppCMSPhotoGalleryRest appCMSPhotoGalleryRest, Gson gson){
-        return new AppCMSPhotoGalleryCall(appCMSPhotoGalleryRest,gson);
+    public AppCMSPhotoGalleryCall providesAppCMSPhotoGalleryCall(AppCMSPhotoGalleryRest appCMSPhotoGalleryRest, Gson gson) {
+        return new AppCMSPhotoGalleryCall(appCMSPhotoGalleryRest, gson);
     }
 
     @Provides
@@ -1570,5 +1589,17 @@ public class AppCMSUIModule {
     @Singleton
     public Map<String, AppCMSActionType> providesActionToActionTypeMap() {
         return actionToActionTypeMap;
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscribeForLatestNewsRest appCMSSubscribeForLatestNewsRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscribeForLatestNewsRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall(AppCMSSubscribeForLatestNewsRest appCMSSubscribeForLatestNewsRest, Gson gson) {
+        return new AppCMSSubscribeForLatestNewsCall(appCMSSubscribeForLatestNewsRest, gson);
     }
 }

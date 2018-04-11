@@ -37,7 +37,7 @@
     <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
-    <!--<bool name="use_hls">false</bool>-->
+   <!-- <bool name="use_hls">false</bool>-->
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
@@ -66,6 +66,7 @@
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
+
     <bool name="show_navbar">false</bool>
 
     <bool name="enable_stream_quality_selection">true</bool>

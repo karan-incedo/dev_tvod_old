@@ -79,6 +79,8 @@ public class ContentDetails implements Serializable {
     @Expose
     String status;
 
+    @SerializedName("relatedArticleIds")
+    @Expose
     List<String> relatedArticleIds;
 
     public boolean getAutoGenerateRelated() {
