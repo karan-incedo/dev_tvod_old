@@ -4184,10 +4184,16 @@ public class ViewCreator {
                         RecyclerView view = appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
                         if (view != null) {
                             view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+                        }else{
+                            textInputEditText.requestFocus();
                         }
                         textInputEditText.setHintTextColor(ContextCompat.getColor(context, android.R.color.white));
                         textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.white));
                         textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
+
+                        if (BaseView.isTablet(context)) {
+                                textInputEditTextLayoutParams.setMargins(0,0,100,0);
+                        }
                         break;
 
                     default:
