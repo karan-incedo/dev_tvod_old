@@ -31,6 +31,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -4408,7 +4409,119 @@ public class AppCMSPresenter {
      * @param resultAction1
      * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
+    public synchronized void editDownloadFromPlaylist(final ContentDatum contentDatum,
+                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
+        if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+            showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                    currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+                    false,
+                    null,
+                    null);
+            return;
+        }
 
+        downloadContentDatumAfterPermissionGranted = null;
+        downloadResultActionAfterPermissionGranted = null;
+
+        //Send Firebase Analytics when user is subscribed and user is Logged In
+        sendFirebaseLoginSubscribeSuccess();
+
+        if (!hasWriteExternalStoragePermission()) {
+            requestDownloadQualityScreen = false;
+            askForPermissionToDownloadToExternalStorage(true,
+                    contentDatum,
+                    resultAction1);
+        } else if (!isMemorySpaceAvailable()) {
+            showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
+            //Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
+        } else {
+
+            // Uncomment to allow for Pause/Resume
+//            if (isVideoDownloadRunning(contentDatum)) {
+//                if (!pauseDownload(contentDatum)) {
+//                    Log.e(TAG, "Failed to pause download");
+//                }
+//                return;
+//            } else if (isVideoDownloadPaused(contentDatum)) {
+//                if (!resumeDownload(contentDatum)) {
+//                    Log.e(TAG, "Failed to resume download");
+//                }
+//            }
+            String downloadURL = "";
+
+            if (contentDatum.getGist() != null &&
+                    contentDatum.getGist().getMediaType() != null &&
+                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                    contentDatum.getGist().getContentType() != null &&
+                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                downloadURL = contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl();
+            } else {
+                downloadURL = getDownloadURL(contentDatum);
+            }
+            new AsyncTask<String, Void, Long>() {
+                String downloadURL = "";
+
+                @Override
+                protected Long doInBackground(String... strings) {
+                    long file_size = 0L;
+                    try {
+                        downloadURL = strings[0];
+
+                        URL url = new URL(downloadURL);
+                        URLConnection urlConnection = url.openConnection();
+                        urlConnection.connect();
+                        //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
+                        file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                        file_size = ((file_size / 1000) / 1000);
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error trying to download: " + e.getMessage());
+                    }
+                    return file_size;
+                }
+
+                @Override
+                protected void onPostExecute(Long aLong) {
+                    super.onPostExecute(aLong);
+                    long file_size = aLong;
+
+                    if (isVideoDownloadedByUser(contentDatum.getGist().getId())) {
+                        if (!isFromPlaylistDownload)
+                            showToast(
+                                    currentActivity.getString(R.string.app_cms_download_available_already_message,
+                                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+
+                    } else if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+                        createLocalCopyForUser(contentDatum, resultAction1);
+                    } else if (getMegabytesAvailable() > file_size) {
+                        try {
+                            if (contentDatum.getGist() != null &&
+                                    contentDatum.getGist().getMediaType() != null &&
+                                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                                    contentDatum.getGist().getContentType() != null &&
+                                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                                downloadMediaFile(contentDatum, downloadURL, 0,isFromPlaylistDownload);
+                                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), AppCMSPresenter.this,
+                                        resultAction1, getLoggedInUser());
+
+                            } else {
+                                startDownload(contentDatum,
+                                        resultAction1,isFromPlaylistDownload);
+                            }
+
+//                        startNextDownload = false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
+                    }
+                }
+            }.execute(downloadURL);
+
+
+        }
+    }
     public synchronized void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
@@ -4483,13 +4596,13 @@ public class AppCMSPresenter {
                             contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
-                        downloadMediaFile(contentDatum, downloadURL, 0);
+                        downloadMediaFile(contentDatum, downloadURL, 0,false);
                         appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
                                 resultAction1, getLoggedInUser());
 
                     } else {
                         startDownload(contentDatum,
-                                resultAction1);
+                                resultAction1,false);
                     }
 
 //                        startNextDownload = false;
@@ -4651,7 +4764,6 @@ public class AppCMSPresenter {
             } else if (contentDatum.getGist().getDescription() != null) {
                 downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
             }
-
             try {
                 if (!TextUtils.isEmpty(downloadVideoRealm.getVideoTitle())) {
                     downloadVideoRealm.setVideoIdDB(getStreamingId(downloadVideoRealm.getVideoTitle()));
@@ -5028,7 +5140,7 @@ public class AppCMSPresenter {
     }
 
     private synchronized void startDownload(ContentDatum contentDatum,
-                                            Action1<UserVideoDownloadStatus> resultAction1) {
+                                            Action1<UserVideoDownloadStatus> resultAction1,boolean isFromPlaylistDownload) {
 
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
@@ -5070,7 +5182,7 @@ public class AppCMSPresenter {
                             int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
                             downloadURL = getDownloadURL(updateContentDatum);
-                            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId);
+                            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
 
                         } catch (Exception e) {
                             Log.e(TAG, e.getMessage());
@@ -5085,7 +5197,7 @@ public class AppCMSPresenter {
         });
     }
 
-    private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId) {
+    private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId, boolean isFromPlaylistDownload) {
         if (!isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
             String mediaPrefix = MEDIA_SURFIX_MP4;
             if (contentDatum.getGist() != null &&
@@ -5151,6 +5263,7 @@ public class AppCMSPresenter {
                     ccEnqueueId,
                     contentDatum,
                     downloadURL);
+            if(!isFromPlaylistDownload)
             showToast(
                     currentActivity.getString(R.string.app_cms_download_started_message,
                             contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
@@ -9720,7 +9833,11 @@ public class AppCMSPresenter {
 
     public void showToast(String message, int messageDuration) {
         if (currentActivity != null) {
+            currentActivity.runOnUiThread(new Runnable() {
+                public void run() {
             Toast.makeText(currentActivity, message, messageDuration).show();
+                }
+            });
         }
     }
 

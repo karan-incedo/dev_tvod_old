@@ -13,18 +13,31 @@ public class DownloadMediaMigration implements RealmMigration {
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
-        // DynamicRealm exposes an editable schema
         Log.e("Migration","Migration START");
         RealmSchema schema = realm.getSchema();
-        //if (oldVersion==0 ){
         RealmObjectSchema realmObjectSchema = schema.get("DownloadVideoRealm");
 
-        realmObjectSchema.addField("artistName",String.class)
-                .addField("directorName",String.class)
-                .addField("songYear",String.class);
+        if(!realmObjectSchema.hasField("artistName")){
+            realmObjectSchema.addField("artistName",String.class);
+        }
+
+        if(!realmObjectSchema.hasField("directorName")){
+            realmObjectSchema.addField("directorName",String.class);
+        }
+
+        if(!realmObjectSchema.hasField("songYear")){
+            realmObjectSchema.addField("songYear",String.class);
+        }
+
+        if(!realmObjectSchema.hasField("contentType")){
+            realmObjectSchema.addField("contentType",String.class);
+        }
+
+        if(!realmObjectSchema.hasField("mediaType")){
+            realmObjectSchema.addField("mediaType",String.class);
+        }
 
         oldVersion++;
         Log.e("Migration","Migration Done");
-        // }
     }
 }

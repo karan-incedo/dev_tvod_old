@@ -37,7 +37,6 @@ public class AppCMSAudioDetailCall {
         this.gson = gson;
     }
 
-    @WorkerThread
     public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
         try {
             appCMSAudioDetailRest.get(url).enqueue(new Callback<AppCMSAudioDetailResult>() {

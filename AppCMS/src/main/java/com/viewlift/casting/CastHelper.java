@@ -386,10 +386,10 @@ public class CastHelper {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
         } else {
-            if (binderPlayScreen.getContentData().getGist() != null && binderPlayScreen.getContentData().getGist().getTitle() != null) {
-                title = binderPlayScreen.getContentData().getGist().getTitle();
+            if (binder.getContentData().getGist() != null && binder.getContentData().getGist().getTitle() != null) {
+                title = binder.getContentData().getGist().getTitle();
             }
-            videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
+            videoUrl = CastingUtils.getPlayingUrl(binder.getContentData());
         }
 
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
