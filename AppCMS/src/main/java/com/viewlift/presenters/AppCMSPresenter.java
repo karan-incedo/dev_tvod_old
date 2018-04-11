@@ -5710,7 +5710,6 @@ public class AppCMSPresenter {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
         if (appCMSPageUI == null) {
             if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
-                Toast.makeText(currentActivity, "UI is null.....", Toast.LENGTH_SHORT).show();
                 RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
                         title, null,
                         null, launchActivity, pageId, SUB_NAV_RETRY_ACTION);

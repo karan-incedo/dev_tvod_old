@@ -291,6 +291,10 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         buttonDrawable.setColor(Color.parseColor(color));
         buttonDrawable.mutate();
         invalidate();
+
+
+
+
     }
 
 
@@ -448,14 +452,38 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
             ((TextView) findViewById(R.id.tv_key_sc_right_angle)).setTextColor(txtColor);
 
             if(null != focusedColor) {
-                ((ImageButton) findViewById(R.id.btn_uc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
-                ((ImageButton) findViewById(R.id.btn_lc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
-                ((ImageButton) findViewById(R.id.btn_num_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
-                ((ImageButton) findViewById(R.id.btn_sc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
+                ((ImageButton) findViewById(R.id.btn_uc_key_backspace)).getBackground().
+                        setTint(context.getResources().getColor(R.color.appcms_btn_default_border_color));
+                ((ImageButton) findViewById(R.id.btn_lc_key_backspace)).getBackground().
+                        setTint(context.getResources().getColor(R.color.appcms_btn_default_border_color));
+                ((ImageButton) findViewById(R.id.btn_num_key_backspace)).getBackground().
+                        setTint(context.getResources().getColor(R.color.appcms_btn_default_border_color));
+                ((ImageButton) findViewById(R.id.btn_sc_key_backspace)).getBackground().
+                        setTint(context.getResources().getColor(R.color.appcms_btn_default_border_color));
+
+                ((ImageButton) findViewById(R.id.btn_uc_key_backspace)).setOnFocusChangeListener(focusChangeListener);
+                ((ImageButton) findViewById(R.id.btn_lc_key_backspace)).setOnFocusChangeListener(focusChangeListener);
+                ((ImageButton) findViewById(R.id.btn_num_key_backspace)).setOnFocusChangeListener(focusChangeListener);
+               ((ImageButton) findViewById(R.id.btn_sc_key_backspace)).setOnFocusChangeListener(focusChangeListener);
             }
         }catch (Exception e){
 
         }
 
     }
+
+    OnFocusChangeListener focusChangeListener = new OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if(null != view) {
+                if (b) {
+                    ((ImageButton) view).getBackground().
+                            setTint(Color.parseColor(focusedColor));
+                } else {
+                    ((ImageButton) view).getBackground().
+                            setTint(context.getResources().getColor(R.color.appcms_btn_default_border_color));
+                }
+            }
+        }
+    };
 }

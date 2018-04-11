@@ -14,11 +14,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -573,17 +575,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                         .into(holder.navImageView);
             }
 
-
-            holder.navImageView.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                    int keyCode = keyEvent.getKeyCode();
-                    if(keyCode == KeyEvent.KEYCODE_MENU){
-                        return true;
-                    }
-                    return false;
-                }
-            });
             holder.navItemLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -850,6 +841,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
                 navItemLayout.setOnKeyListener((view, i, keyEvent) -> {
                     int keyCode = keyEvent.getKeyCode();
+                    if(keyCode == KeyEvent.KEYCODE_MENU){
+                        Toast.makeText(getActivity(),"Menu..",Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
                     int action = keyEvent.getAction();
                     if (action == KeyEvent.ACTION_DOWN) {
                         switch (keyCode) {

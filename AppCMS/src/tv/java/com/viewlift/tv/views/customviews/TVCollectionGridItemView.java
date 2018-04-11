@@ -269,8 +269,9 @@ public class TVCollectionGridItemView extends TVBaseView {
 
                         bringToFront = false;
                         view.setFocusable(true);
-
-                        view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                        view.setBackground(Utils.getMenuSelector(context, appCMSPresenter.getAppCtaBackgroundColor(),
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
+                       // view.setBackgroundResource(R.drawable.st_menu_color_selector);
                         view.setOnClickListener(v ->
                                 {
                            // Toast.makeText(context, "Clicked on " + data.getGist().getTitle(), Toast.LENGTH_SHORT).show();

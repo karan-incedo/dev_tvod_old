@@ -38,6 +38,7 @@
         <item>@string/app_cms_setting_module</item>
         <item>AC UserManagement 02</item>
         <item>@string/app_cms_page_show_detail_module_key</item>
+        <item>AC SubNav 01</item>
         <item></item>
     </string-array>
 
