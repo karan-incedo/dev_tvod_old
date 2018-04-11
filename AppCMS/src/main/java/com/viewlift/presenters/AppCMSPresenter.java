@@ -4409,7 +4409,7 @@ public class AppCMSPresenter {
      * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
 
-    public synchronized void editDownload(final ContentDatum contentDatum,
+    public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
             showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
@@ -5027,7 +5027,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private synchronized void startDownload(ContentDatum contentDatum,
+    private void startDownload(ContentDatum contentDatum,
                                             Action1<UserVideoDownloadStatus> resultAction1) {
 
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
