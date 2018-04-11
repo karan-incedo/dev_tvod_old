@@ -53,6 +53,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
         String mediaType = searchHintResult[4];
         String songCount = searchHintResult[7];
+        String episodeCount = searchHintResult[9];
+
         String songYear="";
         if(searchHintResult.length>=9 && searchHintResult[8]!=null){
             songYear = searchHintResult[8];
@@ -67,7 +69,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                     .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
         } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
             // FIXME: Display number of episodes.
-            runtime.setText(new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
+            runtime.setText(episodeCount+" "+new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
         } else if (runtimeAsInteger / 60 < 2) {
             runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
                     .append(" ")

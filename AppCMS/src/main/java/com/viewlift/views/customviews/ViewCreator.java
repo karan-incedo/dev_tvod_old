@@ -1860,7 +1860,13 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+               /* if (moduleInfo.getBlockName().contains("carousel01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "video_page.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }
+                else*/ if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -2027,7 +2033,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY) {
+        } /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY) {
             moduleView = new DownloadModule(context,
                     module,
                     moduleAPI,
@@ -2040,7 +2046,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else {
+        }*/ else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -3646,6 +3652,7 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+
                             if (appCMSPresenter.getCurrentActivity() != null) {
                                 appCMSPresenter.getCurrentActivity().onBackPressed();
                             } else if (!appCMSPresenter.launchButtonSelectedAction(null,
@@ -3801,10 +3808,12 @@ public class ViewCreator {
 
                             @Override
                             public void onClick(final View v) {
-                                boolean deleteAllFiles = false;
+                                boolean deleteAllFiles = true;
+/*
                                 if (appCMSPresenter.isAudioAvailable()) {
                                     deleteAllFiles = false;
                                 }
+*/
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:

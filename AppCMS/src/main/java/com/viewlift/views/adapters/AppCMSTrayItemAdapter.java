@@ -816,6 +816,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 viewHolder.appCMSContinueWatchingDuration.setTextSize(component.getFontSize());
                                 viewHolder.appCMSContinueWatchingSize.setTextSize(component.getFontSize());
                             }
+                            viewHolder.appCMSContinueWatchingDuration.setVisibility(View.VISIBLE);
                             break;
 
                         case PAGE_API_TITLE:

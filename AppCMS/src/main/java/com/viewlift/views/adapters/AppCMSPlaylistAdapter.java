@@ -3,6 +3,7 @@ package com.viewlift.views.adapters;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Entity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -45,8 +46,10 @@ import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import rx.functions.Action1;
 
@@ -533,7 +536,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         });
     }
 
+    private  int countDownloadPlaylist= 0;
     private void getPlaylistAudioItems() {
+        countDownloadPlaylist= 0;
+        appCMSPresenter.showLoadingDialog(true);
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             if (allViews[i] != null && allViews[i].getChildItems() != null) {
@@ -552,20 +558,67 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             isDownloading = true;
                             Handler handler = new Handler();
                             final int pos = i;
+//
+//                            AppCMSPresenter.PlaylistDetails detailsPlay=new AppCMSPresenter.PlaylistDetails();
+//                            detailsPlay.setImgButton(download);
+//                            detailsPlay.setData(adapterData.get(pos));
+//                            appCMSPresenter.playlistDowloadValues.put(adapterData.get(pos).getGist().getId(),detailsPlay);
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    audioDownload(download, adapterData.get(pos), true);
+                                    playlistAudioDownload(download, adapterData.get(pos).getGist().getId(), true);
                                 }
-                            }, 400);
+                            }, 200);
 
+//                            playlistAudioDownload(download, adapterData.get(pos).getGist().getId(), true);
                         }
                     }
                 }
+
+
             }
         }
+//        Iterator iterator=appCMSPresenter.playlistDowloadValues.entrySet().iterator();
+//        while(iterator.hasNext()){
+//            Map.Entry<String,AppCMSPresenter.PlaylistDetails> pairs = (Map.Entry<String, AppCMSPresenter.PlaylistDetails>) iterator.next();
+//            AppCMSPresenter.PlaylistDetails detailsPlay= pairs.getValue();
+////                    String key= String.valueOf(iterator.next());
+////                    AppCMSPresenter.PlaylistDetails detailsPlay=appCMSPresenter.playlistDowloadValues.get(key);
+//            Handler handler = new Handler();
+//
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("response receive for-"+appCMSAudioDetailResult.getGist().getTitle());
+//
+//                    updateDownloadImageAndStartDownloadProcess(detailsPlay.getData(), detailsPlay.getImgButton(), true);
+//                }
+//            }, 500);
+//
+////            playlistAudioDownload(detailsPlay.getImgButton(),pairs.getKey(),true);
+//        }
     }
 
+    void playlistAudioDownload(ImageButton download, String id, boolean playlistDowload) {
+        appCMSPresenter.getAudioDetailPlaylist(id,
+                0, null, false, false, 0,
+                new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
+                        false,
+                        false,
+                        null,
+                        id,
+                        id,
+                        null,
+                        id,
+                        false, null) {
+                    @Override
+                    public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                        AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
+                        updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
+                    }
+                });
+
+    }
 
     synchronized void audioDownload(ImageButton download, ContentDatum data, boolean playlistDowload) {
         appCMSPresenter.getAudioDetail(data.getGist().getId(),
@@ -584,17 +637,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
-//                        download.performClick();
-                       /* DownloadUpdate downloadTag = (DownloadUpdate) download.getTag();
-
-                        if (!downloadTag.isClick && !downloadTag.isDowloading()) {
-                            DownloadUpdate downloadTag1 = new DownloadUpdate();
-                            downloadTag1.setClick(true);
-                            downloadTag1.setDowloading(true);
-                            download.setTag(downloadTag1);
-                            download.setTag(false);
-                            download.performClick();
-                        }*/
                     }
                 });
 
@@ -727,6 +769,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editDownloadFromPlaylist(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                    countDownloadPlaylist++;
+                    if (countDownloadPlaylist == adapterData.size()){
+                        appCMSPresenter.showLoadingDialog(false);
+                    }
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -802,6 +848,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
                             appCMSPresenter.notifyDownloadHasCompleted();
                         }
+//                        appCMSPresenter.playlistDowloadValues.remove(contentDatum.getGist().getId());
+//                        if(appCMSPresenter.playlistDowloadValues.size()>0) {
+//                            Iterator iterator=appCMSPresenter.playlistDowloadValues.entrySet().iterator();
+//                            if(iterator.hasNext()){
+//                                Map.Entry<String,AppCMSPresenter.PlaylistDetails> pairs = (Map.Entry<String, AppCMSPresenter.PlaylistDetails>) iterator.next();
+//                                AppCMSPresenter.PlaylistDetails detailsPlay= pairs.getValue();
+////                    String key= String.valueOf(iterator.next());
+////                    AppCMSPresenter.PlaylistDetails detailsPlay=appCMSPresenter.playlistDowloadValues.get(key);
+//                                updateDownloadImageAndStartDownloadProcess(detailsPlay.getData(), detailsPlay.getImgButton(), true);
+//
+////                                playlistAudioDownload(detailsPlay.getImgButton(),pairs.getKey(),true);
+//                            }
+//                        }
                         break;
 
                     case STATUS_INTERRUPTED:
@@ -835,11 +894,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 //                imageButton.setOnClickListener(addClickListener);
 //                addClickListener.onClick(imageButton);
 
+                addClickListener.onClick(imageButton);
 
-                if ((boolean) imageButton.getTag()) {
-                    imageButton.setTag(false);
-                    addClickListener.onClick(imageButton);
-                }
+//                if ((boolean) imageButton.getTag()) {
+//                    imageButton.setTag(false);
+//                    addClickListener.onClick(imageButton);
+//                }
 //                new android.os.Handler().postDelayed(new Runnable() {
 //                    @Override
 //                    public void run() {
