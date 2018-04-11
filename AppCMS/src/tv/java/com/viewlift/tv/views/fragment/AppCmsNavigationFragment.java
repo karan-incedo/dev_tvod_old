@@ -3,6 +3,7 @@ package com.viewlift.tv.views.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -118,9 +119,11 @@ public class AppCmsNavigationFragment extends Fragment {
 
             mRecyclerView.setAdapter(navigationAdapter);
             navMenuTile.setText("Menu");
+            navMenuTile.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
             navMenuTile.setVisibility(View.VISIBLE);
             navTopLine.setVisibility(View.VISIBLE);
+            navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
 
             String message;
             if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
@@ -133,6 +136,12 @@ public class AppCmsNavigationFragment extends Fragment {
             }
 
             navMenuSubscriptionModule.setText(message);
+           // navMenuSubscriptionModule.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
+           // navMenuSubscriptionModule.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
+            navMenuSubscriptionModule.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
+                    Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter))
+                    ,null,appCMSPresenter ));
+            navMenuSubscriptionModule.setTextColor(Color.parseColor(Utils.getTextColor(getActivity(),appCMSPresenter)));
 
             toggleVisibilityOfSubscriptionModule();
 
@@ -492,6 +501,8 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
             if (primary.getIcon() != null) {
                 holder.navImageView.setImageResource(getIcon(primary.getIcon()));
+                holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
+                holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
             }
             if (null != mSelectedPageId) {
                 if (primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
@@ -568,7 +579,8 @@ public class AppCmsNavigationFragment extends Fragment {
                     }
 
                     /*Watchlist*/
-                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))) {
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))
+                            || primary.getTitle().contains("Watchlist")) {
                         if (appCmsPresenter.isUserLoggedIn()) {
                             //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
@@ -608,7 +620,8 @@ public class AppCmsNavigationFragment extends Fragment {
                     }
 
                     /*History*/
-                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))) {
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))
+                            || primary.getTitle().contains("History")) {
                         if (appCmsPresenter.isUserLoggedIn()) {
                             //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
@@ -715,7 +728,9 @@ public class AppCmsNavigationFragment extends Fragment {
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navImageView = (ImageView) itemView.findViewById(R.id.nav_item_image);
                 navItemLayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-//                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false));
+                navItemLayout.setBackground(Utils.getMenuSelector(mContext, appCmsPresenter.getAppCtaBackgroundColor(),
+                        /*Utils.getComplimentColor(Color.parseColor(appCmsPresenter.getAppBackgroundColor()))*/
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemLayout.setOnFocusChangeListener((view, hasFocus) -> {

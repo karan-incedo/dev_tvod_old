@@ -163,6 +163,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
 
         if (pageView != null) {
             tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
+            tvCountdown.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             ImageView movieImage = (ImageView) pageView.findViewById(R.id.autoplay_play_movie_image);
             cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
             TextView finishedMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_finished_movie_title);
@@ -246,6 +247,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             }
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0).setBackgroundResource(R.drawable.autoplay_overlay);
+                pageView.getChildAt(0).getBackground().setTint(appCMSPresenter.getGeneralBackgroundColor());
             }
             String imageUrl;
             if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {

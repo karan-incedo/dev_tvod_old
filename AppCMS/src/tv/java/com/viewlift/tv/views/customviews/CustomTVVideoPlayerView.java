@@ -443,14 +443,17 @@ public class CustomTVVideoPlayerView
         if (appCMSMain != null &&
                 appCMSMain.getFeatures() != null &&
                 appCMSMain.getFeatures().getFreePreview() != null &&
-                appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
-                appCMSMain.getFeatures().getFreePreview().getLength() != null &&
-                appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
-            try {
-                entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
-            } catch (Exception e) {
-                Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                appCMSMain.getFeatures().getFreePreview().isFreePreview()) {
+            if (appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
             }
+        }else{
+            entitlementCheckMultiplier = 0; //isFreePreview is false that means we have to show preview dialog immediate.
         }
         return entitlementCheckMultiplier * 60 * 1000;
     }
@@ -707,7 +710,8 @@ public class CustomTVVideoPlayerView
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(300, 75);
         loginButton.setLayoutParams(buttonParams);
         loginButton.setPadding(50,0,50,0);
-        loginButton.setBackgroundColor(getResources().getColor(R.color.colorAccent)/*getResources().getDrawable(R.drawable.st_subscriber_module_color_selector)*/);
+        loginButton.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        loginButton.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
         customMessageContaineer.addView(loginButton);
         loginButton.setVisibility(View.VISIBLE);
 

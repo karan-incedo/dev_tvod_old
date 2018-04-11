@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
@@ -196,11 +197,12 @@ public class AppCMSTVTrayAdapter
             }
             textView.setGravity(Gravity.CENTER);
             Component component1 = new Component();
-            component1.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+            component1.setFontFamily(appCMSPresenter.getFontFamily());
             component1.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
             textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component1));
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             textView.setLayoutParams(layoutParams);
+            textView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             relativeLayout.addView(textView);
             return new ViewHolder(relativeLayout);
         }

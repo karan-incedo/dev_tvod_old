@@ -140,6 +140,9 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
 
+        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+
         String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
         view.setBackgroundColor(Color.parseColor(backGroundColor));
 
@@ -298,6 +301,8 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
             }
         }
         subscriptionTitle.setText(message);
+        subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
         LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
         if (message.length() == 0) {
