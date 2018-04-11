@@ -313,7 +313,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                     }
                     ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                    setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    setTypeFace(appCMSPresenter,context, jsonValueKeyMap, childComponent, ((TextView) view));
                     view.setFocusable(false);
                     String textCase = childComponent.getTextCase();
                     if(textCase != null && !TextUtils.isEmpty(data.getGist().getTitle())){
@@ -339,7 +339,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                         }
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     }
-                    setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    setTypeFace(appCMSPresenter,context, jsonValueKeyMap, childComponent, ((TextView) view));
                     view.setFocusable(false);
 
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL) {
@@ -350,7 +350,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                         }
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     }
-                    setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    setTypeFace(appCMSPresenter,context, jsonValueKeyMap, childComponent, ((TextView) view));
                     view.setFocusable(false);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY) {
                     if (data.getUpdateDate() != 0
@@ -365,28 +365,30 @@ public class TVCollectionGridItemView extends TVBaseView {
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
+                        StringBuilder stringBuilder = new StringBuilder();
 
-                    StringBuilder stringBuilder = new StringBuilder();
+                        if (data.getGist() != null) {
+                            stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                        }
 
-                    if (data.getGist() != null) {
-                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
-                    }
+                        if (data.getContentDetails() != null
+                                && data.getContentDetails().getAuthor() != null) {
+                            if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                            stringBuilder.append(data.getContentDetails().getAuthor());
+                        }
 
-                    if (data.getContentDetails() != null
-                            && data.getContentDetails().getAuthor() != null) {
-                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                        stringBuilder.append(data.getContentDetails().getAuthor());
-                    }
-
-                    if (data.getGist() != null) {
-                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                        Date publishedDate = new Date(data.getGist().getPublishDate());
-                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                        String date = spf.format(publishedDate);
-                        stringBuilder.append("Published on ");
-                        stringBuilder.append(date);
-                    }
-                    ((TextView) view).setText(stringBuilder);
+                        if (data.getGist() != null && data.getGist().getPublishDate() != null) {
+                            try {
+                                Date publishedDate = new Date(data.getGist().getPublishDate());
+                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                                String date = spf.format(publishedDate);
+                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                                stringBuilder.append("Published on ");
+                                stringBuilder.append(date);
+                            } catch (Exception e) {
+                            }
+                        }
+                        ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(

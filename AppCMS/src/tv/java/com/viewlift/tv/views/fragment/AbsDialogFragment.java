@@ -26,7 +26,7 @@ public class AbsDialogFragment extends DialogFragment {
         if (getDialog().getWindow() != null) {
             getDialog().getWindow().setLayout(width, height);
             getDialog().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            getDialog().getWindow().setDimAmount(0.6f);
+            getDialog().getWindow().setDimAmount(0.8f);
             getDialog().getWindow().getAttributes().windowAnimations = R.style.dialogAnimation;
         }
     }

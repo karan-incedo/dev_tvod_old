@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -51,8 +52,8 @@ public class JumbotronPresenter extends CardPresenter {
 
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setFocusable(true);
-            frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
-
+          //  frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
+        frameLayout.setBackgroundColor(Color.parseColor(mAppCMSPresenter.getAppBackgroundColor()));
             return new ViewHolder(frameLayout);
         }
 

@@ -2,16 +2,27 @@ package com.viewlift.firetvcustomkeyboard;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +31,7 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         View.OnKeyListener {
 
     private static final float LETTER_SPACING = 0.01f;
+    private static ColorStateList txtColor;
     private final int animationDuration = 400;
 
     private final Context context;
@@ -265,8 +277,10 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         return false;
     }
 
+    String focusedColor = null;
     @SuppressWarnings("unused")
     public void setFocusColor(String color) {
+        focusedColor = color;
         GradientDrawable gradientDrawable =
                 (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.appcms_search_key_background_focused);
         gradientDrawable.setColor(Color.parseColor(color));
@@ -278,6 +292,30 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         buttonDrawable.mutate();
         invalidate();
     }
+
+
+    public ColorStateList getButtonTextColorDrawable(String defaultColor, String focusedColor){
+        String focusStateTextColor = focusedColor;
+        String unFocusStateTextColor = defaultColor;
+
+        int[][] states = new int[][] {
+                new int[] { android.R.attr.state_focused},
+                new int[] {android.R.attr.state_selected},
+                new int[] {android.R.attr.state_pressed},
+                new int[] {}
+        };
+
+        int[] colors = new int[] {
+                Color.parseColor(focusStateTextColor),
+                Color.parseColor(focusStateTextColor),
+                Color.parseColor(focusStateTextColor),
+                Color.parseColor(unFocusStateTextColor)
+        };
+        txtColor = new ColorStateList(states, colors);
+        setTextColor();
+        return txtColor;
+    }
+
 
     public void setFontFamily(LinearLayout linearLayout) {
         if (null == face) {
@@ -300,5 +338,124 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         LOWERCASE,
         NUMBER,
         SPECIAL_CHARACTERS
+    }
+
+    private void setTextColor(){
+        try {
+            ((Button) findViewById(R.id.btn_uc_key_space)).setTextColor(txtColor);
+            ((Button) findViewById(R.id.btn_lc_key_space)).setTextColor(txtColor);
+            ((Button) findViewById(R.id.btn_num_key_space)).setTextColor(txtColor);
+            ((Button) findViewById(R.id.btn_sc_key_space)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_uc_a)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_b)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_c)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_d)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_e)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_f)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_g)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_h)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_i)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_j)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_k)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_l)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_m)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_n)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_o)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_p)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_q)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_r)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_s)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_t)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_u)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_v)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_w)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_x)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_y)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_z)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_lc_a)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_b)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_c)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_d)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_e)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_f)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_g)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_h)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_i)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_j)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_k)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_l)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_m)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_n)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_o)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_p)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_q)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_r)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_s)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_t)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_u)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_v)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_w)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_x)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_y)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_z)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_num_1)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_2)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_3)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_4)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_5)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_6)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_7)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_8)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_9)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_0)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_sc_exclamation)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_at_the_rate)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_cent)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_colon)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_hash)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_dollar)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_percentage)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_exponential)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_g)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_estrics)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_sc_left_parenthesis)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_right_parenthesis)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_underscore)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_hyphen)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_plus)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_sc_ewual)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_pipe)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_semi_colon)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_single_quote)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_double_quote)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_sc_comma)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_period)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_question_mark)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_slash)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_euro)).setTextColor(txtColor);
+
+            ((TextView) findViewById(R.id.tv_key_sc_pound)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_yen)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_cent)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_left_angle)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_right_angle)).setTextColor(txtColor);
+
+            if(null != focusedColor) {
+                ((ImageButton) findViewById(R.id.btn_uc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
+                ((ImageButton) findViewById(R.id.btn_lc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
+                ((ImageButton) findViewById(R.id.btn_num_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
+                ((ImageButton) findViewById(R.id.btn_sc_key_backspace)).getBackground().setTint(Color.parseColor(focusedColor));
+            }
+        }catch (Exception e){
+
+        }
+
     }
 }

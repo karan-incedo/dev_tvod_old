@@ -1250,9 +1250,9 @@ public class AppCMSPresenter {
                             String siteId,
                             String pageId,
                             boolean usedCachedAPI) {
-        if (appCMSMain.getApiBaseUrlCached() == null) {
+      /*  if (appCMSMain.getApiBaseUrlCached() == null) {
             appCMSMain.setApiBaseUrlCached("https://release-api-cached.viewlift.com");
-        }
+        }*/
         if (currentContext != null && pageId != null) {
             String urlWithContent = null;
             if (usePageIdQueryParam) {
@@ -13502,6 +13502,13 @@ public class AppCMSPresenter {
                     launchErrorActivity(PlatformType.TV);
                 }
             } else {
+
+                if(!isUserLoggedIn()){
+                    if(getAnonymousUserToken() == null){
+                        signinAnonymousUser();
+                    }
+                }
+
                 navigation = appCMSAndroidUI.getNavigation();
 
                 if (getTemplateType() == TemplateType.ENTERTAINMENT) {
@@ -17161,6 +17168,15 @@ public class AppCMSPresenter {
                 module.setContentData(data);
             }
         }
+    }
+
+    public String getFontFamily(){
+        if(null != appCMSMain
+                && null != appCMSMain.getBrand()
+                && null != appCMSMain.getBrand().getGeneral()){
+            return appCMSMain.getBrand().getGeneral().getFontFamily();
+        }
+        return null;
     }
 
 }

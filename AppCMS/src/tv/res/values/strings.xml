@@ -15,6 +15,30 @@
         <item>AC Tray 03</item>
         <item>@string/standaloneplayer</item>
         <item>AC Grid 01</item>
+        <item>AC EventCarousel 01</item>
+    </string-array>
+
+    <string-array name="app_cms_modules">
+        <item>AC VideoPlayerWithInfo 02</item>
+        <item>@string/appcms_detail_module</item>
+        <item>@string/app_cms_ancillary_pages_module</item>
+        <item>@string/app_cms_reset_password_module</item>
+        <item>@string/app_cms_contact_us_module</item>
+        <item>@string/app_cms_page_history_module_key</item>
+        <item>@string/app_cms_page_history_module_key2</item>
+        <item>@string/app_cms_page_watchlist_module_key</item>
+        <item>@string/app_cms_page_watchlist_module_key2</item>
+        <item>@string/app_cms_page_autoplay_module_key_01</item>
+        <item>@string/app_cms_page_autoplay_module_key_02</item>
+        <item>@string/app_cms_page_autoplay_module_key_03</item>
+        <item>@string/app_cms_page_autoplay_landscape_module_key_01</item>
+        <item>@string/app_cms_page_autoplay_portrait_module_key_01</item>
+        <item>@string/app_cms_page_link_your_account_module</item>
+        <item>@string/app_cms_page_authentication_module</item>
+        <item>@string/app_cms_setting_module</item>
+        <item>AC UserManagement 02</item>
+        <item>@string/app_cms_page_show_detail_module_key</item>
+        <item></item>
     </string-array>
 
     <string-array name="app_cms_detail_module">
@@ -22,7 +46,6 @@
     </string-array>
 
     <string name="standaloneplayer">AC StandaloneVideoPlayer 01</string>
-
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="app_cms_contact_us_module">AC ContactUs 01</string>
