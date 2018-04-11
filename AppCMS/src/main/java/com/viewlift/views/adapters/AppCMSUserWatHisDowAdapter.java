@@ -714,10 +714,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         }
                                     }
                                     if (action.contains(trayAction)  &&
-                                            data.getContentType() != null &&
-                                            data.getContentType().equalsIgnoreCase("SERIES") )
+                                            data.getGist() != null &&
+                                            data.getGist().getContentType() != null &&
+                                            data.getGist().getContentType().equalsIgnoreCase("SERIES") )
                                     {
-                                        action= "showDetailPage";
+                                        action= mContext.getString(R.string.app_cms_action_showvideopage_key);
                                     }
                                     /*open video detail page*/
                                     appCMSPresenter.launchButtonSelectedAction(permalink,

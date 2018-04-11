@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -29,6 +30,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -119,6 +121,7 @@ import rx.functions.Action1;
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY;
 
 
 /*
@@ -2387,6 +2390,7 @@ public class ViewCreator {
      * @param viewType             This is the component view type of the parent view and is used to infer additional view properties
      * @param moduleId             This is the module ID that associates
      */
+    @SuppressLint("RestrictedApi")
     @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
                              final Component component,
@@ -3802,9 +3806,6 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = false;
-                                if (appCMSPresenter.isAudioAvailable()) {
-                                    deleteAllFiles = false;
-                                }
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
@@ -3816,6 +3817,12 @@ public class ViewCreator {
 
                                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                                     case PAGE_DOWNLOAD_02_MODULE_KEY:
+                                        if (appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video)) &&
+                                                appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio))) {
+                                            deleteAllFiles = false;
+                                        } else {
+                                            deleteAllFiles = true;
+                                        }
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
@@ -4009,6 +4016,25 @@ public class ViewCreator {
                                 componentViewResult.componentView,
                                 component,
                                 -1);
+                        break;
+
+                    case PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY:
+                        ((Button) componentViewResult.componentView).setTextColor(ContextCompat.getColor(context, android.R.color.black));
+                        ((Button) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        ((Button) componentViewResult.componentView).setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            String[] extraData = new String[1];
+                            extraData[0] = component.getKey();
+
+                            appCMSPresenter.launchButtonSelectedAction(null,
+                                    component.getAction(),
+                                    null,
+                                    extraData,
+                                    null,
+                                    false,
+                                    0,
+                                    null);
+                        });
                         break;
 
                     default:
@@ -5438,26 +5464,6 @@ public class ViewCreator {
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new TextInputLayout(context);
                 TextInputEditText textInputEditText = new TextInputEditText(context);
-                switch (componentKey) {
-                    case PAGE_EMAILTEXTFIELD_KEY:
-                    case PAGE_EMAILTEXTFIELD2_KEY:
-                        textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                        break;
-
-                    case PAGE_PASSWORDTEXTFIELD_KEY:
-                    case PAGE_PASSWORDTEXTFIELD2_KEY:
-                        textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
-                        break;
-
-                    case PAGE_MOBILETEXTFIELD_KEY:
-                        textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
-                        break;
-
-                    default:
-                        break;
-                }
-
                 if (!TextUtils.isEmpty(component.getText())) {
                     textInputEditText.setHint(component.getText());
                 }
@@ -5474,6 +5480,42 @@ public class ViewCreator {
                 TextInputLayout.LayoutParams textInputEditTextLayoutParams =
                         new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT);
+                switch (componentKey) {
+                    case PAGE_EMAILTEXTFIELD_KEY:
+                    case PAGE_EMAILTEXTFIELD2_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                        break;
+
+                    case PAGE_PASSWORDTEXTFIELD_KEY:
+                    case PAGE_PASSWORDTEXTFIELD2_KEY:
+                        textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
+                        break;
+
+                    case PAGE_MOBILETEXTFIELD_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                        break;
+                    case PAGE_SUBSCRIBE_EMAIL_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                        textInputEditText.setId(R.id.subscribe_edit_text_id);
+                        RecyclerView view = appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+                        if (view != null) {
+                            view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+                        } else {
+                            textInputEditText.requestFocus();
+                        }
+                        textInputEditText.setHintTextColor(ContextCompat.getColor(context, android.R.color.white));
+                        textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+                        textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
+
+                        if (BaseView.isTablet(context)) {
+                            textInputEditTextLayoutParams.setMargins(0, 0, 100, 0);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
                 textInputEditText.setLayoutParams(textInputEditTextLayoutParams);
 
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
