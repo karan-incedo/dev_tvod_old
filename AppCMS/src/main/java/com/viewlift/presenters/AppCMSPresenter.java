@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -42,6 +43,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -143,6 +145,7 @@ import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscribeForLatestNewsPojo.ResponsePojo;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
@@ -182,6 +185,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncT
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.background.tasks.PostUANamedUserEventAsyncTask;
+import com.viewlift.models.network.background.tasks.StartEmailSubscripctionAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
@@ -218,6 +222,7 @@ import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
@@ -522,6 +527,7 @@ public class AppCMSPresenter {
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
+    private final AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall;
     private final String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -702,6 +708,9 @@ public class AppCMSPresenter {
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
+    private ResponsePojo responsePojo;
+    private String subscribeEmail;
+    ProgressDialog progressDialog = null;
     private boolean isAudioPlayerOpen;
     public HashMap<String, PlaylistDetails> playlistDowloadValues = new HashMap<String, PlaylistDetails>();
 
@@ -870,7 +879,9 @@ public class AppCMSPresenter {
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                           ReferenceQueue<Object> referenceQueue) {
+                           ReferenceQueue<Object> referenceQueue,
+                           AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall) {
+        this.appCMSSubscribeForLatestNewsCall = appCMSSubscribeForLatestNewsCall;
         this.gson = gson;
         this.appCMSPlaylistCall = appCMSPlaylistCall;
         this.appCMSAudioDetailCall = appCMSAudioDetailCall;
@@ -1298,9 +1309,9 @@ public class AppCMSPresenter {
                             String siteId,
                             String pageId,
                             boolean usedCachedAPI) {
-        if (appCMSMain.getApiBaseUrlCached() == null) {
+      /*  if (appCMSMain.getApiBaseUrlCached() == null) {
             appCMSMain.setApiBaseUrlCached("https://release-api-cached.viewlift.com");
-        }
+        }*/
         if (currentContext != null && pageId != null) {
             String urlWithContent = null;
             if (usePageIdQueryParam) {
@@ -2239,6 +2250,17 @@ public class AppCMSPresenter {
                     ViewCreator.clearPlayerView();
                     loginGoogle();
                     sendSignUpGoogleFirebase();
+                } else if (actionType == AppCMSActionType.SUBSCRIBEGO) {
+                    TextInputEditText subscribeEditText = currentActivity.findViewById(R.id.subscribe_edit_text_id);
+                    subscribeEmail = subscribeEditText.getText().toString();
+                    if (emailValid(subscribeEmail)) {
+                        // Showing progress dialog
+                        showProgressDialog();
+                        StartEmailSubscripctionAsyncTask startEmailSubscripctionAsyncTask = new StartEmailSubscripctionAsyncTask(this, appCMSSubscribeForLatestNewsCall);
+                        startEmailSubscripctionAsyncTask.execute(subscribeEmail);
+                    } else {
+                        showEntitlementDialog(DialogType.SUBSCRIPTION_EMAIL_INVALID, null);
+                    }
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
                         //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
@@ -2528,6 +2550,45 @@ public class AppCMSPresenter {
                 relateVideoIds,
                 currentlyPlayingIndex,
                 isVideoOffline);
+    }
+
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(currentActivity);
+        progressDialog.setMessage("Subscribing...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private boolean emailValid(String email) {
+        if (TextUtils.isEmpty(email)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
+    }
+
+    public void emailSubscriptionResponse(ResponsePojo result) {
+        if (progressDialog != null) {
+            try {
+                if (progressDialog.isShowing()) {
+                    progressDialog.hide();
+                    progressDialog.dismiss();
+                    progressDialog = null;
+                }
+            } catch (Exception ex) {
+
+            }
+        }
+        this.responsePojo = result;
+        if (result != null) {
+            if (result.getUserExist() == null) {//success
+                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_SUCCESS, null);
+            } else {//exist
+                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_EXIST, null);
+            }
+        } else {//fail
+            showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_EMAIL_FAIL, null);
+        }
     }
 
     /**
@@ -3190,14 +3251,14 @@ public class AppCMSPresenter {
     }
 
 
-    private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI, String action) {
-        if (currentActivity != null) {
-            if (appCMSPageUI == null) {
+    private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI , String action) {
+        if (currentActivity != null ) {
+            if(appCMSPageUI == null){
                 showLoader();
 
                 AppCMSActionType actionType = actionToActionTypeMap.get(action);
                 MetaPage metaPage = actionTypeToMetaPageMap.get(actionType);
-                if (metaPage != null) {
+                if(metaPage != null){
                     getAppCMSPage(metaPage.getPageUI(),
                             new Action1<AppCMSPageUI>() {
                                 @Override
@@ -3207,9 +3268,9 @@ public class AppCMSPresenter {
                                     if (action1 != null && actionToPageMap.containsKey(action1)) {
                                         actionToPageMap.put(action1, appCMSPageUI);
                                     }
-                                    launchLinkYourAccountPage(appCMSPageUI, action1);
+                                    launchLinkYourAccountPage(appCMSPageUI,action1);
                                 }
-                            }, loadFromFile, false);
+                            },loadFromFile,false);
                 }
                 return;
             }
@@ -3245,8 +3306,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getDeviceLinkCode(final Action1<GetLinkCode> getSyncCodeAction1) {
-        try {
+    public void getDeviceLinkCode(final Action1<GetLinkCode> getSyncCodeAction1){
+        try{
             showLoader();
             appCMSGetSyncCodeApiCall.call(
                     currentActivity.getString(R.string.app_cms_get_code_api_url,
@@ -3257,12 +3318,12 @@ public class AppCMSPresenter {
                     getAuthToken(),
                     getSyncCodeAction1
             );
-        } catch (Exception e) {
+        }catch (Exception e){
 
         }
     }
 
-    public void deSyncDevice() {
+    public void deSyncDevice(){
         try {
             appCmsSyncDeviceCodeAPICall.call(
                     currentActivity.getString(R.string.app_cms_desync_device_api_url,
@@ -3274,20 +3335,20 @@ public class AppCMSPresenter {
                     new Action1<SyncDeviceCode>() {
                         @Override
                         public void call(SyncDeviceCode syncDeviceCode) {
-                            // Log.d(TAG , "DesyncDevice status = "+syncDeviceCode.getStatus());
+                           // Log.d(TAG , "DesyncDevice status = "+syncDeviceCode.getStatus());
                         }
                     }
             );
 
-        } catch (Exception e) {
+        }catch(Exception e){
 
         }
     }
 
-    public void syncCode(final Action1<SyncDeviceCode> getSyncCodeAction1) {
-        try {
-            if (!isSyncCodeAPIRunning()) {
-                Log.d("TAG", "syncCode.........1");
+    public void syncCode(final Action1<SyncDeviceCode> getSyncCodeAction1){
+        try{
+            if(!isSyncCodeAPIRunning()) {
+                Log.d("TAG","syncCode.........1");
                 startSyncCodeAPI();
                 appCmsSyncDeviceCodeAPICall.call(
                         currentActivity.getString(R.string.app_cms_sync_code_api_url,
@@ -3310,7 +3371,7 @@ public class AppCMSPresenter {
                                     sendSignInEmailFirebase();
                                     setLoggedInUserName(syncDeviceCode.getName());
                                     setLoggedInUserEmail(syncDeviceCode.getEmail());
-                                    // boolean isSubscribed = syncDeviceCode.getIsSubscribed() != null ? Boolean.parseBoolean(syncDeviceCode.getIsSubscribed()) : false;
+                                   // boolean isSubscribed = syncDeviceCode.getIsSubscribed() != null ? Boolean.parseBoolean(syncDeviceCode.getIsSubscribed()) : false;
                                     showLoader();
                                     finalizeLogin(false,
                                             syncDeviceCode.getIsSubscribed(),
@@ -3318,8 +3379,8 @@ public class AppCMSPresenter {
                                             true);
                                     getSyncCodeAction1.call(syncDeviceCode);
                                 } else {
-                                    if (isSyncCodeAPIRunning()) {
-                                        Log.d("TAG", "syncCode.........3");
+                                    if(isSyncCodeAPIRunning()) {
+                                        Log.d("TAG","syncCode.........3");
                                         stopSyncCodeAPI();
                                         syncCode(getSyncCodeAction1);
                                     }
@@ -3328,7 +3389,7 @@ public class AppCMSPresenter {
                         }
                 );
             }
-        } catch (Exception e) {
+        }catch (Exception e){
 
         }
     }
@@ -6011,7 +6072,6 @@ public class AppCMSPresenter {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
         if (appCMSPageUI == null) {
             if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
-                Toast.makeText(currentActivity, "UI is null.....", Toast.LENGTH_SHORT).show();
                 RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
                         title, null,
                         null, launchActivity, pageId, SUB_NAV_RETRY_ACTION);
@@ -10037,6 +10097,32 @@ public class AppCMSPresenter {
                     String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
                     String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
+                    if (dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID) {
+                        title = currentActivity.getString(R.string.invalid_email);
+                        message = currentActivity.getString(R.string.quote_separator) +
+                                subscribeEmail +
+                                currentActivity.getString(R.string.quote_separator) +
+                                currentActivity.getString(R.string.not_valid_email);
+                    }
+
+                    if (dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS) {
+                        title = currentActivity.getString(R.string.thank_you_for_subscribing);
+                        message = currentActivity.getString(R.string.watercoolerready);
+                    }
+
+                    if (dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST) {
+                        title = responsePojo.getUserExist().getTitle();
+                        message = currentActivity.getString(R.string.quote_separator) +
+                                subscribeEmail +
+                                currentActivity.getString(R.string.quote_separator) +
+                                currentActivity.getString(R.string.is_already_subscribed);
+                    }
+
+                    if (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL) {
+                        title = currentActivity.getString(R.string.failed_to_subscribe);
+                        message = currentActivity.getString(R.string.try_again_later);
+                    }
+
                     if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                         title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
                         message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
@@ -10388,6 +10474,18 @@ public class AppCMSPresenter {
                                     }
                                     isDialogShown = false;
                                     dialog.dismiss();
+                                });
+                    } else if ((dialogType == DialogType.SUBSCRIPTION_EMAIL_SUCCESS) ||
+                            (dialogType == DialogType.SUBSCRIPTION_EMAIL_EXIST) ||
+                            (dialogType == DialogType.SUBSCRIPTION_EMAIL_FAIL) ||
+                            (dialogType == DialogType.SUBSCRIPTION_EMAIL_INVALID)) {
+                        builder.setPositiveButton("OK",
+                                (dialog, which) -> {
+                                    try {
+                                        dialog.dismiss();
+                                    } catch (Exception e) {
+                                        //Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
+                                    }
                                 });
                     } else {
                         builder.setPositiveButton(positiveButtonText,
@@ -13894,29 +13992,35 @@ public class AppCMSPresenter {
 
     private String getAutoplayPageId(String mediaType) {
         String autoPlayKey = null;
-//        for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
-//            String key = entry.getKey();
-//            String value = entry.getValue();
-//            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
-//                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
-//                    autoPlayKey = key;
-//                    return autoPlayKey;
-//                } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-//                    autoPlayKey = key;
-//                }
-//            } else {
-//                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-//                    autoPlayKey = key;
-//                    return autoPlayKey;
-//                }
-//            }
-//        }
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                return key;
+            if (getPlatformType() == PlatformType.TV) {
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
+                    if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
+                        autoPlayKey = key;
+                        return autoPlayKey;
+                    } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                        autoPlayKey = key;
+                    }
+                } else {
+                    if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                        autoPlayKey = key;
+                        return autoPlayKey;
+                    }
+                }
+            } else if(getPlatformType() == PlatformType.ANDROID) {
+                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                    return key;
+                }
             }
+        }
+
+
+        for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
         }
         return autoPlayKey;
     }
@@ -13959,6 +14063,13 @@ public class AppCMSPresenter {
                     launchErrorActivity(PlatformType.TV);
                 }
             } else {
+
+                if(!isUserLoggedIn()){
+                    if(getAnonymousUserToken() == null){
+                        signinAnonymousUser();
+                    }
+                }
+
                 navigation = appCMSAndroidUI.getNavigation();
 
                 if (getTemplateType() == TemplateType.ENTERTAINMENT) {
@@ -16387,6 +16498,10 @@ public class AppCMSPresenter {
     }
 
     public enum DialogType {
+        SUBSCRIPTION_EMAIL_SUCCESS,
+        SUBSCRIPTION_EMAIL_EXIST,
+        SUBSCRIPTION_EMAIL_FAIL,
+        SUBSCRIPTION_EMAIL_INVALID,
         NETWORK,
         SIGNIN,
         SIGNUP_BLANK_EMAIL_PASSWORD,
@@ -17653,6 +17768,15 @@ public class AppCMSPresenter {
                 module.setContentData(data);
             }
         }
+    }
+
+    public String getFontFamily(){
+        if(null != appCMSMain
+                && null != appCMSMain.getBrand()
+                && null != appCMSMain.getBrand().getGeneral()){
+            return appCMSMain.getBrand().getGeneral().getFontFamily();
+        }
+        return null;
     }
 
     String videoId = null;

@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,11 +14,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -122,6 +125,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             navMenuTile.setText("Settings");
             navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
             navMenuTile.setVisibility(View.VISIBLE);
+            navMenuTile.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
             STNavigationAdapter navigationAdapter = new STNavigationAdapter(
                     getActivity(),
@@ -134,6 +138,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             setFocusable(true);
             navigationAdapter.setFocusOnSelectedPage();
             navTopLine.setVisibility(View.VISIBLE);
+            navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
         }
         return view;
     }
@@ -552,13 +557,16 @@ public class AppCmsSubNavigationFragment extends Fragment {
             final NavigationSubItem subItem = (NavigationSubItem) getItem(holder.getAdapterPosition());
             holder.navItemView.setText(subItem.title.toUpperCase());
             holder.navItemView.setTag(R.string.item_position, holder.getAdapterPosition());
-            //Log.d("NavigationAdapter", subItem.title.toString());
 
 
             if (!mShowTeams) {
                 holder.navImageView.setPadding(0, 0, 0, 0);
                 holder.navImageView.setImageResource(subItem.icon != null
                         ? getIcon(subItem.icon) : -1);
+                if(subItem.icon != null) {
+                    holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
+                    holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                }
             } else {
                 holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)
@@ -816,6 +824,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navImageView = (ImageView) itemView.findViewById(R.id.nav_item_image);
                 navItemLayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
 //                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCMSPresenter, false));
+                navItemLayout.setBackground(Utils.getMenuSelector(mContext, appCMSPresenter.getAppCtaBackgroundColor(),
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCMSPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemLayout.setOnFocusChangeListener((view, hasFocus) -> {
@@ -831,6 +841,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
                 navItemLayout.setOnKeyListener((view, i, keyEvent) -> {
                     int keyCode = keyEvent.getKeyCode();
+                    if(keyCode == KeyEvent.KEYCODE_MENU){
+                        Toast.makeText(getActivity(),"Menu..",Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
                     int action = keyEvent.getAction();
                     if (action == KeyEvent.ACTION_DOWN) {
                         switch (keyCode) {

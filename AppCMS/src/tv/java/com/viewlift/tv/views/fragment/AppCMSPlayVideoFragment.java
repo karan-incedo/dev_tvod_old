@@ -577,6 +577,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     }
                 }
                 isPerVideo = appCMSMain.getFeatures().getFreePreview().isPerVideo();
+            }else{
+                entitlementCheckMultiplier = 0; //isFreePreview is false that means we have to show preview dialog immediate.
             }
 
             final int maxPreviewSecs = entitlementCheckMultiplier * 60;

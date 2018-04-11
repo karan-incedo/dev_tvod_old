@@ -54,7 +54,7 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        String backGroundColor = Utils.getBackGroundColor(getActivity(),appCMSPresenter);
+        String backGroundColor = appCMSPresenter.getAppBackgroundColor();
         mView.findViewById(R.id.fragment_text_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
@@ -96,14 +96,15 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
 
         btnClose.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
                 Color.parseColor(Utils.getFocusColor(mContext,appCMSPresenter)),
-                btnComponent1));
+                btnComponent1,
+                appCMSPresenter));
 
         btnClose.setTextColor(Utils.getButtonTextColorDrawable(
                 Utils.getColor(getActivity(),Integer.toHexString(ContextCompat.getColor(getActivity() ,
                         R.color.btn_color_with_opacity)))
                 ,
                 Utils.getColor(getActivity() , Integer.toHexString(ContextCompat.getColor(getActivity() ,
-                        android.R.color.white)))
+                        android.R.color.white))),appCMSPresenter
         ));
 
 
