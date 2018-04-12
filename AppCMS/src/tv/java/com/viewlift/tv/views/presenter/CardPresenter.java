@@ -175,7 +175,8 @@ public class CardPresenter extends Presenter {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             StringBuilder stringBuilder = new StringBuilder();
                             if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata() != null) {
-                                tvTitle.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                                tvTitle.setBackgroundColor(Color.parseColor(mAppCmsPresenter.getAppBackgroundColor()));
+                                tvTitle.getBackground().setAlpha(128);
                                 tvTitle.setGravity(Gravity.CENTER);
                                 Integer padding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 tvTitle.setPadding(6, padding, 10, 4);
@@ -200,7 +201,7 @@ public class CardPresenter extends Presenter {
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                          }
-                        tvTitle.setSingleLine(true);
+                        //tvTitle.setSingleLine(true);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setSelected(true);
 
@@ -216,7 +217,7 @@ public class CardPresenter extends Presenter {
 
                         tvTitle.setLayoutParams(layoutParams);
                         tvTitle.setMaxLines(2);
-                        tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
+                        tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));
                         if (component.getFontFamily() != null)
                             fontType = getFontType(component);
                         if (fontType != null) {
@@ -258,7 +259,7 @@ public class CardPresenter extends Presenter {
         CustomFrameLayout cardView = (CustomFrameLayout) viewHolder.view;
         if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))){
             cardView.setBackground(
-                    Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
+                    Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), mAppCmsPresenter.getAppBackgroundColor() /*Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)*/));
         }
         bindComponent(cardView , contentData , blockName);
         cardView.postInvalidate();
@@ -377,13 +378,21 @@ public class CardPresenter extends Presenter {
                             StringBuilder stringBuilder = new StringBuilder();
                             if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata() != null) {
                                 String time = Utils.convertSecondsToTime(contentData.getGist().getRuntime());
-                                Date publishedDate = new Date(contentData.getGist().getPublishDate());
-                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
-                                String date = spf.format(publishedDate);
+                                String date = null;
+                                if(null != contentData
+                                        && null != contentData.getGist()
+                                        && null != contentData.getGist().getPublishDate()) {
+                                    try {
+                                        Date publishedDate = new Date(contentData.getGist().getPublishDate());
+                                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
+                                        date = spf.format(publishedDate);
+                                    } catch (Exception e) {
+                                    }
+                                }
                                 if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayDuration()) {
                                     stringBuilder.append(time);
                                 }
-                                if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayPublishedDate()) {
+                                if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayPublishedDate() && null != date) {
                                     if (stringBuilder.length() > 0) stringBuilder.append(" | ");
                                     stringBuilder.append(date);
                                 }
@@ -394,21 +403,27 @@ public class CardPresenter extends Presenter {
                             tvTitle.setText(stringBuilder);
                             tvTitle.setTextSize(childComponentAndView.component.getFontSize());
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY)) {
-                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                            int episodeNumber = getEpisodeNumber(contentData,
-                                    contentData.getGist().getId());
-                            String text = contentData.getGist().getTitle();
-                            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
-                            spannableStringBuilder.append(" ").append(text);
-                            Typeface font = Typeface.createFromAsset(mContext.getResources().getAssets(), "fonts/OpenSans-ExtraBold.ttf");
-                            spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                            tvTitle.setText(spannableStringBuilder);
+                            try {
+                                tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                                int episodeNumber = getEpisodeNumber(contentData,
+                                        contentData.getGist().getId());
+                                String text = contentData.getGist().getTitle();
+                                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
+                                spannableStringBuilder.append(" ").append(text);
+                                String fontFamily = mAppCmsPresenter.getFontFamily();
+                                String fontPath = null != fontFamily ? "font/" + fontFamily + "-ExtraBold.ttf" : "fonts/OpenSans-ExtraBold.ttf";
+                                Typeface font = Typeface.createFromAsset(mContext.getResources().getAssets(), fontPath);
+                                spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                                tvTitle.setText(spannableStringBuilder);
+                            }catch (Exception e){
+
+                            }
                         } else {
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
                         }
-                        tvTitle.setSingleLine(true);
+                        //tvTitle.setSingleLine(true);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setSelected(true);
                         tvTitle.setMaxLines(2);
@@ -428,7 +443,7 @@ public class CardPresenter extends Presenter {
 
     private Typeface getFontType(Component component) {
         Typeface face = null;
-        if (mJsonKeyValuemap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+        if (mJsonKeyValuemap.get(mAppCmsPresenter.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = mJsonKeyValuemap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -446,7 +461,7 @@ public class CardPresenter extends Presenter {
                 default:
                     face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.opensans_regular_ttf));
             }
-        } else if (mJsonKeyValuemap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+        } else if (mJsonKeyValuemap.get(mAppCmsPresenter.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = mJsonKeyValuemap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
