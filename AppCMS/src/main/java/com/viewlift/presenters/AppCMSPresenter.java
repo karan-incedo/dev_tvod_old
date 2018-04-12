@@ -14089,11 +14089,26 @@ public class AppCMSPresenter {
                                     currentActivity.getString(R.string.profile_label)));
                     navigation.getNavigationPrimary().add(myProfile);
 
-                    //add search in navigation item.
-                    NavigationPrimary searchNav = new NavigationPrimary();
-                    searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                    searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                    navigation.getNavigationPrimary().add(searchNav);
+                    boolean shouldAddSearch = true;
+                    if(navigation != null && navigation.getNavigationPrimary() != null
+                            && navigation.getNavigationPrimary().size() > 0){
+                        for(NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()){
+                            if(navigationPrimary != null && navigationPrimary.getTitle() != null){
+                                if(navigationPrimary.getTitle().contains("search")
+                                         || navigationPrimary.getTitle().contains("Search")){
+                                    shouldAddSearch = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(shouldAddSearch) {
+                        //add search in navigation item.
+                        NavigationPrimary searchNav = new NavigationPrimary();
+                        searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                        searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                        navigation.getNavigationPrimary().add(searchNav);
+                    }
                 }
                 queueMetaPages(appCMSAndroidUI.getMetaPages());
                 final MetaPage firstPage = pagesToProcess.peek();
