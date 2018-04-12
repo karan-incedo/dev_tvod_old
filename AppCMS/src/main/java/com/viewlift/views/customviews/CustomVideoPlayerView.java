@@ -163,6 +163,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private ToggleButton mToggleButton;
     public boolean hideMiniPlayer = false;
+    private int entitlementCheckMultiplier = 0;
 
     public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context, appCMSPresenter);
@@ -246,24 +247,29 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
-                    if (shouldRequestAds) {
-                        requestAds(adsUrl);
-                    } else {
-                        playVideos(0, contentDatum);
-                    }
                     getVideoPreview();
+                    System.out.println("entitlementCheckMultiplier--" + entitlementCheckMultiplier);
+                    if(entitlementCheckMultiplier > 0) {
+                        if (shouldRequestAds) {
+                            requestAds(adsUrl);
+                        } else {
+                            playVideos(0, contentDatum);
+                        }
+                    }
                     appCMSPresenter.setPreviewStatus(false);
                 } else {
                     if (appCMSPresenter.isUserSubscribed()) {
                         playVideos(0, contentDatum);
                         appCMSPresenter.setPreviewStatus(false);
                     } else {
+                        getVideoPreview();
                         if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) {
                             requestAds(adsUrl);
                         } else {
-                            playVideos(0, contentDatum);
+                            if(entitlementCheckMultiplier > 0) {
+                                playVideos(0, contentDatum);
+                            }
                         }
-                        getVideoPreview();
                     }
                 }
             } else {
@@ -420,20 +426,20 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
         if (appCMSPresenter.isAppSVOD() &&
                 !appCMSPresenter.isUserSubscribed()) {
-            int entitlementCheckMultiplier = 5;
             entitlementCheckCancelled = false;
 
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             if (appCMSMain != null &&
                     appCMSMain.getFeatures() != null &&
                     appCMSMain.getFeatures().getFreePreview() != null &&
-                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
-                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
-                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
-                try {
-                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
-                } catch (Exception e) {
-                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview()) {
+                if (appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                        appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                    try {
+                        entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                    }
                 }
             }
 

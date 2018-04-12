@@ -486,7 +486,7 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         System.out.println("image dimen3- width" + childViewHeight + " width" + childViewWidth);
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
 
                         bringToFront = false;
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
@@ -748,13 +748,29 @@ public class CollectionGridItemView extends BaseView {
                         if (component != null &&
                                 component.getView() != null &&
                                 component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-
-                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == false) {
-                                setBorder(((TextView) view));
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            if (childComponent.getNumberOfLines() != 0) {
+                                ((TextView) view).setSingleLine(false);
+                                ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            }
+                            if (BaseView.isTablet(view.getContext())) {
+                                if(isLandscape(getContext()) == true) {
+                                    ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                }else{
+                                    setBorder(((TextView) view));
+                                    ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                                }
                             } else {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                            }
+                        }else{
+                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == true) {
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            }else{
+                                ((TextView) view).setTextColor(Color.parseColor(
+                                        childComponent.getTextColor()));
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
@@ -780,8 +796,11 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             view.setVisibility(VISIBLE);
                         }
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
+                        if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context) == true) {
+                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        }else{
+                            ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                        }
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {

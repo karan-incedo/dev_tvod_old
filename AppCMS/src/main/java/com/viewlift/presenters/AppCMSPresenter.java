@@ -2042,7 +2042,7 @@ public class AppCMSPresenter {
                                 appCMSMain.getFeatures().getFreePreview() != null &&
                                 appCMSMain.getFeatures().getFreePreview().isFreePreview();
 
-                        if (!freePreview && !entitlementCheckActive.isSuccess()) {
+                        if (!isUserSubscribed() && !freePreview && !entitlementCheckActive.isSuccess()) {
                             entitlementCheckActive.setPagePath(pagePath);
                             entitlementCheckActive.setAction(action);
                             entitlementCheckActive.setFilmTitle(filmTitle);
@@ -2199,6 +2199,9 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
                         isVideoPlayerStarted = false;
                         stopLoader();
+                        if(!isUserLoggedIn()) {
+                            showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED, null);
+                        }
                     }
                 } else if (actionType == AppCMSActionType.SHARE) {
                     if (extraData.length > 0) {
@@ -4642,16 +4645,16 @@ public class AppCMSPresenter {
         } else {
 
             // Uncomment to allow for Pause/Resume
-//            if (isVideoDownloadRunning(contentDatum)) {
-//                if (!pauseDownload(contentDatum)) {
-//                    Log.e(TAG, "Failed to pause download");
-//                }
-//                return;
-//            } else if (isVideoDownloadPaused(contentDatum)) {
-//                if (!resumeDownload(contentDatum)) {
-//                    Log.e(TAG, "Failed to resume download");
-//                }
-//            }
+            if (isVideoDownloadRunning(contentDatum)) {
+                if (!pauseDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to pause download");
+               }
+                return;
+            } else if (isVideoDownloadPaused(contentDatum)) {
+                if (!resumeDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to resume download");
+                }
+            }
             String downloadURL = "";
             long file_size = 0L;
             try {
@@ -6357,38 +6360,28 @@ public class AppCMSPresenter {
 
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
-        GetAppCMSVideoDetailAsyncTask.Params params =
-                new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+        GetAppCMSContentDetailTask.Params params =
+                new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken()).build();
-        new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                appCMSVideoDetail -> {
+        new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                appCMSContentDetail -> {
                     try {
-                        if (appCMSVideoDetail != null) {
-                            if(appCMSVideoDetail.getRecords()!=null && appCMSVideoDetail.getRecords().get(0)!=null) {
-                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                            }else{
-                                ContentDatum contentdata=new ContentDatum();
-                                contentdata.setGist(appCMSVideoDetail.getGist());
-                                contentdata.setContentDetails(appCMSVideoDetail.getContentDetails());
-                                contentdata.setStreamingInfo(appCMSVideoDetail.getStreamingInfo());
-                                contentdata.setCreditBlocks(appCMSVideoDetail.getCreditBlocks());
-                                contentdata.setTags(appCMSVideoDetail.getTags());
-                                contentdata.setCategories(appCMSVideoDetail.getCategories());
-                                contentdata.setExternal(appCMSVideoDetail.getExternal());
-                                contentdata.setChannels(appCMSVideoDetail.getChannels());
-                                List<ContentDatum> listRecord=new ArrayList<ContentDatum>() ;
-                                listRecord.add(contentdata);
-                                appCMSVideoDetail.setRecords(listRecord);
-                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                            }
+                        if (appCMSContentDetail != null) {
+                            binder.setContentData(appCMSContentDetail.convertToContentDatum());
                             AppCMSPageAPI pageAPI = null;
                             for (ModuleList moduleList :
                                     appCMSPageUI.getModuleList()) {
                                 if (moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_01)) || moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) || moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_01))||
+                                        moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_02))||
+                                        moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_03))||
+                                        moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01))||
+                                        moduleList.getType().equals(currentActivity
                                         .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
-                                    pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                    pageAPI = appCMSContentDetail.convertToAppCMSPageAPI(pageId,
                                             moduleList.getType());
                                     break;
                                 }
@@ -6670,7 +6663,7 @@ public class AppCMSPresenter {
 
                         if (currentActivity != null) {
 
-                            stopLoader();
+                            //stopLoader();
                         }
                     }
                 });
@@ -9876,7 +9869,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
+        for (NavigationPrimary navigationPrimary : navigation.getTabBar()) {
             if (pageId != null &&
                     navigationPrimary != null &&
                     !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
@@ -13550,6 +13543,12 @@ public class AppCMSPresenter {
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
+                    signupPage = metaPage;
+                    new SoftReference<Object>(signupPage, referenceQueue);
+                }
+
+                if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
                     downloadQualityPage = metaPage;
                     new SoftReference<Object>(downloadQualityPage, referenceQueue);
@@ -13615,8 +13614,8 @@ public class AppCMSPresenter {
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
-                    splashPage = metaPage;
-                    new SoftReference<Object>(splashPage, referenceQueue);
+                    historyPage = metaPage;
+                    new SoftReference<Object>(historyPage, referenceQueue);
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
@@ -14083,11 +14082,26 @@ public class AppCMSPresenter {
                                     currentActivity.getString(R.string.profile_label)));
                     navigation.getNavigationPrimary().add(myProfile);
 
-                    //add search in navigation item.
-                    NavigationPrimary searchNav = new NavigationPrimary();
-                    searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                    searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                    navigation.getNavigationPrimary().add(searchNav);
+                    boolean shouldAddSearch = true;
+                    if(navigation != null && navigation.getNavigationPrimary() != null
+                            && navigation.getNavigationPrimary().size() > 0){
+                        for(NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()){
+                            if(navigationPrimary != null && navigationPrimary.getTitle() != null){
+                                if(navigationPrimary.getTitle().contains("search")
+                                         || navigationPrimary.getTitle().contains("Search")){
+                                    shouldAddSearch = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(shouldAddSearch) {
+                        //add search in navigation item.
+                        NavigationPrimary searchNav = new NavigationPrimary();
+                        searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                        searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                        navigation.getNavigationPrimary().add(searchNav);
+                    }
                 }
                 queueMetaPages(appCMSAndroidUI.getMetaPages());
                 final MetaPage firstPage = pagesToProcess.peek();

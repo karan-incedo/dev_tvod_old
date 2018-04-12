@@ -160,6 +160,15 @@
 
                 <data
                     android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/photos/"
+                    android:scheme="http" />
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/photos/"
+                    android:scheme="https" />
+
+                <data
+                    android:host="@string/app_cms_app_host_name_suffix"
                     android:pathPrefix="/article/"
                     android:scheme="http" />
                 <data

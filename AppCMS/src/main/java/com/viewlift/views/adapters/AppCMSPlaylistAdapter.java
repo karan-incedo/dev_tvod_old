@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Entity;
@@ -67,6 +68,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     protected Settings settings;
     protected ViewCreator viewCreator;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+    private ProgressDialog progressDialog;
     Module moduleAPI;
     List<ContentDatum> adapterData;
     CollectionGridItemView.OnClickHandler onClickHandler;
@@ -142,6 +144,29 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
         serviceReceiver = new updateDataReceiver();
+
+
+
+    }
+    private void progressDialogInit(){
+        progressDialog = new ProgressDialog(mContext,R.style.AppCMSProgressDialogStyle);
+
+
+        //Set the progress dialog to display a horizontal progress bar
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //Set the dialog title to 'Loading...'
+        progressDialog.setTitle("Download Playlist...");
+        //Set the dialog message to 'Loading application View, please wait...'
+        progressDialog.setMessage("Adding playlist in download queue, please wait...");
+        //This dialog can't be canceled by pressing the back key
+        progressDialog.setCancelable(false);
+        //This dialog isn't indeterminate
+        progressDialog.setIndeterminate(false);
+        //The maximum number of items is 100
+        progressDialog.setMax(adapterData.size());
+        //Set the current progress to zero
+        progressDialog.setProgress(countDownloadPlaylist);
+        progressDialog.show();
     }
 
     @Override
@@ -552,11 +577,13 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         });
     }
 
-    private int countDownloadPlaylist = 0;
-
+    private  int countDownloadPlaylist= 0;
     private void getPlaylistAudioItems() {
-        countDownloadPlaylist = 0;
-        appCMSPresenter.showLoadingDialog(true);
+        countDownloadPlaylist= 0;
+        //appCMSPresenter.showLoadingDialog(true);
+
+        //progressDialogInit();
+
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             if (allViews[i] != null && allViews[i].getChildItems() != null) {
@@ -786,17 +813,14 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editDownloadFromPlaylist(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     countDownloadPlaylist++;
-//                    if (countDownloadPlaylist == adapterData.size()) {
-//                        System.out.println("stop loader-" + adapterData.size());
-//                        appCMSPresenter.showLoadingDialog(false);
-//                    }
+                    //progressDialog.setProgress(countDownloadPlaylist);
+                    if (countDownloadPlaylist == adapterData.size()){
+                        //appCMSPresenter.showLoadingDialog(false);
+                        //progressDialog.dismiss();
+                    }
+
+
                 } else {
                     if (appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
@@ -826,10 +850,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_FAILED:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
                         break;
 
                     case STATUS_PAUSED:
@@ -853,10 +873,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
                         imageButton.setOnClickListener(null);
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
                         break;
 
                     case STATUS_RUNNING:
@@ -873,10 +889,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
 
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
                         imageButton.setOnClickListener(null);
@@ -927,6 +943,23 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.requestLayout();
                 addClickListener.onClick(imageButton);
+
+//                if ((boolean) imageButton.getTag()) {
+//                    imageButton.setTag(false);
+//                    addClickListener.onClick(imageButton);
+//                }
+//                new android.os.Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if ((boolean) imageButton.getTag()) {
+//                            imageButton.setTag(false);
+//
+//                            addClickListener.onClick(imageButton);
+//                        }
+//                    }
+//                }, 50);
+
+
             }
         }
 
