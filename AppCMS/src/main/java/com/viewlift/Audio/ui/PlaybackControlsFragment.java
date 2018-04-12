@@ -109,7 +109,11 @@ public class PlaybackControlsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
-        connectMediaService();
+        try {
+            connectMediaService();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         mPlayPause = rootView.findViewById(R.id.play_pause);
         seek_audio = rootView.findViewById(R.id.seek_audio);
 

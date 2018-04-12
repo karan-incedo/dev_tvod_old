@@ -295,6 +295,32 @@ public class Utils {
     }
 
 
+    public static GradientDrawable getSelectedMenuState(Context context , int color){
+        GradientDrawable gradientDrawable =  new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(color);
+        gradientDrawable.setStroke(2,color);
+        return gradientDrawable;
+    }
+
+    public static GradientDrawable getUnSelectedMenuState(Context context , String borderColor){
+        GradientDrawable gradientDrawable =  new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+        if(null != borderColor)
+        gradientDrawable.setStroke(2,Color.parseColor(borderColor));
+        return gradientDrawable;
+    }
+
+    public static StateListDrawable getMenuSelector(Context context , String selectedBackgroundColor , String borderColor ){
+        StateListDrawable res = new StateListDrawable();
+        res.addState(new int[]{android.R.attr.state_focused}, getSelectedMenuState(context , Color.parseColor(selectedBackgroundColor)));
+        res.addState(new int[]{android.R.attr.state_pressed}, getSelectedMenuState(context , Color.parseColor(selectedBackgroundColor)));
+        res.addState(new int[]{android.R.attr.state_selected}, getUnSelectedMenuState(context,borderColor));
+        res.addState(new int[]{},getUnSelectedMenuState(context , borderColor));
+        return res;
+    }
+
     public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter ,
                                                            boolean isSubNavigation , int selectorColor){
         GradientDrawable focusedLayer = new GradientDrawable();
@@ -304,7 +330,8 @@ public class Utils {
         GradientDrawable transparentLayer = new GradientDrawable();
         transparentLayer.setShape(GradientDrawable.RECTANGLE);
         if(isSubNavigation){
-            transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
+           // transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
+            transparentLayer.setColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }else{
             //transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
             transparentLayer.setColor(selectorColor);
@@ -392,6 +419,10 @@ public class Utils {
         if(!isNormalState)
         ageBorder.setStroke(6,Color.parseColor(borderColor));
 
+        if(isEditText && isNormalState){
+            ageBorder.setStroke(1,Color.parseColor(borderColor));
+        }
+
         ageBorder.setColor(ContextCompat.getColor(
                 context,
                 isEditText ? android.R.color.white : android.R.color.transparent
@@ -410,27 +441,72 @@ public class Utils {
      * @param component
      * @return
      */
-    public static StateListDrawable setButtonBackgroundSelector(Context context , int selectedColor , Component component){
-        StateListDrawable res = new StateListDrawable();
+    public static StateListDrawable setButtonBackgroundSelector(Context context ,
+                                                                int selectedColor ,
+                                                                Component component ,
+                                                                AppCMSPresenter appCMSPresenter){
 
+        String focusStateColor = null;
+        String unFocusStateBorderColor = null;
+        String borderWidth = null;
+        if(null != appCMSPresenter &&
+                null != appCMSPresenter.getAppCMSMain() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta()) {
+               if( null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
+                focusStateColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
+            }
+            if( null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary()){
+                unFocusStateBorderColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor();
+                borderWidth = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getWidth();
+                if(null != borderWidth){
+                    if(borderWidth.contains("px")){
+                        String[] bdWidth = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getWidth().split("px");
+                        borderWidth = bdWidth[0];
+                    }
+                }
+            }
+        }
+
+        if(null != focusStateColor){
+            selectedColor = Color.parseColor(focusStateColor);
+        }
+
+        StateListDrawable res = new StateListDrawable();
         res.addState(new int[]{android.R.attr.state_focused}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(selectedColor));
 
-        GradientDrawable gradientDrawable = getButtonNormalState(context , component);
-        if(null != gradientDrawable )
-            res.addState(new int[]{}, gradientDrawable );
+        if(null != component) {
+            GradientDrawable gradientDrawable = getButtonNormalState(context, component, unFocusStateBorderColor, borderWidth);
+            if (null != gradientDrawable)
+                res.addState(new int[]{}, gradientDrawable);
+        }else{
+            GradientDrawable gradientDrawable = getButtonDefaultState(context, unFocusStateBorderColor, borderWidth);
+            if (null != gradientDrawable)
+                res.addState(new int[]{}, gradientDrawable);
+        }
         return res;
     }
 
-    private static GradientDrawable getButtonNormalState(Context context , Component component){
+    private static GradientDrawable getButtonDefaultState(Context context , String unFocusStateBorderColor , String borderWidth){
+        GradientDrawable
+                ageBorder = new GradientDrawable();
+                ageBorder.setShape(GradientDrawable.RECTANGLE);
+                ageBorder.setStroke( null != borderWidth ? Integer.valueOf(borderWidth) : 1,
+                        Color.parseColor(unFocusStateBorderColor != null ? unFocusStateBorderColor : "#000000"));
+                ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+        return ageBorder;
+    }
+
+    private static GradientDrawable getButtonNormalState(Context context , Component component , String unFocusStateBorderColor , String borderWidth ){
         GradientDrawable ageBorder = null;
         if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);
-                ageBorder.setStroke(component.getBorderWidth(),
-                        Color.parseColor(getColor(context, component.getBorderColor())));
+                ageBorder.setStroke( null != borderWidth ? Integer.valueOf(borderWidth) : component.getBorderWidth(),
+                        Color.parseColor(unFocusStateBorderColor != null ? unFocusStateBorderColor : getColor(context, component.getBorderColor())));
                 ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
             }
         }
@@ -438,13 +514,31 @@ public class Utils {
     }
 
 
-    public static ColorStateList getButtonTextColorDrawable(String defaultColor , String focusedColor){
+    public static ColorStateList getButtonTextColorDrawable(String defaultColor , String focusedColor , AppCMSPresenter appCMSPresenter){
+        String focusStateTextColor = null;
+        String unFocusStateTextColor = null;
+        if(null != appCMSPresenter &&
+                null != appCMSPresenter.getAppCMSMain() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
+            focusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor();
+            unFocusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getTextColor();
+        }
+
         int[][] states = new int[][] {
                 new int[] { android.R.attr.state_focused},
                 new int[] {android.R.attr.state_selected},
                 new int[] {android.R.attr.state_pressed},
                 new int[] {}
         };
+
+        if(null != focusStateTextColor){
+            focusedColor = focusStateTextColor;
+        }
+        if(null != unFocusStateTextColor){
+            defaultColor = unFocusStateTextColor;
+        }
         int[] colors = new int[] {
                 Color.parseColor(focusedColor),
                 Color.parseColor(focusedColor),
@@ -792,4 +886,24 @@ public class Utils {
      public static int getDeviceHeight(Context context){
          return context.getResources().getDisplayMetrics().heightPixels;
      }
+
+    /**
+     * Returns the complimentary (opposite) color.
+     * @param color int RGB color to return the compliment of
+     * @return int RGB of compliment color
+     */
+    public static int getComplimentColor(int color) {
+            // get existing colors
+            int alpha = Color.alpha(color);
+            int red = Color.red(color);
+            int blue = Color.blue(color);
+            int green = Color.green(color);
+
+            // find compliments
+            red = (~red) & 0xff;
+            blue = (~blue) & 0xff;
+            green = (~green) & 0xff;
+
+            return Color.argb(alpha, red, green, blue);
+    }
 }

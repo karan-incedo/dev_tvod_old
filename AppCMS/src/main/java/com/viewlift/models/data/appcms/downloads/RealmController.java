@@ -12,6 +12,7 @@ import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
@@ -103,6 +104,17 @@ public class RealmController {
             //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
         }
         return null;
+    }
+    public boolean getDownloadMediaType(String contentType) {
+        try {
+             return realm.where(DownloadVideoRealm.class)
+                    .equalTo("contentType", contentType)
+                    .findAll().size()>0? true:false;
+
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return false;
     }
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
@@ -236,6 +248,7 @@ public class RealmController {
         } catch (Exception e) {
             //Log.e(TAG, "Failed to add download: " + e.getMessage());
         }
+
     }
 
     public void updateDownload(DownloadVideoRealm downloadVideoRealm) {

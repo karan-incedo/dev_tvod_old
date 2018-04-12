@@ -124,6 +124,8 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
 
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
+        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
         loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -274,7 +276,8 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             }
         }
         subscriptionTitle.setText(message);
-
+        subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
         LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
         if (message.length() == 0) {
             textLayoutParams.height = 10;

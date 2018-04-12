@@ -401,7 +401,6 @@ public class CastHelper {
             //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
-
     }
 
 
@@ -711,6 +710,9 @@ public class CastHelper {
                                 isVideoDownloaded);
                         appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
                                 mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
+
+                        appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
+                                castCurrentDuration);
                     }
 
                 }

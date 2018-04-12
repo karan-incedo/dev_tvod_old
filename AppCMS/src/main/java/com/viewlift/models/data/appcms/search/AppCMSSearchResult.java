@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.vimeo.stag.UseStag;
 
 import java.util.List;
@@ -20,17 +22,30 @@ public class AppCMSSearchResult {
     @SerializedName("contentDetails")
     ContentDetails contentDetails;
 
-    public List<String> getAudioList() {
+
+    @SerializedName("seasons")
+    @Expose
+    List<Season_> seasons = null;
+
+    public List<Season_> getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(List<Season_> seasons) {
+        this.seasons = seasons;
+    }
+
+    public List<AudioList> getAudioList() {
         return audioList;
     }
 
-    public void setAudioList(List<String> audioList) {
+    public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
 
     @SerializedName("audioList")
     @Expose
-    List<String> audioList = null;
+    List<AudioList> audioList = null;
 
     public Gist getGist() {
         return gist;

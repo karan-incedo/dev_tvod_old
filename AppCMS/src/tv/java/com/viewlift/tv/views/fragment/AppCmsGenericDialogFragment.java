@@ -78,7 +78,9 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
         subscriptionTitle.setText(getResources().getString(R.string.blank_string));
         subscriptionTitle.setGravity(Gravity.CENTER);
         subscriptionTitle.setFocusable(false);
-        subscriptionTitle.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,

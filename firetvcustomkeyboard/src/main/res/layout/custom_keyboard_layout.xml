@@ -29,7 +29,7 @@
                 android:onClick="keyPressed"
                 android:padding="0dp"
                 android:text="space"
-                android:textColor="@drawable/btn_text_color_selector"
+                android:textColor="@color/btn_text_color_selector"
                 android:textSize="10sp"
                 tools:ignore="SmallSp" />
 
@@ -252,7 +252,7 @@
                 android:onClick="keyPressed"
                 android:padding="0dp"
                 android:text="space"
-                android:textColor="@drawable/btn_text_color_selector"
+                android:textColor="@color/btn_text_color_selector"
                 android:textSize="10sp"
                 tools:ignore="SmallSp" />
 
@@ -468,7 +468,7 @@
                 android:layout_height="16dp"
                 android:layout_marginEnd="4dp"
                 android:background="@drawable/btn_bg_space"
-                android:textColor="@drawable/btn_text_color_selector"
+                android:textColor="@color/btn_text_color_selector"
                 android:nextFocusDown="@+id/tv_select_num"
                 android:nextFocusRight="@+id/tv_search_a"
                 android:nextFocusLeft="@+id/btn_num_key_backspace"
@@ -578,7 +578,7 @@
                 android:layout_height="16dp"
                 android:layout_marginEnd="4dp"
                 android:background="@drawable/btn_bg_space"
-                android:textColor="@drawable/btn_text_color_selector"
+                android:textColor="@color/btn_text_color_selector"
                 android:nextFocusDown="@+id/tv_select_sc"
                 android:nextFocusRight="@+id/tv_search_a"
                 android:nextFocusLeft="@+id/btn_sc_key_backspace"

@@ -291,9 +291,9 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         relateVideoIds = binder.getRelateVideoIds();
         currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
 
-        if (!TextUtils.isEmpty(bgColor)) {
+        /*if (!TextUtils.isEmpty(bgColor)) {
             appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
-        }
+        }*/
 
         boolean freeContent = false;
         if (binder.getContentData() != null && binder.getContentData().getGist() != null &&

@@ -6,37 +6,28 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
+import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
+import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.Map;
-
-import rx.subjects.PublishSubject;
-
-import static com.viewlift.Utils.loadJsonFromAssets;
 
 /**
  * Created by viewlift on 6/28/17.
@@ -66,6 +57,7 @@ public class DownloadModule extends ModuleView {
     public static final int AUDIO_TAB = 259;
     public static final int VIDEO_TAB = 260;
     View downloadSeparator;
+    private boolean isVideoDownloaded, isAudioDownloaded;
 
     @SuppressWarnings("unchecked")
     public DownloadModule(Context context,
@@ -148,19 +140,16 @@ public class DownloadModule extends ModuleView {
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView1, false);
             }
 
+            isVideoDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video));
+            isAudioDownloaded = appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio));
+
             if (module != null && module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
                     if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
-                        if (appCMSPresenter.isAudioAvailable()) {
-                            component.getLayout().getMobile().setTopMargin(0);
-                            component.getLayout().getTabletLandscape().setTopMargin(0);
-                            component.getLayout().getTabletPortrait().setTopMargin(0);
-                            component.getLayout().getMobile().setBottomMargin(0);
-                            component.getLayout().getTabletLandscape().setBottomMargin(0);
-                            component.getLayout().getTabletPortrait().setBottomMargin(0);
-                            createVideoTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
-                            createAudioTab(textColor, downloadModuleSwitcherContainer, component, topLayoutContainer, i);
+                        if (appCMSPresenter.isAudioAvailable() && (isVideoDownloaded && isAudioDownloaded)) {
+                            createVideoTab(textColor, downloadModuleSwitcherContainer, tabs(component), topLayoutContainer, i);
+                            createAudioTab(textColor, downloadModuleSwitcherContainer, tabs(component), topLayoutContainer, i);
                         } else {
                             addChildComponents(moduleView1, component, appCMSAndroidModules, i);
                         }
@@ -176,14 +165,17 @@ public class DownloadModule extends ModuleView {
             }
             pageView.addToHeaderView(topLayoutContainer);
             childContainer.addView(pageView);
-            DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
-            if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
-                selectChild(0);
-                unselectChild(1);
-            }
-            if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
-                selectChild(1);
-                unselectChild(0);
+
+            if (isVideoDownloaded && isAudioDownloaded) {
+                DownloadTabSelectorBus.instanceOf().setTab(appCMSPresenter.getDownloadTabSelected());
+                if (appCMSPresenter.getDownloadTabSelected() == VIDEO_TAB) {
+                    selectChild(0);
+                    unselectChild(1);
+                }
+                if (appCMSPresenter.getDownloadTabSelected() == AUDIO_TAB) {
+                    selectChild(1);
+                    unselectChild(0);
+                }
             }
         }
     }
@@ -283,7 +275,6 @@ public class DownloadModule extends ModuleView {
         addChildComponents(moduleView, component, appCMSAndroidModules, i);
         topLayoutContainer.addView(moduleView);
     }
-
 
     void createAudioTab(int textColor, LinearLayout downloadModuleSwitcherContainer, Component component, LinearLayout topLayoutContainer, int i) {
 
@@ -413,5 +404,22 @@ public class DownloadModule extends ModuleView {
         int g = (color >> 8) & 0xFF;
         int b = (color >> 0) & 0xFF;
         button.setTextColor(Color.argb(alpha, r, g, b));
+    }
+
+    Component tabs(Component component) {
+        Component tab = new Component();
+        tab.setComponents(component.getComponents());
+        tab.setKey(component.getKey());
+        Layout layout = new Layout();
+        Mobile mobile=new Mobile();
+        TabletPortrait tabletPortrait=new TabletPortrait();
+        TabletLandscape tabletLandscape=new TabletLandscape();
+        layout.setMobile(mobile);
+        layout.setTabletPortrait(tabletPortrait);
+        layout.setTabletLandscape(tabletLandscape);
+        tab.setLayout(layout);
+        tab.setTrayClickAction(component.getTrayClickAction());
+        tab.setType(component.getType());
+        return tab;
     }
 }

@@ -599,7 +599,8 @@ public class PlaybackManager implements Playback.Callback {
         public void run() {
             updateProgress();
             if (!isCastConnected) {
-                localPlaybackInstance.setBeaconPingValues();
+               if(localPlaybackInstance != null)
+                  localPlaybackInstance.setBeaconPingValues();
             }
             if (isCastConnected) {
                 AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
