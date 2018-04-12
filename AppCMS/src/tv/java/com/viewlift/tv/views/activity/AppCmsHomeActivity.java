@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -150,7 +151,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             layoutParamsSubNav.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
         homeHolder = (FrameLayout) findViewById(R.id.home_placeholder);
-        homeHolder.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        homeHolder.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         shadowView = (FrameLayout) findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
         setSubNavigationFragment(appCmsSubNavigationFragment, updatedAppCMSBinder);
@@ -343,6 +344,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         TextView textView = (TextView) findViewById(R.id.subscribe_now_strip);
         textView.setText(message);
+        textView.setBackgroundColor(Color.parseColor(Utils.getFocusColor(this,appCMSPresenter)));
+        textView.setTextColor(Color.parseColor(Utils.getTextColor(this,appCMSPresenter)));
         textView.setGravity(Gravity.CENTER);
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) textView.getLayoutParams();
         if (message.length() == 0) {
@@ -862,10 +865,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         hideFooterControl();
-                        break;
+                        return true;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     case KeyEvent.KEYCODE_MEDIA_PLAY:
                         handlePlayRemoteKey();
@@ -883,6 +885,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 break;
             default:
                 break;
+            case KeyEvent.ACTION_UP:
+                switch (keyCode){
+                    case KeyEvent.KEYCODE_MENU:
+                        return true;
+                }
         }
         return super.dispatchKeyEvent(event);
     }

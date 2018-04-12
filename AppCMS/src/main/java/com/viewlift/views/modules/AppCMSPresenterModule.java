@@ -29,6 +29,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
@@ -117,7 +118,8 @@ public class AppCMSPresenterModule {
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,
                                                    Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                                                   ReferenceQueue<Object> referenceQueue) {
+                                                   ReferenceQueue<Object> referenceQueue,
+                                                   AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall) {
         return new AppCMSPresenter(gson,
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
@@ -170,6 +172,7 @@ public class AppCMSPresenterModule {
                 actionToPageAPIMap,
                 actionToActionTypeMap,
 
-                referenceQueue);
+                referenceQueue,
+                appCMSSubscribeForLatestNewsCall);
     }
 }

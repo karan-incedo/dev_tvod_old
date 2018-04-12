@@ -138,27 +138,27 @@ android {
             dimension = "blue"
         }
     }
-        /*configurations.mobileImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '27.0.3'
-                    }
+    /*configurations.mobileImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '27.0.3'
                 }
             }
         }
+    }
 
-       configurations.tvImplementation  {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                def requested = details.requested
-                if (requested.group == 'com.android.support') {
-                    if (!requested.name.startsWith("multidex")) {
-                        details.useVersion '25.4.0'
-                    }
+   configurations.tvImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '25.4.0'
                 }
             }
-        }*/
+        }
+    }*/
 
     defaultConfig {
         javaCompileOptions {
@@ -368,6 +368,9 @@ dependencies {
     implementation  "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
     implementation  "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
     implementation  "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
     implementation  "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation  "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     implementation  "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
@@ -407,11 +410,10 @@ dependencies {
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     compile  project(':exoplayer-library')
     implementation  project(':library')
-    implementation  project(':htmlspanner')
-    implementation  project(path: ':exoplayer-extension-vp9')
+    compile  project(':htmlspanner')
+    compile  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-
 
 }
 

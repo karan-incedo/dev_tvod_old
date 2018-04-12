@@ -254,8 +254,7 @@ public class TVViewCreator {
                         pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
             }
             return null;
-        } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
-//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+        } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -280,24 +279,7 @@ public class TVViewCreator {
                     }
                 });
             }
-        } else {
-            if ("AC History 01".equalsIgnoreCase(module.getView())) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }
-            if ("AC Watchlist 01".equalsIgnoreCase(module.getView())) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
-            }
-            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
-            {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
-            }
-
-            if ("AC UserManagement 01".equalsIgnoreCase(module.getView()))
-            {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
-            }
-
-
+        } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -309,9 +291,10 @@ public class TVViewCreator {
                     textView.setText(context.getString(R.string.no_data_available));
                     textView.setGravity(Gravity.CENTER);
                     Component component = new Component();
-                    component.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+                    component.setFontFamily(appCMSPresenter.getFontFamily());
                     component.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
                     textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component));
+                    textView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
                     childrenContainer.addView(textView);
                     return moduleView;
                 }
@@ -440,15 +423,24 @@ public class TVViewCreator {
                     List<ContentDatum> contentData1 = moduleData.getContentData();
                     List<Component> components = component.getComponents();
                     for (ContentDatum contentData : contentData1) {
-                        BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                        rowData.contentData = contentData;
-                        rowData.uiComponentList = components;
-                        rowData.action = component.getTrayClickAction();
-                        rowData.blockName = moduleUI.getBlockName();
-                        rowData.rowNumber = trayIndex;
-                        listRowAdapter.add(rowData);
+                        if(contentData != null && contentData.getGist() != null
+                                && contentData.getGist().getContentType() != null //video, series/show and episodic
+                                &&(contentData.getGist().getContentType().equalsIgnoreCase("video")
+                                     || contentData.getGist().getContentType().equalsIgnoreCase("series")
+                                      || contentData.getGist().getContentType().equalsIgnoreCase("show")
+                                      || contentData.getGist().getContentType().equalsIgnoreCase("episodic"))
+                                ) {
+                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                            rowData.contentData = contentData;
+                            rowData.uiComponentList = components;
+                            rowData.action = component.getTrayClickAction();
+                            rowData.blockName = moduleUI.getBlockName();
+                            rowData.rowNumber = trayIndex;
+                            listRowAdapter.add(rowData);
+                        }
                         //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                     }
+                    if(listRowAdapter.size() > 0)
                     mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
                 }
             }
@@ -741,7 +733,7 @@ public class TVViewCreator {
                     if (!TextUtils.isEmpty(component.getBorderColor())) {
                         ((TextView) componentViewResult.componentView).setTextColor(Utils.getButtonTextColorDrawable(
                                 Utils.getColor(context, component.getBorderColor()),
-                                Utils.getColor(context, component.getTextColor())));
+                                Utils.getColor(context, component.getTextColor()),appCMSPresenter));
                     }
                 }
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -750,7 +742,8 @@ public class TVViewCreator {
                     componentViewResult.componentView.setBackground(
                             Utils.setButtonBackgroundSelector(context,
                                     Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)),
-                                    component));
+                                    component,
+                                    appCMSPresenter));
                 }
 
                 if (component.getLetetrSpacing() != 0) {
@@ -1379,7 +1372,8 @@ public class TVViewCreator {
                     default:
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    setTypeFace(context,
+                    setTypeFace(appCMSPresenter,
+                            context,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
@@ -1395,7 +1389,10 @@ public class TVViewCreator {
                 }
 
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                if (!TextUtils.isEmpty(component.getTextColor())) {
+                String txtColor = appCMSPresenter.getAppCtaTextColor();
+                if(null != txtColor){
+                    textColor = Color.parseColor(txtColor);
+                }else if (!TextUtils.isEmpty(component.getTextColor())) {
                     textColor = Color.parseColor(getColor(context, component.getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
@@ -1433,8 +1430,9 @@ public class TVViewCreator {
                                 textView.setFocusable(true);
                                 //  componentViewResult.componentView.setTag("API_DSECRIPTION");
 
-                                int color = ContextCompat.getColor(context, R.color.colorAccent);
-                                if (!TextUtils.isEmpty(component.getTextColor())) {
+                                if(null != appCMSPresenter.getAppCtaTextColor()){
+                                    textColor = Color.parseColor(txtColor);
+                                }else if (!TextUtils.isEmpty(component.getTextColor())) {
                                     textColor = Color.parseColor(getColor(context, component.getTextColor()));
                                 } else if (component.getStyles() != null) {
                                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
@@ -1446,7 +1444,8 @@ public class TVViewCreator {
                                 }
                                 textView.setTextColor(textColor);
 
-                                setTypeFace(context,
+                                setTypeFace(appCMSPresenter,
+                                        context,
                                         jsonValueKeyMap,
                                         component,
                                         textView);
@@ -1588,7 +1587,7 @@ public class TVViewCreator {
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             break;
                         case RAW_HTML_TITLE_KEY:
-                            String txtColor = Utils.getTitleColorForST(context , appCMSPresenter);
+                            txtColor = Utils.getTitleColorForST(context , appCMSPresenter);
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(txtColor));
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
@@ -1625,9 +1624,13 @@ public class TVViewCreator {
 
                                 if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                                     String text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
-                                    String publishDate = appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMMM dd, yyyy");
-                                    if(null != publishDate) {
-                                        text = text + " | " + publishDate;
+                                    if(null != moduleAPI.getContentData().get(0).getGist().getPublishDate()) {
+                                        String publishDate = appCMSPresenter.getDateFormat(
+                                                Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),
+                                                "MMMM dd, yyyy");
+                                        if (null != publishDate) {
+                                            text = text + " | " + publishDate;
+                                        }
                                     }
                                     ((TextView) componentViewResult.componentView).setText(text.toString());
                                     componentViewResult.componentView.setAlpha(0.6f);
@@ -1912,7 +1915,8 @@ public class TVViewCreator {
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())
                         && componentViewResult.componentView instanceof TextView) {
-                    setTypeFace(context,
+                    setTypeFace(appCMSPresenter,
+                            context,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
@@ -2317,6 +2321,8 @@ public class TVViewCreator {
                     case PAGE_PASSWORDTEXTFIELD2_KEY:
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         textInputEditText.setId(R.id.password_edit_box);
+                        textInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+
                         //textInputEditText.setNextFocusLeftId(R.id.email_edit_box);
                         // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
                         break;
@@ -2335,10 +2341,11 @@ public class TVViewCreator {
                     textInputEditText.setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
                     textInputEditText.setHintTextColor(Utils.getButtonTextColorDrawable(
                             component.getHintColor(),
-                            component.getHintColor()
+                            component.getHintColor(),
+                            appCMSPresenter
                     ));
                 }
-                setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
+                setTypeFace(appCMSPresenter,context, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_tv_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,
                         0,
@@ -2497,12 +2504,13 @@ public class TVViewCreator {
         }
     }
 
-    private void setTypeFace(Context context,
+    private void setTypeFace(AppCMSPresenter appCMSPresenter,
+                             Context context,
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
-        if (textView != null) {
-            if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+        if (textView != null && null != appCMSPresenter) {
+            if (jsonValueKeyMap.get(appCMSPresenter.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
                 AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
                 if (fontWeight == null) {
                     fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -2525,6 +2533,32 @@ public class TVViewCreator {
                         face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
                         //Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
                 }
+                textView.setTypeface(face);
+            }
+
+            if (jsonValueKeyMap.get(appCMSPresenter.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+                AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+                if (fontWeight == null) {
+                    fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                }
+                Typeface face = null;
+                switch (fontWeight) {
+                    case PAGE_TEXT_BOLD_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                        break;
+                    case PAGE_TEXT_MEDIUM_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                        break;
+                    case PAGE_TEXT_LIGHT_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                        break;
+                    case PAGE_TEXT_REGULAR_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                        break;
+                    default:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                }
+
                 textView.setTypeface(face);
             }
         }

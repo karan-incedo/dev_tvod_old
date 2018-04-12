@@ -12,6 +12,7 @@ import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
@@ -21,7 +22,7 @@ import io.realm.RealmResults;
 
 public class RealmController {
     private static RealmController instance;
-    private final Realm realm;
+    private Realm realm;
 
     private static final String TAG = "RealmController";
 
@@ -30,12 +31,7 @@ public class RealmController {
     }
 
     public RealmController(Application application) {
-        Realm.init(application.getApplicationContext());
-        RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);
+        realm = Realm.getDefaultInstance();
     }
 
     public static RealmController with(Fragment fragment) {
@@ -91,7 +87,7 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloads() {
         try {
-            return realm.where(DownloadVideoRealm.class).findAll();
+            return realm.where(DownloadVideoRealm.class).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get downloads: " + e.getMessage());
         }
@@ -109,11 +105,24 @@ public class RealmController {
         }
         return null;
     }
-    public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
+    public boolean getDownloadMediaType(String contentType) {
         try {
-            return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
+             return realm.where(DownloadVideoRealm.class)
+                    .equalTo("contentType", contentType)
+                    .findAll().size()>0? true:false;
+
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
+        try {
+            Log.e("RealmController","LoggedIn user ID :"+userId);
+            return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -133,7 +142,7 @@ public class RealmController {
                     String.valueOf(DownloadStatus.STATUS_PENDING),
                     String.valueOf(DownloadStatus.STATUS_RUNNING)};
             return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                    .equalTo("userId", userId).findAll();
+                    .equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
         }
@@ -239,6 +248,7 @@ public class RealmController {
         } catch (Exception e) {
             //Log.e(TAG, "Failed to add download: " + e.getMessage());
         }
+
     }
 
     public void updateDownload(DownloadVideoRealm downloadVideoRealm) {

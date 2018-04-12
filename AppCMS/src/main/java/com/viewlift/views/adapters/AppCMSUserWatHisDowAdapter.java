@@ -338,11 +338,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                         R.drawable.ic_download_queued));
                             }
+                            contentDatum.getGist().setDownloadStatus(videoDownloadStatus.getDownloadStatus());
                         },
                         appCMSPresenter.getLoggedInUser());
 
                 switch (contentDatum.getGist().getDownloadStatus()) {
                     case STATUS_PENDING:
+                        deleteButton.setImageBitmap(null);
+                        deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                R.drawable.ic_download_queued));
+                        break;
                     case STATUS_RUNNING:
                         int finalRadiusDifference = radiusDifference;
                         if (contentDatum.getGist() != null && deleteDownloadButton != null) {
@@ -368,7 +373,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             if (userVideoDownloadStatus != null) {
                                                 if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
                                                     finalDeleteDownloadButton.setImageBitmap(null);
-                                                    finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext, R.drawable.ic_deleteicon));
+                                                    finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
+                                                            R.drawable.ic_deleteicon));
                                                     finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
                                                             appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                                                     finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -386,7 +392,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                     } catch (Exception e) {
                                                         //Log.e(TAG, e.getMessage());
                                                     }
-
+                                                    notifyItemChanged(position);
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
                                                     finalDeleteDownloadButton.setImageBitmap(null);
                                                     finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
@@ -452,7 +458,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                         deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                 R.drawable.ic_download_queued));
                         break;
-
                     default:
                         Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
                         deleteDownloadButton.setImageBitmap(null);
@@ -568,11 +573,17 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         listView.setAdapter(this);
         listView.invalidate();
         notifyDataSetChanged();
-
         if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
+            if (isDonwloadPage)
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id) != null)
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id).setVisibility(View.GONE);
         } else {
             sendEvent(showRemoveAllButtonEvent);
+            if (isDonwloadPage)
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id) != null)
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.remove_all_download_id).setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -624,6 +635,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
                                 deleteDownloadVideo(data, position);
+                                return;
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
@@ -689,31 +701,40 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             action);
                                 }
                             }
-                            if (action.contains(trayAction)) {
-                                if (isDonwloadPage) {
-                                    if (data.getGist() != null &&
-                                            data.getGist().getMediaType() != null &&
-                                            data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                                            data.getGist().getContentType() != null &&
-                                            data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                   /*play audio if already downloaded*/
-                                        playDownloadedAudio(data);
-                                        return;
-                                    } else {
-                                    /*play movie if already downloaded*/
-                                        playDownloaded(data, clickPosition);
-                                        return;
+                            if (action != null && !TextUtils.isEmpty(action)) {
+
+                                    if (isDonwloadPage && action.contains(trayAction)) {
+                                        if (data.getGist() != null &&
+                                                data.getGist().getMediaType() != null &&
+                                                data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                                data.getGist().getContentType() != null &&
+                                                data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                            /*play audio if already downloaded*/
+                                            playDownloadedAudio(data);
+                                            return;
+                                        } else {
+                                            /*play movie if already downloaded*/
+                                            playDownloaded(data, clickPosition);
+                                            return;
+                                        }
                                     }
-                                }
-                                /*open video detail page*/
-                                appCMSPresenter.launchButtonSelectedAction(permalink,
-                                        action,
-                                        title,
-                                        null,
-                                        data,
-                                        false,
-                                        currentPlayingIndex,
-                                        relatedVideoIds);
+                                    if (action.contains(trayAction)  &&
+                                            data.getGist() != null &&
+                                            data.getGist().getContentType() != null &&
+                                            data.getGist().getContentType().equalsIgnoreCase("SERIES") )
+                                    {
+                                        action= mContext.getString(R.string.app_cms_action_showvideopage_key);
+                                    }
+                                    /*open video detail page*/
+                                    appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds);
+
                             }
 
                         }

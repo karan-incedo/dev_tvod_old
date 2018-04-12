@@ -6,6 +6,7 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
@@ -21,7 +22,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class AppCMSAudioDetailCall {
 
@@ -37,7 +41,6 @@ public class AppCMSAudioDetailCall {
         this.gson = gson;
     }
 
-    @WorkerThread
     public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
         try {
             appCMSAudioDetailRest.get(url).enqueue(new Callback<AppCMSAudioDetailResult>() {
@@ -58,6 +61,29 @@ public class AppCMSAudioDetailCall {
             });
         } catch (Exception e) {
             //Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
+        }
+    }
+
+    public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction, boolean isFalse) throws IOException {
+        try {
+            appCMSAudioDetailRest.getPlayList("","").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+                @Override
+                public void onCompleted() {
+                    Log.d("TAG", "Complete");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    audioDetailResultAction.call(null);
+                }
+
+                @Override
+                public void onNext(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                    Observable.just(appCMSAudioDetailResult).subscribe(audioDetailResultAction);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
         }
     }
 }

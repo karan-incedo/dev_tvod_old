@@ -636,7 +636,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
-        return 0;
+        return availableStreamingQualities.size() - 1;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
@@ -674,7 +674,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Collections.sort(availableStreamingQualities, (q1, q2) -> {
             int i1 = Integer.valueOf(q1.replace("p", ""));
             int i2 = Integer.valueOf(q2.replace("p", ""));
-            if (i2 > i1) {
+            if (i2 < i1) {
                 return -1;
             } else if (i1 == i2) {
                 return 0;

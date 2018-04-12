@@ -78,7 +78,7 @@ public class AutoplayActivity
             fragmentTransaction.addToBackStack(appCMSBinder.getContentData().getGist().getId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
-            //Log.e(TAG, "Failed to add Fragment to back stack");
+            Log.e(TAG, "Failed to add Fragment to back stack");
         }
     }
 

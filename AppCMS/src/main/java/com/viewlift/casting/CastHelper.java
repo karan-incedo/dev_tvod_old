@@ -371,6 +371,10 @@ public class CastHelper {
     public void launchTrailer(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+        if(binder == null || binder.getContentData() == null){
+            Toast.makeText(mAppContext, mAppContext.getString(R.string.app_cms_download_stream_info_error_title), Toast.LENGTH_SHORT).show();
+            return;
+        }
         this.appCMSPresenterComponenet = appCMSPresenter;
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null
@@ -382,10 +386,10 @@ public class CastHelper {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
         } else {
-            if (binderPlayScreen.getContentData().getGist() != null && binderPlayScreen.getContentData().getGist().getTitle() != null) {
-                title = binderPlayScreen.getContentData().getGist().getTitle();
+            if (binder.getContentData().getGist() != null && binder.getContentData().getGist().getTitle() != null) {
+                title = binder.getContentData().getGist().getTitle();
             }
-            videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
+            videoUrl = CastingUtils.getPlayingUrl(binder.getContentData());
         }
 
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
@@ -707,6 +711,9 @@ public class CastHelper {
                                 isVideoDownloaded);
                         appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
                                 mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
+
+                        appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
+                                castCurrentDuration);
                     }
 
                 }
