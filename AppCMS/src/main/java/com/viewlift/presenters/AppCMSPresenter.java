@@ -4528,16 +4528,16 @@ public class AppCMSPresenter {
         } else {
 
             // Uncomment to allow for Pause/Resume
-//            if (isVideoDownloadRunning(contentDatum)) {
-//                if (!pauseDownload(contentDatum)) {
-//                    Log.e(TAG, "Failed to pause download");
-//                }
-//                return;
-//            } else if (isVideoDownloadPaused(contentDatum)) {
-//                if (!resumeDownload(contentDatum)) {
-//                    Log.e(TAG, "Failed to resume download");
-//                }
-//            }
+            if (isVideoDownloadRunning(contentDatum)) {
+                if (!pauseDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to pause download");
+                }
+                return;
+            } else if (isVideoDownloadPaused(contentDatum)) {
+                if (!resumeDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to resume download");
+                }
+            }
             String downloadURL = "";
 
             if (contentDatum.getGist() != null &&
@@ -16397,13 +16397,6 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public void setLastPauseState(boolean isReload) {
-        isLastStatePlaying = isReload;
-    }
-
-    public boolean isLastStatePause() {
-        return isLastStatePlaying;
-    }
 
     public boolean isAllPlaylistAudioDownloaded(List<ContentDatum> contentData) {
         boolean isPlaylistDownloaded = true;
@@ -16792,7 +16785,12 @@ public class AppCMSPresenter {
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
 
-                iv2.setImageBitmap(b);
+                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        iv2.setImageBitmap(b);
+                    }
+                });
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

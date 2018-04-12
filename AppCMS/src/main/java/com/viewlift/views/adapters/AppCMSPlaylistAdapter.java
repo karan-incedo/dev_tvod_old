@@ -530,15 +530,32 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             @Override
             public void call(Boolean isStartDownload) {
                 if (isStartDownload) {
-                    getPlaylistAudioItems();
+                    Thread th = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    try {
+                                        getPlaylistAudioItems();
+                                    } catch (Exception e) {
+                                        Log.e("ThreadException ", e.toString());
+                                    }                                }
+                            });
+
+                        }
+                    });
+                    th.start();
                 }
             }
         });
     }
 
-    private  int countDownloadPlaylist= 0;
+    private int countDownloadPlaylist = 0;
+
     private void getPlaylistAudioItems() {
-        countDownloadPlaylist= 0;
+        countDownloadPlaylist = 0;
         appCMSPresenter.showLoadingDialog(true);
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
@@ -769,16 +786,17 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 if ((appCMSPresenter.isUserSubscribed()) &&
                         appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editDownloadFromPlaylist(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                    countDownloadPlaylist++;
-                    if (countDownloadPlaylist == adapterData.size()){
-                        appCMSPresenter.showLoadingDialog(false);
-                    }
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
+                    countDownloadPlaylist++;
+//                    if (countDownloadPlaylist == adapterData.size()) {
+//                        System.out.println("stop loader-" + adapterData.size());
+//                        appCMSPresenter.showLoadingDialog(false);
+//                    }
                 } else {
                     if (appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
@@ -808,6 +826,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_FAILED:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
+                        if (countDownloadPlaylist == adapterData.size()) {
+                            System.out.println("stop loader-" + adapterData.size());
+                            appCMSPresenter.showLoadingDialog(false);
+                        }
                         break;
 
                     case STATUS_PAUSED:
@@ -820,20 +842,41 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(R.drawable.ic_download_queued);
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
-                                radiusDifference,
-                                id);
+                        appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, UpdateDownloadImageIconAction.this, userId, false,
+                                        radiusDifference,
+                                        id);
+
+                            }
+                        });
                         imageButton.setOnClickListener(null);
+                        if (countDownloadPlaylist == adapterData.size()) {
+                            System.out.println("stop loader-" + adapterData.size());
+                            appCMSPresenter.showLoadingDialog(false);
+                        }
                         break;
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
                         imageButton.setImageResource(0);
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
-                                radiusDifference,
-                                id);
+                        appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, UpdateDownloadImageIconAction.this, userId, false,
+                                        radiusDifference,
+                                        id);
+
+                            }
+                        });
+
+                        if (countDownloadPlaylist == adapterData.size()) {
+                            System.out.println("stop loader-" + adapterData.size());
+                            appCMSPresenter.showLoadingDialog(false);
+                        }
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
                         imageButton.setOnClickListener(null);
@@ -878,40 +921,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
-                imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setImageResource(R.drawable.ic_download_big);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-//                if(isPlaylistDownloading){
-//                    imageButton.setOnClickListener(addClickListener);
-//                }
-//                if ((boolean) imageButton.getTag()) {
-////                    imageButton.setTag(false);
-//                    System.out.println("download status start");
-//
-//                    addClickListener.onClick(imageButton);
-//                }
-//                imageButton.setOnClickListener(addClickListener);
-//                addClickListener.onClick(imageButton);
-
+                imageButton.requestLayout();
                 addClickListener.onClick(imageButton);
-
-//                if ((boolean) imageButton.getTag()) {
-//                    imageButton.setTag(false);
-//                    addClickListener.onClick(imageButton);
-//                }
-//                new android.os.Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if ((boolean) imageButton.getTag()) {
-//                            imageButton.setTag(false);
-//
-//                            addClickListener.onClick(imageButton);
-//                        }
-//                    }
-//                }, 50);
-
-
             }
         }
 
