@@ -13614,8 +13614,8 @@ public class AppCMSPresenter {
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
-                    splashPage = metaPage;
-                    new SoftReference<Object>(splashPage, referenceQueue);
+                    historyPage = metaPage;
+                    new SoftReference<Object>(historyPage, referenceQueue);
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
