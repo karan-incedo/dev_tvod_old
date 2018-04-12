@@ -44,6 +44,7 @@ import java.util.Objects;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -59,7 +60,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private int bgColor = -1;
     private Typeface extraBoldTypeFace, semiBoldTypeFace;
     private Component extraBoldComp, semiBoldComp;
-    private AppCMSBinder appCmsBinder;
     private Navigation mNavigation;
     private AppCMSBinder mAppCMSBinder;
     private boolean isLoginDialogPage;
@@ -424,7 +424,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
                     if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
-                            .get(navigationSubItem.title))) {
+                            .get(navigationSubItem.title))
+                    || ANDROID_WATCHLIST_SCREEN_KEY.equals(mAppCMSBinder
+                            .getJsonValueKeyMap().get(navigationSubItem.title))) {
 
                         appCmsPresenter.showLoadingDialog(true);
                         appCmsPresenter.navigateToWatchlistPage(

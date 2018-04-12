@@ -27,7 +27,7 @@
     <application
         android:banner="@drawable/tv_logo"
         android:label="@string/default_app_name"
-        android:icon="@drawable/tv_logo"
+        android:icon="@drawable/app_logo"
         tools:replace="android:label"
         >
         <activity
