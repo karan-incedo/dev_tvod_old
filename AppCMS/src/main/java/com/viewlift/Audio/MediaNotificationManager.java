@@ -140,6 +140,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mNotificationManager.cancelAll();
     }
 
+
+    public void notifyMedia(){
+        Notification notification = createNotification();
+        if (notification != null) {
+            mNotificationManager.notify(NOTIFICATION_ID, notification);
+        }
+    }
     /**
      * Posts the notification and starts tracking the session to keep it
      * updated. The notification will automatically be removed if the session is
