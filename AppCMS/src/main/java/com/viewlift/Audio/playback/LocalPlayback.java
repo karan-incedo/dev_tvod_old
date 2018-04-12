@@ -333,6 +333,7 @@ public final class LocalPlayback implements Playback {
 
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
+        appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -358,8 +359,9 @@ public final class LocalPlayback implements Playback {
             }
         }
         audioData.getGist().setAudioPlaying(true);
-        appCMSPresenter.notifyDownloadHasCompleted();
-
+        if (appCMSPresenter != null) {
+            appCMSPresenter.notifyDownloadHasCompleted();
+        }
         if (AudioPlaylistHelper.getInstance().getLastPlayPositionDetails() != null && mCurrentMediaId != null && AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId() != null &&
                 AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getId().equalsIgnoreCase(mCurrentMediaId) &&
                 AudioPlaylistHelper.getInstance().getLastPlayPositionDetails().getPosition() > 0) {
@@ -368,7 +370,7 @@ public final class LocalPlayback implements Playback {
         //reset last save position
         AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
         //if media has changed then load new audio url
-        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && !appCMSPresenter.isLastStatePause())) {
+        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && (AudioPlaylistHelper.getInstance().isLastStatePause()))) {
 
             mListener.onMetadataChanged(item);
             updatedMetaItem = item;
@@ -411,11 +413,11 @@ public final class LocalPlayback implements Playback {
             }
 
         }
-        AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);
+        AudioPlaylistHelper.getInstance().setLastPauseState(false);
 
         configurePlayerState();
         mCallback.onPlaybackStatusChanged(getState());
-        if (appCMSPresenter.getAudioReload()) {
+        if (appCMSPresenter!=null && appCMSPresenter.getAudioReload()) {
             relaodAudioItem();
         }
         if (!sentBeaconPlay && appCMSPresenter != null) {

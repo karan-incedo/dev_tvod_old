@@ -454,7 +454,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewHeight);
                             if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                                 if (data.getGist().getVideoImageUrl() != null) {
-                                    imageUrl = data.getGist().getVideoImageUrl();
+                                    imageUrl = data.getGist().getVideoImageUrl().equalsIgnoreCase("file:///") ? data.getGist().getPosterImageUrl() : data.getGist().getVideoImageUrl();
                                 }
                             }
                         } else {
