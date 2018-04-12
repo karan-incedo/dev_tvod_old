@@ -504,11 +504,13 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
             if (primary.getIcon() != null) {
                 holder.navImageView.setImageResource(getIcon(primary.getIcon()));
-                holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
-                holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                if(null != holder.navImageView.getDrawable()) {
+                    holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
+                    holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                }
             }
             if (null != mSelectedPageId) {
-                if (primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
+                if (null != primary.getPageId() && primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
                     holder.navItemLayout.requestFocus();
                 } else {
                     holder.navItemLayout.clearFocus();
@@ -521,7 +523,11 @@ public class AppCmsNavigationFragment extends Fragment {
                 Utils.pageLoading(true, getActivity());
 
                 new Handler().postDelayed(() -> {
-
+                    if(null == primary.getPageId()){
+                        Toast.makeText(mContext, mContext.getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                        Utils.pageLoading(false, getActivity());
+                        return;
+                    }
                     /*Search*/
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                         appCmsPresenter.openSearch(primary.getPageId(), primary.getTitle());
