@@ -34,6 +34,7 @@ import java.util.List;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -334,6 +335,8 @@ public class AppCmsNavigationFragment extends Fragment {
                                 NavigationUser navigationUser = getNavigationUser();
                                 if (navigationUser != null) {
                                     if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                            .getJsonValueKeyMap().get(navigationUser.getTitle()))
+                                            || ANDROID_WATCHLIST_SCREEN_KEY.equals(appCmsBinder
                                             .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                                         appCmsPresenter.navigateToWatchlistPage(
                                                 navigationUser.getPageId(),
@@ -540,6 +543,8 @@ public class AppCmsNavigationFragment extends Fragment {
                         NavigationUser navigationUser = getNavigationUser();
                         //Log.d("","Selected Title = "+navigationUser.getTitle());
                         if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                .getJsonValueKeyMap().get(navigationUser.getTitle()))
+                        || ANDROID_WATCHLIST_SCREEN_KEY.equals(appCmsBinder
                                 .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                             appCmsPresenter.navigateToWatchlistPage(
                                     navigationUser.getPageId(),
