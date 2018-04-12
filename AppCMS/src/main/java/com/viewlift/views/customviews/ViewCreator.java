@@ -1194,6 +1194,7 @@ public class ViewCreator {
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                                         int placeHolderImage = /*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*/R.drawable.vid_image_placeholder_land;
+                                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
                                         ((ImageView) view).setImageResource(placeHolderImage);
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty()) {
@@ -1880,7 +1881,13 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } /*else if (moduleInfo.getBlockName().contains("tray03")) {
+                } else if (moduleInfo.getBlockName().contains("carousel01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "video_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }/*else if (moduleInfo.getBlockName().contains("tray03")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
@@ -1900,6 +1907,18 @@ public class ViewCreator {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("watchlist02")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("history02")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_history.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
@@ -2104,7 +2123,7 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                             adjustOthers = AdjustOtherState.INITIATED;
-                        } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
+                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null &&
                                 jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {
@@ -3650,6 +3669,7 @@ public class ViewCreator {
                         final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+
                             if (appCMSPresenter.getCurrentActivity() != null) {
                                 appCMSPresenter.getCurrentActivity().onBackPressed();
                             } else if (!appCMSPresenter.launchButtonSelectedAction(null,
@@ -3806,6 +3826,11 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = true;
+/*
+                                if (appCMSPresenter.isAudioAvailable()) {
+                                    deleteAllFiles = false;
+                                }
+*/
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
@@ -3817,12 +3842,6 @@ public class ViewCreator {
 
                                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                                     case PAGE_DOWNLOAD_02_MODULE_KEY:
-                                       /* if (appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_video)) &&
-                                                appCMSPresenter.isDownloadedMediaType(context.getString(R.string.content_type_audio))) {
-                                            deleteAllFiles = false;
-                                        } else {
-                                            deleteAllFiles = true;
-                                        }*/
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
@@ -4088,7 +4107,7 @@ public class ViewCreator {
 
             case PAGE_ADS_KEY:
                 //todo need to work for managing Subscribed User case scanerio
-                if (!appCMSPresenter.isUserSubscribed()) {
+                //if (!appCMSPresenter.isUserSubscribed()) {
                     componentViewResult.componentView = new LinearLayout(context);
                     AdView adView = new AdView(context);
                     adView.setFocusable(false);
@@ -4119,7 +4138,7 @@ public class ViewCreator {
                             adView.setLayoutParams(params);
                         }
                     }
-                }
+                //}
                 break;
 
             case PAGE_LABEL_KEY:
@@ -4472,7 +4491,7 @@ public class ViewCreator {
 
                                 if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
                                     ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
-                                    ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#FFFFFF"));
                                     int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                                     String position = photoGallerySize == 0 ? "0/0" : 1 + "/" + photoGallerySize;
                                     ((TextView) componentViewResult.componentView).setText(position);
@@ -5107,6 +5126,7 @@ public class ViewCreator {
 
                                 int placeHolderImage = R.drawable.vid_image_placeholder_land;/*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*/
                                 ((ImageView) componentViewResult.componentView).setImageResource(placeHolderImage);
+                                ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),

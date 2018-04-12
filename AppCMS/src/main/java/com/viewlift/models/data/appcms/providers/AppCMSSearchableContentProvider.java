@@ -111,12 +111,22 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                 String contentType = searchResultList.get(i).getGist().getContentType();
                                 String gistId = searchResultList.get(i).getGist().getId();
 
-                                String audioCount="0";
-                                if(searchResultList.get(i).getAudioList()!=null && searchResultList.get(i).getAudioList().size()>0){
-                                     audioCount = searchResultList.get(i).getAudioList().size()+"";
+                                String audioCount = "0";
+                                if (searchResultList.get(i).getAudioList() != null && searchResultList.get(i).getAudioList().size() > 0) {
+                                    audioCount = searchResultList.get(i).getAudioList().size() + "";
                                 }
-                                String yearSong="";
-                                if(searchResultList.get(i).getGist()!=null && searchResultList.get(i).getGist().getYear()!=null){
+
+                                int searchEpisodeCount = 0;
+                                if (searchResultList.get(i).getSeasons() != null) {
+                                    for (int j = 0; j < searchResultList.get(i).getSeasons().size(); j++) {
+                                        searchEpisodeCount = searchEpisodeCount + searchResultList.get(i).getSeasons().get(j).getEpisodes().size();
+                                    }
+                                }
+                                if (searchResultList.get(i).getAudioList() != null && searchResultList.get(i).getAudioList().size() > 0) {
+                                    audioCount = searchResultList.get(i).getAudioList().size() + "";
+                                }
+                                String yearSong = "";
+                                if (searchResultList.get(i).getGist() != null && searchResultList.get(i).getGist().getYear() != null) {
                                     yearSong = searchResultList.get(i).getGist().getYear();
                                 }
 
@@ -132,11 +142,11 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         "," +
                                         contentType +
                                         "," +
-                                        gistId+","+audioCount+","+yearSong;
+                                        gistId + "," + audioCount + "," + yearSong + "," + searchEpisodeCount + "";
 
                                 Object[] rowResult = {i,
                                         searchResultList.get(i).getGist().getTitle(),
-                                        searchResultList.get(i).getGist().getRuntime()/ 60,
+                                        searchResultList.get(i).getGist().getRuntime() / 60,
                                         searchHintResult};
 
                                 cursor.addRow(rowResult);
