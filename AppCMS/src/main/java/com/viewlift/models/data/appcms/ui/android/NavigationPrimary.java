@@ -2,6 +2,8 @@ package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ public class NavigationPrimary implements Serializable {
 
     @SerializedName("items")
     @Expose
-    List<Object> items = null;
+    List<NavigationPrimary> items = null;
 
     @SerializedName("pageId")
     @Expose
@@ -45,11 +47,9 @@ public class NavigationPrimary implements Serializable {
     @SerializedName("icon")
     @Expose
     String icon;
-
     @SerializedName("platforms")
     @Expose
     Platforms platforms;
-
     public String getTitle() {
         return title;
     }
@@ -58,11 +58,11 @@ public class NavigationPrimary implements Serializable {
         this.title = title;
     }
 
-    public List<Object> getItems() {
+    public List<NavigationPrimary> getItems() {
         return items;
     }
 
-    public void setItems(List<Object> items) {
+    public void setItems(List<NavigationPrimary> items) {
         this.items = items;
     }
 
@@ -105,28 +105,33 @@ public class NavigationPrimary implements Serializable {
     public void setAccessLevels(AccessLevels accessLevels) {
         this.accessLevels = accessLevels;
     }
-
     public String getPagePath() {
         return pagePath;
     }
-
     public void setPagePath(String pagePath) {
         this.pagePath = pagePath;
     }
-
     public String getIcon() {
         return icon;
     }
-
     public void setIcon(String icon) {
         this.icon = icon;
     }
-
     public Platforms getPlatforms() {
         return platforms;
     }
-
     public void setPlatforms(Platforms platforms) {
         this.platforms = platforms;
+    }
+
+    public ContentDatum convertToContentDatum(){
+        ContentDatum contentDatum = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setId(this.getPageId());
+        gist.setVideoImageUrl(this.getIcon());
+        gist.setTitle(this.getTitle());
+        gist.setPermalink(this.getUrl());
+        contentDatum.setGist(gist);
+       return contentDatum;
     }
 }

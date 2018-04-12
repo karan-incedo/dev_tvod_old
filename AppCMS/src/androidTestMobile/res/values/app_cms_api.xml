@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_cms_api_baseurl">https://appcmsprod.viewlift.com/</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+
+    <!-- AppCMS JSON data input keys -->
+    <string name="app_cms_main_version_key">version</string>
+    <string name="app_cms_main_old_version_key">old_version</string>
+    <string name="app_cms_main_android_key">Android</string>
+    <string name="app_cms_android_navigation_key">navigation</string>
+    <string name="app_cms_page_button_key">button</string>
+    <string name="app_cms_page_image_key">image</string>
+    <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_collection_grid_key">collectionGrid</string>
+    <string name="app_cms_page_carousel_key">Carousel</string>
+    <string name="app_cms_page_bg_key">bg</string>
+    <string name="app_cms_page_logo_key">logo</string>
+
+    <!-- AppAppCMSPageUIPage names for Actions -->
+    <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
+    <string name="app_cms_pagename_homepage_key">Home Page</string>
+    <string name="app_cms_pagename_videopage_key">Video Page</string>
+
+    <!-- AppCMS Action names -->
+    <string name="app_cms_action_splashpage_key">Splash Screen</string>
+    <string name="app_cms_action_homepage_key">Home Page</string>
+    <string name="app_cms_action_videopage_key">lectureDetailPage</string>
+</resources>

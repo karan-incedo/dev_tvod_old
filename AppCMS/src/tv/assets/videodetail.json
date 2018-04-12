@@ -1,12 +1,17 @@
 {
-  "id": "5f18b8ed-7158-4fba-a613-00987a58cba2",
-  "settings": {},
+  "id": "fd948c90-efc9-469a-ae67-725d4d5ccfe9",
+  "settings": {
+    "fileType": "mp4"
+  },
   "view": "AC VideoPlayerWithInfo 01",
   "type": "AC VideoPlayerWithInfo 01",
+  "blockName": "videoPlayerInfo01",
   "layout": {
     "ftv": {
       "yAxis": 0,
-      "height": 560
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 680
     }
   },
   "components": [
@@ -16,7 +21,7 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 100
+          "height": 138
         }
       },
       "components": [
@@ -24,14 +29,14 @@
           "layout": {
             "ftv": {
               "leftMargin": 95,
-              "topMargin": 10,
-              "fontSize": 30
+              "fontSize": 26,
+              "height": 73
             }
           },
-          "opacity": 1,
           "fontFamily": "OpenSans",
           "numberOfLines": 1,
-          "textAlignment": "left",
+          "textAlignment": "center_vertical",
+          "opacity": 1,
           "type": "label",
           "textColor": "#ffffff",
           "fontWeight": "Bold",
@@ -40,18 +45,21 @@
         {
           "layout": {
             "ftv": {
+              "topMargin": 7,
+              "rightMargin": 89,
+              "gravity": "center",
               "width": 590,
-              "rightMargin": 100,
-              "fontSize": 16,
+              "fontSize": 13,
               "height": 36
             }
           },
-          "opacity": 0.5,
           "fontFamily": "OpenSans",
           "numberOfLines": 1,
+          "gravity": "center",
           "textAlignment": "right",
+          "opacity": 0.5,
           "type": "label",
-          "textColor": "#66ffffff",
+          "textColor": "#ffffff",
           "key": "videoSubTitle"
         }
       ],
@@ -62,96 +70,92 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 120,
-          "xAxis": 1080,
-          "width": 747,
-          "height": 420,
-          "padding": 4
-        }
-      },
-      "action": "watchVideo",
-      "type": "image",
-      "key": "videoImage"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 260,
-          "xAxis": 1410,
-          "width": 113,
-          "height": 130
-        }
-      },
-      "type": "button",
-      "key": "playButton"
-    },
-    {
-      "layout": {
-        "ftv": {
           "leftMargin": 95,
-          "yAxis": 477,
-          "width": 270,
-          "height": 62,
-          "fontSize": 12
+          "topMargin": 595,
+          "width": 250,
+          "fontSize": 11.5,
+          "height": 60
         }
       },
-      "padding": 15,
-      "borderColor": "#66ffffff",
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "watchVideo",
+      "text": "START WATCHING",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "ExtraBold",
+      "key": "startWatching"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 389,
+          "topMargin": 595,
+          "width": 250,
+          "fontSize": 11.5,
+          "height": 60
+        }
+      },
+      "borderColor": "ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "addToWatchlist",
       "text": "ADD TO WATCHLIST",
       "type": "button",
       "textColor": "ffffff",
-      "fontWeight": "Semibold",
+      "fontWeight": "ExtraBold",
       "key": "addToWatchlist"
     },
     {
       "layout": {
         "ftv": {
-          "leftMargin": 389,
-          "yAxis": 477,
-          "height": 62,
-          "width": 270,
-          "fontSize": 12
+          "leftMargin": 683,
+          "topMargin": 595,
+          "width": 250,
+          "fontSize": 11.5,
+          "height": 60
         }
       },
-      "letterSpacing": 0.12,
-      "padding": 15,
-      "borderColor": "#66ffffff",
+      "borderColor": "ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
+      "letterSpacing": 0.12,
       "action": "watchTrailer",
       "text": "WATCH TRAILER",
       "type": "button",
       "textColor": "#ffffff",
-      "fontWeight": "Semibold",
+      "fontWeight": "ExtraBold",
       "key": "watchTrailer"
     },
     {
       "layout": {
         "ftv": {
+          "yAxis": 188,
           "xAxis": 95,
-          "yAxis": 120,
-          "width": 800,
-          "fontSize": 15,
-          "height": 240
+          "rightMargin" : 1050,
+          "width": 768,
+          "fontSize": 12,
+          "height": 200
         }
       },
       "fontFamily": "OpenSans",
       "type": "label",
       "textColor": "#ffffff",
+      "fontWeight": "SemiBold",
+      "lineSpacingMultiplier": 1.2,
       "key": "videoDescriptionText"
     },
     {
       "layout": {
         "ftv": {
-          "fontSizeKey": 15,
-          "yAxis": 342,
+          "fontSizeKey": 11.5,
+          "yAxis": 409,
           "xAxis": 95,
-          "width": 800,
-          "height": 100,
-          "fontSizeValue": 15
+          "width": 815,
+          "rightMargin" : 1050,
+          "height": 120,
+          "fontSizeValue": 11.5
         }
       },
       "fontFamilyKey": "OpenSans-ExtraBold",

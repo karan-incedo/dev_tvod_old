@@ -1,6 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.rest.AppCMSMainUICall;

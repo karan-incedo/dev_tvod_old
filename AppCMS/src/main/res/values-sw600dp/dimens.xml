@@ -7,6 +7,12 @@
     <fraction name="mainContainerHeightPercent">35%</fraction>
     <dimen name="app_cms_continue_watching_tray_marginLeft">15dp</dimen>
     <bool name="isTablet">false</bool>
+    <dimen name="nav_item_margin">10dp</dimen>
 
+
+    <dimen name="app_cms_audio_play_width">55dp</dimen>
+    <dimen name="app_cms_audio_play_height">65dp</dimen>
+    <dimen name="app_cms_audio_play_control_height">70dp</dimen>
+    <dimen name="app_cms_audio_item_padding">50dp</dimen>
 
 </resources>

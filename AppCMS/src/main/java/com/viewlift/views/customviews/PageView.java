@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -28,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
-/*
+/**
  * Created by viewlift on 5/4/17.
  */
 
@@ -44,6 +45,8 @@ public class PageView extends BaseView {
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
+    private ViewDimensions fullScreenViewOriginalDimensions;
+
     private boolean shouldRefresh;
 
     private boolean reparentChromecastButton;
@@ -52,7 +55,6 @@ public class PageView extends BaseView {
 
     private boolean ignoreScroll;
     private FrameLayout headerView;
-
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -70,6 +72,18 @@ public class PageView extends BaseView {
 
     public void openViewInFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = false;
+        if (fullScreenViewOriginalDimensions == null) {
+            fullScreenViewOriginalDimensions = new ViewDimensions();
+        }
+        try {
+            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
+            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
+        } catch (Exception e) {
+            //
+        }
+
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
 
         childrenContainer.setVisibility(GONE);
         viewParent.removeView(view);
@@ -88,9 +102,13 @@ public class PageView extends BaseView {
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = true;
-        if (view.getParent() == this) {
+        if (view.getParent() == this && fullScreenViewOriginalDimensions != null) {
             removeView(view);
 
+            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
+            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
+
+            viewParent.addView(view);
             childrenContainer.setVisibility(VISIBLE);
 
             getRootView().forceLayout();
@@ -121,7 +139,6 @@ public class PageView extends BaseView {
                 adapterList.remove(listWithAdapter1);
             }
         }
-
         adapterList.add(listWithAdapter);
     }
 
@@ -179,6 +196,9 @@ public class PageView extends BaseView {
     @Override
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new RecyclerView(getContext());
+        childrenContainer.setId(R.id.home_nested_scroll_view);
+        childrenContainer.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
+        childrenContainer.setFocusableInTouchMode(true);
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
@@ -186,38 +206,12 @@ public class PageView extends BaseView {
         ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
-
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
-
-        // NOTE: The following is an implementation of lazy loading for individual tray elements
-//        childrenContainer.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-//            int firstVisibleIndex =
-//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findFirstVisibleItemPosition();
-//            int lastVisibleIndex =
-//                    ((LinearLayoutManager) ((RecyclerView) childrenContainer).getLayoutManager()).findLastVisibleItemPosition();
-//
-//            List<String> modulesToDisplay = appCMSPageViewAdapter.getViewIdList(firstVisibleIndex, lastVisibleIndex);
-//            appCMSPresenter.getPagesContent(modulesToDisplay,
-//                    appCMSPageAPI -> {
-//                        if (appCMSPageAPI != null) {
-//                            try {
-//                                int numResultModules = appCMSPageAPI.getModules().size();
-//                                for (int i = 0; i < numResultModules; i++) {
-//                                    Module module = appCMSPageAPI.getModules().get(i);
-//                                    updateDataList(module.getContentData(), module.getId());
-//                                }
-//                            } catch (Exception e) {
-//
-//                            }
-//                        }
-//                    });
-//        });
-
         ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                    if (onScrollChangeListener != null &&
+                if (onScrollChangeListener != null &&
                         recyclerView.isLaidOut() &&
                         !ignoreScroll) {
                     onScrollChangeListener.onScroll(dx, dy);
@@ -235,7 +229,6 @@ public class PageView extends BaseView {
                 ignoreScroll = false;
             }
         });
-
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -243,6 +236,7 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
+            appCMSPresenter.setMiniPLayerVisibility(true);
             if (shouldRefresh) {
                 appCMSPresenter.clearPageAPIData(() -> {
                             mainView.setRefreshing(false);
@@ -285,10 +279,10 @@ public class PageView extends BaseView {
 
     public void addModuleViewWithModuleId(String moduleId,
                                           ModuleView moduleView,
-                                          boolean userModuleViewAsHeader) {
+                                          boolean useModuleViewAsHeader) {
         moduleViewMap.put(moduleId, moduleView);
         appCMSPageViewAdapter.addView(moduleView);
-        if (userModuleViewAsHeader) {
+        if (useModuleViewAsHeader) {
             addView(moduleView);
         }
     }
@@ -309,20 +303,18 @@ public class PageView extends BaseView {
         boolean removedChild = false;
         while (index < getChildCount() && !removedChild) {
             View child = getChildAt(index);
-
             if (child != mainView) {
                 removeView(child);
                 removedChild = true;
                 removeAllAddOnViews();
             }
-
             index++;
         }
     }
 
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyDataSetChanged();
+            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
 
@@ -330,7 +322,6 @@ public class PageView extends BaseView {
         if (appCMSPageViewAdapter != null) {
             return appCMSPageViewAdapter.findChildViewById(id);
         }
-
         return null;
     }
 
@@ -364,8 +355,17 @@ public class PageView extends BaseView {
 
     public void scrollToPosition(int position) {
         if (childrenContainer != null) {
-            ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+            if (position==0) {
+                childrenContainer.scrollBy(position, position);
+            }else {
+                 ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+            }
         }
+    }
+
+    private static class ViewDimensions {
+        int width;
+        int height;
     }
 
     public void addToHeaderView(View view){

@@ -1,0 +1,472 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.47.0"
+
+default_platform :android
+
+platform :android do
+
+  before_all do
+      ENV["SLACK_URL"]="https://hooks.slack.com/services/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"
+    
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "assembleRelease")
+    supply
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+
+
+  desc "Mobile track app. Deploy a new version to the Google Play Store - Beta channel"
+
+     lane :buildLane do |options|
+
+
+         puts "******************************************************************"
+         puts options[:mySlackUrl]
+         puts options[:myAppName]
+         puts options[:myAppVersion]
+         puts options[:myEmailId]
+         puts options[:buildId]
+         puts options[:buildId].to_s
+         puts options[:myBuildId]
+         puts options[:myBuildId].to_s
+         puts options[:mySlackUrl]
+         puts "******************************************************************"
+
+         myslackMessageOne = options[:myAppName].to_s + " ANDROID BUILD LANE STARTED. BUILD-ID --> '" + options[:myBuildId].to_s + "'. APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+         
+         slack_train_start(distance: 11)
+        
+         slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
+         
+         slack_train()
+         progress = 30
+         myBuildVersion =0 
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Cleaning the Project'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+
+         gradle(task: "clean")
+
+         slack_train()
+         progress = 35
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Generating the Debug Build and preparing for unit test cases'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         gradle(
+          task: "assemble",
+          flavor: "mobile",
+          build_type: "Debug"
+         )
+
+         progress = 40
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Running the unit test cases'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         gradle(
+           task: "assembleMobileDebugAndroidTest"
+         )
+
+         progress = 45
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Capturing the Phone screenshots'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         desc "Capture phone screenshots"
+         begin
+              phones_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+              rescue => ex
+                 UI.error("Something went wrong: #{ex}")
+         end
+
+         progress = 50
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Capturing the Tablet Screenshots'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         desc "Capture teninchtablet_screenshots screenshots"
+         begin
+              teninchtablet_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+              rescue => ex
+                 UI.error("Something went wrong: #{ex}")
+         end
+
+         progress = 55
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Creating the Release Build'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         gradle(
+          task: "assemble",
+          flavor: "mobile",
+          build_type: "Release"
+         )
+
+         progress = 62
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Generating the Signed Build with unique keystore'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         sign_apk(
+            apk_path: options[:apk_path],
+            keystore_path: options[:keystore_path],
+            alias: options[:alias],
+            storepass: options[:storepass],
+            tsa: "http://timestamp.comodoca.com/rfc316",
+          )
+
+         slack_train()
+
+         progress = 65
+         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Optimizing and Zip Alignining the Build for reducing the Build Size'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+         slack_train()
+
+         zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+
+         slack_train()
+
+         myslackMessageOne = options[:myAppName].to_s + " ANDROID BUILD LANE COMPLETED. UPLOADING BUILD TO S3 BUCKET. BUILD-ID --> " + options[:buildId].to_s + ". APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+
+
+    end
+
+
+     desc "TV release app. Upload new version of TV App on Partner Portal"
+
+     lane :tvbeta do |options|
+
+         puts "******************************************************************"
+         puts options[:mySlackUrl]
+         puts options[:myAppName]
+         puts options[:myAppVersion]
+         puts options[:myEmailId]
+         puts options[:buildId].to_s
+         puts options[:myBuildId]
+         puts options[:myBuildId].to_s
+         puts "******************************************************************"
+
+         ENV["SLACK_URL"]="https://hooks.slack.com/services/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"
+
+
+         slack_train_start(distance: 8)
+
+         myslackMessageOne = options[:myAppName].to_s + " FIRETV BUILD LANE STARTED . BUILD-ID --> " + options[:buildid].to_s + ". APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+         slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
+
+         slack_train()
+
+         progress = 30
+         myBuildVersion =0 
+
+         slack_train()
+
+         #Post status on UI
+         # sh "../../../PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "BUILD_PROGRESS" + " " + "No ERROR" + " " + "CLEANING THE PROJECT" + 30 + " " + 0
+         sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Cleaning the Project'"+ " " + progress.to_s  + " false " + myBuildVersion.to_s
+
+         # gradle(task: "clean")
+
+         slack_train()
+
+         progress = 45
+         myBuildVersion =0 
+         sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Preparing for build Creation'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
+
+         # #Generate Assemble Debug build
+         # gradle(task: "assembleDebug")
+
+         # #Generate Assemble Test build
+         # gradle(task: "assembleAndroidTest")
+
+         # #Capture tv screenshots
+         #  begin
+         #     tv_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+         #     rescue => ex
+         #        UI.error("Something went wrong: #{ex}")
+         #  end
+
+         #Post status on UI
+         # sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" SCREEN_SHOT_CAPTURED ''"
+
+         #Generate Assemble Release build
+
+         progress = 50
+         myBuildVersion =0 
+         sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Creating the Release Build'"+ " " + progress.to_s  + " false " + myBuildVersion.to_s
+
+         slack_train()
+
+         gradle(
+          task: "assemble",
+          flavor: "tv",
+          build_type: "Release"
+          )
+
+         slack_train()
+
+         progress = 60
+         myBuildVersion =0 
+         sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Signing the Build with Secure Keystore'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
+
+
+         sign_apk(
+            apk_path: options[:apk_path],
+            keystore_path: options[:keystore_path],
+            alias: options[:alias],
+            storepass: options[:storepass],
+            tsa: "http://timestamp.comodoca.com/rfc316",
+          )
+
+          slack_train()
+
+          progress = 70
+          myBuildVersion =0 
+          sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Zip Aligning and Optimizing the FireTv Build'"+ " " + progress.to_s  + " false " + myBuildVersion.to_s
+         
+          zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+
+          slack_train()
+
+          #gradle(task: "test")
+
+          slack_train()
+
+          myslackMessageOne = options[:myAppName].to_s + " FIRE TV BUILD LANE COMPLETED. UPLOADING TO S3 BUCKET . BUILD-ID --> " + options[:buildid].to_s + ". APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+
+          slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
+
+    end
+
+    desc "Supply build and metadata on playstore"
+    lane :supply_onplaystore do |options|
+
+     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+
+     myslackMessageOne = options[:myAppName].to_s + " UPLOADING TO PLAY STORE LANE STARTED . BUILD-ID --> " + options[:buildid].to_s + ". APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+     
+     slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
+
+     progress = 90
+     value =0 
+     sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'UPLOADING SCREENSHOTS AND METADATA TO THE PLAY STORE'" + " " + progress.to_s + " " + 'false' + " " + value.to_s
+
+     progress = 95
+     value =0 
+     sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'UPLOADING THE SIGNED BUILD TO THE PLAY STORE'" + " " + progress.to_s + " " + 'false' + " " + value.to_s
+
+     supply(
+           track: options[:track],
+           package_name: options[:package_name],
+           json_key: options[:json_key_file],
+           apk: options[:apk_path]
+         )
+
+
+     myslackMessageOne = options[:myAppName].to_s + " UPLOAD PLAY STORE LANE COMPLETED . BUILD-ID --> " + options[:buildId].to_s + ". APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
+
+
+     slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
+
+
+     progress = 100
+     value = android_get_version_code(gradle_file: "./AppCMS/build.gradle")
+     sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "SUCCESS_PLAY_STORE" + " " + "'NO ERROR'" + " " + "'Successfully Uploaded to Play Store'" + " " + progress.to_s + " " + 'false' + " " + value.to_s
+
+    end
+
+
+    desc "Take phone screenshots"
+    lane :phones_screenshots do |options|
+
+      sh("adb -s emulator-5554 shell input keyevent 82")
+
+      capture_android_screenshots(
+      clear_previous_screenshots: true,
+      app_package_name: options[:app_package_name],
+      device_type: "phone",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path],
+      reinstall_app:"true",
+      specific_device:"emulator-5554"
+      )
+    end
+
+    desc "Take seven inch tablet screenshots"
+    lane :seveninchtablet_screenshots do |options|
+
+      sh("adb -s emulator-5556 shell input keyevent 82")
+
+      capture_android_screenshots(
+      clear_previous_screenshots: true,
+      app_package_name: options[:app_package_name],
+      device_type: "sevenInch",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path],
+      reinstall_app:"true",
+      specific_device:"emulator-5556"
+      )
+    end
+
+    desc "Take ten inch tablet screenshots"
+    lane :teninchtablet_screenshots do |options|
+
+      sh("adb -s emulator-5556 shell input keyevent 82")
+
+      capture_android_screenshots(
+      clear_previous_screenshots: true,
+      app_package_name: options[:app_package_name],
+      device_type: "tenInch",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path],
+      reinstall_app:"true",
+      specific_device:"emulator-5556"
+     )
+    end
+
+    desc "Take tv screenshots"
+        lane :tv_screenshots do |options|
+
+          sh("adb -s emulator-5556 shell input keyevent 82")
+
+          capture_android_screenshots(
+          clear_previous_screenshots: true,
+          app_package_name: options[:app_package_name],
+          device_type: "tv",
+          app_apk_path: options[:app_apk_path],
+          tests_apk_path: options[:tests_apk_path],
+          reinstall_app:"true",
+          specific_device:"emulator:5556"
+         )
+    end
+
+    desc "Send Messages on Slack"
+        lane :slackSendMessage do |options|
+          viewliftSlackUrl="https://hooks.slack.com/services/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"
+          begin
+              # slack(message: options[:my_slack_msg], username: options[:my_user_name], default_payloads: [:test_result], icon_url:"https://s3.amazonaws.com/mysomelogos/635593161616901137-viewliftlogo.jpg",slack_url:options['mySlackUrl'])
+              slack(message: options[:my_slack_msg], username: options[:my_user_name], default_payloads: [:test_result], icon_url:"https://s3.amazonaws.com/mysomelogos/635593161616901137-viewliftlogo.jpg",slack_url:viewliftSlackUrl)
+              rescue => ex
+                 UI.error("Something went wrong: #{ex}")
+          end         
+          puts options[:my_slack_msg]
+    end
+
+  
+    desc "Send Failed Messages on Slack"
+        lane :buildFailedLane do |options|
+          viewliftSlackUrl = "https://hooks.slack.com/services/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"
+          begin
+              # slack(message: options[:my_slack_msg], username: options[:my_user_name], default_payloads: [:lane],icon_url:"https://s3.amazonaws.com/mysomelogos/635593161616901137-viewliftlogo.jpg",slack_url:options['mySlackUrl'])
+              slack(message: options[:my_slack_msg], username: options[:my_user_name], default_payloads: [:test_result], icon_url:"https://s3.amazonaws.com/mysomelogos/635593161616901137-viewliftlogo.jpg",slack_url:viewliftSlackUrl)
+              rescue => ex
+              UI.error("Something went wrong: #{ex}")
+          end  
+    end
+
+    lane :updateTheVersion do |options|
+
+      puts "Update The Version"
+      puts android_get_version_code(gradle_file: "./AppCMS/build.gradle")
+      value = get_version_play_store(app_package_name: options[:app_package_name], json_key_file: options[:json_key_file], buildid:options[:buildid])
+      incValue = value + 1
+      puts incValue
+
+      puts android_set_version_code(
+      version_code: incValue, # optional, if not specified, Version Code will be incremented
+      gradle_file: "./AppCMS/build.gradle" # optional
+      )
+      puts android_get_version_code(gradle_file: "./AppCMS/build.gradle")
+
+    end
+
+
+  lane :get_version_play_store do |options|
+      puts "Getting Google Version From PlayStore"
+      
+      myvalue = google_play_track_version_codes(package_name: options[:app_package_name],
+           track: "beta",
+           json_key: options[:json_key_file],
+           )
+
+      # myAlphaValue = google_play_track_version_codes(package_name: options[:app_package_name],
+      #      track: "alpha",
+      #      json_key: options[:json_key_file],
+      #      )
+
+      # puts myAlphaValue
+
+      largestValue = 0
+
+      
+      # if myvalue.first.nil?
+      #    myvalue.first = 0
+     
+      # if myAlphaValue.first.nil?
+      #    myAlphaValue.first = 0
+
+
+      # if myvalue.first>myAlphaValue.first
+      #      largestValue = myvalue.first
+      # else  
+      #      largestValue = myAlphaValue.first
+      # end
+
+      puts myvalue
+      myvalue.first
+      myvalue.first
+
+  end  
+
+   error do |lane, exception, options|
+
+    progress = 0
+    myBuildVersion = 0
+
+    puts "piyush"
+    puts "piyush"
+
+    buildFailedLane(my_slack_msg: "BUILD FAILED" ,my_user_name:options[:username])
+
+    slack_train_crash
+
+    buildFailedLane(my_slack_msg: exception.to_s ,my_user_name:options[:username])
+
+    errorMessageOne = exception.to_s
+    errorMessageTwo = errorMessageOne.gsub(/\s|"|'/, '')
+
+    sh "./PostBuildStatus.sh "+options[:buildid] + " " + options[:posturl] +  " " + "'FAILED_BUILD_ERROR'" + " " + "'Build Failure. Execution failed for task :AppCMS:mergeMobileDebugResources./Users/piyush/Desktop/fastlane_android/android_fastlane/AppCMS/src/mobile/AndroidManifest.xml:27:5-67 Warning.Configuration compile in project :exoplayer-extension-rtmp is deprecated. Use implementation instead.No matching client found for package name.:AppCMS:processMobileDebugGoogleServices FAILED.exoplayer-library-smoothstreaming:packageDebugAssets.:AppCMS:mergeMobileDebugAssets'" + " " + "'Build Failed'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
+    sh "./PostBuildStatus.sh "+options[:buildid] + " " + options[:posturl] +  " " + "'FAILED_BUILD_ERROR'" + " \"" + errorMessageTwo + "\" " + "'Build Failed'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
+
+   end
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://docs.fastlane.tools/actions
+
+# fastlane reports which actions are used. No personal data is recorded. 
+# Learn more at https://github.com/fastlane/fastlane#metrics

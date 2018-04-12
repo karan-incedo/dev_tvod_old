@@ -21,6 +21,10 @@ public class Category implements Serializable {
     @Expose
     String uuid;
 
+    @SerializedName("id")
+    @Expose
+    String id;
+
     public String getTitle() {
         return title;
     }
@@ -35,5 +39,13 @@ public class Category implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

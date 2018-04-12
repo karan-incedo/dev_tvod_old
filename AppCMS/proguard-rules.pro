@@ -16,6 +16,11 @@
    public *;
 }
 
+-ignorewarnings
+-keep class * {
+    public private *;
+}
+
 -keep class com.viewlift.AppCMSApplication { *;}
 -keep class com.urbanairship.Autopilot { *;}
 
@@ -72,6 +77,10 @@
 -keepclassmembers class * {
     @com.facebook.common.internal.DoNotStrip *;
 }
+
+#kiswe class
+-keep class com.kiswe.kmsdkcorekit { *;}
+-keep class veg.mediaplayer.sdk.** { *;}
 
 # Keep native methods
 -keepclassmembers class * {

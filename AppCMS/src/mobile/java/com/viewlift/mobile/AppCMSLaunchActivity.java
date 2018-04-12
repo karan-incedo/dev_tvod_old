@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.viewlift.AppCMSApplication;
-import com.viewlift.casting.CastHelper;
+import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -87,7 +87,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         activeNetwork.isConnectedOrConnecting();
                 if (!appStartWithNetworkConnected && isConnected && appCMSPresenterComponent != null) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
-                            getString(R.string.app_cms_app_name),
+                            Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
                             false);
@@ -155,8 +155,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Log.w(TAG, "Resuming launch activity");
-
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         appStartWithNetworkConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
@@ -174,7 +172,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 } else {
                     Log.w(TAG, "Retrieving main.json");
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                            getString(R.string.app_cms_app_name),
+                            Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
                             false);

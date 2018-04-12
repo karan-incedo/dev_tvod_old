@@ -371,6 +371,10 @@ public class CastHelper {
     public void launchTrailer(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+        if(binder == null || binder.getContentData() == null){
+            Toast.makeText(mAppContext, mAppContext.getString(R.string.app_cms_download_stream_info_error_title), Toast.LENGTH_SHORT).show();
+            return;
+        }
         this.appCMSPresenterComponenet = appCMSPresenter;
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null
@@ -381,6 +385,11 @@ public class CastHelper {
             if (videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
+        } else {
+            if (binder.getContentData().getGist() != null && binder.getContentData().getGist().getTitle() != null) {
+                title = binder.getContentData().getGist().getTitle();
+            }
+            videoUrl = CastingUtils.getPlayingUrl(binder.getContentData());
         }
 
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
@@ -415,12 +424,12 @@ public class CastHelper {
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
-      String appPackageName=mAppContext.getPackageName();
+        String appPackageName = mAppContext.getPackageName();
 
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
             customData.put(CastingUtils.VIDEO_TITLE, title);
-            customData.put(CastingUtils.ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
+            customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_VIDEO);
 
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
@@ -452,12 +461,12 @@ public class CastHelper {
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
-        String appPackageName=mAppContext.getPackageName();
+        String appPackageName = mAppContext.getPackageName();
 
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
             customData.put(CastingUtils.VIDEO_TITLE, title);
-            customData.put(CastingUtils.ITEM_TYPE, appPackageName+""+CastingUtils.ITEM_TYPE_VIDEO);
+            customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_VIDEO);
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
@@ -487,6 +496,7 @@ public class CastHelper {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 mActivity.startActivity(intent);
                 CastingUtils.isRemoteMediaControllerOpen = true;
+
             }
         }
     }
@@ -508,11 +518,8 @@ public class CastHelper {
                         //Log.e(TAG, e.getMessage());
                         mStreamId = CastingUtils.getRemoteMediaId(mAppContext) + appCMSPresenterComponenet.getCurrentTimeStamp();
                     }
-
-
                 }
                 updatePlaybackState();
-
             }
 
             @Override
@@ -659,7 +666,7 @@ public class CastHelper {
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
+                    if (listCompareRelatedVideosId != null && playIndexPosition < listCompareRelatedVideosId.size()) {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
                                 binderPlayScreen.getCurrentPlayingVideoIndex(),
                                 castCurrentMediaPosition);
@@ -702,6 +709,11 @@ public class CastHelper {
                                 0d,
                                 0,
                                 isVideoDownloaded);
+                        appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
+                                mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
+
+                        appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
+                                castCurrentDuration);
                     }
 
                 }
@@ -901,6 +913,9 @@ public class CastHelper {
                         0,
                         isVideoDownloaded);
                 sentBeaconPlay = true;
+
+                appCMSPresenterComponenet.sendGaEvent(mAppContext.getResources().getString(R.string.play_video_action),
+                        mAppContext.getResources().getString(R.string.play_video_category), currentRemoteMediaId);
             }
         }
         switch (status) {

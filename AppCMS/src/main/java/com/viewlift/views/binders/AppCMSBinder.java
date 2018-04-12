@@ -25,7 +25,7 @@ public class AppCMSBinder extends Binder {
     private final String pagePath;
     private final String screenName;
     private final boolean loadedFromFile;
-    private final boolean appbarPresent;
+    private boolean appbarPresent;
     private final boolean fullScreenEnabled;
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
@@ -134,6 +134,7 @@ public class AppCMSBinder extends Binder {
         return appbarPresent;
     }
 
+
     public boolean isFullScreenEnabled() {
         return fullScreenEnabled;
     }
@@ -212,5 +213,9 @@ public class AppCMSBinder extends Binder {
 
     public void setCurrentScrollPosition(int currentScrollPosition) {
         this.currentScrollPosition = currentScrollPosition;
+    }
+
+    public void setAppbarPresent(boolean appbarPresent) {
+        this.appbarPresent = appbarPresent;
     }
 }

@@ -3,10 +3,10 @@ package com.viewlift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
-import android.support.v7.app.AppCompatActivity;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
+import com.viewlift.models.data.appcms.downloads.DownloadMediaMigration;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -15,6 +15,8 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import java.util.Map;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import rx.functions.Action0;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
@@ -34,10 +36,23 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private Action0 onActivityResumedAction;
 
+    private void initRealmonfig(){
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration
+                .Builder()
+                .schemaVersion(1)
+                .migration(new DownloadMediaMigration())
+//                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        initRealmonfig();
         openActivities = 0;
 
         new Thread(() -> {
@@ -76,9 +91,7 @@ public class AppCMSApplication extends MultiDexApplication {
             registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                    if (activity instanceof AppCompatActivity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
-                    }
+                    appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                 }
 
                 @Override
@@ -89,13 +102,11 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    if (activity instanceof AppCompatActivity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                         if (onActivityResumedAction != null) {
                             onActivityResumedAction.call();
                             onActivityResumedAction = null;
                         }
-                    }
                 }
 
                 @Override

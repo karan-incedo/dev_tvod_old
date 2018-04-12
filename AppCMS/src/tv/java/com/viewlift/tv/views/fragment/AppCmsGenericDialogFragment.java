@@ -2,10 +2,15 @@ package com.viewlift.tv.views.fragment;
 
 
 import android.app.DialogFragment;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -21,6 +26,7 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
+    private TextView subscriptionTitle;
 
 
     public AppCmsGenericDialogFragment() {
@@ -42,8 +48,13 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             appCMSBinder = (AppCMSBinder) getArguments().getBinder("app_cms_binder_key");
         }
+
         appCMSPresenter =
                 ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+
+        if(null != appCMSBinder)
+            appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+
         appCmsViewComponent = buildAppCMSViewComponent();
     }
 
@@ -62,6 +73,31 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
             tvPageView = null;
         }
 
+        subscriptionTitle = new TextView(getActivity());
+        subscriptionTitle.setId(R.id.subscription_text);
+        subscriptionTitle.setText(getResources().getString(R.string.blank_string));
+        subscriptionTitle.setGravity(Gravity.CENTER);
+        subscriptionTitle.setFocusable(false);
+        subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+               10
+        );
+        subscriptionTitle.setLayoutParams(layoutParams);
+
+        if(subscriptionTitle.getParent() != null){
+            ((FrameLayout)subscriptionTitle.getParent()).removeView(subscriptionTitle);
+        }
+
+        if (tvPageView.getChildAt(0).getId() == R.id.subscription_text){
+            tvPageView.removeViewAt(0);
+        }
+        tvPageView.addView(subscriptionTitle,0);
+        updateSubscriptionStrip();
+
         if (tvPageView != null) {
             if (tvPageView.getParent() != null) {
                 ((ViewGroup) tvPageView.getParent()).removeAllViews();
@@ -70,11 +106,68 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
         if (container != null) {
             container.removeAllViews();
         }
-
-        tvPageView.setBackgroundResource(R.drawable.home_screen_background);
-
+        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         return tvPageView;
     }
+
+    private void updateSubscriptionStrip() {
+        /*Check Subscription in case of SPORTS TEMPLATE*/
+        if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            if (!appCMSPresenter.isUserLoggedIn()) {
+                setSubscriptionText(false);
+            } else {
+                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                    try {
+                        if (appCMSUserSubscriptionPlanResult != null) {
+                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                setSubscriptionText(true);
+                            } else {
+                                setSubscriptionText(false);
+                            }
+                        } else {
+                            setSubscriptionText(false);
+                        }
+                    } catch (Exception e) {
+                        setSubscriptionText(false);
+                    }
+                });
+            }
+        }else{
+            subscriptionTitle.setVisibility(View.GONE);
+        }
+    }
+
+    private void setSubscriptionText(boolean isSubscribe) {
+        try {
+            String message = getResources().getString(R.string.blank_string);
+            if (!isSubscribe) {
+                if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                        && null != appCMSPresenter.getNavigation().getSettings()
+                        && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
+                        ) {
+                    message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
+                } else {
+                    message = getResources().getString(R.string.watch_live_text);
+                }
+            }
+            subscriptionTitle.setText(message);
+
+            FrameLayout.LayoutParams textLayoutParams = (FrameLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+            if (message.length() == 0) {
+                textLayoutParams.height = 10;
+            } else {
+                textLayoutParams.height = 40;
+            }
+            subscriptionTitle.setLayoutParams(textLayoutParams);
+        }catch (Exception e){
+
+        }
+    }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

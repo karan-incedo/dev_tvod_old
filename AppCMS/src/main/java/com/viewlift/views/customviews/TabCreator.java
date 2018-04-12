@@ -31,79 +31,82 @@ public class TabCreator {
     private OnClickHandler onClickHandler;
 
     public void create(Context context, int currentIndex, NavigationPrimary tabItem) {
-        final NavBarItemView navBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(currentIndex);
-        int highlightColor;
-        try {
-            highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                    .getCta().getPrimary().getBackgroundColor());
-        } catch (Exception e) {
-            //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+        if (appCMSTabNavContainer.getChildAt(currentIndex) instanceof
+                NavBarItemView) {
+            final NavBarItemView navBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(currentIndex);
+            int highlightColor;
+            try {
+                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+            } catch (Exception e) {
+                //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
 //                            e.getMessage());
-            highlightColor = ContextCompat.getColor(context, R.color.colorAccent);
-        }
+                highlightColor = ContextCompat.getColor(context, R.color.colorAccent);
+            }
 
-        String tabIcon = tabItem.getIcon();
-        if (tabIcon != null) {
-            tabIcon = tabIcon.replace("-", "_");
-        }
-        navBarItemView.setImage(tabIcon);
-        navBarItemView.setHighlightColor(highlightColor);
-        navBarItemView.setLabel(tabItem.getTitle());
+            String tabIcon = tabItem.getIcon();
+            if (tabIcon != null) {
+                tabIcon = tabIcon.replace("-", "_");
+            }
+            navBarItemView.setImage(tabIcon);
+            navBarItemView.setHighlightColor(highlightColor);
+            navBarItemView.setLabel(tabItem.getTitle());
 
-        if (tabItem.getTitle().equalsIgnoreCase("Search")) {
-            navBarItemView.setOnClickListener(v -> {
-                if (onClickHandler.getSelectedNavItem() == navBarItemView) {
-                    return;
-                }
+            if (tabItem.getTitle().equalsIgnoreCase("Search")) {
+                navBarItemView.setOnClickListener(v -> {
+                    if (onClickHandler.getSelectedNavItem() == navBarItemView) {
+                        return;
+                    }
 
-                if (!appCMSPresenter.isNetworkConnected()) {
-                    if (!appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                () -> appCMSPresenter.launchBlankPage(),
+                    if (!appCMSPresenter.isNetworkConnected()) {
+                        if (!appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                    () -> appCMSPresenter.launchBlankPage(),
+                                    null);
+                            return;
+                        }
+
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                true,
+                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                        null, null, false),
                                 null);
                         return;
                     }
 
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                            true,
-                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                    null, null, false),
-                            null);
-                    return;
-                }
-
-                appCMSPresenter.launchSearchPage();
-            });
-            onClickHandler.setSelectedSearchTabIndex(currentIndex);
-        } else if (tabItem.getTitle().equalsIgnoreCase("Menu")) {
-            navBarItemView.setOnClickListener(v -> {
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    //Log.e(TAG, "Could not launch navigation page!");
-                } else {
-                    if (navBarItemView.getResources().getBoolean(R.bool.menu_icon_dismisses_menu_page)) {
-                        onClickHandler.closeMenuPageIfHighlighted(navBarItemView);
+                    appCMSPresenter.launchSearchPage();
+                });
+                onClickHandler.setSelectedSearchTabIndex(currentIndex);
+            } else if (tabItem.getTitle().equalsIgnoreCase("Menu")) {
+                navBarItemView.setOnClickListener(v -> {
+                    if (!appCMSPresenter.launchNavigationPage()) {
+                        //Log.e(TAG, "Could not launch navigation page!");
+                    } else {
+                        if (navBarItemView.getResources().getBoolean(R.bool.menu_icon_dismisses_menu_page)) {
+                            onClickHandler.closeMenuPageIfHighlighted(navBarItemView);
+                        }
                     }
-                }
-            });
-            onClickHandler.setSelectedMenuTabIndex(currentIndex);
-        } else {
-            navBarItemView.setOnClickListener(v -> {
-                if (onClickHandler.getSelectedNavItem() == navBarItemView) {
-                    return;
-                }
+                });
+                onClickHandler.setSelectedMenuTabIndex(currentIndex);
+            } else {
+                navBarItemView.setOnClickListener(v -> {
+                    if (onClickHandler.getSelectedNavItem() == navBarItemView) {
+                        return;
+                    }
 
-                appCMSPresenter.showMainFragmentView(true);
-                onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
-                        tabItem.getPageId(),
-                        tabItem.getTitle());
-            });
-        }
+                    appCMSPresenter.showMainFragmentView(true);
+                    onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
+                            tabItem.getPageId(),
+                            tabItem.getTitle());
+                });
 
-        navBarItemView.setTag(tabItem.getPageId());
-        if (navBarItemView.getParent() == null) {
-            appCMSTabNavContainer.addView(navBarItemView);
+                navBarItemView.setTag(tabItem.getPageId());
+                if (navBarItemView.getParent() == null) {
+                    appCMSTabNavContainer.addView(navBarItemView);
+                }
+            }
         }
     }
 

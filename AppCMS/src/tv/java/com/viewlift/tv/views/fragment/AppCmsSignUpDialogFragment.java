@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -43,6 +45,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
     private Component semiBoldComp;
     private Context mContext;
     private FrameLayout pageHolder;
+    private TextView subscriptionTitle;
 
 
     public AppCmsSignUpDialogFragment() {
@@ -123,10 +126,47 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
 
 
         View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+
+        subscriptionTitle = (TextView)view.findViewById(R.id.nav_top_line);
+        if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
+                .equals(AppCMSPresenter.TemplateType.SPORTS)) {
+            updateSubscriptionStrip();
+        }else{
+            subscriptionTitle.setVisibility(View.GONE);
+        }
+
+
+        LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
 
+        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
+        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
+        view.setBackgroundColor(Color.parseColor(backGroundColor));
+
+        loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    subNavHolder.setAlpha(1f);
+                }else{
+                    subNavHolder.setAlpha(0.52f);
+                }
+            }
+        });
+
+        signupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    subNavHolder.setAlpha(1f);
+                }else{
+                    subNavHolder.setAlpha(0.52f);
+                }
+            }
+        });
 
         loginView.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -193,8 +233,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
                         Uri.EMPTY,
                         false,
                         false,
-                        true
-                );
+                        true);
 
             }
         });
@@ -220,6 +259,59 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         return view;
     }
 
+
+    private void updateSubscriptionStrip() {
+        /*Check Subscription in case of SPORTS TEMPLATE*/
+        if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            if (!appCMSPresenter.isUserLoggedIn()) {
+                setSubscriptionText(false);
+            } else {
+                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                    try {
+                        if (appCMSUserSubscriptionPlanResult != null) {
+                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                setSubscriptionText(true);
+                            } else {
+                                setSubscriptionText(false);
+                            }
+                        } else {
+                            setSubscriptionText(false);
+                        }
+                    } catch (Exception e) {
+                        setSubscriptionText(false);
+                    }
+                });
+            }
+        }
+    }
+
+    private void setSubscriptionText(boolean isSubscribe) {
+        String message = getResources().getString(R.string.blank_string);
+        if (!isSubscribe) {
+            if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                    && null != appCMSPresenter.getNavigation().getSettings()
+                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
+                    ) {
+                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
+            } else {
+                message = getResources().getString(R.string.watch_live_text);
+            }
+        }
+        subscriptionTitle.setText(message);
+        subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
+        subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+
+        LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+        if (message.length() == 0) {
+            textLayoutParams.height = 10;
+        } else {
+            textLayoutParams.height = 40;
+        }
+        subscriptionTitle.setLayoutParams(textLayoutParams);
+    }
 
 
 
@@ -269,7 +361,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
 
 
     private void focusSignupView(TextView signupView , TextView loginView) {
-        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
         signupView.setTypeface(extraBoldTypeFace);
         loginView.setBackground(null);
         loginView.setTypeface(semiBoldTypeFace);
@@ -277,7 +369,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
     }
 
     private void focusLoginView(TextView signupView , TextView loginView) {
-        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
         loginView.setTypeface(extraBoldTypeFace);
         signupView.setBackground(null);
         signupView.setTypeface(semiBoldTypeFace);

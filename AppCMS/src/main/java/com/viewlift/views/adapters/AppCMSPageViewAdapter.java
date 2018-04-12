@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
+
 import com.viewlift.views.customviews.ModuleView;
 
 import java.util.ArrayList;
@@ -18,6 +20,10 @@ import java.util.List;
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
     private List<ModuleView> childViews;
+
+    private static int TYPE_PLAYER = 0;
+    private static int TYPE_STANZA = 1;
+
     private FrameLayout topLayout;
 
     public AppCMSPageViewAdapter(Context context) {
@@ -52,6 +58,31 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     }
 
     @Override
+    public int getItemViewType(int position) {
+
+        
+            if (isPlayerView(position ))
+                return TYPE_PLAYER;
+            else if (isStanzaView(position ))
+                return TYPE_STANZA;
+            else
+                return position;
+        
+    }
+
+    private boolean isPlayerView(int position){
+       /* if(((ModuleView)childViews.get(position)).getModule().getType().equalsIgnoreCase("AC StandaloneVideoPlayer 01"))
+            return true;
+        return false;
+		*/
+		return position == TYPE_PLAYER;
+    }
+
+    private boolean isStanzaView(int position){
+        return position == TYPE_STANZA;
+    }
+
+    @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         FrameLayout viewGroup = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams viewGroupLayoutParams =
@@ -64,21 +95,24 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public void onBindViewHolder(PageViewHolder holder, int position) {
         try {
-            if (position == 0) {
+            /*if (position == 0) {
                 holder.parent.removeAllViews();
                 holder.parent.addView(topLayout);
-            } else {
+            } else if(!isPlayerView(position - 1)) {*/
                 holder.parent.removeAllViews();
-                holder.parent.addView(childViews.get(position - 1));
-            }
+                holder.parent.addView(childViews.get(position));
+            //}
         } catch (Exception e) {
 
         }
+		if (childViews.get(position).findViewById(R.id.video_player_id) !=null){
+           TYPE_PLAYER=position;
+       }
     }
 
     @Override
     public int getItemCount() {
-        return childViews != null ? childViews.size() + 1 : 0;
+        return childViews != null ? childViews.size()  : 0;
     }
 
     public List<String> getViewIdList(int firstIndex, int lastIndex) {

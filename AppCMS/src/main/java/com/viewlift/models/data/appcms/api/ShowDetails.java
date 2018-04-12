@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+
 import java.util.List;
 
 /**
@@ -21,12 +22,24 @@ public class ShowDetails implements Serializable {
     @Expose
     List<Trailer> trailers;
 
+    @SerializedName("site")
+    @Expose
+    String site;
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
     }
 
     public List<Trailer> getTrailers() {

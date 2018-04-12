@@ -3,12 +3,15 @@ package com.viewlift.models.network.components;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSArticleCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -28,6 +31,10 @@ import dagger.Component;
 @Singleton
 @Component(modules = {AppCMSUIModule.class})
 public interface AppCMSUIComponent {
+    AppCMSPlaylistCall appCmsPlaylistCall();
+
+    AppCMSAudioDetailCall appCmsAudioDetailCall();
+
     AppCMSMainUICall appCMSMainCall();
 
     AppCMSAndroidUICall appCMSAndroidCall();
@@ -57,4 +64,6 @@ public interface AppCMSUIComponent {
     AppCMSAddToWatchlistCall appCMSAddToWatchlistCall();
 
     AppCMSBeaconCall appCMSBeaconCall();
+
+    AppCMSArticleCall appCmsArticleCall();
 }

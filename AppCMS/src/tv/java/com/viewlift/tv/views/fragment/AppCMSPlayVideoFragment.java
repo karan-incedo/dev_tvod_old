@@ -9,9 +9,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.percent.PercentRelativeLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,15 +41,21 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
+import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -77,7 +88,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private TextView videoPlayerTitleView, playBackStateTextView;
     private VideoPlayerView videoPlayerView;
     private OnClosePlayerEvent onClosePlayerEvent;
-    private BeaconPingThread beaconMessageThread;
+    private BeaconPing beaconMessageThread;
     private long beaconMsgTimeoutMsec;
 
     private ImaSdkFactory sdkFactory;
@@ -102,7 +113,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean entitlementCheckCancelled;
     private boolean freeContent;
     private static int apod = 0;
-    private BeaconBufferingThread beaconBufferingThread;
+    private BeaconBuffer beaconBufferingThread;
     private long mStopBufferMilliSec;
     private long mStartBufferMilliSec = 0l;
     private double ttfirstframe;
@@ -110,7 +121,21 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconPlay;
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
+    int maxPreviewSecs = 0;
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
+    private PercentRelativeLayout contentRatingMainContainer;
+    private LinearLayout contentRatingInfoContainer;
+    private TextView contentRatingHeaderView;
+    private TextView contentRatingDiscretionView;
+    private TextView contentRatingTitleHeader;
+    private RelativeLayout videoPlayerMainContainer;
 
+    private final int totalCountdownInMillis = 2000;
+    private final int countDownIntervalInMillis = 20;
+    private String signatureCookie;
+    private String policyCookie;
+    private String keyPairIdCookie;
+    private ContentDatum contentDatum;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -142,7 +167,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       String imageUrl,
                                                       String closedCaptionUrl,
                                                       String parentalRating,
-                                                      boolean freeContent) {
+                                                      boolean freeContent, AppCMSSignedURLResult appCMSSignedURLResult, ContentDatum contentDatum) {
 
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
@@ -162,6 +187,17 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
         args.putBoolean(context.getString(R.string.free_content_key), freeContent);
+        args.putSerializable("content_datum",contentDatum);
+        if (appCMSSignedURLResult != null) {
+            appCMSSignedURLResult.parseKeyValuePairs();
+            args.putString(context.getString(R.string.signed_policy_key), appCMSSignedURLResult.getPolicy());
+            args.putString(context.getString(R.string.signed_signature_key), appCMSSignedURLResult.getSignature());
+            args.putString(context.getString(R.string.signed_keypairid_key), appCMSSignedURLResult.getKeyPairId());
+        } else {
+            args.putString(context.getString(R.string.signed_policy_key), "");
+            args.putString(context.getString(R.string.signed_signature_key), "");
+            args.putString(context.getString(R.string.signed_keypairid_key), "");
+        }
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -173,6 +209,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (activity instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) activity;
         }
+        if (activity instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) activity;
+        }
     }
 
     @Override
@@ -181,6 +220,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         this.mContext = context;
         if (context instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) context;
+        }
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
     }
 
@@ -205,6 +247,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+            policyCookie = args.getString(getString(R.string.signed_policy_key));
+            signatureCookie = args.getString(getString(R.string.signed_signature_key));
+            keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
+            contentDatum = (ContentDatum)args.getSerializable("content_datum");
+            Log.d(TAG, "ANAS: free " + freeContent);
         }
 
         appCMSPresenter =
@@ -222,6 +269,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer() {
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getActivity());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         if (!TextUtils.isEmpty(hlsUrl)) {
@@ -243,8 +291,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
 
         long playDifference = runtime - watchedTime;//((watchedTime*100)/runTime);
-        long playTimePercentage = ((watchedTime * 100) / runtime);
-
+        long playTimePercentage = 0;
+        if (runtime != 0) {
+            playTimePercentage = ((watchedTime * 100) / runtime);
+        }
         // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
         if (isTrailer || (playTimePercentage >= 98 && playDifference <= 30)) {
             videoPlayTime = 0;
@@ -261,7 +311,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 switch (playerState.getPlaybackState()) {
                     case ExoPlayer.STATE_BUFFERING:
                         Log.d(TAG, "Video STATE_BUFFERING");
-                        text += "buffering...";
+                        text += getResources().getString(R.string.buffering_text);
+
                         playBackStateLayout.setVisibility(View.VISIBLE);
 
                         if (beaconMessageThread != null) {
@@ -271,7 +322,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             beaconBufferingThread.sendBeaconBuffering = true;
                             if (!beaconBufferingThread.isAlive()) {
                                 beaconBufferingThread.start();
-                             }
+                            }
                         }
 
                         break;
@@ -279,10 +330,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         Log.d(TAG, "Video STATE_READY");
                         text += "";
                         playBackStateLayout.setVisibility(View.GONE);
-                        if (shouldRequestAds && !isADPlay) {
-                            requestAds(adsUrl);
-                            isADPlay = true;
-                        }
 
                         if (beaconBufferingThread != null) {
                             beaconBufferingThread.sendBeaconBuffering = false;
@@ -324,15 +371,24 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
                         }
-                        if (onClosePlayerEvent != null && permaLink.contains(
-                                getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                        if (onClosePlayerEvent != null && isTrailer) {
                             videoPlayerView.releasePlayer();
                             onClosePlayerEvent.closePlayer();
                             return;
                         }
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
-                            onClosePlayerEvent.onMovieFinished();
+                            //sedn the history when complete play.
+                            if (!isTrailer && videoPlayerView != null) {
+                                appCMSPresenter.updateWatchedTime(filmId,
+                                        videoPlayerView.getCurrentPosition() / 1000);
+                            }
+
+                           if(shouldAutoPlay()){
+                               onClosePlayerEvent.onMovieFinished();
+                           } /*else {
+                               onClosePlayerEvent.closePlayer();
+                           }*/
                         }
                         break;
                     default:
@@ -360,7 +416,15 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         });
     }
 
+    private boolean shouldAutoPlay() {
+        boolean isPerVideo = appCMSPresenter.getAppCMSMain().getFeatures().getFreePreview().isPerVideo();
+         if (isPerVideo && !appCMSPresenter.isUserSubscribed() && !freeContent){
+            return false;
+        }
+        return true;
+    }
     private boolean isAdsDisplaying = false;
+
     public boolean isAdsPlaying() {
         return isAdsDisplaying;
     }
@@ -370,7 +434,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player_tv, container, false);
-
+        videoPlayerMainContainer =
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
@@ -398,6 +463,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerInfoContainer.bringToFront();
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
 
@@ -411,146 +480,25 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(), appCMSPresenter)),
                         PorterDuff.Mode.MULTIPLY
                 );
+        if (!TextUtils.isEmpty(policyCookie) &&
+                !TextUtils.isEmpty(signatureCookie) &&
+                !TextUtils.isEmpty(keyPairIdCookie)) {
+            CookieManager cookieManager = new CookieManager();
+            CookieHandler.setDefault(cookieManager);
 
-
-        if (appCMSPresenter.isAppSVOD() &&
-                !isTrailer &&
-                !freeContent &&
-                !appCMSPresenter.isUserSubscribed()) {
-            int entitlementCheckMultiplier = 5;
-            entitlementCheckCancelled = false;
-
-            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-            if (appCMSMain != null &&
-                    appCMSMain.getFeatures() != null &&
-                    appCMSMain.getFeatures().getFreePreview() != null &&
-                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
-                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
-                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
-                try {
-                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
-                } catch (Exception e) {
-                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
-                }
-            }
-
-            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
-            final boolean[] isSubscribe = {false};
-
-            appCMSPresenter.getUserData(userIdentity -> {
-                        if (null != userIdentity)
-                            isSubscribe[0] = userIdentity.isSubscribed();
-
-                        if (!isSubscribe[0]) {
-                            entitlementCheckTimerTask = new TimerTask() {
-                                @Override
-                                public void run() {
-                                    if (!entitlementCheckCancelled) {
-                                        int secsViewed = (int) videoPlayerView.getPlayer().getCurrentPosition() / 1000;
-                                        Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
-                                        if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    pauseVideo();
-                                                    if (videoPlayerView != null) {
-                                                        videoPlayerView.disableController();
-                                                    }
-                                                    videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
-                                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                                getActivity(),
-                                                                appCMSPresenter,
-                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                                                getString(R.string.app_cms_login_required_title),
-                                                                getString(R.string.app_cms_login_required_message),
-                                                                getString(R.string.app_cms_login),
-                                                                getString(android.R.string.cancel),
-                                                                14
-                                                        );
-
-                                                        newFragment.setOnPositiveButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                Utils.pageLoading(true, getActivity());
-                                                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                                                appCMSPresenter.navigateToTVPage(
-                                                                        navigationUser.getPageId(),
-                                                                        navigationUser.getTitle(),
-                                                                        navigationUser.getUrl(),
-                                                                        false,
-                                                                        Uri.EMPTY,
-                                                                        false,
-                                                                        false,
-                                                                        true
-                                                                );
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnNegativeButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                    } else if (!isSubscribe[0]) {
-                                                        Log.d(TAG, "User is not Subscribe");
-                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                                getActivity(),
-                                                                appCMSPresenter,
-                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                                                getString(R.string.subscription_required),
-                                                                getString(R.string.subscription_not_purchased),
-                                                                getString(android.R.string.cancel),
-                                                                getString(R.string.blank_string),
-                                                                14
-                                                        );
-
-                                                        newFragment.setOnPositiveButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                    }
-                                                }
-                                            });
-                                            entitlementCheckCancelled = true;
-                                        }
-                                    }
-                                }
-                            };
-                            entitlementCheckTimer = new Timer();
-                            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
-                        }
-                    }
-            );
+            videoPlayerView.setPolicyCookie(policyCookie);
+            videoPlayerView.setSignatureCookie(signatureCookie);
+            videoPlayerView.setKeyPairIdCookie(keyPairIdCookie);
         }
 
+        initViewForCRW(rootView);
         if (!shouldRequestAds) {
-            //videoPlayerView.getPlayer().setPlayWhenReady(true);
-            preparePlayer();
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                preparePlayer();
+                startEntitlementCheckTimer();
+            }
         }
 
 
@@ -571,34 +519,222 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     false);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
+
+            appCMSPresenter.sendGaEvent(getString(R.string.play_video_action),
+                    getString(R.string.play_video_category),
+                    filmId);
+
         }
 
-        beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
+        beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 filmId,
                 permaLink,
                 isTrailer,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,
+                contentDatum);
 
-        beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
+        beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
                 filmId,
                 permaLink,
                 parentScreenName,
                 videoPlayerView,
-                mStreamId);
+                mStreamId,
+                contentDatum);
 
         return rootView;
+    }
+
+    private void startEntitlementCheckTimer() {
+        if (entitlementCheckTimer != null || entitlementCheckTimerTask != null) {
+            /*That means timer is already running and no need to create a new timer*/
+            return;
+        }
+        if (appCMSPresenter.isAppSVOD() &&
+                !isTrailer &&
+                !freeContent &&
+                !appCMSPresenter.isUserSubscribed()) {
+            int entitlementCheckMultiplier = 5;
+            boolean isPerVideo = false;
+            entitlementCheckCancelled = false;
+
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview()) {
+                if (appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                        appCMSMain.getFeatures().getFreePreview().getLength().getUnit()
+                                .equalsIgnoreCase("Minutes")) {
+                    try {
+                        entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures()
+                                .getFreePreview().getLength().getMultiplier());
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                    }
+                }
+                isPerVideo = appCMSMain.getFeatures().getFreePreview().isPerVideo();
+            }else{
+                entitlementCheckMultiplier = 0; //isFreePreview is false that means we have to show preview dialog immediate.
+            }
+
+            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
+            final boolean[] isSubscribe = {false};
+
+            boolean finalIsPerVideo = isPerVideo;
+            appCMSPresenter.getUserData(userIdentity -> {
+                        if (null != userIdentity)
+                            isSubscribe[0] = userIdentity.isSubscribed();
+
+                        if (!isSubscribe[0]) {
+                            entitlementCheckTimerTask = new TimerTask() {
+                                @Override
+                                public void run() {
+                                    if (!entitlementCheckCancelled) {
+                                        int secsViewed;
+                                        if (finalIsPerVideo) {
+                                            secsViewed = (int) videoPlayerView.getPlayer().getCurrentPosition() / 1000;
+                                        } else {
+                                            secsViewed = (int) (appCMSPresenter.getUserFreePlayTimePreference() / 1000);
+                                        }
+                                        Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
+                                        if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
+
+                                            if (getActivity() != null) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        pauseVideo();
+                                                        if (videoPlayerView != null) {
+                                                            videoPlayerView.disableController();
+                                                        }
+                                                        videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
+                                                        if (!appCMSPresenter.isUserLoggedIn()) {
+
+                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            String positiveButtonText = getString(R.string.app_cms_login);
+                                                            if (appCMSPresenter.getAppCMSAndroid() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null) {
+                                                                if (appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                                                                    dialogMessage = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                                                                }
+                                                                if (appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText() != null) {
+                                                                    positiveButtonText = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText();
+                                                                }
+                                                            }
+                                                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                    getActivity(),
+                                                                    appCMSPresenter,
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                    getString(R.string.app_cms_login_required_title),
+                                                                    dialogMessage,
+                                                                    positiveButtonText,
+                                                                    getString(android.R.string.cancel),
+                                                                    14
+                                                            );
+
+                                                            newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    Utils.pageLoading(true, getActivity());
+                                                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                                                    appCMSPresenter.navigateToTVPage(
+                                                                            navigationUser.getPageId(),
+                                                                            navigationUser.getTitle(),
+                                                                            navigationUser.getUrl(),
+                                                                            false,
+                                                                            Uri.EMPTY,
+                                                                            false,
+                                                                            false,
+                                                                            true);
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnNegativeButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                        } else if (!isSubscribe[0]) {
+                                                            Log.d(TAG, "User is not Subscribe");
+                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            if (appCMSPresenter.getAppCMSAndroid() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                                                                dialogMessage = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                                                            }
+                                                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                    getActivity(),
+                                                                    appCMSPresenter,
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                    getString(R.string.subscription_required),
+                                                                    dialogMessage,
+                                                                    getString(android.R.string.cancel),
+                                                                    getString(R.string.blank_string),
+                                                                    14
+                                                            );
+
+                                                            newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            entitlementCheckCancelled = true;
+                                        }
+                                    }
+                                    if (!finalIsPerVideo && null != videoPlayerView && null != videoPlayerView.getPlayer() &&
+                                            videoPlayerView.getPlayer().getPlayWhenReady()) {
+                                        /*if perVideo is false and the player is not playing*/
+                                        appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                                    }
+                                }
+                            };
+                            entitlementCheckTimer = new Timer();
+                            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+                        }
+                    }
+            );
+        }
     }
 
     public void cancelTimer() {
         if (null != entitlementCheckTimerTask) {
             entitlementCheckTimerTask.cancel();
+            entitlementCheckTimerTask = null;
         }
         if (null != entitlementCheckTimer) {
             entitlementCheckTimer.cancel();
+            entitlementCheckTimer = null;
         }
     }
 
@@ -606,7 +742,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
        /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
-            videoPlayerView.pausePlayer();
+            tvVideoPlayerView.pausePlayer();
         }*/
 
         videoPlayerView.pausePlayer();
@@ -627,7 +763,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
             videoPlayerInfoContainer.setVisibility(View.VISIBLE);
             videoPlayerView.startPlayer();
-            //videoPlayerView.resumePlayer();
+            //tvVideoPlayerView.resumePlayer();
             if (beaconMessageThread != null) {
                 beaconMessageThread.sendBeaconPing = true;
             }
@@ -659,10 +795,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onResume() {
         videoPlayerView.setListener(this);
-       if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+        appCMSPresenter.setCancelAllLoads(false);
+        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         }  /*else {
-            videoPlayerView.resumePlayer();
+            tvVideoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
         }*/
 
@@ -685,21 +822,17 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
+        videoPlayerView.setListener(null);
         super.onPause();
     }
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        if(videoPlayerView.getPlayer() != null){
+        if (videoPlayerView.getPlayer() != null) {
             videoPlayerView.getPlayer().setPlayWhenReady(true);
         }
-        if (isAdded() && isVisible()) {
-            preparePlayer();
-        }
         isAdsDisplaying = false;
-        // videoPlayerView.getPlayer().setPlayWhenReady(true);
-        // videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -739,7 +872,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                videoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }
@@ -777,6 +909,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 isAdsDisplaying = false;
                 if (isVisible() && isAdded()) {
                     preparePlayer();
+                    startEntitlementCheckTimer();
                 }
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
@@ -866,13 +999,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     public boolean showController(KeyEvent event) {
-        if(null != videoPlayerView) {
-            SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
+        if (null != videoPlayerView) {
+            AppCMSSimpleExoPlayerView playerView =  videoPlayerView.getPlayerView();
             if (null != playerView) {
-                if(null != playerView.getPlayer()){
-                    if( playerView.getPlayer().getPlayWhenReady() ) {
+                if (null != playerView.getPlayer()) {
+                    if (playerView.getPlayer().getPlayWhenReady()) {
                         playerView.showController();
-//                        return playerView.dispatchMediaKeyEvent(event);
                     }
                 }
             }
@@ -959,143 +1091,103 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         onClosePlayerEvent.closePlayer();
     }
 
+    private void initViewForCRW(View rootView) {
 
-    private static class BeaconPingThread extends Thread {
-        final long beaconMsgTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        final String mStreamId;
-        VideoPlayerView videoPlayerView;
-        boolean runBeaconPing;
-        boolean sendBeaconPing;
-        boolean isTrailer;
-        int playbackState;
+        contentRatingMainContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
 
+        contentRatingInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
-        public BeaconPingThread(long beaconMsgTimeoutMsec,
-                                AppCMSPresenter appCMSPresenter,
-                                String filmId,
-                                String permaLink,
-                                boolean isTrailer,
-                                String parentScreenName,
-                                VideoPlayerView videoPlayerView,
-                                String mStreamId) {
-            this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-            this.videoPlayerView = videoPlayerView;
-            this.isTrailer = isTrailer;
-            this.mStreamId = mStreamId;
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
+
+        contentRatingTitleHeader = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_header);
+
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+
+        if (!TextUtils.isEmpty(fontColor)) {
+            contentRatingTitleHeader.setTextColor(Color.parseColor(fontColor));
         }
 
-        @Override
-        public void run() {
-            runBeaconPing = true;
-            while (runBeaconPing) {
-                try {
-                    Thread.sleep(beaconMsgTimeoutMsec);
-                    if (sendBeaconPing) {
-
-                        long currentTime = videoPlayerView.getCurrentPosition() / 1000;
-                        playbackState = videoPlayerView.getPlayer().getPlaybackState();
-                        boolean pingCondition = appCMSPresenter != null && videoPlayerView != null
-                                && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0;
-                        if (pingCondition) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.PING,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    0d,
-                                    0,
-                                    false);
-
-                            if (!isTrailer && videoPlayerView != null) {
-                                appCMSPresenter.updateWatchedTime(filmId,
-                                        videoPlayerView.getCurrentPosition() / 1000);
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "BeaconPingThread sleep interrupted");
-                }
-            }
+        if (appCMSPresenter.getAppCMSMain() != null &&
+                !TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            contentRatingHeaderView.setTextColor(highlightColor);
+            applyBorderToComponent(contentRatingInfoContainer, 1, highlightColor);
+            progressBar.getProgressDrawable()
+                    .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
+            progressBar.setMax(100);
         }
     }
 
-    private static class BeaconBufferingThread extends Thread {
-        final long beaconBufferTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        final String mStreamId;
-        VideoPlayerView videoPlayerView;
-        boolean runBeaconBuffering;
-        boolean sendBeaconBuffering;
-        int bufferCount = 0;
-
-        public BeaconBufferingThread(long beaconBufferTimeoutMsec,
-                                     AppCMSPresenter appCMSPresenter,
-                                     String filmId,
-                                     String permaLink,
-                                     String parentScreenName,
-                                     VideoPlayerView videoPlayerView,
-                                     String mStreamId) {
-            this.beaconBufferTimeoutMsec = beaconBufferTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-            this.videoPlayerView = videoPlayerView;
-            this.mStreamId = mStreamId;
+    private void createContentRatingView() throws Exception {
+        if (!isTrailer &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
+            videoPlayerMainContainer.setVisibility(View.GONE);
+            contentRatingMainContainer.setVisibility(View.VISIBLE);
+            contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
+            new Handler().post(this::startCountdown);
+        } else {
+            contentRatingMainContainer.setVisibility(View.GONE);
+            videoPlayerMainContainer.setVisibility(View.VISIBLE);
+            preparePlayer();
+            startEntitlementCheckTimer();
         }
+    }
 
-        public void run() {
-            runBeaconBuffering = true;
-            while (runBeaconBuffering) {
-                try {
-                    Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffering) {
-                        if (appCMSPresenter != null && videoPlayerView != null &&
-                                videoPlayerView.getPlayer().getPlayWhenReady() &&
-                                videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
-                            bufferCount++;
-                            if (bufferCount >= 5) {
-                                appCMSPresenter.sendBeaconMessage(filmId,
-                                        permaLink,
-                                        parentScreenName,
-                                        videoPlayerView.getCurrentPosition(),
-                                        false,
-                                        AppCMSPresenter.BeaconEvent.BUFFERING,
-                                        "Video",
-                                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                        String.valueOf(videoPlayerView.getVideoHeight()),
-                                        String.valueOf(videoPlayerView.getVideoWidth()),
-                                        mStreamId,
-                                        0d,
-                                        0,
-                                        false);
-                                bufferCount = 0;
-                            }
+    /*private String getParentalRating() {
+        if (!isTrailer &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
+            contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
+        }
+        return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
+    }*/
 
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "beaconBufferingThread sleep interrupted");
+    private void startCountdown() {
+        new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
+//                Log.d(TAG, "CRW Progress:" + progress);
+                progressBar.setProgress((int) progress);
+            }
+
+            @Override
+            public void onFinish() {
+                if (isVisible() && isAdded()) {
+                    contentRatingMainContainer.setVisibility(View.GONE);
+                    videoPlayerMainContainer.setVisibility(View.VISIBLE);
+                    preparePlayer();
+                    startEntitlementCheckTimer();
                 }
+            }
+        }.start();
+    }
+
+    private void applyBorderToComponent(View view, int width, int Color) {
+        GradientDrawable rectangleBorder = new GradientDrawable();
+        rectangleBorder.setShape(GradientDrawable.RECTANGLE);
+        rectangleBorder.setStroke(width, Color);
+        view.setBackground(rectangleBorder);
+    }
+
+    private void setTypeFace(Context context,
+                             TextView view, String fontType) {
+        if (null != context && null != view && null != fontType) {
+            try {
+                Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
+                view.setTypeface(face);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 }
+

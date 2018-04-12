@@ -1,11 +1,9 @@
 package com.viewlift.tv.views.fragment;
 
 import android.content.Context;
-
 import android.graphics.Color;
-import android.os.Build;
-
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -16,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -34,6 +31,7 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
     private String desc_text;
     private static Context mContext;
     private AppCMSPresenter appCMSPresenter;
+    private Button btnClose;
 
     public TextOverlayDialogFragment() {
         super();
@@ -56,11 +54,11 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        String backGroundColor = Utils.getBackGroundColor(getActivity(),appCMSPresenter);
+        String backGroundColor = appCMSPresenter.getAppBackgroundColor();
         mView.findViewById(R.id.fragment_text_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
-        Button btnClose = (Button) mView.findViewById(R.id.btn_close);
+        btnClose = (Button) mView.findViewById(R.id.btn_close);
         TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
         TextView tvDescription = (TextView) mView.findViewById(R.id.text_overlay_description);
         ScrollView scrollView = (ScrollView)mView.findViewById(R.id.scrollview);
@@ -98,14 +96,15 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
 
         btnClose.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
                 Color.parseColor(Utils.getFocusColor(mContext,appCMSPresenter)),
-                btnComponent1));
+                btnComponent1,
+                appCMSPresenter));
 
         btnClose.setTextColor(Utils.getButtonTextColorDrawable(
                 Utils.getColor(getActivity(),Integer.toHexString(ContextCompat.getColor(getActivity() ,
                         R.color.btn_color_with_opacity)))
                 ,
                 Utils.getColor(getActivity() , Integer.toHexString(ContextCompat.getColor(getActivity() ,
-                        android.R.color.white)))
+                        android.R.color.white))),appCMSPresenter
         ));
 
 
@@ -151,5 +150,15 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
         bundle.putInt( getString(R.string.tv_dialog_width_key) , width);
         bundle.putInt( getString(R.string.tv_dialog_height_key) , height);
         super.onActivityCreated(bundle);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Handler().postDelayed(() -> {
+            if (isVisible() && isAdded()) {
+                btnClose.requestFocus();
+            }
+        }, 500);
     }
 }

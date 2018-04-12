@@ -10,6 +10,8 @@ import java.io.Serializable;
 @UseStag
 public class Gist implements Serializable {
 
+    boolean selectedPosition;
+
     @SerializedName("id")
     @Expose
     String id;
@@ -40,11 +42,19 @@ public class Gist implements Serializable {
 
     @SerializedName("publishDate")
     @Expose
-    long publishDate;
+    String publishDate;
 
     @SerializedName("runtime")
     @Expose
     long runtime;
+
+    public boolean isFree() {
+        return isFree;
+    }
+
+    @SerializedName("isFree")
+    @Expose
+    boolean isFree;
 
     @SerializedName("posterImageUrl")
     @Expose
@@ -64,11 +74,11 @@ public class Gist implements Serializable {
 
     @SerializedName("addedDate")
     @Expose
-    long addedDate;
+    String addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
+    String updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
@@ -94,7 +104,39 @@ public class Gist implements Serializable {
     @Expose
     int watchedPercentage;
 
+    @SerializedName("kisweEventId")
+    @Expose
+    String kisweEventId;
+
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
+    @SerializedName("readTime")
+    @Expose
+    String readTime;
+
+    @SerializedName("summaryText")
+    @Expose
+    String summaryText;
+
+    String artistName;
+    String directorName;
+
     String downloadStatus;
+    boolean isAudioPlaying;
+    long currentPlayingPosition;
+    Boolean isCastingConnected;
+
+    public String getLandscapeImageUrl() {
+        return landscapeImageUrl;
+    }
+
+    public void setLandscapeImageUrl(String landscapeImageUrl) {
+        this.landscapeImageUrl = landscapeImageUrl;
+    }
+
+    String landscapeImageUrl;
     /**
      * This is to store the url of the downloaded file
      */
@@ -156,11 +198,11 @@ public class Gist implements Serializable {
         this.free = free;
     }
 
-    public long getPublishDate() {
+    public String getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(long publishDate) {
+    public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -196,19 +238,19 @@ public class Gist implements Serializable {
         this.badgeImages = badgeImages;
     }
 
-    public long getAddedDate() {
+    public String getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(long addedDate) {
+    public void setAddedDate(String addedDate) {
         this.addedDate = addedDate;
     }
 
-    public long getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -286,4 +328,90 @@ public class Gist implements Serializable {
     public void setImageGist(ImageGist imageGist) {
         this.imageGist = imageGist;
     }
+
+    public String getKisweEventId() {
+        return kisweEventId;
+    }
+
+    public void setKisweEventId(String kisweEventId) {
+        this.kisweEventId = kisweEventId;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public boolean isAudioPlaying() {
+        return isAudioPlaying;
+    }
+
+    public void setAudioPlaying(boolean audioPlaying) {
+        isAudioPlaying = audioPlaying;
+    }
+
+    public long getCurrentPlayingPosition() {
+        return currentPlayingPosition;
+    }
+
+    public void setCurrentPlayingPosition(long currentPlayingPosition) {
+        this.currentPlayingPosition = currentPlayingPosition;
+    }
+
+    public Boolean getCastingConnected() {
+        return isCastingConnected;
+    }
+
+    public void setCastingConnected(Boolean castingConnected) {
+        isCastingConnected = castingConnected;
+    }
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getDirectorName() {
+        return directorName;
+    }
+
+    public void setDirectorName(String directorName) {
+        this.directorName = directorName;
+    }
+
+
+
+    public boolean isSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(boolean selectedPosition) {
+        this.selectedPosition = selectedPosition;
+    }
+
+    public String getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(String readTime) {
+        this.readTime = readTime;
+    }
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
+    }
+
+    public void setDownloadStatus(String downloadStatus) {
+        this.downloadStatus = downloadStatus;
+    }
 }
+

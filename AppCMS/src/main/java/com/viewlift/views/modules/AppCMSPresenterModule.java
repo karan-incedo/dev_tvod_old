@@ -9,6 +9,8 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSArticleCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
@@ -18,6 +20,8 @@ import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPhotoGalleryCall;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
@@ -25,6 +29,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
@@ -62,6 +67,10 @@ public class AppCMSPresenterModule {
     @Provides
     @Singleton
     public AppCMSPresenter providesAppCMSPresenter(Gson gson,
+                                                   AppCMSArticleCall appCMSArticleCall,
+                                                   AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
+                                                   AppCMSPlaylistCall appCMSPlaylistCall,
+                                                   AppCMSAudioDetailCall appCMSAudioDetailCall,
                                                    AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
@@ -109,8 +118,13 @@ public class AppCMSPresenterModule {
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,
                                                    Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                                                   ReferenceQueue<Object> referenceQueue) {
+                                                   ReferenceQueue<Object> referenceQueue,
+                                                   AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall) {
         return new AppCMSPresenter(gson,
+                appCMSArticleCall,
+                appCMSPhotoGalleryCall,
+                appCMSPlaylistCall,
+                appCMSAudioDetailCall,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,
@@ -158,6 +172,7 @@ public class AppCMSPresenterModule {
                 actionToPageAPIMap,
                 actionToActionTypeMap,
 
-                referenceQueue);
+                referenceQueue,
+                appCMSSubscribeForLatestNewsCall);
     }
 }

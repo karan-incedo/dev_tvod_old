@@ -2,6 +2,7 @@ package com.viewlift.views.activity;
 
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,13 +10,17 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -23,6 +28,7 @@ import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.MusicService;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -78,6 +84,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
     @Inject
     AppCMSSearchCall appCMSSearchCall;
+    private MediaBrowserCompat mMediaBrowser;
 
     private String searchQuery;
     private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
@@ -141,6 +148,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
+        TextView searchText = (TextView) appCMSSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        appCMSPresenter.setCursorDrawableColor((EditText) searchText);
+
         appCMSSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -158,22 +168,19 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         });
 
         appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-
             @Override
             public boolean onSuggestionSelect(int position) {
                 return true;
             }
-
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
-                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSPresenter.searchSuggestionClick(searchHintResult);
                 finish();
                 return true;
             }
         });
-
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
@@ -185,6 +192,41 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         handleIntent(getIntent());
         appCMSSearchItemAdapter.handleProgress((object) -> progressBar.setVisibility(View.VISIBLE));
+
+        mMediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, MusicService.class), mConnectionCallback, null);
+
+    }
+
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    try {
+                        MediaControllerCompat mediaController = new MediaControllerCompat(
+                                AppCMSSearchActivity.this, mMediaBrowser.getSessionToken());
+                        MediaControllerCompat.setMediaController(AppCMSSearchActivity.this, mediaController);
+                    } catch (RemoteException e) {
+                    }
+                }
+            };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mMediaBrowser != null) {
+            mMediaBrowser.connect();
+        }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mMediaBrowser != null) {
+            mMediaBrowser.disconnect();
+        }
+
     }
 
     private void sendFirebaseAnalyticsEvents() {
@@ -243,7 +285,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
-                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSPresenter.searchSuggestionClick(searchHintResult);
 
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);

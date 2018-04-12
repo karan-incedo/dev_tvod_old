@@ -4,25 +4,31 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.apptentive.android.sdk.Apptentive;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/*
+import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
+
+/**
  * Created by viewlift on 5/30/17.
  */
 
@@ -122,6 +128,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
                             appCMSPresenter.navigateToSubscriptionPlansPage(true);
+                        } else if (titleKey == AppCMSUIKeyType.PAGE_TEAMS_KEY) {
+                            appCMSPresenter.launchTeamNavPage();
                         } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
@@ -178,16 +186,17 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
                                     appCMSPresenter.showLoadingDialog(true);
+                                    DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
+                                    appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
                                 case ANDROID_WATCHLIST_NAV_KEY:
+                                case ANDROID_WATCHLIST_SCREEN_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                                    null,
-                                                    false,
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
                                                     appCMSPresenter::launchBlankPage,
                                                     null);
                                             return;
@@ -206,13 +215,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_HISTORY_NAV_KEY:
+                                case ANDROID_HISTORY_SCREEN_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                                    null,
-                                                    false,
-                                                    null,
-                                                    null);
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null, null);
                                             return;
                                         }
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -229,7 +235,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 default:
-                                    if (!appCMSPresenter.isNetworkConnected() && titleKey !=AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY) {
+
+                                    if (!appCMSPresenter.isNetworkConnected() && titleKey != AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                                     null,
@@ -246,7 +253,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                                 null);
                                         return;
                                     }
-
                                     if (!appCMSPresenter.navigateToPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(),
                                             navigationUser.getUrl(),
@@ -291,7 +297,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.itemView.setOnClickListener(v -> {
                             setClickedItemPosition(i);
                             notifyDataSetChanged();
-
+                            //Log.d(TAG, "Navigating to page with Title position: " + i);
                             if (!appCMSPresenter.isNetworkConnected()) {
                                 if (!appCMSPresenter.isUserLoggedIn()) {
                                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -309,10 +315,28 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                         null);
                                 return;
                             }
-                            //Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
-                            if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                            if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
+                                    !TextUtils.isEmpty(navigationFooter.getTitle())) {
+                                appCMSPresenter.openChromeTab(navigationFooter.getUrl());
+                            } else if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.contact_us)) && !TextUtils.isEmpty(Utils.getProperty("ApptentiveApiKey", viewHolder.itemView.getContext()))) {
+                                if (appCMSPresenter.isNetworkConnected()) {
+                                    //Firebase Event when contact us screen is opened.
+                                    appCMSPresenter.sendFireBaseContactUsEvent();
+                                    if (Apptentive.canShowMessageCenter()) {
+                                        Apptentive.showMessageCenter(viewHolder.itemView.getContext());
+                                    }
+                                } else {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                            null,
+                                            false,
+                                            () -> {
+                                            },
+                                            () -> {
+                                            });
+                                }
+                            } else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,
@@ -337,14 +361,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
-                    if (!appCMSPresenter.isNetworkConnected()){
+                    if (!appCMSPresenter.isNetworkConnected()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                                 true,
                                 () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
                                         null, null, false),
                                 null);
-                    }else {
+                    } else {
                         if (appCMSPresenter.isDownloadUnfinished()) {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD, null);
                         } else {

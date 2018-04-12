@@ -32,7 +32,9 @@ public class ContentDetails implements Serializable {
 
     @SerializedName("author")
     @Expose
-    Object author;
+    AuthorData author;
+
+
 
     @SerializedName("relatedVideoIds")
     @Expose
@@ -77,6 +79,10 @@ public class ContentDetails implements Serializable {
     @Expose
     String status;
 
+    @SerializedName("relatedArticleIds")
+    @Expose
+    List<String> relatedArticleIds;
+
     public boolean getAutoGenerateRelated() {
         return autoGenerateRelated;
     }
@@ -117,11 +123,11 @@ public class ContentDetails implements Serializable {
         this.geoRestriction = geoRestriction;
     }
 
-    public Object getAuthor() {
+    public AuthorData getAuthor() {
         return author;
     }
 
-    public void setAuthor(Object author) {
+    public void setAuthor(AuthorData author) {
         this.author = author;
     }
 
@@ -215,6 +221,14 @@ public class ContentDetails implements Serializable {
 
     public boolean isAutoGenerateRelated() {
         return autoGenerateRelated;
+    }
+
+    public List<String> getRelatedArticleIds() {
+        return relatedArticleIds;
+    }
+
+    public void setRelatedArticleIds(List<String> relatedArticleIds) {
+        this.relatedArticleIds = relatedArticleIds;
     }
 
 

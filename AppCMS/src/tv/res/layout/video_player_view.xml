@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/videoPlayerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:controller_layout_id="@layout/custom_exo_playback_control_view"
+        app:surface_type="texture_view"/>
+
+
+    <ImageView
+        android:id="@+id/videoPlayerThumbnailImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/videoPlayerThumbnailImageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d4000000"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
+</RelativeLayout>
+

@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
@@ -83,29 +85,34 @@ public class AppCMSTVTrayAdapter
         if (this.adapterData == null) {
             this.adapterData = new ArrayList<>();
         }
-        switch (jsonValueKeyMap.get(viewType)) {
-            case PAGE_HISTORY_MODULE_KEY:
-                this.isHistory = true;
-                break;
 
-            case PAGE_WATCHLIST_MODULE_KEY:
-                this.isWatchlist = true;
-                break;
+        if (null != jsonValueKeyMap.get(viewType)) {
+            switch (jsonValueKeyMap.get(viewType)) {
+                case PAGE_HISTORY_01_MODULE_KEY:
+                case PAGE_HISTORY_02_MODULE_KEY:
+                    this.isHistory = true;
+                    break;
 
-            default:
-                break;
+                case PAGE_WATCHLIST_01_MODULE_KEY:
+                case PAGE_WATCHLIST_02_MODULE_KEY:
+                    this.isWatchlist = true;
+                    break;
+                default:
+                    break;
+            }
         }
         sortData();
     }
 
 
-    public void setContentData(List<ContentDatum> adapterData){
+    public void setContentData(List<ContentDatum> adapterData) {
         this.adapterData = adapterData;
+        sortData();
         notifyDataSetChanged();
     }
 
-    private String getDefaultAction(Context context , Component component) {
-        if(null != component.getItemClickAction()){
+    private String getDefaultAction(Context context, Component component) {
+        if (null != component.getItemClickAction()) {
             return component.getItemClickAction();
         }
         return context.getString(R.string.app_cms_action_videopage_key);
@@ -127,7 +134,8 @@ public class AppCMSTVTrayAdapter
                     this.parentLayout,
                     false,
                     component,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     Utils.getFocusColor(context, appCMSPresenter));
 
@@ -135,41 +143,43 @@ public class AppCMSTVTrayAdapter
 
             for (int i = 0; i < component.getComponents().size(); i++) {
                 Component childComponent = component.getComponents().get(i);
-                tvViewCreator.createComponentView(context,
-                        childComponent,
-                        this.parentLayout,
-                        module,
-                        null,
-                        childComponent.getSettings(),
-                        jsonValueKeyMap,
-                        appCMSPresenter,
-                        false,
-                        this.viewType,
-                        false);
-
-                if (componentViewResult.onInternalEvent != null) {
-                    onInternalEvents.add(componentViewResult.onInternalEvent);
-                }
-
-                View componentView = componentViewResult.componentView;
-                if (componentView != null) {
-                    TVCollectionGridItemView.ItemContainer itemContainer =
-                            new TVCollectionGridItemView.ItemContainer.Builder()
-                                    .childView(componentView)
-                                    .component(childComponent)
-                                    .build();
-                    collectionGridItemView.addChild(itemContainer);
-                    collectionGridItemView.setComponentHasView(i, true);
-                    collectionGridItemView.setViewMarginsFromComponent(childComponent,
-                            componentView,
-                            collectionGridItemView.getLayout(),
-                            collectionGridItemView.getChildrenContainer(),
+                if (null != childComponent) {
+                    tvViewCreator.createComponentView(context,
+                            childComponent,
+                            this.parentLayout,
+                            module,
+                            null,
+                            childComponent.getSettings(),
                             jsonValueKeyMap,
+                            appCMSPresenter,
                             false,
-                            false,
-                            this.viewType);
-                } else {
-                    collectionGridItemView.setComponentHasView(i, false);
+                            this.viewType,
+                            false);
+
+                    if (componentViewResult.onInternalEvent != null) {
+                        onInternalEvents.add(componentViewResult.onInternalEvent);
+                    }
+
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        TVCollectionGridItemView.ItemContainer itemContainer =
+                                new TVCollectionGridItemView.ItemContainer.Builder()
+                                        .childView(componentView)
+                                        .component(childComponent)
+                                        .build();
+                        collectionGridItemView.addChild(itemContainer);
+                        collectionGridItemView.setComponentHasView(i, true);
+                        collectionGridItemView.setViewMarginsFromComponent(childComponent,
+                                componentView,
+                                collectionGridItemView.getLayout(),
+                                collectionGridItemView.getChildrenContainer(),
+                                jsonValueKeyMap,
+                                false,
+                                false,
+                                this.viewType);
+                    } else {
+                        collectionGridItemView.setComponentHasView(i, false);
+                    }
                 }
             }
             return new ViewHolder(collectionGridItemView);
@@ -187,11 +197,12 @@ public class AppCMSTVTrayAdapter
             }
             textView.setGravity(Gravity.CENTER);
             Component component1 = new Component();
-            component1.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+            component1.setFontFamily(appCMSPresenter.getFontFamily());
             component1.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
             textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component1));
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             textView.setLayoutParams(layoutParams);
+            textView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             relativeLayout.addView(textView);
             return new ViewHolder(relativeLayout);
         }
@@ -201,7 +212,7 @@ public class AppCMSTVTrayAdapter
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && adapterData != null && position < adapterData.size()) {
-            bindView(holder.componentView, adapterData.get(position));
+            bindView(holder.componentView, adapterData.get(position), position);
         }
     }
 
@@ -223,7 +234,7 @@ public class AppCMSTVTrayAdapter
     }
 
     protected void bindView(TVCollectionGridItemView itemView,
-                            final ContentDatum data) throws IllegalArgumentException {
+                            final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
             onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
                 @Override
@@ -252,13 +263,12 @@ public class AppCMSTVTrayAdapter
                         }
 
                         if (defaultAction.equalsIgnoreCase(context.getString(R.string.app_cms_action_watchvideo_key))) {
-                            play(childComponent,data);
-                        }
-                        else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                            play(childComponent, data);
+                        } else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
                                 action/*"lectureDetailPage"*/,
                                 title,
                                 extraData,
-                                 data,
+                                data,
                                 false, -1, null)) {
                          /*   Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);  */
@@ -282,25 +292,39 @@ public class AppCMSTVTrayAdapter
                 public void delete(Component childComponent, ContentDatum data) {
                     //Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
                     if (appCMSPresenter.isNetworkConnected()) {
-                        appCMSPresenter.editWatchlist(data.getGist().getId(),
+                        appCMSPresenter.editWatchlist(data,
                                 addToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
-                                }, false);
+                                }, false, true);
                     } else {
-                        appCMSPresenter.openErrorDialog(data.getGist().getId(),
+                        appCMSPresenter.openErrorDialog(data,
                                 true,
                                 appCMSAddToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
                                 });
@@ -315,7 +339,8 @@ public class AppCMSTVTrayAdapter
                     data,
                     jsonValueKeyMap,
                     onClickHandler,
-                    viewTypeKey);
+                    viewTypeKey,
+                    position);
         }
     }
 
@@ -371,11 +396,12 @@ public class AppCMSTVTrayAdapter
                 this.componentView = (TVCollectionGridItemView) itemView;
         }
     }
+
     private void sortData() {
         if (adapterData != null) {
             if (isWatchlist) {
                 Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+                        -> Long.compare(o2.getAddedDate(), o1.getAddedDate()));
             } else if (isHistory) {
                 Collections.sort(adapterData, (o1, o2)
                         -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));

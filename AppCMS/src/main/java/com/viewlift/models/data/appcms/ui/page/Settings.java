@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.api.Columns;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @UseStag
 public class Settings implements Serializable {
@@ -29,7 +30,6 @@ public class Settings implements Serializable {
     @SerializedName("primaryCta")
     @Expose
     PrimaryCta primaryCta;
-
     @SerializedName("showPIP")
     @Expose
     boolean showPIP;
@@ -41,9 +41,44 @@ public class Settings implements Serializable {
     @Expose
     boolean showPlaybackControls;
 
-    @SerializedName("roundedCorners")
+    @SerializedName("showTabBar")
     @Expose
-    boolean roundedCorners;
+    boolean showTabBar;
+
+    @SerializedName("image")
+    @Expose
+    String image;
+    @SerializedName("backgroundColor")
+    @Expose
+    String backgroundColor;
+
+    @SerializedName("socialLinks")
+    @Expose
+    ArrayList<SocialLinks> socialLinks;
+
+    @SerializedName("links")
+    @Expose
+    ArrayList<Links> links;
+
+    @SerializedName("isHidden")
+    @Expose
+    boolean isHidden;
+
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public ArrayList<SocialLinks> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public ArrayList<Links> getLinks() {
+        return links;
+    }
+
+    public String getImage() {
+        return image;
+    }
 
     public String getTitle() {
         return title;
@@ -113,11 +148,19 @@ public class Settings implements Serializable {
         return standaloneVideo;
     }
 
-    public boolean isRoundedCorners() {
-        return roundedCorners;
+    public boolean isShowTabBar() {
+        return showTabBar;
     }
 
-    public void setRoundedCorners(boolean roundedCorners) {
-        this.roundedCorners = roundedCorners;
+    public void setShowTabBar(boolean showTabBar) {
+        this.showTabBar = showTabBar;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        isHidden = hidden;
     }
 }

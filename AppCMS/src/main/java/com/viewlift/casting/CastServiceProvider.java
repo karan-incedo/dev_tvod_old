@@ -27,7 +27,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.AppCMSApplication;
-
+import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
 import com.viewlift.casting.roku.RokuDevice;
@@ -167,7 +167,6 @@ public class CastServiceProvider {
 
         @Override
         public void onRouterSelected(MediaRouter mMediaRouter, MediaRouter.RouteInfo info) {
-
             mCastHelper.chromeCastConnecting = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
             mCastHelper.isCastDeviceConnected = true;
@@ -281,7 +280,6 @@ public class CastServiceProvider {
     private void initRoku() {
         rokuWrapper = RokuWrapper.getInstance();
         rokuWrapper.setListener(callBackRokuDiscoveredDevices);
-
     }
 
     /*
@@ -311,7 +309,11 @@ public class CastServiceProvider {
                     .getCurrentCastSession();
         }
         mCastHelper.setCastSessionManager();
-
+        if (shouldCastMiniControllerVisible()) {
+            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+        } else {
+            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
+        }
 
         createMediaChooserDialog();
         mCastHelper.setCastDiscovery();
@@ -638,10 +640,10 @@ public class CastServiceProvider {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                             null);
                 } else if (appCMSPresenter.isAppSVOD()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();

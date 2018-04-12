@@ -1,12 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'Hoichoi'
-def final hostName = "www.hoichoi.tv"
-def final hostNameSuffix = "*.hoichoi.tv"
-
-def final appVersionName = "2.1.99"
+//def final packageName = 'com.viewlift.hoichoi'
+//def final customApplicationId = 'Hoichoi'
+//def final hostName = "www.hoichoi.tv"
+//def final appVersionName = "2.1.23"
 
 buildscript {
     repositories {
@@ -32,31 +30,90 @@ repositories {
     maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
     maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
+    maven {
+        url "s3://sdkv1.kiswe.com/snapshot"
+        credentials(AwsCredentials) {
+            accessKey 'AKIAIST5GLZEHZKM57SQ'
+            secretKey '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'
+        }
+    }
+
+    maven {
+        url "s3://sdkv1.kiswe.com/stable"
+        credentials(AwsCredentials) {
+            accessKey 'AKIAIST5GLZEHZKM57SQ'
+            secretKey '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'
+        }
+    }
     mavenCentral()
 }
 
 android {
     compileSdkVersion 26
     buildToolsVersion '27.0.3'
+
+    def packageName
+    def customApplicationId
+    def hostName
+    def final hostNameSuffix
+    def final facebookAppId
+    def final useHLS
+    def appVersionCode
+    def appVersionName
+    //def minsdkversion
+    //def targetsdkversion
+
+    def versionPropsFile = file('src/main/assets/version.properties')
+
+    if (versionPropsFile.canRead()) {
+        Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        packageName = versionProps['AppPackageName'].toString()
+        customApplicationId = versionProps['AppName'].toString()
+        hostName = versionProps['HostName'].toString()
+        hostNameSuffix = versionProps['HostNameSuffix'].toString()
+        facebookAppId = versionProps['FacebookAppId'].toString()
+        useHLS = versionProps['UseHLS'].toBoolean()
+        appVersionCode = versionProps['AppVersionCode'].toInteger()
+        appVersionName = versionProps['AppVersionName'].toString()
+        //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
+        //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
+
+        versionProps['AppPackageName'] = packageName.toString()
+        versionProps['AppName'] = customApplicationId.toString()
+        versionProps['HostName'] = hostName.toString()
+        versionProps['HostNameSuffix'] = hostNameSuffix.toString()
+        versionProps['FacebookAppId'] = facebookAppId.toString()
+        versionProps['UseHLS'] = useHLS.toString()
+        versionProps['AppVersionCode'] = appVersionCode.toString()
+        versionProps['AppVersionName'] = appVersionName.toString()
+        //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
+        //versionProps['TARGET_SDK_VERSION'] = targetsdkversion.toString()
+
+        versionProps.store(versionPropsFile.newWriter(), null)
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 227
-
+        versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
-    flavorDimensions "green"
+    flavorDimensions "green", "blue"
     productFlavors {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 26
-            targetSdkVersion 26
+            compileSdkVersion 27
+            targetSdkVersion 27
             aaptOptions {
                 cruncherEnabled = false
             }
@@ -64,14 +121,45 @@ android {
         tv {
             minSdkVersion 21
             compileSdkVersion 26
-            versionCode 3010031
-            versionName "1.2.1"
+            targetSdkVersion 26
+            buildToolsVersion '27.0.3'
+            versionCode appVersionCode
+            versionName appVersionName
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
             }
+
+        }
+        kiswe {
+            dimension = "blue"
+        }
+        nonkiswe {
+            dimension = "blue"
         }
     }
+    /*configurations.mobileImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '27.0.3'
+                }
+            }
+        }
+    }
+
+   configurations.tvImplementation  {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '25.4.0'
+                }
+            }
+        }
+    }*/
+
     defaultConfig {
         javaCompileOptions {
             annotationProcessorOptions {
@@ -82,39 +170,71 @@ android {
                 ]
             }
         }
+
+        ndk {
+            abiFilters "armeabi-v7a", "x86", "armeabi", "mips"
+        }
     }
     sourceSets {
         mobile {
             java.srcDirs = ['src/mobile/java']
             res.srcDirs = ['src/mobile/res']
             manifest.srcFile 'src/mobile/AndroidManifest.xml'
+
+            androidTest {
+                // If all the files for a source set are located under a single root
+                // directory, you can specify that directory using the setRoot property.
+                // When gathering sources for the source set, Gradle looks only in locations
+                // relative to the root directory you specify. For example, after applying the
+                // configuration below for the androidTest source set, Gradle looks for Java
+                // sources only in the src/tests/java/ directory.
+                setRoot 'src/androidTestMobile/java'
+            }
+            assets.srcDirs = ['src/mobile/assets', 'src/mobile/assets/']
         }
         tv {
             java.srcDirs = ['src/tv/java']
             res.srcDirs = ['src/tv/res']
             manifest.srcFile 'src/tv/AndroidManifest.xml'
         }
+        kiswe {
+            java.srcDirs = ['src/kiswe/java']
+            manifest.srcFile 'src/kiswe/AndroidManifest.xml'
+        }
+        nonkiswe {
+            java.srcDirs = ['src/nonkiswe/java']
+        }
     }
+
+
+
     buildTypes {
         debug {
             multiDexEnabled true
+            minifyEnabled false
+            zipAlignEnabled true
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
             resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
+            resValue "string", "facebook_app_id", "${facebookAppId}"
+            resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
             multiDexEnabled true
-            minifyEnabled true
+            minifyEnabled false
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
             resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
+            resValue "string", "facebook_app_id", "${facebookAppId}"
+            resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -136,19 +256,21 @@ android {
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
     }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
 
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
     dexOptions {
         javaMaxHeapSize "4g"
+        preDexLibraries = false
+        additionalParameters = ["--set-max-idx-number=55000"]
     }
     configurations.all {
         resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
 }
-
 afterEvaluate {
     if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
         tasks.matching {
@@ -163,23 +285,32 @@ afterEvaluate {
     }
 }
 
+
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation  fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.0') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+    androidTestImplementation("tools.fastlane:screengrab:1.0.3", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation "com.google.dexmaker:dexmaker:$rootProject.ext.dexmakerVersion"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$rootProject.ext.dexmakerVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation "junit:junit:$rootProject.ext.junitVersion"
-    implementation "com.android.support:multidex:$rootProject.ext.multiDexVersion"
-    implementation( "com.android.support:support-compat:$rootProject.ext.androidsupportVersion", {
+    implementation  "com.android.support:multidex:$rootProject.ext.multiDexVersion"
+    implementation("com.android.support:support-compat:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -189,96 +320,101 @@ dependencies {
         exclude group: 'com.android.support', module: 'com.android.support:support-core-ui'
         exclude group: 'com.android.support', module: 'support-compat'
     })
-    implementation( "com.android.support:support-fragment:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:support-fragment:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
-    implementation "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
-    implementation( "com.android.support:animated-vector-drawable:$rootProject.ext.androidsupportVersion", {
+    implementation  "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
+    implementation("com.android.support:animated-vector-drawable:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
-    implementation( "com.android.support:support-vector-drawable:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:support-vector-drawable:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
     })
-    implementation( "com.android.support:support-core-ui:$rootProject.ext.androidsupportVersion", {
-        exclude group: 'com.android.support', module: 'design'
-        exclude group: 'com.android.support', module: 'support-vector-drawable'
-    })
-    implementation( "com.android.support:support-media-compat:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:support-core-ui:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:support-v4:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:support-media-compat:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:cardview-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:support-v4:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:cardview-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:recyclerview-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation( "com.android.support:gridlayout-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:recyclerview-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvImplementation "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
-    tvImplementation "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvImplementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
-    implementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
-    implementation "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
-    implementation "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
-    implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
-    implementation "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
-    implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
-    implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
-    implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
-    implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
-    implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
-    mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-    implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
-    implementation( "com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
+    implementation("com.android.support:gridlayout-v7:$rootProject.ext.androidsupportVersion", {
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'support-vector-drawable'
+    })
+    implementation  "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
+    tvImplementation  "com.android.support:leanback-v17:$rootProject.ext.leanbackVersion"
+    implementation  "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    implementation  "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
+    implementation  "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
+    implementation  "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
+    implementation  "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
+    implementation  "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
+    implementation  "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
+    implementation  "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
+    implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
+    implementation  "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
+    implementation  "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    implementation  "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+    implementation  "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
+    mobileImplementation  "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
+    implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-    mobileImplementation "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
-    implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
+    mobileImplementation  "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+    implementation  "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
-    implementation( "com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
+    implementation("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
-    implementation "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
+    implementation  "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     compileOnly "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
-    implementation( "com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion", {
+    implementation("com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    implementation  "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-    implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-    implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-    tvImplementation project(path: ':firetvcustomkeyboard')
-    implementation( "com.android.support:percent:$rootProject.ext.androidsupportVersion", {
+    implementation  "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
+    implementation  "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
+    tvImplementation  project(path: ':firetvcustomkeyboard')
+    implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    implementation "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
-    mobileImplementation "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    implementation project(':exoplayer-library')
-    implementation project(':library')
-    implementation project(':htmlspanner')
-    implementation project(path: ':exoplayer-extension-vp9')
+    implementation  "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+    implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+    mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
+    compile  project(':exoplayer-library')
+    implementation  project(':library')
+    compile  project(':htmlspanner')
+    compile  project(path: ':exoplayer-extension-vp9')
+    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
+    implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+
 }
 
 apply plugin: 'com.google.gms.google-services'

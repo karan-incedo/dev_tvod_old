@@ -1,14 +1,15 @@
 {
-  "id": "596730f6-c016-4cb8-b73e-96edda509f56",
+  "id": "08a49490-1f21-439a-8ccb-d5e99a6380f6",
   "settings": {},
   "view": "AC History 01",
   "type": "AC History 01",
+  "blockName": "history01",
   "layout": {
     "ftv": {
       "yAxis": 0,
       "xAxis": 0,
       "width": 1920,
-      "height": 940
+      "height": 1080
     }
   },
   "components": [
@@ -22,7 +23,7 @@
           "height": 60
         }
       },
-      "borderColor": "66ffffff",
+      "borderColor": "#ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "clearHistory",
@@ -66,13 +67,14 @@
     {
       "layout": {
         "ftv": {
-          "trayPadding": 10,
+          "trayPadding": 100,
           "leftMargin": 4.9,
           "yAxis": 183,
           "rightMargin": 2.67,
           "itemHeight": 118,
           "itemWidth": 1730,
-          "height": 757
+          "height": 757,
+          "padding" : 150
         }
       },
       "components": [
@@ -92,11 +94,11 @@
         {
           "layout": {
             "ftv": {
+              "padding": 5,
               "leftMargin": 95,
               "yAxis": 107,
               "xAxis": 0,
               "width": 210,
-              "padding": 6,
               "height": 8
             }
           },
@@ -134,8 +136,8 @@
         {
           "layout": {
             "ftv": {
-              "topMargin": 35,
               "leftMargin": 325,
+              "topMargin": 35,
               "width": 730,
               "fontSize": 11.5,
               "height": 74
@@ -158,12 +160,12 @@
             }
           },
           "fontFamily": "OpenSans",
+          "textAlignment": "right",
+          "fontSize": 15,
           "type": "label",
           "textColor": "#7D7D7D",
           "fontWeight": "Semibold",
-          "key": "historyLastAddedLabel",
-          "textAlignment": "right",
-          "fontSize": 15
+          "key": "historyLastAddedLabel"
         }
       ],
       "itemClickAction": "watchVideo",

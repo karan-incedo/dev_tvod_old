@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import java.io.File;
@@ -16,16 +17,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.URL;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -64,16 +56,19 @@ public class AppCMSMainUICall {
                            boolean bustCache,
                            boolean networkDisconnected) {
         Date now = new Date();
+
         StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_baseurl),
+                Utils.getProperty("BaseUrl", context),
                 siteId));
         if (bustCache) {
             appCMSMainUrlSb.append("?x=");
             appCMSMainUrlSb.append(now.getTime());
         }
+        final String appCMSMainUrl = appCMSMainUrlSb.toString();
+
         AppCMSMain main = null;
         try {
-            //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
+            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
             if (!networkDisconnected) {
                 try {

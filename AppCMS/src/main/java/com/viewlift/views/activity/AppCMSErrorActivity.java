@@ -92,9 +92,10 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                                              @Override
                                              public void run() {
                                                  if (timerScheduled) {
-                                                     Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                                                     /*Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
                                                      relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
-                                                     startActivity(relaunchApp);
+                                                     startActivity(relaunchApp);*/
+                                                     AppCMSErrorActivity.this.finish();
                                                      try {
                                                          unregisterReceiver(networkConnectedReceiver);
                                                      } catch (Exception e) {

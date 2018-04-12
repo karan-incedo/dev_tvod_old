@@ -2,6 +2,10 @@ package com.viewlift.views.fragments;
 
 import android.app.DialogFragment;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -63,14 +67,43 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
-        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getId());
+        addToWatchList.setText(isAdded ? appCMSPresenter.getCurrentActivity().getResources().getString(R.string.remove_from_watchlist) : appCMSPresenter.getCurrentActivity().getResources().getString(R.string.add_to_watchlist));
+        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getBackgroundColor()));
+        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
+        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId());
+        //downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
+        if (!isDownloaded && !appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())) {
+            downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getBackgroundColor()));
+            downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getTextColor()));
+            downloadBtn.setOnClickListener(this);
+        }else {
+            downloadBtn.setBackgroundColor(Color.GRAY);
+            downloadBtn.setText(isDownloaded?"Downloaded":"Downloading...");
+            downloadBtn.setActivated(false);
+            downloadBtn.setOnClickListener(null);
+        }
         downloadBtn.setVisibility(isDownloaded ? View.GONE : View.VISIBLE);
         downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
         closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
+        if (!appCMSPresenter.isDownloadable()){
+            downloadBtn.setVisibility(View.GONE);
+        }
         addToWatchList.setOnClickListener(this);
-        downloadBtn.setOnClickListener(this);
+
+
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(appCMSPresenter.getGeneralBackgroundColor()); // Changes this drawbale to use a single color instead of a gradient
+        gd.setStroke(5, appCMSPresenter.getGeneralTextColor());
+
+        closeBtn.setTextColor(appCMSPresenter.getGeneralTextColor());
+        closeBtn.setBackground(gd);
         closeBtn.setOnClickListener(this);
     }
 

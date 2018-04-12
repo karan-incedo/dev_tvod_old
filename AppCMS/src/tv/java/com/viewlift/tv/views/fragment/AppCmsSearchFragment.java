@@ -15,7 +15,6 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -48,7 +46,6 @@ import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 
 import java.io.IOException;
-
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,9 +82,9 @@ public class AppCmsSearchFragment extends Fragment {
     private LinearLayout llView;
     private boolean clrbtnFlag;
 
-    private Typeface openSansSemiBoldTypeFace;
-    private Typeface openSansExtraBoldTypeFace;
-    private Typeface openSansRegularTypeface;
+    private Typeface semiBoldTypeFace;
+    private Typeface extraBoldTypeFace;
+    private Typeface regularTypeface;
     private CustomKeyboard customKeyboard;
 
     private ProgressBar progressBar;
@@ -105,6 +102,7 @@ public class AppCmsSearchFragment extends Fragment {
         setTypeFaceValue();
         noSearchTextView = (TextView)view.findViewById(R.id.appcms_no_search_result);
         noSearchTextView.setVisibility(View.GONE);
+        noSearchTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
         llView = (LinearLayout)view.findViewById(R.id.ll_view);
         editText = (EditText)view.findViewById(R.id.appcms_et_search);
@@ -123,21 +121,37 @@ public class AppCmsSearchFragment extends Fragment {
 
         customKeyboard = (CustomKeyboard)view.findViewById(R.id.appcms_keyboard);
         customKeyboard.setFocusColor(Utils.getFocusColor(getActivity() , appCMSPresenter));
+
+        if(null != appCMSPresenter &&
+                null != appCMSPresenter.getAppCMSMain() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta() &&
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
+            String focusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor();
+            String unFocusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getTextColor();
+            customKeyboard.getButtonTextColorDrawable(focusStateTextColor , unFocusStateTextColor);
+        }
         customKeyboard.requestFocus();
 
-        if(null != openSansRegularTypeface)
-            editText.setTypeface(openSansRegularTypeface);
-        if(null != openSansExtraBoldTypeFace)
-            searchPrevious.setTypeface(openSansExtraBoldTypeFace);
-        if(null != openSansSemiBoldTypeFace) {
-            noSearchTextView.setTypeface(openSansSemiBoldTypeFace);
-            searchOne.setTypeface(openSansSemiBoldTypeFace);
-            searchTwo.setTypeface(openSansSemiBoldTypeFace);
-            searchThree.setTypeface(openSansSemiBoldTypeFace);
-            btnClearHistory.setTypeface(openSansSemiBoldTypeFace);
+        if(null != regularTypeface)
+            editText.setTypeface(regularTypeface);
+        if(null != extraBoldTypeFace)
+            searchPrevious.setTypeface(extraBoldTypeFace);
+        if(null != semiBoldTypeFace) {
+            noSearchTextView.setTypeface(semiBoldTypeFace);
+            searchOne.setTypeface(semiBoldTypeFace);
+            searchTwo.setTypeface(semiBoldTypeFace);
+            searchThree.setTypeface(semiBoldTypeFace);
+            btnClearHistory.setTypeface(semiBoldTypeFace);
         }
 
-        moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component_sports.json"), ModuleList.class);
+        }else {
+            moduleList = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        }
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -148,7 +162,7 @@ public class AppCmsSearchFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (lastSearchedString.equals(editable.toString())) {
+                if (lastSearchedString.trim().equals(editable.toString().trim())) {
                     return;
                 }
                 if (editable.toString().trim().length() >= 3){
@@ -192,14 +206,15 @@ public class AppCmsSearchFragment extends Fragment {
 
         btnClearHistory.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
                 Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)),
-                component));
+                component,
+                appCMSPresenter));
 
         btnClearHistory.setTextColor(Utils.getButtonTextColorDrawable(
                 Utils.getColor(getActivity(),Integer.toHexString(ContextCompat.getColor(getActivity() ,
                         R.color.btn_color_with_opacity)))
                 ,
                 Utils.getColor(getActivity() , Integer.toHexString(ContextCompat.getColor(getActivity() ,
-                        android.R.color.white)))
+                        android.R.color.white))),appCMSPresenter
         ));
 
         btnClearHistory.setOnKeyListener(new View.OnKeyListener() {
@@ -252,22 +267,23 @@ public class AppCmsSearchFragment extends Fragment {
     };
 
     private void setTypeFaceValue(){
-        if(null == openSansSemiBoldTypeFace) {
+
+        if(null == semiBoldTypeFace) {
             Component openSansSemiBoldComp = new Component();
-            openSansSemiBoldComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
+            openSansSemiBoldComp.setFontFamily(appCMSPresenter.getFontFamily());
             openSansSemiBoldComp.setFontWeight(getString(R.string.app_cms_page_font_semibold_key));
-            openSansSemiBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansSemiBoldComp);
+            semiBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansSemiBoldComp);
         }
-        if(null == openSansExtraBoldTypeFace) {
+        if(null == extraBoldTypeFace) {
             Component openSansExtraBoldComp = new Component();
-            openSansExtraBoldComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
+            openSansExtraBoldComp.setFontFamily(appCMSPresenter.getFontFamily());
             openSansExtraBoldComp.setFontWeight(getString(R.string.app_cms_page_font_extrabold_key));
-            openSansExtraBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansExtraBoldComp);
+            extraBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansExtraBoldComp);
         }
-        if(null == openSansRegularTypeface) {
+        if(null == regularTypeface) {
             Component openSansRegularComp = new Component();
-            openSansRegularComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
-            openSansRegularTypeface = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansRegularComp);
+            openSansRegularComp.setFontFamily(appCMSPresenter.getFontFamily());
+            regularTypeface = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansRegularComp);
         }
     }
 
@@ -277,14 +293,18 @@ public class AppCmsSearchFragment extends Fragment {
         super.onResume();
         List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
 
-        if (resultForTv != null && resultForTv.size() > 0) {
-            llView.setVisibility(View.VISIBLE);
-            if(resultForTv.size() > 3) {
-                resultForTv.remove(resultForTv.iterator().next());
+        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            if (resultForTv != null && resultForTv.size() > 0) {
+                llView.setVisibility(View.VISIBLE);
+                if(resultForTv.size() > 3) {
+                    resultForTv.remove(resultForTv.iterator().next());
+                }
+                setSearchValueOnView(resultForTv, resultForTv.size());
+            } else {
+                llView.setVisibility(View.INVISIBLE);
             }
-            setSearchValueOnView(resultForTv, resultForTv.size());
         } else {
-            llView.setVisibility(View.INVISIBLE);
+            llView.setVisibility(View.GONE);
         }
         setFocusSequence();
         if(mRowsAdapter == null || (mRowsAdapter != null && mRowsAdapter.size() == 0))
@@ -369,14 +389,18 @@ public class AppCmsSearchFragment extends Fragment {
                     addSearchValueInSharePref(previousString);
                 }
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
-                if (resultForTv != null && resultForTv.size() > 0) {
-                    if(resultForTv.size() > 0){
-                        llView.setVisibility(View.VISIBLE);
-                        setSearchValueOnView(resultForTv, resultForTv.size());
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    if (resultForTv != null && resultForTv.size() > 0) {
+                        if (resultForTv.size() > 0) {
+                            llView.setVisibility(View.VISIBLE);
+                            setSearchValueOnView(resultForTv, resultForTv.size());
 
-                    } else {
-                        llView.setVisibility(View.INVISIBLE);
+                        } else {
+                            llView.setVisibility(View.INVISIBLE);
+                        }
                     }
+                } else {
+                    llView.setVisibility(View.GONE);
                 }
                 setAdapter(appCMSSearchResults);
             }else{
@@ -389,12 +413,16 @@ public class AppCmsSearchFragment extends Fragment {
                 }
 
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
-                if (resultForTv != null && resultForTv.size() > 0) {
-                    llView.setVisibility(View.VISIBLE);
-                    if(resultForTv.size() > 3) {
-                        resultForTv.remove(resultForTv.iterator().next());
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    if (resultForTv != null && resultForTv.size() > 0) {
+                        llView.setVisibility(View.VISIBLE);
+                        if (resultForTv.size() > 3) {
+                            resultForTv.remove(resultForTv.iterator().next());
+                        }
+                        setSearchValueOnView(resultForTv, resultForTv.size());
                     }
-                    setSearchValueOnView(resultForTv, resultForTv.size());
+                } else {
+                    llView.setVisibility(View.GONE);
                 }
             }
 
@@ -422,16 +450,16 @@ public class AppCmsSearchFragment extends Fragment {
     private void setSearchValueOnView(List<String> resultForTv, int size){
         for (int i = 0; i < size; i++) {
             if(i == 0){
-                searchOne.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchOne.setText(resultForTv.get(i).trim().toUpperCase());
                 searchTwo.setVisibility(View.INVISIBLE);
                 searchThree.setVisibility(View.INVISIBLE);
             } else if(i == 1){
                 searchTwo.setVisibility(View.VISIBLE);
                 searchThree.setVisibility(View.INVISIBLE);
-                searchTwo.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchTwo.setText(resultForTv.get(i).trim().toUpperCase());
             } else if(i == 2){
                 searchThree.setVisibility(View.VISIBLE);
-                searchThree.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchThree.setText(resultForTv.get(i).trim().toUpperCase());
             }
         }
     }
@@ -527,6 +555,7 @@ public class AppCmsSearchFragment extends Fragment {
 
     private void setAdapter(List<AppCMSSearchResult> appCMSSearchResults){
         if(null != moduleList){
+            trayIndex = -1;
             for(Component component : moduleList.getComponents()){
                 createTrayModule(getActivity() ,
                                 component ,
@@ -541,7 +570,7 @@ public class AppCmsSearchFragment extends Fragment {
         if(null != mRowsAdapter && mRowsAdapter.size() > 0){
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
-                browseFragment.setAdapter(mRowsAdapter);
+                browseFragment.setmRowsAdapter(mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }
         }
@@ -573,47 +602,115 @@ public class AppCmsSearchFragment extends Fragment {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        customHeaderItem = null;
-                        customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                getResources().getQuantityString(R.plurals.app_cms_search_result_header ,
-                                        appCMSSearchResults.size(),
-                                        lastSearchedString.toUpperCase())
-                                );
-                        customHeaderItem.setmIsCarousal(isCarousel);
-                        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                        customHeaderItem.setFontFamily(component.getFontFamily());
-                        customHeaderItem.setFontWeight(component.getFontWeight());
-                        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+                        createCustomHeaderItem(context, component, appCMSSearchResults, moduleUI, appCMSPresenter, isCarousel);
                         break;
                 }
                 break;
             case PAGE_COLLECTIONGRID_KEY:
-                if (null == mRowsAdapter) {
-                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
-                    mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    createRowsForEntertainment(context, component, appCMSSearchResults, moduleUI, jsonValueKeyMap, appCMSPresenter);
+                } else {
+                    createRowsForST(context, component, appCMSSearchResults, moduleUI, jsonValueKeyMap, appCMSPresenter);
                 }
-                CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                        Integer.valueOf(component.getLayout().getTv().getHeight()),
-                        Integer.valueOf(component.getLayout().getTv().getWidth()),
-                        jsonValueKeyMap
-                );
-                ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
-
-                for (AppCMSSearchResult searchResult : appCMSSearchResults) {
-                    BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    rowData.contentData = searchResult.getContent();
-                    rowData.uiComponentList = component.getComponents();
-                    rowData.action = component.getTrayClickAction();
-                    traylistRowAdapter.add(rowData);
-                    //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
-                }
-                mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                 break;
         }
     }
+
+    private void createCustomHeaderItem(Context context, Component component, List<AppCMSSearchResult> appCMSSearchResults, ModuleList moduleUI, AppCMSPresenter appCMSPresenter, boolean isCarousel) {
+        customHeaderItem = null;
+        customHeaderItem = new CustomHeaderItem(
+                context,
+                trayIndex++,
+                appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)
+                        ? getResources().getQuantityString(R.plurals.app_cms_search_result_header,
+                        appCMSSearchResults.size(),
+                        lastSearchedString.toUpperCase())
+                        : ""
+        );
+        customHeaderItem.setmIsCarousal(isCarousel);
+        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
+        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        customHeaderItem.setFontFamily(component.getFontFamily());
+        customHeaderItem.setFontWeight(component.getFontWeight());
+        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+    }
+
+    private void createRowsForEntertainment(Context context,
+                                            Component component,
+                                            List<AppCMSSearchResult> appCMSSearchResults,
+                                            ModuleList moduleUI,
+                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                            AppCMSPresenter appCMSPresenter) {
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+        CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                Integer.valueOf(component.getLayout().getTv().getHeight()),
+                Integer.valueOf(component.getLayout().getTv().getWidth()),
+                component,
+                jsonValueKeyMap);
+        ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+
+        for (AppCMSSearchResult searchResult : appCMSSearchResults) {
+            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.isSearchPage = true;
+            rowData.contentData = searchResult.getContent();
+            rowData.uiComponentList = component.getComponents();
+            rowData.action = component.getTrayClickAction();
+            rowData.blockName = moduleUI.getBlockName();
+            trayListRowAdapter.add(rowData);
+            //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+        }
+        mRowsAdapter.add(new ListRow(customHeaderItem, trayListRowAdapter));
+    }
+
+    private void createRowsForST(Context context,
+                                 Component component,
+                                 List<AppCMSSearchResult> appCMSSearchResults,
+                                 ModuleList moduleUI,
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 AppCMSPresenter appCMSPresenter) {
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+
+        ArrayObjectAdapter trayListRowAdapter = null;
+        int position = -1;
+         for (int i = 0; i < appCMSSearchResults.size(); i++) {
+            if(position == -1){
+                 CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                         Integer.valueOf(component.getLayout().getTv().getHeight()),
+                         Integer.valueOf(component.getLayout().getTv().getWidth()),
+                         component,
+                         jsonValueKeyMap
+                 );
+
+                 trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+             }
+            AppCMSSearchResult searchResult = appCMSSearchResults.get(i);
+            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.isSearchPage = true;
+            rowData.contentData = searchResult.getContent();
+            rowData.uiComponentList = component.getComponents();
+            rowData.action = component.getTrayClickAction();
+            rowData.blockName = moduleUI.getBlockName();
+            rowData.rowNumber = trayIndex;
+            trayListRowAdapter.add(rowData);
+            position++;
+
+            if ((trayListRowAdapter.size()  % 4 == 0) /*already four items in the adapter*/
+                    || i == appCMSSearchResults.size() - 1 /*Reached the last item*/) {
+                mRowsAdapter.add(new ListRow(customHeaderItem, trayListRowAdapter));
+                createCustomHeaderItem(context, component, appCMSSearchResults, moduleUI, appCMSPresenter, false);
+                position = -1;
+             }
+        }
+    }
+
 
     public void searchResult(String searchQuery){
         try {

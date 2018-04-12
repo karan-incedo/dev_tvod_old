@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -92,6 +94,9 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.requestFocus();
+        TextView searchText = (TextView) appCMSSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        appCMSPresenter.setCursorDrawableColor((EditText) searchText);
+
         appCMSPresenter.showSoftKeyboard(appCMSSearchView);
 
         if (searchQuery != null) {
@@ -111,11 +116,13 @@ public class AppCMSSearchFragment extends DialogFragment {
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
-                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSPresenter.searchSuggestionClick(searchHintResult);
                 return true;
             }
         });
 
+        buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+        textColor = appCMSPresenter.getBrandPrimaryCtaTextColor();
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 

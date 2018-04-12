@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/media_route_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="#00000000"
+                android:padding="4dp"
+                android:scaleType="center"
+                android:src="@drawable/anim_cast" />
+
+            <ImageView
+                android:id="@+id/add_to_playlist"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/add_to_watchlist"
+                android:visibility="gone" />
+
+            <com.viewlift.views.customviews.ResponsiveButton
+                android:id="@+id/download_audio"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitEnd"
+                app:srcCompat="@drawable/ic_download_big" />
+
+            <ImageView
+                android:id="@+id/share_audio"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_share"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_cross_icon"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/cross_icon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+
+
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/cancel"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/app_cms_play_audio_page_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

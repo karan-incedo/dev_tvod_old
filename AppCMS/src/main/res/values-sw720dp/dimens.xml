@@ -7,5 +7,11 @@
     <fraction name="mainContainerHeightPercent">21%</fraction>
     <dimen name="app_cms_continue_watching_tray_marginLeft">15dp</dimen>
     <dimen name="a_new_version_of_the_app_is_available_textsize">24sp</dimen>
+    <dimen name="full_screen_item_min_width">20dp</dimen>
+    <dimen name="app_cms_audio_player_controller_height">58dp</dimen>
+    <dimen name="app_cms_audio_player_controller_padding">95dp</dimen>
+    <dimen name="app_cms_audio_player_thumbnail_pading">70dp</dimen>
+    <dimen name="app_cms_audio_image_padding">35dp</dimen>
+    <dimen name="app_cms_audio_player_sep_pading">85dp</dimen>
 
 </resources>

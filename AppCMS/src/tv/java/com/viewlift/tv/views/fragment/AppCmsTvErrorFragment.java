@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -32,6 +31,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
     private ErrorFragmentListener mErrorFragmentListener;
     Button btnRetry;
     boolean shouldRegisterInternetReciever = true;
+    private boolean shouldNavigateToLogin;
 
     public AppCmsTvErrorFragment(){
 
@@ -62,6 +62,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         shouldRegisterInternetReciever = bundle.getBoolean(getString(R.string.register_internet_receiver_key));
         String errorMsg = bundle.getString(getString(R.string.tv_dialog_msg_key));
         String headerTitle = bundle.getString(getString(R.string.tv_dialog_header_key));
+        shouldNavigateToLogin = bundle.getBoolean(getString(R.string.shouldNavigateToLogin));
 
         if(null != errorMsg){
             errorTextView.setText(errorMsg);
@@ -76,7 +77,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
                 ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         String textColor = Utils.getTextColor(getActivity(),appCMSPresenter);
-        String backGroundColor = Utils.getBackGroundColor(getActivity(),appCMSPresenter);
+        String backGroundColor = appCMSPresenter.getAppBackgroundColor();
         String focusColor = Utils.getFocusColor(getActivity(),appCMSPresenter);
 
         errorTextView.setTextColor(Color.parseColor(textColor));
@@ -91,14 +92,16 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
 
         btnClose.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
                 Color.parseColor(focusColor),
-                btnComponent1));
+                btnComponent1 , appCMSPresenter));
 
         btnClose.setTypeface(Utils.getTypeFace(getActivity() ,appCMSPresenter.getJsonValueKeyMap(), btnComponent1));
 
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mErrorFragmentListener.onErrorScreenClose();
+               // if(shouldNavigateToLogin) {
+                    mErrorFragmentListener.onErrorScreenClose();
+                //}
                 dismiss();
             }
         });
@@ -114,7 +117,8 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
 
         btnRetry.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
                 Color.parseColor(focusColor),
-                btnRetryComp));
+                btnRetryComp,
+                appCMSPresenter));
 
         btnRetry.setTypeface(Utils.getTypeFace(getActivity() ,appCMSPresenter.getJsonValueKeyMap(), btnRetryComp));
 

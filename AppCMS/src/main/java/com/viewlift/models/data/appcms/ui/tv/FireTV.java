@@ -26,6 +26,16 @@ public class FireTV implements Serializable {
 
     private String itemHeight;
 
+    public String getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(String orientation) {
+        this.orientation = orientation;
+    }
+
+    private String orientation;
+
     public Float getFontSizeKey() {
         return fontSizeKey;
     }
@@ -48,6 +58,9 @@ public class FireTV implements Serializable {
     @SerializedName("fontSizeValue")
     @Expose
     private Float fontSizeValue;
+    @SerializedName("itemSpacing")
+    @Expose
+    private String itemSpacing;
     public int getFontSize() {
         return fontSize;
     }
@@ -174,6 +187,14 @@ public class FireTV implements Serializable {
 
     public void setItemHeight(String itemHeight) {
         this.itemHeight = itemHeight;
+    }
+
+    public String getItemSpacing() {
+        return itemSpacing;
+    }
+
+    public void setItemSpacing(String itemSpacing) {
+        this.itemSpacing = itemSpacing;
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 @UseStag
 public class AppCMSPageUI implements Serializable {

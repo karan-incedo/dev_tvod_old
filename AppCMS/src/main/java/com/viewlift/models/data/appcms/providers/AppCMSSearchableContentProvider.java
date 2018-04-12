@@ -11,6 +11,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
@@ -30,19 +31,18 @@ import okhttp3.OkHttpClient;
 
 import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 
-/*
+/**
  * Created by viewlift on 6/12/17.
  */
 
 public class AppCMSSearchableContentProvider extends ContentProvider {
     public static final String URI_AUTHORITY = BuildConfig.AUTHORITY;
-    //private static final String TAG = "SearchableProvider";
+    private static final String TAG = "SearchableProvider";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private static final String[] SUGGESTION_COLUMN_NAMES = {BaseColumns._ID,
             SearchManager.SUGGEST_COLUMN_TEXT_1,
             SearchManager.SUGGEST_COLUMN_DURATION,
-            SearchManager.SUGGEST_COLUMN_INTENT_DATA,
-    SearchManager.SUGGEST_COLUMN_CONTENT_TYPE};
+            SearchManager.SUGGEST_COLUMN_INTENT_DATA};
 
     static {
         uriMatcher.addURI(URI_AUTHORITY, SUGGEST_URI_PATH_QUERY, 1);
@@ -98,7 +98,6 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                     //Log.d(TAG, "Search URL: " + url);
                     try {
                         List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(appCMSSearchUrlData.getApiKey(), url);
-
                         if (searchResultList != null) {
                             //Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
@@ -108,7 +107,28 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                 String filmUri = permalinkUri.getLastPathSegment();
                                 String title = searchResultList.get(i).getGist().getTitle();
                                 String runtime = String.valueOf(searchResultList.get(i).getGist().getRuntime());
+                                String mediaType = searchResultList.get(i).getGist().getMediaType();
                                 String contentType = searchResultList.get(i).getGist().getContentType();
+                                String gistId = searchResultList.get(i).getGist().getId();
+
+                                String audioCount = "0";
+                                if (searchResultList.get(i).getAudioList() != null && searchResultList.get(i).getAudioList().size() > 0) {
+                                    audioCount = searchResultList.get(i).getAudioList().size() + "";
+                                }
+
+                                int searchEpisodeCount = 0;
+                                if (searchResultList.get(i).getSeasons() != null) {
+                                    for (int j = 0; j < searchResultList.get(i).getSeasons().size(); j++) {
+                                        searchEpisodeCount = searchEpisodeCount + searchResultList.get(i).getSeasons().get(j).getEpisodes().size();
+                                    }
+                                }
+                                if (searchResultList.get(i).getAudioList() != null && searchResultList.get(i).getAudioList().size() > 0) {
+                                    audioCount = searchResultList.get(i).getAudioList().size() + "";
+                                }
+                                String yearSong = "";
+                                if (searchResultList.get(i).getGist() != null && searchResultList.get(i).getGist().getYear() != null) {
+                                    yearSong = searchResultList.get(i).getGist().getYear();
+                                }
 
                                 String searchHintResult = searchResultList.get(i).getGist().getTitle() +
                                         "," +
@@ -118,8 +138,16 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         "," +
                                         permalinkUri +
                                         "," +
-                                        contentType;
-                                Object[] rowResult = {i, title, runtime, searchHintResult, contentType};
+                                        mediaType +
+                                        "," +
+                                        contentType +
+                                        "," +
+                                        gistId + "," + audioCount + "," + yearSong + "," + searchEpisodeCount + "";
+
+                                Object[] rowResult = {i,
+                                        searchResultList.get(i).getGist().getTitle(),
+                                        searchResultList.get(i).getGist().getRuntime() / 60,
+                                        searchHintResult};
 
                                 cursor.addRow(rowResult);
                                 //Log.d(TAG, searchResultList.get(i).getGist().getTitle());

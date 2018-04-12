@@ -1,14 +1,22 @@
 {
-  "id": "596730f6-c016-4cb8-b73e-96edda509f56",
-  "settings": {},
+  "id": "b3214a4e-adaf-4c88-b9d3-f6b83be5d76a",
+  "settings": {
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    }
+  },
   "view": "AC Watchlist 01",
   "type": "AC Watchlist 01",
+  "blockName": "watchlist01",
   "layout": {
     "ftv": {
       "yAxis": 0,
       "xAxis": 0,
       "width": 1920,
-      "height": 940
+      "height": 1080
     }
   },
   "components": [
@@ -22,13 +30,13 @@
           "height": 60
         }
       },
-      "borderColor": "66ffffff",
+      "borderColor": "#ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "clearWatchlist",
       "text": "CLEAR WATCHLIST",
       "type": "button",
-      "textColor": "ffffff",
+      "textColor": "#ffffff",
       "fontWeight": "Semibold",
       "key": "removeAll"
     },
@@ -72,7 +80,8 @@
           "rightMargin": 2.67,
           "itemHeight": 118,
           "itemWidth": 1730,
-          "height": 757
+          "height": 757,
+          "padding" : 150
         }
       },
       "components": [
@@ -118,8 +127,8 @@
         {
           "layout": {
             "ftv": {
-              "topMargin": 35,
               "leftMargin": 325,
+              "topMargin": 35,
               "width": 730,
               "fontSize": 11.5,
               "height": 74
@@ -136,20 +145,20 @@
         {
           "layout": {
             "ftv": {
-              "topMargin": 30,
               "leftMargin": 1615,
+              "topMargin": 30,
               "width": 210,
               "fontSize": 12,
               "height": 60
             }
           },
-          "borderColor": "66ffffff",
+          "borderColor": "#ffffff",
           "fontFamily": "OpenSans",
           "borderWidth": 4,
           "action": "deleteItem",
           "text": "REMOVE",
           "type": "button",
-          "textColor": "ffffff",
+          "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "deleteItemButton"
         }

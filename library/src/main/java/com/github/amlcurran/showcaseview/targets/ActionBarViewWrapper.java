@@ -117,7 +117,6 @@ class ActionBarViewWrapper {
             List actionItems = (ArrayList) actionItemsField.get(optionsMenu);
             if (null != actionItems) {
                 for(Object obj : actionItems) {
-                    System.out.println(obj);
                     Object view = getMediaRouteButton(obj);
                     if (null != view) {
                         return (View) view;

@@ -85,6 +85,10 @@ public class Mobile implements Serializable {
     @Expose
     float maximumWidth;
 
+    @SerializedName("isHorizontalScroll")
+    @Expose
+    boolean isHorizontalScroll;
+
     @SerializedName("thumbnailWidth")
     @Expose
     int thumbnailWidth;
@@ -102,6 +106,10 @@ public class Mobile implements Serializable {
     float leftDrawableWidth;
 
     private float savedWidth;
+
+    public boolean isHorizontalScroll() {
+        return isHorizontalScroll;
+    }
 
     public float getWidth() {
         return width;

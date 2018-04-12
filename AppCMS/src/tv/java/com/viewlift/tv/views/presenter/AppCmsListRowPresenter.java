@@ -14,20 +14,16 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
-import com.viewlift.R;
-
 /**
  * Created by nitin.tyagi on 7/2/2017.
  */
-
 public class AppCmsListRowPresenter extends ListRowPresenter {
 
     private Context mContext;
@@ -35,6 +31,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     String textColor = null;
     Typeface typeface = null;
     float headerTileLetterSpacing = 0.11f;
+    private boolean isFocusOnFirstRow;
 
     public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
         super(FocusHighlight.ZOOM_FACTOR_XSMALL);
@@ -42,8 +39,18 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
         mAppCMSPresenter  = appCMSPresenter;
-        textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
     }
+
+    public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter , int zoomFactor){
+        super(zoomFactor);
+        mContext = context;
+        setShadowEnabled(false);
+        setSelectEffectEnabled(false);
+        mAppCMSPresenter  = appCMSPresenter;
+        textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
+    }
+
 
     @Override
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
@@ -53,7 +60,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
             if(null == textColor){
-                textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+                textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter); /*mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();*/
             }
             headerTitle.setTextColor(Color.parseColor(textColor));
             //set Alpha for removing any shadow.
@@ -62,15 +69,15 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             headerTitle.setLetterSpacing(headerTileLetterSpacing);
 
             //ListRowView and its layout Params.
-            ListRowView listRowView = (ListRowView)holder.view;
-            LinearLayout.LayoutParams listRowParam = ( LinearLayout.LayoutParams)listRowView.getLayoutParams();
+            ListRowView listRowView = (ListRowView) holder.view;
+            LinearLayout.LayoutParams listRowParam = (LinearLayout.LayoutParams) listRowView.getLayoutParams();
 
             //Horizontal GridView and its layout Params.
             HorizontalGridView horizontalGridView = listRowView.getGridView();
-            LinearLayout.LayoutParams horizontalGrLayoutParams = ( LinearLayout.LayoutParams)horizontalGridView.getLayoutParams();
+            LinearLayout.LayoutParams horizontalGrLayoutParams = (LinearLayout.LayoutParams) horizontalGridView.getLayoutParams();
 
             //HeaderTitle layout Params.
-            LinearLayout.LayoutParams headerTitleContainerLayoutParams = ( LinearLayout.LayoutParams)headerTitleContainer.getLayoutParams();
+            LinearLayout.LayoutParams headerTitleContainerLayoutParams = (LinearLayout.LayoutParams) headerTitleContainer.getLayoutParams();
 
 
             horizontalGridView.setOnKeyListener(new View.OnKeyListener() {
@@ -82,18 +89,19 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
 
             ListRow rowItem = (ListRow) item;
-            CustomHeaderItem customHeaderItem = ((CustomHeaderItem)rowItem.getHeaderItem());
-            int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowLeftMargin());
-            int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowRightMargin());
-            int listRowHeight =  Utils.getViewYAxisAsPerScreen(mContext,customHeaderItem.getmListRowHeight());
+            CustomHeaderItem customHeaderItem = ((CustomHeaderItem) rowItem.getHeaderItem());
+            int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowLeftMargin());
+            int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowRightMargin());
+            int listRowHeight = Utils.getViewYAxisAsPerScreen(mContext, customHeaderItem.getmListRowHeight());
+            int listRowWidth = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowWidth());
 
             headerTitle.setTextSize(customHeaderItem.getFontSize());
 
-            if(typeface == null) {
+            if (typeface == null) {
                 typeface = Utils.getTypeFace(mContext, mAppCMSPresenter.getJsonValueKeyMap(),
                         customHeaderItem.getComponent());
             }
-            if(null != typeface){
+            if (null != typeface) {
                 headerTitle.setTypeface(typeface);
             }
 
@@ -101,46 +109,68 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
 
-            //Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
-            if(isCarousal){
+            Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString()
+            +" isLivePlayer = "+customHeaderItem.ismIsLivePlayer());
+            if(customHeaderItem.ismIsLivePlayer()){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
-                int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);
+                Log.d("TAG" , "Height = "+listRowHeight + "Width = "+listRowWidth);
+                listRowParam.height = listRowHeight;//Utils.getViewYAxisAsPerScreen(mContext , 962);
+                listRowParam.width = listRowWidth;//Utils.getViewXAxisAsPerScreen(mContext , 1590);
+                listRowView.setLayoutParams(listRowParam);
+
+                horizontalGrLayoutParams.setMargins(/*Utils.getViewXAxisAsPerScreen(mContext , 370)*/100, 0 , 0,0);
+                horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
+
+                return;
+            }
+            else if(isCarousal){
+                headerTitleContainer.setVisibility(View.GONE);
+                headerTitle.setVisibility(View.GONE);
+                int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);
 
                 //set the spacing between Carousal item.
                 //horizontalGridView.setItemSpacing(horizontalSpacing);
+                horizontalGridView.setItemSpacing(horizontalSpacing);
+                horizontalGridView.setSelectedPosition(2);
 
                 //set the HorizontalGrid Layout Params..
-                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0 , listRowRightmargin,0);
+                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0, listRowRightmargin, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 //set the background color
-                if(null != listRowBackgroundColor)
-                //listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
-                    listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
+                if (null != listRowBackgroundColor)
+                    //listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
+                    listRowView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight/*listRowHeight*/;
-                listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 listRowView.setLayoutParams(listRowParam);
 
-            }else{
+            } else {
                 headerTitleContainer.setVisibility(View.VISIBLE);
                 headerTitle.setVisibility(View.VISIBLE);
-                int paddingTop = (int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
-                int paddingLeft =(int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
-                int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
+                int paddingTop = (int) mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
+                int paddingLeft = (int) mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
+                int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
 
-                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop , 0,0);
+                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 0, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
-                //horizontalGridView.setItemSpacing(horizontalSpacing);
+                if (customHeaderItem.getItemSpacing() != null) {
+                    try {
+                        horizontalSpacing = Integer.parseInt(customHeaderItem.getItemSpacing());
+                    } catch (NumberFormatException e) {
 
-                headerTitleContainerLayoutParams.setMargins(paddingLeft , 0 , 0 , 0);
+                    }
+                }
+                horizontalGridView.setItemSpacing(horizontalSpacing);
+                headerTitleContainerLayoutParams.setMargins(paddingLeft, 0, 0, 0);
                 headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
 
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight;
-                listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
-                listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
             }
         }
     }
@@ -148,5 +178,27 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     @Override
     protected void onUnbindRowViewHolder(RowPresenter.ViewHolder holder) {
         super.onUnbindRowViewHolder(holder);
+    }
+
+    @Override
+    protected void onRowViewSelected(RowPresenter.ViewHolder holder, boolean selected) {
+        super.onRowViewSelected(holder, selected);
+        if (selected) {
+            try {
+                long id = holder.getRow().getId();
+                Log.d("ANAS", "id: " + id);
+                /*View view = holder.getSelectedItemViewHolder().view;
+                 view.setOnKeyListener((v, keyCode, event) -> {
+                     if (keyCode == KeyEvent.KEYCODE_DPAD_UP
+                             && event.getAction() == KeyEvent.ACTION_UP) {
+                         holder.view.clearFocus();
+                     }
+                     return false;
+                 });*/
+                isFocusOnFirstRow = id == -1;
+            } catch (Exception e) {
+                Log.d("ANAS", "Exception." + e.getLocalizedMessage());
+            }
+        }
     }
 }

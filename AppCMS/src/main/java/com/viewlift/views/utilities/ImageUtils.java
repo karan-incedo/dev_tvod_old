@@ -31,6 +31,7 @@ public class ImageUtils {
         return false;
     }
 
+
     public static boolean loadImageWithLinearGradient(ImageView view,
                                                    String url,
                                                    int imageWidth,

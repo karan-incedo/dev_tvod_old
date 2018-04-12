@@ -11,4 +11,7 @@
     <integer name="app_cms_login_underline_padding">16</integer>
     <integer name="app_cms_border_stroke_width">4</integer>
     <integer name="app_cms_empty_list_message_textsize">24</integer>
+
+
+    <integer name="nav_bar_items_weightsum">100</integer>
 </resources>

@@ -4,11 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -34,6 +35,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
@@ -73,10 +75,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String contentRating;
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
+    private CastServiceProvider castProvider;
 
     private Map<String, String> availableStreamingQualityMap;
     private List<String> availableStreamingQualities;
-    private String videoStreamingUrl;
+
     private OnResumeVideo onResumeVideo;
 
     @Override
@@ -89,6 +92,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 getAppCMSPresenterComponent().appCMSPresenter();
 
         getBundleData();
+        appCMSPresenter.stopAudioServices();
     }
 
     @Override
@@ -96,11 +100,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             Fragment fragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
             if (fragmentPlayer != null) {
-                getSupportFragmentManager().beginTransaction().
-                        remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
             }
         } catch (Exception e) {
-            //
+
         }
         getBundleData();
         super.onNewIntent(intent);
@@ -108,7 +113,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     private void getBundleData() {
         appCMSPlayVideoPageContainer =
-                (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
+                findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
@@ -138,7 +143,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution,
                                     intent, appCMSPlayVideoPageContainer, null);
                         } catch (Exception e) {
-                            //
+
                         }
                     }, 500);
                 } else {
@@ -231,8 +236,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     return;
                 }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                if ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    return;
+                }
                 try {
-                    if (((binder != null && !isDownloaded &&
+                    if (((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -249,7 +257,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         onResumeVideo.onResumeVideo();
                     }
                 } catch (Exception e) {
-                    if ((binder != null && !isDownloaded &&
+                    if ((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -270,7 +278,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public boolean isDownloaded = false;
     public void launchVideoPlayer(Gist gist,
                                   String[] extra,
                                   boolean useHls,
@@ -282,16 +289,17 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
-
         appCMSPresenter.setPlayingVideo(true);
-
-        if (binder.isOffline()
+        if (gist != null && gist.getKisweEventId() != null &&
+                gist.getKisweEventId().trim().length() > 0) {
+            appCMSPresenter.launchKiswePlayer(gist.getKisweEventId());
+            finish();
+        } else if (binder.isOffline()
                 && extra != null
                 && extra.length >= 2
                 && extra[1] != null
                 && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
-            isDownloaded=true;
         }
                 /*If the video is already downloaded, play if from there, even if Internet is
                 * available*/
@@ -301,15 +309,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
-            videoStreamingUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getVideoWebURL();
-            isDownloaded= true;
-            if(binder.getContentData().getStreamingInfo() != null) {
-                if (binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
-                    VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-                    initializeStreamingQualityValues(videoAssets);
-                }
-            }
-
         } else if (binder.getContentData() != null &&
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
@@ -317,6 +316,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
             if (useHls) {
                 videoUrl = videoAssets.getHls();
+                /*for hls streaming quality values are extracted in the VideoPlayerView class*/
+            } else {
+                initializeStreamingQualityValues(videoAssets);
             }
             if (TextUtils.isEmpty(videoUrl)) {
                 if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
@@ -339,8 +341,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
                 }
             }
-            videoStreamingUrl = videoUrl;
-            initializeStreamingQualityValues(videoAssets);
         }
 
         // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -366,6 +366,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             filmId = binder.getContentData().getGist().getId();
             videoRunTime = binder.getContentData().getGist().getRuntime();
         }
+
+        appCMSPresenter.setCurrentPlayingVideo(filmId);
         String adsUrl = binder.getAdsUrl();
         String bgColor = binder.getBgColor();
         int playIndex = binder.getCurrentPlayingVideoIndex();
@@ -384,10 +386,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
         }
 
-        if (!TextUtils.isEmpty(bgColor)) {
-            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
-        }
-
         boolean freeContent = false;
         if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
                 binder.getContentData().getGist().getFree()) {
@@ -396,7 +394,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         String finalClosedCaptionUrl = closedCaptionUrl;
         boolean finalFreeContent = freeContent;
-
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -438,9 +435,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onResume();
 
         // This is to enable offline video playback even when Internet is not available.
-        if (binder != null && !isDownloaded &&
-                !binder.isOffline() &&
-                !appCMSPresenter.isNetworkConnected()) {
+        if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,
@@ -477,12 +472,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
+        appCMSPresenter.setCurrentPlayingVideo(null);
+
         super.onDestroy();
     }
 
+
     @Override
     public void closePlayer() {
-
         finish();
     }
 
@@ -520,7 +517,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            //
+
         }
     }
 
@@ -639,25 +636,19 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
-        return 0;
-    }
-
-    @Override
-    public String getVideoStreamingUrl() {
-        return videoStreamingUrl;
-    }
-
-    @Override
-    public void setVideoStreaming(String videoStreamingUrl) {
-        this.videoStreamingUrl = videoStreamingUrl;
+        return availableStreamingQualities.size() - 1;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingQualityMap == null) {
             availableStreamingQualityMap = new HashMap<>();
+        } else {
+            availableStreamingQualityMap.clear();
         }
         if (availableStreamingQualities == null) {
             availableStreamingQualities = new ArrayList<>();
+        }else {
+            availableStreamingQualities.clear();
         }
         if (videoAssets != null && videoAssets.getMpeg() != null) {
             List<Mpeg> availableMpegs = videoAssets.getMpeg();
@@ -700,5 +691,23 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void registerOnResumeVideo(OnResumeVideo onResumeVideo) {
         this.onResumeVideo = onResumeVideo;
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (BaseView.isTablet(this)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Making sure video is always played in Landscape
+        appCMSPresenter.restrictLandscapeOnly();
     }
 }

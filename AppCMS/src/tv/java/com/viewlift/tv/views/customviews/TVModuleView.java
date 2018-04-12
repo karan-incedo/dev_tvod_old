@@ -1,13 +1,17 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
-import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.tv.utility.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -17,12 +21,14 @@ import com.viewlift.tv.utility.Utils;
 public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
     private static final String TAG = "ModuleView";
     protected boolean[] componentHasViewList;
+    List<ChildComponentAndView> childView;
 
     private final T module;
 
     public TVModuleView(Context context, T module) {
         super(context);
         this.module = module;
+        this.childView = new ArrayList<>();
         init();
     }
 
@@ -58,7 +64,6 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         componentHasViewList = new boolean[size];
     }
 
-
     @Override
     protected Component getChildComponent(int index) {
         if (module.getComponents() != null &&
@@ -76,14 +81,15 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
 
     private FrameLayout childrenContainer;
     protected ViewGroup createChildrenContainer() {
-        childrenContainer = new FrameLayout(getContext());
+
+         childrenContainer = new FrameLayout(getContext());
         int viewWidth =  (int) Utils.getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
         int viewHeight = (int) Utils.getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
 
         FrameLayout.LayoutParams childContainerLayoutParams =
                 new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
-        addView(childrenContainer);
+         addView(childrenContainer);
         return childrenContainer;
     }
 
@@ -95,5 +101,20 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         return childrenContainer;
     }
 
+    public List<ChildComponentAndView> getChildViewList(){
+        return childView;
+    }
+
+    public void addChildComponentAndView(View componentView, Component component) {
+        ChildComponentAndView childComponentAndView = new ChildComponentAndView();
+        childComponentAndView.childView = componentView;
+        childComponentAndView.component = component;
+        childView.add(childComponentAndView);
+    }
+
+    public static class ChildComponentAndView {
+        Component component;
+        View childView;
+    }
 
 }

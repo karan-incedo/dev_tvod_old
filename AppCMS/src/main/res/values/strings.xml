@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="default_app_name">@string/app_name</string>
     <string name="error_loading_page"><![CDATA[Could not retrieve data!<br>Please try again later!]]></string>
     <string name="fragment_page_bundle_key">fragment_page</string>
@@ -8,7 +8,9 @@
     <string name="app_cms_download_setting_bundle_key">app_cms_download_setting_bundle_key</string>
     <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
 
+    <string name="something_wrong">Something went wrong. Please try again!</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
+    <string name="app_cms_selected_season_key">selected_season</string>
     <string name="launch_binder_key">launch_binder</string>
     <string name="video_player_data_key">video_player_data</string>
     <string name="drawer_open">drawer_open</string>
@@ -21,7 +23,14 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="min_abbreviation">MIN</string>
-    <string name="mins_abbreviation">MINS</string>
+    <string name="sec_abbreviation">SEC</string>
+    <string name="secs_abbreviation">SECS</string>
+    <string name="mins_abbreviation">&#160;MINS</string>
+
+    <plurals name="mins_plural">
+        <item quantity="one">%d MIN</item>
+        <item quantity="other">%d MINS</item>
+    </plurals>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="blank_separator">&#160;</string>
@@ -40,6 +49,8 @@
     <string name="resume_internal_events_key">resume_internal_events</string>
     <string name="send_to">Share Video</string>
     <string name="done">DONE</string>
+    <string name="preview_ended">Preview ended</string>
+
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
@@ -50,7 +61,9 @@
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_forgot_password_title">Forgot Password</string>
-    <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
+    <string name="app_cms_reset_password_success_description">Follow the instructions in the email we just sent you to reset your password.</string>
+    <string name="st_privacy_policy_icon_key">icon-privacy-policy</string>
+    <string name="start_watching">Start Watching</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
@@ -87,8 +100,34 @@
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+
+
+    <string name="font_bold_ttf">fonts/%1$s-Bold.ttf</string>
+    <string name="font_italic_ttf">fonts/%1$s-Italic.ttf</string>
+    <string name="font_semibold_ttf">fonts/%1$s-Semibold.ttf</string>
+    <string name="font_semibold_italic_ttf">fonts/%1$s-SemiboldItalic.ttf</string>
+    <string name="font_bold_italic_ttf">fonts/%1$s-BoldItalic.ttf</string>
+    <string name="font_black_ttf">fonts/%1$s-Black.ttf</string>
+    <string name="font_black_italic_ttf">fonts/%1$s-BlackItalic.ttf</string>
+    <string name="font_light_ttf">fonts/%1$s-Light.ttf</string>
+    <string name="font_light_italic_ttf">fonts/%1$s-LightItalic.ttf</string>
+    <string name="font_hairline_ttf">fonts/%1$s-Hairline.ttf</string>
+    <string name="font_hairline_italic_ttf">fonts/%1$s-HairlineItalic.ttf</string>
+    <string name="font_heavy_ttf">fonts/%1$s-Heavy.ttf</string>
+    <string name="font_heavy_italic_ttf">fonts/%1$s-HeavyItalic.ttf</string>
+    <string name="font_medium_ttf">fonts/%1$s-Medium.ttf</string>
+    <string name="font_medium_italic_ttf">fonts/%1$s-MediumItalic.ttf</string>
+    <string name="font_thin_ttf">fonts/%1$s-Thin.ttf</string>
+    <string name="font_thin_italic_ttf">fonts/%1$s-ThinItalic.ttf</string>
+    <string name="font_extrabold_ttf">fonts/%1$s-ExtraBold.ttf</string>
+    <string name="font_regular_ttf">fonts/%1$s-Regular.ttf</string>
+
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
+    <string name="lato_regular">fonts/Lato-Regular.ttf</string>
+    <string name="lato_medium">fonts/Lato-Medium.ttf</string>
+    <string name="lato_light">fonts/Lato-Light.ttf</string>
+    <string name="lato_bold">fonts/Lato-Bold.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -110,7 +149,8 @@
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
     <!--<string name="empty_download_message">Your download is currently empty.</string>-->
-    <string name="empty_download_message">You haven’t downloaded any movies yet.</string>
+    <string name="empty_download_video_message">You haven’t downloaded anything yet.</string>
+    <string name="empty_download_audio_message">You haven’t downloaded anything yet.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
@@ -155,11 +195,15 @@
     <!--User Management - Closed Captions-->
     <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
+
     <string name="media_route_menu_title">Play on&#8230;</string>
     <string name="countdown_seconds">%d seconds</string>
     <string name="related_movies_id_list">related_movies_id</string>
     <string name="loading_vid_on_casting">Loading on casting device..</string>
     <string name="app_cms_page_autoplay_key">AutoPlay Screen</string>
+    <string name="app_cms_page_autoplay_land_key">AutoPlay Screen (Landscape)</string>
+    <string name="app_cms_page_autoplay_port_key">AutoPlay Screen (Portrait)</string>
+    <string name="app_cms_page_crw_screen_key">Content Rating Warning Screen</string>
     <plurals name="countdown_seconds">
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>
@@ -169,6 +213,10 @@
         <item quantity="one">MIN</item>
         <item quantity="other">MINS</item>
     </plurals>
+
+    <!-- Download tab -->
+    <string name="app_cms_download_tab_video_title">Video</string>
+    <string name="app_cms_download_tab_audio_title">Audio</string>
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
@@ -200,6 +248,7 @@
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
     <string name="runtime_episodes_abbreviation">EPISODES</string>
+    <string name="songs_abbreviation">SONGS</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -261,26 +310,33 @@
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
 
-    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
-    <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
+    <string name="app_cms_delete_history_alert_title">Delete History</string>
+    <string name="app_cms_delete_one_history_item_message">Do you want to delete video from history?</string>
+    <string name="app_cms_delete_all_history_items_message">Do you want to delete all videos from history?</string>
 
-    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
-    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+    <string name="app_cms_delete_watchlist_alert_title">Delete Watchlist</string>
+    <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
+    <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
 
-    <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
-    <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
+    <string name="app_cms_download_retry_alert_title">Download could not finish</string>
+    <string name="app_cms_re_download_item_message">A network issue occurred, would you like to cancel this download or retry?</string>
 
-    <string name="app_cms_select_alert_title">Please Select!</string>
-    <string name="app_cms_re_download_item_message">Select your option to re-download or delete item.</string>
 
+    <string name="app_cms_delete_download_alert_title">Delete Download</string>
+    <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
+    <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
+    <string name="app_cms_delete_all_video_download_items_message">Do you want to delete all video from downloads?</string>
+    <string name="app_cms_delete_all_audio_download_items_message">Do you want to delete all audio from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
     <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
+    <string name="preview_content">Premium Content</string>
+    <string name="app_cms_login_and_subscription_audio_preview_title">Preview Ended</string>
+
+    <string name="app_cms_login_and_subscription_premium_content_required_message">You need to have a valid subscription to access this content.</string>
+
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
@@ -294,8 +350,12 @@
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
     <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
+    <string name="no_data_received">No response received</string>
+    <string name="there_is_a_problem_loading_data">There is a problem loading data</string>
+    <string name="open_url_in_browser_message">Open this link in a Browser?</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
+    <string name="app_cms_audio_preview_end_message">To listen to this complete audio and get access to so much more, subscribe or Login now!</string>
 
     <string name="app_cms_subscription_upgrade_unavailable_title">Upgrade Unavailable</string>
     <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
@@ -325,6 +385,7 @@
     <string name="app_cms_signup_name_matches_password_message">Please enter a password that is not the same your name.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a password that is between 5 to 50 characters in length.</string>
     <string name="loading_video_text">Loading Video</string>
+    <string name="loading_next_video_text">Loading Next Video...</string>
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
@@ -348,6 +409,11 @@
         <item quantity="one">RESULT FOR \"%1$s\"</item>
         <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
+    <plurals name="episodes">
+        <item quantity="one">%d EPISODE</item>
+        <item quantity="other">%d EPISODES</item>
+    </plurals>
+    <string name="seasons">%d SEASONS</string>
     <string name="item_shop">{0,choice,0#Added Today|1#Added 1 Day Ago|1&lt;Added {0} Days Ago}</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
@@ -382,6 +448,7 @@
     <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following content is rated: &#160;</string>
+    <string name="content_rating_description_placeholder">The following content is rated: %s</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
 
     <string name="cost_without_fraction">%.0f</string>
@@ -411,9 +478,13 @@
     <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
+    <string name="open_account_dialog_text">You have to be signed in to view account.</string>
+    <string name="open_watchlist_dialog_text">You have to be signed in to view your Watchlist.</string>
+    <string name="open_history_dialog_text">You have to be signed in to view your History.</string>
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>
+    <string name="no">NO</string>
     <string name="sign_in_text">SIGN IN</string>
 
     <string name="blank_string"></string>
@@ -424,6 +495,7 @@
     <string name="app_connectivity_dialog_title">App Connectivity</string>
     <string name="no_active_subscription">NO ACTIVE SUBSCRIPTION</string>
     <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="app_cms_autoplay_finished_movie_image_key">finishedMovieImage</string>
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
 
@@ -443,9 +515,31 @@
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
+    <string name="st_home_icon_key">icon-home</string>
+    <string name="st_show_icon_key">icon-grid</string>
+    <string name="st_teams_icon_key">icon-bracket</string>
+    <string name="st_watchlist_icon_key">icon-watchlist</string>
+    <string name="st_history_icon_key">icon-clock</string>
+    <string name="st_settings_icon_key">icon-gear</string>
+    <string name="st_search_icon_key">icon-search</string>
+    <string name="st_autoplay_icon_key">icon-autoplay</string>
+    <string name="st_closed_caption_icon_key">icon-cc</string>
+    <string name="st_manage_subscription_icon_key">icon-manage-subscription</string>
+    <string name="st_account_icon_key">icon-account</string>
+    <string name="st_faq_icon_key">icon-faq</string>
+    <string name="st_signin_icon_key">icon-signin</string>
+    <string name="st_signout_icon_key">icon-signout</string>
+    <string name="st_contact_icon_key">icon-contact</string>
+    <string name="st_live_icon_key">icon-live</string>
+    <string name="st_about_us_icon_key">icon-about</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
+    <string name="published_on">Published on</string>
+
+    <string name="app_cms_module_list_footer_key">footer01</string>
+    <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
     <string name="app_cms_download_over_cellular_disabled_error_title">Download Over Cellular Disabled</string>
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
@@ -457,13 +551,75 @@
     <string name="existing_subscription_does_not_exist_toast_message">Existing subscription does not exist</string>
     <string name="logging_in_using_existing_subscription">Logging in using existing subscription</string>
 
+    <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
+    <string name="visit_website_msg">Please visit our website to start your subscription.</string>
+    <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="no_more_videos_in_queue">No more videos in queue.</string>
+    <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
+    <string name="resume_watching">Resume Watching</string>
+    <string name="reload_page_from_menu">We encountered an issue while loading the live player. Please refresh this screen in the app Menu.</string>
 
+    <string name="app_cms_video_ended_text_message">No more videos in queue.</string>
     <string name="app_cms_touch_to_cast_msg">Touch to cast the video on your \n Chromecast device.</string>
 
+    <string name="app_cms_live_preview_text_message">Did you enjoy your free preview?  Want more access to your DC sports teams?  Become a member now so you don’t miss another play!</string>
+    <string name="app_cms_start_free_trial">Start Your Free Trial</string>
+
+    <string name="pop_dialog_tickets">Tickets</string>
+    <string name="pop_dialog_facebook">Facebook</string>
+    <string name="pop_dialog_instagram">Instagram</string>
+    <string name="dialog_close_button">Close</string>
+    <string name="app_template_type">sports_template</string>
+
+    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_querying_decoders">Unable to query device decoders</string>
+
+    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
+    <string name="selection_disabled"> Disabled</string>
+
+    <string name="selection_default">Default</string>
+
+    <string name="selection_default_none">Default (none)</string>
+    <string name="unexpected_intent_action">Unexpected intent action: <xliff:g id="action">%1$s</xliff:g></string>
+
+    <string name="enable_random_adaptation">Enable random adaptation</string>
+
+    <string name="error_drm_not_supported">Protected content not supported on API levels below 18</string>
+
+    <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
+
+    <string name="error_drm_unknown">An unknown DRM error occurred</string>
+
+
+    <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
+
+    <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
+
+    <string name="storage_permission_denied">Permission to access storage was denied</string>
+
+    <string name="sample_list_load_error">One or more sample lists failed to load</string>
+    <string name="auto">Auto</string>
+
+    <string name="invalid_email">Invalid email!</string>
+    <string name="not_valid_email">\u0020\u0020is not a valid email! Please enter a valid email!</string>
+    <string name="quote_separator">\'</string>
+    <string name="thank_you_for_subscribing">THANK YOU FOR SUBSCRIBING!</string>
+    <string name="watercoolerready">#WATERCOOLERREADY</string>
+    <string name="is_already_subscribed">\u0020\u0020is already subscribed to list Sports.</string>
+    <string name="failed_to_subscribe">Failed to subscribe!</string>
+    <string name="try_again_later">Try again later!</string>
 
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>
         <item quantity="other">EPISODES</item>
+    </plurals>
+
+    <plurals name="no_of_photos">
+        <item quantity="one">%1$s photo</item>
+        <item quantity="other">%1$s photos</item>
     </plurals>
 
     <plurals name="minute_subtitle_text">
@@ -475,15 +631,45 @@
         <item quantity="one">SEC</item>
         <item quantity="other">SECS</item>
     </plurals>
+    <string name="season_episode_placeholders">S%d:E%d</string>
+    <string name="subscription_cancelled_in">Scheduled to be cancelled by %s</string>
 
-    <string name="app_cms_play_lecture_text">Play</string>
-    <string name="app_cms_resume_lecture_text">Resume</string>
-    <string name="app_cms_percent_complete_text">%1$d\%% Complete</string>
+    <string name="audio_fragment_tag_key">audio_fragment</string>
+    <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_audio">AUDIO</string>
+    <string name="media_type_video">VIDEO</string>
+    <string name="content_type_audio">AUDIO</string>
+    <string name="content_type_video">VIDEO</string>
+    <string name="content_type_series">SERIES</string>
+    <string name="content_type_show">SHOW</string>
+
+
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">UAMP_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for UAMP</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+
+    <string name="stop_casting">Stop Casting</string>
+    <string name="casting_to_device">Casting to %1$s</string>
 
     <!-- Apptentive Messages -->
     <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
     <string name="app_cms_apptentive_login_event_name">Login</string>
 
+    <string name="play_video_action">playVideo</string>
+
+    <string name="play_video_category">player-video</string>
+
+
+    <string name="play_audio_action">playAudio</string>
+
+    <string name="play_audio_category">player-audio</string>
+     <string name="app_cms_link_your_account_action">linkAccount</string>
+    <string name="app_cms_sign_up_page_action">signUpPageAction</string>
+    
 </resources>
 
 

@@ -11,11 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AutoplayFragment;
-
-import com.viewlift.R;
 
 public class AutoplayActivity
         extends AppCompatActivity
@@ -49,7 +48,7 @@ public class AutoplayActivity
             }
         };
 
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_AUTOPLAY_SCREEN));
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         try {
@@ -79,7 +78,7 @@ public class AutoplayActivity
             fragmentTransaction.addToBackStack(appCMSBinder.getContentData().getGist().getId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
-            //Log.e(TAG, "Failed to add Fragment to back stack");
+            Log.e(TAG, "Failed to add Fragment to back stack");
         }
     }
 

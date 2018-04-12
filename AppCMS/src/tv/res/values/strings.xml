@@ -12,12 +12,41 @@
         <item>@string/carousel_nodule</item>
         <item>AC ContinueWatching 01</item>
         <item>AC Tray 01</item>
+        <item>AC Tray 03</item>
+        <item>@string/standaloneplayer</item>
+        <item>AC Grid 01</item>
+        <item>AC EventCarousel 01</item>
+    </string-array>
+
+    <string-array name="app_cms_modules">
+        <item>AC VideoPlayerWithInfo 02</item>
+        <item>@string/appcms_detail_module</item>
+        <item>@string/app_cms_ancillary_pages_module</item>
+        <item>@string/app_cms_reset_password_module</item>
+        <item>@string/app_cms_contact_us_module</item>
+        <item>@string/app_cms_page_history_module_key</item>
+        <item>@string/app_cms_page_history_module_key2</item>
+        <item>@string/app_cms_page_watchlist_module_key</item>
+        <item>@string/app_cms_page_watchlist_module_key2</item>
+        <item>@string/app_cms_page_autoplay_module_key_01</item>
+        <item>@string/app_cms_page_autoplay_module_key_02</item>
+        <item>@string/app_cms_page_autoplay_module_key_03</item>
+        <item>@string/app_cms_page_autoplay_landscape_module_key_01</item>
+        <item>@string/app_cms_page_autoplay_portrait_module_key_01</item>
+        <item>@string/app_cms_page_link_your_account_module</item>
+        <item>@string/app_cms_page_authentication_module</item>
+        <item>@string/app_cms_setting_module</item>
+        <item>AC UserManagement 02</item>
+        <item>@string/app_cms_page_show_detail_module_key</item>
+        <item>AC SubNav 01</item>
+        <item></item>
     </string-array>
 
     <string-array name="app_cms_detail_module">
-        <item>AC VideoPlayerWithInfo 01</item>
+        <item>AC VideoPlayerWithInfo 02</item>
     </string-array>
 
+    <string name="standaloneplayer">AC StandaloneVideoPlayer 01</string>
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="app_cms_contact_us_module">AC ContactUs 01</string>
@@ -40,6 +69,8 @@
 
     <string name="video_image_key">video_image_key</string>
 
+    <string name="buffering_text">Buffering...</string>
+
 
     <plurals name="mins_abbreviation">
         <item quantity="one">MIN</item>
@@ -52,7 +83,25 @@
     <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
-     <string name="blank_email_error_msg">Please enter email to continue.</string>
+    <string name="blank_email_error_msg">Please enter email to continue.</string>
     <string name="blank_password_error_msg">Please enter password to continue.</string>
     <string name="back">BACK</string>
+
+    <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
+
+    <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="unsubscribe_text">To continue watching, and access so much more, log in or subscribe now!</string>
+
+    <string name="text_case_sentence">sentence</string>
+    <string name="text_case_small">small</string>
+    <string name="text_case_caps">caps</string>
+
+  
+    <string name="header">If you are currently a member of $App$, follow these instructions to link your device to membership account:</string>
+    <string name="code_sync_dialog_text_line_1">1. Sign in to $App$ from your desktop.</string>
+    <string name="code_sync_dialog_text_line_2">2. Go to My Account and enter code XXXXXX to link this device to your account.</string>
+    <string name="code_sync_dialog_text_line_3">3. Upon linking your device, you can start streaming $App$ on your Apple TV immediately.</string>
+
+    <string name="default_code">XXXXXX</string>
+
 </resources>

@@ -2,16 +2,12 @@ package com.viewlift.tv.views.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
-import com.viewlift.R;
-import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
+import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
+import com.viewlift.views.binders.AppCMSBinder;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -24,9 +20,18 @@ public abstract class AppCmsBaseActivity extends Activity {
         super.onCreate(savedInstanceState, persistentState);
     }
 
-    public void setNavigationFragment(AppCmsNavigationFragment navigationFragment){
-        getFragmentManager().beginTransaction().add(getNavigationContaineer() ,navigationFragment , "nav" ).commit();
+    public void setNavigationFragment(AppCmsNavigationFragment navigationFragment) {
+        getFragmentManager().beginTransaction().add(getNavigationContainer(), navigationFragment, "nav").commit();
     }
 
-    public abstract int getNavigationContaineer();
+    public void setSubNavigationFragment(AppCmsSubNavigationFragment navigationFragment, AppCMSBinder appCMSBinder) {
+        Bundle bundle = new Bundle();
+        bundle.putBinder("app_cms_binder", appCMSBinder);
+        navigationFragment.setArguments(bundle);
+        navigationFragment.setSelectedPageId(appCMSBinder.getPageId());
+        getFragmentManager().beginTransaction().add(getSubNavigationContainer(), navigationFragment, "subnav").commit();
+    }
+
+    public abstract int getNavigationContainer();
+    public abstract int getSubNavigationContainer();
 }

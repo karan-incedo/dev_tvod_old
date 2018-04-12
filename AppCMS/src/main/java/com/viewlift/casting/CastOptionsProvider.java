@@ -55,7 +55,6 @@ public class CastOptionsProvider implements OptionsProvider {
 
         return new CastOptions.Builder()
                 .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-                //.setReceiverApplicationId(context.getResources().getString(R.string.chromecast_receiver_app_id))
                 .setCastMediaOptions(mediaOptions)
                 .build();
     }

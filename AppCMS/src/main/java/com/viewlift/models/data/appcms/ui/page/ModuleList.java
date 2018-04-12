@@ -32,6 +32,19 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     ArrayList<Component> components;
 
+    @SerializedName("key")
+    @Expose
+    String key;
+
+    @SerializedName("value")
+    @Expose
+    int value;
+
+
+    @SerializedName("alpha")
+    @Expose
+    float alpha;
+
     @SerializedName("type")
     @Expose
     String type;
@@ -43,6 +56,34 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @SerializedName("blockName")
     @Expose
     String blockName;
+
+
+    @SerializedName("isTabSeparator")
+    @Expose
+    boolean isTabSeparator;
+
+    @SerializedName("tabSeparator-color")
+    @Expose
+    String tabSeparator_color;
+
+    @SerializedName("isBackgroundSelectable")
+    @Expose
+    boolean isBackgroundSelectable;
+
+
+    @SerializedName("isSelectable")
+    @Expose
+    boolean isSelectable;
+
+    public int getModulePosition() {
+        return modulePosition;
+    }
+
+    public void setModulePosition(int modulePosition) {
+        this.modulePosition = modulePosition;
+    }
+
+    int modulePosition;
 
     public String getId() {
         return id;
@@ -107,5 +148,37 @@ public class ModuleList implements ModuleWithComponents, Serializable {
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
+    }
+
+    public boolean isTabSeparator() {
+        return isTabSeparator;
+    }
+
+    public void setTabSeparator(boolean tabSeparator) {
+        isTabSeparator = tabSeparator;
+    }
+
+    public String getTabSeparator_color() {
+        return tabSeparator_color;
+    }
+
+    public void setTabSeparator_color(String tabSeparator_color) {
+        this.tabSeparator_color = tabSeparator_color;
+    }
+
+    public boolean isBackgroundSelectable() {
+        return isBackgroundSelectable;
+    }
+
+    public void setBackgroundSelectable(boolean backgroundSelectable) {
+        isBackgroundSelectable = backgroundSelectable;
+    }
+
+    public boolean isSelectable() {
+        return isSelectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        isSelectable = selectable;
     }
 }

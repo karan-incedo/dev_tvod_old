@@ -83,6 +83,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
     }
 
     public void setData(ContentDatum planData) {
+        this.planData = null;
         this.planData = planData;
         initViews();
     }
@@ -107,6 +108,16 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 }
             }
 
+            /**
+             *
+             * Fix of MSEAN-1433
+             * Whenever it cheld views wer more then 0 it created duplicate details view at
+             * plan screen. #removeAllViews() help for clearing duplicate views.
+             */
+            if (getChildAt(0)!=null &&
+                    getChildAt(0)instanceof  GridLayout) {
+               removeAllViews();
+            }
             for (int i = 0; i < featureDetails.size(); i++) {
                 if (!TextUtils.isEmpty(featureDetails.get(i).getValueType()) &&
                         featureDetails.get(i).getValueType().equals("integer")) {
@@ -214,7 +225,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 gridLayoutParams.setGravity(Gravity.END);
                 gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
                 ((TextView) componentViewResult.componentView)
-                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+
                 planLayout.addView(componentViewResult.componentView);
             }
         }

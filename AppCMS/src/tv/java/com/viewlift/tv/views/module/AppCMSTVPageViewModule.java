@@ -48,7 +48,7 @@ public class AppCMSTVPageViewModule {
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
         this.modulesToIgnoreList =
-                Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules_to_ignore));
+                Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules_to_ignore_tv));
     }
 
 

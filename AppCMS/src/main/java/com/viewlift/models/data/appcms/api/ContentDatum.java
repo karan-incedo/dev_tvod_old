@@ -2,6 +2,8 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.audio.AudioAssets;
+import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -102,17 +104,70 @@ public class ContentDatum implements Serializable {
     @SerializedName("creditBlocks")
     @Expose
     List<CreditBlock> creditBlocks = null;
-
-    @SerializedName("parentalRating")
-    @Expose
-    String parentalRating;
-
     @SerializedName("showDetails")
     @Expose
     ShowDetails showDetails;
 
-    // NOTE: The actual name value pair from the backend will be different
-    boolean isHdEnabled;
+    @SerializedName("parentalRating")
+    @Expose
+    String parentalRating;
+    @SerializedName("permalink")
+    @Expose
+    String permalink;
+    @SerializedName("title")
+    @Expose
+    String title;
+    @SerializedName("contentType")
+    @Expose
+    String contentType;
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
+    public boolean isRenewable() {
+        return renewable;
+    }
+
+    public void setAddedDate(long addedDate) {
+        this.addedDate = addedDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
 
     public Gist getGist() {
         return gist;
@@ -328,11 +383,26 @@ public class ContentDatum implements Serializable {
         return appCMSPageAPI;
     }
 
-    public boolean isHdEnabled() {
-        return isHdEnabled;
+
+    List<AudioList> audioList = null;
+
+    public List<AudioList> getAudioList() {
+        return audioList;
     }
 
-    public void setHdEnabled(boolean hdEnabled) {
-        isHdEnabled = hdEnabled;
+    public void setAudioList(List<AudioList> audioList) {
+        this.audioList = audioList;
     }
+
+    AudioAssets audioAssets = null;
+
+    public AudioAssets getAudioAssets() {
+        return audioAssets;
+    }
+
+    public void setAudioAssets(AudioAssets audioAssets) {
+        this.audioAssets = audioAssets;
+    }
+
+
 }

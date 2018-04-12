@@ -18,7 +18,6 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
@@ -40,14 +39,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
-    String componentViewType;
     private List<OnInternalEvent> receivers;
     private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
+
     private MotionEvent lastTouchDownEvent;
+
+    String componentViewType;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -99,7 +100,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                         ((TextView) holder.componentView.getChild(i)).setText("");
                     }
                 }
-                bindView(holder.componentView, adapterData.get(position));
+                bindView(holder.componentView, adapterData.get(position), position);
             }
         }
     }
@@ -166,30 +167,24 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         return null;
     }
 
-    @Override
-    public void resetData(RecyclerView listView) {
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-        this.isClickable = clickable;
-    }
-
     private void bindView(CollectionGridItemView itemView,
-                          final ContentDatum data) {
+                          final ContentDatum data,
+                          int position) {
         if (onClickHandler == null) {
             onClickHandler = new CollectionGridItemView.OnClickHandler() {
                 @Override
                 public void click(CollectionGridItemView collectionGridItemView,
                                   Component childComponent,
-                                  ContentDatum data) {
+                                  ContentDatum data,
+                                  int position) {
                     if (isClickable) {
+                        AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+                        /**
+                         * if click happened from description text then no need to show play screen as more fragment open
+                         */
+                        if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
+                            return;
+                        }
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();
@@ -227,17 +222,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                         -1,
                                         action)) {
                                     //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
+                                    //                                                " permalink: " +
+                                    //                                                permalink +
+                                    //                                                " action: " +
+                                    //                                                action);
                                 }
                             } else {
-                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                actionPresenter.setAction(action);
-
                                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                        actionPresenter,
+                                        action,
                                         title,
                                         null,
                                         data,
@@ -245,10 +237,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                         currentPlayingIndex,
                                         relatedVideoIds)) {
                                     //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
+                                    //                                                " permalink: " +
+                                    //                                                permalink +
+                                    //                                                " action: " +
+                                    //                                                action);
                                 }
                             }
                         }
@@ -278,12 +270,12 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                     -1,
                                     null)) {
                                 //Log.e(TAG, "Could not launch play action: " +
-//                                            " filmId: " +
-//                                            filmId +
-//                                            " permaLink: " +
-//                                            permaLink +
-//                                            " title: " +
-//                                            title);
+                                //                                            " filmId: " +
+                                //                                            filmId +
+                                //                                            " permaLink: " +
+                                //                                            permaLink +
+                                //                                            " title: " +
+                                //                                            title);
                             }
                         }
                     }
@@ -355,8 +347,24 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                     onClickHandler,
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppTextColor()),
-                    appCMSPresenter);
+                    appCMSPresenter,
+                    position);
         }
+    }
+
+    @Override
+    public void resetData(RecyclerView listView) {
+        //
+    }
+
+    @Override
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
+        //
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+
     }
 
     private String getDefaultAction(Context context) {

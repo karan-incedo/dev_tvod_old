@@ -17,9 +17,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.viewlift.presenters.AppCMSPresenter;
-
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 /**
  * Created by viewlift on 6/7/17.
@@ -121,7 +120,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     public void setSpanOnFocus(TextView textView, boolean hasFocus , int textColor){
         Spannable wordToSpan = new SpannableString(textView.getText().toString());
         ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(
-                Color.parseColor( appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor())
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())
         );
 
         int length = wordToSpan.length();
@@ -130,7 +129,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             wordToSpan.setSpan(foregroundColorSpan, length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         } else {
-            wordToSpan.setSpan(new StyleSpan(Typeface.BOLD), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            wordToSpan.setSpan(new StyleSpan(Typeface.NORMAL), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             wordToSpan.setSpan(new ForegroundColorSpan(textColor), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         textView.setText(wordToSpan);

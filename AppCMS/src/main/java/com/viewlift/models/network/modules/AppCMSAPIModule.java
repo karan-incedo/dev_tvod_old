@@ -4,6 +4,10 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
+import com.viewlift.models.network.rest.AppCMSContentDetailCall;
+import com.viewlift.models.network.rest.AppCMSContentDetailRest;
+import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
@@ -13,7 +17,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailRest;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.models.network.rest.UANamedUserEventRest;
 import com.viewlift.presenters.UrbanAirshipEventPresenter;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +28,13 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.R;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeRest;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeRest;
+import com.viewlift.models.network.rest.AppCMSContentDetailCall;
+import com.viewlift.models.network.rest.AppCMSContentDetailRest;
+import com.viewlift.stag.generated.Stag;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -71,9 +80,10 @@ public class AppCMSAPIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
+     /* return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();*/
         return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
                 .create();
+
     }
 
     @Provides
@@ -114,6 +124,11 @@ public class AppCMSAPIModule {
     public AppCMSVideoDetailRest providesAppCMSVideoDetailRest(Retrofit retrofit) {
         return retrofit.create(AppCMSVideoDetailRest.class);
     }
+    @Provides
+    @Singleton
+    public AppCMSContentDetailRest providesAppCMSContentDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSContentDetailRest.class);
+    }
 
     @Provides
     @Singleton
@@ -143,9 +158,44 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public AppCMSContentDetailCall providesAppCMSContentDetailCall(AppCMSContentDetailRest appCMSContentDetailRest){
+        return new AppCMSContentDetailCall(appCMSContentDetailRest);
+    }
+
+
+    @Provides
+    @Singleton
+    public AppCMSFloodLightRest appCMSFloodLightRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSFloodLightRest.class);
+    }
+
     public UANamedUserEventCall providesUANamedUserEventCall(UANamedUserEventRest uaNamedUserEventRest,
                                                              Gson gson) {
         return new UANamedUserEventCall(uaNamedUserEventRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSDeviceCodeRest providesGetLinkCodeRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSDeviceCodeRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSyncDeviceCodeRest providesSyncCodeRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSyncDeviceCodeRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSDeviceCodeApiCall providesAppCmsGetDeviceLinkCodeCall(AppCMSDeviceCodeRest appCMSGetSyncCodeRest, Gson gson){
+        return new AppCMSDeviceCodeApiCall(appCMSGetSyncCodeRest,gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSyncDeviceCodeApiCall providesAppCmsSyncDeviceCodeCall(AppCMSSyncDeviceCodeRest appCMSSyncDeviceCodeRest, Gson gson){
+        return new AppCMSSyncDeviceCodeApiCall(appCMSSyncDeviceCodeRest,gson);
     }
 
     @Provides

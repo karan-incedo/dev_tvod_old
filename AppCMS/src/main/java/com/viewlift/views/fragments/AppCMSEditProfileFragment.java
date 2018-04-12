@@ -1,14 +1,20 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
@@ -24,8 +30,10 @@ import android.widget.Toast;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
 
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -58,6 +66,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     @BindView(R.id.app_cms_edit_profile_email_text)
     TextView appCMSEditProfileEmailText;
 
+    private String regex = "[a-zA-Z\\s]+";
+
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
                                                         String email) {
@@ -81,11 +91,12 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        appCMSPresenter.scrollUpWhenSoftKeyboardIsVisible();
+        //appCMSPresenter.scrollUpWhenSoftKeyboardIsVisible();
 
         int bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
         int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getBlockTitleColor());
+
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getTextColor());
         int transparentColor = getResources().getColor(R.color.transparentColor);
@@ -95,6 +106,9 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
         titleTextView.setTextColor(textColor);
+        appCMSEditProfileNameText.setTextColor(textColor);
+        appCMSEditProfileEmailText.setTextColor(textColor);
+
         titleTextView.setTypeface(appCMSPresenter.getBoldTypeFace());
 
         appCMSEditProfileNameText.setTextColor(textColor);
@@ -108,6 +122,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         appCMSEditProfileNameInput.setTextColor(textColor);
         if (!TextUtils.isEmpty(username)) {
             appCMSEditProfileNameInput.setText(username);
+            appCMSEditProfileNameInput.setTextColor(textColor);
         }
 
         if (!TextUtils.isEmpty(email)) {
@@ -127,6 +142,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
+            setCursorColor(password,textColor);
             textInputLayout.addView(password);
             textInputLayout.setPasswordVisibilityToggleEnabled(true);
             password.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -160,14 +176,43 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
             AlertDialog dialog = builder.create();
             dialog.show();
+            Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            buttonPositive.setTextColor(textColor);
+            Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+            buttonNegative.setTextColor(textColor);
+
         });
 
-        editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
-                buttonColor));
+        editProfileConfirmChangeButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
         editProfileConfirmChangeButton.setBackgroundColor(buttonColor);
         setBgColor(bgColor);
 
         return view;
+    }
+
+    public static void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
     }
 
     private void setBgColor(int bgColor) {

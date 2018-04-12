@@ -1,74 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/navigation_placholder"
+    <RelativeLayout
+        android:id="@+id/navigation_layouts_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/appcms_tv_navigation_height"
-        android:background="@color/appcms_nav_background"
-        android:visibility="gone">
-    </FrameLayout>
+        android:layout_height="wrap_content">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_below="@id/navigation_placholder">
+        <FrameLayout
+            android:id="@+id/navigation_placholder"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/appcms_tv_navigation_height"
+            android:animateLayoutChanges="true"
+            android:background="@color/appcms_nav_background"
+            android:visibility="gone" />
 
-    <FrameLayout
-        android:id="@+id/home_placeholder"
+        <FrameLayout
+            android:id="@+id/sub_navigation_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:background="@color/appcms_nav_background"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/home_screen_background">
-    </FrameLayout>
+        android:layout_below="@id/navigation_layouts_container"
+        android:animateLayoutChanges="true">
 
-    <FrameLayout
-        android:id="@+id/shadow_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/appcms_shadow_color"
-        android:alpha="0.7"
-        android:visibility="gone">
-    </FrameLayout>
-
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/footer_gradient_image"
-        >
-    </FrameLayout>
+        <TextView
+            android:id="@+id/subscribe_now_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:focusable="false"
+            android:textAlignment="center"
+            />
 
 
-</RelativeLayout>
-
-    <ImageView
-        android:layout_width="@dimen/footer_logo_width"
-        android:layout_height="@dimen/footer_logo_height"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/logo"
-        android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
-        android:layout_marginRight="@dimen/footer_logo_margin_right"
-        android:layout_gravity="right"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/subscribe_now_strip">
 
 
-    <ImageView
-        android:id="@+id/info_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:background="@drawable/info_icon"
-        android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
-        android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
-        />
+            <FrameLayout
+                android:id="@+id/home_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/logo_margin">
+
+                <ImageView
+                    android:id="@+id/footer_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/logo_margin"
+                    android:background="@drawable/app_logo"
+                    />
+
+
+                <ImageView
+                    android:id="@+id/info_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
+                    android:background="@drawable/info_icon"
+                    />
+
+                <ImageView
+                    android:id="@+id/press_down_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/press_down"
+                    />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/press_up_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/footer_info_icon_margin_bottom"
+                android:background="@drawable/prees_menu"
+                />
+
+            <ImageView
+                android:id="@+id/top_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
+                android:layout_marginTop="@dimen/footer_info_icon_margin_bottom"
+                android:background="@drawable/app_logo"
+                />
+
+            <FrameLayout
+                android:id="@+id/shadow_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.7"
+                android:background="@color/appcms_shadow_color"
+                android:visibility="gone"/>
+
+
+            <FrameLayout
+                android:id="@+id/black_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/footer_gradient_image"
+                android:visibility="visible"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 
 
 

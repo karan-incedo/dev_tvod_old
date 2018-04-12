@@ -12,51 +12,39 @@ public class Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose
-    String text = "";
+    String text;
 
     @SerializedName("textColor")
     @Expose
-    String textColor = "";
+    String textColor;
+
+    @SerializedName("isSelectable")
+    @Expose
+    boolean isSelectable;
 
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor = "";
+    String backgroundColor;
 
     @SerializedName("layout")
     @Expose
-    Layout layout = new Layout();
+    Layout layout;
 
     @SerializedName("backgroundSelectedColor")
     @Expose
-    String backgroundSelectedColor = "";
+    String backgroundSelectedColor;
 
     @SerializedName("action")
     @Expose
-    String action = "";
+    String action;
 
     @SerializedName("type")
     @Expose
-    String type = "";
+    String type;
 
     @SerializedName("key")
     @Expose
-    String key = "";
-
-    @SerializedName("settings")
-    @Expose
-    Settings settings = new Settings();
-
-    @SerializedName("camelCase")
-    @Expose
-    boolean camelCase;
-
-    @SerializedName("minLines")
-    @Expose
-    int minLines;
-
-    @SerializedName("hdEnabled")
-    @Expose
-    boolean hdEnabled;
+    String key;
 
     public int getOpacity() {
         return opacity;
@@ -121,10 +109,6 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("supportPagination")
     @Expose
     boolean supportPagination;
-
-    @SerializedName("headerView")
-    @Expose
-    boolean headerView;
 
     @SerializedName("trayClickAction")
     @Expose
@@ -201,7 +185,7 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
-	
+
     @SerializedName("selectedText")
     @Expose
     String selectedText;
@@ -237,13 +221,21 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
-    @SerializedName("alwaysVisible")
+    @SerializedName("trayBackground")
     @Expose
-    boolean alwaysVisible;
+    String trayBackground;
 
-    @SerializedName("iconColor")
+    @SerializedName("textCase")
     @Expose
-    String iconColor;
+    String textCase;
+
+    @SerializedName("lineSpacingMultiplier")
+    @Expose
+    float lineSpacingMultiplier;
+
+    @SerializedName("headerView")
+    @Expose
+    boolean headerView;
 
     boolean yAxisSetManually;
 
@@ -309,7 +301,6 @@ public class Component implements ModuleWithComponents, Serializable {
     }
     @Override
     public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     public String getKey() {
@@ -407,7 +398,13 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setTrayClickAction(String trayClickAction) {
         this.trayClickAction = trayClickAction;
     }
+    public boolean isSelectable() {
+        return isSelectable;
+    }
 
+    public void setSelectable(boolean selectable) {
+        isSelectable = selectable;
+    }
     public String getFontFamily() {
         return fontFamily;
     }
@@ -492,14 +489,6 @@ public class Component implements ModuleWithComponents, Serializable {
         return fontWeight;
     }
 
-    public String getIconColor() {
-        return iconColor;
-    }
-
-    public void setIconColor(String iconColor) {
-        this.iconColor = iconColor;
-    }
-
     public void setFontWeight(String fontWeight) {
         this.fontWeight = fontWeight;
     }
@@ -526,7 +515,7 @@ public class Component implements ModuleWithComponents, Serializable {
 
     @Override
     public Settings getSettings() {
-        return settings;
+        return null;
     }
 
     public void setView(String view) {
@@ -561,7 +550,7 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setSelectedText(String selectedText) {
         this.selectedText = selectedText;
     }
-	
+
     float letterSpacing;
     public float getLetetrSpacing() {
         return letterSpacing;
@@ -597,37 +586,30 @@ public class Component implements ModuleWithComponents, Serializable {
         this.widthModified = widthModified;
     }
 
-    public boolean isCamelCase() {
-        return camelCase;
+    public String getTrayBackground() {
+        return trayBackground;
     }
 
-    public void setCamelCase(boolean camelCase) {
-        this.camelCase = camelCase;
+    public void setTrayBackground(String trayBackground) {
+        this.trayBackground = trayBackground;
     }
 
-    public int getMinLines() {
-        return minLines;
+    public String getTextCase() {
+        return textCase;
     }
 
-    public void setMinLines(int minLines) {
-        this.minLines = minLines;
+    public void setTextCase(String textCase) {
+        this.textCase = textCase;
     }
 
-    public boolean isHdEnabled() {
-        return hdEnabled;
+    public float getLineSpacingMultiplier() {
+        return lineSpacingMultiplier;
     }
 
-    public void setHdEnabled(boolean hdEnabled) {
-        this.hdEnabled = hdEnabled;
+    public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
+        this.lineSpacingMultiplier = lineSpacingMultiplier;
     }
 
-    public boolean isAlwaysVisible() {
-        return alwaysVisible;
-    }
-
-    public void setAlwaysVisible(boolean alwaysVisible) {
-        this.alwaysVisible = alwaysVisible;
-    }
 
     public boolean isHeaderView() {
         return headerView;
