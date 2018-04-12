@@ -90,8 +90,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
-      //  mView.findViewById(R.id.fragment_clear_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
+        String backGroundColor = appCMSPresenter.getAppBackgroundColor();
+        mView.findViewById(R.id.fragment_clear_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
         negativeButton = (Button) mView.findViewById(R.id.btn_cancel);
@@ -150,13 +150,14 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         negativeButton.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
                 Color.parseColor(Utils.getFocusColor(getActivity(), appCMSPresenter)),
-                btnComponent1));
+                btnComponent1,
+                appCMSPresenter));
 
         negativeButton.setTextColor(Utils.getButtonTextColorDrawable(
                 Utils.getColor(getActivity(), Integer.toHexString(ContextCompat.getColor(getActivity(),
                         R.color.btn_color_with_opacity))),
                 Utils.getColor(getActivity(), Integer.toHexString(ContextCompat.getColor(getActivity(),
-                        android.R.color.white)))
+                        android.R.color.white))),appCMSPresenter
         ));
 
 
@@ -164,13 +165,14 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
                 Color.parseColor(Utils.getFocusColor(getActivity(), appCMSPresenter)),
-                btnComponent1));
+                btnComponent1,
+                appCMSPresenter));
 
         positiveButton.setTextColor(Utils.getButtonTextColorDrawable(
                 Utils.getColor(getActivity(), Integer.toHexString(ContextCompat.getColor(getActivity(),
                         R.color.btn_color_with_opacity))),
                 Utils.getColor(getActivity(), Integer.toHexString(ContextCompat.getColor(getActivity(),
-                        android.R.color.white)))
+                        android.R.color.white))),appCMSPresenter
         ));
 
 

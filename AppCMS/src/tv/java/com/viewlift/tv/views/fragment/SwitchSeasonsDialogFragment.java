@@ -142,7 +142,8 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
 
             button.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
                     Color.parseColor(focusColor),
-                    component));
+                    component,
+                    appCMSPresenter));
 
             button.setTypeface(Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), component));
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(250, 60);

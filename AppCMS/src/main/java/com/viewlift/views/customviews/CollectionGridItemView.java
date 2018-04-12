@@ -905,6 +905,8 @@ public class CollectionGridItemView extends BaseView {
                                     //unit abbrevation from here .Its causing double visibilty of time unit
                                     .append(context.getString(R.string.min_abbreviation));
                             ((TextView) view).setText(runtimeText);
+                            ((TextView) view).setVisibility(View.VISIBLE);
+
                         } else {
                             StringBuilder runtimeText = new StringBuilder()
                                     .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
@@ -926,6 +928,8 @@ public class CollectionGridItemView extends BaseView {
                             view.setClickable(true);
                             view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
                         }
+                        ((TextView) view).setVisibility(View.VISIBLE);
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
 
                         if (data.getGist().getMediaType() != null && data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {

@@ -126,7 +126,7 @@ public class AppCmsLinkYourAccountFragment extends AbsDialogFragment {
                 }
             });
         }
-        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         return tvPageView;
     }
 

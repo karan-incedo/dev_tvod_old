@@ -80,7 +80,8 @@ public class PlayerPresenter extends Presenter {
         cardView.setBackground(Utils.getGradientTrayBorder(
                         context,
                         Utils.getPrimaryHoverColor(context, appCmsPresenter),
-                        Utils.getSecondaryHoverColor(context, appCmsPresenter)));
+                        appCmsPresenter.getAppBackgroundColor()
+                        /*Utils.getSecondaryHoverColor(context, appCmsPresenter)*/));
     }
 
     @Override

@@ -537,7 +537,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
 
-                    if ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
