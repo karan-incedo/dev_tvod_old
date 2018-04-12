@@ -121,8 +121,8 @@ public class AppCMSSearchFragment extends DialogFragment {
             }
         });
 
-        buttonColor=appCMSPresenter.getBrandPrimaryCtaColor();
-        textColor=appCMSPresenter.getBrandPrimaryCtaTextColor();
+        buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+        textColor = appCMSPresenter.getBrandPrimaryCtaTextColor();
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 

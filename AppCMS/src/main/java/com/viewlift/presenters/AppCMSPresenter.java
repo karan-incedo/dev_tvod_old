@@ -198,6 +198,7 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSArticleCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
@@ -318,7 +319,13 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Url;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -705,7 +712,7 @@ public class AppCMSPresenter {
     private String subscribeEmail;
     ProgressDialog progressDialog = null;
     private boolean isAudioPlayerOpen;
-
+    public HashMap<String, PlaylistDetails> playlistDowloadValues = new HashMap<String, PlaylistDetails>();
 
     public int getDownloadTabSelected() {
         return DOWNLOAD_TAB_SELECTED;
@@ -717,6 +724,28 @@ public class AppCMSPresenter {
 
     private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
 
+
+
+    public static class PlaylistDetails{
+        public ImageButton getImgButton() {
+            return imgButton;
+        }
+
+        public void setImgButton(ImageButton imgButton) {
+            this.imgButton = imgButton;
+        }
+
+        public ContentDatum getData() {
+            return data;
+        }
+
+        public void setData(ContentDatum data) {
+            this.data = data;
+        }
+
+        ImageButton imgButton;
+        ContentDatum data;
+    }
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -4472,7 +4501,7 @@ public class AppCMSPresenter {
      * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
     public synchronized void editDownloadFromPlaylist(final ContentDatum contentDatum,
-                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
+                                                      final Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
             showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
                     currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
@@ -4562,13 +4591,13 @@ public class AppCMSPresenter {
                                     contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                                     contentDatum.getGist().getContentType() != null &&
                                     contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
-                                downloadMediaFile(contentDatum, downloadURL, 0,isFromPlaylistDownload);
+                                downloadMediaFile(contentDatum, downloadURL, 0, isFromPlaylistDownload);
                                 appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), AppCMSPresenter.this,
                                         resultAction1, getLoggedInUser());
 
                             } else {
                                 startDownload(contentDatum,
-                                        resultAction1,isFromPlaylistDownload);
+                                        resultAction1, isFromPlaylistDownload);
                             }
 
 //                        startNextDownload = false;
@@ -4584,6 +4613,7 @@ public class AppCMSPresenter {
 
         }
     }
+
     public synchronized void editDownload(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
@@ -4658,13 +4688,13 @@ public class AppCMSPresenter {
                             contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
-                        downloadMediaFile(contentDatum, downloadURL, 0,false);
+                        downloadMediaFile(contentDatum, downloadURL, 0, false);
                         appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
                                 resultAction1, getLoggedInUser());
 
                     } else {
                         startDownload(contentDatum,
-                                resultAction1,false);
+                                resultAction1, false);
                     }
 
 //                        startNextDownload = false;
@@ -5202,7 +5232,7 @@ public class AppCMSPresenter {
     }
 
     private synchronized void startDownload(ContentDatum contentDatum,
-                                            Action1<UserVideoDownloadStatus> resultAction1,boolean isFromPlaylistDownload) {
+                                            Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
 
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
@@ -5325,10 +5355,10 @@ public class AppCMSPresenter {
                     ccEnqueueId,
                     contentDatum,
                     downloadURL);
-            if(!isFromPlaylistDownload)
-            showToast(
-                    currentActivity.getString(R.string.app_cms_download_started_message,
-                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+            if (!isFromPlaylistDownload)
+                showToast(
+                        currentActivity.getString(R.string.app_cms_download_started_message,
+                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
 
         }
@@ -6334,7 +6364,23 @@ public class AppCMSPresenter {
                 appCMSVideoDetail -> {
                     try {
                         if (appCMSVideoDetail != null) {
-                            binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                            if(appCMSVideoDetail.getRecords()!=null && appCMSVideoDetail.getRecords().get(0)!=null) {
+                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                            }else{
+                                ContentDatum contentdata=new ContentDatum();
+                                contentdata.setGist(appCMSVideoDetail.getGist());
+                                contentdata.setContentDetails(appCMSVideoDetail.getContentDetails());
+                                contentdata.setStreamingInfo(appCMSVideoDetail.getStreamingInfo());
+                                contentdata.setCreditBlocks(appCMSVideoDetail.getCreditBlocks());
+                                contentdata.setTags(appCMSVideoDetail.getTags());
+                                contentdata.setCategories(appCMSVideoDetail.getCategories());
+                                contentdata.setExternal(appCMSVideoDetail.getExternal());
+                                contentdata.setChannels(appCMSVideoDetail.getChannels());
+                                List<ContentDatum> listRecord=new ArrayList<ContentDatum>() ;
+                                listRecord.add(contentdata);
+                                appCMSVideoDetail.setRecords(listRecord);
+                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                            }
                             AppCMSPageAPI pageAPI = null;
                             for (ModuleList moduleList :
                                     appCMSPageUI.getModuleList()) {
@@ -6498,8 +6544,136 @@ public class AppCMSPresenter {
         }
     }
 
+    static <T> T createRetrofitService(final Class<T> clazz, final String endPoint) {
+        final Retrofit restAdapter = new Retrofit.Builder().baseUrl(endPoint)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                 .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        T service = restAdapter.create(clazz);
+
+//        Retrofit retrofit =
+//                new Retrofit.Builder()
+//                        .baseUrl(endPoint)
+//                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                        .build();
+        return service;
+    }
+    private void getAudioContentAsy(final String apiBaseUrl,
+                                    final String siteId,
+                                    String pageId,
+                                    final AppCMSAudioDetailAPIAction audiDetail){
+        if (currentContext != null) {
+            try {
+                String url = currentContext.getString(R.string.app_cms_audio_detail_api_url,
+                        apiBaseUrl,
+                        siteId,
+                        pageId);
+                AppCMSAudioDetailRest  appCMSAudioDetailCallPlaylist=(AppCMSAudioDetailRest) createRetrofitService(AppCMSAudioDetailRest.class,apiBaseUrl);
+                appCMSAudioDetailCallPlaylist.getPlayList(siteId,pageId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d("TAG", "Complete");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        audiDetail.call(null);
+                    }
+
+                    @Override
+                    public void onNext(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                        Observable.just(appCMSAudioDetailResult).subscribe(audiDetail);
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("TAG","Print Exception :"+e.getMessage());
+            }
+        }
+
+    }
+
     public AudioPlaylistHelper.IPlaybackCall getCallBackPlaylistHelper() {
         return callBackPlaylistHelper;
+    }
+
+
+    public void getAudioDetailPlaylist(String audioId, long mCurrentPlayerPosition,
+                               AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
+            , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
+                               AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
+        if (!isNetworkConnected()) {
+            int count = tryCount;
+            openDownloadScreenForNetworkError(false,
+                    () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
+                            playAudio, count, appCMSAudioDetailAPIAction));
+            return;
+        }
+
+        tryCount++;
+        this.callBackPlaylistHelper = callBackPlaylistHelper;
+        int finalTryCount = tryCount;
+
+
+        getAudioContentAsy(appCMSMain.getApiBaseUrl(),
+                appCMSSite.getGist().getSiteInternalName(),
+                audioId,
+                new AppCMSAudioDetailAPIAction(false,
+                        false,
+                        false,
+                        null,
+                        audioId,
+                        audioId,
+                        null,
+                        audioId,
+                        false, null) {
+                    @Override
+                    public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+
+                        if (appCMSAudioDetailResult != null) {
+                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            /*check to play audio*/
+                            if (playAudio) {
+                                sendGaEvent(currentContext.getResources().getString(R.string.play_audio_action),
+                                        currentContext.getResources().getString(R.string.play_audio_category), appCMSAudioDetailResult.getGist().getId());
+                                AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
+                                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+                                if (callBackPlaylistHelper != null) {
+                                    callBackPlaylistHelper.onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                } else if (currentActivity != null) {
+                                    AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                }
+                            } else {
+                                if (appCMSAudioDetailAPIAction != null) {
+                                    appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
+                                }
+                            }
+                            if (isPlayerScreenOpen && currentActivity != null) {
+                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                if (controller != null) {
+                                    MediaMetadataCompat metadata = controller.getMetadata();
+                                    if (metadata != null) {
+                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                metadata);
+                                    }
+                                }
+                                currentActivity.startActivity(intent);
+                            }
+
+                        } else {
+                            if (finalTryCount < 3) {
+                                getAudioDetailPlaylist(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
+                            }
+                        }
+
+                        if (currentActivity != null) {
+
+                            stopLoader();
+                        }
+                    }
+                });
     }
 
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
@@ -9896,7 +10070,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             currentActivity.runOnUiThread(new Runnable() {
                 public void run() {
-            Toast.makeText(currentActivity, message, messageDuration).show();
+                    Toast.makeText(currentActivity, message, messageDuration).show();
                 }
             });
         }
@@ -15193,9 +15367,14 @@ public class AppCMSPresenter {
     }
 
     public String getNetworkConnectivityDownloadErrorMsg() {
-        if (currentActivity != null) {
-            return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
-        } else {
+        try {
+            if (currentActivity != null) {
+                return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
+            } else {
+                return "Please connect your device to a network and try again, or click OK for go to My Downloads";
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
             return "Please connect your device to a network and try again, or click OK for go to My Downloads";
         }
     }

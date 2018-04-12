@@ -510,6 +510,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         mExecutorService.shutdown();
         getActivity().unregisterReceiver(recevierPreview);
         getActivity().getContentResolver().unregisterContentObserver(volumeObserver);
+        appCMSPresenter.setCurrentPlayingVideo(null);
 
     }
 
@@ -547,6 +548,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             directorName = (String) metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_DIRECTOR);
             directorName = " (" + directorName + ")";
         }
+        appCMSPresenter.setCurrentPlayingVideo(metaData.getDescription().getMediaId());
+
         artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST) + "" + directorName);
         String trackYearValue = metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR) + "";
         if (TextUtils.isEmpty(trackYearValue)) {
