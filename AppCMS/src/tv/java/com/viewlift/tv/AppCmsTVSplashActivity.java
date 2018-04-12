@@ -40,7 +40,6 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             return;
         }
         setContentView(R.layout.activity_launch_tv);
-//        Log.d("TVSplashActivity" , "DeviceDetail = "+getDeviceDetail());
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
@@ -108,8 +107,8 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         int smallWidth = bd.getBitmap().getWidth();
         int smallHeight = bd.getBitmap().getHeight();
 
-        float xScale = (float) (((smallWidth * 100) / logoWidth)) / 100;
-        float yScale = (float) (((smallHeight * 100) / logoHeight)) / 100;
+        float xScale = 0;//(float) (((smallWidth * 100) / logoWidth)) / 100;
+        float yScale = 0;//(float) (((smallHeight * 100) / logoHeight)) / 100;
 
 
         new Handler().post(new Runnable() {
