@@ -137,7 +137,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         } else {
             btnClose.setText(getResources().getString(R.string.app_cms_close_alert_dialog_button_text));
         }
-
+        if(null != backGroundColor)
         parentLayout.setBackgroundColor(Color.parseColor(backGroundColor));
         return view;
     }
