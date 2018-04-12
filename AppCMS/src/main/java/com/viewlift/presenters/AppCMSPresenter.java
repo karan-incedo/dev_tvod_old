@@ -13550,6 +13550,12 @@ public class AppCMSPresenter {
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
+                    signupPage = metaPage;
+                    new SoftReference<Object>(signupPage, referenceQueue);
+                }
+
+                if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
                     downloadQualityPage = metaPage;
                     new SoftReference<Object>(downloadQualityPage, referenceQueue);
