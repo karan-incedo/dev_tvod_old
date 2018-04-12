@@ -560,7 +560,7 @@
     <string name="app_cms_video_ended_text_message">No more videos in queue.</string>
     <string name="app_cms_touch_to_cast_msg">Touch to cast the video on your \n Chromecast device.</string>
 
-    <string name="app_cms_live_preview_text_message">Did you enjoy your free preview?  Want more access to your DC sports teams?  Become a member now so you don’t miss another play!</string>
+    <string name="app_cms_live_preview_text_message">Want more access to your content?  Become a member now!</string>
     <string name="app_cms_start_free_trial">Start Your Free Trial</string>
 
     <string name="pop_dialog_tickets">Tickets</string>

@@ -80,6 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerInside"
+                    android:layout_centerInParent="true"
                     android:src="@drawable/logo_icon" />
 
                 <LinearLayout
@@ -124,7 +125,7 @@
                             android:background="#00000000"
                             android:padding="5dp"
                             android:src="@drawable/anim_cast"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 

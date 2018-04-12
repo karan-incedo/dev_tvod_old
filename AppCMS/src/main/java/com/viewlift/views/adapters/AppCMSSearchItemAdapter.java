@@ -77,6 +77,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
+    int placeholder = R.drawable.vid_image_placeholder_port;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -169,12 +170,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
-        int placeholder;
-        if (imageHeight > imageWidth) {
-            placeholder = R.drawable.vid_image_placeholder_port;
-        } else {
-            placeholder = R.drawable.vid_image_placeholder_land;
-        }
 
         if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
                 appCMSSearchResults.get(adapterPosition).getGist().getPosterImageUrl() != null &&
@@ -210,7 +205,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
                 applySportsStyleDefault(viewHolder, createEmptyBitmap());
             }
-            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder).fitCenter();
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
                     appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl(),
@@ -263,10 +258,10 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     url,
                     imageWidth,
                     imageHeight);
-            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder).fitCenter();;
 
            Glide.with(viewHolder.view.getContext())
-                   .load(imageUrl)
+                   .load(imageUrl).apply(requestOptions)
                    .into(viewHolder.filmThumbnail);
         } else {
 
@@ -466,6 +461,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.titleLayout.setLayoutParams(titleLayoutParams);
 
         viewHolder.gridOptions.setVisibility(View.VISIBLE);
+        placeholder = R.drawable.vid_image_placeholder_land;
+        viewHolder.filmThumbnail.setScaleType(ImageView.ScaleType.FIT_XY);
     }
 
     private void setThumbInfoText(View view,Gist data){

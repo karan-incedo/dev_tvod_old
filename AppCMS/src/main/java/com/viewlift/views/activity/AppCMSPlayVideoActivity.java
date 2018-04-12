@@ -125,10 +125,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             binder = (AppCMSVideoPageBinder)
                     bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
-            String fontColor = "0xffffffff";
-            if (binder != null) {
+            String fontColor = "#ffffffff";
+            /*if (binder != null) {
                 fontColor = binder.getFontColor();
-            }
+            }*/
             if (binder != null
                     && binder.getContentData() != null
                     && binder.getContentData().getGist() != null) {

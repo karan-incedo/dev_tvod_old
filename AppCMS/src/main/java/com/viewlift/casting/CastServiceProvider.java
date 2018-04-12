@@ -524,7 +524,7 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.INVISIBLE);
+        mMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.GONE);
 
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)
