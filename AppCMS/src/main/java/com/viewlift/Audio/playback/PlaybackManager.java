@@ -618,10 +618,12 @@ public class PlaybackManager implements Playback.Callback {
         public void run() {
             updateProgress();
             if (!isCastConnected) {
-                localPlaybackInstance.setBeaconPingValues();
+                if(localPlaybackInstance != null)
+                  localPlaybackInstance.setBeaconPingValues();
             }
             if (isCastConnected) {
-                AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
+                if(AudioCastPlayback.castPlaybackInstance != null)
+                  AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
             }
         }
     };
@@ -668,7 +670,7 @@ public class PlaybackManager implements Playback.Callback {
     public void sendProgressAnalyticEvents(long progressPercent) {
         AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
         MediaMetadataCompat mediaMetaData= AudioPlaylistHelper.getInstance().getMetadata(getCurrentMediaId());
-        if(mediaMetaData==null){
+        if(mediaMetaData==null && mediaMetaData.getDescription()==null){
             return;
         }
 
