@@ -33,6 +33,12 @@
         </item>
     </style>
 
+    <style name="AppCMSProgressDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorNavBarText</item>
+        <item name="android:background">@color/backgroundColor</item>
+    </style>
+
     <style name="TransparentTheme" parent="AppTheme">
 
         <item name="android:background">@color/semiTransparentColor</item>

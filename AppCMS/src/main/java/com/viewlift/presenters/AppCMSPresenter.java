@@ -6670,7 +6670,7 @@ public class AppCMSPresenter {
 
                         if (currentActivity != null) {
 
-                            stopLoader();
+                            //stopLoader();
                         }
                     }
                 });
