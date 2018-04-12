@@ -812,7 +812,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
                     && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
                     ) {
-                System.out.println("vinay1 ----");
                 createStreamingQualitySelectorForHLS();
 
                 // Default "Auto" is selected

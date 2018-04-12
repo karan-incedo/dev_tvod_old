@@ -76,8 +76,8 @@
 
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/action_bar_logo_width"
+                    android:layout_height="@dimen/action_bar_logo_height"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerInside"
                     android:layout_centerInParent="true"

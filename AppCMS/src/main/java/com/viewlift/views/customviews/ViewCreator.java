@@ -2123,7 +2123,7 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                             adjustOthers = AdjustOtherState.INITIATED;
-                        } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
+                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null &&
                                 jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {

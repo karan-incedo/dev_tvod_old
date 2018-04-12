@@ -486,7 +486,7 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         System.out.println("image dimen3- width" + childViewHeight + " width" + childViewWidth);
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
 
                         bringToFront = false;
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
