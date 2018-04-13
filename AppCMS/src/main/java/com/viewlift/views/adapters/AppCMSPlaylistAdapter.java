@@ -447,15 +447,15 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     Thread th = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
-                                public void run() {
-
+                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable()
+                            {
+                                public void run()
+                                {
                                     try {
                                         getPlaylistAudioItems();
                                     } catch (Exception e) {
                                         Log.e("ThreadException ", e.toString());
-                                    }
-                                }
+                                    }                                }
                             });
 
                         }
@@ -575,6 +575,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
+
+
                     }
                 });
 
@@ -640,29 +642,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     }
 
-    public class DownloadUpdate {
-        private boolean isClick;
-
-        public boolean isClick() {
-            return isClick;
-        }
-
-        public void setClick(boolean click) {
-            isClick = click;
-        }
-
-        public boolean isDowloading() {
-            return isDowloading;
-        }
-
-        public void setDowloading(boolean dowloading) {
-            isDowloading = dowloading;
-        }
-
-        private boolean isDowloading;
-
-    }
-
 
     /**
      * This class has been created to updated the Download Image Action and Status
@@ -715,7 +694,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     });
                     countDownloadPlaylist++;
                     progressDialog.setProgress(countDownloadPlaylist);
-                    if (countDownloadPlaylist == adapterData.size()) {
+                    if (countDownloadPlaylist >= adapterData.size()) {
                         //appCMSPresenter.showLoadingDialog(false);
                         progressDialog.dismiss();
                     }
@@ -777,10 +756,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
                         imageButton.setOnClickListener(null);
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         break;
 
                     case STATUS_RUNNING:
@@ -797,10 +776,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
 
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
                         imageButton.setOnClickListener(null);

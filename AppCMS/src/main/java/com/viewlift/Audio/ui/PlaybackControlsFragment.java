@@ -46,8 +46,10 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
+import com.viewlift.views.fragments.AppCMSPlayAudioFragment;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -104,6 +106,7 @@ public class PlaybackControlsFragment extends Fragment {
         }
     };
     UpdateDataReceiver serviceReceiver;
+    UpdateMetaDataReceiver updateRecevierMeta;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -137,6 +140,16 @@ public class PlaybackControlsFragment extends Fragment {
         });
 
         scheduleSeekbarUpdate();
+
+        updateRecevierMeta = new UpdateMetaDataReceiver();
+        IntentFilter intentFilterMetaData = new IntentFilter();
+        intentFilterMetaData.addAction(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_ACTION);
+        try {
+            getActivity().registerReceiver(updateRecevierMeta, intentFilterMetaData);
+
+        } catch (Exception e) {
+            //
+        }
         return rootView;
     }
 
@@ -169,12 +182,15 @@ public class PlaybackControlsFragment extends Fragment {
         Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-        if (controller != null) {
-            MediaMetadataCompat metadata = controller.getMetadata();
-            if (metadata != null) {
-                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                        metadata);
-            }
+        MediaMetadataCompat metadata = null;
+        if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+            metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+        } else {
+            metadata = controller.getMetadata();
+        }
+        if (metadata != null) {
+            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                    metadata);
         }
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
@@ -223,8 +239,14 @@ public class PlaybackControlsFragment extends Fragment {
             if (controller != null) {
                 PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
                 updatePlaybackState(state);
-                updateDuration(controller.getMetadata());
-                onMetadataChanged(controller.getMetadata());
+                MediaMetadataCompat metadata = null;
+                if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                } else {
+                    metadata = controller.getMetadata();
+                }
+                updateDuration(metadata);
+                onMetadataChanged(metadata);
                 onPlaybackStateChanged(controller.getPlaybackState());
                 controller.registerCallback(mCallback);
             }
@@ -395,8 +417,12 @@ public class PlaybackControlsFragment extends Fragment {
                             state == PlaybackStateCompat.STATE_STOPPED ||
                             state == PlaybackStateCompat.STATE_NONE) {
                         AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
-                        MediaMetadataCompat metadata = controller.getMetadata();
-
+                        MediaMetadataCompat metadata = null;
+                        if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                            metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                        } else {
+                            metadata = controller.getMetadata();
+                        }
                         if (!isPreviewEnded(metadata)) {
                             playMedia();
                         } else {
@@ -452,7 +478,11 @@ public class PlaybackControlsFragment extends Fragment {
         super.onDestroy();
         stopSeekbarUpdate();
         getActivity().unregisterReceiver(serviceReceiver);
-
+        try {
+            getActivity().unregisterReceiver(updateRecevierMeta);
+        } catch (Exception e) {
+            //
+        }
     }
 
     private void updateProgress() {
@@ -504,6 +534,24 @@ public class PlaybackControlsFragment extends Fragment {
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE)) {
                 connectMediaService();
 //                playMedia();
+            }
+        }
+    }
+
+    private class UpdateMetaDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("TAsk Stopped stop on receiver");
+
+            if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_MESSAGE)) {
+
+                MediaMetadataCompat metadata = null;
+                if (AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                    updateDuration(metadata);
+                    PlaybackControlsFragment.this.onMetadataChanged(metadata);
+                }
             }
         }
     }

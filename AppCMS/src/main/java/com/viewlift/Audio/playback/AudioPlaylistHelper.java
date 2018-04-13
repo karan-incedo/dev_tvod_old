@@ -298,7 +298,7 @@ public class AudioPlaylistHelper {
         String genre = "";
         int trackNumber = 0;
         int totalTrackCount = 0;
-        long duration = -1;
+        long duration = runTime;
 
 //        if(title.equalsIgnoreCase("Aasan Nahin Yahan") || title.equalsIgnoreCase("Qismat")){
 //            isFree="true";
