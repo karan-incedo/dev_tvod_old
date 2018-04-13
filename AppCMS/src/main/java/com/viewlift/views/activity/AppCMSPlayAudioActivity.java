@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -269,4 +271,5 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                 break;
         }
     }
+
 }

@@ -34,7 +34,8 @@ public class AudioServiceHelper {
     public static String APP_CMS_UPDATE_PLAYLIST = "app_cms_update_playlist";
     public static String APP_CMS_PLAYBACK_UPDATE = "app_cms_playback_update";
     public static String APP_CMS_PLAYBACK_UPDATE_MESSAGE = "app_cms_playback_update_message";
-
+    public static String APP_CMS_NOTIFICATION_AUDIO_SERVICE_MESSAGE = "app_cms_notification_audio_service_message";
+    public static String APP_CMS_NOTIFICATION_AUDIO_SERVICE_ACTION = "app_cms_notification_audio_service_action";
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
             audioHelper = new AudioServiceHelper();
@@ -93,6 +94,12 @@ public class AudioServiceHelper {
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(mActivity, token);
+        if(mediaController.getMetadata()==null){
+            System.out.println("Metadata null");
+        }else{
+            System.out.println("Metadata not null");
+
+        }
         MediaControllerCompat.setMediaController(mActivity, mediaController);
         mediaController.registerCallback(mMediaControllerCallback);
         callbackAudioService.onConnect();
