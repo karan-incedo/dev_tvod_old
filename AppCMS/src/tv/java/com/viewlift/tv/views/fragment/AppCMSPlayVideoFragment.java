@@ -444,7 +444,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
-            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+            videoPlayerTitleView.setTextColor(getResources().getColor(android.R.color.white)/*Color.parseColor(fontColor)*/);
         }
 
         videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
@@ -473,7 +473,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
         playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
-        playBackStateTextView.setTextColor(Color.parseColor(fontColor));
+        playBackStateTextView.setTextColor(getResources().getColor(android.R.color.white)/*Color.parseColor(fontColor)*/);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
         progressBar.getIndeterminateDrawable().
