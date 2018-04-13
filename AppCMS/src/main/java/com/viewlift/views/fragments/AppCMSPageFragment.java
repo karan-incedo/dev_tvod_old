@@ -254,11 +254,13 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
         }
+
         try {
             CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
         } catch(Exception e){
             e.printStackTrace();
         }
+
     }
 
     private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
@@ -338,6 +340,7 @@ public class AppCMSPageFragment extends Fragment {
     }catch(Exception e){
             e.printStackTrace();
     }
+
     }
 
     @Override

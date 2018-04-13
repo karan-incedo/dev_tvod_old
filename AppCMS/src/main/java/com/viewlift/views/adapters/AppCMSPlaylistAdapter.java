@@ -145,7 +145,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.appCMSAndroidModules = appCMSAndroidModules;
         serviceReceiver = new updateDataReceiver();
 
-
     }
 
     private void progressDialogInit() {
@@ -168,6 +167,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         progressDialog.setProgress(countDownloadPlaylist);
         progressDialog.show();
     }
+
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -449,6 +449,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         public void run() {
                             appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                                 public void run() {
+
                                     try {
                                         getPlaylistAudioItems();
                                     } catch (Exception e) {
@@ -471,6 +472,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         countDownloadPlaylist = 0;
         progressDialogInit();
         //appCMSPresenter.showLoadingDialog(true);
+
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             if (allViews[i] != null && allViews[i].getChildItems() != null) {
@@ -531,6 +533,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     }
 
     void playlistAudioDownload(ImageButton download, String id, boolean playlistDowload) {
+
         if (appCMSPresenter.isVideoDownloaded(id)|| appCMSPresenter.isVideoDownloading(id)){
             countDownloadPlaylist++;
         }else {

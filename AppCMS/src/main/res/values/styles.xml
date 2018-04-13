@@ -38,6 +38,7 @@
         <item name="android:textColor">@color/colorNavBarText</item>
         <item name="android:textColorSecondary">@color/colorNavBarText</item>
         <item name="android:textColorPrimary">@color/colorNavBarText</item>
+
         <item name="android:background">@color/backgroundColor</item>
     </style>
 
