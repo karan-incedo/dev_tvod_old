@@ -149,7 +149,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
         serviceReceiver = new MusicServiceReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
-        registerReceiver(serviceReceiver, intentFilter);
+        try {
+            registerReceiver(serviceReceiver, intentFilter);
+
+        } catch (Exception e) {
+            //
+        }
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -394,4 +399,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
             }
         }
     }
+
+
 }

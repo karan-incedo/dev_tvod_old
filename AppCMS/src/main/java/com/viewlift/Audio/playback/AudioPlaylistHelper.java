@@ -45,6 +45,7 @@ public class AudioPlaylistHelper {
     public static String CUSTOM_METADATA_TRACK_ALBUM_YEAR = "_ALBUM_YEAR";
     public static String CUSTOM_METADATA_IS_FREE = "__IS_FREE__";
     public static String CUSTOM_METADATA_TRACK_DIRECTOR = "_ALBUM_DIRECTOR";
+    boolean isLastStatePlaying = true;
 
     Activity mAct;
 
@@ -401,6 +402,13 @@ public class AudioPlaylistHelper {
 
     public void setCurrentAudioPLayingData(ContentDatum currentAudioPLayingData) {
         this.currentAudioPLayingData = currentAudioPLayingData;
+    }
+    public void setLastPauseState(boolean isReload) {
+        isLastStatePlaying = isReload;
+    }
+
+    public boolean isLastStatePause() {
+        return isLastStatePlaying;
     }
 
 }

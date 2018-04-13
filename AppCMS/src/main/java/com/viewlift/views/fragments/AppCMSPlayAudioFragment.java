@@ -138,6 +138,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private ScheduledFuture<?> mScheduleFuture;
     private PlaybackStateCompat mLastPlaybackState;
     boolean isDialogVisible = false;
+    int connectionTry = 0;
 
     private final Runnable mUpdateProgressTask = new Runnable() {
         @Override
@@ -171,6 +172,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
                 }
             };
@@ -431,7 +433,12 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 getActivity(), token);
         if (mediaController.getMetadata() == null) {
-            getActivity().finish();
+            if (connectionTry == 0 && mMediaBrowser != null) {
+                mMediaBrowser.connect();
+            } else {
+                getActivity().finish();
+            }
+            connectionTry++;
             return;
         }
         MediaControllerCompat.setMediaController(getActivity(), mediaController);
@@ -598,7 +605,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     if (appCMSPresenter.dialog != null && appCMSPresenter.dialog.isShowing()) {
                         try {
                             appCMSPresenter.dialog.dismiss();
-                        }catch(IllegalArgumentException e){
+                        } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                         }
                         appCMSPresenter.isDialogShown = false;

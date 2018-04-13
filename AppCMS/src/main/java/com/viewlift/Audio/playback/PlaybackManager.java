@@ -68,7 +68,21 @@ public class PlaybackManager implements Playback.Callback {
     private MediaRouter mMediaRouter;
     private static boolean isCastConnected = false;
     MediaSessionCompat msession;
+    boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
+    private final String FIREBASE_VIDEO_ID_KEY = "audio_id";
+    private final String FIREBASE_VIDEO_NAME_KEY = "audio_name";
+    private final String FIREBASE_SERIES_ID_KEY = "series_id";
+    private final String FIREBASE_SERIES_NAME_KEY = "series_name";
+    private final String FIREBASE_PLAYER_NAME_KEY = "player_name";
+    private final String FIREBASE_MEDIA_TYPE_KEY = "media_type";
+    private final String FIREBASE_PLAYER_NATIVE = "Native";
+    private final String FIREBASE_MEDIA_TYPE_AUDIO = "Audio";
 
+    private final String FIREBASE_STREAM_START = "stream_start";
+    private final String FIREBASE_STREAM_25 = "stream_25_pct";
+    private final String FIREBASE_STREAM_50 = "stream_50_pct";
+    private final String FIREBASE_STREAM_75 = "stream_75_pct";
+    private final String FIREBASE_STREAM_100 = "stream_100_pct";
     /**
      * create constructor for PlaybackManager. initialize castsession manager , cast listener , and callback methods
      *
@@ -119,6 +133,11 @@ public class PlaybackManager implements Playback.Callback {
          * check if audio item is playable
          */
         if (!isPreviewEnded()) {
+            isStreamStart=false;
+            isStream25=false;
+            isStream50=false;
+            isStream75=false;
+            isStream100=false;
             mServiceCallback.onPlaybackStart();
             mServiceCallback.switchPlayback(currentPosition);
             scheduleSeekbarUpdate();
@@ -138,7 +157,7 @@ public class PlaybackManager implements Playback.Callback {
             mServiceCallback.onPlaybackPause();
             stopSeekbarUpdate();
 
-            AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(true);
+            AudioPlaylistHelper.getInstance().setLastPauseState(true);
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(getCurrentMediaId(), 0);
 
         }
@@ -166,7 +185,7 @@ public class PlaybackManager implements Playback.Callback {
         AudioPlaylistHelper.getInstance().setCurrentPlaylistId(null);
         setCurrentMediaId(null);
         mPlayback.setCurrentId(null);
-        AudioPlaylistHelper.getInstance().getAppCmsPresenter().setLastPauseState(false);
+        AudioPlaylistHelper.getInstance().setLastPauseState(false);
 
     }
 
@@ -599,11 +618,12 @@ public class PlaybackManager implements Playback.Callback {
         public void run() {
             updateProgress();
             if (!isCastConnected) {
-               if(localPlaybackInstance != null)
+                if(localPlaybackInstance != null)
                   localPlaybackInstance.setBeaconPingValues();
             }
             if (isCastConnected) {
-                AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
+                if(AudioCastPlayback.castPlaybackInstance != null)
+                  AudioCastPlayback.castPlaybackInstance.setBeaconPingValues();
             }
         }
     };
@@ -628,9 +648,112 @@ public class PlaybackManager implements Playback.Callback {
         currentPositionInMS = currentPosition;
         //System.out.println("currentPositionInMS- " + currentPositionInMS);
         audioPreview();
+
+        if(mPlayback!=null && mPlayback.getTotalDuration()>0) {
+            long totalDuration = mPlayback.getTotalDuration();
+            long mPercentage = (long)
+                    (((float) (currentPositionInMS) / totalDuration) * 100);
+            System.out.println("progress event total duration- " + totalDuration);
+            System.out.println("progress event current duration- " + currentPositionInMS);
+            System.out.println("progress event total percenaage- " + mPercentage);
+
+            try {
+                sendProgressAnalyticEvents(mPercentage);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
+    public void sendProgressAnalyticEvents(long progressPercent) {
+        AppCMSPresenter appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+        MediaMetadataCompat mediaMetaData= AudioPlaylistHelper.getInstance().getMetadata(getCurrentMediaId());
+        if(mediaMetaData==null && mediaMetaData.getDescription()==null){
+            return;
+        }
 
+        String audioId=mediaMetaData.getDescription().getMediaId();
+        String title=mediaMetaData.getDescription().getTitle().toString();
+        System.out.println("progress event id- " + audioId);
+        System.out.println("progress event title- " + title);
+        System.out.println("---------------- " );
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_VIDEO_ID_KEY, audioId);
+        bundle.putString(FIREBASE_VIDEO_NAME_KEY, title);
+        bundle.putString(FIREBASE_PLAYER_NAME_KEY, FIREBASE_PLAYER_NATIVE);
+        bundle.putString(FIREBASE_MEDIA_TYPE_KEY, FIREBASE_MEDIA_TYPE_AUDIO);
+        //bundle.putString(FIREBASE_SERIES_ID_KEY, "");
+        //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
+
+        //Logs an app event.
+        if (progressPercent == 0 && !isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
+
+        if (!isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
+
+        if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
+            if (!isStreamStart) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+                isStreamStart = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+            isStream25 = true;
+        }
+
+        if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+            isStream50 = true;
+        }
+
+        if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+            isStream75 = true;
+        }
+
+        if (progressPercent >= 98 && progressPercent <= 100 && !isStream100) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            if (!isStream75) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+                isStream75 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
+            isStream100 = true;
+        }
+    }
     void audioPreview() {
         if (isPreviewEnded()) {
             handlePauseRequest();
