@@ -9,6 +9,8 @@
 
     <!-- AppCMS Search API -->
     <string name="app_cms_search_api_url">%1$s/search/v1?site=%2$s&amp;searchTerm=%3$s</string>
+    <string name="app_cms_search_api_url_video_only">%1$s/search/v1?site=%2$s&amp;searchTerm=%3$s&amp;types=%4$s</string>
+    <string name="type_video_only">videos</string>
 
     <!-- AppCMS Ads API -->
     <string name="app_cms_ads_api_url">%1$s&amp;url=%2$s&amp;ad_rule=0&amp;correlator=%3$d&amp;cust_params=APPID=%4$s</string>
