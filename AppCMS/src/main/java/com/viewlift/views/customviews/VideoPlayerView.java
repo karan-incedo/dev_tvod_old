@@ -434,7 +434,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 && !useHls
                 && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
-            currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+            showStreamingQualitySelector();
         }/* else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }*/
@@ -531,7 +531,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void createStreamingQualitySelector() {
         if (streamingQualitySelector != null && appCMSPresenter != null) {
-            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            showStreamingQualitySelector();
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
                 listView = new RecyclerView(getContext());
@@ -615,7 +615,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
         if (streamingQualitySelector != null && appCMSPresenter != null) {
-            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            showStreamingQualitySelector();
             TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
             List<HLSStreamingQuality> availableStreamingQualities = new ArrayList<>();
             availableStreamingQualities.add(new HLSStreamingQuality(0, "Auto"));
@@ -814,11 +814,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     ) {
                 createStreamingQualitySelectorForHLS();
 
-                // Default "Auto" is selected
-                currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
-                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+                   // Default "Auto" is selected
+                    currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
+                    showStreamingQualitySelector();
             }
         }
+    }
+
+    private void showStreamingQualitySelector() {
+        if(null != currentStreamingQualitySelector
+                && null != appCMSPresenter
+                && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+        currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
     @Override
