@@ -380,9 +380,14 @@ public class TVCollectionGridItemView extends TVBaseView {
 
                         if (data.getGist() != null && data.getGist().getPublishDate() != null) {
                             try {
-                                Date publishedDate = new Date(data.getGist().getPublishDate());
+
+                                    String date = appCMSPresenter.getDateFormat(
+                                            Long.parseLong(data.getGist().getPublishDate()),
+                                            "MMMM dd, yyyy");
+
+                                /*Date publishedDate = new Date(data.getGist().getPublishDate());
                                 SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                String date = spf.format(publishedDate);
+                                String date = spf.format(publishedDate);*/
                                 if (stringBuilder.length() > 0) stringBuilder.append(" | ");
                                 stringBuilder.append("Published on ");
                                 stringBuilder.append(date);

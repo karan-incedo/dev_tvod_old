@@ -195,7 +195,6 @@
     <!--User Management - Closed Captions-->
     <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
-
     <string name="media_route_menu_title">Play on&#8230;</string>
     <string name="countdown_seconds">%d seconds</string>
     <string name="related_movies_id_list">related_movies_id</string>
@@ -539,7 +538,6 @@
     <string name="app_cms_module_list_footer_key">footer01</string>
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
-
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
     <string name="app_cms_download_over_cellular_disabled_error_title">Download Over Cellular Disabled</string>
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
@@ -669,7 +667,7 @@
     <string name="play_audio_category">player-audio</string>
      <string name="app_cms_link_your_account_action">linkAccount</string>
     <string name="app_cms_sign_up_page_action">signUpPageAction</string>
-    
+
 </resources>
 
 
