@@ -341,6 +341,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
                         if (isActive) {
+                            try{
                             handleLaunchPageAction(updatedAppCMSBinder,
                                     false,
                                     false,
@@ -364,6 +365,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         ViewCreator.enableFullScreenMode();
                                     }
                                 }
+                            }
+                        }catch(Exception e){
+                                e.printStackTrace();
                             }
                         } else if (updatedAppCMSBinder != null) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,

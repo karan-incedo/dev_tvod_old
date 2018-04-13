@@ -8,7 +8,8 @@ build/*
 /AppCMS/release/*
 *.apk
 /*.json
-/.idea/
+/.idea/*
+.idea/
 /AppCMS/mobile/release/*
 /library/build
 /library/build/*
@@ -35,6 +36,7 @@ gen/
 # Ignore gradle files
 .gradle/
 build/
+gradle/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -44,3 +46,8 @@ htmlspanner/build/
 AppCMS/.idea/
 AppCMS/local.properties
 AppCMS/gradle/
+
+*.gradle
+AppCMS/*.gradle
+Apps/*.gradle
+
