@@ -343,10 +343,11 @@ public class AppCmsSearchFragment extends Fragment {
     }
 
     private String getUrl(String url){
-        return getString(R.string.app_cms_search_api_url,
+        return getString(R.string.app_cms_search_api_url_video_only,
                 appCMSSearchUrlData.getBaseUrl(),
                 appCMSSearchUrlData.getSiteName(),
-                url);
+                url,
+                getString(R.string.type_video_only));
 
     }
     @Override
