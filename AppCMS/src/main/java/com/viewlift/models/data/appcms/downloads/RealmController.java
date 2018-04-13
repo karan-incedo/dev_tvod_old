@@ -130,7 +130,9 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
                     .equalTo("userId", userId).findAll();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
+            //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
+        }catch (Exception e) {
             //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
         }
         return  null;

@@ -1578,8 +1578,14 @@ public class AppCMSPresenter {
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(() -> {
                     if (realmController != null) {
-                        for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
-                            updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                        try {
+                            for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
+                                updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 });

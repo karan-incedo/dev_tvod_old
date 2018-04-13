@@ -144,7 +144,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
 
         mSessionExtras = new Bundle();
-//        CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
+        CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
         mSession.setExtras(mSessionExtras);
         mPlaybackManager.updatePlaybackState(null);
 
