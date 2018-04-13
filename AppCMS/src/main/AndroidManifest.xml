@@ -24,7 +24,7 @@
         <activity
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
             <meta-data
                 android:name="android.app.default_searchable"
@@ -141,12 +141,17 @@
 
         <service
             android:name="com.viewlift.Audio.MusicService"
-            android:enabled="true"
-            android:exported="true">>
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="com.viewlift.Audio.utils.TaskRemoveService"
+            android:stopWithTask="false" />
+
     </application>
 
 </manifest>

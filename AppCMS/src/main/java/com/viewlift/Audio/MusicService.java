@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.viewlift.Audio;
 
@@ -118,7 +118,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 isCastConnected = false;
                 playback = localPlayback;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -140,7 +140,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
 
         mSessionExtras = new Bundle();
-        CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
+//        CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
         mSession.setExtras(mSessionExtras);
         mPlaybackManager.updatePlaybackState(null);
 
@@ -149,7 +149,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         } catch (RemoteException e) {
             throw new IllegalStateException("Could not create a MediaNotificationManager", e);
         }
-        registerCarConnectionReceiver();
+//        registerCarConnectionReceiver();
         serviceReceiver = new MusicServiceReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
@@ -184,9 +184,23 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mSession.setMetadata(metadata);
+            updateMetaPlaylist();
+            updateMetaPlayerPage();
+
         }
     };
-
+    public void updateMetaPlaylist() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_DATA_UPDATE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_DATA_UPDATE_MESSAGE, true);
+        getApplicationContext().sendBroadcast(intent);
+    }
+    public void updateMetaPlayerPage() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_MESSAGE, true);
+        getApplicationContext().sendBroadcast(intent);
+    }
     /**
      * (non-Javadoc)A
      *
@@ -234,7 +248,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             if (castSession != null && castSession.isConnected()) {
                 mRemoteMediaClient = castSession.getRemoteMediaClient();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -253,7 +267,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onDestroy() {
 
         try {
-            unregisterCarConnectionReceiver();
+//            unregisterCarConnectionReceiver();
             // Service is being killed, so make sure we release our resources
             mPlaybackManager.handleStopRequest(null);
             mMediaNotificationManager.stopNotification();
@@ -263,7 +277,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             AudioCastPlayback.castPlaybackInstance = null;
             unregisterReceiver(serviceReceiver);
             unregisterReceiver(networkConnectedReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

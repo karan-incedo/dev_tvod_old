@@ -54,6 +54,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -77,6 +78,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.utils.TaskRemoveService;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
@@ -260,6 +262,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private float dX, dY;
     private final String mobileLaunchActivity = "com.viewlift.mobile.AppCMSLaunchActivity";
 
+    private int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+
+    private boolean checkPlayServices() throws Exception {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                Toast.makeText(this, "This device is not supported.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -273,12 +295,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_appcms_page);
 
+        try{
+
+            checkPlayServices();
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
         AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
+        startService(new Intent(getBaseContext(), TaskRemoveService.class));
 
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
@@ -1244,7 +1273,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
-        if (updatedAppCMSBinder!=null && updatedAppCMSBinder.getExtraScreenType()!=null &&
+        if (updatedAppCMSBinder != null && updatedAppCMSBinder.getExtraScreenType() != null &&
                 updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
                 if (appCMSPresenter.isAppBelowMinVersion()) {
@@ -1836,10 +1865,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (updatedAppCMSBinder != null) {
-             /*
-         * casting button will show only on home page, movie page and player page so check which
-         * page will be open
-         */
+            /*
+             * casting button will show only on home page, movie page and player page so check which
+             * page will be open
+             */
             if (!castDisabled) {
                 setMediaRouterButtonVisibility(updatedAppCMSBinder.getPageId());
             }
@@ -1932,7 +1961,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         pageLoading(false);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
-         /*
+        /*
          * casting button will show only on home page, movie page and player page so check which
          * page will be open
          */
@@ -2056,7 +2085,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             /*Just to make sure that the pop-up (mini) player is dismissed when a new page is
-            * opened, so that the player isn't visible on the next page.*/
+             * opened, so that the player isn't visible on the next page.*/
             appCMSPresenter.dismissPopupWindowPlayer(false);
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
@@ -3383,5 +3412,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         });
     }
+
 
 }
