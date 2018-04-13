@@ -120,6 +120,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
             }
         }catch (Exception e){
             e.printStackTrace();
+        }finally {
+            isCastConnected = false;
+            playback = localPlayback;
         }
 
 
