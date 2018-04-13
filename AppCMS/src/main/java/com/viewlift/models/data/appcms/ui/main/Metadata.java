@@ -20,7 +20,7 @@ public class Metadata implements Serializable {
     @Expose
     boolean displayAuthor;
 
-    @SerializedName("displayPublishedDate")
+    @SerializedName("displayPublishDate")
     @Expose
     boolean displayPublishedDate;
 

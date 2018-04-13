@@ -412,15 +412,18 @@ public class CustomTVVideoPlayerView
 
     @NonNull
     private String getUnSubscribeOvelayText() {
-        String message = null;
+        String message = getResources().getString(R.string.unsubscribe_text);
+        if(!appCMSPresenter.isUserLoggedIn()){
+            message = getResources().getString(R.string.unsubscribe_text_with_login);
+        }
         if (appCMSPresenter.getAppCMSAndroid() != null
                 && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
                 && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
             message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
         }
-        if (message == null) {
+        /*if (message == null) {
             message = getResources().getString(R.string.unsubscribe_text);
-        }
+        }*/
         return message;
     }
 
@@ -962,7 +965,7 @@ public class CustomTVVideoPlayerView
         titleView.setSingleLine(true);
         titleView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         titleView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        titleView.setTextColor(Color.parseColor(Utils.getTextColor(getContext() , appCMSPresenter)));
+        titleView.setTextColor(getResources().getColor(android.R.color.white)/*Color.parseColor(Utils.getTextColor(getContext() , appCMSPresenter))*/);
         titleView.setTextSize(24);
         headerTitleContaineer.addView(titleView);
         addView(headerTitleContaineer);
