@@ -9869,7 +9869,11 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
-        for (NavigationPrimary navigationPrimary : navigation.getTabBar()) {
+        List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
+        if(getPlatformType() == PlatformType.TV){
+            navigationPrimaryList = navigation.getNavigationPrimary();
+        }
+        for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
             if (pageId != null &&
                     navigationPrimary != null &&
                     !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
