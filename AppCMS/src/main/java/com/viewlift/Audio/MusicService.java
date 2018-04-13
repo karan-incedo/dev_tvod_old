@@ -153,7 +153,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         } catch (RemoteException e) {
             throw new IllegalStateException("Could not create a MediaNotificationManager", e);
         }
-//        registerCarConnectionReceiver();
+        registerCarConnectionReceiver();
         serviceReceiver = new MusicServiceReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
@@ -271,7 +271,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onDestroy() {
 
         try {
-//            unregisterCarConnectionReceiver();
+            unregisterCarConnectionReceiver();
             // Service is being killed, so make sure we release our resources
             mPlaybackManager.handleStopRequest(null);
             mMediaNotificationManager.stopNotification();

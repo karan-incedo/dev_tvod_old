@@ -694,7 +694,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     });
                     countDownloadPlaylist++;
                     progressDialog.setProgress(countDownloadPlaylist);
-                    if (countDownloadPlaylist == adapterData.size()) {
+                    if (countDownloadPlaylist >= adapterData.size()) {
                         //appCMSPresenter.showLoadingDialog(false);
                         progressDialog.dismiss();
                     }
@@ -756,10 +756,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
                         imageButton.setOnClickListener(null);
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         break;
 
                     case STATUS_RUNNING:
@@ -776,10 +776,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
 
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
                         imageButton.setOnClickListener(null);

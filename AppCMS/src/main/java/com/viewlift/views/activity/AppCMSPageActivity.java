@@ -1795,33 +1795,40 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void pageLoading(boolean pageLoading) {
-        if (pageLoading) {
-            appCMSPresenter.setMainFragmentTransparency(0.5f);
-            appCMSFragment.setEnabled(false);
-            appCMSTabNavContainer.setEnabled(false);
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            //while progress bar loading disable user interaction
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainerItems.getChildAt(i).setEnabled(false);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (pageLoading) {
+                    appCMSPresenter.setMainFragmentTransparency(0.5f);
+                    appCMSFragment.setEnabled(false);
+                    appCMSTabNavContainer.setEnabled(false);
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    //while progress bar loading disable user interaction
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                        appCMSTabNavContainerItems.getChildAt(i).setEnabled(false);
+                    }
+                    appCMSPresenter.setPageLoading(true);
+                } else if (!loaderWaitingFor3rdPartyLogin) {
+                    appCMSPresenter.setMainFragmentTransparency(1.0f);
+                    if (appCMSPresenter.isAddOnFragmentVisible()) {
+                        appCMSPresenter.showAddOnFragment(true, 0.2f);
+                    }
+                    appCMSFragment.setEnabled(true);
+                    appCMSTabNavContainer.setEnabled(true);
+                    loadingProgressBar.setVisibility(View.GONE);
+                    //clear user interaction blocker flag
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                        appCMSTabNavContainerItems.getChildAt(i).setEnabled(true);
+                    }
+                    appCMSPresenter.setPageLoading(false);
+                }
             }
-            appCMSPresenter.setPageLoading(true);
-        } else if (!loaderWaitingFor3rdPartyLogin) {
-            appCMSPresenter.setMainFragmentTransparency(1.0f);
-            if (appCMSPresenter.isAddOnFragmentVisible()) {
-                appCMSPresenter.showAddOnFragment(true, 0.2f);
-            }
-            appCMSFragment.setEnabled(true);
-            appCMSTabNavContainer.setEnabled(true);
-            loadingProgressBar.setVisibility(View.GONE);
-            //clear user interaction blocker flag
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainerItems.getChildAt(i).setEnabled(true);
-            }
-            appCMSPresenter.setPageLoading(false);
-        }
+        });
+
     }
 
     private boolean isPageLoading() {
