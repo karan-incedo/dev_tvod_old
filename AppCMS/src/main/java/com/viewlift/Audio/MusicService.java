@@ -120,7 +120,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             isCastConnected = false;
             playback = localPlayback;
 
@@ -193,18 +193,21 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         }
     };
+
     public void updateMetaPlaylist() {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_DATA_UPDATE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_DATA_UPDATE_MESSAGE, true);
         getApplicationContext().sendBroadcast(intent);
     }
+
     public void updateMetaPlayerPage() {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_MESSAGE, true);
         getApplicationContext().sendBroadcast(intent);
     }
+
     /**
      * (non-Javadoc)A
      *
