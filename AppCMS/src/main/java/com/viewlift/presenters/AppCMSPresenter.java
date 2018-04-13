@@ -9869,7 +9869,11 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
-        for (NavigationPrimary navigationPrimary : navigation.getTabBar()) {
+        List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
+        if(getPlatformType() == PlatformType.TV){
+            navigationPrimaryList = navigation.getNavigationPrimary();
+        }
+        for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
             if (pageId != null &&
                     navigationPrimary != null &&
                     !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
@@ -13614,8 +13618,8 @@ public class AppCMSPresenter {
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
-                    splashPage = metaPage;
-                    new SoftReference<Object>(splashPage, referenceQueue);
+                    historyPage = metaPage;
+                    new SoftReference<Object>(historyPage, referenceQueue);
                 }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
@@ -16411,13 +16415,6 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public void setLastPauseState(boolean isReload) {
-        isLastStatePlaying = isReload;
-    }
-
-    public boolean isLastStatePause() {
-        return isLastStatePlaying;
-    }
 
     public boolean isAllPlaylistAudioDownloaded(List<ContentDatum> contentData) {
         boolean isPlaylistDownloaded = true;
@@ -16806,7 +16803,12 @@ public class AppCMSPresenter {
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
 
-                iv2.setImageBitmap(b);
+                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        iv2.setImageBitmap(b);
+                    }
+                });
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

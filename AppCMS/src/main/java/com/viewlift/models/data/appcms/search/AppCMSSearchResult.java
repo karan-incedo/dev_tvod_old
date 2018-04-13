@@ -8,6 +8,7 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.vimeo.stag.UseStag;
 
 import java.util.List;
@@ -34,17 +35,17 @@ public class AppCMSSearchResult {
         this.seasons = seasons;
     }
 
-    public List<String> getAudioList() {
+    public List<AudioList> getAudioList() {
         return audioList;
     }
 
-    public void setAudioList(List<String> audioList) {
+    public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
 
     @SerializedName("audioList")
     @Expose
-    List<String> audioList = null;
+    List<AudioList> audioList = null;
 
     public Gist getGist() {
         return gist;
