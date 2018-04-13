@@ -111,7 +111,7 @@ public class PlaybackControlsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
         try {
             connectMediaService();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         mPlayPause = rootView.findViewById(R.id.play_pause);
@@ -169,10 +169,12 @@ public class PlaybackControlsFragment extends Fragment {
         Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-        MediaMetadataCompat metadata = controller.getMetadata();
-        if (metadata != null) {
-            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                    metadata);
+        if (controller != null) {
+            MediaMetadataCompat metadata = controller.getMetadata();
+            if (metadata != null) {
+                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                        metadata);
+            }
         }
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
