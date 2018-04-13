@@ -123,6 +123,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         }finally {
             isCastConnected = false;
             playback = localPlayback;
+
         }
 
 
