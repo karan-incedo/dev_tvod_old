@@ -108,14 +108,18 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         //switch playback instance to local or casting playback based on casting device status
 
-        CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-                .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected()) {
-            isCastConnected = true;
-            playback = castPlayback;
-        } else {
-            isCastConnected = false;
-            playback = localPlayback;
+        try {
+            CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                    .getCurrentCastSession();
+            if (castSession != null && castSession.isConnected()) {
+                isCastConnected = true;
+                playback = castPlayback;
+            } else {
+                isCastConnected = false;
+                playback = localPlayback;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
 
@@ -224,10 +228,14 @@ public class MusicService extends MediaBrowserServiceCompat implements
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
 
-        CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-                .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected()) {
-            mRemoteMediaClient = castSession.getRemoteMediaClient();
+        try {
+            CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                    .getCurrentCastSession();
+            if (castSession != null && castSession.isConnected()) {
+                mRemoteMediaClient = castSession.getRemoteMediaClient();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         //if audio is casting to remote media client than dont stop the service
