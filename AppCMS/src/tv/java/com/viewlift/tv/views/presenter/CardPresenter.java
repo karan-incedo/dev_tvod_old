@@ -383,9 +383,12 @@ public class CardPresenter extends Presenter {
                                         && null != contentData.getGist()
                                         && null != contentData.getGist().getPublishDate()) {
                                     try {
-                                        Date publishedDate = new Date(contentData.getGist().getPublishDate());
+                                       /* Date publishedDate = new Date(contentData.getGist().getPublishDate());
                                         SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
-                                        date = spf.format(publishedDate);
+                                        date = spf.format(publishedDate);*/
+                                        date = mAppCmsPresenter.getDateFormat(
+                                                Long.parseLong(contentData.getGist().getPublishDate()),
+                                                "MMMM dd");
                                     } catch (Exception e) {
                                     }
                                 }
