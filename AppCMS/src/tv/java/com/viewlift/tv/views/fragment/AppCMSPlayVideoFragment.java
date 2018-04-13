@@ -614,7 +614,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
                                                         if (!appCMSPresenter.isUserLoggedIn()) {
 
-                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            String dialogMessage = getString(R.string.unsubscribe_text_with_login);
                                                             String positiveButtonText = getString(R.string.app_cms_login);
                                                             if (appCMSPresenter.getAppCMSAndroid() != null
                                                                     && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null) {
