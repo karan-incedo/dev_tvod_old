@@ -198,6 +198,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     }
 
+    UpdateMetaDataReceiver updateRecevier;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -298,6 +300,16 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         setTypeFace(getContext(), trackYear, getContext().getString(R.string.opensans_semibold_ttf));
         setTypeFace(getContext(), albumName, getContext().getString(R.string.opensans_bold_ttf));
 
+
+        updateRecevier = new UpdateMetaDataReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioServiceHelper.APP_CMS_DATA_UPDATE_ACTION);
+        try {
+            getActivity().registerReceiver(updateRecevier, intentFilter);
+
+        } catch (Exception e) {
+            //
+        }
         return rootView;
     }
 
@@ -395,31 +407,37 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
 
     void audioPreview(boolean isPlay) {
-        if (getActivity() != null
-                && MediaControllerCompat.getMediaController(getActivity()) != null
-                && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
-            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
-            String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
-            if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
-                if (isPlay) {
-                    controls.play();
-                }
-                scheduleSeekbarUpdate();
-            } else {
-                if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
-                        && appCMSPresenter.getAppCMSMain().getFeatures() != null
-                        && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
-                    if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
-                        if ((currentProgess) >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
-                            stopSeekbarUpdate();
-                            showEntitleMentDialog();
-                        }
+        try {
+            if (getActivity() != null
+                    && MediaControllerCompat.getMediaController(getActivity()) != null
+                    && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
+                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+                MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
+                String isFree = (String) metadata.getText(AudioPlaylistHelper.CUSTOM_METADATA_IS_FREE);
+                if (((appCMSPresenter.isUserSubscribed()) && appCMSPresenter.isUserLoggedIn()) || Boolean.valueOf(isFree)) {
+                    if (isPlay) {
+                        controls.play();
                     }
+                    scheduleSeekbarUpdate();
                 } else {
-                    showEntitleMentDialog();
+                    if (appCMSPresenter != null && appCMSPresenter.getAppCMSMain() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures() != null
+                            && appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview() != null) {
+                        if (appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().isAudioPreview()) {
+                            if ((currentProgess) >= Integer.parseInt(appCMSPresenter.getAppCMSMain().getFeatures().getAudioPreview().getLength().getMultiplier())) {
+                                stopSeekbarUpdate();
+                                showEntitleMentDialog();
+                            }
+                        }
+                    } else {
+                        showEntitleMentDialog();
+                    }
                 }
             }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -432,31 +450,49 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 getActivity(), token);
-        if (mediaController.getMetadata() == null) {
-            if (connectionTry == 0 && mMediaBrowser != null) {
-                mMediaBrowser.connect();
-            } else {
-                getActivity().finish();
-            }
-            connectionTry++;
-            return;
-        }
+//        if (mediaController.getMetadata() == null) {
+//            if (connectionTry == 0 && mMediaBrowser != null ) {
+//                try {
+//                    mMediaBrowser.disconnect();
+//                    mMediaBrowser.connect();
+//                }catch(Exception e){
+//
+//                }
+//            } else {
+//                getActivity().finish();
+//            }
+//            connectionTry++;
+//            return;
+//        }
         MediaControllerCompat.setMediaController(getActivity(), mediaController);
         mediaController.registerCallback(mCallback);
-        PlaybackStateCompat state = mediaController.getPlaybackState();
+        PlaybackStateCompat state = null;
+        if (mediaController.getPlaybackState() != null) {
+            state = mediaController.getPlaybackState();
 
-        updatePlaybackState(state);
-        MediaMetadataCompat metadata = mediaController.getMetadata();
-        if (metadata != null) {
-            updateMediaDescription(metadata);
-            updateDuration(metadata);
+        } else {
+            System.out.println("Check bt status null-");
         }
+        MediaMetadataCompat metadata = null;
+        updatePlaybackState(state);
+        if (mediaController != null && mediaController.getMetadata() != null) {
+            metadata = mediaController.getMetadata();
+            if (metadata != null) {
+                updateMediaDescription(metadata);
+                updateDuration(metadata);
+            }
+        } else {
+            System.out.println("Check bt status null-");
+
+        }
+
         updateProgress();
         if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
             scheduleSeekbarUpdate();
         }
-        checkSubscription(metadata);
+        if (metadata != null)
+            checkSubscription(metadata);
     }
 
     private void updateFromParams(Intent intent) {
@@ -465,6 +501,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
             if (description != null) {
                 updateMediaDescription(description);
+                updateDuration(description);
+                onUpdateMetaChange.updateMetaData(description);
+                System.out.println("Decription not null");
+                getActivity().startService(new Intent(getActivity(), MusicService.class));
             }
         }
     }
@@ -518,6 +558,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         getActivity().unregisterReceiver(recevierPreview);
         getActivity().getContentResolver().unregisterContentObserver(volumeObserver);
         appCMSPresenter.setCurrentPlayingVideo(null);
+        getActivity().unregisterReceiver(updateRecevier);
 
     }
 
@@ -813,6 +854,26 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         @Override
         public Resource<Bitmap> transform(@NonNull Context context, @NonNull Resource<Bitmap> resource, int outWidth, int outHeight) {
             return super.transform(resource, outWidth, outHeight);
+        }
+    }
+
+    private class UpdateMetaDataReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("TAsk Stopped stop on receiver");
+
+            if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_DATA_UPDATE_MESSAGE)) {
+                MediaMetadataCompat metadata = null;
+                if (AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                    currentProgess = 0;
+                    updateMediaDescription(metadata);
+                    updateDuration(metadata);
+//                    onUpdateMetaChange.updateMetaData(metadata);
+                }
+
+            }
         }
     }
 }
