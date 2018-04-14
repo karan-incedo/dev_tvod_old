@@ -4507,7 +4507,7 @@ public class AppCMSPresenter {
      *
      * @param contentDatum
      * @param resultAction1
-     * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
+     * @param            In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
     public synchronized void editDownloadFromPlaylist(final ContentDatum contentDatum,
                                                       final Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
@@ -16317,7 +16317,7 @@ public class AppCMSPresenter {
      * Last position of playing audio item will save in following conditions:-
      * uf user kill the app , if video starts to play while audio is playing
      *
-     * @param saveLastAudioPosition
+     * @param
      */
     public void stopAudioServices() {
         Intent intent = new Intent();
