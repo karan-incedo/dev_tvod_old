@@ -1578,8 +1578,14 @@ public class AppCMSPresenter {
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(() -> {
                     if (realmController != null) {
-                        for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
-                            updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                        try {
+                            for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
+                                updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -6610,6 +6616,7 @@ public class AppCMSPresenter {
     }
 
 
+
     public void getAudioDetailPlaylist(String audioId, long mCurrentPlayerPosition,
                                        AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
@@ -6745,7 +6752,7 @@ public class AppCMSPresenter {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
                                 if (controller != null) {
-                                    MediaMetadataCompat metadata = controller.getMetadata();
+                                    MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getGist().getId());//controller.getMetadata();
                                     if (metadata != null) {
                                         intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
                                                 metadata);
@@ -9889,7 +9896,11 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
-        for (NavigationPrimary navigationPrimary : navigation.getTabBar()) {
+        List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
+        if (getPlatformType() == PlatformType.TV) {
+            navigationPrimaryList = navigation.getNavigationPrimary();
+        }
+        for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
             if (pageId != null &&
                     navigationPrimary != null &&
                     !TextUtils.isEmpty(navigationPrimary.getPageId()) &&

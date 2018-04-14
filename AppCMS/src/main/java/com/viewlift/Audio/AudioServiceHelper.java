@@ -36,6 +36,14 @@ public class AudioServiceHelper {
     public static String APP_CMS_PLAYBACK_UPDATE_MESSAGE = "app_cms_playback_update_message";
     public static String APP_CMS_NOTIFICATION_AUDIO_SERVICE_MESSAGE = "app_cms_notification_audio_service_message";
     public static String APP_CMS_NOTIFICATION_AUDIO_SERVICE_ACTION = "app_cms_notification_audio_service_action";
+
+
+    public static String APP_CMS_DATA_UPDATE_ACTION = "app_cms_data_update_action";
+    public static String APP_CMS_DATA_UPDATE_MESSAGE = "app_cms_data_update_message";
+
+    public static String APP_CMS_DATA_PLAYLIST_UPDATE_ACTION = "app_cms_data_playlist_update_action";
+    public static String APP_CMS_DATA_PLAYLIST_UPDATE_MESSAGE = "app_cms_data_playlist_update_message";
+
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
             audioHelper = new AudioServiceHelper();
@@ -94,9 +102,9 @@ public class AudioServiceHelper {
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(mActivity, token);
-        if(mediaController.getMetadata()==null){
+        if (mediaController.getMetadata() == null) {
             System.out.println("Metadata null");
-        }else{
+        } else {
             System.out.println("Metadata not null");
 
         }
@@ -153,7 +161,6 @@ public class AudioServiceHelper {
     }
 
 
-
     protected void hidePlaybackControls() {
         try {
             if (mActivity != null && !mActivity.isFinishing()) {
@@ -182,7 +189,7 @@ public class AudioServiceHelper {
     protected boolean shouldShowControls() {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
         if (mediaController == null ||
-                mediaController.getMetadata() == null ||
+//                mediaController.getMetadata() == null ||
                 mediaController.getPlaybackState() == null) {
             return false;
         }

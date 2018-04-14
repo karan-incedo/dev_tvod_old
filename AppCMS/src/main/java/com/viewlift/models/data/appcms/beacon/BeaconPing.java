@@ -106,7 +106,10 @@ public class BeaconPing extends Thread {
                         }
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                //Log.e(TAG, "BeaconPingThread sleep interrupted");
+            }catch (InterruptedException e) {
                 //Log.e(TAG, "BeaconPingThread sleep interrupted");
             }
         }

@@ -145,29 +145,29 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.appCMSAndroidModules = appCMSAndroidModules;
         serviceReceiver = new updateDataReceiver();
 
-
-
     }
-//    private void progressDialogInit(){
-//        progressDialog = new ProgressDialog(mContext,R.style.AppCMSProgressDialogStyle);
-//
-//
-//        //Set the progress dialog to display a horizontal progress bar
-//        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//        //Set the dialog title to 'Loading...'
-//        progressDialog.setTitle("Download Playlist...");
-//        //Set the dialog message to 'Loading application View, please wait...'
-//        progressDialog.setMessage("Adding playlist in download queue, please wait...");
-//        //This dialog can't be canceled by pressing the back key
-//        progressDialog.setCancelable(false);
-//        //This dialog isn't indeterminate
-//        progressDialog.setIndeterminate(false);
-//        //The maximum number of items is 100
-//        progressDialog.setMax(adapterData.size());
-//        //Set the current progress to zero
-//        progressDialog.setProgress(countDownloadPlaylist);
-//        progressDialog.show();
-//    }
+
+    private void progressDialogInit() {
+        progressDialog = new ProgressDialog(mContext, R.style.AppCMSProgressDialogStyle);
+
+
+        //Set the progress dialog to display a horizontal progress bar
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //Set the dialog title to 'Loading...'
+        progressDialog.setTitle("Download Playlist...");
+        //Set the dialog message to 'Loading application View, please wait...'
+        progressDialog.setMessage("Adding playlist in download queue, please wait...");
+        //This dialog can't be canceled by pressing the back key
+        progressDialog.setCancelable(false);
+        //This dialog isn't indeterminate
+        progressDialog.setIndeterminate(false);
+        //The maximum number of items is 100
+        progressDialog.setMax(adapterData.size());
+        //Set the current progress to zero
+        progressDialog.setProgress(countDownloadPlaylist);
+        progressDialog.show();
+    }
+
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -466,10 +466,13 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         });
     }
 
-    private  int countDownloadPlaylist= 0;
+    private int countDownloadPlaylist = 0;
+
     private void getPlaylistAudioItems() {
         countDownloadPlaylist = 0;
-        appCMSPresenter.showLoadingDialog(true);
+        progressDialogInit();
+        //appCMSPresenter.showLoadingDialog(true);
+
         isPlaylistDownloading = true;
         for (int i = 0; i < allViews.length; i++) {
             if (allViews[i] != null && allViews[i].getChildItems() != null) {
@@ -530,23 +533,28 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     }
 
     void playlistAudioDownload(ImageButton download, String id, boolean playlistDowload) {
-        appCMSPresenter.getAudioDetailPlaylist(id,
-                0, null, false, false, 0,
-                new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
-                        false,
-                        false,
-                        null,
-                        id,
-                        id,
-                        null,
-                        id,
-                        false, null) {
-                    @Override
-                    public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
-                        AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
-                        updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
-                    }
-                });
+
+        if (appCMSPresenter.isVideoDownloaded(id)|| appCMSPresenter.isVideoDownloading(id)){
+            countDownloadPlaylist++;
+        }else {
+            appCMSPresenter.getAudioDetailPlaylist(id,
+                    0, null, false, false, 0,
+                    new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
+                            false,
+                            false,
+                            null,
+                            id,
+                            id,
+                            null,
+                            id,
+                            false, null) {
+                        @Override
+                        public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
+                            updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
+                        }
+                    });
+        }
 
     }
 
@@ -567,6 +575,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
                         updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
+
+
                     }
                 });
 
@@ -632,29 +642,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     }
 
-    public class DownloadUpdate {
-        private boolean isClick;
-
-        public boolean isClick() {
-            return isClick;
-        }
-
-        public void setClick(boolean click) {
-            isClick = click;
-        }
-
-        public boolean isDowloading() {
-            return isDowloading;
-        }
-
-        public void setDowloading(boolean dowloading) {
-            isDowloading = dowloading;
-        }
-
-        private boolean isDowloading;
-
-    }
-
 
     /**
      * This class has been created to updated the Download Image Action and Status
@@ -706,10 +693,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         }
                     });
                     countDownloadPlaylist++;
-                    //progressDialog.setProgress(countDownloadPlaylist);
-                    if (countDownloadPlaylist == adapterData.size()){
+                    progressDialog.setProgress(countDownloadPlaylist);
+                    if (countDownloadPlaylist >= adapterData.size()) {
                         //appCMSPresenter.showLoadingDialog(false);
-                        //progressDialog.dismiss();
+                        progressDialog.dismiss();
                     }
 
 
@@ -769,10 +756,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
                         imageButton.setOnClickListener(null);
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         break;
 
                     case STATUS_RUNNING:
@@ -789,10 +776,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             }
                         });
 
-                        if (countDownloadPlaylist == adapterData.size()) {
-                            System.out.println("stop loader-" + adapterData.size());
-                            appCMSPresenter.showLoadingDialog(false);
-                        }
+//                        if (countDownloadPlaylist == adapterData.size()) {
+//                            System.out.println("stop loader-" + adapterData.size());
+//                            appCMSPresenter.showLoadingDialog(false);
+//                        }
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
                         imageButton.setOnClickListener(null);

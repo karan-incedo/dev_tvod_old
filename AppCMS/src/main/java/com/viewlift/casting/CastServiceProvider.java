@@ -268,13 +268,16 @@ public class CastServiceProvider {
     private void initChromecast() {
 
         mCastHelper = CastHelper.getInstance(mContext);
-        mCastHelper.initCastingObj();
         if (mCastSession == null) {
             mCastSession = CastContext.getSharedInstance(mContext).getSessionManager()
                     .getCurrentCastSession();
         }
-        mCastHelper.setCallBackListener(callBackCastHelper);
-        mCastHelper.setCastSessionManager();
+
+        if (mCastHelper != null){
+            mCastHelper.initCastingObj();
+            mCastHelper.setCallBackListener(callBackCastHelper);
+            mCastHelper.setCastSessionManager();
+        }
     }
 
     private void initRoku() {

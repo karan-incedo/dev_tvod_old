@@ -32,7 +32,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final AppCMSPresenter appCMSPresenter;
     private final String title;
     private final String fullText;
-    private final boolean forceMaxLines;
+    private boolean forceMaxLines;
     private final int moreForegroundColor;
     private final boolean useItalics;
 
@@ -58,6 +58,10 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                 textView.getLineHeight();
         if (textView.getLineCount() < linesCompletelyVisible) {
             linesCompletelyVisible = textView.getLineCount();
+            //Resolved AF-11
+            if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                forceMaxLines = true;
+            }
         }
         if (!forceMaxLines && textView.getLayout() != null) {
             int lineEnd = textView.getLayout().getLineVisibleEnd(linesCompletelyVisible - 1) -
