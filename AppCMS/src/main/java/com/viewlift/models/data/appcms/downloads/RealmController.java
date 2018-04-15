@@ -120,7 +120,7 @@ public class RealmController {
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
             Log.e("RealmController","LoggedIn user ID :"+userId);
-            return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
+            return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
             e.printStackTrace();
         }
