@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.PlaybackManager;
@@ -656,8 +657,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 data.getGist().getContentType() != null &&
                 data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
             /*play audio if already downloaded*/
-            //playDownloadedAudio(data);
+            appCMSPresenter.showLoadingDialog(true);
             playPlaylistItem(data,context,position);
+            appCMSPresenter.showLoadingDialog(false);
 
             return;
         }
@@ -831,6 +833,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void loadImage(Context context, String url, ImageView imageView) {
         Glide.with(context)
                 .load(Uri.decode(url))
+                .apply(new RequestOptions().override(imageView.getWidth(),imageView.getHeight()).placeholder(R.drawable.vid_image_placeholder_land))
                 .into(imageView);
     }
 
