@@ -396,7 +396,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
 
         if (view == playlist) {
-            if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() != null) {
+            if (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null &&
+                    AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(getString(R.string.app_cms_page_download_audio_playlist_key))) {
+               // appCMSPresenter.navigateToDownloadPage();
+                //getActivity().finish();
+            }else if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() != null) {
                 appCMSPresenter.navigatePlayListPageWithPreLoadData(AudioPlaylistHelper.getInstance().getCurrentPlaylistData());
                 getActivity().finish();
             } else {

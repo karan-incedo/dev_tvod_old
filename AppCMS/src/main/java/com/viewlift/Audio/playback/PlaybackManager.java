@@ -370,7 +370,8 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected() &&
+                    !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
                 onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
                 AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
 
@@ -383,7 +384,8 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToPrevious() {
-            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected()) {
+            if (!AudioPlaylistHelper.getInstance().getAppCmsPresenter().isNetworkConnected() &&
+                    !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
                 onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
                 AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(true);
 
