@@ -91,6 +91,7 @@ import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -2062,7 +2063,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } */ else {
+        }  */else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2554,7 +2555,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                    /*AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
                             component.getLayout(),
@@ -2566,6 +2567,33 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
                             appCMSAndroidModules);
+*/
+                    CollectionGridItemViewCreator collectionGridItemViewCreator =
+                            new CollectionGridItemViewCreator(this,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    appCMSPresenter,
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    settings,
+                                    jsonValueKeyMap,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    true,
+                                    true,
+                                    viewType,
+                                    false,
+                                    false);
+
+                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
+                            collectionGridItemViewCreator,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
 
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
@@ -2605,7 +2633,7 @@ public class ViewCreator {
                                         LinearLayoutManager.VERTICAL,
                                         false));
 
-                        AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                        /*AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -2616,7 +2644,33 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType,
-                                appCMSAndroidModules);
+                                appCMSAndroidModules);*/
+                        CollectionGridItemViewCreator collectionGridItemViewCreator =
+                                new CollectionGridItemViewCreator(this,
+                                        parentLayout,
+                                        false,
+                                        component,
+                                        appCMSPresenter,
+                                        moduleAPI,
+                                        appCMSAndroidModules,
+                                        settings,
+                                        jsonValueKeyMap,
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        true,
+                                        true,
+                                        viewType,
+                                        false,
+                                        false);
+
+                        AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
+                                collectionGridItemViewCreator,
+                                moduleAPI != null ? moduleAPI.getContentData() : null,
+                                component.getComponents(),
+                                appCMSPresenter,
+                                jsonValueKeyMap,
+                                viewType,
+                                (RecyclerView) componentViewResult.componentView);
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
