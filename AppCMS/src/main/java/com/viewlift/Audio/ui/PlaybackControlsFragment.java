@@ -172,29 +172,36 @@ public class PlaybackControlsFragment extends Fragment {
             };
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
-        MediaControllerCompat mediaController = new MediaControllerCompat(getActivity(), token);
-        MediaControllerCompat.setMediaController(getActivity(), mediaController);
-        onConnected();
+        try {
+            MediaControllerCompat mediaController = new MediaControllerCompat(getActivity(), token);
+            MediaControllerCompat.setMediaController(getActivity(), mediaController);
+            onConnected();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
     private void launchAudioPlayer() {
-        Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-        MediaMetadataCompat metadata = null;
-        if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
-            metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
-        } else {
-            metadata = controller.getMetadata();
+        try {
+            Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+            MediaMetadataCompat metadata = null;
+            if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                metadata = controller.getMetadata();
+            }
+            if (metadata != null) {
+                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                        metadata);
+            }
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        if (metadata != null) {
-            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                    metadata);
-        }
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-
     }
 
     @Override

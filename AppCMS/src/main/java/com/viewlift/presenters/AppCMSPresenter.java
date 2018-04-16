@@ -4507,7 +4507,7 @@ public class AppCMSPresenter {
      *
      * @param contentDatum
      * @param resultAction1
-     * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
+     * @param In            future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
     public synchronized void editDownloadFromPlaylist(final ContentDatum contentDatum,
                                                       final Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
@@ -5730,6 +5730,14 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+
+                }).start();
+
                 for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
                     contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
                 }
@@ -6597,7 +6605,6 @@ public class AppCMSPresenter {
     }
 
 
-
     public void getAudioDetailPlaylist(String audioId, long mCurrentPlayerPosition,
                                        AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
@@ -6666,6 +6673,9 @@ public class AppCMSPresenter {
                         } else {
                             if (finalTryCount < 3) {
                                 getAudioDetailPlaylist(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
+                            }else{
+                                appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
+
                             }
                         }
 
@@ -16317,7 +16327,7 @@ public class AppCMSPresenter {
      * Last position of playing audio item will save in following conditions:-
      * uf user kill the app , if video starts to play while audio is playing
      *
-     * @param saveLastAudioPosition
+     * @param
      */
     public void stopAudioServices() {
         Intent intent = new Intent();

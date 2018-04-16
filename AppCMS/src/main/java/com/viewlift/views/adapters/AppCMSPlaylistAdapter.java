@@ -447,15 +447,14 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     Thread th = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable()
-                            {
-                                public void run()
-                                {
+                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                                public void run() {
                                     try {
                                         getPlaylistAudioItems();
                                     } catch (Exception e) {
                                         Log.e("ThreadException ", e.toString());
-                                    }                                }
+                                    }
+                                }
                             });
 
                         }
@@ -511,32 +510,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
             }
         }
-//        Iterator iterator=appCMSPresenter.playlistDowloadValues.entrySet().iterator();
-//        while(iterator.hasNext()){
-//            Map.Entry<String,AppCMSPresenter.PlaylistDetails> pairs = (Map.Entry<String, AppCMSPresenter.PlaylistDetails>) iterator.next();
-//            AppCMSPresenter.PlaylistDetails detailsPlay= pairs.getValue();
-////                    String key= String.valueOf(iterator.next());
-////                    AppCMSPresenter.PlaylistDetails detailsPlay=appCMSPresenter.playlistDowloadValues.get(key);
-//            Handler handler = new Handler();
-//
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    System.out.println("response receive for-"+appCMSAudioDetailResult.getGist().getTitle());
-//
-//                    updateDownloadImageAndStartDownloadProcess(detailsPlay.getData(), detailsPlay.getImgButton(), true);
-//                }
-//            }, 500);
-//
-////            playlistAudioDownload(detailsPlay.getImgButton(),pairs.getKey(),true);
-//        }
+
     }
 
     void playlistAudioDownload(ImageButton download, String id, boolean playlistDowload) {
 
-        if (appCMSPresenter.isVideoDownloaded(id)|| appCMSPresenter.isVideoDownloading(id)){
+        if (appCMSPresenter.isVideoDownloaded(id) || appCMSPresenter.isVideoDownloading(id)) {
             countDownloadPlaylist++;
-        }else {
+            progressDialog.setProgress(countDownloadPlaylist);
+            if (countDownloadPlaylist >= adapterData.size()) {
+                //appCMSPresenter.showLoadingDialog(false);
+                progressDialog.dismiss();
+            }
+        } else {
             appCMSPresenter.getAudioDetailPlaylist(id,
                     0, null, false, false, 0,
                     new AppCMSPresenter.AppCMSAudioDetailAPIAction(false,
@@ -555,7 +541,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         }
                     });
         }
-
+        progressDialog.setProgress(countDownloadPlaylist);
+        if (countDownloadPlaylist >= adapterData.size()) {
+            //appCMSPresenter.showLoadingDialog(false);
+            progressDialog.dismiss();
+        }
     }
 
     synchronized void audioDownload(ImageButton download, ContentDatum data, boolean playlistDowload) {
@@ -573,8 +563,16 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     @Override
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
+                        if(appCMSAudioDetailResult!=null && data!=null && data.getGist()!=null){
                         AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(data.getGist().getId());
-                        updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);
+                        updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload);}
+                        else{
+                            countDownloadPlaylist++;
+                            if (countDownloadPlaylist >= adapterData.size()) {
+                                //appCMSPresenter.showLoadingDialog(false);
+                                progressDialog.dismiss();
+                            }
+                        }
 
 
                     }
