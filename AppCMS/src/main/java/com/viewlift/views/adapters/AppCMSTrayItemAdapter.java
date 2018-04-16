@@ -974,10 +974,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             break;
 
                         case PAGE_API_DESCRIPTION:
+                        case PAGE_HISTORY_DESCRIPTION_KEY:
+                        case PAGE_WATCHLIST_DESCRIPTION_KEY:
+                        case PAGE_DOWNLOAD_DESCRIPTION_KEY:
                             viewHolder.appCMSContinueWatchingDescription.setTextColor(textColor);
-                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                           /* if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
-                            }
+                            }*/
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
