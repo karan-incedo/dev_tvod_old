@@ -23,7 +23,11 @@ public class DownloadTabSelectorBus {
      * Pass any event down to event listeners.
      */
     public void setTab(Object object) {
-        subject.onNext(object);
+        try{
+            subject.onNext(object);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -7651,11 +7651,13 @@ public class AppCMSPresenter {
                                 userIdentity -> {
                                     try {
                                         Observable.just(userIdentity)
+                                                .observeOn(AndroidSchedulers.mainThread())
                                                 .onErrorResumeNext(throwable -> Observable.empty())
                                                 .subscribe(userIdentityAction);
                                     } catch (Exception e) {
                                         //Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
                                         Observable.just((UserIdentity) null)
+                                                .observeOn(AndroidSchedulers.mainThread())
                                                 .onErrorResumeNext(throwable -> Observable.empty())
                                                 .subscribe(userIdentityAction);
                                     }
@@ -7663,6 +7665,7 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
                         //Log.e(TAG, "Error refreshing identity: " + e.getMessage());
                         Observable.just((UserIdentity) null)
+                                .observeOn(AndroidSchedulers.mainThread())
                                 .onErrorResumeNext(throwable -> Observable.empty())
                                 .subscribe(userIdentityAction);
                     }
