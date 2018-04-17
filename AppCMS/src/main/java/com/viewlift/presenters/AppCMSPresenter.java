@@ -3568,6 +3568,10 @@ public class AppCMSPresenter {
         }
     }
 
+    private void initiateSSLCommerzPurchase() {
+
+    }
+
     private void initiateCCAvenuePurchase() {
         //Log.v("authtoken", getAuthToken());
         //Log.v("apikey", apikey);
@@ -3613,6 +3617,21 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
         Log.v("useCCAve", useCCAve + "");
         return useCCAve;
+    }
+
+    private boolean useSSLCommerz() {
+        boolean useSSLCommerz = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+                (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
+                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                !TextUtils.isEmpty(countryCode) &&
+                appCMSMain != null &&
+                appCMSMain.getPaymentProviders() != null &&
+                appCMSMain.getPaymentProviders().getSslCommerz() != null &&
+                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
+                appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
+        return useSSLCommerz;
     }
 
     public void initiateItemPurchase(boolean purchaseFromRestore) {
@@ -11524,6 +11543,9 @@ public class AppCMSPresenter {
                             if (useCCAvenue()) {
                                 //Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
+                            } else if (useSSLCommerz()) {
+                                //Log.d(TAG, "Initiating SSL Commerz purchase");
+                                initiateSSLCommerzPurchase();
                             } else {
                                 setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             }
@@ -16791,7 +16813,7 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                Bitmap b     = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);
                 Paint paint = new Paint();
 
