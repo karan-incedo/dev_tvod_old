@@ -343,10 +343,17 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
 
                         } else {
-                            placeholder = R.drawable.vid_image_placeholder_land;
+
 
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                                placeholder = R.drawable.vid_image_placeholder_square;
+                            } else {
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                placeholder = R.drawable.vid_image_placeholder_land;
+                            }
+
                         }
                     }
                     if (data.getGist() != null &&
@@ -681,6 +688,10 @@ public class CollectionGridItemView extends BaseView {
                         int radiusDifference = 5;
                         if (BaseView.isTablet(context)) {
                             radiusDifference = 2;
+                            if(appCMSUIcomponentViewType==AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY){
+                                radiusDifference=4;
+                            }
+
                         }
                         ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                                 updateDownloadImageIconActionMap.get(data.getGist().getId());
@@ -752,10 +763,10 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             }
                             if (BaseView.isTablet(view.getContext())) {
-                                if(isLandscape(getContext()) == true) {
+                                if (isLandscape(getContext()) == true) {
                                     ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                     ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                }else{
+                                } else {
                                     setBorder(((TextView) view));
                                     ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                                 }
@@ -763,10 +774,10 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
-                        }else{
+                        } else {
                             if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == true) {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                            }else{
+                            } else {
                                 ((TextView) view).setTextColor(Color.parseColor(
                                         childComponent.getTextColor()));
                             }
@@ -796,7 +807,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                         if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context) == true) {
                             ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        }else{
+                        } else {
                             ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                         }
 
@@ -901,15 +912,19 @@ public class CollectionGridItemView extends BaseView {
                         final int SECONDS_PER_MINS = 60;
                         if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                             StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ")
-                                    .append(context.getString(R.string.min_abbreviation));
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
+                            if (appCMSUIcomponentViewType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                                runtimeText.append(" ")
+                                        .append(context.getString(R.string.min_abbreviation));
+                            }
                             ((TextView) view).setText(runtimeText);
                         } else {
                             StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
-                                    .append(" ")
-                                    .append(context.getString(R.string.mins_abbreviation));
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
+                            if (appCMSUIcomponentViewType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                                runtimeText.append(" ")
+                                        .append(context.getString(R.string.mins_abbreviation));
+                            }
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
