@@ -3570,6 +3570,10 @@ public class AppCMSPresenter {
         }
     }
 
+    private void initiateSSLCommerzPurchase() {
+
+    }
+
     private void initiateCCAvenuePurchase() {
         //Log.v("authtoken", getAuthToken());
         //Log.v("apikey", apikey);
@@ -3615,6 +3619,21 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
         Log.v("useCCAve", useCCAve + "");
         return useCCAve;
+    }
+
+    private boolean useSSLCommerz() {
+        boolean useSSLCommerz = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+                (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
+                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                !TextUtils.isEmpty(countryCode) &&
+                appCMSMain != null &&
+                appCMSMain.getPaymentProviders() != null &&
+                appCMSMain.getPaymentProviders().getSslCommerz() != null &&
+                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
+                appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
+        return useSSLCommerz;
     }
 
     public void initiateItemPurchase(boolean purchaseFromRestore) {
@@ -5445,7 +5464,7 @@ public class AppCMSPresenter {
             downloadTimerTask.imageView = imageView;
 
             if (!downloadTimerTask.running) {
-                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 4000);
+                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 3000);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
@@ -5607,20 +5626,11 @@ public class AppCMSPresenter {
                 deleteMsg,
                 true, () -> {
                     if (deleteAllFiles) {
-                        try {
-                            progressDialogInit(realmController.getDownloadesByUserId(getLoggedInUser()).size());
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
-                        int i=0;
-                        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
-                            i++;
-                            progressDialogDeleteDownload.setProgress(i);
+                        for (DownloadVideoRealm downloadVideoRealm :
+                                realmController.getDownloadesByUserId(getLoggedInUser())) {
                             removeDownloadedFile(downloadVideoRealm.getVideoId());
                         }
-                        progressDialogDeleteDownload.dismiss();
                     } else {
-
                         for (DownloadVideoRealm downloadVideoRealm :
                                 realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
                             removeDownloadedFile(downloadVideoRealm.getVideoId());
@@ -11556,6 +11566,9 @@ public class AppCMSPresenter {
                             if (useCCAvenue()) {
                                 //Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
+                            } else if (useSSLCommerz()) {
+                                //Log.d(TAG, "Initiating SSL Commerz purchase");
+                                initiateSSLCommerzPurchase();
                             } else {
                                 setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             }
@@ -16840,7 +16853,7 @@ public class AppCMSPresenter {
                 paint.setStrokeWidth(iv2.getWidth() / 10);
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setAntiAlias(true);
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - paint.getStrokeWidth()/2, paint);// Fix SVFA-1561 changed  -2 to -7
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - radiusDifference, paint);// Fix SVFA-1561 changed  -2 to -7
 
 //                if (isTablet) {
 //                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);
@@ -16870,7 +16883,7 @@ public class AppCMSPresenter {
                     public void run() {
                         iv2.setImageBitmap(b);
                     }
-                });*/
+                });
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

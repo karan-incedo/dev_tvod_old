@@ -1242,6 +1242,7 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_PLAYLIST_AUDIO_ARTIST_TITLE:
                 case PAGE_THUMBNAIL_TITLE_KEY:
                    /* if (jsonValueKeyMap.get(viewType) != null &&
                             (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
@@ -1261,11 +1262,15 @@ public abstract class BaseView extends FrameLayout {
 
                     if (jsonValueKeyMap.get(viewType) != null &&
                             (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (0 < thumbnailHeight && 0 < thumbnailWidth) {
-                            if (thumbnailHeight < thumbnailWidth) {
+                            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
+                                int heightByRatio = (int) ((float) thumbnailWidth * 1.0f / 1.0f);
+                                tm = heightByRatio + 4;
+                            }else if (thumbnailHeight < thumbnailWidth) {
                                 int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
                                 tm = heightByRatio + 4;
                             } else {
@@ -1338,6 +1343,8 @@ public abstract class BaseView extends FrameLayout {
                 if (0 < viewWidth && 0 < viewHeight) {
                     if (viewWidth < viewHeight) {
                         viewHeight = (int) ((float) viewWidth * 4.0f / 3.0f);
+                    } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY){
+                        viewHeight = (int) ((float) viewWidth * 1.0f / 1.0f);
                     } else {
                         viewHeight = (int) ((float) viewWidth * 9.0f / 16.0f);
                     }
