@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.presenter;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -10,10 +11,12 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -43,6 +46,7 @@ import java.util.Map;
  */
 
 public class CardPresenter extends Presenter {
+    private static final String TAG = CardPresenter.class.getCanonicalName();
     private String trayBackground;
     private Component mComponent;
     private AppCMSPresenter mAppCmsPresenter = null;
@@ -116,8 +120,8 @@ public class CardPresenter extends Presenter {
                 switch (componentType) {
                     case PAGE_IMAGE_KEY:
                         ImageView imageView = new ImageView(parentLayout.getContext());
-                        switch(componentKey){
-                            case PAGE_THUMBNAIL_IMAGE_KEY:
+                        switch (componentKey) {
+                            case PAGE_THUMBNAIL_IMAGE_KEY: {
                                 Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
@@ -141,32 +145,66 @@ public class CardPresenter extends Presenter {
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 parentLayout.addView(imageView);
-                                parentLayout.addChildComponentAndView(imageView,component);
+                                parentLayout.addChildComponentAndView(imageView, component);
                                 break;
+                            }
 
-                            case PAGE_BEDGE_IMAGE_KEY:
-                                    Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                                    Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                            case PAGE_BEDGE_IMAGE_KEY: {
+                                Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
 
-                                    FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
-                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
-                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
+                                FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
+                                        Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
+                                        Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
 
-                                    badgeParams.setMargins(
-                                            Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
-                                            Integer.valueOf(component.getLayout().getTv().getTopMargin()),
-                                            0,
-                                            0);
+                                badgeParams.setMargins(
+                                        Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
+                                        Integer.valueOf(component.getLayout().getTv().getTopMargin()),
+                                        0,
+                                        0);
 
-                                    imageView.setLayoutParams(badgeParams);
-                                    parentLayout.addView(imageView);
-                                    parentLayout.addChildComponentAndView(imageView,component);
+                                imageView.setLayoutParams(badgeParams);
+                                parentLayout.addView(imageView);
+                                parentLayout.addChildComponentAndView(imageView, component);
                                 break;
+                            }
+                            case PAGE_SEPARATOR_VIEW_KEY: {
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
+                                        Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
+                                        Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
+                                int leftMargin = 0;
+                                int topMargin = 0;
+                                if (component.getLayout() != null
+                                        && component.getLayout().getTv() != null) {
+                                    if (component.getLayout().getTv().getLeftMargin() != null) {
+                                        leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
+                                    }
+                                    if (component.getLayout().getTv().getTopMargin() != null) {
+                                        topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
+                                    }
+                                }
+                                parms.setMargins(leftMargin, topMargin, 0, 0);
+
+                                imageView.setLayoutParams(parms);
+                                int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                                imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
+                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                                parentLayout.addView(imageView);
+                                parentLayout.addChildComponentAndView(imageView, component);
+                                parentLayout.setHoverBackground(imageView);
+
+                                imageView.setId(R.id.videoBackgroundOnHover);
+                                imageView.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                                imageView.setAlpha(0f);
+                                break;
+                            }
 
                         }
                         break;
 
-                    case PAGE_LABEL_KEY:
+                    case PAGE_LABEL_KEY:{
                         TextView tvTitle = new TextView(parentLayout.getContext());
                         FrameLayout.LayoutParams layoutParams;
                         if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY)) {
@@ -192,6 +230,30 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)) {
+                            tvTitle.setId(R.id.videoTitleOnHover);
+                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    itemWidth,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            tvTitle.setAlpha(0);
+                            parentLayout.setHoverTitle(tvTitle);
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)) {
+                            tvTitle.setId(R.id.videoSubTitleOnHover);
+                            tvTitle.setAlpha(0);
+                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    itemWidth,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            parentLayout.setHoverSubTitle(tvTitle);
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
+                            tvTitle.setId(R.id.videoDescriptionOnHover);
+                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    itemWidth,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            tvTitle.setAlpha(0);
+                            parentLayout.setHoverDescription(tvTitle);
                         } else {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -200,7 +262,7 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                         }
+                        }
                         //tvTitle.setSingleLine(true);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setSelected(true);
@@ -223,11 +285,16 @@ public class CardPresenter extends Presenter {
                         if (fontType != null) {
                             tvTitle.setTypeface(fontType);
                         }
-                         parentLayout.addView(tvTitle);
-                        parentLayout.addChildComponentAndView(tvTitle,component);
+                        if (component.getText() != null)
+                            tvTitle.setText(component.getText());
+                        if (component.getFontSize() != 0) {
+                            tvTitle.setTextSize(component.getFontSize());
+                        }
+                        parentLayout.addView(tvTitle);
+                        parentLayout.addChildComponentAndView(tvTitle, component);
                         break;
-
-                    case PAGE_PROGRESS_VIEW_KEY:
+                }
+                    case PAGE_PROGRESS_VIEW_KEY: {
                         FrameLayout.LayoutParams progressBarParams = new FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
@@ -243,8 +310,22 @@ public class CardPresenter extends Presenter {
                         progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext, component.getUnprogressColor(), mAppCmsPresenter));
                         progressBar.setFocusable(false);
                         parentLayout.addView(progressBar);
-                        parentLayout.addChildComponentAndView(progressBar,component);
+                        parentLayout.addChildComponentAndView(progressBar, component);
                         break;
+                    }
+                    case PAGE_SEPARATOR_VIEW_KEY: {
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                                Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getWidth())),
+                                Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                        View view = new View(parentLayout.getContext());
+                        view.setId(R.id.videoBackgroundOnHover);
+                        view.setLayoutParams(params);
+                        view.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        view.setAlpha(0);
+                        parentLayout.addView(view);
+                        parentLayout.addChildComponentAndView(view, component);
+                        break;
+                    }
                 }
             }
         }
@@ -317,15 +398,15 @@ public class CardPresenter extends Presenter {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
                                             .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                                .placeholder(R.drawable.video_image_placeholder)
-                                                .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
+                                                    .placeholder(R.drawable.video_image_placeholder)
+                                                    .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
                                             .into(imageView);
                                 } else {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
                                             .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                                .placeholder(R.drawable.poster_image_placeholder)
-                                                .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder)))
+                                                    .placeholder(R.drawable.poster_image_placeholder)
+                                                    .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder)))
                                             .into(imageView);
                                 }
 
@@ -356,7 +437,7 @@ public class CardPresenter extends Presenter {
                                                     "&w=" + badgeItemWidth +
                                                     "&h=" + badgeItemHeight;
                                         }
-                                  //      imageView.setBackground(null);
+                                        //      imageView.setBackground(null);
                                         Glide.with(mContext)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
@@ -383,9 +464,6 @@ public class CardPresenter extends Presenter {
                                         && null != contentData.getGist()
                                         && null != contentData.getGist().getPublishDate()) {
                                     try {
-                                       /* Date publishedDate = new Date(contentData.getGist().getPublishDate());
-                                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
-                                        date = spf.format(publishedDate);*/
                                         date = mAppCmsPresenter.getDateFormat(
                                                 Long.parseLong(contentData.getGist().getPublishDate()),
                                                 "MMMM dd");
@@ -422,14 +500,28 @@ public class CardPresenter extends Presenter {
                             }catch (Exception e){
 
                             }
-                        } else {
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY)){
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
+                            tvTitle.setMaxLines(2);
+                        }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)){
+                           Log.d(TAG, "ANAS: hover Title");
+                           tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            tvTitle.setText(contentData.getGist().getTitle());
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                            tvTitle.setSelected(true);
+                        }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)){
+                            tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            Log.d(TAG, "ANAS: hover sub Title");
+                        }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)){
+                            tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            Log.d(TAG, "ANAS: hover description");
+                            tvTitle.setText(contentData.getGist().getDescription());
                         }
                         //tvTitle.setSingleLine(true);
-                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                        tvTitle.setSelected(true);
-                        tvTitle.setMaxLines(2);
+//                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+//                        tvTitle.setSelected(true);
+
                         break;
 
                     case PAGE_PROGRESS_VIEW_KEY:
@@ -507,6 +599,43 @@ public class CardPresenter extends Presenter {
 
     class CustomFrameLayout extends FrameLayout{
         List<CustomFrameLayout.ChildComponentAndView> childView = null;
+
+        public TextView getHoverTitle() {
+            return hoverTitle;
+        }
+
+        public void setHoverTitle(TextView hoverTitle) {
+            this.hoverTitle = hoverTitle;
+        }
+
+        public TextView getHoverSubTitle() {
+            return hoverSubTitle;
+        }
+
+        public void setHoverSubTitle(TextView hoverSubTitle) {
+            this.hoverSubTitle = hoverSubTitle;
+        }
+
+        public TextView getHoverDescription() {
+            return hoverDescription;
+        }
+
+        public void setHoverDescription(TextView hoverDescription) {
+            this.hoverDescription = hoverDescription;
+        }
+
+        public View getHoverBackground() {
+            return hoverBackground;
+        }
+
+        public void setHoverBackground(View hoverBackground) {
+            this.hoverBackground = hoverBackground;
+        }
+
+        TextView hoverTitle;// = itemViewHolder.view.findViewById(R.id.videoTitleOnHover);
+        TextView hoverSubTitle;// = itemViewHolder.view.findViewById(R.id.videoSubTitleOnHover);
+        TextView hoverDescription;// = itemViewHolder.view.findViewById(R.id.videoDescriptionOnHover);
+        View hoverBackground;// = itemViewHolder.view.findViewById(R.id.videoBackgroundOnHover);
         public CustomFrameLayout(@NonNull Context context) {
             super(context);
             childView = new ArrayList<>();
@@ -527,5 +656,84 @@ public class CardPresenter extends Presenter {
             Component component;
             View childView;
         }
+
+        @Override
+        public void setSelected(boolean selected) {
+            super.setSelected(selected);
+            if (selected) {
+                Log.d(TAG, "Selected");
+                if (hoverTitle != null
+                        && hoverSubTitle != null
+                        && hoverDescription != null
+                        && hoverBackground != null) {
+                    startHoverAnimation(hoverTitle, hoverSubTitle, hoverDescription, hoverBackground);
+                }
+            } else {
+                Log.d(TAG, "Deselected");
+                if (hoverTitle != null
+                        && hoverSubTitle != null
+                        && hoverDescription != null
+                        && hoverBackground != null) {
+                    hoverTitle.setAlpha(0);
+                    hoverSubTitle.setAlpha(0);
+                    hoverDescription.setAlpha(0);
+                    hoverBackground.setAlpha(0);
+                }
+            }
+        }
+
+        public void startHoverAnimation(TextView hoverTitle,
+                                         TextView hoverSubTitle,
+                                         TextView hoverDescription,
+                                         View hoverBackground) {
+
+            int translateStartPosition = 20;
+            int translateEndPosition = 0;
+            int duration = 500;
+
+            float alphaStartVal = 0f;
+            float alphaEndVal = 1f;
+            AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
+
+            ObjectAnimator translationY = ObjectAnimator.ofFloat(hoverTitle, "translationY", translateStartPosition, translateEndPosition);
+            translationY.setDuration(duration);
+            translationY.setInterpolator(interpolator);
+            translationY.start();
+
+            ObjectAnimator translationY1 = ObjectAnimator.ofFloat(hoverSubTitle, "translationY", translateStartPosition, translateEndPosition);
+            translationY1.setDuration(duration);
+            translationY1.setStartDelay(duration / 2);
+            translationY1.setInterpolator(interpolator);
+            translationY1.start();
+
+            ObjectAnimator translationY2 = ObjectAnimator.ofFloat(hoverDescription, "translationY", translateStartPosition, translateEndPosition);
+            translationY2.setDuration(duration);
+            translationY2.setStartDelay(duration);
+            translationY2.setInterpolator(interpolator);
+            translationY2.start();
+
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(hoverTitle, "alpha", alphaStartVal, alphaEndVal);
+            alpha.setDuration(duration);
+            alpha.setInterpolator(interpolator);
+            alpha.start();
+
+            ObjectAnimator alpha1 = ObjectAnimator.ofFloat(hoverSubTitle, "alpha", alphaStartVal, alphaEndVal);
+            alpha1.setDuration(duration);
+            alpha1.setStartDelay(duration / 2);
+            alpha1.setInterpolator(interpolator);
+            alpha1.start();
+
+            ObjectAnimator alpha2 = ObjectAnimator.ofFloat(hoverDescription, "alpha", alphaStartVal, alphaEndVal);
+            alpha2.setDuration(duration);
+            alpha2.setStartDelay(duration);
+            alpha2.setInterpolator(interpolator);
+            alpha2.start();
+
+            ObjectAnimator alpha3 = ObjectAnimator.ofFloat(hoverBackground, "alpha", alphaStartVal, alphaEndVal);
+            alpha3.setDuration(duration);
+            alpha3.setInterpolator(interpolator);
+            alpha3.start();
+        }
+
     }
 }
