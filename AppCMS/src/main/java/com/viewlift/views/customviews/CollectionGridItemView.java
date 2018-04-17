@@ -361,9 +361,9 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_audio))
                             && appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
                         int size = childViewWidth;
-                        if (childViewWidth < childViewHeight) {
+                        /*if (childViewHeight< childViewWidth ) {
                             size = childViewHeight;
-                        }
+                        }*/
                         int horizontalMargin = 0;
                         horizontalMargin = (int) getHorizontalMargin(getContext(), childComponent.getLayout());
                         int verticalMargin = (int) getVerticalMargin(getContext(), parentLayout, size, 0);
@@ -387,7 +387,7 @@ public class CollectionGridItemView extends BaseView {
                                 }
                             }
                             RequestOptions requestOptions = new RequestOptions()
-                                    .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                    .override(size, size).placeholder(placeholder)
                                     .fitCenter();
 //                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
