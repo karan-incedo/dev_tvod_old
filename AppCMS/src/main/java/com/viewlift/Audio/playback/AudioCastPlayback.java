@@ -86,7 +86,7 @@ public class AudioCastPlayback implements Playback {
 
         try {
             initRemoteClient();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         mRemoteMediaClientListener = new CastMediaClientListener();
@@ -191,11 +191,12 @@ public class AudioCastPlayback implements Playback {
     @Override
     public long getTotalDuration() {
         if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession() && mRemoteMediaClient.getStreamDuration() > 0) {
-            mRemoteMediaClient.pause();
+//            mRemoteMediaClient.pause();
             return mRemoteMediaClient.getStreamDuration();
         }
         return 0;
     }
+
 
     @Override
     public void updateLastKnownStreamPosition() {

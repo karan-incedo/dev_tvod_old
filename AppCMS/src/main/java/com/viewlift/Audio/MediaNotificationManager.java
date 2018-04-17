@@ -39,6 +39,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
@@ -85,6 +86,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
+                if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                } else {
+                    mMetadata = mController.getMetadata();
+                }
                 Notification notification = createNotification();
                 if (notification != null) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -95,6 +101,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mMetadata = metadata;
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
             Notification notification = createNotification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -141,12 +152,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
 
-    public void notifyMedia(){
+    public void notifyMedia() {
         Notification notification = createNotification();
         if (notification != null) {
             mNotificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
+
     /**
      * Posts the notification and starts tracking the session to keep it
      * updated. The notification will automatically be removed if the session is
@@ -154,7 +166,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
      */
     public void startNotification() {
         if (!mStarted) {
-            mMetadata = mController.getMetadata();
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
+//            mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
 
             // The notification must be updated after setting started to true

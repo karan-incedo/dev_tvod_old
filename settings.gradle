@@ -1,4 +1,4 @@
-include ':AppCMS', ':firetvcustomkeyboard', ':library', ':htmlspanner'
+include ':AppCMS', ':firetvcustomkeyboard', ':library', ':htmlspanner', ':SSLCommerz'
 gradle.ext.exoplayerRoot = '../exoplayer'
 gradle.ext.exoplayerModulePrefix = 'exoplayer-'
 apply from: new File(gradle.ext.exoplayerRoot, 'core_settings.gradle')

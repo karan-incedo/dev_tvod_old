@@ -205,6 +205,7 @@
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
     <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
+    <string name="app_cms_page_download_audio_playlist_key">DownloadedAudioPlayList</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
 
 

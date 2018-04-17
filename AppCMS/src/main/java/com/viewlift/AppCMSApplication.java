@@ -1,6 +1,7 @@
 package com.viewlift;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
@@ -54,6 +55,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
         initRealmonfig();
         openActivities = 0;
+
 
         new Thread(() -> {
             conversionDataListener = new AppsFlyerConversionListener() {

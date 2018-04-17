@@ -34,6 +34,10 @@ public class AppCMSPlaylistResult {
     @Expose
     Gist gist;
 
+    @SerializedName("audioList")
+    @Expose
+    List<AudioList> audioList = null;
+
     public Gist getGist() {
         return gist;
     }
@@ -45,10 +49,6 @@ public class AppCMSPlaylistResult {
     public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
-
-    @SerializedName("audioList")
-    @Expose
-    List<AudioList> audioList = null;
 
 
     public List<AudioList> getAudioList() {
