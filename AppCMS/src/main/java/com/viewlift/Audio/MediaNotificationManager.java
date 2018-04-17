@@ -362,14 +362,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.notification_pause;
             intent = mPauseIntent;
-        }else   if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            System.out.println("State media pause");
+        } else if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
 
             label = mService.getString(R.string.label_play);
             icon = R.drawable.notification_play;
             intent = mPlayIntent;
         } else {
-            System.out.println("State media other - " + mPlaybackState.getState());
 
             label = mService.getString(R.string.label_play);
             icon = R.drawable.notification_play;
