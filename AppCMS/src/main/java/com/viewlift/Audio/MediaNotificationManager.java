@@ -177,6 +177,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
             if (notification != null) {
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
+            if (notification != null) {
                 mController.registerCallback(mCb);
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(ACTION_NEXT);
@@ -354,11 +357,20 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final String label;
         final int icon;
         final PendingIntent intent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            System.out.println("State media playing");
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.notification_pause;
             intent = mPauseIntent;
+        }else   if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            System.out.println("State media pause");
+
+            label = mService.getString(R.string.label_play);
+            icon = R.drawable.notification_play;
+            intent = mPlayIntent;
         } else {
+            System.out.println("State media other - " + mPlaybackState.getState());
+
             label = mService.getString(R.string.label_play);
             icon = R.drawable.notification_play;
             intent = mPlayIntent;
@@ -418,4 +430,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 }
+
+
 
