@@ -46,6 +46,9 @@ repositories {
         }
     }
     mavenCentral()
+    flatDir{
+        dirs 'libs'
+    }
 }
 
 android {
@@ -414,9 +417,11 @@ dependencies {
     implementation  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation project(':SSLCommerz')
     implementation 'com.android.volley:volley:1.0.0'
 
 }
-
+fileTree(dir: 'libs', include: '**/*.aar')
+        .each { File file ->
+    dependencies.add("compile", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
+}
 apply plugin: 'com.google.gms.google-services'
