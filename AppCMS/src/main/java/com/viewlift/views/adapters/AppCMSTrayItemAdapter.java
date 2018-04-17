@@ -98,6 +98,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String moduleId;
     private String mCurrentPlayListId;
 
+    boolean isLoaded = false;
+
     public AppCMSTrayItemAdapter(Context context,
                                  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                  List<ContentDatum> adapterData,
@@ -113,7 +115,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
-
+        isLoaded = false;
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_01_MODULE_KEY:
             case PAGE_HISTORY_02_MODULE_KEY:
@@ -215,6 +217,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         StringBuilder logMessage = new StringBuilder("Binding tray item adapter view holder: \n\t" + position);
         if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
@@ -241,7 +244,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             StringBuffer imageUrl;
             if (isDownload) {
-                if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
+                if (contentDatum.getGist() != null &&
+                        contentDatum.getGist().getMediaType() != null &&
+                        contentDatum.getGist().getMediaType().toLowerCase().contains(holder.itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) && contentDatum.getGist().getPosterImageUrl() != null) {
+                    imageUrl = new StringBuffer(contentDatum.getGist().getPosterImageUrl());
+
+                } else if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
                     imageUrl = new StringBuffer(contentDatum.getGist().getVideoImageUrl());
                 } else {
                     imageUrl = new StringBuffer();
@@ -251,26 +259,48 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
                 int radiusDifference = 5;
                 if (BaseView.isTablet(holder.itemView.getContext())) {
-                    radiusDifference = 2;
+                    radiusDifference = 3;
                 }
 
-                if (contentDatum.getGist() != null) {
+                if (contentDatum.getGist() != null ) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
+                    contentDatum.getGist().setDataLoaded(true);
+                    if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
+                        holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                        holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        holder.appCMSContinueWatchingDeleteButton.invalidate();
+                        holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
 
-                    appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
-                            videoDownloadStatus -> {
-                                if (videoDownloadStatus != null &&
-                                        (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
-                                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
-                                                (!appCMSPresenter.isNetworkConnected() &&
-                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                                                        videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
-                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
-                                            R.drawable.ic_download_queued));
-                                }
-                            },
-                            appCMSPresenter.getLoggedInUser());
+//                        contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
+//                        try {
+//                            if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
+//                                    contentDatum.getContentDetails() != null &&
+//                                    contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
+//                                contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+//                            }
+//                        } catch (Exception e) {
+//                            //Log.e(TAG, e.getMessage());
+//                        }
+                    } else // if (holder.appCMSContinueWatchingSize.getTag() != null && (boolean) holder.appCMSContinueWatchingSize.getTag()) {
+                    {
+                        appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
+                                videoDownloadStatus -> {
+
+                                    if (videoDownloadStatus != null &&
+                                            (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                                    videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                                    (!appCMSPresenter.isNetworkConnected() &&
+                                                            videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                                            videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
+                                        holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                        holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                                R.drawable.ic_download_queued));
+                                    }
+                                },
+                                appCMSPresenter.getLoggedInUser());
+                    }
 
                     switch (appCMSPresenter.getVideoDownloadStatus(contentDatum.getGist().getId())) {
                         case STATUS_PENDING:
@@ -282,46 +312,54 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 filmDownloadIconUpdatedMap.put(contentDatum.getGist().getId(), true);
 
 
-
                                 int finalRadiusDifference = radiusDifference;
                                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
-                                            if (userVideoDownloadStatus != null) {
-                                                if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
-                                                    holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
-                                                    holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                                                    holder.appCMSContinueWatchingDeleteButton.invalidate();
-                                                    holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                                            appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (userVideoDownloadStatus != null) {
+                                                        if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+                                                            holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+                                                            holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                            holder.appCMSContinueWatchingDeleteButton.invalidate();
+                                                            holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+//                                                                holder.appCMSContinueWatchingSize.se
+                                                            String imageUrl = userVideoDownloadStatus.getPosterUri();
+                                                            loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
-                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
-                                                    try {
-                                                        if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
-                                                                contentDatum.getContentDetails() != null &&
-                                                                contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
-                                                            contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+                                                            contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
+                                                            try {
+                                                                if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
+                                                                        contentDatum.getContentDetails() != null &&
+                                                                        contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
+                                                                    contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+                                                                }
+                                                            } catch (Exception e) {
+                                                                //Log.e(TAG, e.getMessage());
+                                                            }
+
+                                                        } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
+                                                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                                                    android.R.drawable.stat_sys_warning));
+                                                            holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
+                                                            holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
+                                                        } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
+                                                            holder.appCMSContinueWatchingSize.setText("Cancel");
+                                                        } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+                                                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                                                    R.drawable.ic_download_queued));
                                                         }
-                                                    } catch (Exception e) {
-                                                        //Log.e(TAG, e.getMessage());
+                                                        contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                                     }
-
-                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
-                                                            android.R.drawable.stat_sys_warning));
-                                                    holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
-                                                    holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
-                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
-                                                    holder.appCMSContinueWatchingSize.setText("Cancel");
-                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
-                                                            R.drawable.ic_download_queued));
                                                 }
-                                                contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
-                                            }
+                                            });
+
                                         },
                                         userId,
                                         true,
@@ -376,6 +414,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                             break;
                     }
+
                     DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
                             .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId);
                     if (downloadVideoRealm != null && contentDatum != null && contentDatum.getGist() != null) {
@@ -655,14 +694,23 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
+                    null,
+                    false,
+                    null,
+                    null);
+            return;
+        }
+
         if (data.getGist() != null &&
                 data.getGist().getMediaType() != null &&
                 data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) &&
                 data.getGist().getContentType() != null &&
                 data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
-            /*play audio if already downloaded*/
-            appCMSPresenter.showLoadingDialog(true);
-            playPlaylistItem(data,context,position);
+
+            playPlaylistItem(data, context, position);
             appCMSPresenter.showLoadingDialog(false);
 
             return;
@@ -729,17 +777,39 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
+    private void playIncompleteDownload(ContentDatum data, Context mContext) {
+        if (data.getGist() != null &&
+                data.getGist().getMediaType() != null &&
+                data.getGist().getMediaType().toLowerCase().contains(mContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                data.getGist().getContentType() != null &&
+                data.getGist().getContentType().toLowerCase().contains(mContext.getString(R.string.content_type_audio).toLowerCase())) {
+            appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
+            // on click from playlist adapter .Get playlist from temp list and set into current playlist
+            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) || (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
+                AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
+            }
+            data.getGist().setAudioPlaying(true);
+
+            updateData(mRecyclerView, adapterData);
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+            return;
+        }
+    }
+
     private void playPlaylistItem(ContentDatum data, Context context, int clickPosition) {
 
-      /*  try {
+        try {
             appCMSPresenter.showLoadingDialog(true);
 
             AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(data);
 
-        *//*
-        if at the time of click from download list device already connected to casatin device than get audio details from server
-        and cast audio url to casting device
-         *//*
+
+//        if at the time of click from download list device already connected to casatin device than get audio details from server
+//        and cast audio url to casting device
+
             if (CastServiceProvider.getInstance(context).isCastingConnected()) {
                 AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSAudioDetailResult.getId(), 0);
             } else {
@@ -766,51 +836,53 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            appCMSPresenter.showLoadingDialog(false);
-        }*/
-
-        try{
-        if (data.getGist() != null &&
-                data.getGist().getMediaType() != null &&
-                data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) &&
-                data.getGist().getContentType() != null &&
-                data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
-            appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_PAGE_LOADING_ACTION));
-
-            // on click from playlist adapter .Get playlist from temp list and set into current playlist
-            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) ||
-                    (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null &&
-                            !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
-
-                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
-                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
-                AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
-            }
-            /*if (adapterData.size() > oldClick) {
-                if (oldClick != clickPosition) {
-                    if (oldClick == -1) {
-                        oldClick = clickPosition;
-                        data.getGist().setAudioPlaying(true);
-                    } else {
-                        adapterData.get(oldClick).getGist().setAudioPlaying(false);
-                        oldClick = clickPosition;
-                        data.getGist().setAudioPlaying(true);
-                    }
-                }
-            }*/
-            updateData(mRecyclerView, adapterData);
-            AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
-
-            return;
-        }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
+        } finally {
             appCMSPresenter.showLoadingDialog(false);
         }
+
+        // TODO : To handle playlist from download
+//        try {
+//            if (data.getGist() != null &&
+//                    data.getGist().getMediaType() != null &&
+//                    data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) &&
+//                    data.getGist().getContentType() != null &&
+//                    data.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
+//                appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+//                        .PRESENTER_PAGE_LOADING_ACTION));
+//
+//                // on click from playlist adapter .Get playlist from temp list and set into current playlist
+//                if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) ||
+//                        (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null &&
+//                                !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
+//
+//                    AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
+//                    AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
+//                    AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
+//                }
+//            /*if (adapterData.size() > oldClick) {
+//                if (oldClick != clickPosition) {
+//                    if (oldClick == -1) {
+//                        oldClick = clickPosition;
+//                        data.getGist().setAudioPlaying(true);
+//                    } else {
+//                        adapterData.get(oldClick).getGist().setAudioPlaying(false);
+//                        oldClick = clickPosition;
+//                        data.getGist().setAudioPlaying(true);
+//                    }
+//                }
+//            }*/
+//                updateData(mRecyclerView, adapterData);
+//                AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+//
+//                return;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            appCMSPresenter.showLoadingDialog(false);
+//        }
     }
+
     @Override
     public int getItemCount() {
         return adapterData != null && !adapterData.isEmpty() ? adapterData.size() : 1;
@@ -846,7 +918,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void loadImage(Context context, String url, ImageView imageView) {
         Glide.with(context)
                 .load(Uri.decode(url))
-                .apply(new RequestOptions().override(imageView.getWidth(),imageView.getHeight()).placeholder(R.drawable.vid_image_placeholder_land))
+                .apply(new RequestOptions().override(imageView.getWidth(), imageView.getHeight()).placeholder(R.drawable.vid_image_placeholder_land))
                 .into(imageView);
     }
 
@@ -912,7 +984,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 case PAGE_LABEL_KEY:
                 case PAGE_TEXTVIEW_KEY:
-                    int textColor = ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.colorAccent);
+                    String textColorValue = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+
+                    int textColor = ContextCompat.getColor(viewHolder.itemView.getContext(), R.color.color_white);
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textColor = Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getTextColor()));
                     } else if (component.getStyles() != null) {
@@ -928,12 +1002,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     switch (componentKey) {
                         case PAGE_WATCHLIST_DURATION_KEY:
-                            viewHolder.appCMSContinueWatchingDuration.setTextColor(textColor);
+                            viewHolder.appCMSContinueWatchingDuration.setTextColor(viewHolder.itemView.getContext().getResources().getColor(R.color.white));
 
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                                viewHolder.appCMSContinueWatchingDuration
-                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
-                                                component.getBackgroundColor())));
+//                                viewHolder.appCMSContinueWatchingDuration
+//                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+//                                                component.getBackgroundColor())));
                                 viewHolder.appCMSContinueWatchingSize
                                         .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
                                                 component.getBackgroundColor())));
@@ -1291,7 +1365,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return appCMSAudioDetailResult;
     }
 
-    private void createDownloadedAudioPlaylist(Context context){
+    private void createDownloadedAudioPlaylist(Context context) {
         try {
             AppCMSPlaylistResult appCMSPlaylistResult = new AppCMSPlaylistResult();
             List<AudioList> audioLists = new ArrayList<>();
@@ -1302,7 +1376,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 audioLists.add(listItem);
             }
             appCMSPlaylistResult.setAudioList(audioLists);
-            mCurrentPlayListId=context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key);
+            mCurrentPlayListId = context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key);
             appCMSPlaylistResult.setId(mCurrentPlayListId);
 
             if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
@@ -1311,7 +1385,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 AudioPlaylistHelper.getInstance().setTempPlaylistData(appCMSPlaylistResult);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -679,27 +679,38 @@ public class CollectionGridItemView extends BaseView {
 
                     String userId = appCMSPresenter.getLoggedInUser();
 
-                    try {
-                        int radiusDifference = 5;
-                        if (BaseView.isTablet(context)) {
-                            radiusDifference = 2;
+                    if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())){
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
+                    }else {
+                        try {
+                            int radiusDifference = 7;
+                            if (BaseView.isTablet(context)) {
+                                radiusDifference = 4;
+                            }
+                            if(data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                radiusDifference = 5;
+                                if (BaseView.isTablet(context)) {
+                                    radiusDifference = 3;
+                                }
+                            }
+                            ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                                    updateDownloadImageIconActionMap.get(data.getGist().getId());
+                            if (updateDownloadImageIconAction == null) {
+                                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
+                                        data, userId, radiusDifference, moduleId);
+                                updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
+                            }
+
+                            view.setTag(data.getGist().getId());
+
+                            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
+
+                            appCMSPresenter.getUserVideoDownloadStatus(
+                                    data.getGist().getId(), updateDownloadImageIconAction, userId);
+                        } catch (Exception e) {
+
                         }
-                        ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
-                                updateDownloadImageIconActionMap.get(data.getGist().getId());
-                        if (updateDownloadImageIconAction == null) {
-                            updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                    data, userId, radiusDifference, moduleId);
-                            updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
-                        }
-
-                        view.setTag(data.getGist().getId());
-
-                        updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
-
-                        appCMSPresenter.getUserVideoDownloadStatus(
-                                data.getGist().getId(), updateDownloadImageIconAction, userId);
-                    } catch (Exception e) {
-
                     }
                 } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
                  *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,

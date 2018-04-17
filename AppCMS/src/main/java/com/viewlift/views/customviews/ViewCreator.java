@@ -1025,9 +1025,16 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                            int radiusDifference = 5;
+                                            int radiusDifference = 7;
                                             if (BaseView.isTablet(context)) {
-                                                radiusDifference = 2;
+                                                radiusDifference = 4;
+                                            }
+                                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                                radiusDifference = 5;
+                                                if (BaseView.isTablet(context)) {
+                                                    radiusDifference = 3;
+                                                }
                                             }
                                             String userId = appCMSPresenter.getLoggedInUser();
                                             appCMSPresenter.getUserVideoDownloadStatus(
@@ -3478,9 +3485,16 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
                             String userId = appCMSPresenter.getLoggedInUser();
-                            int radiusDifference = 5;
+                            int radiusDifference = 7;
                             if (BaseView.isTablet(context)) {
-                                radiusDifference = 2;
+                                radiusDifference = 4;
+                            }
+                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                radiusDifference = 5;
+                                if (BaseView.isTablet(context)) {
+                                    radiusDifference = 3;
+                                }
                             }
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
@@ -6400,7 +6414,7 @@ public class ViewCreator {
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
-                        imageButton.setImageResource(0);
+//                        imageButton.setImageResource(0);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
@@ -6438,7 +6452,16 @@ public class ViewCreator {
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                         radiusDifference,
                         id);
-                imageButton.setImageResource(R.drawable.ic_download_big);
+
+                if(appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())){
+                    imageButton.setImageResource(R.drawable.ic_download_queued);
+
+                }else if(appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())){
+                    imageButton.setImageResource(R.drawable.ic_downloaded_big);
+
+                }else{
+                    imageButton.setImageResource(R.drawable.ic_download_big);
+                }
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));

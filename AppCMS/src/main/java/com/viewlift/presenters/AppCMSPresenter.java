@@ -711,6 +711,8 @@ public class AppCMSPresenter {
     private ResponsePojo responsePojo;
     private String subscribeEmail;
     ProgressDialog progressDialog = null;
+    ProgressDialog progressDialogDeleteDownload = null;
+
     private boolean isAudioPlayerOpen;
     public HashMap<String, PlaylistDetails> playlistDowloadValues = new HashMap<String, PlaylistDetails>();
 
@@ -5145,7 +5147,9 @@ public class AppCMSPresenter {
                         getLoggedInUser());
                 return downloadVideoRealm != null &&
                         downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+                        (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_RUNNING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PAUSED);
             } catch (Exception e) {
 
             }
@@ -5441,7 +5445,7 @@ public class AppCMSPresenter {
             downloadTimerTask.imageView = imageView;
 
             if (!downloadTimerTask.running) {
-                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 4000);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
@@ -5567,7 +5571,26 @@ public class AppCMSPresenter {
             //Log.e(TAG, "Error editing history for " + filmId + ": " + e.getMessage());
         }
     }
+    private void progressDialogInit(int maxSize) {
+        progressDialogDeleteDownload = new ProgressDialog(currentActivity);
 
+
+        //Set the progress dialog to display a horizontal progress bar
+        progressDialogDeleteDownload.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //Set the dialog title to 'Loading...'
+        progressDialogDeleteDownload.setTitle("Deleting contents...");
+        //Set the dialog message to 'Loading application View, please wait...'
+        progressDialogDeleteDownload.setMessage("Removing contents , please wait...");
+        //This dialog can't be canceled by pressing the back key
+        progressDialogDeleteDownload.setCancelable(false);
+        //This dialog isn't indeterminate
+        progressDialogDeleteDownload.setIndeterminate(false);
+        //The maximum number of items is 100
+        progressDialogDeleteDownload.setMax(maxSize);
+        //Set the current progress to zero
+        progressDialogDeleteDownload.setProgress(0);
+        progressDialogDeleteDownload.show();
+    }
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
 
         realmController = RealmController.with(currentActivity);
@@ -5584,11 +5607,20 @@ public class AppCMSPresenter {
                 deleteMsg,
                 true, () -> {
                     if (deleteAllFiles) {
-                        for (DownloadVideoRealm downloadVideoRealm :
-                                realmController.getDownloadesByUserId(getLoggedInUser())) {
+                        try {
+                            progressDialogInit(realmController.getDownloadesByUserId(getLoggedInUser()).size());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        int i=0;
+                        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
+                            i++;
+                            progressDialogDeleteDownload.setProgress(i);
                             removeDownloadedFile(downloadVideoRealm.getVideoId());
                         }
+                        progressDialogDeleteDownload.dismiss();
                     } else {
+
                         for (DownloadVideoRealm downloadVideoRealm :
                                 realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
                             removeDownloadedFile(downloadVideoRealm.getVideoId());
@@ -16719,6 +16751,8 @@ public class AppCMSPresenter {
 //                                            radiusDifference = 2;
 //                                        }
                                         imageView.setBackground(null);
+                                        Log.e(TAG, "Draw circular image: " + filmId+" percentage- "+downloadPercent);
+
                                         circularImageBar(imageView, downloadPercent, radiusDifference);
                                     } else if (cancelled) {
                                         imageView.setImageBitmap(null);
@@ -16791,15 +16825,22 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(b);
-                Paint paint = new Paint();
+                Bitmap b = null;
+                Canvas canvas=null;
+                Paint paint = null;
+                if(b==null){
+                    b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                    canvas = new Canvas(b);
+                    paint = new Paint();
+                }
+                //Canvas canvas = new Canvas(b);
+                //Paint paint = new Paint();
 
                 paint.setColor(Color.DKGRAY);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setAntiAlias(true);
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - radiusDifference, paint);// Fix SVFA-1561 changed  -2 to -7
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - paint.getStrokeWidth()/2, paint);// Fix SVFA-1561 changed  -2 to -7
 
 //                if (isTablet) {
 //                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);
@@ -16823,13 +16864,13 @@ public class AppCMSPresenter {
 //                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-
-                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                iv2.setImageBitmap(b);
+               /* appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         iv2.setImageBitmap(b);
                     }
-                });
+                });*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }
