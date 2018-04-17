@@ -16883,7 +16883,7 @@ public class AppCMSPresenter {
                     public void run() {
                         iv2.setImageBitmap(b);
                     }
-                });
+                });*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

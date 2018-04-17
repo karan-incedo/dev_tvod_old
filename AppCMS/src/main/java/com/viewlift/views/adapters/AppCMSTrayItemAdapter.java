@@ -265,25 +265,25 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (contentDatum.getGist() != null ) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
                     contentDatum.getGist().setDataLoaded(true);
-                    if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
-                        holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                        holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
-                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
-                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                        holder.appCMSContinueWatchingDeleteButton.invalidate();
-                        holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
-
-//                        contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
-//                        try {
-//                            if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
-//                                    contentDatum.getContentDetails() != null &&
-//                                    contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
-//                                contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
-//                            }
-//                        } catch (Exception e) {
-//                            //Log.e(TAG, e.getMessage());
-//                        }
-                    } else // if (holder.appCMSContinueWatchingSize.getTag() != null && (boolean) holder.appCMSContinueWatchingSize.getTag()) {
+//                    if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
+//                        holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+//                        holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+//                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+//                        holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+//                        holder.appCMSContinueWatchingDeleteButton.invalidate();
+//                        holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
+//
+////                        contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
+////                        try {
+////                            if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
+////                                    contentDatum.getContentDetails() != null &&
+////                                    contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
+////                                contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+////                            }
+////                        } catch (Exception e) {
+////                            //Log.e(TAG, e.getMessage());
+////                        }
+//                    } else // if (holder.appCMSContinueWatchingSize.getTag() != null && (boolean) holder.appCMSContinueWatchingSize.getTag()) {
                     {
                         appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
                                 videoDownloadStatus -> {
@@ -329,9 +329,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                             holder.appCMSContinueWatchingDeleteButton.invalidate();
                                                             holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
 //                                                                holder.appCMSContinueWatchingSize.se
-                                                            String imageUrl = userVideoDownloadStatus.getPosterUri();
-                                                            loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
-
+//
                                                             contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
                                                             try {
                                                                 if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
@@ -1002,7 +1000,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     switch (componentKey) {
                         case PAGE_WATCHLIST_DURATION_KEY:
-                            viewHolder.appCMSContinueWatchingDuration.setTextColor(viewHolder.itemView.getContext().getResources().getColor(R.color.white));
+                            viewHolder.appCMSContinueWatchingDuration.setTextColor(Color.parseColor(textColorValue));
 
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
 //                                viewHolder.appCMSContinueWatchingDuration
