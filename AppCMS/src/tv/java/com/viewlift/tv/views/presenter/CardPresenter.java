@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.presenter;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
@@ -35,9 +36,7 @@ import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.CustomTypefaceSpan;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -191,7 +190,7 @@ public class CardPresenter extends Presenter {
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                                parentLayout.addView(imageView);
+                                parentLayout.hoverLayout.addView(imageView);
                                 parentLayout.addChildComponentAndView(imageView, component);
                                 parentLayout.setHoverBackground(imageView);
 
@@ -222,6 +221,8 @@ public class CardPresenter extends Presenter {
                             } else /*Don't show time and date as metadata is null*/ {
                                 tvTitle.setVisibility(View.INVISIBLE);
                             }
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY)) {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -230,6 +231,8 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)) {
                             tvTitle.setId(R.id.videoTitleOnHover);
                             Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
@@ -238,6 +241,9 @@ public class CardPresenter extends Presenter {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             tvTitle.setAlpha(0);
                             parentLayout.setHoverTitle(tvTitle);
+
+                            parentLayout.hoverLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)) {
                             tvTitle.setId(R.id.videoSubTitleOnHover);
                             tvTitle.setAlpha(0);
@@ -246,6 +252,8 @@ public class CardPresenter extends Presenter {
                                     itemWidth,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             parentLayout.setHoverSubTitle(tvTitle);
+                            parentLayout.hoverLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
                             tvTitle.setId(R.id.videoDescriptionOnHover);
                             Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
@@ -254,6 +262,8 @@ public class CardPresenter extends Presenter {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             tvTitle.setAlpha(0);
                             parentLayout.setHoverDescription(tvTitle);
+                            parentLayout.hoverLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -262,7 +272,8 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                        }
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);}
                         //tvTitle.setSingleLine(true);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setSelected(true);
@@ -290,8 +301,6 @@ public class CardPresenter extends Presenter {
                         if (component.getFontSize() != 0) {
                             tvTitle.setTextSize(component.getFontSize());
                         }
-                        parentLayout.addView(tvTitle);
-                        parentLayout.addChildComponentAndView(tvTitle, component);
                         break;
                 }
                     case PAGE_PROGRESS_VIEW_KEY: {
@@ -311,19 +320,6 @@ public class CardPresenter extends Presenter {
                         progressBar.setFocusable(false);
                         parentLayout.addView(progressBar);
                         parentLayout.addChildComponentAndView(progressBar, component);
-                        break;
-                    }
-                    case PAGE_SEPARATOR_VIEW_KEY: {
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                                Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getWidth())),
-                                Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
-                        View view = new View(parentLayout.getContext());
-                        view.setId(R.id.videoBackgroundOnHover);
-                        view.setLayoutParams(params);
-                        view.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
-                        view.setAlpha(0);
-                        parentLayout.addView(view);
-                        parentLayout.addChildComponentAndView(view, component);
                         break;
                     }
                 }
@@ -636,9 +632,14 @@ public class CardPresenter extends Presenter {
         TextView hoverSubTitle;// = itemViewHolder.view.findViewById(R.id.videoSubTitleOnHover);
         TextView hoverDescription;// = itemViewHolder.view.findViewById(R.id.videoDescriptionOnHover);
         View hoverBackground;// = itemViewHolder.view.findViewById(R.id.videoBackgroundOnHover);
+        FrameLayout hoverLayout;
         public CustomFrameLayout(@NonNull Context context) {
             super(context);
             childView = new ArrayList<>();
+            FrameLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            hoverLayout = new FrameLayout(context);
+            hoverLayout.setLayoutParams(layoutParams);
+            this.addView(hoverLayout);
         }
 
         public List<CustomFrameLayout.ChildComponentAndView> getChildViewList(){
@@ -666,6 +667,8 @@ public class CardPresenter extends Presenter {
                         && hoverSubTitle != null
                         && hoverDescription != null
                         && hoverBackground != null) {
+                    hoverLayout.bringToFront();
+                    hoverLayout.setVisibility(VISIBLE);
                     startHoverAnimation(hoverTitle, hoverSubTitle, hoverDescription, hoverBackground);
                 }
             } else {
@@ -678,6 +681,7 @@ public class CardPresenter extends Presenter {
                     hoverSubTitle.setAlpha(0);
                     hoverDescription.setAlpha(0);
                     hoverBackground.setAlpha(0);
+                    hoverLayout.setVisibility(INVISIBLE);
                 }
             }
         }
@@ -710,6 +714,7 @@ public class CardPresenter extends Presenter {
             translationY2.setDuration(duration);
             translationY2.setStartDelay(duration);
             translationY2.setInterpolator(interpolator);
+            translationY.addListener(getAnimatorListener());
             translationY2.start();
 
             ObjectAnimator alpha = ObjectAnimator.ofFloat(hoverTitle, "alpha", alphaStartVal, alphaEndVal);
@@ -733,6 +738,38 @@ public class CardPresenter extends Presenter {
             alpha3.setDuration(duration);
             alpha3.setInterpolator(interpolator);
             alpha3.start();
+        }
+
+        @NonNull
+        private Animator.AnimatorListener getAnimatorListener() {
+            return new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            /*CustomFrameLayout.this.hoverTitle.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverSubTitle.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverDescription.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverBackground.setVisibility(VISIBLE);*/
+                            CustomFrameLayout.this.hoverLayout.setVisibility(VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            if (!CustomFrameLayout.this.isSelected()) {
+                                CustomFrameLayout.this.hoverLayout.setVisibility(INVISIBLE);
+                            }
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    };
         }
 
     }
