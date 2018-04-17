@@ -1343,6 +1343,8 @@ public abstract class BaseView extends FrameLayout {
                 if (0 < viewWidth && 0 < viewHeight) {
                     if (viewWidth < viewHeight) {
                         viewHeight = (int) ((float) viewWidth * 4.0f / 3.0f);
+                    } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY){
+                        viewHeight = (int) ((float) viewWidth * 1.0f / 1.0f);
                     } else {
                         viewHeight = (int) ((float) viewWidth * 9.0f / 16.0f);
                     }

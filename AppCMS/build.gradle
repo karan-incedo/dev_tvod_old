@@ -414,7 +414,7 @@ dependencies {
     implementation  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation project(':SSLCommerz')
+   // implementation project(':SSLCommerz')
     implementation 'com.android.volley:volley:1.0.0'
 
 }
