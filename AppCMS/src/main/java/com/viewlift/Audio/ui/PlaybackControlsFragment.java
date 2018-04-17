@@ -360,14 +360,18 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     private void updateCastInfo() {
-        if (getActivity() != null && getActivity().getApplicationContext() != null && CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
-            String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
-            String line3Text = castName == null ? "" : getResources()
-                    .getString(R.string.casting_to_device, castName);
-            extra_info.setText(line3Text);
-            extra_info.setVisibility(View.VISIBLE);
-        } else {
-            extra_info.setVisibility(View.GONE);
+        try {
+            if (getActivity() != null && getActivity().getApplicationContext() != null && CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
+                String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
+                String line3Text = castName == null ? "" : getResources()
+                        .getString(R.string.casting_to_device, castName);
+                extra_info.setText(line3Text);
+                extra_info.setVisibility(View.VISIBLE);
+            } else {
+                extra_info.setVisibility(View.GONE);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
