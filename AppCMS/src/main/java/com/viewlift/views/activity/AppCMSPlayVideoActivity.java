@@ -301,8 +301,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
         }
-                /*If the video is already downloaded, play if from there, even if Internet is
-                * available*/
+        /*If the video is already downloaded, play if from there, even if Internet is
+         * available*/
         else if (gist.getId() != null
                 && appCMSPresenter.getRealmController() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
@@ -453,7 +453,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+//        super.onBackPressed();
         finish();
         appCMSPresenter.setEntitlementPendingVideoData(null);
     }
@@ -647,7 +647,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         if (availableStreamingQualities == null) {
             availableStreamingQualities = new ArrayList<>();
-        }else {
+        } else {
             availableStreamingQualities.clear();
         }
         if (videoAssets != null && videoAssets.getMpeg() != null) {
@@ -696,10 +696,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (BaseView.isTablet(this)){
+        if (BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-        }else
-        {
+        } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }

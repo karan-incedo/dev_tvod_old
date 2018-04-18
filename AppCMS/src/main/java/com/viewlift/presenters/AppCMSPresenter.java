@@ -385,6 +385,8 @@ public class AppCMSPresenter {
     public static final String ACTION_LINK_YOUR_ACCOUNT = "appcms_link_your_account_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
@@ -671,6 +673,8 @@ public class AppCMSPresenter {
     private boolean pageLoading;
     private boolean cancelLoad;
     private boolean cancelAllLoads;
+    private int currentResumedActivities = 0;
+
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
@@ -1437,6 +1441,10 @@ public class AppCMSPresenter {
                         }
                     }).execute(params);
         }
+    }
+
+    public void setResumedActivities(int currentResumedActivities) {
+        this.currentResumedActivities = currentResumedActivities;
     }
 
     /**
@@ -4216,7 +4224,13 @@ public class AppCMSPresenter {
         customToast.setDuration(Toast.LENGTH_SHORT);
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
-        customToast.show();
+
+        /**
+         * if no activity in visible state ,dont show the toast message
+         */
+        if (this.currentResumedActivities >= 1) {
+            customToast.show();
+        }
     }
 
     public void cancelCustomToast() {
@@ -5590,6 +5604,7 @@ public class AppCMSPresenter {
             //Log.e(TAG, "Error editing history for " + filmId + ": " + e.getMessage());
         }
     }
+
     private void progressDialogInit(int maxSize) {
         progressDialogDeleteDownload = new ProgressDialog(currentActivity);
 
@@ -5610,6 +5625,7 @@ public class AppCMSPresenter {
         progressDialogDeleteDownload.setProgress(0);
         progressDialogDeleteDownload.show();
     }
+
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
 
         realmController = RealmController.with(currentActivity);
@@ -6715,7 +6731,7 @@ public class AppCMSPresenter {
                         } else {
                             if (finalTryCount < 3) {
                                 getAudioDetailPlaylist(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
-                            }else{
+                            } else {
                                 appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
 
                             }
@@ -16764,7 +16780,7 @@ public class AppCMSPresenter {
 //                                            radiusDifference = 2;
 //                                        }
                                         imageView.setBackground(null);
-                                        Log.e(TAG, "Draw circular image: " + filmId+" percentage- "+downloadPercent);
+                                        Log.e(TAG, "Draw circular image: " + filmId + " percentage- " + downloadPercent);
 
                                         circularImageBar(imageView, downloadPercent, radiusDifference);
                                     } else if (cancelled) {
@@ -16839,9 +16855,9 @@ public class AppCMSPresenter {
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
                 Bitmap b = null;
-                Canvas canvas=null;
+                Canvas canvas = null;
                 Paint paint = null;
-                if(b==null){
+                if (b == null) {
                     b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
                     canvas = new Canvas(b);
                     paint = new Paint();

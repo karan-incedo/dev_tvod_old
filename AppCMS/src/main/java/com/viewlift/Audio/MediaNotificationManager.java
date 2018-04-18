@@ -53,7 +53,8 @@ import com.viewlift.views.activity.AppCMSPageActivity;
  * won't be killed during playback.
  */
 public class MediaNotificationManager extends BroadcastReceiver {
-
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     public static final String ACTION_PAUSE = "com.viewlift.Audio.pause";
     public static final String ACTION_PLAY = "com.viewlift.Audio.play";
     public static final String ACTION_PREV = "com.viewlift.Audio.prev";
@@ -268,6 +269,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
         openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
+        if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+            mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+        } else {
+            mMetadata = mController.getMetadata();
+        }
+        openUI.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION, mMetadata);
+
 //        }
 //        openUI.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT );
         return PendingIntent.getActivity(mService.getApplicationContext(), REQUEST_CODE, openUI,

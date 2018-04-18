@@ -262,7 +262,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     radiusDifference = 3;
                 }
 
-                if (contentDatum.getGist() != null ) {
+                if (contentDatum.getGist() != null) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
                     contentDatum.getGist().setDataLoaded(true);
 //                    if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {

@@ -863,6 +863,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
     }
 
+
     private class UpdateMetaDataReceiver extends BroadcastReceiver {
 
         @Override
