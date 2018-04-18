@@ -385,6 +385,8 @@ public class AppCMSPresenter {
     public static final String ACTION_LINK_YOUR_ACCOUNT = "appcms_link_your_account_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
@@ -671,6 +673,8 @@ public class AppCMSPresenter {
     private boolean pageLoading;
     private boolean cancelLoad;
     private boolean cancelAllLoads;
+    private int currentResumedActivities = 0;
+
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
@@ -711,6 +715,8 @@ public class AppCMSPresenter {
     private ResponsePojo responsePojo;
     private String subscribeEmail;
     ProgressDialog progressDialog = null;
+    ProgressDialog progressDialogDeleteDownload = null;
+
     private boolean isAudioPlayerOpen;
     public HashMap<String, PlaylistDetails> playlistDowloadValues = new HashMap<String, PlaylistDetails>();
 
@@ -1435,6 +1441,10 @@ public class AppCMSPresenter {
                         }
                     }).execute(params);
         }
+    }
+
+    public void setResumedActivities(int currentResumedActivities) {
+        this.currentResumedActivities = currentResumedActivities;
     }
 
     /**
@@ -4214,7 +4224,13 @@ public class AppCMSPresenter {
         customToast.setDuration(Toast.LENGTH_SHORT);
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
-        customToast.show();
+
+        /**
+         * if no activity in visible state ,dont show the toast message
+         */
+        if (this.currentResumedActivities >= 1) {
+            customToast.show();
+        }
     }
 
     public void cancelCustomToast() {
@@ -5164,7 +5180,9 @@ public class AppCMSPresenter {
                         getLoggedInUser());
                 return downloadVideoRealm != null &&
                         downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+                        (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_RUNNING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PAUSED);
             } catch (Exception e) {
 
             }
@@ -5460,7 +5478,7 @@ public class AppCMSPresenter {
             downloadTimerTask.imageView = imageView;
 
             if (!downloadTimerTask.running) {
-                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 3000);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
@@ -5585,6 +5603,27 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //Log.e(TAG, "Error editing history for " + filmId + ": " + e.getMessage());
         }
+    }
+
+    private void progressDialogInit(int maxSize) {
+        progressDialogDeleteDownload = new ProgressDialog(currentActivity);
+
+
+        //Set the progress dialog to display a horizontal progress bar
+        progressDialogDeleteDownload.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //Set the dialog title to 'Loading...'
+        progressDialogDeleteDownload.setTitle("Deleting contents...");
+        //Set the dialog message to 'Loading application View, please wait...'
+        progressDialogDeleteDownload.setMessage("Removing contents , please wait...");
+        //This dialog can't be canceled by pressing the back key
+        progressDialogDeleteDownload.setCancelable(false);
+        //This dialog isn't indeterminate
+        progressDialogDeleteDownload.setIndeterminate(false);
+        //The maximum number of items is 100
+        progressDialogDeleteDownload.setMax(maxSize);
+        //Set the current progress to zero
+        progressDialogDeleteDownload.setProgress(0);
+        progressDialogDeleteDownload.show();
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
@@ -6692,7 +6731,7 @@ public class AppCMSPresenter {
                         } else {
                             if (finalTryCount < 3) {
                                 getAudioDetailPlaylist(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen, playAudio, finalTryCount, appCMSAudioDetailAPIAction);
-                            }else{
+                            } else {
                                 appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
 
                             }
@@ -16753,6 +16792,8 @@ public class AppCMSPresenter {
 //                                            radiusDifference = 2;
 //                                        }
                                         imageView.setBackground(null);
+                                        Log.e(TAG, "Draw circular image: " + filmId + " percentage- " + downloadPercent);
+
                                         circularImageBar(imageView, downloadPercent, radiusDifference);
                                     } else if (cancelled) {
                                         imageView.setImageBitmap(null);
@@ -16825,9 +16866,16 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b     = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(b);
-                Paint paint = new Paint();
+                Bitmap b = null;
+                Canvas canvas = null;
+                Paint paint = null;
+                if (b == null) {
+                    b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                    canvas = new Canvas(b);
+                    paint = new Paint();
+                }
+                //Canvas canvas = new Canvas(b);
+                //Paint paint = new Paint();
 
                 paint.setColor(Color.DKGRAY);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
@@ -16857,13 +16905,13 @@ public class AppCMSPresenter {
 //                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-
-                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                iv2.setImageBitmap(b);
+               /* appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         iv2.setImageBitmap(b);
                     }
-                });
+                });*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

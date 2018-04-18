@@ -652,6 +652,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
                                 Glide.with(context.getApplicationContext())
                                         .load(imageUrl).apply(requestOptions)
+//                                        .override(size,size)
                                         .into(((ImageView) view));
                             }
                         } else {
@@ -685,31 +686,38 @@ public class CollectionGridItemView extends BaseView {
 
                     String userId = appCMSPresenter.getLoggedInUser();
 
-                    try {
-                        int radiusDifference = 5;
-                        if (BaseView.isTablet(context)) {
-                            radiusDifference = 2;
-                            if(appCMSUIcomponentViewType==AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY){
-                                radiusDifference=4;
+                    if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())){
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
+                    }else {
+                        try {
+                            int radiusDifference = 7;
+                            if (BaseView.isTablet(context)) {
+                                radiusDifference = 4;
+                            }
+                            if(data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                radiusDifference = 5;
+                                if (BaseView.isTablet(context)) {
+                                    radiusDifference = 3;
+                                }
+                            }
+                            ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                                    updateDownloadImageIconActionMap.get(data.getGist().getId());
+                            if (updateDownloadImageIconAction == null) {
+                                updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
+                                        data, userId, radiusDifference, moduleId);
+                                updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
                             }
 
+                            view.setTag(data.getGist().getId());
+
+                            updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
+
+                            appCMSPresenter.getUserVideoDownloadStatus(
+                                    data.getGist().getId(), updateDownloadImageIconAction, userId);
+                        } catch (Exception e) {
+
                         }
-                        ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
-                                updateDownloadImageIconActionMap.get(data.getGist().getId());
-                        if (updateDownloadImageIconAction == null) {
-                            updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                    data, userId, radiusDifference, moduleId);
-                            updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
-                        }
-
-                        view.setTag(data.getGist().getId());
-
-                        updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
-
-                        appCMSPresenter.getUserVideoDownloadStatus(
-                                data.getGist().getId(), updateDownloadImageIconAction, userId);
-                    } catch (Exception e) {
-
                     }
                 } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
                  *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
@@ -764,10 +772,10 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             }
                             if (BaseView.isTablet(view.getContext())) {
-                                if (isLandscape(getContext()) == true) {
+                                if(isLandscape(getContext()) == true) {
                                     ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                     ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                } else {
+                                }else{
                                     setBorder(((TextView) view));
                                     ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                                 }
@@ -775,10 +783,10 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
-                        } else {
+                        }else{
                             if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == true) {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                            } else {
+                            }else{
                                 ((TextView) view).setTextColor(Color.parseColor(
                                         childComponent.getTextColor()));
                             }
@@ -808,7 +816,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                         if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context) == true) {
                             ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        } else {
+                        }else{
                             ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                         }
 

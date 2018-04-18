@@ -13,4 +13,6 @@
     <color name="transparentColor">#00000000</color>
     <color name="audioSeekBg">#414344</color>
     <color name="volumeProgress">#B5B5B5</color>
+    <color name="color_white">#ffffff</color>
+
 </resources>
