@@ -5100,7 +5100,7 @@ public class AppCMSPresenter {
                 List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
                 return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
             } catch (Exception e) {
-
+                            e.printStackTrace();
             }
         }
         return false;
@@ -12490,6 +12490,18 @@ public class AppCMSPresenter {
                                             false,
                                             false
                                     );
+                                }
+                            }else {
+                                if (loginFromNavPage) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            true,
+                                            deeplinkSearchQuery);
                                 }
                             }
                             if (currentActivity != null) {

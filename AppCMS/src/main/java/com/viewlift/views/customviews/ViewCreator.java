@@ -1877,7 +1877,7 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+               /* if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -1888,18 +1888,18 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } /*else if (moduleInfo.getBlockName().contains("carousel01")) {
+                } else if (moduleInfo.getBlockName().contains("carousel01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
+                }else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -2550,7 +2550,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    /*AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                       AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
                             component.getLayout(),
@@ -2562,8 +2562,10 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
                             appCMSAndroidModules);
-*/
-                    CollectionGridItemViewCreator collectionGridItemViewCreator =
+
+   //Todo temp code for Hoichi Only
+/*
+     CollectionGridItemViewCreator collectionGridItemViewCreator =
                             new CollectionGridItemViewCreator(this,
                                     parentLayout,
                                     false,
@@ -2589,6 +2591,7 @@ public class ViewCreator {
                             jsonValueKeyMap,
                             viewType,
                             (RecyclerView) componentViewResult.componentView);
+         */
 
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
@@ -2628,7 +2631,7 @@ public class ViewCreator {
                                         LinearLayoutManager.VERTICAL,
                                         false));
 
-                        /*AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                        AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -2639,33 +2642,37 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType,
-                                appCMSAndroidModules);*/
-                        CollectionGridItemViewCreator collectionGridItemViewCreator =
-                                new CollectionGridItemViewCreator(this,
-                                        parentLayout,
-                                        false,
-                                        component,
-                                        appCMSPresenter,
-                                        moduleAPI,
-                                        appCMSAndroidModules,
-                                        settings,
-                                        jsonValueKeyMap,
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                                        true,
-                                        true,
-                                        viewType,
-                                        false,
-                                        false);
+                                appCMSAndroidModules);
 
-                        AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
-                                collectionGridItemViewCreator,
-                                moduleAPI != null ? moduleAPI.getContentData() : null,
-                                component.getComponents(),
-                                appCMSPresenter,
-                                jsonValueKeyMap,
-                                viewType,
-                                (RecyclerView) componentViewResult.componentView);
+                        //Todo temp code for Hoichi Only
+/*
+     CollectionGridItemViewCreator collectionGridItemViewCreator =
+                            new CollectionGridItemViewCreator(this,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    appCMSPresenter,
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    settings,
+                                    jsonValueKeyMap,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    true,
+                                    true,
+                                    viewType,
+                                    false,
+                                    false);
+
+                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
+                            collectionGridItemViewCreator,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
+         */
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
