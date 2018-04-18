@@ -5102,7 +5102,7 @@ public class AppCMSPresenter {
                 List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
                 return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
             } catch (Exception e) {
-
+                            e.printStackTrace();
             }
         }
         return false;
