@@ -1446,7 +1446,8 @@ public class AppCMSPresenter {
     public void setResumedActivities(int currentResumedActivities) {
         this.currentResumedActivities = currentResumedActivities;
     }
-    public int getResumedActivities(){
+
+    public int getResumedActivities() {
         return this.currentResumedActivities;
     }
 
@@ -4461,28 +4462,31 @@ public class AppCMSPresenter {
     }
 
     private long getRemainingDownloadSize() {
+        if (currentActivity != null) {
+            realmController = RealmController.with(currentActivity);
+            if (getRealmController() != null) {
+                List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
+                long bytesRemainDownload = 0L;
+                if(remainDownloads!=null && remainDownloads.size()>0) {
+                    for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
 
-        realmController = RealmController.with(currentActivity);
-        if (getRealmController() != null) {
-            List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
-            long bytesRemainDownload = 0L;
-            for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
+                        DownloadManager.Query query = new DownloadManager.Query();
+                        query.setFilterById(downloadVideoRealm.getVideoId_DM());
+                        Cursor c = downloadManager.query(query);
+                        if (c != null) {
+                            if (c.moveToFirst()) {
+                                long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                                long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                                totalSize -= downloaded;
+                                bytesRemainDownload += totalSize;
+                            }
+                            c.close();
+                        }
 
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadVideoRealm.getVideoId_DM());
-                Cursor c = downloadManager.query(query);
-                if (c != null) {
-                    if (c.moveToFirst()) {
-                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        totalSize -= downloaded;
-                        bytesRemainDownload += totalSize;
                     }
-                    c.close();
+                    return bytesRemainDownload / (1024L * 1024L);
                 }
-
             }
-            return bytesRemainDownload / (1024L * 1024L);
         }
         return 0L;
     }
@@ -5100,7 +5104,7 @@ public class AppCMSPresenter {
                 List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
                 return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
             } catch (Exception e) {
-                            e.printStackTrace();
+                e.printStackTrace();
             }
         }
         return false;
@@ -12491,7 +12495,7 @@ public class AppCMSPresenter {
                                             false
                                     );
                                 }
-                            }else {
+                            } else {
                                 if (loginFromNavPage) {
                                     navigateToPage(homePageNavItem.getPageId(),
                                             homePageNavItem.getTitle(),

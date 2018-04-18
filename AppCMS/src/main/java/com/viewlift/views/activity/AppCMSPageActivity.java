@@ -1137,10 +1137,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         NetworkInfo activeNetwork = null;
-
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
         appCMSPresenter.setNetworkConnected(isConnected, null);
+
+        if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+            appCMSPresenter.setShowNetworkConnectivity(true);
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        } else {
+            appCMSPresenter.setShowNetworkConnectivity(false);
+            appCMSPresenter.cancelAlertDialog();
+        }
         if (activeNetwork != null) {
             appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
         }
