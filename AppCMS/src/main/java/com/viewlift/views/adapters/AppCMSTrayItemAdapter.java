@@ -1005,7 +1005,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     switch (componentKey) {
                         case PAGE_WATCHLIST_DURATION_KEY:
-                            viewHolder.appCMSContinueWatchingDuration.setTextColor(Color.parseColor(textColorValue));
+                            viewHolder.appCMSContinueWatchingDuration.setTextColor(textColor);
 
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
 //                                viewHolder.appCMSContinueWatchingDuration
