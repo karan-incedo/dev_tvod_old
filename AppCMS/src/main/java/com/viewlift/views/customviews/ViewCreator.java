@@ -2564,8 +2564,7 @@ public class ViewCreator {
                             appCMSAndroidModules);
 
    //Todo temp code for Hoichi Only
-/*
-     CollectionGridItemViewCreator collectionGridItemViewCreator =
+    /* CollectionGridItemViewCreator collectionGridItemViewCreator =
                             new CollectionGridItemViewCreator(this,
                                     parentLayout,
                                     false,
@@ -2591,8 +2590,7 @@ public class ViewCreator {
                             jsonValueKeyMap,
                             viewType,
                             (RecyclerView) componentViewResult.componentView);
-         */
-
+*/
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
@@ -2671,8 +2669,8 @@ public class ViewCreator {
                             appCMSPresenter,
                             jsonValueKeyMap,
                             viewType,
-                            (RecyclerView) componentViewResult.componentView);
-         */
+                            (RecyclerView) componentViewResult.componentView);*/
+
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
