@@ -1446,6 +1446,9 @@ public class AppCMSPresenter {
     public void setResumedActivities(int currentResumedActivities) {
         this.currentResumedActivities = currentResumedActivities;
     }
+    public int getResumedActivities(){
+        return this.currentResumedActivities;
+    }
 
     /**
      * Launches the Video Player view associated with the input data
@@ -4224,13 +4227,8 @@ public class AppCMSPresenter {
         customToast.setDuration(Toast.LENGTH_SHORT);
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
+        customToast.show();
 
-        /**
-         * if no activity in visible state ,dont show the toast message
-         */
-        if (this.currentResumedActivities >= 1) {
-            customToast.show();
-        }
     }
 
     public void cancelCustomToast() {
