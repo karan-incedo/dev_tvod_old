@@ -1004,19 +1004,19 @@
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 }
               },
               "type": "image",
@@ -1028,19 +1028,19 @@
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "xAxis": 0,
                   "width": 227.62,
-                  "height": 128
+                  "height": 134
                 }
               },
               "type": "image",
@@ -1051,16 +1051,22 @@
                 "mobile": {
                   "yAxis": 134,
                   "fontSize": 15,
+                  "thumbnailHeight":134,
+                  "thumbnailWidth":227.62,
                   "height": 50
                 },
                 "tabletLandscape": {
                   "yAxis": 134,
                   "fontSize": 16,
+                  "thumbnailHeight":134,
+                  "thumbnailWidth":227.62,
                   "height": 50
                 },
                 "tabletPortrait": {
                   "yAxis": 134,
                   "fontSize": 16,
+                  "thumbnailHeight":134,
+                  "thumbnailWidth":227.62,
                   "height": 50
                 }
               },
@@ -1099,23 +1105,29 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 107,
+                  "yAxis": 114,
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
+                  "thumbnailHeight":114,
+                  "thumbnailWidth":227.62,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "yAxis": 107,
+                  "yAxis": 114,
                   "xAxis": 0,
                   "leftMargin": 0,
                   "fontSize": 12,
+                  "thumbnailHeight":114,
+                  "thumbnailWidth":227.62,
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "yAxis": 107,
+                  "yAxis": 114,
                   "xAxis": 0,
                   "fontSize": 12,
+                  "thumbnailHeight":114,
+                  "thumbnailWidth":227.62,
                   "height": 20
                 }
               },

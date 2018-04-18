@@ -186,8 +186,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
                                     appCMSPresenter.showLoadingDialog(true);
-                                    DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
-                                    appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
+                                    try {
+                                        DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
+                                        appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
+                                    }catch(NullPointerException e){
+                                        e.printStackTrace();
+                                    }
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
