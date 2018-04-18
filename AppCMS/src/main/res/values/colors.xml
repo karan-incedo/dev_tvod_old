@@ -3,7 +3,7 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#f4181c</color>
-    <color name="backgroundColor">#000000</color>
+    <color name="backgroundColor">#fff</color>
     <color name="splashbackgroundColor">#F81004</color>
     <color name="colorNavBarText">#8c8c8c</color>
     <color name="facebookBlue">#3b5998</color>

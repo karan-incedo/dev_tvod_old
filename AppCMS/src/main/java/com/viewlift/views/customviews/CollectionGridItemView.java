@@ -665,6 +665,7 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent, data, position));
                     }
                 }
+             //Bellow is end of thumbnail Image
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");

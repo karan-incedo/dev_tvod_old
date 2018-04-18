@@ -12454,6 +12454,18 @@ public class AppCMSPresenter {
                                             false
                                     );
                                 }
+                            }else {
+                                if (loginFromNavPage) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            true,
+                                            deeplinkSearchQuery);
+                                }
                             }
                             if (currentActivity != null) {
                                 Apptentive.engage(currentActivity, currentActivity.getString(R.string.app_cms_apptentive_login_event_name));
