@@ -338,7 +338,7 @@
 
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
-    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
+    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading content, You can still access your already downloaded content after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
     <string name="app_cms_login_and_signup_button_text">SIGNUP</string>
     <string name="app_cms_signout_button_text">SIGN OUT</string>
