@@ -33,6 +33,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -78,6 +79,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.Audio.utils.TaskRemoveService;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -295,10 +297,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_appcms_page);
 
-        try{
+        try {
 
             checkPlayServices();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         ButterKnife.bind(this);
@@ -327,6 +329,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                 Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                if (fullScreenIntent.getParcelableExtra(
+                        PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                    MediaMetadataCompat description = fullScreenIntent.getParcelableExtra(
+                            PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                    fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                }
                 startActivity(fullScreenIntent);
             }
             appCMSPresenter.setAppHomeActivityCreated(true);
@@ -370,32 +379,32 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
                         if (isActive) {
-                            try{
-                            handleLaunchPageAction(updatedAppCMSBinder,
-                                    false,
-                                    false,
-                                    false);
+                            try {
+                                handleLaunchPageAction(updatedAppCMSBinder,
+                                        false,
+                                        false,
+                                        false);
 
-                            if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                    updatedAppCMSBinder != null &&
-                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                    appCMSPresenter.unrestrictPortraitOnly();
-                                    if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                            ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
+                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                        updatedAppCMSBinder != null &&
+                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                        appCMSPresenter.unrestrictPortraitOnly();
+                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
+                                                ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            exitFullScreenVideoPlayer(true);
+                                        }
                                     } else {
-                                        exitFullScreenVideoPlayer(true);
-                                    }
-                                } else {
-                                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
-                                    } else {
-                                        ViewCreator.enableFullScreenMode();
+                                        if (ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            ViewCreator.enableFullScreenMode();
+                                        }
                                     }
                                 }
-                            }
-                        }catch(Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else if (updatedAppCMSBinder != null) {
@@ -1450,6 +1459,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        if (intent.getParcelableExtra(
+                                PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                            MediaMetadataCompat description = intent.getParcelableExtra(
+                                    PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                            fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                        }
                         startActivity(fullScreenIntent);
                     }
                     appCMSPresenter.setAppHomeActivityCreated(true);

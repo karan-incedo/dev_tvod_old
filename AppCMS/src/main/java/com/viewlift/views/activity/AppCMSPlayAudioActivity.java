@@ -102,7 +102,10 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        appCMSPresenter.sendGaScreen("Music");
+        checkAudioDownloadStatus();
+    }
+
+    private void checkAudioDownloadStatus(){
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         if (currentAudio != null &&
                 currentAudio.getGist() != null &&
@@ -115,7 +118,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
-
 
     private void launchAudioPlayer() {
         try {
@@ -186,7 +188,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+//        super.onBackPressed();
         finish();
     }
 
@@ -194,6 +196,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
         String audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
+        checkAudioDownloadStatus();
     }
 
 

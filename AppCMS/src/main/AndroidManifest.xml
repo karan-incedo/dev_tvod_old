@@ -126,7 +126,6 @@
         -->
         <activity
             android:name=".views.activity.AppCMSPlayAudioActivity"
-            android:theme="@style/TransparentTheme"
             android:launchMode="singleTask">
 
             <!--<intent-filter>-->

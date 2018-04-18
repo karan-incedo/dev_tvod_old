@@ -321,7 +321,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             videoSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
             int radiusDifference = 5;
             if (BaseView.isTablet(componentView.getContext())) {
-                radiusDifference = 2;
+                radiusDifference = 3;
             }
             if (contentDatum.getGist() != null) {
                 deleteDownloadButton.setTag(contentDatum.getGist().getId());
