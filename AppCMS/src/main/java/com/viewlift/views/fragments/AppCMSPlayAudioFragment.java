@@ -245,8 +245,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MediaControllerCompat.getMediaController(getActivity()).getTransportControls().seekTo(seekBar.getProgress());
-                scheduleSeekbarUpdate();
+                if(getActivity()!=null) {
+                    MediaControllerCompat.getMediaController(getActivity()).getTransportControls().seekTo(seekBar.getProgress());
+                    scheduleSeekbarUpdate();
+                }
             }
         });
         updateFromParams(getActivity().getIntent());
@@ -860,6 +862,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             return super.transform(resource, outWidth, outHeight);
         }
     }
+
 
     private class UpdateMetaDataReceiver extends BroadcastReceiver {
 

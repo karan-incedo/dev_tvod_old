@@ -147,9 +147,9 @@ public class RealmController {
                     String.valueOf(DownloadStatus.STATUS_PENDING),
                     String.valueOf(DownloadStatus.STATUS_RUNNING)};
             return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                    .equalTo("userId", userId).findAllAsync();
+                    .equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
+            Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
         }
         return null;
     }

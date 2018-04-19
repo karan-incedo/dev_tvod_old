@@ -245,7 +245,7 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
-        } else if (!BaseView.isTablet(getContext())) {
+        } else if (!BaseView.isTablet(getContext()) && appCMSPresenter!=null) {
             appCMSPresenter.restrictPortraitOnly();
         }
         setMiniPlayer();

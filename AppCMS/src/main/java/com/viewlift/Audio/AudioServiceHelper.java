@@ -68,14 +68,17 @@ public class AudioServiceHelper {
 
     public void onStart() {
 
-        mControlsFragment = (PlaybackControlsFragment) mActivity.getFragmentManager()
-                .findFragmentById(R.id.fragment_playback_controls);
-        if (mControlsFragment == null) {
-            throw new IllegalStateException("Mising fragment with id 'controls'. Cannot continue.");
+        try {
+            mControlsFragment = (PlaybackControlsFragment) mActivity.getFragmentManager()
+                    .findFragmentById(R.id.fragment_playback_controls);
+//        if (mControlsFragment == null) {
+//            throw new IllegalStateException("Mising fragment with id 'controls'. Cannot continue.");
+//        }
+
+            hidePlaybackControls();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
-
-        hidePlaybackControls();
-
         mMediaBrowser.connect();
     }
 

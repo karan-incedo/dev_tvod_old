@@ -423,6 +423,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 mPlaybackManager.handleStopRequest(null);
                 mPlaybackManager.setCurrentMediaId(null);
                 AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+                stopNotification();
                 stopSelf();
 
             }

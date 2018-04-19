@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.StaleDataException;
 import android.graphics.Bitmap;
@@ -332,6 +333,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Url;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -393,6 +396,8 @@ public class AppCMSPresenter {
     public static final String ACTION_LINK_YOUR_ACCOUNT = "appcms_link_your_account_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
@@ -680,6 +685,8 @@ public class AppCMSPresenter {
     private boolean pageLoading;
     private boolean cancelLoad;
     private boolean cancelAllLoads;
+    private int currentResumedActivities = 0;
+
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
@@ -720,6 +727,8 @@ public class AppCMSPresenter {
     private ResponsePojo responsePojo;
     private String subscribeEmail;
     ProgressDialog progressDialog = null;
+    ProgressDialog progressDialogDeleteDownload = null;
+
     private boolean isAudioPlayerOpen;
     public HashMap<String, PlaylistDetails> playlistDowloadValues = new HashMap<String, PlaylistDetails>();
 
@@ -1446,6 +1455,14 @@ public class AppCMSPresenter {
                         }
                     }).execute(params);
         }
+    }
+
+    public void setResumedActivities(int currentResumedActivities) {
+        this.currentResumedActivities = currentResumedActivities;
+    }
+
+    public int getResumedActivities() {
+        return this.currentResumedActivities;
     }
 
     /**
@@ -4318,6 +4335,7 @@ public class AppCMSPresenter {
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
         customToast.show();
+
     }
 
     public void cancelCustomToast() {
@@ -4550,28 +4568,31 @@ public class AppCMSPresenter {
     }
 
     private long getRemainingDownloadSize() {
+        if (currentActivity != null) {
+            realmController = RealmController.with(currentActivity);
+            if (getRealmController() != null) {
+                List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
+                long bytesRemainDownload = 0L;
+                if(remainDownloads!=null && remainDownloads.size()>0) {
+                    for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
 
-        realmController = RealmController.with(currentActivity);
-        if (getRealmController() != null) {
-            List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
-            long bytesRemainDownload = 0L;
-            for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
+                        DownloadManager.Query query = new DownloadManager.Query();
+                        query.setFilterById(downloadVideoRealm.getVideoId_DM());
+                        Cursor c = downloadManager.query(query);
+                        if (c != null) {
+                            if (c.moveToFirst()) {
+                                long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                                long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                                totalSize -= downloaded;
+                                bytesRemainDownload += totalSize;
+                            }
+                            c.close();
+                        }
 
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadVideoRealm.getVideoId_DM());
-                Cursor c = downloadManager.query(query);
-                if (c != null) {
-                    if (c.moveToFirst()) {
-                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        totalSize -= downloaded;
-                        bytesRemainDownload += totalSize;
                     }
-                    c.close();
+                    return bytesRemainDownload / (1024L * 1024L);
                 }
-
             }
-            return bytesRemainDownload / (1024L * 1024L);
         }
         return 0L;
     }
@@ -5190,7 +5211,7 @@ public class AppCMSPresenter {
                 List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
                 return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
         return false;
@@ -5268,7 +5289,9 @@ public class AppCMSPresenter {
                         getLoggedInUser());
                 return downloadVideoRealm != null &&
                         downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+                        (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_RUNNING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PAUSED);
             } catch (Exception e) {
 
             }
@@ -5564,7 +5587,7 @@ public class AppCMSPresenter {
             downloadTimerTask.imageView = imageView;
 
             if (!downloadTimerTask.running) {
-                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 3000);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
@@ -5689,6 +5712,27 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //Log.e(TAG, "Error editing history for " + filmId + ": " + e.getMessage());
         }
+    }
+
+    private void progressDialogInit(int maxSize) {
+        progressDialogDeleteDownload = new ProgressDialog(currentActivity);
+
+
+        //Set the progress dialog to display a horizontal progress bar
+        progressDialogDeleteDownload.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //Set the dialog title to 'Loading...'
+        progressDialogDeleteDownload.setTitle("Deleting contents...");
+        //Set the dialog message to 'Loading application View, please wait...'
+        progressDialogDeleteDownload.setMessage("Removing contents , please wait...");
+        //This dialog can't be canceled by pressing the back key
+        progressDialogDeleteDownload.setCancelable(false);
+        //This dialog isn't indeterminate
+        progressDialogDeleteDownload.setIndeterminate(false);
+        //The maximum number of items is 100
+        progressDialogDeleteDownload.setMax(maxSize);
+        //Set the current progress to zero
+        progressDialogDeleteDownload.setProgress(0);
+        progressDialogDeleteDownload.show();
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
@@ -12575,6 +12619,18 @@ public class AppCMSPresenter {
                                             false
                                     );
                                 }
+                            } else {
+                                if (loginFromNavPage) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            true,
+                                            deeplinkSearchQuery);
+                                }
                             }
                             if (currentActivity != null) {
                                 Apptentive.engage(currentActivity, currentActivity.getString(R.string.app_cms_apptentive_login_event_name));
@@ -16862,6 +16918,8 @@ public class AppCMSPresenter {
 //                                            radiusDifference = 2;
 //                                        }
                                         imageView.setBackground(null);
+                                        Log.e(TAG, "Draw circular image: " + filmId + " percentage- " + downloadPercent);
+
                                         circularImageBar(imageView, downloadPercent, radiusDifference);
                                     } else if (cancelled) {
                                         imageView.setImageBitmap(null);
@@ -16934,9 +16992,16 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(b);
-                Paint paint = new Paint();
+                Bitmap b = null;
+                Canvas canvas = null;
+                Paint paint = null;
+                if (b == null) {
+                    b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                    canvas = new Canvas(b);
+                    paint = new Paint();
+                }
+                //Canvas canvas = new Canvas(b);
+                //Paint paint = new Paint();
 
                 paint.setColor(Color.DKGRAY);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
@@ -16966,13 +17031,13 @@ public class AppCMSPresenter {
 //                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-
-                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                iv2.setImageBitmap(b);
+               /* appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         iv2.setImageBitmap(b);
                     }
-                });
+                });*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }
