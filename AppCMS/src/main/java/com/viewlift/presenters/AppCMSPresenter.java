@@ -3636,8 +3636,7 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
-        return false;
-//        return useCCAve;
+        return useCCAve;
     }
 
     public boolean useSSLCommerz() {
@@ -3652,8 +3651,7 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getSslCommerz() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                 appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
-        return true;
-//        return useSSLCommerz;
+        return useSSLCommerz;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId,  String planName) {
