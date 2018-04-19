@@ -2178,6 +2178,9 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
+                                if (componentView.getParent() != null)
+                                    ((ViewGroup) componentView.getParent()).removeView(componentView);
+
                                 if (component.isHeaderView()) {
                                     pageView.addToHeaderView(componentView);
                                 } else {
@@ -2387,7 +2390,7 @@ public class ViewCreator {
 
         return collectionGridItemView;
     }
-
+    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter=null;
     /**
      * This method is used to create an individual component view, which may by a recycler view,
      * text view, button, image view, etc.  The result is stored in the componentViewResult member object.
@@ -2545,56 +2548,32 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView = new RecyclerView(context);
 
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.VERTICAL,
-                                    false));
+                    if(appCMSPresenter.getDownlistScreenCache()==null) {
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.VERTICAL,
+                                        false));
 
-                       AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);
+                         appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType,
+                                appCMSAndroidModules);
 
-   //Todo temp code for Hoichi Only
-    /* CollectionGridItemViewCreator collectionGridItemViewCreator =
-                            new CollectionGridItemViewCreator(this,
-                                    parentLayout,
-                                    false,
-                                    component,
-                                    appCMSPresenter,
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    settings,
-                                    jsonValueKeyMap,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    true,
-                                    true,
-                                    viewType,
-                                    false,
-                                    false);
-
-                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
-                            collectionGridItemViewCreator,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            viewType,
-                            (RecyclerView) componentViewResult.componentView);
-*/
-
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
-                    componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
-                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                        componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
+                        componentViewResult.onInternalEvent.setModuleId(moduleId);
+                        appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                    }else{
+                        ( componentViewResult.componentView)=appCMSPresenter.getDownlistScreenCache();
+                    }
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSUserWatHisDowAdapter)
@@ -2629,6 +2608,8 @@ public class ViewCreator {
                                         LinearLayoutManager.VERTICAL,
                                         false));
 
+
+
                         AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
@@ -2641,35 +2622,6 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType,
                                 appCMSAndroidModules);
-
-                        //Todo temp code for Hoichi Only
-/*
-     CollectionGridItemViewCreator collectionGridItemViewCreator =
-                            new CollectionGridItemViewCreator(this,
-                                    parentLayout,
-                                    false,
-                                    component,
-                                    appCMSPresenter,
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    settings,
-                                    jsonValueKeyMap,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    true,
-                                    true,
-                                    viewType,
-                                    false,
-                                    false);
-
-                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
-                            collectionGridItemViewCreator,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            viewType,
-                            (RecyclerView) componentViewResult.componentView);*/
 
 
 
@@ -3906,6 +3858,9 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.stopLoader();
+
+                                            System.out.println("started clean download finish");
                                         }, deleteAllFiles);
                                         break;
 

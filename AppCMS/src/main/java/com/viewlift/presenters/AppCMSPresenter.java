@@ -37,6 +37,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
@@ -550,6 +552,8 @@ public class AppCMSPresenter {
     private final Map<String, String> actionToPageAPIUrlMap;
     private final Map<String, String> actionToPageNameMap;
     private final Map<String, String> pageIdToPageNameMap;
+    private  RecyclerView downloadRecyclerView=null;
+
     private final Map<AppCMSActionType, MetaPage> actionTypeToMetaPageMap;
     private final List<Action1<Boolean>> onOrientationChangeHandlers;
     private final Map<String, List<OnInternalEvent>> onActionInternalEvents;
@@ -5607,25 +5611,21 @@ public class AppCMSPresenter {
         }
     }
 
-    private void progressDialogInit(int maxSize) {
+    private void progressDialogInit() {
         progressDialogDeleteDownload = new ProgressDialog(currentActivity);
-
-
-        //Set the progress dialog to display a horizontal progress bar
-        progressDialogDeleteDownload.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        //Set the dialog title to 'Loading...'
-        progressDialogDeleteDownload.setTitle("Deleting contents...");
-        //Set the dialog message to 'Loading application View, please wait...'
-        progressDialogDeleteDownload.setMessage("Removing contents , please wait...");
-        //This dialog can't be canceled by pressing the back key
+        progressDialogDeleteDownload.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialogDeleteDownload.setMessage("Running backup. Do not unplug drive");
+        progressDialogDeleteDownload.setIndeterminate(true);
         progressDialogDeleteDownload.setCancelable(false);
-        //This dialog isn't indeterminate
-        progressDialogDeleteDownload.setIndeterminate(false);
-        //The maximum number of items is 100
-        progressDialogDeleteDownload.setMax(maxSize);
-        //Set the current progress to zero
-        progressDialogDeleteDownload.setProgress(0);
         progressDialogDeleteDownload.show();
+
+    }
+    public void removeDeleteProgress(){
+        if(progressDialogDeleteDownload!=null){
+//            progressDialogDeleteDownload.dismiss();
+//            progressDialogDeleteDownload.cancel();
+//            progressDialogDeleteDownload=null;
+        }
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1, Boolean deleteAllFiles) {
@@ -5643,11 +5643,18 @@ public class AppCMSPresenter {
         showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
                 deleteMsg,
                 true, () -> {
+
+            System.out.println("started clean download");
                     if (deleteAllFiles) {
-                        for (DownloadVideoRealm downloadVideoRealm :
-                                realmController.getDownloadesByUserId(getLoggedInUser())) {
-                            removeDownloadedFile(downloadVideoRealm.getVideoId());
+//                        progressDialogInit();
+                        showLoader();
+                        if(realmController!=null) {
+                            for (DownloadVideoRealm downloadVideoRealm :
+                                    realmController.getDownloadesByUserId(getLoggedInUser())) {
+                                removeDownloadedFile(downloadVideoRealm.getVideoId());
+                            }
                         }
+
                     } else {
                         for (DownloadVideoRealm downloadVideoRealm :
                                 realmController.getDownloadsByUserIdAndMedia(getLoggedInUser(), content)) {
@@ -5745,8 +5752,9 @@ public class AppCMSPresenter {
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
+        System.out.println("navigateToDownloadPage to start");
         setPlayingVideo(false);
-
+        setDownlistScreenCache(null);
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && downloadsAvailableForApp()) {
             for (Fragment fragment : ((FragmentActivity) currentActivity).getSupportFragmentManager().getFragments()) {
                 if (fragment instanceof AppCMSMoreFragment) {
@@ -5909,6 +5917,8 @@ public class AppCMSPresenter {
                         }
                     }
                 }
+                System.out.println("navigateToDownloadPage to stop");
+
             }
         }
     }
@@ -6231,7 +6241,7 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
+            setDownlistScreenCache(null);
             if (appCMSPageUI == null) {
                 if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
                     RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
@@ -7082,7 +7092,7 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
+            setDownlistScreenCache(null);
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
                 if (metaPage != null) {
@@ -16043,7 +16053,17 @@ public class AppCMSPresenter {
         }
         return null;
     }
+    public RecyclerView getDownlistScreenCache() {
+        if (downloadRecyclerView != null) {
+            return downloadRecyclerView;
 
+        }
+        return null;
+    }
+    public void setDownlistScreenCache(RecyclerView recyclerView) {
+        this.downloadRecyclerView=recyclerView;
+
+    }
     public void setWebViewCache(String key, CustomWebView webView) {
         if (webViewCache == null) {
             webViewCache = new HashMap<String, CustomWebView>();

@@ -3,6 +3,7 @@ package com.viewlift.models.data.appcms.downloads;
 import android.app.Activity;
 import android.app.Application;
 import android.support.annotation.UiThread;
+import android.support.annotation.WorkerThread;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -197,7 +198,7 @@ public class RealmController {
         return false;
     }
 
-    @UiThread
+    @WorkerThread
     public DownloadVideoRealm getDownloadByIdBelongstoUser(String videoId, String userId) {
         try {
             return realm.where(DownloadVideoRealm.class)

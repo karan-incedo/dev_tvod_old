@@ -1841,6 +1841,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSFragment.setEnabled(false);
                     appCMSTabNavContainer.setEnabled(false);
                     loadingProgressBar.setVisibility(View.VISIBLE);
+                    loadingProgressBar.bringToFront();
                     //while progress bar loading disable user interaction
                     getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
