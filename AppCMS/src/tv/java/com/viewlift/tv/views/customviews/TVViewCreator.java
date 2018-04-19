@@ -549,30 +549,30 @@ public class TVViewCreator {
                 if (null != moduleData
                         && moduleData.getContentData() != null
                         && !moduleData.getContentData().isEmpty()) {
-                    CustomTVVideoPlayerView videoPlayerView = (CustomTVVideoPlayerView) appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
+                CustomTVVideoPlayerView videoPlayerView = (CustomTVVideoPlayerView) appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
 
-                    createHeaderItem(component, context, moduleUI, moduleData, "", false);
-                    customHeaderItem.setmIsLivePlayer(true);
-                    PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter ,
-                            Integer.valueOf(component.getLayout().getTv().getHeight()),
-                            Integer.valueOf(component.getLayout().getTv().getWidth()));
+                createHeaderItem(component, context, moduleUI, moduleData, "", false);
+                customHeaderItem.setmIsLivePlayer(true);
+                PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter ,
+                        Integer.valueOf(component.getLayout().getTv().getHeight()),
+                        Integer.valueOf(component.getLayout().getTv().getWidth()));
 
-                    if (videoPlayerView == null) {
-                        videoPlayerView = playerPresenter.playerView(context);
-                        playerPresenter.setVideoPlayerView(videoPlayerView, true);
-                        appCMSPresenter.getPlayerLruCache().put(appCMSPageAPI.getId(), videoPlayerView);
-                    } else {
-                        playerPresenter.setVideoPlayerView(videoPlayerView, false);
-                    }
-                    ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(playerPresenter);
-                    BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
-                    browseFragmentRowData.isPlayerComponent = true;
-                    browseFragmentRowData.contentData = moduleData.getContentData().get(0);
-                    browseFragmentRowData.rowNumber = trayIndex;
-                    listRowAdapter.add(browseFragmentRowData);
-                    pageView.setIsStandAlonePlayerEnabled(true);
-                    mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+                if (videoPlayerView == null) {
+                    videoPlayerView = playerPresenter.playerView(context);
+                    playerPresenter.setVideoPlayerView(videoPlayerView, true);
+                    appCMSPresenter.getPlayerLruCache().put(appCMSPageAPI.getId(), videoPlayerView);
+                } else {
+                    playerPresenter.setVideoPlayerView(videoPlayerView, false);
                 }
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(playerPresenter);
+                BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
+                browseFragmentRowData.isPlayerComponent = true;
+                browseFragmentRowData.contentData = moduleData.getContentData().get(0);
+                browseFragmentRowData.rowNumber = trayIndex;
+                listRowAdapter.add(browseFragmentRowData);
+                pageView.setIsStandAlonePlayerEnabled(true);
+                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+            }
                 break;
         }
     }
@@ -1386,6 +1386,7 @@ public class TVViewCreator {
                     componentViewResult.componentView = new ScrollView(context);
                 } else {
                     componentViewResult.componentView = new TextView(context);
+                    (componentViewResult.componentView).setScrollBarStyle(context.getResources().getColor(android.R.color.holo_red_dark));
                 }
 
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
@@ -2321,7 +2322,8 @@ public class TVViewCreator {
                     case PAGE_PASSWORDTEXTFIELD2_KEY:
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         textInputEditText.setId(R.id.password_edit_box);
-                        textInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        textInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+                        textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
                         //textInputEditText.setNextFocusLeftId(R.id.email_edit_box);
                         // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);

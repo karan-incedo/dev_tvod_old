@@ -1132,7 +1132,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
-        super.onResume();
+        try {
+            super.onResume();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -1629,10 +1633,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             true);
                 }
-            } else if(requestCode == AppCMSPresenter.APP_CMS_PLAY_AUDIO_ACTIVITY_REQUEST_CODE){
-                if(data.getStringExtra("isActive").equals("true")){
-                    isActive = true;
-                }
             } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
                 appCMSPresenter.initiateItemPurchase(false);
             } else if (requestCode == AppCMSPresenter.CC_AVENUE_REQUEST_CODE) {
@@ -1845,6 +1845,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSFragment.setEnabled(false);
                     appCMSTabNavContainer.setEnabled(false);
                     loadingProgressBar.setVisibility(View.VISIBLE);
+                    loadingProgressBar.bringToFront();
                     //while progress bar loading disable user interaction
                     getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

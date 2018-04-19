@@ -1,6 +1,5 @@
 package com.viewlift.views.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -170,7 +169,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
                     getString(R.string.audio_fragment_tag_key));
-           // fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
+//            fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
 
@@ -230,11 +229,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("isActive","true");
-        setResult(Activity.RESULT_OK,returnIntent);
         super.onBackPressed();
-       // finish();
+//        finish();
     }
 
 
@@ -301,6 +297,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

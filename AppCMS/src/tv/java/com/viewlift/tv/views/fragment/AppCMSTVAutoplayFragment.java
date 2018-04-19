@@ -365,9 +365,9 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (PageView.isTablet(context) || (binder != null && binder.isFullscreenEnabled())) {
+       /* if (PageView.isTablet(context) || (binder != null && binder.isFullscreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
-        }
+        }*/
 
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
@@ -390,53 +390,84 @@ public class AppCMSTVAutoplayFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            if (cancelCountdown) {
+                stopCountdown();
+                if (cancelCountdownButton != null) {
+                    cancelCountdownButton.setText(getString(R.string.back));
+                }
+                cancelCountdown = false;
+                if (appCMSTVAutoplayCustomLoader != null) {
+                    appCMSTVAutoplayCustomLoader.setVisibility(View.GONE);
+                }
+                if (upNextTextView != null) {
+                    upNextTextView.setVisibility(View.GONE);
+                }
+                if (countdownCancelledTextView != null) {
+                    countdownCancelledTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+
     @Override
     public void onStop() {
         super.onStop();
-        if (cancelCountdown) {
-            stopCountdown();
-            if (cancelCountdownButton != null) {
-                cancelCountdownButton.setText(getString(R.string.back));
+        try {
+            if (cancelCountdown) {
+                stopCountdown();
+                if (cancelCountdownButton != null) {
+                    cancelCountdownButton.setText(getString(R.string.back));
+                }
+                cancelCountdown = false;
+                if (appCMSTVAutoplayCustomLoader != null) {
+                    appCMSTVAutoplayCustomLoader.setVisibility(View.GONE);
+                }
+                if (upNextTextView != null) {
+                    upNextTextView.setVisibility(View.GONE);
+                }
+                if (countdownCancelledTextView != null) {
+                    countdownCancelledTextView.setVisibility(View.VISIBLE);
+                }
             }
-            cancelCountdown = false;
-            if (appCMSTVAutoplayCustomLoader != null) {
-                appCMSTVAutoplayCustomLoader.setVisibility(View.GONE);
-            }
-            if (upNextTextView != null) {
-                upNextTextView.setVisibility(View.GONE);
-            }
-            if (countdownCancelledTextView != null) {
-                countdownCancelledTextView.setVisibility(View.VISIBLE);
-            }
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void onDestroy() {
-        if (binder != null && appCMSViewComponent.tvviewCreator() != null) {
-            appCMSPresenter.removeLruCacheItem(context, binder.getPageID());
+        try {
+            if (binder != null && appCMSViewComponent.tvviewCreator() != null) {
+                appCMSPresenter.removeLruCacheItem(context, binder.getPageID());
+            }
+            if (countdownTimer != null) {
+                countdownTimer.cancel();
+                countdownTimer = null;
+            }
+            binder = null;
+            pageView = null;
+        } catch (Exception e) {
         }
-        if (countdownTimer != null) {
-            countdownTimer.cancel();
-            countdownTimer = null;
-        }
-        binder = null;
-        pageView = null;
         super.onDestroy();
     }
 
 
-    @Override
+   /* @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBinder(getString(R.string.app_cms_binder_key), binder);
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         handleOrientation(newConfig.orientation);
-    }
+    }*/
 
     public static AppCMSTVAutoplayFragment newInstance(Context context, AppCMSVideoPageBinder binder) {
         AppCMSTVAutoplayFragment fragment = new AppCMSTVAutoplayFragment();
@@ -454,7 +485,6 @@ public class AppCMSTVAutoplayFragment extends Fragment {
 
     public interface FragmentInteractionListener {
         void onCountdownFinished();
-
         void closeActivity();
     }
 

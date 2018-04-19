@@ -227,17 +227,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
-                currentStreamingQualitySelector != null &&
-                streamingQualitySelector != null) {
-            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-            if (0 < availableStreamingQualities.size()) {
-                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
-                if (0 <= streamingQualityIndex) {
-                    currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
-                    setSelectedStreamingQualityIndex();
+        try {
+            if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
+                    currentStreamingQualitySelector != null &&
+                    streamingQualitySelector != null) {
+                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+                if (0 < availableStreamingQualities.size()) {
+                    int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+                    if (0 <= streamingQualityIndex) {
+                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
+                        setSelectedStreamingQualityIndex();
+                    }
                 }
             }
+        } catch (Exception e) {
         }
     }
 

@@ -36,6 +36,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.AppCmsTVSplashActivity;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
@@ -98,7 +99,19 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         isActive = true;
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
-        AppCMSBinder appCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+        AppCMSBinder appCMSBinder = null;
+        if(null != args && args.getBinder(getString(R.string.app_cms_binder_key)) instanceof AppCMSBinder){
+            appCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+        }else{
+            if(null != savedInstanceState) {
+                startSplashActivity();
+                finish();
+                return;
+            }
+        }
+
+
+
         updatedAppCMSBinder = appCMSBinder;
 
         appCMSBinderStack = new Stack<>();
@@ -115,7 +128,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
-        if (appCMSPresenter.getAppCMSAndroid().getAnalytics() != null) {
+        if (null != appCMSPresenter.getAppCMSAndroid() && appCMSPresenter.getAppCMSAndroid().getAnalytics() != null) {
             appCMSPresenter.initializeGA(appCMSPresenter.getAppCMSAndroid().getAnalytics().getGoogleAnalyticsId());
         }
 
@@ -299,13 +312,20 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    private void startSplashActivity() {
+        Intent intent = new Intent(AppCmsHomeActivity.this , AppCmsTVSplashActivity.class);
+        startActivity(intent);
+    }
+
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
             if (!appCMSPresenter.isUserLoggedIn()) {
                 setSubscriptionText(false);
             } else {
+
                 if (appCMSPresenter.getCurrentActivity() != null) {
+
                     appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                         try {
                             if (appCMSUserSubscriptionPlanResult != null) {
