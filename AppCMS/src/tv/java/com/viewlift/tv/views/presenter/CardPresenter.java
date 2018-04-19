@@ -385,7 +385,7 @@ public class CardPresenter extends Presenter {
                                     try {
                                         date = mAppCmsPresenter.getDateFormat(
                                                 Long.parseLong(contentData.getGist().getPublishDate()),
-                                                "MMMM dd");
+                                                "MMMM dd, yyyy");
                                     } catch (Exception e) {
                                     }
                                 }
