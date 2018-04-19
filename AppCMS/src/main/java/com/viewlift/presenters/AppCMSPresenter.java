@@ -3654,10 +3654,15 @@ public class AppCMSPresenter {
         return useSSLCommerz;
     }
 
-    public void initiateSSLCommerzPurchase(String mobile, String planId,  String planName) {
-        if (currentActivity != null) {
-            showLoader();
-        }
+    public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (currentActivity != null) {
+                    showLoader();
+                }
+            }
+        }, 300);
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
 
         getSSLCommerzConfigContent(appCMSMain.getApiBaseUrl(),
@@ -3685,7 +3690,8 @@ public class AppCMSPresenter {
                                     mandatoryFieldModel, customerFieldModel, new OnPaymentResultListener() {
                                         @Override
                                         public void transactionSuccess(TransactionInfo transactionInfo) {
-                                            if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                                            SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
+                                            /*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
                                                 AppsFlyerUtils.subscriptionEvent(getCurrentContext(),
                                                         true,
                                                         getAppsFlyerKey(),
@@ -3701,7 +3707,7 @@ public class AppCMSPresenter {
                                             bundle.putString(FIREBASE_TRANSACTION_ID, transactionInfo.getTranId());
 
                                             if (getmFireBaseAnalytics() != null)
-                                                getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
+                                                getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
 
                                             finalizeSignupAfterCCAvenueSubscription(null);
                                             Log.d(TAG, "Transaction Successfully completed");
@@ -3711,6 +3717,7 @@ public class AppCMSPresenter {
                                         @Override
                                         public void transactionFail(TransactionInfo transactionInfo) {
                                             Log.e(TAG, "Transaction Fail");
+                                            SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                         }
 
                                         @Override
@@ -3719,26 +3726,32 @@ public class AppCMSPresenter {
                                                 // Your provides information is not valid.
                                                 case ErrorKeys.USER_INPUT_ERROR:
                                                     Log.e(TAG, "User Input Error");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                                     break;
                                                 // Internet is not connected.
                                                 case ErrorKeys.INTERNET_CONNECTION_ERROR:
                                                     Log.e(TAG, "Internet Connection Error");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
                                                     break;
                                                 // Server is not giving valid data.
                                                 case ErrorKeys.DATA_PARSING_ERROR:
                                                     Log.e(TAG, "Data Parsing Error");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                                     break;
                                                 // User press back button or canceled the transaction.
                                                 case ErrorKeys.CANCEL_TRANSACTION_ERROR:
                                                     Log.e(TAG, "User Cancel The Transaction");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
                                                     break;
                                                 // Server is not responding.
                                                 case ErrorKeys.SERVER_ERROR:
                                                     Log.e(TAG, "Server Error");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_server_error);
                                                     break;
                                                 // For some reason network is not responding
                                                 case ErrorKeys.NETWORK_ERROR:
                                                     Log.e(TAG, "Network Error");
+                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
                                                     break;
                                             }
                                         }
@@ -3746,6 +3759,17 @@ public class AppCMSPresenter {
                         }
                     }
                 });
+    }
+
+    private void SSLComerzTransactionStatus(int msg) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (currentActivity != null) {
+                    showDialog(DialogType.SUBSCRIBE, currentActivity.getString(msg), false, null, null);
+                }
+            }
+        }, 400);
     }
 
     public void initiateItemPurchase(boolean purchaseFromRestore) {
@@ -4567,7 +4591,7 @@ public class AppCMSPresenter {
             if (getRealmController() != null) {
                 List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
                 long bytesRemainDownload = 0L;
-                if(remainDownloads!=null && remainDownloads.size()>0) {
+                if (remainDownloads != null && remainDownloads.size() > 0) {
                     for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
 
                         DownloadManager.Query query = new DownloadManager.Query();

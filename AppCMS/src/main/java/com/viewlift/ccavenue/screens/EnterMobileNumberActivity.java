@@ -70,10 +70,10 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
                 finish();
             }
             if (appCMSPresenter.useSSLCommerz()) {
+                finish();
                 appCMSPresenter.initiateSSLCommerzPurchase(mobileNumber,
                         getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
                         getIntent().getStringExtra("plan_to_purchase_name"));
-                finish();
             }
         } else {
             Toast.makeText(getApplicationContext(), "Please provide valid 10 digits mobile number", Toast.LENGTH_SHORT).show();
