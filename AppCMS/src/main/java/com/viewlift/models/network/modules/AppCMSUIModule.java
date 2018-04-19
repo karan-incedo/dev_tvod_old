@@ -52,6 +52,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -1226,6 +1228,19 @@ public class AppCMSUIModule {
     public AppCMSPlaylistRest providesAppCMSPlaylistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSPlaylistRest.class);
     }
+
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzConfigRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSSLCommerzConfigRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzConfigCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzConfigRest configRest, Gson gson) {
+        return new AppCMSSSLCommerzConfigCall(configRest, gson);
+    }
+
 
     @Provides
     @Singleton
