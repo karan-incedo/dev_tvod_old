@@ -54,6 +54,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -248,6 +249,18 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
                 isGrid = true;
             }
+            if (module.getBlockName().equalsIgnoreCase("tray01")) {
+                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("carousel01")) {
+                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_carousel.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray04")) {
+                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray02")) {
+                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            }
 
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
@@ -417,7 +430,7 @@ public class TVViewCreator {
                 }
 
             if (moduleData != null) {
-                CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter);
+                CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter, component, jsonValueKeyMap);
                 ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
                 if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                     List<ContentDatum> contentData1 = moduleData.getContentData();

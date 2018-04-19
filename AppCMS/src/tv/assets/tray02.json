@@ -1,10 +1,10 @@
 {
-  "id": "c39a18e9-d097-4822-8c4a-eba2071d29b3",
+  "id": "20817726-210f-487a-bc59-f17303ff3ed7",
   "settings": {
     "loop": false,
     "columns": {
       "tablet": 4,
-      "desktop": 6,
+      "desktop": 4,
       "mobile": 3,
       "ott": 6
     },
@@ -18,14 +18,14 @@
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 260
+      "height": 280
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 14
+          "fontSize": 20
         }
       },
       "fontFamily": "OpenSans",
@@ -85,6 +85,74 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "thumbnailTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "width": 338,
+              "height": 185,
+              "leftMargin": 6,
+              "topMargin": 6
+            }
+          },
+          "type": "image",
+          "key": "separatorView"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 19,
+              "width": 320,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 16,
+          "numberOfLines": 1
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 65,
+              "width": 320,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoSubTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 10,
+          "numberOfLines": 1
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 95,
+              "width": 320,
+              "height": 100
+            }
+          },
+          "type": "label",
+          "key": "videoDescriptionOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 12,
+          "numberOfLines": 2
         }
       ],
       "type": "collectionGrid",

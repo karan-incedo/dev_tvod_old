@@ -74,12 +74,13 @@
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 10,
-              "width": 260,
-              "height": 380
+              "topMargin": 16,
+              "width": 249,
+              "height": 368,
+              "leftMargin": 6
+
             }
           },
-          "backgroundColor": "#80000000",
           "type": "image",
           "key": "separatorView"
         },
@@ -106,7 +107,7 @@
               "padding": 0,
               "leftMargin": 12,
               "topMargin": 119,
-              "width": 260,
+              "width": 240,
               "height": 40
             }
           },
@@ -114,10 +115,7 @@
           "key": "videoTitleOnHover",
           "fontFamily": "Lato",
           "textAlignment": "left",
-          "text":"Title Goes Here.",
-          "textColor": "#FFFFFF",
           "fontWeight": "regular",
-          "backgroundColor": "#90000000",
           "fontSize": 16,
           "numberOfLines": 1
         },
@@ -128,7 +126,7 @@
               "padding": 0,
               "leftMargin": 12,
               "topMargin": 160,
-              "width": 260,
+              "width": 240,
               "height": 40
             }
           },
@@ -136,10 +134,7 @@
           "key": "videoSubTitleOnHover",
           "fontFamily": "Lato",
           "textAlignment": "left",
-          "textColor": "#FFFFFF",
           "fontWeight": "regular",
-          "text":"09:10 | Monday",
-          "backgroundColor": "#90000000",
           "fontSize": 10,
           "numberOfLines": 1
         },
@@ -157,10 +152,7 @@
           "key": "videoDescriptionOnHover",
           "fontFamily": "Lato",
           "textAlignment": "left",
-          "textColor": "#FFFFFF",
           "fontWeight": "regular",
-          "text":"My Name is Nitin Tyagi. My Name is Nitin Tyagi. My Name is Nitin Tyagi. My Name is Nitin Tyagi. ",
-          "backgroundColor": "#90000000",
           "fontSize": 12,
           "numberOfLines": 4
         }
