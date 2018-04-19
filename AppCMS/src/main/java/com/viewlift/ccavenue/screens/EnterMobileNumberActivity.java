@@ -54,12 +54,6 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
     void openPaymentPage(View button) {
         String mobileNumber = id_et_mobile_number.getText().toString().trim();
         if (mobileNumber.length() == 10) {
-//            try {
-//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
             appCMSPresenter.closeSoftKeyboard();
             button.setEnabled(false);
             if (appCMSPresenter.useCCAvenue()) {
@@ -94,12 +88,6 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        try {
-//            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
         appCMSPresenter.closeSoftKeyboard();
     }
 }
