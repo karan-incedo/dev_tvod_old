@@ -91,6 +91,7 @@ import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -690,6 +691,7 @@ public class ViewCreator {
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
@@ -1024,9 +1026,16 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                            int radiusDifference = 5;
+                                            int radiusDifference = 7;
                                             if (BaseView.isTablet(context)) {
-                                                radiusDifference = 2;
+                                                radiusDifference = 4;
+                                            }
+                                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                                radiusDifference = 5;
+                                                if (BaseView.isTablet(context)) {
+                                                    radiusDifference = 3;
+                                                }
                                             }
                                             String userId = appCMSPresenter.getLoggedInUser();
                                             appCMSPresenter.getUserVideoDownloadStatus(
@@ -1712,7 +1721,11 @@ public class ViewCreator {
                 appCMSPresenter,
                 modulesToIgnore);
         if (appCMSPageAPI != null) {
-            CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).setPageName(appCMSPageAPI.getTitle());
+            try {
+                CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).setPageName(appCMSPageAPI.getTitle());
+            }catch ( Exception e){
+                e.printStackTrace();
+            }
         }
         pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
@@ -1864,41 +1877,29 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+               /* if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } /*else if (moduleInfo.getBlockName().contains("tray02")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "photo_galery.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } */ else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
+                }  else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery_grid.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } /*else if (moduleInfo.getBlockName().contains("carousel01")) {
+                } else if (moduleInfo.getBlockName().contains("carousel01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*//*else if (moduleInfo.getBlockName().contains("tray03")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "video_detail_new.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(2);
-                }*/ else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
+                }else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                } else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -1915,13 +1916,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().contains("history02")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "my_history.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                }*/ else if (moduleInfo.getSettings() != null &&
+                }*/else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -1960,6 +1955,7 @@ public class ViewCreator {
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_EVENT_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
                 createModule = false;
             }
@@ -2062,7 +2058,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } */ else {
+        }  */else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2554,7 +2550,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                       AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
                             component.getLayout(),
@@ -2567,6 +2563,34 @@ public class ViewCreator {
                             viewType,
                             appCMSAndroidModules);
 
+   //Todo temp code for Hoichi Only
+    /* CollectionGridItemViewCreator collectionGridItemViewCreator =
+                            new CollectionGridItemViewCreator(this,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    appCMSPresenter,
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    settings,
+                                    jsonValueKeyMap,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    true,
+                                    true,
+                                    viewType,
+                                    false,
+                                    false);
+
+                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
+                            collectionGridItemViewCreator,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
+*/
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
@@ -2617,6 +2641,36 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType,
                                 appCMSAndroidModules);
+
+                        //Todo temp code for Hoichi Only
+/*
+     CollectionGridItemViewCreator collectionGridItemViewCreator =
+                            new CollectionGridItemViewCreator(this,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    appCMSPresenter,
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    settings,
+                                    jsonValueKeyMap,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    true,
+                                    true,
+                                    viewType,
+                                    false,
+                                    false);
+
+                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
+                            collectionGridItemViewCreator,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);*/
+
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
@@ -3424,9 +3478,16 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
                             String userId = appCMSPresenter.getLoggedInUser();
-                            int radiusDifference = 5;
+                            int radiusDifference = 7;
                             if (BaseView.isTablet(context)) {
-                                radiusDifference = 2;
+                                radiusDifference = 4;
+                            }
+                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                radiusDifference = 5;
+                                if (BaseView.isTablet(context)) {
+                                    radiusDifference = 3;
+                                }
                             }
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
@@ -6346,7 +6407,7 @@ public class ViewCreator {
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
-                        imageButton.setImageResource(0);
+//                        imageButton.setImageResource(0);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
@@ -6384,7 +6445,16 @@ public class ViewCreator {
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                         radiusDifference,
                         id);
-                imageButton.setImageResource(R.drawable.ic_download_big);
+
+                if(appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())){
+                    imageButton.setImageResource(R.drawable.ic_download_queued);
+
+                }else if(appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())){
+                    imageButton.setImageResource(R.drawable.ic_downloaded_big);
+
+                }else{
+                    imageButton.setImageResource(R.drawable.ic_download_big);
+                }
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));

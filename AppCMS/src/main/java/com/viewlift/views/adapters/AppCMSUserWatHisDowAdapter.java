@@ -321,24 +321,27 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             videoSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
             int radiusDifference = 5;
             if (BaseView.isTablet(componentView.getContext())) {
-                radiusDifference = 2;
+                radiusDifference = 3;
             }
             if (contentDatum.getGist() != null) {
                 deleteDownloadButton.setTag(contentDatum.getGist().getId());
                 final ImageButton deleteButton = deleteDownloadButton;
                 appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
                         videoDownloadStatus -> {
-                            if (videoDownloadStatus != null &&
-                                    (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
-                                            videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
-                                            (!appCMSPresenter.isNetworkConnected() &&
-                                                    videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                                                    videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL))) {
-                                deleteButton.setImageBitmap(null);
-                                deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
-                                        R.drawable.ic_download_queued));
+                            if (videoDownloadStatus != null) {
+                                if (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                        videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                        (!appCMSPresenter.isNetworkConnected() &&
+                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                                videoDownloadStatus.getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL)) {
+                                    deleteButton.setImageBitmap(null);
+                                    deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                            R.drawable.ic_download_queued));
+                                }
+                                if (videoDownloadStatus != null && videoDownloadStatus.getDownloadStatus() != null) {
+                                    contentDatum.getGist().setDownloadStatus(videoDownloadStatus.getDownloadStatus());
+                                }
                             }
-                            contentDatum.getGist().setDownloadStatus(videoDownloadStatus.getDownloadStatus());
                         },
                         appCMSPresenter.getLoggedInUser());
 

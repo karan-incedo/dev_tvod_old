@@ -208,6 +208,7 @@
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
     <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
+    <string name="app_cms_page_download_audio_playlist_key">DownloadedAudioPlayList</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
 
 
@@ -223,6 +224,9 @@
     <string name="app_cms_page_bannerAd_module_key">AC BannerAd 01</string>
     <string name="app_cms_page_mediumRectangleAd_module_key">AC MediumRectangleAd 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_page_tray_02_module_key">AC Tray 02</string>
+    <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
+
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>

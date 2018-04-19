@@ -128,6 +128,16 @@ public class Gist implements Serializable {
     long currentPlayingPosition;
     Boolean isCastingConnected;
 
+    public Boolean getDataLoaded() {
+        return isDataLoaded;
+    }
+
+    public void setDataLoaded(Boolean dataLoaded) {
+        isDataLoaded = dataLoaded;
+    }
+
+    Boolean isDataLoaded=false;
+
     public String getLandscapeImageUrl() {
         return landscapeImageUrl;
     }

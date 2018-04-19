@@ -39,6 +39,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
@@ -52,7 +53,8 @@ import com.viewlift.views.activity.AppCMSPageActivity;
  * won't be killed during playback.
  */
 public class MediaNotificationManager extends BroadcastReceiver {
-
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     public static final String ACTION_PAUSE = "com.viewlift.Audio.pause";
     public static final String ACTION_PLAY = "com.viewlift.Audio.play";
     public static final String ACTION_PREV = "com.viewlift.Audio.prev";
@@ -85,6 +87,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
+                if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                } else {
+                    mMetadata = mController.getMetadata();
+                }
                 Notification notification = createNotification();
                 if (notification != null) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -95,6 +102,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mMetadata = metadata;
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
             Notification notification = createNotification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -141,12 +153,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
 
-    public void notifyMedia(){
+    public void notifyMedia() {
         Notification notification = createNotification();
         if (notification != null) {
             mNotificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
+
     /**
      * Posts the notification and starts tracking the session to keep it
      * updated. The notification will automatically be removed if the session is
@@ -154,11 +167,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
      */
     public void startNotification() {
         if (!mStarted) {
-            mMetadata = mController.getMetadata();
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
+//            mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
 
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
+            if (notification != null) {
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
             if (notification != null) {
                 mController.registerCallback(mCb);
                 IntentFilter filter = new IntentFilter();
@@ -248,6 +269,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
         openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
+        if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+            mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+        } else {
+            mMetadata = mController.getMetadata();
+        }
+        openUI.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION, mMetadata);
+
 //        }
 //        openUI.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT );
         return PendingIntent.getActivity(mService.getApplicationContext(), REQUEST_CODE, openUI,
@@ -337,11 +365,18 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final String label;
         final int icon;
         final PendingIntent intent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            System.out.println("State media playing");
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.notification_pause;
             intent = mPauseIntent;
+        } else if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+
+            label = mService.getString(R.string.label_play);
+            icon = R.drawable.notification_play;
+            intent = mPlayIntent;
         } else {
+
             label = mService.getString(R.string.label_play);
             icon = R.drawable.notification_play;
             intent = mPlayIntent;
@@ -401,4 +436,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 }
+
+
 

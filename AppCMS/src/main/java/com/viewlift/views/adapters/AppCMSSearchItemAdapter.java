@@ -422,7 +422,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.gridOptions.setBackground(context.getDrawable(R.drawable.dots_more));
             this.gridOptions.getBackground().setTint(appCMSPresenter.getGeneralTextColor());
             this.gridOptions.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-            this.gridOptions.setVisibility(View.INVISIBLE);
+            this.gridOptions.setVisibility(View.GONE);
             this.titleLayout.addView(this.gridOptions);
 
             this.filmTitle = new TextView(view.getContext());

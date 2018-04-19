@@ -1,8 +1,10 @@
 package com.viewlift;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
@@ -33,10 +35,11 @@ public class AppCMSApplication extends MultiDexApplication {
     private AppsFlyerConversionListener conversionDataListener;
 
     private int openActivities;
+    private int visibleActivities;
 
     private Action0 onActivityResumedAction;
 
-    private void initRealmonfig(){
+    private void initRealmonfig() {
 
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration
@@ -54,6 +57,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
         initRealmonfig();
         openActivities = 0;
+
 
         new Thread(() -> {
             conversionDataListener = new AppsFlyerConversionListener() {
@@ -96,28 +100,36 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityStarted(Activity activity) {
-                    //Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
+                    Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
                     openActivities++;
+                    visibleActivities++;
+                    if(appCMSPresenterComponent.appCMSPresenter()!=null){
+                        appCMSPresenterComponent.appCMSPresenter().setResumedActivities(visibleActivities);
+                    }
                 }
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                        if (onActivityResumedAction != null) {
-                            onActivityResumedAction.call();
-                            onActivityResumedAction = null;
-                        }
+                    appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+                    if (onActivityResumedAction != null) {
+                        onActivityResumedAction.call();
+                        onActivityResumedAction = null;
+                    }
                 }
 
                 @Override
                 public void onActivityPaused(Activity activity) {
-                    //Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
+                    Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
                     appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
+                    visibleActivities--;
+                    if(appCMSPresenterComponent.appCMSPresenter()!=null){
+                        appCMSPresenterComponent.appCMSPresenter().setResumedActivities(visibleActivities);
+                    }
                 }
 
                 @Override
                 public void onActivityStopped(Activity activity) {
-                    //Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
+                    Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
                     if (openActivities == 1) {
                         appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
                     }
@@ -132,7 +144,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onActivityDestroyed(Activity activity) {
-                    //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
+                    Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                     appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                     appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
                 }
