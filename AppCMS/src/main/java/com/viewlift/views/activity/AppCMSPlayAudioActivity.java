@@ -169,7 +169,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
                     getString(R.string.audio_fragment_tag_key));
-            fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
+//            fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
 
@@ -229,8 +229,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
-        finish();
+        super.onBackPressed();
+//        finish();
     }
 
 
