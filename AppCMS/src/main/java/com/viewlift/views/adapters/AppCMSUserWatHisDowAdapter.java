@@ -98,7 +98,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private List<OnInternalEvent> receivers;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
-    public static boolean listIsClicked = false;
     CollectionGridItemView view = null;
     private String moduleId;
     RecyclerView mRecyclerView;
@@ -332,10 +331,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 deleteDownloadButton.setTag(contentDatum.getGist().getId());
                 final ImageButton deleteButton = deleteDownloadButton;
 
-//                if(contentDatum.isLoad()){
-//                    return;
-//                }
-                contentDatum.setLoad(true);
+                /**
+                 * if content already downloaded then just update the status , no need to call update status for running progress
+                 */
                 if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
                     deleteDownloadButton.setImageBitmap(null);
                     deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
@@ -590,9 +588,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     @Override
     public void resetData(RecyclerView listView) {
-        if (!listIsClicked) {
-//            notifyDataSetChanged();
-        }
+
     }
 
     @Override
@@ -605,9 +601,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
         listView.setAdapter(null);
         adapterData = null;
-//        notifyDataSetChanged();
         adapterData = contentData;
-//        notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
         notifyDataSetChanged();
@@ -720,19 +714,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                        listIsClicked = true;
                                         /*play audio if already downloaded*/
                                         playDownloadedAudio(data);
 
                                         return;
                                     } else {
-                                        listIsClicked = true;
                                         /*play movie if already downloaded*/
                                         playDownloaded(data, clickPosition);
                                         return;
                                     }
                                 } else {
-                                    listIsClicked = true;
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
                                             data.getGist().getId(),

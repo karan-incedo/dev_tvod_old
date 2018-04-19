@@ -124,15 +124,7 @@ public class ContentDatum implements Serializable {
     @Expose
     String mediaType;
 
-    public boolean isLoad() {
-        return isLoad;
-    }
 
-    public void setLoad(boolean load) {
-        isLoad = load;
-    }
-
-    boolean isLoad;
 
 
     public boolean isRenewable() {
