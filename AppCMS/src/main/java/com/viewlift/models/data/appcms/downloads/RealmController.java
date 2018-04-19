@@ -45,7 +45,7 @@ public class RealmController {
 
     public static RealmController with(Activity activity) {
 
-        if (instance == null) {
+        if (instance == null && activity != null && activity.getApplication() != null) {
             instance = new RealmController(activity.getApplication());
         }
         return instance;
@@ -95,7 +95,7 @@ public class RealmController {
         return null;
     }
 
-    public RealmResults<DownloadVideoRealm> getDownloadsByUserIdAndMedia(String userId,String contentType) {
+    public RealmResults<DownloadVideoRealm> getDownloadsByUserIdAndMedia(String userId, String contentType) {
         try {
             return realm.where(DownloadVideoRealm.class)
                     .equalTo("userId", userId)
@@ -106,11 +106,12 @@ public class RealmController {
         }
         return null;
     }
+
     public boolean getDownloadMediaType(String contentType) {
         try {
-             return realm.where(DownloadVideoRealm.class)
+            return realm.where(DownloadVideoRealm.class)
                     .equalTo("contentType", contentType)
-                    .findAll().size()>0? true:false;
+                    .findAll().size() > 0 ? true : false;
 
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
@@ -120,24 +121,26 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
-            Log.e("RealmController","LoggedIn user ID :"+userId);
+            Log.e("RealmController", "LoggedIn user ID :" + userId);
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
     public RealmResults<DownloadVideoRealm> getAllUnSyncedWithServer(String userId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
                     .equalTo("userId", userId).findAll();
         } catch (NullPointerException e) {
             //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
         }
-        return  null;
+        return null;
     }
+
     public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
         try {
             String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
@@ -169,6 +172,7 @@ public class RealmController {
         }
         return null;
     }
+
     public RealmResults<DownloadVideoRealm> getDownloadsById(String videoId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findAll();
