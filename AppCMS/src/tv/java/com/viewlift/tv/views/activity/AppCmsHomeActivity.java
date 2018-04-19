@@ -323,7 +323,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             if (!appCMSPresenter.isUserLoggedIn()) {
                 setSubscriptionText(false);
             } else {
-                if(appCMSPresenter.getCurrentActivity() != null) {
+
+                if (appCMSPresenter.getCurrentActivity() != null) {
+
                     appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                         try {
                             if (appCMSUserSubscriptionPlanResult != null) {

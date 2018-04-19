@@ -41,11 +41,22 @@ downloadFile(){ #url, output, buildid, posturl
 }
 
 
-rm -rf ./AppCMS/src/main/res/drawable-xhdpi/app_logo.jpg
-rm -rf ./AppCMS/src/main/res/drawable-xhdpi/app_logo.png
+base64 --decode ./AppCMS/crfile.txt > ./AppCMS/google-services.json
+base64 --decode ./credentialfile.txt > ./googleplay_android.json
 
-rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/app_logo.jpg
-rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/app_logo.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/video_image_placeholder.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/video_image_placeholder.png
+
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/video_image_placeholder.jpg
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/video_image_placeholder.png
+
+
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/poster_image_placeholder.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/poster_image_placeholder.png
+
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/poster_image_placeholder.jpg
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/poster_image_placeholder.png
 
 
 rm -rf ./AppCMS/src/main/res/drawable-xhdpi/tv_logo.jpg
@@ -55,44 +66,11 @@ rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/tv_logo.jpg
 rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/tv_logo.png
 
 
-base64 --decode ./AppCMS/crfile.txt > ./AppCMS/google-services.json
-base64 --decode ./credentialfile.txt > ./googleplay_android.json
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/app_logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/app_logo.png
 
-
-if [ "'$1'" = "'00000149-86ec-d4f3-a7e9-e6fe760d0000'" ]
-then
-   cp ./Apps/Snagfilms/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default Snagfilms.xml"
-
-elif [ "'$1'" = "'7fa0ea9a-9799-4417-99f5-cbb5343c551d'" ]
-then
-   cp ./Apps/Hoichoi/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default hoichoi.xml"
-
-elif [ "'$1'" = "'00000151-11b4-d29b-a17d-55fdb2b80000'" ]
-then
-   cp ./Apps/MonumentalSports/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default Monumental.xml"
-
-elif [ "'$1'" = "'6ea6f2a0-451c-4d87-8060-051f8c07db23'" ]
-then
-   cp ./Apps/FailArmy/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default FailArmy.xml"
-
-elif [ "'$1'" = "'0000014c-edbe-da12-a1fc-fdbe2f120000'"]
-then
-   cp ./Apps/LSN/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default TampaBay.xml"
-
-elif [ "'$1'" = "'3f6f15c7-8454-462f-917e-2c427c95fa1d'" ]
-then
-   cp ./Apps/TampaBay/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default TampaBay.xml"
-
-else
-   echo "Default Colors.xml"
-   cp ./Apps/Snagfilms/colors.xml ./AppCMS/src/main/res/values/colors.xml
-fi
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/app_logo.jpg
+rm -rf ./AppCMS/src/tv/res/drawable-xhdpi/app_logo.png
 
 
 postBuildStatus ${13} $POST_URL "STARTED" "No ERROR" "Build Successfully Started" 5 false 0
@@ -111,7 +89,7 @@ postBuildStatus ${13} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading 
 
 postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build is In Progress." 25 " " 0
 
-fastlane android tvbeta app_package_name:$6 buildid:${13} app_apk_path:./AppCMS/build/outputs/apk/tv/debug/AppCMS-tv-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/tv/debug/AppCMS-tv-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${16} apk_path:./AppCMS/build/outputs/apk/tv/release/AppCMS-tv-release-unsigned.apk mySlackUrl:"{18}" myAppName:${4} myAppVersion:${3} myEmailId:${17} myBuildId:'${13}'
+fastlane android tvbeta app_package_name:$6 buildid:${13} app_apk_path:./AppCMS/build/outputs/apk/tvNonKiswe/debug/AppCMS-tv-nonkiswe-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/tvnonkiswe/debug/AppCMS-tv-nonkiswe-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${16} apk_path:./AppCMS/build/outputs/apk/tvnonkiswe/release/AppCMS-tv-nonkiswe-release-unsigned.apk mySlackUrl:"{18}" myAppName:${4} myAppVersion:${3} myEmailId:${17} myBuildId:${13}
 
 IS_APP_SUCCESS="$?"
 
@@ -120,12 +98,16 @@ echo "$IS_APP_SUCCESS"
 
 if [ "$IS_APP_SUCCESS" -eq "0" ]
         then
+
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Preparing Build to Upload on S3 Bucket" 75 " " 0
         # aws s3 cp ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk s3://appcms-config/$1/build/android/
-        aws s3 cp ./AppCMS/build/outputs/apk/tv/release/AppCMS-tv-release.apk s3://appcms-config/$1/build/fireTv/
+        myApkName="${4}-tv.apk"
+        mv ./AppCMS/build/outputs/apk/tvNonKiswe/release/AppCMS-tv-nonkiswe-release.apk "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}"
+
+        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://appcms-config/$1/build/fireTv/
 
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 80 " " 0
-        postUpdateLink ${13} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/fireTv/AppCMS-tv-release.apk" 
+        postUpdateLink ${13} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
 
         postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://developer.amazon.com/app-submission' target='_blank'> Amazon Appstore </a> for manual Uploading" 100 " " 0
 
