@@ -1629,6 +1629,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             true);
                 }
+            } else if(requestCode == AppCMSPresenter.APP_CMS_PLAY_AUDIO_ACTIVITY_REQUEST_CODE){
+                if(data.getStringExtra("isActive").equals("true")){
+                    isActive = true;
+                }
             } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
                 appCMSPresenter.initiateItemPurchase(false);
             } else if (requestCode == AppCMSPresenter.CC_AVENUE_REQUEST_CODE) {

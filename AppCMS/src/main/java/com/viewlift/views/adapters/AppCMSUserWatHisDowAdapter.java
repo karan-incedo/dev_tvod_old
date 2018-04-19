@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -94,7 +95,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private String deleteSingleItemWatchlistAction;
     private String deleteSingleItemDownloadAction;
     boolean emptyList = false;
-    public static boolean listIsClicked = false;
 
     private List<OnInternalEvent> receivers;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
@@ -558,9 +558,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     @Override
     public void resetData(RecyclerView listView) {
-        if(!listIsClicked) {
-            notifyDataSetChanged();
-        }
     }
 
     @Override
@@ -689,13 +686,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                         /*play audio if already downloaded*/
-                                        listIsClicked = true;
                                         playDownloadedAudio(data);
 
                                         return;
                                     } else {
                                         /*play movie if already downloaded*/
-                                        listIsClicked = true;
                                         playDownloaded(data, clickPosition);
                                         return;
                                     }
@@ -718,12 +713,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                         /*play audio if already downloaded*/
-                                        listIsClicked = true;
                                         playDownloadedAudio(data);
                                         return;
                                     } else {
                                         /*play movie if already downloaded*/
-                                        listIsClicked = true;
                                         playDownloaded(data, clickPosition);
                                         return;
                                     }
@@ -951,7 +944,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 }
 
                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
-                Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
+                Activity activity = appCMSPresenter.getCurrentActivity();
+                Intent intent = new Intent(activity, AppCMSPlayAudioActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
                 if (controller != null) {
@@ -961,7 +955,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 metadata);
                     }
                 }
-                mContext.startActivity(intent);
+                activity.startActivityForResult(intent, AppCMSPresenter.APP_CMS_PLAY_AUDIO_ACTIVITY_REQUEST_CODE);
             }
         } catch (Exception e) {
             e.printStackTrace();

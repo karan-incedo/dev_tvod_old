@@ -384,6 +384,7 @@ public class AppCMSPresenter {
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final String ACTION_LINK_YOUR_ACCOUNT = "appcms_link_your_account_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
+    public static final int APP_CMS_PLAY_AUDIO_ACTIVITY_REQUEST_CODE = 17;
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
             "CURRENT_MEDIA_DESCRIPTION";

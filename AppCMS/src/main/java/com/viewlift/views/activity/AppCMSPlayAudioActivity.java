@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -229,6 +230,9 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("isActive","true");
+        setResult(Activity.RESULT_OK,returnIntent);
         super.onBackPressed();
        // finish();
     }
