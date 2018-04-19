@@ -5193,7 +5193,7 @@ public class AppCMSPresenter {
     }
 
     @UiThread
-    private boolean isVideoDownloadedByUser(String videoId) {
+    public boolean isVideoDownloadedByUser(String videoId) {
         if (realmController != null) {
             try {
                 DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
@@ -6970,7 +6970,7 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.pageId,
                     appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
-                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    screenName.toString(),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
                     appCMSPlaylistAPIAction.fullscreenEnabled,
@@ -11435,6 +11435,30 @@ public class AppCMSPresenter {
                     .setAction(action)
                     .setLabel(label)
                     .build());
+        }
+    }
+
+    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
+        if (!isVideoDownloaded(downloadVideoRealm.getVideoId())) {
+            try {
+                String mediaType = downloadVideoRealm.getMediaType();
+                String contentType = downloadVideoRealm.getContentType();
+                String title = downloadVideoRealm.getVideoTitle();
+                if (title != null) {
+                    title.substring(0, Math.min(title.length(), 500));
+                }
+
+                if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
+                    sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
+                            currentActivity.getResources().getString(R.string.ga_audio_download_category), title);
+                } else if (mediaType != null && mediaType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
+                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
+                    sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                }
+            }catch (Exception ex){
+
+            }
         }
     }
 

@@ -84,6 +84,8 @@ public class AppCMSUserDownloadVideoStatusCall {
                         long totalSize = cursor.getLong(cursor
                                 .getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
 
+                        appCMSPresenter.sendGaEventForDownloadedContent(downloadVideoRealm);
+
                         appCMSPresenter.getRealmController().updateDownloadInfo(videoId,
                                 uriVideo,
                                 appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoThumbId_DM()),
