@@ -94,6 +94,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private String deleteSingleItemWatchlistAction;
     private String deleteSingleItemDownloadAction;
     boolean emptyList = false;
+    public static boolean listIsClicked = false;
 
     private List<OnInternalEvent> receivers;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
@@ -279,22 +280,22 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (adapterData != null && adapterData.size() == 0) {
-            sendEvent(hideRemoveAllButtonEvent);
-        }
-        if (!emptyList) {
-            if (0 <= position && position < adapterData.size()) {
-                for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
-                    if (holder.componentView.getChild(i) instanceof TextView) {
-                        ((TextView) holder.componentView.getChild(i)).setText("");
+            if (adapterData != null && adapterData.size() == 0) {
+                sendEvent(hideRemoveAllButtonEvent);
+            }
+            if (!emptyList) {
+                if (0 <= position && position < adapterData.size()) {
+                    for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
+                        if (holder.componentView.getChild(i) instanceof TextView) {
+                            ((TextView) holder.componentView.getChild(i)).setText("");
+                        }
+                    }
+                    bindView(holder.componentView, adapterData.get(position), position);
+                    if (isDonwloadPage) {
+                        downloadView(adapterData.get(position), holder.componentView, position);
                     }
                 }
-                bindView(holder.componentView, adapterData.get(position), position);
-                if (isDonwloadPage) {
-                    downloadView(adapterData.get(position), holder.componentView, position);
-                }
             }
-        }
     }
 
     private void downloadView(ContentDatum contentDatum, CollectionGridItemView componentView, int position) {
@@ -557,7 +558,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     @Override
     public void resetData(RecyclerView listView) {
-        notifyDataSetChanged();
+        if(!listIsClicked) {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -686,11 +689,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                         /*play audio if already downloaded*/
+                                        listIsClicked = true;
                                         playDownloadedAudio(data);
 
                                         return;
                                     } else {
                                         /*play movie if already downloaded*/
+                                        listIsClicked = true;
                                         playDownloaded(data, clickPosition);
                                         return;
                                     }
@@ -713,10 +718,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             data.getGist().getContentType() != null &&
                                             data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                         /*play audio if already downloaded*/
+                                        listIsClicked = true;
                                         playDownloadedAudio(data);
                                         return;
                                     } else {
                                         /*play movie if already downloaded*/
+                                        listIsClicked = true;
                                         playDownloaded(data, clickPosition);
                                         return;
                                     }
@@ -942,6 +949,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 } else if (appCMSPresenter.getCurrentActivity() != null) {
                     AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
                 }
+
                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                 Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
