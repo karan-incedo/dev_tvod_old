@@ -10,6 +10,24 @@
         <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
     </style>
 
+
+    <style name="ApptentiveThemeOverride">
+        <item name="colorPrimary">@color/backgroundColor</item>
+        <item name="colorPrimaryDark">@color/backgroundColor</item>
+        <item name="android:textColor">@color/colorNavBarText</item>
+
+        <item name="apptentiveCardBorderColor">@color/colorAccent</item>
+        <item name="apptentiveToolbarTheme">@style/ApptentiveToolbarOverride</item>
+
+    </style>
+
+    <style name="ApptentiveToolbarOverride" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/colorNavBarText</item>
+        <item name="android:textColor">@color/colorNavBarText</item>
+        <item name="android:textColorPrimary">@color/colorNavBarText</item>
+    </style>
+
+
     <style name="CustomShowcaseTheme">
         <item name="sv_showcaseColor">@color/colorAccent</item>
         <item name="sv_buttonText">OK</item>

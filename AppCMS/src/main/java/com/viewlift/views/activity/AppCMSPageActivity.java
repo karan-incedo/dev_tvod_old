@@ -33,6 +33,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -78,6 +79,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.Audio.utils.TaskRemoveService;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -295,10 +297,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_appcms_page);
 
-        try{
+        try {
 
             checkPlayServices();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         ButterKnife.bind(this);
@@ -327,6 +329,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                 Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                if (fullScreenIntent.getParcelableExtra(
+                        PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                    MediaMetadataCompat description = fullScreenIntent.getParcelableExtra(
+                            PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                    fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                }
                 startActivity(fullScreenIntent);
             }
             appCMSPresenter.setAppHomeActivityCreated(true);
@@ -370,32 +379,32 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
                         if (isActive) {
-                            try{
-                            handleLaunchPageAction(updatedAppCMSBinder,
-                                    false,
-                                    false,
-                                    false);
+                            try {
+                                handleLaunchPageAction(updatedAppCMSBinder,
+                                        false,
+                                        false,
+                                        false);
 
-                            if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                    updatedAppCMSBinder != null &&
-                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                    appCMSPresenter.unrestrictPortraitOnly();
-                                    if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                            ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
+                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                        updatedAppCMSBinder != null &&
+                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                        appCMSPresenter.unrestrictPortraitOnly();
+                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
+                                                ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            exitFullScreenVideoPlayer(true);
+                                        }
                                     } else {
-                                        exitFullScreenVideoPlayer(true);
-                                    }
-                                } else {
-                                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
-                                    } else {
-                                        ViewCreator.enableFullScreenMode();
+                                        if (ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            ViewCreator.enableFullScreenMode();
+                                        }
                                     }
                                 }
-                            }
-                        }catch(Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else if (updatedAppCMSBinder != null) {
@@ -571,7 +580,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
 
                     // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
-                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo()) ) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
@@ -804,8 +813,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         registerReceiver(uaReceiveChannelIdReceiver,
                 new IntentFilter("receive_ua_channel_id"));
         registerReceiver(uaReceiveAppKeyReceiver,
@@ -1126,6 +1134,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        NetworkInfo activeNetwork = null;
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
+
+        if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+            appCMSPresenter.setShowNetworkConnectivity(true);
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        } else {
+            appCMSPresenter.setShowNetworkConnectivity(false);
+            appCMSPresenter.cancelAlertDialog();
+        }
+        if (activeNetwork != null) {
+            appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        }
         if (!libsThreadExecuted) {
             new Thread(() -> {
                 Intent initReceivers = new Intent("INITIALIZATION");
@@ -1412,6 +1440,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(keepScreenOnReceiver);
             unregisterReceiver(clearKeepScreenOnReceiver);
             unregisterReceiver(chromecastDisconnectedReceiver);
+            unregisterReceiver(networkConnectedReceiver);
+
         } catch (Exception e) {
         }
     }
@@ -1450,6 +1480,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        if (intent.getParcelableExtra(
+                                PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                            MediaMetadataCompat description = intent.getParcelableExtra(
+                                    PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                            fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                        }
                         startActivity(fullScreenIntent);
                     }
                     appCMSPresenter.setAppHomeActivityCreated(true);

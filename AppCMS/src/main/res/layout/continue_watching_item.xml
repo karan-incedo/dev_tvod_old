@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity=""
     android:orientation="vertical"
     android:padding="4dp">
 
@@ -21,6 +22,7 @@
             android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
             android:layout_height="112dp"
             android:layout_alignParentStart="true"
+
             android:orientation="horizontal">
 
             <ImageButton
@@ -67,6 +69,7 @@
                 android:layout_marginTop="72dp"
                 android:gravity="end"
                 android:textAlignment="viewEnd"
+                android:textColor="#ffffff"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
