@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#f4181c</color>
     <color name="backgroundColor">#000000</color>
-    <color name="splashbackgroundColor">#f4181c</color>
+    <color name="splashbackgroundColor">#F81004</color>
     <color name="colorNavBarText">#8c8c8c</color>
     <color name="facebookBlue">#3b5998</color>
     <color name="googleRed">#c04b4c</color>
@@ -13,4 +13,6 @@
     <color name="transparentColor">#00000000</color>
     <color name="audioSeekBg">#414344</color>
     <color name="volumeProgress">#B5B5B5</color>
+    <color name="color_white">#ffffff</color>
+
 </resources>

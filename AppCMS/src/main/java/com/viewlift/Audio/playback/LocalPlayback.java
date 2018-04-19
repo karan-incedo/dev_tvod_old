@@ -370,8 +370,9 @@ public final class LocalPlayback implements Playback {
         //reset last save position
         AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
         //if media has changed then load new audio url
-        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && (AudioPlaylistHelper.getInstance().isLastStatePause()))) {
+        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && (AudioPlaylistHelper.getInstance().isLastStatePause())) || (AudioPlaylistHelper.getInstance().getAppCmsPresenter() !=null && AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload())) {
 
+            AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(false);
             mListener.onMetadataChanged(item);
             updatedMetaItem = item;
 

@@ -21,6 +21,14 @@ public class PaymentProviders implements Serializable {
     @Expose
     CCAv ccav;
 
+    public SSLCommerz getSslCommerz() {
+        return sslCommerz;
+    }
+
+    @SerializedName("sslcommerz")
+    @Expose
+    SSLCommerz sslCommerz;
+
     public CCAv getCcav() {
         return ccav;
     }

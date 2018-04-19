@@ -245,7 +245,7 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
-        } else if (!BaseView.isTablet(getContext())) {
+        } else if (!BaseView.isTablet(getContext()) && appCMSPresenter!=null) {
             appCMSPresenter.restrictPortraitOnly();
         }
         setMiniPlayer();
@@ -254,7 +254,13 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
         }
-        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
+
+        try {
+            CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
@@ -329,8 +335,12 @@ public class AppCMSPageFragment extends Fragment {
 
             }
         }
-
+    try {
         CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
+    }catch(Exception e){
+            e.printStackTrace();
+    }
+
     }
 
     @Override
