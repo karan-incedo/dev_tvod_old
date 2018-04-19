@@ -58,6 +58,27 @@
           "type": "image",
           "key": "thumbnailImage"
         },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 1,
+              "topMargin": 185,
+              "leftMargin": 8,
+              "width": 160,
+              "height": 30
+            }
+          },
+          "type": "label",
+          "key": "trayTimeAndDataKey",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "textColor": "#FFFFFF",
+          "fontWeight": "Bold",
+          "backgroundColor": "#90000000",
+          "fontSize": 12,
+          "numberOfLines": 1
+        },
         {
           "layout": {
             "ftv": {
