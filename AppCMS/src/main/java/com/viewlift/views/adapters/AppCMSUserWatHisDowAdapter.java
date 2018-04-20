@@ -416,6 +416,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
                                                                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
                                                         finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                        finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
+                                                                R.drawable.ic_deleteicon));
                                                         finalDeleteDownloadButton.invalidate();
 
                                                         if (contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
