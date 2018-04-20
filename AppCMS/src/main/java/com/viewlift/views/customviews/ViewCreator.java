@@ -1910,13 +1910,25 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }/*else if (moduleInfo.getBlockName().contains("watchlist02")) {
+                }else if (moduleInfo.getBlockName().contains("downloads01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(3);
+                }else if (moduleInfo.getBlockName().contains("history01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("watchlist01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/else if (moduleInfo.getSettings() != null &&
+                }else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2594,6 +2606,7 @@ public class ViewCreator {
          */
 
 
+                    ((RecyclerView) componentViewResult.componentView).setNestedScrollingEnabled(false);
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
@@ -2673,6 +2686,7 @@ public class ViewCreator {
                             viewType,
                             (RecyclerView) componentViewResult.componentView);
          */
+
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);

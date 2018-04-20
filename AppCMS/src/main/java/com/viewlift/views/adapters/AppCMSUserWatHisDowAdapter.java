@@ -274,11 +274,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 return new ViewHolder(emptyView);
             }
         }
+        System.out.println(" download Adapter onCreateViewHolder ");
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        System.out.println(" download Adapter onBindViewHolder "+ position);
         if (adapterData != null && adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         }
@@ -557,7 +559,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     @Override
     public void resetData(RecyclerView listView) {
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     @Override
