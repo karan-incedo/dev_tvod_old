@@ -1132,7 +1132,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
-        super.onResume();
+        try {
+            super.onResume();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -1841,6 +1845,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSFragment.setEnabled(false);
                     appCMSTabNavContainer.setEnabled(false);
                     loadingProgressBar.setVisibility(View.VISIBLE);
+                    loadingProgressBar.bringToFront();
                     //while progress bar loading disable user interaction
                     getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

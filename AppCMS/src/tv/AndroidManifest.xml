@@ -25,9 +25,9 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
     <application
-        android:banner="@drawable/tv_logo"
+        android:banner="@drawable/launcher_icon"
         android:label="@string/default_app_name"
-        android:icon="@drawable/app_logo"
+        android:icon="@drawable/launcher_icon"
         tools:replace="android:label"
         >
         <activity

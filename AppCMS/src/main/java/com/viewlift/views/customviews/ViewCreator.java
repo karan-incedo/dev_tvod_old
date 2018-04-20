@@ -1030,8 +1030,8 @@ public class ViewCreator {
                                             if (BaseView.isTablet(context)) {
                                                 radiusDifference = 4;
                                             }
-                                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                                            if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
                                                 radiusDifference = 5;
                                                 if (BaseView.isTablet(context)) {
                                                     radiusDifference = 3;
@@ -1723,7 +1723,7 @@ public class ViewCreator {
         if (appCMSPageAPI != null) {
             try {
                 CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).setPageName(appCMSPageAPI.getTitle());
-            }catch ( Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -1899,7 +1899,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */
+                if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -1916,7 +1917,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/else if (moduleInfo.getSettings() != null &&
+                }*/ else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2058,7 +2059,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */else {
+        }  */ else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2178,6 +2179,9 @@ public class ViewCreator {
                             if (componentViewResult.addToPageView) {
                                 pageView.addView(componentView);
                             } else {
+                                if (componentView.getParent() != null)
+                                    ((ViewGroup) componentView.getParent()).removeView(componentView);
+
                                 if (component.isHeaderView()) {
                                     pageView.addToHeaderView(componentView);
                                 } else {
@@ -2388,6 +2392,8 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
+    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+
     /**
      * This method is used to create an individual component view, which may by a recycler view,
      * text view, button, image view, etc.  The result is stored in the componentViewResult member object.
@@ -2544,57 +2550,38 @@ public class ViewCreator {
                     }
                 } else {
                     componentViewResult.componentView = new RecyclerView(context);
+                    /*
+                     * get cache of recycler view if already created . need to clear cached  when opening first time this screen using same adapter and recycler view
+                     * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
+                     */
+                    if (appCMSPresenter.getDownlistScreenCache() == null) {
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.VERTICAL,
+                                        false));
 
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.VERTICAL,
-                                    false));
+                        appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType,
+                                appCMSAndroidModules);
 
-                       AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
-   //Todo temp code for Hoichi Only
-    /* CollectionGridItemViewCreator collectionGridItemViewCreator =
-                            new CollectionGridItemViewCreator(this,
-                                    parentLayout,
-                                    false,
-                                    component,
-                                    appCMSPresenter,
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    settings,
-                                    jsonValueKeyMap,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    true,
-                                    true,
-                                    viewType,
-                                    false,
-                                    false);
-
-                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
-                            collectionGridItemViewCreator,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            viewType,
-                            (RecyclerView) componentViewResult.componentView);
-*/
-
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                        appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                    } else {
+                        (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
+                    }
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
+
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSUserWatHisDowAdapter)
@@ -2629,6 +2616,7 @@ public class ViewCreator {
                                         LinearLayoutManager.VERTICAL,
                                         false));
 
+
                         AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
@@ -2641,36 +2629,6 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType,
                                 appCMSAndroidModules);
-
-                        //Todo temp code for Hoichi Only
-/*
-     CollectionGridItemViewCreator collectionGridItemViewCreator =
-                            new CollectionGridItemViewCreator(this,
-                                    parentLayout,
-                                    false,
-                                    component,
-                                    appCMSPresenter,
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    settings,
-                                    jsonValueKeyMap,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    true,
-                                    true,
-                                    viewType,
-                                    false,
-                                    false);
-
-                    AppCMSTrayItemAdapter appCMSUserWatHisDowAdapter = new AppCMSTrayItemAdapter(context,
-                            collectionGridItemViewCreator,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
-                            appCMSPresenter,
-                            jsonValueKeyMap,
-                            viewType,
-                            (RecyclerView) componentViewResult.componentView);*/
-
 
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
@@ -3482,8 +3440,8 @@ public class ViewCreator {
                             if (BaseView.isTablet(context)) {
                                 radiusDifference = 4;
                             }
-                            if(moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())){
+                            if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
                                 radiusDifference = 5;
                                 if (BaseView.isTablet(context)) {
                                     radiusDifference = 3;
@@ -3906,6 +3864,9 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.stopLoader();
+
+                                            System.out.println("started clean download finish");
                                         }, deleteAllFiles);
                                         break;
 
@@ -4169,36 +4130,36 @@ public class ViewCreator {
             case PAGE_ADS_KEY:
                 //todo need to work for managing Subscribed User case scanerio
                 //if (!appCMSPresenter.isUserSubscribed()) {
-                    componentViewResult.componentView = new LinearLayout(context);
-                    AdView adView = new AdView(context);
-                    adView.setFocusable(false);
-                    adView.setEnabled(false);
-                    adView.setClickable(false);
-                    switch (jsonValueKeyMap.get(viewType)) {
-                        case PAGE_BANNER_AD_MODULE_KEY:
-                            adView.setAdSize(AdSize.BANNER);
-                            break;
-                        case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
-                            adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
-                            break;
-                    }
+                componentViewResult.componentView = new LinearLayout(context);
+                AdView adView = new AdView(context);
+                adView.setFocusable(false);
+                adView.setEnabled(false);
+                adView.setClickable(false);
+                switch (jsonValueKeyMap.get(viewType)) {
+                    case PAGE_BANNER_AD_MODULE_KEY:
+                        adView.setAdSize(AdSize.BANNER);
+                        break;
+                    case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
+                        adView.setAdSize(AdSize.MEDIUM_RECTANGLE);
+                        break;
+                }
 
-                    if (moduleAPI != null &&
-                            moduleAPI.getMetadataMap() != null &&
-                            moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
-                        LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
-                        MobileAds.initialize(context, admap.get("adTag"));
-                        adView.setAdUnitId(admap.get("adTag"));
-                        AdRequest adRequest = new AdRequest.Builder().build();
-                        adView.loadAd(adRequest);
-                        ((LinearLayout) componentViewResult.componentView).addView(adView);
-                        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) adView.getLayoutParams();
-                        if (params != null) {
-                            params.weight = 1.0f;
-                            params.gravity = Gravity.CENTER;
-                            adView.setLayoutParams(params);
-                        }
+                if (moduleAPI != null &&
+                        moduleAPI.getMetadataMap() != null &&
+                        moduleAPI.getMetadataMap() instanceof LinkedTreeMap) {
+                    LinkedTreeMap<String, String> admap = (LinkedTreeMap<String, String>) moduleAPI.getMetadataMap();
+                    MobileAds.initialize(context, admap.get("adTag"));
+                    adView.setAdUnitId(admap.get("adTag"));
+                    AdRequest adRequest = new AdRequest.Builder().build();
+                    adView.loadAd(adRequest);
+                    ((LinearLayout) componentViewResult.componentView).addView(adView);
+                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) adView.getLayoutParams();
+                    if (params != null) {
+                        params.weight = 1.0f;
+                        params.gravity = Gravity.CENTER;
+                        adView.setLayoutParams(params);
                     }
+                }
                 //}
                 break;
 
@@ -6446,13 +6407,13 @@ public class ViewCreator {
                         radiusDifference,
                         id);
 
-                if(appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())){
+                if (appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())) {
                     imageButton.setImageResource(R.drawable.ic_download_queued);
 
-                }else if(appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())){
+                } else if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
                     imageButton.setImageResource(R.drawable.ic_downloaded_big);
 
-                }else{
+                } else {
                     imageButton.setImageResource(R.drawable.ic_download_big);
                 }
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);

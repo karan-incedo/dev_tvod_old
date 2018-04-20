@@ -102,130 +102,49 @@ echo ${1}
 echo "viewlift"
 
 
-
-if [ "'$1'" = "'00000149-86ec-d4f3-a7e9-e6fe760d0000'" ]
-then
-   cp ./Apps/Snagfilms/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default Snagfilms.xml"
-
-elif [ "'$1'" = "'7fa0ea9a-9799-4417-99f5-cbb5343c551d'" ]
-then
-   cp ./Apps/Hoichoi/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default hoichoi.xml"
-
-elif [ "'$1'" = "'00000151-11b4-d29b-a17d-55fdb2b80000'" ]
-then
-   cp ./Apps/MonumentalSports/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default Monumental.xml"
-
-elif [ "'$1'" = "'6ea6f2a0-451c-4d87-8060-051f8c07db23'" ]
-then
-   cp ./Apps/FailArmy/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default FailArmy.xml"
-
-elif [ "'$1'" = "'0000014c-edbe-da12-a1fc-fdbe2f120000'"]
-then
-   cp ./Apps/LSN/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default TampaBay.xml"
-
-elif [ "'$1'" = "'3f6f15c7-8454-462f-917e-2c427c95fa1d'" ]
-then
-   cp ./Apps/TampaBay/colors.xml ./AppCMS/src/main/res/values/colors.xml
-   echo "Default TampaBay.xml"
-
-else
-   echo "Default Colors.xml"
-   cp ./Apps/Snagfilms/colors.xml ./AppCMS/src/main/res/values/colors.xml
-fi
-
-
-
-#Required for QA Server
-# if [ "'$1'" = "'3f5e193b-2e51-4853-839e-618e62896deb'" ]
-# then
-#    cp ./Apps/Snagfilms/colors.xml ./AppCMS/src/main/res/values/colors.xml
-#    echo "Default Snagfilms.xml"
-
-# elif [ "'$1'" = "'57e4b76f-6168-41af-bdd8-c76a2e5bf798'" ]
-# then
-#    cp ./Apps/Hoichoi/colors.xml ./AppCMS/src/main/res/values/colors.xml
-#    echo "Default hoichoi.xml"
-
-# elif [ "'$1'" = "'3f6f15c7-8454-462f-917e-2c427c95fa1d'" ]
-# then
-#    cp ./Apps/TampaBay/colors.xml ./AppCMS/src/main/res/values/colors.xml
-#    echo "Default TampaBay.xml"
-
-# else
-#    echo "Default Colors.xml"
-# fi
-
 aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Drawable Resources" 6 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
 
 aws s3 cp s3://${19}/$1/build/android/resource/drawable ./AppCMS/src/main/res/drawable --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Drawable Resources" 6 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
 aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable-xhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Drawable Resources" 7 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 7 " " 0
 aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxxhdpi ./AppCMS/src/main/res/drawable-xxxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Drawable Resources" 8 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 8 " " 0
 aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxhdpi ./AppCMS/src/main/res/drawable-xxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Drawable Resources" 9 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
 
 #2: Slack Second Message. Downloading Resources
 fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID DOWNLOADING RESOURCES AND METADATA. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
 
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-hdpi ./AppCMS/src/main/res/mipmap-hdpi/ --recursive
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-hdpi ./AppCMS/src/mobile/res/mipmap-hdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 10 " " 0
-
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-mdpi ./AppCMS/src/main/res/mipmap-mdpi/ --recursive
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-mdpi ./AppCMS/src/mobile/res/mipmap-mdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 11 " " 0
-
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xhdpi ./AppCMS/src/main/res/mipmap-xhdpi/ --recursive
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xhdpi ./AppCMS/src/mobile/res/mipmap-xhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 12 " " 0
-
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xxhdpi ./AppCMS/src/main/res/mipmap-xxhdpi/ --recursive
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xxhdpi ./AppCMS/src/mobile/res/mipmap-xxhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 13 " " 0
-
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xxxhdpi ./AppCMS/src/main/res/mipmap-xxxhdpi/ --recursive
-# aws s3 cp s3://appcms-config/3f5e193b-2e51-4853-839e-618e62896deb/build/android/resource/mipmap-xxxhdpi ./AppCMS/src/mobile/res/mipmap-xxxhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 14 " " 0
-
-
-
-
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-hdpi ./AppCMS/src/main/res/mipmap-hdpi/ --recursive
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-hdpi ./AppCMS/src/mobile/res/mipmap-hdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Mipmap Resources" 10 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 10 " " 0
 
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-mdpi ./AppCMS/src/main/res/mipmap-mdpi/ --recursive
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-mdpi ./AppCMS/src/mobile/res/mipmap-mdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Mipmap Resources" 11 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 11 " " 0
 
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xhdpi ./AppCMS/src/main/res/mipmap-xhdpi/ --recursive
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xhdpi ./AppCMS/src/mobile/res/mipmap-xhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Mipmap Resources" 12 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 12 " " 0
 
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xxhdpi ./AppCMS/src/main/res/mipmap-xxhdpi/ --recursive
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xxhdpi ./AppCMS/src/mobile/res/mipmap-xxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Mipmap Resources" 13 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 13 " " 0
 
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xxxhdpi ./AppCMS/src/main/res/mipmap-xxxhdpi/ --recursive
 aws s3 cp s3://${19}/$1/build/android/resource/mipmap-xxxhdpi ./AppCMS/src/mobile/res/mipmap-xxxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Build Mipmap Resources" 14 " " 0
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build mipmap resources" 14 " " 0
 
 rm -rf ./fastlane/metadata
 
-rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk 
-rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-debug-androidTest.apk  
-rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-release-unsigned.apk
-rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-release.apk
+rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-nonkiswe-debug.apk 
+rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-nonkiswe-debug-androidTest.apk  
+rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release-unsigned.apk
+rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release.apk
 
 
 fastlane supply init --package_name $6 --json_key ./googleplay_android.json
@@ -238,28 +157,28 @@ if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
         then
         echo "App is Present on Play Store"
 
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Feature Graphic Asset" 15 "true" -1
+        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading FeatureGraphic" 15 "true" -1
         downloadFile ${12} ./fastlane/metadata/android/en-US/images/featureGraphic.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The Promo Graphic Asset" 16 "true" -1
+        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading PromoGraphic" 16 "true" -1
         downloadFile ${13} ./fastlane/metadata/android/en-US/images/promoGraphic.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The TV Banner Asset" 17 "true" -1
+        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the TV Banner" 17 "true" -1
         downloadFile ${14} ./fastlane/metadata/android/en-US/images/tvBanner.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the Icon Images Assets" 18 "true" -1
+        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the icon images" 18 "true" -1
         downloadFile ${15} ./fastlane/metadata/android/en-US/images/icon.png ${17} $POST_URL
 
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading The MetaData Of The Application" 19 "true" -1
+        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the MetaData of the Application" 19 "true" -1
 
         echo ${21} > ./fastlane/metadata/android/en-US/full_description.txt
         echo ${22} > ./fastlane/metadata/android/en-US/short_description.txt
         echo ${4} > ./fastlane/metadata/android/en-US/title.txt
 
-        slackMessageThree = "${4}" + " - ANDROID BUILD SUCCESSFULLY STARTED. BUILD-ID:" + "{17}" + ". VERSION-NUMBER:" + "{3}"
+        slackMessageThree = "${4}" + " - ANDROID BUILD SUCCESSFULLY STARTED. BUILD-ID:" + "${17}" + ". VERSION-NUMBER:" + "${3}"
 
         #3: Slack Second Message. Downloading Resources
         fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID UPDATING VERSION PROPERTIES OF THE APPLICATION. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
         #Now we need to check the Version of App on the Play Store.
-        postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Fetching Latest Version From Playstore And Incrementing The Same" 19 " " 0
+        postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Fetching latest version from playstore and incrementing the same" 19 " " 0
         fastlane android updateTheVersion app_package_name:$6 buildid:${17} json_key_file:./googleplay_android.json posturl:$POST_URL
         postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Version Name is Incremented" 20 " " 0
 
@@ -267,10 +186,9 @@ else
         echo "App is not Present on Play Store"
 fi
 
-postBuildStatus ${17} $POST_URL "CONFIGURING_BUILD" "No ERROR" "Checking If App Already Exists On The Google Play Store" 25 " " 0
+postBuildStatus ${17} $POST_URL "CONFIGURING_BUILD" "No ERROR" "Checking if app already exists on the App Store" 25 " " 0
 
-fastlane android buildLane app_package_name:$6 buildid:${17} app_apk_path:./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${20} apk_path:./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-release-unsigned.apk track:${10} json_key_file:./googleplay_android.json username:"Viewlift fastlane" mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
-
+fastlane android buildLane app_package_name:$6 buildid:${17} app_apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/debug/AppCMS-mobile-nonkiswe-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/mobileNonKiswe/debug/AppCMS-mobile-nonkiswe-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${20} apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release-unsigned.apk track:${10} json_key_file:./googleplay_android.json username:"Viewlift fastlane" mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
 
 IS_APP_SUCCESS="$?"
 
@@ -282,22 +200,25 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
         echo "Uploading Apk File On Partner Portal"
 
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Generated and Preparing the Build for upload to S3 Bucket" 70 " " 0
-        # aws s3 cp ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk s3://appcms-config/$1/build/android/
-        aws s3 cp ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-release.apk s3://${19}/$1/build/android/
+       
+        myApkName="${4}-mobile.apk"
+
+        mv ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}"
+
+        aws s3 cp "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}" s3://${19}/$1/build/android/
        
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 75 " " 0
-        
-        # postUpdateLink ${17} $UPLOAD_URL "http://appcms-config-prod.s3.amazonaws.com/$1/build/android/AppCMS-mobile-release.apk" 
-        postUpdateLink ${17} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/android/AppCMS-mobile-release.apk" 
+
+        postUpdateLink ${17} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/android/${myApkName}" 
 
 
         if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
                 then
                 echo "App is Present on Play Store"
-                postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Uploaded to the S3 Bucket" 80 true 0
+                postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Uploaded to the S3 Bucket" 80 "true" 0
                 sleep 5
-                postBuildStatus ${17} $POST_URL "UPLOADING_PLAY_STORE" "No ERROR" "Uploading the App MetaData and Build to Play Store" 85 " " 0
-                fastlane android supply_onplaystore package_name:$6 track:${10} json_key_file:./googleplay_android.json apk_path:./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-release.apk buildid:${17} posturl:$POST_URL mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
+                postBuildStatus ${17} $POST_URL "UPLOADING_PLAY_STORE" "No ERROR" "Uploading the App MetaData and Build to Play Store" 85 "true" 0
+                fastlane android supply_onplaystore package_name:$6 track:${10} json_key_file:./googleplay_android.json apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName} buildid:${17} posturl:$POST_URL mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
 
         else
                 echo "App is not Present on Play Store"
