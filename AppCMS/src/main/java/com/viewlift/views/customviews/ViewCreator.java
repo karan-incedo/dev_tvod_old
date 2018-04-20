@@ -1899,8 +1899,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                }else */
-                if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -1911,13 +1910,25 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }/*else if (moduleInfo.getBlockName().contains("watchlist02")) {
+                }else if (moduleInfo.getBlockName().contains("downloads01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(3);
+                }else if (moduleInfo.getBlockName().contains("history01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("watchlist01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/ else if (moduleInfo.getSettings() != null &&
+                }else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2059,7 +2070,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */ else {
+        }  */else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2581,7 +2592,6 @@ public class ViewCreator {
                     }
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
-
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSUserWatHisDowAdapter)
