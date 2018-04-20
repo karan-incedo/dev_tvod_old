@@ -1806,6 +1806,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        appCMSPresenter.setDownlistScreenCache(null);
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.restrictLandscapeOnly();
             if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
