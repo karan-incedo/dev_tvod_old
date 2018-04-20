@@ -59,7 +59,6 @@ public class LaunchInstrumentedTest {
         activityTestRule.launchActivity(new Intent(InstrumentationRegistry.getTargetContext(), AppCMSLaunchActivity.class));
         Thread.sleep(5000);
         Screengrab.screenshot("splash_screen");
-        onView(withId(R.id.error_fragment)).check(doesNotExist());
         Thread.sleep(10000);
         Screengrab.screenshot("home_screen");
         Thread.sleep(5000);
@@ -105,9 +104,9 @@ public class LaunchInstrumentedTest {
         } catch (NoMatchingViewException e) {
             // View is not in hierarchy
         }
-        Activity activity = activityTestRule.getActivity();
-        String package_name = Utils.getProperty("AppPackageName", activity);
-        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) activity.getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+//        Activity activity = activityTestRule.getActivity();
+//        String package_name = Utils.getProperty("AppPackageName", activity);
+//        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) activity.getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
     }
 
