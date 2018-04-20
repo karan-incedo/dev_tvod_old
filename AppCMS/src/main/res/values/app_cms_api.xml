@@ -81,8 +81,8 @@
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
-    
-        <!-- AppCMS Content Detail API -->
+
+    <!-- AppCMS Content Detail API -->
     <string name="app_cms_content_detail_api_url">%1$s/content/videos/%2$s?site=%3$s</string>
 
     <!--Get Sync Code and Code Sync API-->
@@ -396,6 +396,7 @@
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
+    <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
@@ -487,6 +488,8 @@
     <string name="app_cms_subscription_key">android</string>
     <string name="ua_android_device_key">android</string>
 
+    <!--AppCMS SSLCommerz credentials API-->
+    <string name="app_cms_sslcommerz_cred_api_url">%1$s/sslcommerz/config?site=%2$s&amp;device=android_phone</string>
     <!--AppCMS Subscription Plan API-->
     <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>
@@ -589,6 +592,8 @@
     <string name="subscription_android_payment_processor_friendly">Google Play</string>
     <string name="subscription_ccavenue_payment_processor">ccavenue</string>
     <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
+    <string name="subscription_sslcommerz_payment_processor">sslcommerz</string>
+    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCommerz</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
@@ -627,9 +632,9 @@
     <string name="app_cms_rawhtml_image_key">rawHtmlImageKey</string>
     <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
 
-     <string name="icon_image_key">iconImage</string>
-     <string name="icon_label_key">iconLabel</string>
-     <string name="app_cms_subtitle_label">subtitleLabel</string>
+    <string name="icon_image_key">iconImage</string>
+    <string name="icon_label_key">iconLabel</string>
+    <string name="app_cms_subtitle_label">subtitleLabel</string>
 
     <string name="app_cms_page_subscribeEditText_key">mailChimpEmailTextField</string>
     <string name="app_cms_page_subscribe_email_go_button_key">goButton</string>
@@ -706,8 +711,5 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
-
-
-
 
 </resources>
