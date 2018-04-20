@@ -6996,6 +6996,9 @@ public class AppCMSPresenter {
                             }
                         });
             } catch (Exception e) {
+                Observable.just((AppCMSHistoryResult) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(appCMSHistoryResultAction);
             }
         }
     }
