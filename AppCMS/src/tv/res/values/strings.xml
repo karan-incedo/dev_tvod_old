@@ -90,7 +90,8 @@
     <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
 
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
-    <string name="unsubscribe_text">To continue watching, and access so much more, log in or subscribe now!</string>
+    <string name="unsubscribe_text_with_login">To continue watching, and access so much more, login below!</string>
+    <string name="unsubscribe_text">To continue watching, and access so much more, please subscribe with this account at our website.</string>
 
     <string name="text_case_sentence">sentence</string>
     <string name="text_case_small">small</string>

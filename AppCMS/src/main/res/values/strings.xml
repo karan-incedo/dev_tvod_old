@@ -338,7 +338,7 @@
 
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
-    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
+    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading content, You can still access your already downloaded content after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
     <string name="app_cms_login_and_signup_button_text">SIGNUP</string>
     <string name="app_cms_signout_button_text">SIGN OUT</string>
@@ -668,6 +668,12 @@
      <string name="app_cms_link_your_account_action">linkAccount</string>
     <string name="app_cms_sign_up_page_action">signUpPageAction</string>
 
+    <!--SSL Commerz transaction msgs-->
+    <string name="ssl_commerz_transaction_fail">Transaction failed. Please try again.</string>
+    <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>
+    <string name="ssl_commerz_transaction_cancel">You cancelled the transaction</string>
+    <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
+    <string name="ssl_commerz_transaction_successful">Transaction successful. Please wait for 3-4 hours while we update your subscription</string>
 </resources>
 
 

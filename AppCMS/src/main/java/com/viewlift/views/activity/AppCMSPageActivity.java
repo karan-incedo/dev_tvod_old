@@ -580,7 +580,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
 
                     // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
-                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo()) ) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
@@ -813,8 +813,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         registerReceiver(uaReceiveChannelIdReceiver,
                 new IntentFilter("receive_ua_channel_id"));
         registerReceiver(uaReceiveAppKeyReceiver,
@@ -1133,8 +1132,32 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
-        super.onResume();
+        try {
+            super.onResume();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        NetworkInfo activeNetwork = null;
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
+
+        if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+            appCMSPresenter.setShowNetworkConnectivity(true);
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        } else {
+            appCMSPresenter.setShowNetworkConnectivity(false);
+            appCMSPresenter.cancelAlertDialog();
+        }
+        if (activeNetwork != null) {
+            appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        }
         if (!libsThreadExecuted) {
             new Thread(() -> {
                 Intent initReceivers = new Intent("INITIALIZATION");
@@ -1421,6 +1444,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(keepScreenOnReceiver);
             unregisterReceiver(clearKeepScreenOnReceiver);
             unregisterReceiver(chromecastDisconnectedReceiver);
+            unregisterReceiver(networkConnectedReceiver);
+
         } catch (Exception e) {
         }
     }
@@ -1820,6 +1845,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSFragment.setEnabled(false);
                     appCMSTabNavContainer.setEnabled(false);
                     loadingProgressBar.setVisibility(View.VISIBLE);
+                    loadingProgressBar.bringToFront();
                     //while progress bar loading disable user interaction
                     getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
