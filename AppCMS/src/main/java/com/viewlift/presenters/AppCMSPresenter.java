@@ -5370,13 +5370,13 @@ public class AppCMSPresenter {
         double teraByte = sizeKB / 1073741824.0;
 
         if (teraByte > 1) {
-            fileSize = dec.format(teraByte).concat("TB");
+            fileSize = dec.format(teraByte).concat(" TB");
         } else if (gigaByte > 1) {
-            fileSize = dec.format(gigaByte).concat("GB");
+            fileSize = dec.format(gigaByte).concat(" GB");
         } else if (megaByte > 1) {
-            fileSize = dec.format(megaByte).concat("MB");
+            fileSize = dec.format(megaByte).concat(" MB");
         } else {
-            fileSize = dec.format(sizeKB).concat("KB");
+            fileSize = dec.format(sizeKB).concat(" KB");
         }
 
         return fileSize;
