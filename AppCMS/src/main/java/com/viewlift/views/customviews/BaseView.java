@@ -1312,11 +1312,11 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
                     if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
-                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ) {
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (thumbnailHeight < thumbnailWidth) {
@@ -1330,8 +1330,8 @@ public abstract class BaseView extends FrameLayout {
                         if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
                                 jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY ||
                                 jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
-                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ){
-                            tm -=12;
+                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY) {
+                            tm -= 12;
                         }
 
                         lm += thumbnailWidth - viewWidth;
@@ -1350,14 +1350,12 @@ public abstract class BaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-            viewHeight = getContext().getResources().getDisplayMetrics().heightPixels - 150;
+            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
             RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
                 @Override
                 public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                     int action = e.getAction();
-                    switch (action)
-
-                    {
+                    switch (action) {
                         case MotionEvent.ACTION_MOVE:
                             rv.getParent().requestDisallowInterceptTouchEvent(true);
                             break;
@@ -1365,17 +1363,13 @@ public abstract class BaseView extends FrameLayout {
                     return false;
                 }
 
-
                 @Override
-                public void onTouchEvent(RecyclerView rv, MotionEvent e)
-
-                {
+                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
                     rv.getParent().requestDisallowInterceptTouchEvent(true);
                 }
 
                 @Override
                 public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
                 }
             };
             ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
@@ -1397,9 +1391,9 @@ public abstract class BaseView extends FrameLayout {
                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                     viewWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     gravity = Gravity.CENTER_HORIZONTAL;
-                }else if( jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
+                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY ){
+                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                     int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                     if (0 < thumbnailHeight && 0 < thumbnailWidth) {
