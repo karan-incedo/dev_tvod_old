@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import android.app.DownloadManager;
 import android.database.Cursor;
 import android.support.annotation.UiThread;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -27,7 +28,7 @@ public class AppCMSUserDownloadVideoStatusCall {
         //
     }
 
-    @UiThread
+    @WorkerThread
     public void call(String videoId, AppCMSPresenter appCMSPresenter,
                      final Action1<UserVideoDownloadStatus> readyAction1, String userId) {
         DownloadVideoRealm downloadVideoRealm=null;
