@@ -3640,7 +3640,8 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
-        return useCCAve;
+//        return useCCAve;
+        return false;
     }
 
     public boolean useSSLCommerz() {
@@ -3655,7 +3656,8 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getSslCommerz() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                 appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
-        return useSSLCommerz;
+//        return useSSLCommerz;
+        return true;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
@@ -3670,7 +3672,7 @@ public class AppCMSPresenter {
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
 
         getSSLCommerzConfigContent(appCMSMain.getApiBaseUrl(),
-                appCMSSite.getGist().getSiteInternalName(), new AppCMSSSLCommerzConfigAPIAction("SSLCommerze") {
+                appCMSSite.getGist().getSiteInternalName(), new AppCMSSSLCommerzConfigAPIAction("SSLCommerz") {
                     @Override
                     public void call(SSLCredential sslCredential) {
                         if (currentActivity != null) {
@@ -3729,7 +3731,7 @@ public class AppCMSPresenter {
                                             switch (errorCode) {
                                                 // Your provides information is not valid.
                                                 case ErrorKeys.USER_INPUT_ERROR:
-                                                    Log.e(TAG, "User Input Eqweasdqwerror");
+                                                    Log.e(TAG, "User Input Error");
                                                     SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                                     break;
                                                 // Internet is not connected.
