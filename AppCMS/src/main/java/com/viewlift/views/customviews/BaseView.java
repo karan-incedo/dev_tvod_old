@@ -1349,8 +1349,8 @@ public abstract class BaseView extends FrameLayout {
             viewHeight *= 1.2;
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
-            viewHeight = getContext().getResources().getDisplayMetrics().heightPixels - 250;
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            viewHeight = getContext().getResources().getDisplayMetrics().heightPixels - 150;
             RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
                 @Override
                 public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
