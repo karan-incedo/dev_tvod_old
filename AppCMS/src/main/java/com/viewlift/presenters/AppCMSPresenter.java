@@ -3729,7 +3729,7 @@ public class AppCMSPresenter {
                                             switch (errorCode) {
                                                 // Your provides information is not valid.
                                                 case ErrorKeys.USER_INPUT_ERROR:
-                                                    Log.e(TAG, "User Input Error");
+                                                    Log.e(TAG, "User Input Eqweasdqwerror");
                                                     SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                                     break;
                                                 // Internet is not connected.
