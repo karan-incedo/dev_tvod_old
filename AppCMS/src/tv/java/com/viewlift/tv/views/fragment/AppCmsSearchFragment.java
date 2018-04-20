@@ -107,6 +107,11 @@ public class AppCmsSearchFragment extends Fragment {
         llView = (LinearLayout)view.findViewById(R.id.ll_view);
         editText = (EditText)view.findViewById(R.id.appcms_et_search);
         editText.setFocusable(false);
+        Component editTextComponent = new Component();
+        editTextComponent.setType(getString(R.string.app_cms_page_textfield_key));
+        editTextComponent.setCornerRadius(5);
+        editText.setBackground(Utils.getTrayBorder(getActivity(),
+                Utils.getFocusColor(getActivity(), appCMSPresenter), editTextComponent));
 
         searchPrevious = (TextView)view.findViewById(R.id.search_previous);
         searchOne = (TextView)view.findViewById(R.id.search_history_one);

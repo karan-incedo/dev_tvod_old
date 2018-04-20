@@ -15761,7 +15761,7 @@ public class AppCMSPresenter {
                                 AppCMSPresenter.this::sendRefreshPageAction, true);
                     }, action1
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             //
         }
     }
@@ -18089,5 +18089,16 @@ public class AppCMSPresenter {
             return realmController.getDownloadMediaType(mediaType);
         }
         return false;
+    }
+
+    public String getPageType(String pageId){
+        String pageType = null;
+        if(null != pageId && null != pageIdToMetaPageMap && pageIdToMetaPageMap.size() > 0) {
+            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+            if(null != metaPage){
+                pageType = metaPage.getPageType();
+            }
+        }
+        return pageType;
     }
 }

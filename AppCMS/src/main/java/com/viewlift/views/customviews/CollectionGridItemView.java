@@ -932,7 +932,7 @@ public class CollectionGridItemView extends BaseView {
 
                             ((TextView) view).setText(runtimeText);
                         }
-                        ((TextView) view).setBackgroundColor(Color.parseColor("#4D000000"));
+                        ((TextView) view).setBackgroundColor(Color.parseColor("#7D000000"));
                         ((TextView) view).setTextColor(Color.parseColor("#ffffff"));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
                         ((TextView) view).setSingleLine(false);
@@ -975,6 +975,10 @@ public class CollectionGridItemView extends BaseView {
                             }
                             ((TextView) view).setText(runtimeText);
                         }
+                        int textBgColor = Color.parseColor(ViewCreator.getColorWithOpacity(context, "000000",76));
+                        ((TextView) view).setBackgroundColor(textBgColor);
+
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         final int SECONDS_PER_MINS = 60;
                         if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
