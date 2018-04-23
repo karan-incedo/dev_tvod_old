@@ -59,6 +59,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -742,6 +743,11 @@ public class AppCMSPresenter {
 
     private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
 
+    static {
+        System.loadLibrary("keys");
+    }
+    public native String getNativeKey1();
+    public native String getNativeKey2();
 
     public static class PlaylistDetails {
         public ImageButton getImgButton() {
@@ -3640,8 +3646,8 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
-//        return useCCAve;
-        return false;
+        return useCCAve;
+//        return false;
     }
 
     public boolean useSSLCommerz() {
@@ -3656,12 +3662,17 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getSslCommerz() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                 appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
-//        return useSSLCommerz;
-        return true;
+        return useSSLCommerz;
+//        return true;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
-        new Handler().postDelayed(new Runnable() {
+
+        String key1 = new String(Base64.decode(getNativeKey1(),Base64.DEFAULT));
+        String key2 = new String(Base64.decode(getNativeKey2(), Base64.DEFAULT));
+        Log.e("key1",key1);
+        Log.e("key2",key2);
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (currentActivity != null) {
@@ -3682,7 +3693,7 @@ public class AppCMSPresenter {
                                 && sslCredential.getStorePassword() != null && sslCredential.getTransactionId() != null) {
                             MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(sslCredential.getStoreId(),
                                     sslCredential.getStorePassword(), planAmt, sslCredential.getTransactionId(),
-                                    CurrencyType.BDT, /*SdkType.LIVE*/ SdkType.TESTBOX, SdkCategory.BANK_LIST);
+                                    CurrencyType.BDT, *//*SdkType.LIVE*//* SdkType.TESTBOX, SdkCategory.BANK_LIST);
 
                             String custName = getLoggedInUserName();
                             if (custName == null && getLoggedInUserEmail() != null) {
@@ -3697,7 +3708,7 @@ public class AppCMSPresenter {
                                         @Override
                                         public void transactionSuccess(TransactionInfo transactionInfo) {
                                             SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
-                                            /*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                                            *//*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
                                                 AppsFlyerUtils.subscriptionEvent(getCurrentContext(),
                                                         true,
                                                         getAppsFlyerKey(),
@@ -3713,7 +3724,7 @@ public class AppCMSPresenter {
                                             bundle.putString(FIREBASE_TRANSACTION_ID, transactionInfo.getTranId());
 
                                             if (getmFireBaseAnalytics() != null)
-                                                getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
+                                                getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*//*
 
                                             finalizeSignupAfterCCAvenueSubscription(null);
                                             Log.d(TAG, "Transaction Successfully completed");
@@ -3764,7 +3775,7 @@ public class AppCMSPresenter {
                                     });
                         }
                     }
-                });
+                });*/
     }
 
     private void SSLComerzTransactionStatus(int msg) {
