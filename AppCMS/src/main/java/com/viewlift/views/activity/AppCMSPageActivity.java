@@ -8,6 +8,7 @@ import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -54,6 +55,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -81,6 +83,7 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -259,6 +262,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private float downRawX, downRawY;
     private float dX, dY;
     private final String mobileLaunchActivity = "com.viewlift.mobile.AppCMSLaunchActivity";
+    private int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+
+    private boolean checkPlayServices() throws Exception {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                Toast.makeText(this, "This device is not supported.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -277,6 +299,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        try{
+
+            checkPlayServices();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
         AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
 

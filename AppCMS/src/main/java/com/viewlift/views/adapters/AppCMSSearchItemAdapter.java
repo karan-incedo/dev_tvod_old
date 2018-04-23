@@ -364,14 +364,14 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.action = action;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public  class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         FrameLayout parentLayout;
         ImageView filmThumbnail;
         ImageView gridOptions;
-        TextView filmTitle,thumbnailInfo;
+        TextView filmTitle;
         RelativeLayout titleLayout;
-        RelativeLayout filmThumbnailLayout;
+
 
         public ViewHolder(View view,
                           int imageWidth,
@@ -382,28 +382,12 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             super(view);
             this.view = view;
             this.parentLayout = (FrameLayout) view.findViewById(R.id.search_result_item_view);
-            this.filmThumbnailLayout = new RelativeLayout(view.getContext());
-            this.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
 
             this.filmThumbnail = new ImageView(view.getContext());
-            RelativeLayout.LayoutParams filmImageThumbnailLayoutParams =
-                    new RelativeLayout.LayoutParams(imageWidth, imageHeight);
+            FrameLayout.LayoutParams filmImageThumbnailLayoutParams =
+                    new FrameLayout.LayoutParams(imageWidth, imageHeight);
             this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
-
-            this.thumbnailInfo = new TextView(view.getContext());
-            this.thumbnailInfo.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-            this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.apptentive_brand_red));
-            this.thumbnailInfo.setTextSize(textSize);
-            RelativeLayout.LayoutParams thumbnailInfoParams =
-                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            thumbnailInfoParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            this.thumbnailInfo.setLayoutParams(thumbnailInfoParams);
-
-            this.filmThumbnailLayout.addView(this.filmThumbnail);
-            this.filmThumbnailLayout.addView( this.thumbnailInfo);
-
-            this.parentLayout.addView(this.filmThumbnailLayout);
+            this.parentLayout.addView(this.filmThumbnail);
 
             this.titleLayout = new RelativeLayout(view.getContext());
             FrameLayout.LayoutParams titleLayoutParams =
@@ -422,7 +406,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.gridOptions.setBackground(context.getDrawable(R.drawable.dots_more));
             this.gridOptions.getBackground().setTint(appCMSPresenter.getGeneralTextColor());
             this.gridOptions.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-            this.gridOptions.setVisibility(View.INVISIBLE);
+            this.gridOptions.setVisibility(View.GONE);
             this.titleLayout.addView(this.gridOptions);
 
             this.filmTitle = new TextView(view.getContext());
@@ -435,7 +419,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setLayoutParams(filmTitleLayoutParams);
             this.filmTitle.setTextSize(textSize);
             this.filmTitle.setMaxLines(2);
-
+            /*this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
+                    android.R.color.white));*/
             this.filmTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.titleLayout.addView(this.filmTitle);
@@ -451,8 +436,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     }
 
     void applySportsStyleDefault(ViewHolder viewHolder, Bitmap image) {
-        viewHolder.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(),image.getHeight()));
-        viewHolder.filmThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(image.getWidth(), image.getHeight()));
+        viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), image.getHeight()));
+
         viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         FrameLayout.LayoutParams titleLayoutParams = (FrameLayout.LayoutParams) viewHolder.titleLayout.getLayoutParams();

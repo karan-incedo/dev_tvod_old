@@ -107,9 +107,13 @@ public class MusicService extends MediaBrowserServiceCompat implements
         castPlayback = AudioCastPlayback.getInstance(MusicService.this, callBackPlaybackListener);
 
         //switch playback instance to local or casting playback based on casting device status
-
-        CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-                .getCurrentCastSession();
+        CastSession castSession = null;
+        try {
+            castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+            .getCurrentCastSession();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         if (castSession != null && castSession.isConnected()) {
             isCastConnected = true;
             playback = castPlayback;
@@ -223,9 +227,13 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
-
-        CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-                .getCurrentCastSession();
+        CastSession castSession=null;
+        try {
+            castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                    .getCurrentCastSession();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         if (castSession != null && castSession.isConnected()) {
             mRemoteMediaClient = castSession.getRemoteMediaClient();
         }
