@@ -1356,9 +1356,7 @@ public abstract class BaseView extends FrameLayout {
                 @Override
                 public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                     int action = e.getAction();
-                    switch (action)
-
-                    {
+                    switch (action) {
                         case MotionEvent.ACTION_MOVE:
                             rv.getParent().requestDisallowInterceptTouchEvent(true);
                             break;
@@ -1367,18 +1365,15 @@ public abstract class BaseView extends FrameLayout {
                 }
 
                 @Override
-                public void onTouchEvent(RecyclerView rv, MotionEvent e)
-
-                {
+                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
                     rv.getParent().requestDisallowInterceptTouchEvent(true);
                 }
 
                 @Override
                 public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
                 }
             };
-            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
+            //((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
 
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
