@@ -39,6 +39,11 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.NotificationTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
@@ -297,6 +302,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // async fetch the album art icon
             String artUrl = description.getIconUri().toString();
             art = AlbumArtCache.getInstance().getBigImage(artUrl);
+
             if (art == null) {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
@@ -402,17 +408,30 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
 
+
     private void fetchBitmapFromURLAsync(final String bitmapUrl,
                                          final NotificationCompat.Builder builder) {
-        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+//        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+//            @Override
+//            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+//                if (mMetadata != null && mMetadata.getDescription().getIconUri() != null &&
+//                        mMetadata.getDescription().getIconUri().toString().equals(artUrl)) {
+//                    // If the media is still the same, update the notification:
+//                    builder.setLargeIcon(bitmap);
+////                    addActions(builder);
+//                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+//                }
+//            }
+//        });
+        Glide.with(mService.getApplicationContext()).asBitmap().load(bitmapUrl).into(new SimpleTarget<Bitmap>() {
+
             @Override
-            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                if (mMetadata != null && mMetadata.getDescription().getIconUri() != null &&
-                        mMetadata.getDescription().getIconUri().toString().equals(artUrl)) {
-                    // If the media is still the same, update the notification:
+            public void onResourceReady(Bitmap bitmap, Transition<? super Bitmap> transition) {
+                if (bitmap != null) {
                     builder.setLargeIcon(bitmap);
-//                    addActions(builder);
+
                     mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+
                 }
             }
         });
