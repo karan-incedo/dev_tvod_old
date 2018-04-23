@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.viewlift.Audio;
 
@@ -107,19 +107,23 @@ public class MusicService extends MediaBrowserServiceCompat implements
         castPlayback = AudioCastPlayback.getInstance(MusicService.this, callBackPlaybackListener);
 
         //switch playback instance to local or casting playback based on casting device status
-        CastSession castSession = null;
+
         try {
-            castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-            .getCurrentCastSession();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        if (castSession != null && castSession.isConnected()) {
-            isCastConnected = true;
-            playback = castPlayback;
-        } else {
+            CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                    .getCurrentCastSession();
+            if (castSession != null && castSession.isConnected()) {
+                isCastConnected = true;
+                playback = castPlayback;
+            } else {
+                isCastConnected = false;
+                playback = localPlayback;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             isCastConnected = false;
             playback = localPlayback;
+
         }
 
 
@@ -184,8 +188,25 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mSession.setMetadata(metadata);
+            updateMetaPlaylist();
+            updateMetaPlayerPage();
+
         }
     };
+
+    public void updateMetaPlaylist() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_DATA_UPDATE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_DATA_UPDATE_MESSAGE, true);
+        getApplicationContext().sendBroadcast(intent);
+    }
+
+    public void updateMetaPlayerPage() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_DATA_PLAYLIST_UPDATE_MESSAGE, true);
+        getApplicationContext().sendBroadcast(intent);
+    }
 
     /**
      * (non-Javadoc)A
@@ -227,15 +248,15 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mPlaybackManager.saveLastPositionAudioOnForcefullyStop();
         RemoteMediaClient mRemoteMediaClient = null;
         boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
-        CastSession castSession=null;
+
         try {
-            castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+            CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
                     .getCurrentCastSession();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        if (castSession != null && castSession.isConnected()) {
-            mRemoteMediaClient = castSession.getRemoteMediaClient();
+            if (castSession != null && castSession.isConnected()) {
+                mRemoteMediaClient = castSession.getRemoteMediaClient();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         //if audio is casting to remote media client than dont stop the service
@@ -263,7 +284,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             AudioCastPlayback.castPlaybackInstance = null;
             unregisterReceiver(serviceReceiver);
             unregisterReceiver(networkConnectedReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -402,6 +423,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 mPlaybackManager.handleStopRequest(null);
                 mPlaybackManager.setCurrentMediaId(null);
                 AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+                stopNotification();
                 stopSelf();
 
             }

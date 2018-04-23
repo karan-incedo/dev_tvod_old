@@ -40,12 +40,14 @@ gradle/
 
 # Local configuration file (sdk path, etc)
 local.properties
+
 library/build/
 sample/build/
 htmlspanner/build/
 AppCMS/.idea/
 AppCMS/local.properties
 AppCMS/gradle/
+AppCMS/src/main/assets/version.properties
 
 *.gradle
 AppCMS/*.gradle

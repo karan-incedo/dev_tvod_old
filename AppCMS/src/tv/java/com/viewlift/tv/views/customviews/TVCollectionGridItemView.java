@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -204,9 +205,11 @@ public class TVCollectionGridItemView extends TVBaseView {
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
-                                .apply(new RequestOptions().override(childViewWidth, childViewHeight)
-                                    .centerCrop())
+                                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .placeholder(R.drawable.video_image_placeholder)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                 .into((ImageView) view);
+
                     }
                     bringToFront = false;
                     view.setFocusable(true);
@@ -380,9 +383,14 @@ public class TVCollectionGridItemView extends TVBaseView {
 
                         if (data.getGist() != null && data.getGist().getPublishDate() != null) {
                             try {
-                                Date publishedDate = new Date(data.getGist().getPublishDate());
+
+                                    String date = appCMSPresenter.getDateFormat(
+                                            Long.parseLong(data.getGist().getPublishDate()),
+                                            "MMMM dd, yyyy");
+
+                                /*Date publishedDate = new Date(data.getGist().getPublishDate());
                                 SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                String date = spf.format(publishedDate);
+                                String date = spf.format(publishedDate);*/
                                 if (stringBuilder.length() > 0) stringBuilder.append(" | ");
                                 stringBuilder.append("Published on ");
                                 stringBuilder.append(date);

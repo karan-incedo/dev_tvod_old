@@ -227,17 +227,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
-                currentStreamingQualitySelector != null &&
-                streamingQualitySelector != null) {
-            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-            if (0 < availableStreamingQualities.size()) {
-                int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
-                if (0 <= streamingQualityIndex) {
-                    currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
-                    setSelectedStreamingQualityIndex();
+        try {
+            if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
+                    currentStreamingQualitySelector != null &&
+                    streamingQualitySelector != null) {
+                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+                if (0 < availableStreamingQualities.size()) {
+                    int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+                    if (0 <= streamingQualityIndex) {
+                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
+                        setSelectedStreamingQualityIndex();
+                    }
                 }
             }
+        } catch (Exception e) {
         }
     }
 
@@ -430,23 +433,23 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+        /*if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                 && !useHls
                 && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
-            currentStreamingQualitySelector.setVisibility(View.VISIBLE);
-        }/* else {
+            showStreamingQualitySelector();
+        }*//* else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }*/
 
 
-       /* currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                 && (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)) {
             createStreamingQualitySelector();
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
-        }*/
+        }
 
        /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
 
@@ -531,7 +534,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void createStreamingQualitySelector() {
         if (streamingQualitySelector != null && appCMSPresenter != null) {
-            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            showStreamingQualitySelector();
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
                 listView = new RecyclerView(getContext());
@@ -615,7 +618,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
         if (streamingQualitySelector != null && appCMSPresenter != null) {
-            currentStreamingQualitySelector.setVisibility(VISIBLE);
+            showStreamingQualitySelector();
             TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
             List<HLSStreamingQuality> availableStreamingQualities = new ArrayList<>();
             availableStreamingQualities.add(new HLSStreamingQuality(0, "Auto"));
@@ -814,11 +817,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     ) {
                 createStreamingQualitySelectorForHLS();
 
-                // Default "Auto" is selected
-                currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
-                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+                   // Default "Auto" is selected
+                    currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
+                    showStreamingQualitySelector();
             }
         }
+    }
+
+    private void showStreamingQualitySelector() {
+        if(null != currentStreamingQualitySelector
+                && null != appCMSPresenter
+                && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+        currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
     @Override

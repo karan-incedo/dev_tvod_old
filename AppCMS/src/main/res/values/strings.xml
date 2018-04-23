@@ -195,7 +195,6 @@
     <!--User Management - Closed Captions-->
     <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
-
     <string name="media_route_menu_title">Play on&#8230;</string>
     <string name="countdown_seconds">%d seconds</string>
     <string name="related_movies_id_list">related_movies_id</string>
@@ -323,9 +322,9 @@
 
 
     <string name="app_cms_delete_download_alert_title">Delete Download</string>
-    <string name="app_cms_delete_one_download_video_item_message">Do you want to delete video from downloads?</string>
+    <string name="app_cms_delete_one_download_video_item_message">Do you want to delete this content from downloads?</string>
     <string name="app_cms_delete_one_download_audio_item_message">Do you want to delete audio from downloads?</string>
-    <string name="app_cms_delete_all_video_download_items_message">Do you want to delete all video from downloads?</string>
+    <string name="app_cms_delete_all_video_download_items_message">Do you want to delete all content from downloads?</string>
     <string name="app_cms_delete_all_audio_download_items_message">Do you want to delete all audio from downloads?</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
@@ -339,7 +338,7 @@
 
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
-    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
+    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading content, You can still access your already downloaded content after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
     <string name="app_cms_login_and_signup_button_text">SIGNUP</string>
     <string name="app_cms_signout_button_text">SIGN OUT</string>
@@ -539,7 +538,6 @@
     <string name="app_cms_module_list_footer_key">footer01</string>
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
-
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
     <string name="app_cms_download_over_cellular_disabled_error_title">Download Over Cellular Disabled</string>
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
@@ -669,7 +667,13 @@
     <string name="play_audio_category">player-audio</string>
      <string name="app_cms_link_your_account_action">linkAccount</string>
     <string name="app_cms_sign_up_page_action">signUpPageAction</string>
-    
+
+    <!--SSL Commerz transaction msgs-->
+    <string name="ssl_commerz_transaction_fail">Transaction failed. Please try again.</string>
+    <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>
+    <string name="ssl_commerz_transaction_cancel">You cancelled the transaction</string>
+    <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
+    <string name="ssl_commerz_transaction_successful">Transaction successful. Please wait for 3-4 hours while we update your subscription</string>
 </resources>
 
 

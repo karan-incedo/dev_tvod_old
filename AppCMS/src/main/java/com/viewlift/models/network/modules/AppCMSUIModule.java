@@ -52,6 +52,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -198,6 +200,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
                 AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
+                AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
@@ -627,6 +631,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_02_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_03_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
                 AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY);
 
@@ -962,6 +970,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_musicHub_page_key));*/
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_history_screen_key),
+                context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 context.getString(R.string.app_cms_action_watchlistpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
@@ -1226,6 +1236,19 @@ public class AppCMSUIModule {
     public AppCMSPlaylistRest providesAppCMSPlaylistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSPlaylistRest.class);
     }
+
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzConfigRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSSLCommerzConfigRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzConfigCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzConfigRest configRest, Gson gson) {
+        return new AppCMSSSLCommerzConfigCall(configRest, gson);
+    }
+
 
     @Provides
     @Singleton

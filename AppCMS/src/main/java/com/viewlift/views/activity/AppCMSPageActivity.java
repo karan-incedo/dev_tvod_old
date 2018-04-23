@@ -34,6 +34,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -79,6 +80,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.ui.PlaybackControlsFragment;
+import com.viewlift.Audio.utils.TaskRemoveService;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
@@ -262,6 +265,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private float downRawX, downRawY;
     private float dX, dY;
     private final String mobileLaunchActivity = "com.viewlift.mobile.AppCMSLaunchActivity";
+
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
 
     private boolean checkPlayServices() throws Exception {
@@ -295,6 +299,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_appcms_page);
 
+        try {
+
+            checkPlayServices();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -309,6 +319,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
         AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
+        startService(new Intent(getBaseContext(), TaskRemoveService.class));
 
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
@@ -328,6 +339,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                 Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                if (fullScreenIntent.getParcelableExtra(
+                        PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                    MediaMetadataCompat description = fullScreenIntent.getParcelableExtra(
+                            PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                    fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                }
                 startActivity(fullScreenIntent);
             }
             appCMSPresenter.setAppHomeActivityCreated(true);
@@ -371,29 +389,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
                         if (isActive) {
-                            handleLaunchPageAction(updatedAppCMSBinder,
-                                    false,
-                                    false,
-                                    false);
+                            try {
+                                handleLaunchPageAction(updatedAppCMSBinder,
+                                        false,
+                                        false,
+                                        false);
 
-                            if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                    updatedAppCMSBinder != null &&
-                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                    appCMSPresenter.unrestrictPortraitOnly();
-                                    if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                            ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
+                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                        updatedAppCMSBinder != null &&
+                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                        appCMSPresenter.unrestrictPortraitOnly();
+                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
+                                                ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            exitFullScreenVideoPlayer(true);
+                                        }
                                     } else {
-                                        exitFullScreenVideoPlayer(true);
-                                    }
-                                } else {
-                                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                                        enterFullScreenVideoPlayer();
-                                    } else {
-                                        ViewCreator.enableFullScreenMode();
+                                        if (ViewCreator.playerViewFullScreenEnabled()) {
+                                            enterFullScreenVideoPlayer();
+                                        } else {
+                                            ViewCreator.enableFullScreenMode();
+                                        }
                                     }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         } else if (updatedAppCMSBinder != null) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
@@ -568,7 +590,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
 
                     // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
-                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo()) ) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
@@ -801,8 +823,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         registerReceiver(uaReceiveChannelIdReceiver,
                 new IntentFilter("receive_ua_channel_id"));
         registerReceiver(uaReceiveAppKeyReceiver,
@@ -1121,8 +1142,32 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
-        super.onResume();
+        try {
+            super.onResume();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
 
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        NetworkInfo activeNetwork = null;
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
+
+        if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+            appCMSPresenter.setShowNetworkConnectivity(true);
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        } else {
+            appCMSPresenter.setShowNetworkConnectivity(false);
+            appCMSPresenter.cancelAlertDialog();
+        }
+        if (activeNetwork != null) {
+            appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        }
         if (!libsThreadExecuted) {
             new Thread(() -> {
                 Intent initReceivers = new Intent("INITIALIZATION");
@@ -1274,7 +1319,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
 
-        if (updatedAppCMSBinder!=null && updatedAppCMSBinder.getExtraScreenType()!=null &&
+        if (updatedAppCMSBinder != null && updatedAppCMSBinder.getExtraScreenType() != null &&
                 updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
             appCMSPresenter.refreshPages(shouldRefresh -> {
                 if (appCMSPresenter.isAppBelowMinVersion()) {
@@ -1409,6 +1454,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(keepScreenOnReceiver);
             unregisterReceiver(clearKeepScreenOnReceiver);
             unregisterReceiver(chromecastDisconnectedReceiver);
+            unregisterReceiver(networkConnectedReceiver);
+
         } catch (Exception e) {
         }
     }
@@ -1447,6 +1494,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        if (intent.getParcelableExtra(
+                                PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                            MediaMetadataCompat description = intent.getParcelableExtra(
+                                    PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                            fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+                        }
                         startActivity(fullScreenIntent);
                     }
                     appCMSPresenter.setAppHomeActivityCreated(true);
@@ -1762,6 +1816,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        appCMSPresenter.setDownlistScreenCache(null);
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.restrictLandscapeOnly();
             if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -1792,33 +1847,41 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void pageLoading(boolean pageLoading) {
-        if (pageLoading) {
-            appCMSPresenter.setMainFragmentTransparency(0.5f);
-            appCMSFragment.setEnabled(false);
-            appCMSTabNavContainer.setEnabled(false);
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            //while progress bar loading disable user interaction
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainerItems.getChildAt(i).setEnabled(false);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (pageLoading) {
+                    appCMSPresenter.setMainFragmentTransparency(0.5f);
+                    appCMSFragment.setEnabled(false);
+                    appCMSTabNavContainer.setEnabled(false);
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    loadingProgressBar.bringToFront();
+                    //while progress bar loading disable user interaction
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                        appCMSTabNavContainerItems.getChildAt(i).setEnabled(false);
+                    }
+                    appCMSPresenter.setPageLoading(true);
+                } else if (!loaderWaitingFor3rdPartyLogin) {
+                    appCMSPresenter.setMainFragmentTransparency(1.0f);
+                    if (appCMSPresenter.isAddOnFragmentVisible()) {
+                        appCMSPresenter.showAddOnFragment(true, 0.2f);
+                    }
+                    appCMSFragment.setEnabled(true);
+                    appCMSTabNavContainer.setEnabled(true);
+                    loadingProgressBar.setVisibility(View.GONE);
+                    //clear user interaction blocker flag
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                        appCMSTabNavContainerItems.getChildAt(i).setEnabled(true);
+                    }
+                    appCMSPresenter.setPageLoading(false);
+                }
             }
-            appCMSPresenter.setPageLoading(true);
-        } else if (!loaderWaitingFor3rdPartyLogin) {
-            appCMSPresenter.setMainFragmentTransparency(1.0f);
-            if (appCMSPresenter.isAddOnFragmentVisible()) {
-                appCMSPresenter.showAddOnFragment(true, 0.2f);
-            }
-            appCMSFragment.setEnabled(true);
-            appCMSTabNavContainer.setEnabled(true);
-            loadingProgressBar.setVisibility(View.GONE);
-            //clear user interaction blocker flag
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainerItems.getChildAt(i).setEnabled(true);
-            }
-            appCMSPresenter.setPageLoading(false);
-        }
+        });
+
     }
 
     private boolean isPageLoading() {
@@ -1866,10 +1929,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (updatedAppCMSBinder != null) {
-             /*
-         * casting button will show only on home page, movie page and player page so check which
-         * page will be open
-         */
+            /*
+             * casting button will show only on home page, movie page and player page so check which
+             * page will be open
+             */
             if (!castDisabled) {
                 setMediaRouterButtonVisibility(updatedAppCMSBinder.getPageId());
             }
@@ -1962,7 +2025,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         pageLoading(false);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
-         /*
+        /*
          * casting button will show only on home page, movie page and player page so check which
          * page will be open
          */
@@ -2086,7 +2149,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             /*Just to make sure that the pop-up (mini) player is dismissed when a new page is
-            * opened, so that the player isn't visible on the next page.*/
+             * opened, so that the player isn't visible on the next page.*/
             appCMSPresenter.dismissPopupWindowPlayer(false);
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
@@ -3413,5 +3476,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         });
     }
+
 
 }

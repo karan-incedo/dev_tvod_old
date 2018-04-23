@@ -1,10 +1,15 @@
 package com.viewlift.views.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +25,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -53,6 +59,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     private CastServiceProvider castProvider;
     ContentDatum currentAudio;
     public static boolean isDownloading = true;
+    private BroadcastReceiver networkConnectedReceiver;
+    private ConnectivityManager connectivityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +82,33 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
         launchAudioPlayer();
         setCasting();
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = null;
+
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
+
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+                String pageId = "";
+                if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo()) ) {
+                    return;
+                }
+                if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+                    appCMSPresenter.setShowNetworkConnectivity(true);
+                    appCMSPresenter.showNoNetworkConnectivityToast();
+                } else {
+                    appCMSPresenter.setShowNetworkConnectivity(false);
+                    appCMSPresenter.cancelAlertDialog();
+                }
+
+            }
+        };
     }
 
     private void setCasting() {
@@ -88,21 +123,30 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkConnectedReceiver);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("on destroy audio player");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        appCMSPresenter.sendGaScreen("Music");
+        checkAudioDownloadStatus();
+    }
+
+    private void checkAudioDownloadStatus(){
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         if (currentAudio != null &&
                 currentAudio.getGist() != null &&
@@ -116,7 +160,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
     }
 
-
     private void launchAudioPlayer() {
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -126,7 +169,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
                     getString(R.string.audio_fragment_tag_key));
-            fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
+//            fragmentTransaction.addToBackStack(getString(R.string.audio_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
 
@@ -187,13 +230,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+//        finish();
     }
 
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
         String audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
+        checkAudioDownloadStatus();
     }
 
 

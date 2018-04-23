@@ -550,32 +550,36 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 }
             }
 
-            switch (event.getKeyCode()) {
-                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    if (null != appCMSPlayVideoPageContainer) {
-                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
-                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
-                        if (appCMSPlayVideoFragment != null
-                                && appCMSPlayVideoFragment.getVideoPlayerView() != null
-                                && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null) {
-                            return super.dispatchKeyEvent(event)
-                                    || appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView()
-                                    .dispatchKeyEvent(event);
+            try {
+                switch (event.getKeyCode()) {
+                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        if (null != appCMSPlayVideoPageContainer) {
+                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
+                            if (appCMSPlayVideoFragment != null
+                                    && appCMSPlayVideoFragment.getVideoPlayerView() != null
+                                    && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null) {
+                                return super.dispatchKeyEvent(event)
+                                        || appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView()
+                                        .dispatchKeyEvent(event);
+                            }
                         }
-                    }
-                    break;
-                case KeyEvent.KEYCODE_MEDIA_REWIND:
-                    if (null != appCMSPlayVideoPageContainer) {
-                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
-                        return super.dispatchKeyEvent(event);
-                    }
-                    break;
-                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                    if (null != appCMSPlayVideoPageContainer) {
-                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
-                        return super.dispatchKeyEvent(event);
-                    }
-                    break;
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_REWIND:
+                        if (null != appCMSPlayVideoPageContainer) {
+                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                            return super.dispatchKeyEvent(event);
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                        if (null != appCMSPlayVideoPageContainer) {
+                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                            return super.dispatchKeyEvent(event);
+                        }
+                        break;
+                }
+            } catch (Exception e) {
+
             }
         }
         return super.dispatchKeyEvent(event);

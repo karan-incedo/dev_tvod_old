@@ -39,6 +39,12 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.NotificationTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
@@ -52,7 +58,8 @@ import com.viewlift.views.activity.AppCMSPageActivity;
  * won't be killed during playback.
  */
 public class MediaNotificationManager extends BroadcastReceiver {
-
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "CURRENT_MEDIA_DESCRIPTION";
     public static final String ACTION_PAUSE = "com.viewlift.Audio.pause";
     public static final String ACTION_PLAY = "com.viewlift.Audio.play";
     public static final String ACTION_PREV = "com.viewlift.Audio.prev";
@@ -85,6 +92,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
+                if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                } else {
+                    mMetadata = mController.getMetadata();
+                }
                 Notification notification = createNotification();
                 if (notification != null) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -95,6 +107,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mMetadata = metadata;
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
             Notification notification = createNotification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -141,12 +158,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
 
-    public void notifyMedia(){
+    public void notifyMedia() {
         Notification notification = createNotification();
         if (notification != null) {
             mNotificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
+
     /**
      * Posts the notification and starts tracking the session to keep it
      * updated. The notification will automatically be removed if the session is
@@ -154,11 +172,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
      */
     public void startNotification() {
         if (!mStarted) {
-            mMetadata = mController.getMetadata();
+            if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+            } else {
+                mMetadata = mController.getMetadata();
+            }
+//            mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
 
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
+            if (notification != null) {
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
             if (notification != null) {
                 mController.registerCallback(mCb);
                 IntentFilter filter = new IntentFilter();
@@ -248,6 +274,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
         openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
+        if (mController.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+            mMetadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+        } else {
+            mMetadata = mController.getMetadata();
+        }
+        openUI.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION, mMetadata);
+
 //        }
 //        openUI.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT );
         return PendingIntent.getActivity(mService.getApplicationContext(), REQUEST_CODE, openUI,
@@ -269,6 +302,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // async fetch the album art icon
             String artUrl = description.getIconUri().toString();
             art = AlbumArtCache.getInstance().getBigImage(artUrl);
+
             if (art == null) {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
@@ -337,11 +371,18 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final String label;
         final int icon;
         final PendingIntent intent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            System.out.println("State media playing");
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.notification_pause;
             intent = mPauseIntent;
+        } else if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+
+            label = mService.getString(R.string.label_play);
+            icon = R.drawable.notification_play;
+            intent = mPlayIntent;
         } else {
+
             label = mService.getString(R.string.label_play);
             icon = R.drawable.notification_play;
             intent = mPlayIntent;
@@ -367,17 +408,30 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
 
+
     private void fetchBitmapFromURLAsync(final String bitmapUrl,
                                          final NotificationCompat.Builder builder) {
-        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+//        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+//            @Override
+//            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+//                if (mMetadata != null && mMetadata.getDescription().getIconUri() != null &&
+//                        mMetadata.getDescription().getIconUri().toString().equals(artUrl)) {
+//                    // If the media is still the same, update the notification:
+//                    builder.setLargeIcon(bitmap);
+////                    addActions(builder);
+//                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+//                }
+//            }
+//        });
+        Glide.with(mService.getApplicationContext()).asBitmap().load(bitmapUrl).into(new SimpleTarget<Bitmap>() {
+
             @Override
-            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                if (mMetadata != null && mMetadata.getDescription().getIconUri() != null &&
-                        mMetadata.getDescription().getIconUri().toString().equals(artUrl)) {
-                    // If the media is still the same, update the notification:
+            public void onResourceReady(Bitmap bitmap, Transition<? super Bitmap> transition) {
+                if (bitmap != null) {
                     builder.setLargeIcon(bitmap);
-//                    addActions(builder);
+
                     mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+
                 }
             }
         });
@@ -401,4 +455,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 }
+
+
 

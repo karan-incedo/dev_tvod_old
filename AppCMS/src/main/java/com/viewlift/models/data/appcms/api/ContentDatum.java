@@ -124,6 +124,9 @@ public class ContentDatum implements Serializable {
     @Expose
     String mediaType;
 
+
+
+
     public boolean isRenewable() {
         return renewable;
     }

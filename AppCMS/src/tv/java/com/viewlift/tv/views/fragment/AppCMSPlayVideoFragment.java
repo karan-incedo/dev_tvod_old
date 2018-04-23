@@ -62,6 +62,9 @@ import java.util.TimerTask;
 
 import rx.functions.Action1;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 /**
  * Created by viewlift on 6/14/17.
  */
@@ -276,8 +279,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                            ? View.VISIBLE
-                            : View.GONE);
+                            ? VISIBLE
+                            : GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -313,7 +316,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         Log.d(TAG, "Video STATE_BUFFERING");
                         text += getResources().getString(R.string.buffering_text);
 
-                        playBackStateLayout.setVisibility(View.VISIBLE);
+                        playBackStateLayout.setVisibility(VISIBLE);
 
                         if (beaconMessageThread != null) {
                             beaconMessageThread.sendBeaconPing = false;
@@ -329,7 +332,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     case ExoPlayer.STATE_READY:
                         Log.d(TAG, "Video STATE_READY");
                         text += "";
-                        playBackStateLayout.setVisibility(View.GONE);
+                        playBackStateLayout.setVisibility(GONE);
 
                         if (beaconBufferingThread != null) {
                             beaconBufferingThread.sendBeaconBuffering = false;
@@ -367,7 +370,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         break;
                     case ExoPlayer.STATE_ENDED:
                         Log.d(TAG, "Video STATE_ENDED");
-                        playBackStateLayout.setVisibility(View.GONE);
+                        playBackStateLayout.setVisibility(GONE);
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
                         }
@@ -393,7 +396,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         break;
                     default:
                         text += "";
-                        playBackStateLayout.setVisibility(View.GONE);
+                        playBackStateLayout.setVisibility(GONE);
                         break;
                 }
                 playBackStateTextView.setText(text);
@@ -402,16 +405,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView.setOnPlayerControlsStateChanged(new Action1<Integer>() {
             @Override
             public void call(Integer visiblity) {
-                if (visiblity == View.GONE) {
-                    videoPlayerInfoContainer.setVisibility(View.GONE);
-                } else if (visiblity == View.VISIBLE) {
-                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                if (visiblity == GONE) {
+                    videoPlayerInfoContainer.setVisibility(GONE);
+                } else if (visiblity == VISIBLE) {
+                    videoPlayerInfoContainer.setVisibility(VISIBLE);
                 }
             }
         });
         videoPlayerView.setOnClosedCaptionButtonClicked(isChecked -> {
             videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                    .setVisibility(isChecked ? VISIBLE : GONE);
             appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
     }
@@ -444,7 +447,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
-            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+            videoPlayerTitleView.setTextColor(getResources().getColor(android.R.color.white)/*Color.parseColor(fontColor)*/);
         }
 
         videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
@@ -473,7 +476,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
         playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
-        playBackStateTextView.setTextColor(Color.parseColor(fontColor));
+        playBackStateTextView.setTextColor(getResources().getColor(android.R.color.white)/*Color.parseColor(fontColor)*/);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
         progressBar.getIndeterminateDrawable().
@@ -545,6 +548,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 mStreamId,
                 contentDatum);
 
+        hideControlsForLiveStream(contentDatum);
         return rootView;
     }
 
@@ -614,7 +618,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
                                                         if (!appCMSPresenter.isUserLoggedIn()) {
 
-                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            String dialogMessage = getString(R.string.unsubscribe_text_with_login);
                                                             String positiveButtonText = getString(R.string.app_cms_login);
                                                             if (appCMSPresenter.getAppCMSAndroid() != null
                                                                     && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null) {
@@ -761,7 +765,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             if (videoPlayerView != null) {
                 videoPlayerView.enableController();
             }
-            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+            videoPlayerInfoContainer.setVisibility(VISIBLE);
             videoPlayerView.startPlayer();
             //tvVideoPlayerView.resumePlayer();
             if (beaconMessageThread != null) {
@@ -841,8 +845,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         switch (adEvent.getType()) {
             case LOADED:
-                playBackStateLayout.setVisibility(View.GONE);
-                videoPlayerInfoContainer.setVisibility(View.GONE); //to hide the player controls.
+                playBackStateLayout.setVisibility(GONE);
+                videoPlayerInfoContainer.setVisibility(GONE); //to hide the player controls.
                 adsManager.start();
                 isAdsDisplaying = true;
                 break;
@@ -911,7 +915,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     preparePlayer();
                     startEntitlementCheckTimer();
                 }
-                videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
+                videoPlayerInfoContainer.setVisibility(VISIBLE); //show player controlls.
                 break;
             default:
                 break;
@@ -1128,13 +1132,13 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
                 !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
                 watchedTime == 0) {
-            videoPlayerMainContainer.setVisibility(View.GONE);
-            contentRatingMainContainer.setVisibility(View.VISIBLE);
+            videoPlayerMainContainer.setVisibility(GONE);
+            contentRatingMainContainer.setVisibility(VISIBLE);
             contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
             new Handler().post(this::startCountdown);
         } else {
-            contentRatingMainContainer.setVisibility(View.GONE);
-            videoPlayerMainContainer.setVisibility(View.VISIBLE);
+            contentRatingMainContainer.setVisibility(GONE);
+            videoPlayerMainContainer.setVisibility(VISIBLE);
             preparePlayer();
             startEntitlementCheckTimer();
         }
@@ -1162,8 +1166,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             @Override
             public void onFinish() {
                 if (isVisible() && isAdded()) {
-                    contentRatingMainContainer.setVisibility(View.GONE);
-                    videoPlayerMainContainer.setVisibility(View.VISIBLE);
+                    contentRatingMainContainer.setVisibility(GONE);
+                    videoPlayerMainContainer.setVisibility(VISIBLE);
                     preparePlayer();
                     startEntitlementCheckTimer();
                 }
@@ -1189,5 +1193,34 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
         }
     }
+
+    public void hideControlsForLiveStream(ContentDatum contentDatum) {
+        try {
+            boolean isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
+            videoPlayerView.getPlayerView().findViewById(R.id.exo_position).setVisibility(isLiveStream ? GONE : VISIBLE);
+            videoPlayerView.getPlayerView().findViewById(R.id.exo_progress).setVisibility(isLiveStream ? GONE : VISIBLE);
+            videoPlayerView.getPlayerView().findViewById(R.id.exo_duration).setVisibility(isLiveStream ? GONE : VISIBLE);
+
+            if (isLiveStream) {
+                View rewind = videoPlayerView.getPlayerView().findViewById(R.id.exo_rew);
+                rewind.setTag(rewind.getVisibility());
+                rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (rewind.getVisibility() == VISIBLE) {
+                        rewind.setVisibility(GONE);
+                    }
+                });
+
+                View forward = videoPlayerView.getPlayerView().findViewById(R.id.exo_ffwd);
+                forward.setTag(rewind.getVisibility());
+                forward.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (forward.getVisibility() == VISIBLE) {
+                        forward.setVisibility(GONE);
+                    }
+                });
+            }
+        } catch (Exception e) {
+        }
+    }
+
 }
 

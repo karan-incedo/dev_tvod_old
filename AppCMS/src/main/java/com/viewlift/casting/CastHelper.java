@@ -639,7 +639,7 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
 
-                onAppDisConnectCalled = false;
+                onAppDisConnectCalled =  false;
                 if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
                     onAppDisConnectCalled = true;
                     //if player activity already opened than finish it
