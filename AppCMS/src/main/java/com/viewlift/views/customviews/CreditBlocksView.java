@@ -132,8 +132,13 @@ public class CreditBlocksView extends RelativeLayout {
         LayoutParams starringListLayoutParams =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         starringListLayoutParams.addRule(ALIGN_PARENT_END);
-        starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
-        starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
+        if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList) &&
+                directorListTitleView != null &&
+                directorListView != null) {
+            starringListLayoutParams.addRule(END_OF, directorListTitleViewId);
+        }else{
+            starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
+        }
         starringListLayoutParams.addRule(BELOW, directorListViewId);
         starringListView.setLayoutParams(starringListLayoutParams);
         starringListView.setId(starringListViewId);
@@ -151,6 +156,8 @@ public class CreditBlocksView extends RelativeLayout {
                 directorListView != null) {
             directorListTitleView.setText(directorListTitle);
             directorListView.setText(directorList);
+            directorListView.setSingleLine();
+            directorListView.setEllipsize(TextUtils.TruncateAt.END);
 
             ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
             directorListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(directorListView,
