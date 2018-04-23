@@ -401,7 +401,6 @@ public class CastHelper {
             //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
-
     }
 
 

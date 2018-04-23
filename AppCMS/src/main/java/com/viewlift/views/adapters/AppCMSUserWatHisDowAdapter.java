@@ -345,15 +345,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
 
 
-                    deleteDownloadButton.invalidate();
-
                     if (contentDatum.getGist()!=null && contentDatum.getGist().getMediaType()!=null  && contentDatum.getGist().getPosterImageUrl()!=null && contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
                         loadImage(mContext, contentDatum.getGist().getPosterImageUrl(), thumbnailImage);
 
                     } else if(contentDatum.getGist()!=null && contentDatum.getGist().getVideoImageUrl()!=null) {
                         loadImage(mContext, contentDatum.getGist().getVideoImageUrl(), thumbnailImage);
                     }
-
+                    deleteDownloadButton.postInvalidate();
                 } else {
                     videoSize.setText("Cancel".toUpperCase());
 
