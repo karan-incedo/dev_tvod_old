@@ -8,7 +8,8 @@
       "mobile": 2,
       "ott": 3
     },
-    "thumbnailType": "landscape"
+    "thumbnailType": "landscape",
+    "infoHover": true
   },
   "view": "AC Tray 01",
   "type": "AC Tray 01",
@@ -97,7 +98,7 @@
             }
           },
           "type": "image",
-          "key": "separatorView"
+          "key": "hoverBackground"
         },
         {
           "layout": {

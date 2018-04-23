@@ -656,6 +656,7 @@ public class AppCmsSearchFragment extends Fragment {
         CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
+                moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                 component,
                 jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
@@ -691,6 +692,7 @@ public class AppCmsSearchFragment extends Fragment {
                  CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                          Integer.valueOf(component.getLayout().getTv().getHeight()),
                          Integer.valueOf(component.getLayout().getTv().getWidth()),
+                         moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                          component,
                          jsonValueKeyMap
                  );

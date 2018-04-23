@@ -12,7 +12,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,6 +46,7 @@ import java.util.Map;
 
 public class CardPresenter extends Presenter {
     private static final String TAG = CardPresenter.class.getCanonicalName();
+    private final boolean infoHover;
     int i = 0;
     int mHeight = -1;
     int mWidth = -1;
@@ -63,6 +63,7 @@ public class CardPresenter extends Presenter {
                          AppCMSPresenter appCMSPresenter,
                          int height,
                          int width,
+                         boolean infoHover,
                          Component component,
                          Map<String,
                                  AppCMSUIKeyType> jsonKeyValuemap) {
@@ -74,16 +75,19 @@ public class CardPresenter extends Presenter {
         this.trayBackground = mComponent.getTrayBackground();
         mJsonKeyValuemap = jsonKeyValuemap;
         borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
+        this.infoHover = infoHover;
     }
 
 
-    public CardPresenter(Context context, AppCMSPresenter appCMSPresenter,
-                         Map<String,
-                                 AppCMSUIKeyType> jsonKeyValuemap) {
+    public CardPresenter(Context context,
+                         AppCMSPresenter appCMSPresenter,
+                         Map<String, AppCMSUIKeyType> jsonKeyValuemap,
+                         boolean infoHover) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
         borderColor = Utils.getFocusColor(mContext, appCMSPresenter);
         mJsonKeyValuemap = jsonKeyValuemap;
+        this.infoHover = infoHover;
     }
 
     @Override
@@ -171,36 +175,38 @@ public class CardPresenter extends Presenter {
                                 parentLayout.addChildComponentAndView(imageView, component);
                                 break;
                             }
-                            case PAGE_SEPARATOR_VIEW_KEY: {
-                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                                Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
-                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
-                                        Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
-                                        Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
-                                int leftMargin = 0;
-                                int topMargin = 0;
-                                if (component.getLayout() != null
-                                        && component.getLayout().getTv() != null) {
-                                    if (component.getLayout().getTv().getLeftMargin() != null) {
-                                        leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
+                            case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
+                                if (infoHover) {
+                                    Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                    Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                    FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
+                                            Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
+                                            Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
+                                    int leftMargin = 0;
+                                    int topMargin = 0;
+                                    if (component.getLayout() != null
+                                            && component.getLayout().getTv() != null) {
+                                        if (component.getLayout().getTv().getLeftMargin() != null) {
+                                            leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
+                                        }
+                                        if (component.getLayout().getTv().getTopMargin() != null) {
+                                            topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
+                                        }
                                     }
-                                    if (component.getLayout().getTv().getTopMargin() != null) {
-                                        topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
-                                    }
+                                    parms.setMargins(leftMargin, topMargin, 0, 0);
+
+                                    imageView.setLayoutParams(parms);
+                                    int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                                    imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
+                                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                                    parentLayout.hoverLayout.addView(imageView);
+                                    parentLayout.addChildComponentAndView(imageView, component);
+                                    parentLayout.setHoverBackground(imageView);
+
+                                    imageView.setId(R.id.videoBackgroundOnHover);
+                                    imageView.setBackgroundColor(Color.parseColor("#CC" + mAppCmsPresenter.getAppBackgroundColor().replace("#","")));
+                                    imageView.setAlpha(0f);
                                 }
-                                parms.setMargins(leftMargin, topMargin, 0, 0);
-
-                                imageView.setLayoutParams(parms);
-                                int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
-                                imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
-                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                                parentLayout.hoverLayout.addView(imageView);
-                                parentLayout.addChildComponentAndView(imageView, component);
-                                parentLayout.setHoverBackground(imageView);
-
-                                imageView.setId(R.id.videoBackgroundOnHover);
-                                imageView.setBackgroundColor(Color.parseColor("#CC" + mAppCmsPresenter.getAppBackgroundColor().replace("#","")));
-                                imageView.setAlpha(0f);
                                 break;
                             }
 
@@ -241,40 +247,47 @@ public class CardPresenter extends Presenter {
                             parentLayout.addChildComponentAndView(tvTitle, component);
                             tvTitle.setMaxLines(2);
                             tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));
+                            parentLayout.setThumbnailTitle(tvTitle);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)) {
-                            tvTitle.setId(R.id.videoTitleOnHover);
-                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                            layoutParams = new FrameLayout.LayoutParams(
-                                    itemWidth,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            tvTitle.setAlpha(0);
-                            parentLayout.setHoverTitle(tvTitle);
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoTitleOnHover);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                tvTitle.setAlpha(0);
+                                parentLayout.setHoverTitle(tvTitle);
 
-                            parentLayout.hoverLayout.addView(tvTitle);
-                            parentLayout.addChildComponentAndView(tvTitle, component);
-                            tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)) {
-                            tvTitle.setId(R.id.videoSubTitleOnHover);
-                            tvTitle.setAlpha(0);
-                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                            layoutParams = new FrameLayout.LayoutParams(
-                                    itemWidth,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            parentLayout.setHoverSubTitle(tvTitle);
-                            parentLayout.hoverLayout.addView(tvTitle);
-                            parentLayout.addChildComponentAndView(tvTitle, component);
-                            tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoSubTitleOnHover);
+                                tvTitle.setAlpha(0);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                parentLayout.setHoverSubTitle(tvTitle);
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
-                            tvTitle.setId(R.id.videoDescriptionOnHover);
-                            Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                            layoutParams = new FrameLayout.LayoutParams(
-                                    itemWidth,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            tvTitle.setAlpha(0);
-                            parentLayout.setHoverDescription(tvTitle);
-                            parentLayout.hoverLayout.addView(tvTitle);
-                            parentLayout.addChildComponentAndView(tvTitle, component);
-                            tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoDescriptionOnHover);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                tvTitle.setAlpha(0);
+                                parentLayout.setHoverDescription(tvTitle);
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY)){
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -513,14 +526,12 @@ public class CardPresenter extends Presenter {
                             tvTitle.setText(contentData.getGist().getTitle());
                             tvTitle.setMaxLines(2);
                         }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)){
-                           Log.d(TAG, "ANAS: hover Title");
                            tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
                             tvTitle.setText(contentData.getGist().getTitle());
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setSelected(true);
                         }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)){
                             tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
-                            Log.d(TAG, "ANAS: hover sub Title");
                             try {
                                 if (contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                                     TVBaseView.setShowViewWithSubtitle(mContext,
@@ -536,7 +547,6 @@ public class CardPresenter extends Presenter {
                             }
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
                             tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
-                            Log.d(TAG, "ANAS: hover description");
                             tvTitle.setText(contentData.getGist().getDescription());
                         }
                         //tvTitle.setSingleLine(true);
@@ -688,7 +698,6 @@ public class CardPresenter extends Presenter {
         public void setSelected(boolean selected) {
             super.setSelected(selected);
             if (selected) {
-                Log.d(TAG, "Selected");
                 if (hoverTitle != null
                         && hoverSubTitle != null
                         && hoverDescription != null
@@ -699,7 +708,6 @@ public class CardPresenter extends Presenter {
                     startHoverAnimation(thumbnailTitle, hoverTitle, hoverSubTitle, hoverDescription, hoverBackground, false);
                 }
             } else {
-                Log.d(TAG, "Deselected");
                 if (hoverTitle != null
                         && hoverSubTitle != null
                         && hoverDescription != null

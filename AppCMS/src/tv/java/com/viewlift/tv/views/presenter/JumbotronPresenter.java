@@ -3,7 +3,6 @@ package com.viewlift.tv.views.presenter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -35,9 +34,8 @@ public class JumbotronPresenter extends CardPresenter {
 
 
     public JumbotronPresenter(Context context, AppCMSPresenter appCMSPresenter, Component component,
-                              Map<String,
-                                      AppCMSUIKeyType> jsonKeyValuemap){
-        super(context , appCMSPresenter, jsonKeyValuemap);
+                              Map<String, AppCMSUIKeyType> appCMSUIKeyTypeMap, boolean infoHover){
+        super(context , appCMSPresenter, appCMSUIKeyTypeMap, infoHover);
         mContext = context;
         mAppCMSPresenter = appCMSPresenter;
         this.parentComponent = component;
@@ -110,13 +108,12 @@ public class JumbotronPresenter extends CardPresenter {
                                 parentLayout.addView(imageView);
                                 break;
                             }
-                            case PAGE_SEPARATOR_VIEW_KEY: {
+                            case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
                                 createComponentView(parentComponent, parentLayout);
                                 break;
                             }
                         }
                     case PAGE_LABEL_KEY: {
-                        Log.d(TAG, "ANAS: inside Page label Key");
                         createComponentView(parentComponent, parentLayout);
                         bindComponent(parentLayout, contentData, parentComponent.getBlockName());
                         break;

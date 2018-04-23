@@ -268,6 +268,7 @@ public class TVViewCreator {
             }
             return null;
         } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -430,7 +431,12 @@ public class TVViewCreator {
                 }
 
             if (moduleData != null) {
-                CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter, component, jsonValueKeyMap);
+                CardPresenter cardPresenter = new JumbotronPresenter(
+                        context,
+                        appCMSPresenter,
+                        component,
+                        jsonValueKeyMap,
+                        moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover());
                 ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
                 if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                     List<ContentDatum> contentData1 = moduleData.getContentData();
@@ -468,6 +474,7 @@ public class TVViewCreator {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                             Integer.valueOf(component.getLayout().getTv().getHeight() != null ? component.getLayout().getTv().getHeight() : "0"),
                             Integer.valueOf(component.getLayout().getTv().getWidth() != null ? component.getLayout().getTv().getWidth() : "0"),
+                            moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                             component,
                             jsonValueKeyMap
                     );
