@@ -243,7 +243,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     @Override
     public void resetData(RecyclerView listView) {
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     @Override

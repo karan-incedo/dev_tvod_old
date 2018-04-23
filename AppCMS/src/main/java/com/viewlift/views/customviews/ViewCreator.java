@@ -1899,8 +1899,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                }else */
-                if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -1911,13 +1910,25 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }/*else if (moduleInfo.getBlockName().contains("watchlist02")) {
+                }else if (moduleInfo.getBlockName().contains("downloads01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(3);
+                }else if (moduleInfo.getBlockName().contains("history01")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "my_watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("watchlist01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/ else if (moduleInfo.getSettings() != null &&
+                }else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2059,7 +2070,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */ else {
+        }  */else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2581,7 +2592,6 @@ public class ViewCreator {
                     }
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
-
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSUserWatHisDowAdapter)
@@ -3371,55 +3381,57 @@ public class ViewCreator {
                         });
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
+                        // Temp removed visibility of this playlist download button
+                        ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
 
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-                        componentViewResult.componentView.setId(R.id.playlist_download_id);
-
-                        if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
-                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        }
-                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (!appCMSPresenter.isNetworkConnected()) {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-                                            false,
-                                            null,
-                                            null);
-                                    return;
-                                }
-                                if (!appCMSPresenter.isUserLoggedIn()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
-                                            () -> {
-                                                appCMSPresenter.setAfterLoginAction(() -> {
-                                                });
-                                            });
-                                } else if (!appCMSPresenter.isUserSubscribed()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
-                                            () -> {
-                                                appCMSPresenter.setAfterLoginAction(() -> {
-                                                });
-                                            });
-                                } else {
-                                    if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
-
-                                        if (!appCMSPresenter.getDownloadOverCellularEnabled() && appCMSPresenter.getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
-                                                    context.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
-                                                    false,
-                                                    null,
-                                                    null);
-                                            return;
-                                        }
-                                        appCMSPlaylistAdapter.startDownloadPlaylist();
-
-                                    }
-                                }
-                            }
-                        });
+//                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+//                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
+//                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+//                        componentViewResult.componentView.setId(R.id.playlist_download_id);
+//
+//                        if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+//                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
+//                            componentViewResult.componentView.setVisibility(View.GONE);
+//                        }
+//                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                if (!appCMSPresenter.isNetworkConnected()) {
+//                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
+//                                            false,
+//                                            null,
+//                                            null);
+//                                    return;
+//                                }
+//                                if (!appCMSPresenter.isUserLoggedIn()) {
+//                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+//                                            () -> {
+//                                                appCMSPresenter.setAfterLoginAction(() -> {
+//                                                });
+//                                            });
+//                                } else if (!appCMSPresenter.isUserSubscribed()) {
+//                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
+//                                            () -> {
+//                                                appCMSPresenter.setAfterLoginAction(() -> {
+//                                                });
+//                                            });
+//                                } else {
+//                                    if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+//
+//                                        if (!appCMSPresenter.getDownloadOverCellularEnabled() && appCMSPresenter.getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+//                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+//                                                    context.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+//                                                    false,
+//                                                    null,
+//                                                    null);
+//                                            return;
+//                                        }
+//                                        appCMSPlaylistAdapter.startDownloadPlaylist();
+//
+//                                    }
+//                                }
+//                            }
+//                        });
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                       /*  ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);

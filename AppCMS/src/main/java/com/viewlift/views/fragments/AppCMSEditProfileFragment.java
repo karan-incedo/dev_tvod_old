@@ -85,6 +85,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+
         ButterKnife.bind(this, view);
 
         final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
@@ -142,7 +143,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-            setCursorColor(password,buttonColor);
+            setCursorColor(password, buttonColor);
             textInputLayout.addView(password);
             textInputLayout.setPasswordVisibilityToggleEnabled(true);
             password.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -176,13 +177,10 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
             AlertDialog dialog = builder.create();
             dialog.show();
-            /*Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            buttonPositive.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-            buttonPositive.setBackgroundColor(buttonColor);
-
+         /*   Button buttonPositive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            buttonPositive.setTextColor(textColor);
             Button buttonNegative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-            buttonNegative.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-            buttonNegative.setBackgroundColor(buttonColor);*/
+            buttonNegative.setTextColor(textColor);*/
 
         });
 
