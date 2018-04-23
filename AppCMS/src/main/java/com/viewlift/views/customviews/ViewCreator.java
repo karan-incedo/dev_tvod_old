@@ -73,6 +73,7 @@ import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Tag;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.PhotoGalleryGridInsetDecoration;
@@ -2403,7 +2404,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+     static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2627,7 +2628,7 @@ public class ViewCreator {
                                         false));
 
 
-                        AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                         appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -6397,7 +6398,9 @@ public class ViewCreator {
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
                             appCMSPresenter.setDownloadInProgress(false);
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
+                            contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
                             appCMSPresenter.notifyDownloadHasCompleted();
+                            notifyDataChange();
                         }
                         break;
 
@@ -6447,6 +6450,12 @@ public class ViewCreator {
         public View.OnClickListener getAddClickListener() {
             return addClickListener;
         }
+    }
+
+    public static void notifyDataChange(){
+
+        if(appCMSUserWatHisDowAdapter != null)
+         appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
