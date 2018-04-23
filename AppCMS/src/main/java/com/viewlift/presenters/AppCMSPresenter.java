@@ -559,7 +559,7 @@ public class AppCMSPresenter {
     private final Map<String, String> actionToPageAPIUrlMap;
     private final Map<String, String> actionToPageNameMap;
     private final Map<String, String> pageIdToPageNameMap;
-    private  RecyclerView downloadRecyclerView=null;
+    private RecyclerView downloadRecyclerView = null;
 
     private final Map<AppCMSActionType, MetaPage> actionTypeToMetaPageMap;
     private final List<Action1<Boolean>> onOrientationChangeHandlers;
@@ -5372,13 +5372,13 @@ public class AppCMSPresenter {
         double teraByte = sizeKB / 1073741824.0;
 
         if (teraByte > 1) {
-            fileSize = dec.format(teraByte).concat("TB");
+            fileSize = dec.format(teraByte).concat(" TB");
         } else if (gigaByte > 1) {
-            fileSize = dec.format(gigaByte).concat("GB");
+            fileSize = dec.format(gigaByte).concat(" GB");
         } else if (megaByte > 1) {
-            fileSize = dec.format(megaByte).concat("MB");
+            fileSize = dec.format(megaByte).concat(" MB");
         } else {
-            fileSize = dec.format(sizeKB).concat("KB");
+            fileSize = dec.format(sizeKB).concat(" KB");
         }
 
         return fileSize;
@@ -5747,8 +5747,9 @@ public class AppCMSPresenter {
         progressDialogDeleteDownload.show();
 
     }
-    public void removeDeleteProgress(){
-        if(progressDialogDeleteDownload!=null){
+
+    public void removeDeleteProgress() {
+        if (progressDialogDeleteDownload != null) {
 //            progressDialogDeleteDownload.dismiss();
 //            progressDialogDeleteDownload.cancel();
 //            progressDialogDeleteDownload=null;
@@ -5771,11 +5772,11 @@ public class AppCMSPresenter {
                 deleteMsg,
                 true, () -> {
 
-            System.out.println("started clean download");
+                    System.out.println("started clean download");
                     if (deleteAllFiles) {
 //                        progressDialogInit();
                         showLoader();
-                        if(realmController!=null) {
+                        if (realmController != null) {
                             for (DownloadVideoRealm downloadVideoRealm :
                                     realmController.getDownloadesByUserId(getLoggedInUser())) {
                                 removeDownloadedFile(downloadVideoRealm.getVideoId());
@@ -16197,6 +16198,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public RecyclerView getDownlistScreenCache() {
         if (downloadRecyclerView != null) {
             return downloadRecyclerView;
@@ -16204,10 +16206,12 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public void setDownlistScreenCache(RecyclerView recyclerView) {
-        this.downloadRecyclerView=recyclerView;
+        this.downloadRecyclerView = recyclerView;
 
     }
+
     public void setWebViewCache(String key, CustomWebView webView) {
         if (webViewCache == null) {
             webViewCache = new HashMap<String, CustomWebView>();
