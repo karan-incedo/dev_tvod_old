@@ -2403,7 +2403,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2627,7 +2627,7 @@ public class ViewCreator {
                                         false));
 
 
-                        AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                         appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -6398,6 +6398,7 @@ public class ViewCreator {
                             appCMSPresenter.setDownloadInProgress(false);
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
                             appCMSPresenter.notifyDownloadHasCompleted();
+                            notifyDataChange();
                         }
                         break;
 
@@ -6447,6 +6448,12 @@ public class ViewCreator {
         public View.OnClickListener getAddClickListener() {
             return addClickListener;
         }
+    }
+
+    public static void notifyDataChange(){
+
+        if(appCMSUserWatHisDowAdapter != null)
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {

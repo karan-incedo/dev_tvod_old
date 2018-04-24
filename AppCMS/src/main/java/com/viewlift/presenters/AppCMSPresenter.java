@@ -5064,8 +5064,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
+        sendGaEventForDownloadedContent(downloadVideoRealm);
         realmController.addDownload(downloadVideoRealm);
-
     }
 
     private void clearSubscriptionPlans() {
@@ -11598,7 +11598,6 @@ public class AppCMSPresenter {
     }
 
     public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
-        if (!isVideoDownloaded(downloadVideoRealm.getVideoId())) {
             try {
                 String mediaType = downloadVideoRealm.getMediaType();
                 String contentType = downloadVideoRealm.getContentType();
@@ -11618,7 +11617,6 @@ public class AppCMSPresenter {
             }catch (Exception ex){
 
             }
-        }
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
