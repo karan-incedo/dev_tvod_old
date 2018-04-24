@@ -360,11 +360,11 @@ public class CardPresenter extends Presenter {
         List<Component> componentList = rowData.uiComponentList;
         String blockName = rowData.blockName;
         CustomFrameLayout cardView = (CustomFrameLayout) viewHolder.view;
-        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))){
-            cardView.setBackground(
-                    Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), mAppCmsPresenter.getAppBackgroundColor() /*Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)*/));
+        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))
+                && !rowData.infoHover){
+            cardView.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), mAppCmsPresenter.getAppBackgroundColor() /*Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)*/));
         }
-        bindComponent(cardView , contentData , blockName);
+        bindComponent(cardView , contentData , blockName, rowData.infoHover);
         cardView.postInvalidate();
         //createComponent(componentList, cardView, contentData,blockName);
 
@@ -393,7 +393,7 @@ public class CardPresenter extends Presenter {
     public void onUnbindViewHolder(ViewHolder viewHolder) {
     }
 
-    protected void bindComponent(CustomFrameLayout cardView, ContentDatum contentData, String blockName) {
+    protected void bindComponent(CustomFrameLayout cardView, ContentDatum contentData, String blockName, boolean infoHover) {
         List<CustomFrameLayout.ChildComponentAndView> childComponentAndViewsList = cardView.getChildViewList();
         if(null != childComponentAndViewsList && childComponentAndViewsList.size() > 0){
             for(CustomFrameLayout.ChildComponentAndView childComponentAndView : childComponentAndViewsList){
@@ -431,13 +431,18 @@ public class CardPresenter extends Presenter {
                                             .into(imageView);
                                 }
 
-                                if (null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02")
-                                        || blockName.equalsIgnoreCase("grid01")
-                                        || blockName.equalsIgnoreCase("showDetail01")
-                                        || blockName.equalsIgnoreCase("tray04")
-                                        || blockName.equalsIgnoreCase("continuewatching01"))) {
-                                    imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                if (null != blockName) {
+                                    if (blockName.equalsIgnoreCase("tray01")
+                                            || blockName.equalsIgnoreCase("tray02")
+                                            || blockName.equalsIgnoreCase("grid01")
+                                            || blockName.equalsIgnoreCase("showDetail01")
+                                            || blockName.equalsIgnoreCase("tray04")
+                                            || blockName.equalsIgnoreCase("continuewatching01")) {
+                                        imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                    } else if (blockName.equalsIgnoreCase("tray03") && infoHover) {
+                                        imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                        imageView.setPadding(5,5,5,5);
+                                    }
                                 }
                                 break;
 
@@ -533,7 +538,7 @@ public class CardPresenter extends Presenter {
                         }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)){
                             tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
                             try {
-                                if (contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                                if (contentData.getGist().getContentType() != null && contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                                     TVBaseView.setShowViewWithSubtitle(mContext,
                                             contentData,
                                             tvTitle);
@@ -713,14 +718,14 @@ public class CardPresenter extends Presenter {
                         && hoverDescription != null
                         && hoverBackground != null
                         && hoverLayout != null) {
-                    hoverTitle.setAlpha(0);
+                    /*hoverTitle.setAlpha(0);
                     hoverSubTitle.setAlpha(0);
                     hoverDescription.setAlpha(0);
                     hoverBackground.setAlpha(0);
                     hoverTitle.clearAnimation();
                     hoverSubTitle.clearAnimation();
                     hoverDescription.clearAnimation();
-                    hoverBackground.clearAnimation();
+                    hoverBackground.clearAnimation();*/
 //                    hoverLayout.setVisibility(INVISIBLE);
                     startHoverAnimation(thumbnailTitle, hoverTitle, hoverSubTitle, hoverDescription, hoverBackground, true);
                 }

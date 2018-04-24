@@ -115,7 +115,8 @@ public class JumbotronPresenter extends CardPresenter {
                         }
                     case PAGE_LABEL_KEY: {
                         createComponentView(parentComponent, parentLayout);
-                        bindComponent(parentLayout, contentData, parentComponent.getBlockName());
+                        bindComponent(parentLayout, contentData, parentComponent.getBlockName(),
+                                parentComponent.getSettings() != null && parentComponent.getSettings().isInfoHover());
                         break;
                     }
                 }

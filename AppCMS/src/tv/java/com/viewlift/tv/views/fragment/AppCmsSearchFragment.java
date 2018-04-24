@@ -668,6 +668,7 @@ public class AppCmsSearchFragment extends Fragment {
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             trayListRowAdapter.add(rowData);
             //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
         }
@@ -706,6 +707,7 @@ public class AppCmsSearchFragment extends Fragment {
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             rowData.rowNumber = trayIndex;
             trayListRowAdapter.add(rowData);
             position++;
