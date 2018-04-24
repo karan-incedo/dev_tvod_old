@@ -2404,7 +2404,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-     static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2566,7 +2566,7 @@ public class ViewCreator {
                      * get cache of recycler view if already created . need to clear cached  when opening first time this screen using same adapter and recycler view
                      * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
                      */
-                    if (appCMSPresenter.getDownlistScreenCache() == null) {
+                    //if (appCMSPresenter.getDownlistScreenCache() == null) {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
                                         LinearLayoutManager.VERTICAL,
@@ -2587,10 +2587,10 @@ public class ViewCreator {
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
-                        appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                  /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
                         (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
-                    }
+                    }*/
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
                     if (pageView != null) {
@@ -6455,7 +6455,7 @@ public class ViewCreator {
     public static void notifyDataChange(){
 
         if(appCMSUserWatHisDowAdapter != null)
-         appCMSUserWatHisDowAdapter.notifyDataSetChanged();
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {

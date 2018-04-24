@@ -132,11 +132,13 @@ public class CreditBlocksView extends RelativeLayout {
         LayoutParams starringListLayoutParams =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         starringListLayoutParams.addRule(ALIGN_PARENT_END);
+        //starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
+        //starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
         if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList) &&
                 directorListTitleView != null &&
                 directorListView != null) {
             starringListLayoutParams.addRule(END_OF, directorListTitleViewId);
-        }else{
+        } else {
             starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
         }
         starringListLayoutParams.addRule(BELOW, directorListViewId);
@@ -186,7 +188,7 @@ public class CreditBlocksView extends RelativeLayout {
 //                starringListView.setHorizontallyScrolling(true);
 //                starringListView.setSingleLine();
 //            }else
-                {
+            {
                 ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
                 starringListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(starringListView,
                         null,

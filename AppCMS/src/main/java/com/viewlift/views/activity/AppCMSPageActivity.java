@@ -1273,9 +1273,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             libsThreadExecuted = true;
         }
         if(appCMSPresenter.isNetworkConnected()) {
-            Apptentive.engage(this, this.getString(R.string.app_cms_apptentive_open_app_name));
+                        Apptentive.engage(this, this.getString(R.string.app_cms_apptentive_open_app_name));
         }
-
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()

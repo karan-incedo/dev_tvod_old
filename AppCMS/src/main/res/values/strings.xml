@@ -634,8 +634,8 @@
 
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
-    <string name="media_type_episode">Episode</string>
     <string name="media_type_audio">AUDIO</string>
+    <string name="media_type_episode">Episodic</string>
     <string name="media_type_video">VIDEO</string>
     <string name="content_type_audio">AUDIO</string>
     <string name="content_type_video">VIDEO</string>
