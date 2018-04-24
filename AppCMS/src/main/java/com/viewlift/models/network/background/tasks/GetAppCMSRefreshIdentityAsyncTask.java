@@ -1,7 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 
@@ -41,6 +39,7 @@ public class GetAppCMSRefreshIdentityAsyncTask {
                                              Action1<RefreshIdentityResponse> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
+
     }
 
     public void execute(Params params) {

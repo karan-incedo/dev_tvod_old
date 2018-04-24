@@ -36,8 +36,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
@@ -88,6 +86,7 @@ import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
+import com.fasterxml.uuid.Generators;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -744,10 +743,12 @@ public class AppCMSPresenter {
     private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
 
     static {
-        System.loadLibrary("keys");
+        System.loadLibrary("SSLKeys");
     }
-    public native String getNativeKey1();
-    public native String getNativeKey2();
+
+    public native String getStoreId();
+
+    public native String getStorePwd();
 
     public static class PlaylistDetails {
         public ImageButton getImgButton() {
@@ -3668,114 +3669,96 @@ public class AppCMSPresenter {
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
 
-        String key1 = new String(Base64.decode(getNativeKey1(),Base64.DEFAULT));
-        String key2 = new String(Base64.decode(getNativeKey2(), Base64.DEFAULT));
-        Log.e("key1",key1);
-        Log.e("key2",key2);
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (currentActivity != null) {
-                    showLoader();
-                }
-            }
-        }, 300);
+        UUID transId = Generators.timeBasedGenerator().generate();
+        String transactionId=transId.toString().replace("-","").substring(0,20);
+        String storeId = new String(Base64.decode(getStoreId(), Base64.DEFAULT));
+        String storePassword = new String(Base64.decode(getStorePwd(), Base64.DEFAULT));
+        Log.e("key1", storeId);
+        Log.e("key2", storePassword);
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
+        MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(storeId,
+                storePassword, planAmt, transactionId,
+                CurrencyType.BDT, /*SdkType.LIVE */SdkType.TESTBOX, SdkCategory.BANK_LIST);
 
-        getSSLCommerzConfigContent(appCMSMain.getApiBaseUrl(),
-                appCMSSite.getGist().getSiteInternalName(), new AppCMSSSLCommerzConfigAPIAction("SSLCommerz") {
+        String custName = getLoggedInUserName();
+        if (custName == null && getLoggedInUserEmail() != null) {
+            custName = getLoggedInUserEmail().split("@")[0];
+        }
+        CustomerFieldModel customerFieldModel = new CustomerFieldModel(custName,
+                getLoggedInUserEmail(), "",
+                "", "", "",
+                "", "", mobile, "");
+        PayUsingSSLCommerz.getInstance().setData(getCurrentContext(),
+                mandatoryFieldModel, customerFieldModel, new OnPaymentResultListener() {
                     @Override
-                    public void call(SSLCredential sslCredential) {
-                        if (currentActivity != null) {
-                            stopLoader();
+                    public void transactionSuccess(TransactionInfo transactionInfo) {
+                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
+                        /*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                            AppsFlyerUtils.subscriptionEvent(getCurrentContext(),
+                                    true,
+                                    getAppsFlyerKey(),
+                                    planAmt,
+                                    planId,
+                                    transactionInfo.getCurrencyType());
                         }
-                        if (sslCredential != null && sslCredential.getStoreId() != null
-                                && sslCredential.getStorePassword() != null && sslCredential.getTransactionId() != null) {
-                            MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(sslCredential.getStoreId(),
-                                    sslCredential.getStorePassword(), planAmt, sslCredential.getTransactionId(),
-                                    CurrencyType.BDT, *//*SdkType.LIVE*//* SdkType.TESTBOX, SdkCategory.BANK_LIST);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FIREBASE_PLAN_ID, planId);
+                        bundle.putString(FIREBASE_PLAN_NAME, planName);
+                        bundle.putString(FIREBASE_CURRENCY_NAME, transactionInfo.getCurrencyType());
+                        bundle.putDouble(FIREBASE_VALUE, Double.parseDouble(transactionInfo.getAmount()));
+                        bundle.putString(FIREBASE_TRANSACTION_ID, transactionInfo.getTranId());
 
-                            String custName = getLoggedInUserName();
-                            if (custName == null && getLoggedInUserEmail() != null) {
-                                custName = getLoggedInUserEmail().split("@")[0];
-                            }
-                            CustomerFieldModel customerFieldModel = new CustomerFieldModel(custName,
-                                    getLoggedInUserEmail(), "",
-                                    "", "", "",
-                                    "", "", mobile, "");
-                            PayUsingSSLCommerz.getInstance().setData(getCurrentContext(),
-                                    mandatoryFieldModel, customerFieldModel, new OnPaymentResultListener() {
-                                        @Override
-                                        public void transactionSuccess(TransactionInfo transactionInfo) {
-                                            SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
-                                            *//*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
-                                                AppsFlyerUtils.subscriptionEvent(getCurrentContext(),
-                                                        true,
-                                                        getAppsFlyerKey(),
-                                                        planAmt,
-                                                        planId,
-                                                        transactionInfo.getCurrencyType());
-                                            }
-                                            Bundle bundle = new Bundle();
-                                            bundle.putString(FIREBASE_PLAN_ID, planId);
-                                            bundle.putString(FIREBASE_PLAN_NAME, planName);
-                                            bundle.putString(FIREBASE_CURRENCY_NAME, transactionInfo.getCurrencyType());
-                                            bundle.putDouble(FIREBASE_VALUE, Double.parseDouble(transactionInfo.getAmount()));
-                                            bundle.putString(FIREBASE_TRANSACTION_ID, transactionInfo.getTranId());
+                        if (getmFireBaseAnalytics() != null)
+                            getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
 
-                                            if (getmFireBaseAnalytics() != null)
-                                                getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*//*
+                        finalizeSignupAfterCCAvenueSubscription(null);
+                        Log.d(TAG, "Transaction Successfully completed");
 
-                                            finalizeSignupAfterCCAvenueSubscription(null);
-                                            Log.d(TAG, "Transaction Successfully completed");
+                    }
 
-                                        }
+                    @Override
+                    public void transactionFail(TransactionInfo transactionInfo) {
+                        Log.e(TAG, "Transaction Fail");
+                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
+                    }
 
-                                        @Override
-                                        public void transactionFail(TransactionInfo transactionInfo) {
-                                            Log.e(TAG, "Transaction Fail");
-                                            SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
-                                        }
-
-                                        @Override
-                                        public void error(int errorCode) {
-                                            switch (errorCode) {
-                                                // Your provides information is not valid.
-                                                case ErrorKeys.USER_INPUT_ERROR:
-                                                    Log.e(TAG, "User Input Error");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
-                                                    break;
-                                                // Internet is not connected.
-                                                case ErrorKeys.INTERNET_CONNECTION_ERROR:
-                                                    Log.e(TAG, "Internet Connection Error");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
-                                                    break;
-                                                // Server is not giving valid data.
-                                                case ErrorKeys.DATA_PARSING_ERROR:
-                                                    Log.e(TAG, "Data Parsing Error");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
-                                                    break;
-                                                // User press back button or canceled the transaction.
-                                                case ErrorKeys.CANCEL_TRANSACTION_ERROR:
-                                                    Log.e(TAG, "User Cancel The Transaction");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
-                                                    break;
-                                                // Server is not responding.
-                                                case ErrorKeys.SERVER_ERROR:
-                                                    Log.e(TAG, "Server Error");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_server_error);
-                                                    break;
-                                                // For some reason network is not responding
-                                                case ErrorKeys.NETWORK_ERROR:
-                                                    Log.e(TAG, "Network Error");
-                                                    SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
-                                                    break;
-                                            }
-                                        }
-                                    });
+                    @Override
+                    public void error(int errorCode) {
+                        switch (errorCode) {
+                            // Your provides information is not valid.
+                            case ErrorKeys.USER_INPUT_ERROR:
+                                Log.e(TAG, "User Input Error");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
+                                break;
+                            // Internet is not connected.
+                            case ErrorKeys.INTERNET_CONNECTION_ERROR:
+                                Log.e(TAG, "Internet Connection Error");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
+                                break;
+                            // Server is not giving valid data.
+                            case ErrorKeys.DATA_PARSING_ERROR:
+                                Log.e(TAG, "Data Parsing Error");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
+                                break;
+                            // User press back button or canceled the transaction.
+                            case ErrorKeys.CANCEL_TRANSACTION_ERROR:
+                                Log.e(TAG, "User Cancel The Transaction");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
+                                break;
+                            // Server is not responding.
+                            case ErrorKeys.SERVER_ERROR:
+                                Log.e(TAG, "Server Error");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_server_error);
+                                break;
+                            // For some reason network is not responding
+                            case ErrorKeys.NETWORK_ERROR:
+                                Log.e(TAG, "Network Error");
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_connection_error);
+                                break;
                         }
                     }
-                });*/
+                });
+
     }
 
     private void SSLComerzTransactionStatus(int msg) {
@@ -5077,10 +5060,9 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
-        try{
+        try {
             sendGaEventForDownloadedContent(downloadVideoRealm);
-        } catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         realmController.addDownload(downloadVideoRealm);
@@ -11611,8 +11593,9 @@ public class AppCMSPresenter {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
+
     public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
-        if (downloadVideoRealm != null ) {
+        if (downloadVideoRealm != null) {
             try {
                 String mediaType = downloadVideoRealm.getMediaType();
                 String contentType = downloadVideoRealm.getContentType();
@@ -11621,9 +11604,9 @@ public class AppCMSPresenter {
                 if (title != null) {
                     title.substring(0, Math.min(title.length(), 500));
                 }
-                if(showTitle != null) {
+                if (showTitle != null) {
                     showTitle.substring(0, Math.min(title.length(), 500));
-                    title+=" | "+showTitle;
+                    title += " | " + showTitle;
 
                 }
 
@@ -11635,11 +11618,12 @@ public class AppCMSPresenter {
                 } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
                     sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
                 }
-            }catch (Exception ex){
+            } catch (Exception ex) {
 
             }
         }
     }
+
     public void sendGaEvent(String action, String category, String label) {
         if (tracker != null) {
             tracker.send(new HitBuilders.EventBuilder()
@@ -13303,7 +13287,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
                             launchErrorActivity(platformType);
                         }
-                    }).execute(url, !isNetworkConnected());
+                    }).execute(url,apikey, !isNetworkConnected());
         } else {
             launchBlankPage();
         }
@@ -18144,11 +18128,11 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getPageType(String pageId){
+    public String getPageType(String pageId) {
         String pageType = null;
-        if(null != pageId && null != pageIdToMetaPageMap && pageIdToMetaPageMap.size() > 0) {
+        if (null != pageId && null != pageIdToMetaPageMap && pageIdToMetaPageMap.size() > 0) {
             MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-            if(null != metaPage){
+            if (null != metaPage) {
                 pageType = metaPage.getPageType();
             }
         }

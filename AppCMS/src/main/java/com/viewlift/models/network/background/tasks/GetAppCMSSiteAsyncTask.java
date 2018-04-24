@@ -1,7 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 
@@ -26,12 +24,12 @@ public class GetAppCMSSiteAsyncTask {
         this.readyAction = readyAction;
     }
 
-    public void execute(String params, boolean networkDisconnected) {
+    public void execute(String params,String apiKey, boolean networkDisconnected) {
         Observable
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params, networkDisconnected, 0);
+                            return call.call(params,apiKey, networkDisconnected, 0);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
