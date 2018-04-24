@@ -350,7 +350,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     } else if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
                         loadImage(mContext, contentDatum.getGist().getVideoImageUrl(), thumbnailImage);
                     }
-
+                    deleteDownloadButton.postInvalidate();
                 } else {
                     videoSize.setText("Cancel".toUpperCase());
 
