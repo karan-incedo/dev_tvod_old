@@ -86,7 +86,6 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
