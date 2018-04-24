@@ -1373,7 +1373,7 @@ public abstract class BaseView extends FrameLayout {
                 public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
                 }
             };
-            //((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
+            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
 
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
