@@ -259,9 +259,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageHeight);
             RequestOptions requestOptions = new RequestOptions().placeholder(placeholder).fitCenter();;
 
-           Glide.with(viewHolder.view.getContext())
-                   .load(imageUrl).apply(requestOptions)
-                   .into(viewHolder.filmThumbnail);
+            Glide.with(viewHolder.view.getContext())
+                    .load(imageUrl).apply(requestOptions)
+                    .into(viewHolder.filmThumbnail);
         } else {
 
             viewHolder.filmThumbnail.setImageResource(placeholder);

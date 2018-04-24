@@ -634,6 +634,7 @@
 
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_episode">Episode</string>
     <string name="media_type_audio">AUDIO</string>
     <string name="media_type_video">VIDEO</string>
     <string name="content_type_audio">AUDIO</string>
@@ -663,6 +664,11 @@
 
 
     <string name="play_audio_action">playAudio</string>
+    <string name="ga_audio_download_action">From Playlist</string>
+    <string name="ga_audio_download_category">Audio Download</string>
+
+    <string name="ga_video_download_action">From Playlist</string>
+    <string name="ga_video_download_category">Video Download</string>
 
     <string name="play_audio_category">player-audio</string>
      <string name="app_cms_link_your_account_action">linkAccount</string>

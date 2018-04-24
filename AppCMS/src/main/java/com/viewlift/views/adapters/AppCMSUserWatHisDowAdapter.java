@@ -291,13 +291,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 }
                 bindView(holder.componentView, adapterData.get(position), position);
 
-
                 if (isDonwloadPage) {
                     downloadView(adapterData.get(position), holder.componentView, position);
                 }
-
             }
-
         }
     }
 
@@ -347,13 +344,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                     deleteDownloadButton.invalidate();
 
-                    if (contentDatum.getGist()!=null && contentDatum.getGist().getMediaType()!=null  && contentDatum.getGist().getPosterImageUrl()!=null && contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
+                    if (contentDatum.getGist() != null && contentDatum.getGist().getMediaType() != null && contentDatum.getGist().getPosterImageUrl() != null && contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
                         loadImage(mContext, contentDatum.getGist().getPosterImageUrl(), thumbnailImage);
 
-                    } else if(contentDatum.getGist()!=null && contentDatum.getGist().getVideoImageUrl()!=null) {
+                    } else if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
                         loadImage(mContext, contentDatum.getGist().getVideoImageUrl(), thumbnailImage);
                     }
-
+                    deleteDownloadButton.postInvalidate();
                 } else {
                     videoSize.setText("Cancel".toUpperCase());
 
@@ -430,7 +427,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         }
                                                         try {
                                                             finalVideoSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
-                                                        }catch(Exception e){
+                                                        } catch (Exception e) {
                                                             e.printStackTrace();
                                                             finalVideoSize.setVisibility(View.GONE);
                                                         }
