@@ -8,6 +8,7 @@ import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -85,6 +86,7 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -307,6 +309,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        try{
+
+            checkPlayServices();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
         AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
         startService(new Intent(getBaseContext(), TaskRemoveService.class));
@@ -1262,7 +1272,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }).run();
             libsThreadExecuted = true;
         }
-
+        if(appCMSPresenter.isNetworkConnected()) {
+                        Apptentive.engage(this, this.getString(R.string.app_cms_apptentive_open_app_name));
+        }
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()

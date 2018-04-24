@@ -634,6 +634,7 @@
 
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_episode">Episode</string>
     <string name="media_type_audio">AUDIO</string>
     <string name="media_type_episode">Episodic</string>
     <string name="media_type_video">VIDEO</string>
@@ -657,6 +658,7 @@
     <!-- Apptentive Messages -->
     <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
     <string name="app_cms_apptentive_login_event_name">Login</string>
+    <string name="app_cms_apptentive_open_app_name">Open App</string>
 
     <string name="play_video_action">playVideo</string>
 

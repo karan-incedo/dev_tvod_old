@@ -73,6 +73,7 @@ import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Tag;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.PhotoGalleryGridInsetDecoration;
@@ -6397,6 +6398,7 @@ public class ViewCreator {
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
                             appCMSPresenter.setDownloadInProgress(false);
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
+                            contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
                             appCMSPresenter.notifyDownloadHasCompleted();
                             notifyDataChange();
                         }

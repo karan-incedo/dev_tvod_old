@@ -5066,6 +5066,7 @@ public class AppCMSPresenter {
         }
         sendGaEventForDownloadedContent(downloadVideoRealm);
         realmController.addDownload(downloadVideoRealm);
+
     }
 
     private void clearSubscriptionPlans() {
@@ -5322,7 +5323,7 @@ public class AppCMSPresenter {
     }
 
     @UiThread
-    public boolean isVideoDownloadedByUser(String videoId) {
+    private boolean isVideoDownloadedByUser(String videoId) {
         if (realmController != null) {
             try {
                 DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
@@ -7101,8 +7102,11 @@ public class AppCMSPresenter {
             screenName.append(appCMSPlaylistAPIAction.pageTitle);
         }
         screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-        if (pageAPI.getModules() != null && pageAPI.getModules().get(0) != null && pageAPI.getModules().get(0).getContentData() != null
-                && pageAPI.getModules().get(0).getContentData().get(0) != null && pageAPI.getModules().get(0).getContentData().get(0).getGist() != null && pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle() != null) {
+        if (pageAPI.getModules() != null && pageAPI.getModules().get(0) != null &&
+                pageAPI.getModules().get(0).getContentData() != null
+                && pageAPI.getModules().get(0).getContentData().get(0) != null &&
+                pageAPI.getModules().get(0).getContentData().get(0).getGist() != null &&
+                pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle() != null) {
             screenName.append(pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle());
 
         }
@@ -7232,6 +7236,9 @@ public class AppCMSPresenter {
                             }
                         });
             } catch (Exception e) {
+                Observable.just((AppCMSHistoryResult) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(appCMSHistoryResultAction);
             }
         }
     }
