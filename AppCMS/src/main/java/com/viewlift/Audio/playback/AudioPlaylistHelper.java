@@ -216,7 +216,7 @@ public class AudioPlaylistHelper {
      */
     public void skipToPreviousItem(IPlaybackCall callBackPlaylistHelper) {
 
-        if (!appCmsPresenter.isNetworkConnected() &&
+        if (!appCmsPresenter.isNetworkConnected() && getCurrentPlaylistId() != null &&
                 !getCurrentPlaylistId().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
             Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
             return;

@@ -2404,7 +2404,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-     static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -6455,7 +6455,7 @@ public class ViewCreator {
     public static void notifyDataChange(){
 
         if(appCMSUserWatHisDowAdapter != null)
-         appCMSUserWatHisDowAdapter.notifyDataSetChanged();
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
