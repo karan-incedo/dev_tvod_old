@@ -5064,12 +5064,7 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
-        try{
-            sendGaEventForDownloadedContent(downloadVideoRealm);
-        } catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        sendGaEventForDownloadedContent(downloadVideoRealm);
         realmController.addDownload(downloadVideoRealm);
 
     }
@@ -7121,7 +7116,7 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    screenName.toString(),
+                    appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
                     pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
                     loadFromFile,
@@ -7136,9 +7131,9 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    screenName.toString(),
+                    appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
-                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    screenName.toString(),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
                     appCMSPlaylistAPIAction.fullscreenEnabled,
@@ -11598,35 +11593,7 @@ public class AppCMSPresenter {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
-    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
-        if (downloadVideoRealm != null ) {
-            try {
-                String mediaType = downloadVideoRealm.getMediaType();
-                String contentType = downloadVideoRealm.getContentType();
-                String title = downloadVideoRealm.getVideoTitle();
-                String showTitle = downloadVideoRealm.getShowTitle();
-                if (title != null) {
-                    title.substring(0, Math.min(title.length(), 500));
-                }
-                if(showTitle != null) {
-                    showTitle.substring(0, Math.min(title.length(), 500));
-                    title+=" | "+showTitle;
 
-                }
-
-                if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
-                    sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
-                            currentActivity.getResources().getString(R.string.ga_audio_download_category), title);
-                } else if (mediaType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
-                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
-                } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
-                    sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
-                }
-            }catch (Exception ex){
-
-            }
-        }
-    }
     public void sendGaEvent(String action, String category, String label) {
         if (tracker != null) {
             tracker.send(new HitBuilders.EventBuilder()
@@ -11635,6 +11602,28 @@ public class AppCMSPresenter {
                     .setLabel(label)
                     .build());
         }
+    }
+
+    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
+            try {
+                String mediaType = downloadVideoRealm.getMediaType();
+                String contentType = downloadVideoRealm.getContentType();
+                String title = downloadVideoRealm.getVideoTitle();
+                if (title != null) {
+                    title.substring(0, Math.min(title.length(), 500));
+                }
+
+                if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
+                    sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
+                            currentActivity.getResources().getString(R.string.ga_audio_download_category), title);
+                } else if (mediaType != null && mediaType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
+                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
+                    sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                }
+            }catch (Exception ex){
+
+            }
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
