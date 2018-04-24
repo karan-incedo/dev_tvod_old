@@ -5066,6 +5066,12 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
+        try{
+            sendGaEventForDownloadedContent(downloadVideoRealm);
+        } catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         realmController.addDownload(downloadVideoRealm);
 
     }
@@ -7103,8 +7109,11 @@ public class AppCMSPresenter {
             screenName.append(appCMSPlaylistAPIAction.pageTitle);
         }
         screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-        if (pageAPI.getModules() != null && pageAPI.getModules().get(0) != null && pageAPI.getModules().get(0).getContentData() != null
-                && pageAPI.getModules().get(0).getContentData().get(0) != null && pageAPI.getModules().get(0).getContentData().get(0).getGist() != null && pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle() != null) {
+        if (pageAPI.getModules() != null && pageAPI.getModules().get(0) != null &&
+                pageAPI.getModules().get(0).getContentData() != null
+                && pageAPI.getModules().get(0).getContentData().get(0) != null &&
+                pageAPI.getModules().get(0).getContentData().get(0).getGist() != null &&
+                pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle() != null) {
             screenName.append(pageAPI.getModules().get(0).getContentData().get(0).getGist().getTitle());
 
         }
@@ -7114,7 +7123,7 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    appCMSPlaylistAPIAction.pageTitle,
+                    screenName.toString(),
                     playlistId,
                     pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
                     loadFromFile,
@@ -7129,7 +7138,7 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    appCMSPlaylistAPIAction.pageTitle,
+                    screenName.toString(),
                     playlistId,
                     pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
                     loadFromFile,
@@ -7234,6 +7243,9 @@ public class AppCMSPresenter {
                             }
                         });
             } catch (Exception e) {
+                Observable.just((AppCMSHistoryResult) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(appCMSHistoryResultAction);
             }
         }
     }
@@ -11588,7 +11600,35 @@ public class AppCMSPresenter {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
+    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
+        if (downloadVideoRealm != null ) {
+            try {
+                String mediaType = downloadVideoRealm.getMediaType();
+                String contentType = downloadVideoRealm.getContentType();
+                String title = downloadVideoRealm.getVideoTitle();
+                String showTitle = downloadVideoRealm.getShowTitle();
+                if (title != null) {
+                    title.substring(0, Math.min(title.length(), 500));
+                }
+                if(showTitle != null) {
+                    showTitle.substring(0, Math.min(title.length(), 500));
+                    title+=" | "+showTitle;
 
+                }
+
+                if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
+                    sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
+                            currentActivity.getResources().getString(R.string.ga_audio_download_category), title);
+                } else if (mediaType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
+                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
+                    sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
+                }
+            }catch (Exception ex){
+
+            }
+        }
+    }
     public void sendGaEvent(String action, String category, String label) {
         if (tracker != null) {
             tracker.send(new HitBuilders.EventBuilder()
