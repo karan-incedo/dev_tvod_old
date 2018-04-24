@@ -485,8 +485,6 @@
     <string name="app_cms_subscription_key">android</string>
     <string name="ua_android_device_key">android</string>
 
-    <!--AppCMS SSLCommerz credentials API-->
-    <string name="app_cms_sslcommerz_cred_api_url">%1$s/sslcommerz/config?site=%2$s&amp;device=android_phone</string>
     <!--AppCMS Subscription Plan API-->
     <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>

@@ -228,7 +228,6 @@ import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -572,7 +571,6 @@ public class AppCMSPresenter {
     private final ReferenceQueue<Object> referenceQueue;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
     private final AppCMSAudioDetailCall appCMSAudioDetailCall;
-    private final AppCMSSSLCommerzConfigCall appCMSSSLCommerzConfigCall;
     public TVVideoPlayerView tvVideoPlayerView;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
@@ -857,7 +855,6 @@ public class AppCMSPresenter {
                            AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                            AppCMSPlaylistCall appCMSPlaylistCall,
                            AppCMSAudioDetailCall appCMSAudioDetailCall,
-                           AppCMSSSLCommerzConfigCall appCMSSSLCommerzConfigCall,
                            AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
@@ -911,7 +908,6 @@ public class AppCMSPresenter {
         this.gson = gson;
         this.appCMSPlaylistCall = appCMSPlaylistCall;
         this.appCMSAudioDetailCall = appCMSAudioDetailCall;
-        this.appCMSSSLCommerzConfigCall = appCMSSSLCommerzConfigCall;
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
@@ -6745,29 +6741,6 @@ public class AppCMSPresenter {
                         audiDetail);
             } catch (IOException e) {
             }
-        }
-    }
-
-    private void getSSLCommerzConfigContent(final String apiBaseUrl,
-                                            final String siteId,
-                                            final AppCMSSSLCommerzConfigAPIAction sslConfigAction) {
-        if (currentContext != null) {
-            try {
-                appCMSSSLCommerzConfigCall.call(
-                        currentContext.getString(R.string.app_cms_sslcommerz_cred_api_url,
-                                apiBaseUrl,
-                                siteId), getAuthToken(),
-                        sslConfigAction);
-            } catch (IOException e) {
-            }
-        }
-    }
-
-    public abstract static class AppCMSSSLCommerzConfigAPIAction implements Action1<SSLCredential> {
-        final String action;
-
-        public AppCMSSSLCommerzConfigAPIAction(String action) {
-            this.action = action;
         }
     }
 

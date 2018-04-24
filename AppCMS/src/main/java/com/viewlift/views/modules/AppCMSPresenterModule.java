@@ -25,7 +25,6 @@ import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -40,10 +39,8 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.presenters.UrbanAirshipEventPresenter;
 
 import java.lang.ref.ReferenceQueue;
 import java.util.Map;
@@ -72,7 +69,6 @@ public class AppCMSPresenterModule {
                                                    AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
                                                    AppCMSAudioDetailCall appCMSAudioDetailCall,
-                                                   AppCMSSSLCommerzConfigCall appCMSSSLCommerzConfigCall,
                                                    AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
@@ -127,7 +123,6 @@ public class AppCMSPresenterModule {
                 appCMSPhotoGalleryCall,
                 appCMSPlaylistCall,
                 appCMSAudioDetailCall,
-                appCMSSSLCommerzConfigCall,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,

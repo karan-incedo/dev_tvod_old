@@ -21,11 +21,10 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
-import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
-import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSArticleCall;
 import com.viewlift.models.network.rest.AppCMSArticleRest;
-
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -42,22 +41,22 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
-import com.viewlift.models.network.rest.AppCMSPlaylistCall;
-import com.viewlift.models.network.rest.AppCMSPlaylistRest;
 import com.viewlift.models.network.rest.AppCMSPhotoGalleryCall;
 import com.viewlift.models.network.rest.AppCMSPhotoGalleryRest;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
+import com.viewlift.models.network.rest.AppCMSPlaylistRest;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLRest;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
@@ -70,8 +69,6 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
-import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
-import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
@@ -1237,17 +1234,7 @@ public class AppCMSUIModule {
         return retrofit.create(AppCMSPlaylistRest.class);
     }
 
-    @Provides
-    @Singleton
-    public AppCMSSSLCommerzConfigRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
-        return retrofit.create(AppCMSSSLCommerzConfigRest.class);
-    }
 
-    @Provides
-    @Singleton
-    public AppCMSSSLCommerzConfigCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzConfigRest configRest, Gson gson) {
-        return new AppCMSSSLCommerzConfigCall(configRest, gson);
-    }
 
 
     @Provides
