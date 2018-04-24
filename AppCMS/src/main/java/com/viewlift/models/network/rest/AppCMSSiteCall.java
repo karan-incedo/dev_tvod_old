@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import android.support.annotation.WorkerThread;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -13,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -27,21 +30,28 @@ public class AppCMSSiteCall {
     private final AppCMSSiteRest appCMSSiteRest;
     private final Gson gson;
     private final File storageDirectory;
+    private Map<String, String> headersMap;
 
     @Inject
-    public AppCMSSiteCall(AppCMSSiteRest appCMSSiteRest, Gson gson, File storageDirectory) {
+    public AppCMSSiteCall(AppCMSSiteRest appCMSSiteRest, Gson gson, File storageDirectory ) {
         this.appCMSSiteRest = appCMSSiteRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
+        this.headersMap = new HashMap<>();
     }
 
     @WorkerThread
-    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries) throws IOException {
+    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries , String apiKey) throws IOException {
         try {
             //Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             AppCMSSite appCMSSite = null;
+
+            headersMap.clear();
+            if (!TextUtils.isEmpty(apiKey)) {
+                headersMap.put("x-api-key", apiKey);
+            }
             if (!networkDisconnected) {
-                appCMSSite = appCMSSiteRest.get(url).execute().body();
+                appCMSSite = appCMSSiteRest.get(url,headersMap).execute().body();
             }
             if (appCMSSite == null) {
                 appCMSSite = readAppCMSSiteFromFile(getResourceFilename());
@@ -57,7 +67,7 @@ public class AppCMSSiteCall {
         }
 
         if (numberOfTries == 0) {
-            return call(url, networkDisconnected, numberOfTries + 1);
+            return call(url, networkDisconnected, numberOfTries + 1 , apiKey);
         } else {
             try {
                 return readAppCMSSiteFromFile(getResourceFilename());
