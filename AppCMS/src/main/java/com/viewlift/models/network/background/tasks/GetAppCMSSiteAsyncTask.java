@@ -19,11 +19,13 @@ public class GetAppCMSSiteAsyncTask {
 
     private final AppCMSSiteCall call;
     private final Action1<AppCMSSite> readyAction;
+    private final String apiKey;
 
     public GetAppCMSSiteAsyncTask(AppCMSSiteCall call,
-                                  Action1<AppCMSSite> readyAction) {
+                                  Action1<AppCMSSite> readyAction, String apiKey) {
         this.call = call;
         this.readyAction = readyAction;
+        this.apiKey = apiKey;
     }
 
     public void execute(String params, boolean networkDisconnected) {
@@ -31,7 +33,7 @@ public class GetAppCMSSiteAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params, networkDisconnected, 0);
+                            return call.call(params, networkDisconnected, 0,apiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
