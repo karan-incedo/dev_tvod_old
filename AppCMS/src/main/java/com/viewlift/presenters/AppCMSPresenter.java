@@ -1815,7 +1815,7 @@ public class AppCMSPresenter {
                 } catch (Exception e) {
                     //Log.e(TAG, "Error signing in as anonymous user: " + e.getMessage());
                 }
-            });
+            },apikey);
         }
     }
 
@@ -1853,7 +1853,7 @@ public class AppCMSPresenter {
                         getAppCMSTV(tryCount + 1);
                     }
                 }
-            });
+            },apikey);
         }
     }
 
@@ -13285,7 +13285,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
                             launchErrorActivity(platformType);
                         }
-                    }).execute(url, !isNetworkConnected());
+                    } , apikey).execute(url, !isNetworkConnected());
         } else {
             launchBlankPage();
         }
