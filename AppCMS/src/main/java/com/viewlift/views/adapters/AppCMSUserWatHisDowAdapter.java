@@ -211,7 +211,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             if (isWatchlistPage || isDonwloadPage) {
                 sortByAddedDate();
             } else if (isHistoryPage) {
-                sortByUpdateDate();
+                    sortByUpdateDate();
             }
         }
     }
@@ -222,9 +222,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void sortByUpdateDate() {
-        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
-                Long.valueOf(o2.getGist().getUpdateDate())));
-        Collections.reverse(adapterData);
+        try {
+            Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
+                    Long.valueOf(o2.getGist().getUpdateDate())));
+            Collections.reverse(adapterData);
+        }catch (Exception ex){
+
+        }
     }
 
     @Override
@@ -1007,6 +1011,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
                 }
                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+
+                List<String> audioPlaylistId = new ArrayList<String>();
+                audioPlaylistId.add(appCMSAudioDetailResult.getGist().getId());
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSAudioDetailResult.getGist().getId());
+                AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+
                 Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());

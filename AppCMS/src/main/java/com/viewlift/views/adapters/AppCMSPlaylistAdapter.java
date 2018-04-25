@@ -348,7 +348,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
             // on click from playlist adapter .Get playlist from temp list and set into current playlist
-            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) || (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
+            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) ||
+                    (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null &&
+                            !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
                 AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
                 AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
                 AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));

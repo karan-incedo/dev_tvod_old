@@ -300,7 +300,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // This sample assumes the iconUri will be a valid URL formatted String, but
             // it can actually be any valid Android Uri formatted String.
             // async fetch the album art icon
-            String artUrl = description.getIconUri().toString();
+            String artUrl = mService.getResources().getString(R.string.app_cms_image_with_resize_query,
+                    description.getIconUri().toString(),120,120);
             art = AlbumArtCache.getInstance().getBigImage(artUrl);
 
             if (art == null) {

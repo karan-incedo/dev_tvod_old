@@ -7118,7 +7118,7 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.pageId,
                     appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
-                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    screenName.toString(),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
                     appCMSPlaylistAPIAction.fullscreenEnabled,
@@ -11609,8 +11609,14 @@ public class AppCMSPresenter {
                 String mediaType = downloadVideoRealm.getMediaType();
                 String contentType = downloadVideoRealm.getContentType();
                 String title = downloadVideoRealm.getVideoTitle();
+                String showTitle = downloadVideoRealm.getShowTitle();
                 if (title != null) {
                     title.substring(0, Math.min(title.length(), 500));
+                }
+                if(showTitle != null) {
+                    showTitle.substring(0, Math.min(title.length(), 500));
+                    title+=" | "+showTitle;
+
                 }
 
                 if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
@@ -16338,6 +16344,9 @@ public class AppCMSPresenter {
     }
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
+        if(contentDatum.getGist().getUpdateDate() == null){
+            return "";
+        }
         long currentTime = System.currentTimeMillis();
         long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
