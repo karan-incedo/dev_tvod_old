@@ -16344,6 +16344,9 @@ public class AppCMSPresenter {
     }
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
+        if(contentDatum.getGist().getUpdateDate() == null){
+            return "";
+        }
         long currentTime = System.currentTimeMillis();
         long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 

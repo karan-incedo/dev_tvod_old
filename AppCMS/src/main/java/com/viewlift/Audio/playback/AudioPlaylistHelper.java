@@ -92,7 +92,9 @@ public class AudioPlaylistHelper {
 
     public void setPlaylist(List<String> arrPlaylist) {
         currentAudioPlaylist.clear();
-        currentAudioPlaylist.addAll(arrPlaylist);
+        if(arrPlaylist != null) {
+            currentAudioPlaylist.addAll(arrPlaylist);
+        }
         if (appCmsPresenter.getAudioShuffledPreference()) {
             doShufflePlaylist();
         } else {
@@ -137,7 +139,7 @@ public class AudioPlaylistHelper {
 
     public void autoPlayNextItemFromPLaylist(IPlaybackCall callBackPlaylistHelper) {
 
-        if (!appCmsPresenter.isNetworkConnected() &&
+        if (!appCmsPresenter.isNetworkConnected() && getCurrentPlaylistId()!= null &&
                 !getCurrentPlaylistId().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
             Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
             return;
@@ -185,11 +187,11 @@ public class AudioPlaylistHelper {
      * @param callBackPlaylistHelper
      */
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
-        if (!appCmsPresenter.isNetworkConnected() &&
-                                !getCurrentPlaylistId().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
-                        Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
-                        return;
-            }
+        if (!appCmsPresenter.isNetworkConnected() &&  getCurrentPlaylistId() != null &&
+                !getCurrentPlaylistId().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_download_audio_playlist_key))) {
+            Toast.makeText(context, context.getResources().getString(R.string.no_network_connectivity_message), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist + 1) && indexAudioFromPlaylist + 1 >= 0) {
             indexAudioFromPlaylist++;
         } else {
