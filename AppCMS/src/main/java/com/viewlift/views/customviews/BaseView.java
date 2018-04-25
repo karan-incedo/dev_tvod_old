@@ -1136,7 +1136,7 @@ public abstract class BaseView extends FrameLayout {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 5;
                         } else if (isTablet(getContext()) && !isLandscape(getContext())) {
-                            tm -= viewHeight * 2;
+                            tm -= 80 * 3;
                         } else {
                             tm -= viewHeight * 3;
                         }

@@ -549,6 +549,11 @@ public class CollectionGridItemView extends BaseView {
                                     data.getGist().getVideoImageUrl(),
                                     deviceWidth,
                                     childViewHeight);
+                        } else if (data.getGist() != null && data.getGist().getImageGist() != null && data.getGist().getImageGist().get_16x9() != null){
+                            imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getImageGist().get_16x9(),
+                                    deviceWidth,
+                                    childViewHeight);
                         }
 
                         try {
