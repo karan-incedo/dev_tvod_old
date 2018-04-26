@@ -337,12 +337,15 @@ public class CastServiceProvider {
     public boolean shouldCastMiniControllerVisible() {
         boolean shouldControllerVisible = true;
         RemoteMediaClient mRemoteMediaClient = null;
-        mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
-                .getCurrentCastSession();
-        if (mCastSession != null && mCastSession.isConnected()) {
-            mRemoteMediaClient = mCastSession.getRemoteMediaClient();
-        }
+
         try {
+
+            mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
+                    .getCurrentCastSession();
+            if (mCastSession != null && mCastSession.isConnected()) {
+                mRemoteMediaClient = mCastSession.getRemoteMediaClient();
+            }
+
             if (mRemoteMediaClient != null) {
                 MediaInfo mediaInfo = mRemoteMediaClient.getMediaInfo();
                 if (mediaInfo == null) {
@@ -366,7 +369,7 @@ public class CastServiceProvider {
             } else {
                 shouldControllerVisible = false;
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
         }
         return shouldControllerVisible;
     }
@@ -400,7 +403,7 @@ public class CastServiceProvider {
 
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isCastDeviceAvailable && (mCastHelper.isRemoteDeviceConnected() || rokuWrapper.isRokuConnected())) {
+        if (mCastHelper != null && mCastHelper.isCastDeviceAvailable && (mCastHelper.isRemoteDeviceConnected() || rokuWrapper.isRokuConnected())) {
             isConnected = true;
         }
         return isConnected;

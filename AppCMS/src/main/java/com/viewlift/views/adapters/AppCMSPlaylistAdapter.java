@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.model.MusicLibrary;
@@ -45,6 +47,8 @@ import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -340,34 +344,51 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
 
     private void playPlaylistItem(ContentDatum data, View itemView, int clickPosition) {
-        if (data.getGist() != null &&
-                data.getGist().getMediaType() != null &&
-                data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                data.getGist().getContentType() != null &&
-                data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-            appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_PAGE_LOADING_ACTION));
-            // on click from playlist adapter .Get playlist from temp list and set into current playlist
-            if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) || (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
-                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
-                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
-                AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
-            }
-            if (adapterData.size() > oldClick) {
-                if (oldClick != clickPosition) {
-                    if (oldClick == -1) {
-                        oldClick = clickPosition;
-                        data.getGist().setAudioPlaying(true);
-                    } else {
-                        adapterData.get(oldClick).getGist().setAudioPlaying(false);
-                        oldClick = clickPosition;
-                        data.getGist().setAudioPlaying(true);
+
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
+        if (resultCode == ConnectionResult.SUCCESS) {
+
+            if (data.getGist() != null &&
+                    data.getGist().getMediaType() != null &&
+                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                    data.getGist().getContentType() != null &&
+                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                        .PRESENTER_PAGE_LOADING_ACTION));
+                // on click from playlist adapter .Get playlist from temp list and set into current playlist
+                if ((AudioPlaylistHelper.getInstance().getCurrentPlaylistId() == null) ||
+                        (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null &&
+                                !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId))) {
+                    AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
+                    AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
+                    AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
+                }
+                if (adapterData.size() > oldClick) {
+                    if (oldClick != clickPosition) {
+                        if (oldClick == -1) {
+                            oldClick = clickPosition;
+                            data.getGist().setAudioPlaying(true);
+                        } else {
+                            adapterData.get(oldClick).getGist().setAudioPlaying(false);
+                            oldClick = clickPosition;
+                            data.getGist().setAudioPlaying(true);
+                        }
                     }
                 }
+                updateData(mRecyclerView, adapterData);
+                AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+                return;
             }
-            updateData(mRecyclerView, adapterData);
-            AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
-            return;
+        }else{
+            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                Toast.makeText(mContext, "This device is not supported.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
