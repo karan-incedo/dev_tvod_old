@@ -92,6 +92,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
@@ -4294,15 +4296,14 @@ public class AppCMSPresenter {
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
             request.setUserId(getLoggedInUser());
-            if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_video))) {
+            /*if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_video))) {
                 request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             }
             if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_series)) ||
                     contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_show))) {
                 request.setContentType(currentActivity.getString(R.string.content_type_show).toLowerCase());
-            }
-            //TODO- in future we will pick the content type form contentDatum
-//            request.setContentType(contentDatum.getGist().getContentType());
+            }*/
+            request.setContentType(contentDatum.getGist().getContentType());
             request.setPosition(1L);
             if (add) {
                 request.setContentId(contentDatum.getGist().getId());
@@ -5925,17 +5926,13 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-
-                }).start();
-
-                for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
-                    contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
-                }
+                  try {
+                      for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
+                          contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+                      }
+                  }catch(Exception ex){
+                      ex.printStackTrace();
+                  }
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
@@ -6877,17 +6874,33 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
-                                if (controller != null) {
-                                    MediaMetadataCompat metadata = controller.getMetadata();
-                                    if (metadata != null) {
-                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                                metadata);
+
+                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+                                if (resultCode == ConnectionResult.SUCCESS) {
+
+                                    Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                    if (controller != null) {
+                                        MediaMetadataCompat metadata = controller.getMetadata();
+                                        if (metadata != null) {
+                                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                    metadata);
+                                        }
+                                    }
+                                    currentActivity.startActivity(intent);
+                                }else{
+
+                                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                                    if (apiAvailability.isUserResolvableError(resultCode)) {
+                                        apiAvailability.getErrorDialog(currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                                .show();
+                                    } else {
+                                        Log.i(TAG, "This device is not supported.");
+                                        Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                currentActivity.startActivity(intent);
                             }
 
                         } else {
@@ -6907,11 +6920,29 @@ public class AppCMSPresenter {
                 });
     }
 
+
+
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
-        if (!isNetworkConnected()) {
+
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+        if (resultCode != ConnectionResult.SUCCESS) {
+
+            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+            if (!isNetworkConnected()) {
             int count = tryCount;
             openDownloadScreenForNetworkError(false,
                     () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
@@ -6959,17 +6990,31 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
-                                if (controller != null) {
-                                    MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getGist().getId());//controller.getMetadata();
-                                    if (metadata != null) {
-                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                                metadata);
+
+                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+                                if (resultCode == ConnectionResult.SUCCESS) {
+                                    Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                    if (controller != null) {
+                                        MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getGist().getId());//controller.getMetadata();
+                                        if (metadata != null) {
+                                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                    metadata);
+                                        }
+                                    }
+                                    currentActivity.startActivity(intent);
+                                }else{
+                                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                                    if (apiAvailability.isUserResolvableError(resultCode)) {
+                                        apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                                .show();
+                                    } else {
+                                        Log.i(TAG, "This device is not supported.");
+                                        Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                currentActivity.startActivity(intent);
                             }
 
                         } else {
