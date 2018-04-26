@@ -40,7 +40,7 @@ public class AppCMSSiteCall {
     }
 
     @WorkerThread
-    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries) throws IOException {
+    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries,String apiKey) throws IOException {
         try {
             //Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             headersMap.clear();
