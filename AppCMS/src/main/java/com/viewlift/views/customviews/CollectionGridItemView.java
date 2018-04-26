@@ -828,8 +828,18 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
                         } else {
-                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext()) == true) {
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
+                                if (appCMSPresenter.getAppCMSMain() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                        ) {
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                                }else{
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                }
                             } else {
                                 ((TextView) view).setTextColor(Color.parseColor(
                                         childComponent.getTextColor()));
@@ -858,8 +868,18 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             view.setVisibility(VISIBLE);
                         }
-                        if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context) == true) {
-                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context)) {
+                            if (appCMSPresenter.getAppCMSMain() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                    ) {
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                            }else{
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            }
                         } else {
                             ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                         }
