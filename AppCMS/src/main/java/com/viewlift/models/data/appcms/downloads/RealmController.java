@@ -12,6 +12,7 @@ import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
@@ -132,7 +133,7 @@ public class RealmController {
     public RealmResults<DownloadVideoRealm> getAllUnSyncedWithServer(String userId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
-                    .equalTo("userId", userId).findAll();
+                    .equalTo("userId", userId).greaterThanOrEqualTo("watchedTime",30).notEqualTo("mediaType", "AUDIO", Case.INSENSITIVE).findAll();
         } catch (NullPointerException e) {
             //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
         } catch (Exception e) {

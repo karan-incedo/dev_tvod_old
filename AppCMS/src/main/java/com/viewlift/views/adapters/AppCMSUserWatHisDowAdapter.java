@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -48,7 +50,8 @@ import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -211,7 +214,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             if (isWatchlistPage || isDonwloadPage) {
                 sortByAddedDate();
             } else if (isHistoryPage) {
-                sortByUpdateDate();
+                    sortByUpdateDate();
             }
         }
     }
@@ -222,9 +225,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private void sortByUpdateDate() {
-        Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
-                Long.valueOf(o2.getGist().getUpdateDate())));
-        Collections.reverse(adapterData);
+        try {
+            Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
+                    Long.valueOf(o2.getGist().getUpdateDate())));
+            Collections.reverse(adapterData);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -979,6 +986,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private void playDownloadedAudio(ContentDatum contentDatum) {
         try {
 
+
             if (contentDatum.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                     contentDatum.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
@@ -1007,17 +1015,38 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
                 }
                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
-                Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
-                if (controller != null) {
-                    MediaMetadataCompat metadata = controller.getMetadata();
-                    if (metadata != null) {
-                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                metadata);
+
+                List<String> audioPlaylistId = new ArrayList<String>();
+                audioPlaylistId.add(appCMSAudioDetailResult.getGist().getId());
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSAudioDetailResult.getGist().getId());
+                AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+
+                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
+                if (resultCode == ConnectionResult.SUCCESS) {
+
+                    Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
+                    if (controller != null) {
+                        MediaMetadataCompat metadata = controller.getMetadata();
+                        if (metadata != null) {
+                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                    metadata);
+                        }
+                    }
+                    mContext.startActivity(intent);
+                }else{
+                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                    if (apiAvailability.isUserResolvableError(resultCode)) {
+                        apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                .show();
+                    } else {
+                        Log.i(TAG, "This device is not supported.");
+                        Toast.makeText(mContext, "This device is not supported.", Toast.LENGTH_SHORT).show();
                     }
                 }
-                mContext.startActivity(intent);
             }
         } catch (Exception e) {
             e.printStackTrace();

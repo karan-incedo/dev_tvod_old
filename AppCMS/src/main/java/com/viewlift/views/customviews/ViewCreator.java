@@ -2404,7 +2404,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-     static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2566,7 +2566,7 @@ public class ViewCreator {
                      * get cache of recycler view if already created . need to clear cached  when opening first time this screen using same adapter and recycler view
                      * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
                      */
-                    if (appCMSPresenter.getDownlistScreenCache() == null) {
+                    //if (appCMSPresenter.getDownlistScreenCache() == null) {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
                                         LinearLayoutManager.VERTICAL,
@@ -2587,10 +2587,10 @@ public class ViewCreator {
 
                         ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
-                        appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                  /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
                         (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
-                    }
+                    }*/
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
                     if (pageView != null) {
@@ -3383,56 +3383,56 @@ public class ViewCreator {
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
                         // Temp removed visibility of this playlist download button
-                        ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                        ((ImageButton) componentViewResult.componentView).setVisibility(View.VISIBLE);
 
-//                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-//                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
-//                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-//                        componentViewResult.componentView.setId(R.id.playlist_download_id);
-//
-//                        if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
-//                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
-//                            componentViewResult.componentView.setVisibility(View.GONE);
-//                        }
-//                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                if (!appCMSPresenter.isNetworkConnected()) {
-//                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
-//                                            false,
-//                                            null,
-//                                            null);
-//                                    return;
-//                                }
-//                                if (!appCMSPresenter.isUserLoggedIn()) {
-//                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
-//                                            () -> {
-//                                                appCMSPresenter.setAfterLoginAction(() -> {
-//                                                });
-//                                            });
-//                                } else if (!appCMSPresenter.isUserSubscribed()) {
-//                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
-//                                            () -> {
-//                                                appCMSPresenter.setAfterLoginAction(() -> {
-//                                                });
-//                                            });
-//                                } else {
-//                                    if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
-//
-//                                        if (!appCMSPresenter.getDownloadOverCellularEnabled() && appCMSPresenter.getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
-//                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
-//                                                    context.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
-//                                                    false,
-//                                                    null,
-//                                                    null);
-//                                            return;
-//                                        }
-//                                        appCMSPlaylistAdapter.startDownloadPlaylist();
-//
-//                                    }
-//                                }
-//                            }
-//                        });
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setId(R.id.playlist_download_id);
+
+                        if (appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_downloaded);
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        }
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (!appCMSPresenter.isNetworkConnected()) {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null,
+                                            false,
+                                            null,
+                                            null);
+                                    return;
+                                }
+                                if (!appCMSPresenter.isUserLoggedIn()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+                                            () -> {
+                                                appCMSPresenter.setAfterLoginAction(() -> {
+                                                });
+                                            });
+                                } else if (!appCMSPresenter.isUserSubscribed()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO,
+                                            () -> {
+                                                appCMSPresenter.setAfterLoginAction(() -> {
+                                                });
+                                            });
+                                } else {
+                                    if (!appCMSPresenter.isAllPlaylistAudioDownloaded(moduleAPI.getContentData())) {
+
+                                        if (!appCMSPresenter.getDownloadOverCellularEnabled() && appCMSPresenter.getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                    context.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+                                                    false,
+                                                    null,
+                                                    null);
+                                            return;
+                                        }
+                                        appCMSPlaylistAdapter.startDownloadPlaylist();
+
+                                    }
+                                }
+                            }
+                        });
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                       /*  ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -6455,7 +6455,7 @@ public class ViewCreator {
     public static void notifyDataChange(){
 
         if(appCMSUserWatHisDowAdapter != null)
-         appCMSUserWatHisDowAdapter.notifyDataSetChanged();
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {

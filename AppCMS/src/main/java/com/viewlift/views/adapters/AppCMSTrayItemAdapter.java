@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,9 +24,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.PlaybackManager;
@@ -807,37 +811,48 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void playPlaylistItem(ContentDatum data, Context context, int clickPosition) {
 
         try {
-            appCMSPresenter.showLoadingDialog(true);
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
+            if (resultCode == ConnectionResult.SUCCESS) {
+                appCMSPresenter.showLoadingDialog(true);
 
-            AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(data);
+                AppCMSAudioDetailResult appCMSAudioDetailResult = convertToAudioResult(data);
+                //        if at the time of click from download list device already connected to casatin device than get audio details from server
+                //        and cast audio url to casting device
 
-
-//        if at the time of click from download list device already connected to casatin device than get audio details from server
-//        and cast audio url to casting device
-
-            if (CastServiceProvider.getInstance(context).isCastingConnected()) {
-                AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSAudioDetailResult.getId(), 0);
-            } else {
-                AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
-                AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-                PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
-                if (appCMSPresenter.getCallBackPlaylistHelper() != null) {
-                    appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
-                } else if (appCMSPresenter.getCurrentActivity() != null) {
-                    AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
-                }
-                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
-                Intent intent = new Intent(context, AppCMSPlayAudioActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
-                if (controller != null) {
-                    MediaMetadataCompat metadata = controller.getMetadata();
-                    if (metadata != null) {
-                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                metadata);
+                if (CastServiceProvider.getInstance(context).isCastingConnected()) {
+                    AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSAudioDetailResult.getId(), 0);
+                } else {
+                    AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(appCMSAudioDetailResult.getId());
+                    AudioPlaylistHelper.getInstance().createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                    PlaybackManager.setCurrentMediaData(AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getId()));
+                    if (appCMSPresenter.getCallBackPlaylistHelper() != null) {
+                        appCMSPresenter.getCallBackPlaylistHelper().onPlaybackStart(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
+                    } else if (appCMSPresenter.getCurrentActivity() != null) {
+                        AudioPlaylistHelper.getInstance().onMediaItemSelected(AudioPlaylistHelper.getInstance().getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
                     }
+                    AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+                    Intent intent = new Intent(context, AppCMSPlayAudioActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
+                    if (controller != null) {
+                        MediaMetadataCompat metadata = controller.getMetadata();
+                        if (metadata != null) {
+                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                    metadata);
+                        }
+                    }
+                    context.startActivity(intent);
                 }
-                context.startActivity(intent);
+            }else{
+                int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                if (apiAvailability.isUserResolvableError(resultCode)) {
+                    apiAvailability.getErrorDialog((Activity)context, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                            .show();
+                } else {
+                    Log.i(TAG, "This device is not supported.");
+                    Toast.makeText(context, "This device is not supported.", Toast.LENGTH_SHORT).show();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -15,6 +15,7 @@
  */
 package com.viewlift.Audio.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -32,6 +33,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
@@ -184,21 +188,35 @@ public class PlaybackControlsFragment extends Fragment {
 
     private void launchAudioPlayer() {
         try {
-            Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            MediaMetadataCompat metadata = null;
-            if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
-                metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
-            } else {
-                metadata = controller.getMetadata();
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(getActivity());
+            if (resultCode == ConnectionResult.SUCCESS) {
+
+                Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+                MediaMetadataCompat metadata = null;
+                if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
+                    metadata = AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId());//controller.getMetadata();
+                } else {
+                    metadata = controller.getMetadata();
+                }
+                if (metadata != null) {
+                    intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                            metadata);
+                }
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            }else{
+                int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                if (apiAvailability.isUserResolvableError(resultCode)) {
+                    apiAvailability.getErrorDialog(getActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                            .show();
+                } else {
+                    Log.i("PLaybackControls", "This device is not supported.");
+                    Toast.makeText(getActivity(), "This device is not supported.", Toast.LENGTH_SHORT).show();
+                }
             }
-            if (metadata != null) {
-                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                        metadata);
-            }
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }catch (Exception e){
             e.printStackTrace();
         }
