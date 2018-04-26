@@ -1931,7 +1931,7 @@ public class AppCMSPresenter {
             String videoTag;
 
             if (appCMSAndroid.getAdvertising() != null &&
-                    (TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag()))) {
+                    !TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag())) {
                 videoTag = appCMSAndroid.getAdvertising().getVideoTag();
             } else {
                 videoTag = "";
@@ -2192,12 +2192,13 @@ public class AppCMSPresenter {
                                 extraData);
 
                         try {
-                            adsUrl = getAppAdsURL(pagePath);
+                            //adsUrl = getAppAdsURL(pagePath);
+                            adsUrl = getAppAdsURL(contentDatum.getGist().getPermalink());
                         } catch (Exception e) {
                             requestAds = false;
                         }
 
-                        if (!TextUtils.isEmpty(adsUrl)) requestAds = false;
+                        if (!TextUtils.isEmpty(adsUrl)) {requestAds = false;}
 
                         String backgroundColor = getAppBackgroundColor();
 
