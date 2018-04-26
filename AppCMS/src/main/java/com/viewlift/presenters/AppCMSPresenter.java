@@ -92,6 +92,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
@@ -1815,7 +1817,7 @@ public class AppCMSPresenter {
                 } catch (Exception e) {
                     //Log.e(TAG, "Error signing in as anonymous user: " + e.getMessage());
                 }
-            });
+            },apikey);
         }
     }
 
@@ -1853,7 +1855,7 @@ public class AppCMSPresenter {
                         getAppCMSTV(tryCount + 1);
                     }
                 }
-            });
+            },apikey);
         }
     }
 
@@ -1931,7 +1933,7 @@ public class AppCMSPresenter {
             String videoTag;
 
             if (appCMSAndroid.getAdvertising() != null &&
-                    (TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag()))) {
+                    !TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag())) {
                 videoTag = appCMSAndroid.getAdvertising().getVideoTag();
             } else {
                 videoTag = "";
@@ -2192,12 +2194,13 @@ public class AppCMSPresenter {
                                 extraData);
 
                         try {
-                            adsUrl = getAppAdsURL(pagePath);
+                            //adsUrl = getAppAdsURL(pagePath);
+                            adsUrl = getAppAdsURL(contentDatum.getGist().getPermalink());
                         } catch (Exception e) {
                             requestAds = false;
                         }
 
-                        if (!TextUtils.isEmpty(adsUrl)) requestAds = false;
+                        if (!TextUtils.isEmpty(adsUrl)) {requestAds = false;}
 
                         String backgroundColor = getAppBackgroundColor();
 
@@ -4296,15 +4299,14 @@ public class AppCMSPresenter {
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
             request.setUserId(getLoggedInUser());
-            if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_video))) {
+            /*if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_video))) {
                 request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             }
             if (contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_series)) ||
                     contentDatum.getGist().getContentType().contains(currentActivity.getString(R.string.content_type_show))) {
                 request.setContentType(currentActivity.getString(R.string.content_type_show).toLowerCase());
-            }
-            //TODO- in future we will pick the content type form contentDatum
-//            request.setContentType(contentDatum.getGist().getContentType());
+            }*/
+            request.setContentType(contentDatum.getGist().getContentType());
             request.setPosition(1L);
             if (add) {
                 request.setContentId(contentDatum.getGist().getId());
@@ -5066,12 +5068,7 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
-        try{
-            sendGaEventForDownloadedContent(downloadVideoRealm);
-        } catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        sendGaEventForDownloadedContent(downloadVideoRealm);
         realmController.addDownload(downloadVideoRealm);
 
     }
@@ -5932,17 +5929,13 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-
-                }).start();
-
-                for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
-                    contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
-                }
+                  try {
+                      for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
+                          contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+                      }
+                  }catch(Exception ex){
+                      ex.printStackTrace();
+                  }
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
@@ -6884,17 +6877,33 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
-                                if (controller != null) {
-                                    MediaMetadataCompat metadata = controller.getMetadata();
-                                    if (metadata != null) {
-                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                                metadata);
+
+                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+                                if (resultCode == ConnectionResult.SUCCESS) {
+
+                                    Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                    if (controller != null) {
+                                        MediaMetadataCompat metadata = controller.getMetadata();
+                                        if (metadata != null) {
+                                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                    metadata);
+                                        }
+                                    }
+                                    currentActivity.startActivity(intent);
+                                }else{
+
+                                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                                    if (apiAvailability.isUserResolvableError(resultCode)) {
+                                        apiAvailability.getErrorDialog(currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                                .show();
+                                    } else {
+                                        Log.i(TAG, "This device is not supported.");
+                                        Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                currentActivity.startActivity(intent);
                             }
 
                         } else {
@@ -6914,11 +6923,29 @@ public class AppCMSPresenter {
                 });
     }
 
+
+
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
-        if (!isNetworkConnected()) {
+
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+        if (resultCode != ConnectionResult.SUCCESS) {
+
+            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+            if (!isNetworkConnected()) {
             int count = tryCount;
             openDownloadScreenForNetworkError(false,
                     () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
@@ -6966,17 +6993,31 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
-                                if (controller != null) {
-                                    MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getGist().getId());//controller.getMetadata();
-                                    if (metadata != null) {
-                                        intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                                metadata);
+
+                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
+                                if (resultCode == ConnectionResult.SUCCESS) {
+                                    Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                    if (controller != null) {
+                                        MediaMetadataCompat metadata = AudioPlaylistHelper.getInstance().getMetadata(appCMSAudioDetailResult.getGist().getId());//controller.getMetadata();
+                                        if (metadata != null) {
+                                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                                    metadata);
+                                        }
+                                    }
+                                    currentActivity.startActivity(intent);
+                                }else{
+                                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                                    if (apiAvailability.isUserResolvableError(resultCode)) {
+                                        apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                                .show();
+                                    } else {
+                                        Log.i(TAG, "This device is not supported.");
+                                        Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                currentActivity.startActivity(intent);
                             }
 
                         } else {
@@ -7123,9 +7164,9 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    screenName.toString(),
+                    appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
-                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    screenName.toString(),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
                     appCMSPlaylistAPIAction.fullscreenEnabled,
@@ -7138,9 +7179,9 @@ public class AppCMSPresenter {
                     appCMSPlaylistAPIAction.appCMSPageUI,
                     pageAPI,
                     appCMSPlaylistAPIAction.pageId,
-                    screenName.toString(),
+                    appCMSPlaylistAPIAction.pageTitle,
                     playlistId,
-                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    screenName.toString(),
                     loadFromFile,
                     appCMSPlaylistAPIAction.appbarPresent,
                     appCMSPlaylistAPIAction.fullscreenEnabled,
@@ -11600,8 +11641,18 @@ public class AppCMSPresenter {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
+
+    public void sendGaEvent(String action, String category, String label) {
+        if (tracker != null) {
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(category)
+                    .setAction(action)
+                    .setLabel(label)
+                    .build());
+        }
+    }
+
     public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
-        if (downloadVideoRealm != null ) {
             try {
                 String mediaType = downloadVideoRealm.getMediaType();
                 String contentType = downloadVideoRealm.getContentType();
@@ -11619,7 +11670,7 @@ public class AppCMSPresenter {
                 if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
                     sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
                             currentActivity.getResources().getString(R.string.ga_audio_download_category), title);
-                } else if (mediaType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
+                } else if (mediaType != null && mediaType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
                     sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
                 } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
                     sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
@@ -11627,16 +11678,6 @@ public class AppCMSPresenter {
             }catch (Exception ex){
 
             }
-        }
-    }
-    public void sendGaEvent(String action, String category, String label) {
-        if (tracker != null) {
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory(category)
-                    .setAction(action)
-                    .setLabel(label)
-                    .build());
-        }
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
@@ -13292,7 +13333,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
                             launchErrorActivity(platformType);
                         }
-                    }).execute(url, !isNetworkConnected());
+                    } , apikey).execute(url, !isNetworkConnected());
         } else {
             launchBlankPage();
         }
@@ -16351,6 +16392,9 @@ public class AppCMSPresenter {
     }
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
+        if(contentDatum.getGist().getUpdateDate() == null){
+            return "";
+        }
         long currentTime = System.currentTimeMillis();
         long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
