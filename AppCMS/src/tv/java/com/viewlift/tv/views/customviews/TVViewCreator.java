@@ -249,9 +249,11 @@ public class TVViewCreator {
                 isGrid = true;
             }
 
-            for (Component component : module.getComponents()) {
-                createTrayModule(context, component, module.getLayout(), module, moduleAPI,
-                        pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
+            if (null != module.getComponents() && module.getComponents().size() > 0) {
+                for (Component component : module.getComponents()) {
+                    createTrayModule(context, component, module.getLayout(), module, moduleAPI,
+                            pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
+                }
             }
             return null;
         } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
