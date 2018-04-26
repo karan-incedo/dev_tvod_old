@@ -326,8 +326,12 @@ public class PlaybackManager implements Playback.Callback {
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
+          try {
 
-            handlePlayRequest(0);
+              handlePlayRequest(0);
+          }catch (Exception ex){
+              ex.printStackTrace();
+          }
         }
 
         @Override
