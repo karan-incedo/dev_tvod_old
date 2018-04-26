@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -1355,18 +1356,21 @@ public abstract class BaseView extends FrameLayout {
             RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
                 @Override
                 public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                    int action = e.getAction();
-                    switch (action) {
-                        case MotionEvent.ACTION_MOVE:
-                            rv.getParent().requestDisallowInterceptTouchEvent(true);
-                            break;
+                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
                     }
                     return false;
                 }
 
                 @Override
                 public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                    rv.getParent().requestDisallowInterceptTouchEvent(true);
+                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
                 }
 
                 @Override
