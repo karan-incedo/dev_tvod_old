@@ -677,7 +677,7 @@
     <!--SSL Commerz transaction msgs-->
     <string name="ssl_commerz_transaction_fail">Transaction failed. Please try again.</string>
     <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>
-    <string name="ssl_commerz_transaction_cancel">You cancelled the transaction</string>
+    <!--<string name="ssl_commerz_transaction_cancel">You cancelled the transaction.</string>-->
     <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
     <string name="ssl_commerz_transaction_successful">Transaction successful. Please wait for 3-4 hours while we update your subscription</string>
 </resources>

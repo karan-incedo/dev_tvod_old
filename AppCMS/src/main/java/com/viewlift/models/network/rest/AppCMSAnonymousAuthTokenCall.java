@@ -5,10 +5,13 @@ package com.viewlift.models.network.rest;
  */
 
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.AnonymousAuthTokenResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -25,16 +28,22 @@ public class AppCMSAnonymousAuthTokenCall {
 
     @SuppressWarnings("FieldCanBeLocal, unused")
     private final Gson gson;
+    private Map<String, String> headersMap;
 
     @Inject
     public AppCMSAnonymousAuthTokenCall(AppCMSAnonymousAuthTokenRest anonymousAuthTokenRest,
                                         Gson gson) {
         this.anonymousAuthTokenRest = anonymousAuthTokenRest;
         this.gson = gson;
+        this.headersMap = new HashMap<>();
     }
 
-    public void call(String url, final Action1<AnonymousAuthTokenResponse> responseAction1) {
-        anonymousAuthTokenRest.get(url).enqueue(new Callback<AnonymousAuthTokenResponse>() {
+    public void call(String url, final Action1<AnonymousAuthTokenResponse> responseAction1, String apiKey) {
+        headersMap.clear();
+        if (!TextUtils.isEmpty(apiKey)) {
+            headersMap.put("x-api-key", apiKey);
+        }
+        anonymousAuthTokenRest.get(url, headersMap).enqueue(new Callback<AnonymousAuthTokenResponse>() {
             @Override
             public void onResponse(@NonNull Call<AnonymousAuthTokenResponse> call,
                                    @NonNull Response<AnonymousAuthTokenResponse> response) {

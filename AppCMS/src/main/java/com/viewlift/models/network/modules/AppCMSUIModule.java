@@ -27,6 +27,8 @@ import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -51,6 +53,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -1234,7 +1238,29 @@ public class AppCMSUIModule {
         return retrofit.create(AppCMSPlaylistRest.class);
     }
 
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzInitiateRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSSLCommerzInitiateRest.class);
+    }
 
+    @Provides
+    @Singleton
+    public AppCMSSSLCommerzInitiateCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzInitiateRest initiateRest, Gson gson) {
+        return new AppCMSSSLCommerzInitiateCall(initiateRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSCCAvenueRSAKeyRest providesAppCMSCCAvenueRSAKeyRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSCCAvenueRSAKeyRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSCCAvenueRSAKeyCall providesAppCMSCCAvenueRSAKeyCall(AppCMSCCAvenueRSAKeyRest initiateRest, Gson gson) {
+        return new AppCMSCCAvenueRSAKeyCall(initiateRest, gson);
+    }
 
 
     @Provides

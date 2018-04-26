@@ -143,6 +143,7 @@ import com.viewlift.models.data.appcms.audio.LastPlayAudioDetail;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
+import com.viewlift.models.data.appcms.ccavenue.RSAKeyResponse;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -155,7 +156,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.AppCMSPhotoGalleryResult;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
-import com.viewlift.models.data.appcms.sslcommerz.SSLCredential;
+import com.viewlift.models.data.appcms.sslcommerz.SSLInitiateResponse;
 import com.viewlift.models.data.appcms.subscribeForLatestNewsPojo.ResponsePojo;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
@@ -213,6 +214,7 @@ import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSContentDetailCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
@@ -228,6 +230,7 @@ import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -570,6 +573,8 @@ public class AppCMSPresenter {
     private final List<DownloadTimerTask> downloadProgressTimerList = new ArrayList<>();
     private final ReferenceQueue<Object> referenceQueue;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
+    private final AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall;
+    private final AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall;
     private final AppCMSAudioDetailCall appCMSAudioDetailCall;
     public TVVideoPlayerView tvVideoPlayerView;
     public boolean pipPlayerVisible = false;
@@ -854,6 +859,8 @@ public class AppCMSPresenter {
                            AppCMSArticleCall appCMSArticleCall,
                            AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                            AppCMSPlaylistCall appCMSPlaylistCall,
+                           AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
+                           AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
                            AppCMSAudioDetailCall appCMSAudioDetailCall,
                            AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
@@ -907,6 +914,8 @@ public class AppCMSPresenter {
         this.appCMSSubscribeForLatestNewsCall = appCMSSubscribeForLatestNewsCall;
         this.gson = gson;
         this.appCMSPlaylistCall = appCMSPlaylistCall;
+        this.appCMSSSLCommerzInitiateCall = appCMSSSLCommerzInitiateCall;
+        this.appCMSCCAvenueRSAKeyCall = appCMSCCAvenueRSAKeyCall;
         this.appCMSAudioDetailCall = appCMSAudioDetailCall;
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
@@ -1818,7 +1827,7 @@ public class AppCMSPresenter {
                 } catch (Exception e) {
                     //Log.e(TAG, "Error signing in as anonymous user: " + e.getMessage());
                 }
-            });
+            }, apikey);
         }
     }
 
@@ -1856,7 +1865,7 @@ public class AppCMSPresenter {
                         getAppCMSTV(tryCount + 1);
                     }
                 }
-            });
+            }, apikey);
         }
     }
 
@@ -3644,7 +3653,6 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
         return useCCAve;
-//        return false;
     }
 
     public boolean useSSLCommerz() {
@@ -3660,17 +3668,14 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                 appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
         return useSSLCommerz;
-//        return true;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
 
         UUID transId = Generators.timeBasedGenerator().generate();
-        String transactionId=transId.toString().replace("-","").substring(0,20);
+        String transactionId = transId.toString().replace("-", "").substring(0, 20);
         String storeId = new String(Base64.decode(getStoreId(), Base64.DEFAULT));
         String storePassword = new String(Base64.decode(getStorePwd(), Base64.DEFAULT));
-        Log.e("key1", storeId);
-        Log.e("key2", storePassword);
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
         MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(storeId,
                 storePassword, planAmt, transactionId,
@@ -3688,7 +3693,7 @@ public class AppCMSPresenter {
                 mandatoryFieldModel, customerFieldModel, new OnPaymentResultListener() {
                     @Override
                     public void transactionSuccess(TransactionInfo transactionInfo) {
-                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
+
                         /*if (!TextUtils.isEmpty(getAppsFlyerKey())) {
                             AppsFlyerUtils.subscriptionEvent(getCurrentContext(),
                                     true,
@@ -3706,14 +3711,26 @@ public class AppCMSPresenter {
 
                         if (getmFireBaseAnalytics() != null)
                             getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
+                        initiateSSLCommerz(planId, transactionInfo.getTranId(), transactionInfo.getSessionkey(), new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
+                            @Override
+                            public void call(SSLInitiateResponse sslInitiateResponse) {
 
+                            }
+                        });
                         finalizeSignupAfterCCAvenueSubscription(null);
+                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
                         Log.d(TAG, "Transaction Successfully completed");
 
                     }
 
                     @Override
                     public void transactionFail(TransactionInfo transactionInfo) {
+                        initiateSSLCommerz(planId, transactionInfo.getTranId(), transactionInfo.getSessionkey(), new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
+                            @Override
+                            public void call(SSLInitiateResponse sslInitiateResponse) {
+
+                            }
+                        });
                         Log.e(TAG, "Transaction Fail");
                         SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                     }
@@ -3739,7 +3756,7 @@ public class AppCMSPresenter {
                             // User press back button or canceled the transaction.
                             case ErrorKeys.CANCEL_TRANSACTION_ERROR:
                                 Log.e(TAG, "User Cancel The Transaction");
-                                SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
+                                SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
                                 break;
                             // Server is not responding.
                             case ErrorKeys.SERVER_ERROR:
@@ -3755,6 +3772,63 @@ public class AppCMSPresenter {
                     }
                 });
 
+    }
+
+
+    private void initiateSSLCommerz(String planId, String transId, String sessionKey,
+                                    final AppCMSSSLCommerzInitiateAPIAction sslCommerzInitiateAPIAction) {
+        if (currentContext != null) {
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+            try {
+                appCMSSSLCommerzInitiateCall.call(
+                        currentContext.getString(R.string.app_cms_sslcommerz_initiate_api_url,
+                                baseUrl,
+                                siteId),
+                        sslCommerzInitiateAPIAction,
+                        apikey,
+                        getAuthToken(),
+                        planId,
+                        transId,
+                        sessionKey
+                );
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    public abstract static class AppCMSSSLCommerzInitiateAPIAction implements Action1<SSLInitiateResponse> {
+        final String action;
+
+        public AppCMSSSLCommerzInitiateAPIAction(String action) {
+            this.action = action;
+        }
+    }
+
+    public void getCCAvenueRSAKey(
+            final AppCMSCCAvenueRSAKeyAPIAction rsaKeyAPIAction) {
+        if (currentContext != null) {
+            try {
+                appCMSCCAvenueRSAKeyCall.call(
+                        appCMSMain.getApiBaseUrl() + "/ccavenue/ccavenue/rsakey?x=" + new Date().getTime(),
+                        rsaKeyAPIAction,
+                        apikey,
+                        getAuthToken(),
+                        planToPurchase,
+                        appCMSSite.getGist().getSiteInternalName(),
+                        getLoggedInUser()
+                );
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    public abstract static class AppCMSCCAvenueRSAKeyAPIAction implements Action1<RSAKeyResponse> {
+        final String action;
+
+        public AppCMSCCAvenueRSAKeyAPIAction(String action) {
+            this.action = action;
+        }
     }
 
     private void SSLComerzTransactionStatus(int msg) {
@@ -12386,7 +12460,7 @@ public class AppCMSPresenter {
                         //Log.e(TAG, "Error retrieving sign in response: " + e.getMessage());
                         stopLoader();
                     }
-                }).execute(params);
+                }, apikey).execute(params);
     }
 
     private void finalizeLogin(boolean forceSubscribed,
@@ -13260,7 +13334,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
                             launchErrorActivity(platformType);
                         }
-                    }).execute(url,apikey, !isNetworkConnected());
+                    }, apikey).execute(url, !isNetworkConnected());
         } else {
             launchBlankPage();
         }
