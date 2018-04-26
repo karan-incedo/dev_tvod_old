@@ -266,7 +266,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
 
-    private boolean checkPlayServices() throws Exception {
+    private boolean checkPlayServices(){
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -308,13 +308,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        try{
-
-            checkPlayServices();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
         AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
         startService(new Intent(getBaseContext(), TaskRemoveService.class));
@@ -334,17 +327,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 finish();
             } else {
-                Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                if (fullScreenIntent.getParcelableExtra(
-                        PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
-                    MediaMetadataCompat description = fullScreenIntent.getParcelableExtra(
-                            PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
-                    fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+                if(checkPlayServices()) {
+                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    if (fullScreenIntent.getParcelableExtra(
+                            PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                        MediaMetadataCompat description = fullScreenIntent.getParcelableExtra(
+                                PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                        fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
 
+                    }
+                    startActivity(fullScreenIntent);
                 }
-                startActivity(fullScreenIntent);
             }
             appCMSPresenter.setAppHomeActivityCreated(true);
 
@@ -1491,6 +1486,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         startActivity(new Intent(this, launchActivity));
                         finish();
                     } else {
+                        if(checkPlayServices()) {
                         Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1502,6 +1498,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                         }
                         startActivity(fullScreenIntent);
+                      }
                     }
                     appCMSPresenter.setAppHomeActivityCreated(true);
 
