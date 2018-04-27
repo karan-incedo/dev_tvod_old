@@ -1,58 +1,58 @@
 {
-  "id": "bb6f4e60-4c2b-4133-8a27-eb295c6ceb98",
+  "id": "ac9ccb07-b465-4e9d-bb6a-0d800745ba5e",
   "settings": {
-    "loop": false,
+    "loop": true,
     "columns": {
-      "tablet": 4,
-      "desktop": 6,
-      "mobile": 3,
+      "tablet": 3,
+      "desktop": 5,
+      "mobile": 2,
       "ott": 6
     },
-    "infoHover": true,
-    "thumbnailType": "landscape"
+    "thumbnailType": "landscape",
+    "infoHover": true
   },
-  "view": "AC ContinueWatching 01",
-  "type": "AC ContinueWatching 01",
-  "blockName": "continueWatching01",
+  "view": "AC Tray 02",
+  "type": "AC Tray 03",
+  "blockName": "tray03",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 280
+      "height": 350
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 20
+          "fontSize": 18
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
       "textAlignment": "left",
-      "textCase": "caps",
       "type": "label",
       "textColor": "#008EE0",
-      "fontWeight": "Semibold",
+      "fontWeight": "Bold",
       "key": "trayTitle"
     },
     {
       "layout": {
         "ftv": {
-          "width": 350,
-          "height": 250
+          "width": 396,
+          "height": 320
         }
       },
-      "trayClickAction": "watchVideo",
+      "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "topMargin": 0,
-              "width": 350,
-              "height": 197
+              "padding": 0,
+              "leftMargin": 8,
+              "topMargin": 9,
+              "width": 380,
+              "height": 214
             }
           },
           "type": "image",
@@ -61,43 +61,64 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 0,
-              "topMargin": 202,
-              "rightMargin": 0,
-              "fontSize": 11,
-              "height": 40
+              "padding": 0,
+              "leftMargin": 8,
+              "topMargin": 9,
+              "width": 380,
+              "height": 214
             }
           },
-          "fontFamily": "OpenSans",
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#ffffff",
-          "fontWeight": "Semibold",
-          "key": "thumbnailTitle"
+          "type": "image",
+          "key": "bedgeImage"
         },
         {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "yAxis": 183,
-              "xAxis": 0,
-              "height": 8
+              "padding": 1,
+              "leftMargin": 13,
+              "topMargin": 179,
+              "width": 160,
+              "height": 30
             }
           },
-          "progressColor": "008EE0",
-          "unprogressColor": "0A151C",
-          "type": "progressView",
-          "key": "progressView"
+          "backgroundColor": "#90000000",
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "fontSize": 12,
+          "type": "label",
+          "textColor": "#FFFFFF",
+          "key": "trayTimeAndDataKey",
+          "fontWeight": "Bold"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 8,
+              "topMargin": 230,
+              "rightMargin": 0,
+              "height": 70,
+              "width": 280
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 2,
+          "textAlignment": "left",
+          "fontSize": 12,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Regular",
+          "key": "thumbnailTitle"
         },
 
         {
           "layout": {
             "ftv": {
               "padding": 6,
-              "width": 338,
-              "height": 185,
-              "leftMargin": 6,
-              "topMargin": 6
+              "width": 370,
+              "height": 204,
+              "leftMargin": 13,
+              "topMargin": 14
             }
           },
           "type": "image",
@@ -107,9 +128,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 19,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 40,
+              "width": 360,
               "height": 40
             }
           },
@@ -126,9 +147,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 65,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 85,
+              "width": 360,
               "height": 40
             }
           },
@@ -144,9 +165,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 95,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 115,
+              "width": 360,
               "height": 100
             }
           },
@@ -159,6 +180,7 @@
           "numberOfLines": 2
         }
       ],
+      "textAlignment": "center",
       "type": "collectionGrid",
       "key": "collectionGrid"
     }

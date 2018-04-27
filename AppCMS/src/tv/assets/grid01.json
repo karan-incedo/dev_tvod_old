@@ -1,58 +1,59 @@
 {
-  "id": "bb6f4e60-4c2b-4133-8a27-eb295c6ceb98",
+  "id": "11c5a959-001e-461e-a85e-303ecb9a3af3",
   "settings": {
-    "loop": false,
     "columns": {
-      "tablet": 4,
-      "desktop": 6,
-      "mobile": 3,
-      "ott": 6
+      "tablet": 2,
+      "desktop": 5,
+      "mobile": 1,
+      "ott": 3
     },
-    "infoHover": true,
-    "thumbnailType": "landscape"
+    "loop": true,
+    "thumbnailType": "landscape",
+    "infoHover" : true
   },
-  "view": "AC ContinueWatching 01",
-  "type": "AC ContinueWatching 01",
-  "blockName": "continueWatching01",
+  "view": "AC Grid 01",
+  "type": "AC Grid 01",
+  "blockName": "grid01",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 280
+      "height": 390
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 20
+          "fontSize": 18
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
       "textAlignment": "left",
-      "textCase": "caps",
+      "textCase": "sentence",
       "type": "label",
       "textColor": "#008EE0",
-      "fontWeight": "Semibold",
+      "fontWeight": "Bold",
       "key": "trayTitle"
     },
     {
       "layout": {
         "ftv": {
-          "width": 350,
-          "height": 250
+          "width": 560,
+          "height": 388
         }
       },
-      "trayClickAction": "watchVideo",
+      "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "topMargin": 0,
-              "width": 350,
-              "height": 197
+              "padding": 5,
+              "leftMargin": 8,
+              "topMargin": 9,
+              "width": 551,
+              "height": 310
             }
           },
           "type": "image",
@@ -61,43 +62,30 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 0,
-              "topMargin": 202,
+              "leftMargin": 8,
+              "topMargin": 320,
               "rightMargin": 0,
-              "fontSize": 11,
-              "height": 40
+              "height": 68
             }
           },
-          "fontFamily": "OpenSans",
+          "fontFamily": "Lato",
+          "numberOfLines": 2,
           "textAlignment": "left",
+          "fontSize": 12,
           "type": "label",
           "textColor": "#ffffff",
-          "fontWeight": "Semibold",
+          "fontWeight": "Regular",
           "key": "thumbnailTitle"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "padding": 6,
-              "yAxis": 183,
-              "xAxis": 0,
-              "height": 8
-            }
-          },
-          "progressColor": "008EE0",
-          "unprogressColor": "0A151C",
-          "type": "progressView",
-          "key": "progressView"
         },
 
         {
           "layout": {
             "ftv": {
               "padding": 6,
-              "width": 338,
-              "height": 185,
-              "leftMargin": 6,
-              "topMargin": 6
+              "width": 541,
+              "height": 300,
+              "leftMargin": 13,
+              "topMargin": 14
             }
           },
           "type": "image",
@@ -107,9 +95,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 19,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 80,
+              "width": 527,
               "height": 40
             }
           },
@@ -126,9 +114,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 65,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 125,
+              "width": 527,
               "height": 40
             }
           },
@@ -144,9 +132,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 95,
-              "width": 325,
+              "leftMargin": 20,
+              "topMargin": 155,
+              "width": 527,
               "height": 100
             }
           },
@@ -156,9 +144,10 @@
           "textAlignment": "left",
           "fontWeight": "regular",
           "fontSize": 12,
-          "numberOfLines": 2
+          "numberOfLines": 4
         }
       ],
+      "textAlignment": "center",
       "type": "collectionGrid",
       "key": "collectionGrid"
     }

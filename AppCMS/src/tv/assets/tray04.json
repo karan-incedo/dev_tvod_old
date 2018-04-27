@@ -8,7 +8,8 @@
       "mobile": 2,
       "ott": 3
     },
-    "thumbnailType": "landscape"
+    "thumbnailType": "landscape",
+    "infoHover": true
   },
   "view": "AC Tray 01",
   "type": "AC Tray 01",
@@ -25,7 +26,7 @@
     {
       "layout": {
         "ftv": {
-          "fontSize": 18
+          "fontSize": 20
         }
       },
       "fontFamily": "OpenSans",
@@ -85,6 +86,74 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "thumbnailTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "width": 578,
+              "height": 320,
+              "leftMargin": 6,
+              "topMargin": 20
+            }
+          },
+          "type": "image",
+          "key": "hoverBackground"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 79,
+              "width": 560,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 16,
+          "numberOfLines": 1
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 125,
+              "width": 560,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoSubTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 10,
+          "numberOfLines": 1
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 155,
+              "width": 560,
+              "height": 400
+            }
+          },
+          "type": "label",
+          "key": "videoDescriptionOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 12,
+          "numberOfLines": 4
         }
       ],
       "type": "collectionGrid",

@@ -1,25 +1,25 @@
 {
-  "id": "bb6f4e60-4c2b-4133-8a27-eb295c6ceb98",
+  "id": "ca44e76b-e798-4b5e-8561-bdbda386458a",
   "settings": {
-    "loop": false,
+    "loop": true,
     "columns": {
       "tablet": 4,
       "desktop": 6,
-      "mobile": 3,
+      "mobile": 2,
       "ott": 6
     },
-    "infoHover": true,
-    "thumbnailType": "landscape"
+    "thumbnailType": "portrait",
+    "infoHover": true
   },
-  "view": "AC ContinueWatching 01",
-  "type": "AC ContinueWatching 01",
-  "blockName": "continueWatching01",
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray01",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 280
+      "height": 470
     }
   },
   "components": [
@@ -40,19 +40,19 @@
     {
       "layout": {
         "ftv": {
-          "width": 350,
-          "height": 250
+          "width": 260,
+          "height": 470
         }
       },
-      "trayClickAction": "watchVideo",
+      "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 0,
-              "width": 350,
-              "height": 197
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
             }
           },
           "type": "image",
@@ -61,8 +61,34 @@
         {
           "layout": {
             "ftv": {
+              "padding": 6,
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
+            }
+          },
+          "type": "image",
+          "key": "badgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 16,
+              "width": 249,
+              "height": 368,
+              "leftMargin": 6
+
+            }
+          },
+          "type": "image",
+          "key": "hoverBackground"
+        },
+        {
+          "layout": {
+            "ftv": {
               "leftMargin": 0,
-              "topMargin": 202,
+              "topMargin": 395,
               "rightMargin": 0,
               "fontSize": 11,
               "height": 40
@@ -78,38 +104,10 @@
         {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "yAxis": 183,
-              "xAxis": 0,
-              "height": 8
-            }
-          },
-          "progressColor": "008EE0",
-          "unprogressColor": "0A151C",
-          "type": "progressView",
-          "key": "progressView"
-        },
-
-        {
-          "layout": {
-            "ftv": {
-              "padding": 6,
-              "width": 338,
-              "height": 185,
-              "leftMargin": 6,
-              "topMargin": 6
-            }
-          },
-          "type": "image",
-          "key": "hoverBackground"
-        },
-        {
-          "layout": {
-            "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 19,
-              "width": 325,
+              "leftMargin": 12,
+              "topMargin": 119,
+              "width": 240,
               "height": 40
             }
           },
@@ -126,9 +124,9 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 65,
-              "width": 325,
+              "leftMargin": 12,
+              "topMargin": 160,
+              "width": 240,
               "height": 40
             }
           },
@@ -144,10 +142,10 @@
           "layout": {
             "ftv": {
               "padding": 0,
-              "leftMargin": 15,
-              "topMargin": 95,
-              "width": 325,
-              "height": 100
+              "leftMargin": 12,
+              "topMargin": 190,
+              "width": 240,
+              "height": 400
             }
           },
           "type": "label",
@@ -156,7 +154,7 @@
           "textAlignment": "left",
           "fontWeight": "regular",
           "fontSize": 12,
-          "numberOfLines": 2
+          "numberOfLines": 4
         }
       ],
       "type": "collectionGrid",
