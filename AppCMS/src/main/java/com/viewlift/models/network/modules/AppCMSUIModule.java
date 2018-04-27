@@ -332,6 +332,17 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_sub_title_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_description_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_hover_background_key),
+                AppCMSUIKeyType.PAGE_VIDEO_HOVER_BACKGROUND_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_description_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_read_more_text_key),
