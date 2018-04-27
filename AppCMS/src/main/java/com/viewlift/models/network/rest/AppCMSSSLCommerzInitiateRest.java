@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import com.google.gson.JsonElement;
+import com.viewlift.models.data.appcms.sslcommerz.SSLInitiateBody;
 import com.viewlift.models.data.appcms.ui.authentication.SignInRequest;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ import retrofit2.http.Url;
  * Created by viewlift on 7/5/17.
  */
 
-public interface AppCMSSignInRest {
+public interface AppCMSSSLCommerzInitiateRest {
     @POST
-    Call<JsonElement> signin(@Url String url, @Body SignInRequest body, @HeaderMap Map<String, String> headers);
+    Call<JsonElement> initiateSSL(@Url String url, @Body SSLInitiateBody body, @HeaderMap Map<String, String> headers);
 }
