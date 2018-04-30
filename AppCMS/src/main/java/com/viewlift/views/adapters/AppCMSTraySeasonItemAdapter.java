@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -23,10 +24,13 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import rx.functions.Action1;
 
 public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTraySeasonItemAdapter.ViewHolder>
         implements OnInternalEvent, AppCMSBaseAdapter {
@@ -49,17 +53,17 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     private MotionEvent lastTouchDownEvent;
 
     String componentViewType;
-
+    RecyclerView mRecyclerView;
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
-                                       List<ContentDatum> adapterData,
+                                       Module moduleAPI,
                                        List<Component> components,
                                        List<String> allEpisodeIds,
                                        AppCMSPresenter appCMSPresenter,
                                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                        String viewType) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
-        this.adapterData = adapterData;
+        this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();
         this.sortData();
         this.components = components;
         this.allEpisodeIds = allEpisodeIds;
@@ -75,6 +79,18 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
         this.componentViewType = viewType;
+
+
+        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object o) {
+                if (o instanceof Integer) {
+                    int seasonSelected =(int) o;
+                    adapterData = moduleAPI.getContentData().get(0).getSeason().get(seasonSelected).getEpisodes();
+                    updateData(mRecyclerView,adapterData);
+                }
+            }
+        });
     }
 
     private void sortData() {
@@ -358,8 +374,19 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
+    }
+
+    @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        //
+        listView.setAdapter(null);
+        adapterData = null;
+        adapterData = contentData;
+        listView.setAdapter(this);
+        listView.invalidate();
+        notifyDataSetChanged();
     }
 
     @Override

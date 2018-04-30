@@ -969,7 +969,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_3);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_code_sync_text_line_header),
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tabs_type),
+                AppCMSUIKeyType.PAGE_TABLAYOUT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_viewpager_type),
+                AppCMSUIKeyType.PAGE_VIEWPAGER_KEY);
 
     }
 
