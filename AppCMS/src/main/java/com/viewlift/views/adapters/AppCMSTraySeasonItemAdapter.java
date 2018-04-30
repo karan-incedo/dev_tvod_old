@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import rx.functions.Action1;
 
 public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTraySeasonItemAdapter.ViewHolder>
@@ -80,17 +82,42 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         this.componentViewType = viewType;
 
-
-        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
+        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
             @Override
-            public void call(Object o) {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
                 if (o instanceof Integer) {
                     int seasonSelected =(int) o;
                     adapterData = moduleAPI.getContentData().get(0).getSeason().get(seasonSelected).getEpisodes();
                     updateData(mRecyclerView,adapterData);
                 }
             }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
         });
+
+//        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
+//            @Override
+//            public void call(Object o) {
+//                if (o instanceof Integer) {
+//                    int seasonSelected =(int) o;
+//                    adapterData = moduleAPI.getContentData().get(0).getSeason().get(seasonSelected).getEpisodes();
+//                    updateData(mRecyclerView,adapterData);
+//                }
+//            }
+//        });
     }
 
     private void sortData() {

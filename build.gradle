@@ -41,7 +41,7 @@ allprojects {
         retrofit2Version = "2.3.0"
         okHttp3Version = "3.8.1"
         rxandroidVersion = "1.2.0"
-        rxjavaVersion = "1.1.4"
+        rxjavaVersion = "2.1.1"
         jsr250_apiVersion = "1.0"
         googleAdsInteractiveMediaV3 = "3.6.0"
         googlePlayServicesVersion = "11.8.0"
