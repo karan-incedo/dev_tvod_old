@@ -1,5 +1,7 @@
 package com.viewlift.tv.views.presenter;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,6 +16,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,11 +33,10 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.customviews.TVBaseView;
 import com.viewlift.views.customviews.CustomTypefaceSpan;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,15 +45,17 @@ import java.util.Map;
  */
 
 public class CardPresenter extends Presenter {
+    private static final String TAG = CardPresenter.class.getCanonicalName();
+    private final boolean infoHover;
+    int i = 0;
+    int mHeight = -1;
+    int mWidth = -1;
+    String borderColor = null;
     private String trayBackground;
     private Component mComponent;
     private AppCMSPresenter mAppCmsPresenter = null;
     private Context mContext;
-    int i = 0;
-    int mHeight = -1;
-    int mWidth = -1;
-    private Map<String , AppCMSUIKeyType> mJsonKeyValuemap;
-    String borderColor = null;
+    private Map<String, AppCMSUIKeyType> mJsonKeyValuemap;
     private Typeface fontType;
     private boolean consumeUpKeyEvent = false;
 
@@ -59,6 +63,7 @@ public class CardPresenter extends Presenter {
                          AppCMSPresenter appCMSPresenter,
                          int height,
                          int width,
+                         boolean infoHover,
                          Component component,
                          Map<String,
                                  AppCMSUIKeyType> jsonKeyValuemap) {
@@ -70,13 +75,19 @@ public class CardPresenter extends Presenter {
         this.trayBackground = mComponent.getTrayBackground();
         mJsonKeyValuemap = jsonKeyValuemap;
         borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
+        this.infoHover = infoHover;
     }
 
 
-    public CardPresenter(Context context, AppCMSPresenter appCMSPresenter) {
+    public CardPresenter(Context context,
+                         AppCMSPresenter appCMSPresenter,
+                         Map<String, AppCMSUIKeyType> jsonKeyValuemap,
+                         boolean infoHover) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
-        borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
+        borderColor = Utils.getFocusColor(mContext, appCMSPresenter);
+        mJsonKeyValuemap = jsonKeyValuemap;
+        this.infoHover = infoHover;
     }
 
     @Override
@@ -99,7 +110,7 @@ public class CardPresenter extends Presenter {
         return new ViewHolder(frameLayout);
     }
 
-    private void createComponentView(Component parentComponent , CustomFrameLayout parentLayout) {
+    protected void createComponentView(Component parentComponent, CustomFrameLayout parentLayout) {
         List<Component> componentList = parentComponent.getComponents();
         if(null != componentList && componentList.size() > 0) {
             for (Component component : componentList) {
@@ -116,8 +127,8 @@ public class CardPresenter extends Presenter {
                 switch (componentType) {
                     case PAGE_IMAGE_KEY:
                         ImageView imageView = new ImageView(parentLayout.getContext());
-                        switch(componentKey){
-                            case PAGE_THUMBNAIL_IMAGE_KEY:
+                        switch (componentKey) {
+                            case PAGE_THUMBNAIL_IMAGE_KEY: {
                                 Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
@@ -141,34 +152,72 @@ public class CardPresenter extends Presenter {
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 parentLayout.addView(imageView);
-                                parentLayout.addChildComponentAndView(imageView,component);
+                                parentLayout.addChildComponentAndView(imageView, component);
                                 break;
+                            }
 
-                            case PAGE_BEDGE_IMAGE_KEY:
-                                    Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                                    Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                            case PAGE_BEDGE_IMAGE_KEY: {
+                                Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
 
-                                    FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
-                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
-                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
+                                FrameLayout.LayoutParams badgeParams = new FrameLayout.LayoutParams(
+                                        Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
+                                        Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
 
-                                    badgeParams.setMargins(
-                                            Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
-                                            Integer.valueOf(component.getLayout().getTv().getTopMargin()),
-                                            0,
-                                            0);
+                                badgeParams.setMargins(
+                                        Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
+                                        Integer.valueOf(component.getLayout().getTv().getTopMargin()),
+                                        0,
+                                        0);
 
-                                    imageView.setLayoutParams(badgeParams);
-                                    parentLayout.addView(imageView);
-                                    parentLayout.addChildComponentAndView(imageView,component);
+                                imageView.setLayoutParams(badgeParams);
+                                parentLayout.addView(imageView);
+                                parentLayout.addChildComponentAndView(imageView, component);
                                 break;
+                            }
+                            case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
+                                if (infoHover) {
+                                    Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                    Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                    FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
+                                            Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
+                                            Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
+                                    int leftMargin = 0;
+                                    int topMargin = 0;
+                                    if (component.getLayout() != null
+                                            && component.getLayout().getTv() != null) {
+                                        if (component.getLayout().getTv().getLeftMargin() != null) {
+                                            leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
+                                        }
+                                        if (component.getLayout().getTv().getTopMargin() != null) {
+                                            topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
+                                        }
+                                    }
+                                    parms.setMargins(leftMargin, topMargin, 0, 0);
+
+                                    imageView.setLayoutParams(parms);
+                                    int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                                    imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
+                                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                                    parentLayout.hoverLayout.addView(imageView);
+                                    parentLayout.addChildComponentAndView(imageView, component);
+                                    parentLayout.setHoverBackground(imageView);
+
+                                    imageView.setId(R.id.videoBackgroundOnHover);
+                                    imageView.setBackgroundColor(Color.parseColor("#CC" + mAppCmsPresenter.getAppBackgroundColor().replace("#","")));
+                                    imageView.setAlpha(0f);
+                                }
+                                break;
+                            }
 
                         }
                         break;
 
-                    case PAGE_LABEL_KEY:
+                    case PAGE_LABEL_KEY:{
                         TextView tvTitle = new TextView(parentLayout.getContext());
-                        FrameLayout.LayoutParams layoutParams;
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                         if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY)) {
                             layoutParams = new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -184,6 +233,8 @@ public class CardPresenter extends Presenter {
                             } else /*Don't show time and date as metadata is null*/ {
                                 tvTitle.setVisibility(View.INVISIBLE);
                             }
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY)) {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -192,7 +243,52 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                        } else {
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
+                            tvTitle.setMaxLines(2);
+                            tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));
+                            parentLayout.setThumbnailTitle(tvTitle);
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)) {
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoTitleOnHover);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                tvTitle.setAlpha(0);
+                                parentLayout.setHoverTitle(tvTitle);
+
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)) {
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoSubTitleOnHover);
+                                tvTitle.setAlpha(0);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                parentLayout.setHoverSubTitle(tvTitle);
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
+                            if (infoHover) {
+                                tvTitle.setId(R.id.videoDescriptionOnHover);
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                layoutParams = new FrameLayout.LayoutParams(
+                                        itemWidth,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                tvTitle.setAlpha(0);
+                                parentLayout.setHoverDescription(tvTitle);
+                                parentLayout.hoverLayout.addView(tvTitle);
+                                parentLayout.addChildComponentAndView(tvTitle, component);
+                                tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppTextColor()));
+                            }
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY)){
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
                                     : 0;
@@ -200,7 +296,11 @@ public class CardPresenter extends Presenter {
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                         }
+                            parentLayout.addView(tvTitle);
+                            parentLayout.addChildComponentAndView(tvTitle, component);
+                            parentLayout.setThumbnailTitle(tvTitle);
+                            tvTitle.setMaxLines(2);
+                            tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));}
                         //tvTitle.setSingleLine(true);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setSelected(true);
@@ -216,18 +316,20 @@ public class CardPresenter extends Presenter {
                             layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, 0);
 
                         tvTitle.setLayoutParams(layoutParams);
-                        tvTitle.setMaxLines(2);
-                        tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));
+
                         if (component.getFontFamily() != null)
                             fontType = getFontType(component);
                         if (fontType != null) {
                             tvTitle.setTypeface(fontType);
                         }
-                         parentLayout.addView(tvTitle);
-                        parentLayout.addChildComponentAndView(tvTitle,component);
+                        if (component.getText() != null)
+                            tvTitle.setText(component.getText());
+                        if (component.getFontSize() != 0) {
+                            tvTitle.setTextSize(component.getFontSize());
+                        }
                         break;
-
-                    case PAGE_PROGRESS_VIEW_KEY:
+                    }
+                    case PAGE_PROGRESS_VIEW_KEY: {
                         FrameLayout.LayoutParams progressBarParams = new FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
@@ -243,8 +345,9 @@ public class CardPresenter extends Presenter {
                         progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext, component.getUnprogressColor(), mAppCmsPresenter));
                         progressBar.setFocusable(false);
                         parentLayout.addView(progressBar);
-                        parentLayout.addChildComponentAndView(progressBar,component);
+                        parentLayout.addChildComponentAndView(progressBar, component);
                         break;
+                    }
                 }
             }
         }
@@ -257,11 +360,11 @@ public class CardPresenter extends Presenter {
         List<Component> componentList = rowData.uiComponentList;
         String blockName = rowData.blockName;
         CustomFrameLayout cardView = (CustomFrameLayout) viewHolder.view;
-        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))){
-            cardView.setBackground(
-                    Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), mAppCmsPresenter.getAppBackgroundColor() /*Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)*/));
+        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))
+                && !rowData.infoHover){
+            cardView.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), mAppCmsPresenter.getAppBackgroundColor() /*Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)*/));
         }
-        bindComponent(cardView , contentData , blockName);
+        bindComponent(cardView , contentData , blockName, rowData.infoHover);
         cardView.postInvalidate();
         //createComponent(componentList, cardView, contentData,blockName);
 
@@ -286,12 +389,11 @@ public class CardPresenter extends Presenter {
     }
 
 
-
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
     }
 
-    private void bindComponent(CustomFrameLayout cardView, ContentDatum contentData, String blockName) {
+    protected void bindComponent(CustomFrameLayout cardView, ContentDatum contentData, String blockName, boolean infoHover) {
         List<CustomFrameLayout.ChildComponentAndView> childComponentAndViewsList = cardView.getChildViewList();
         if(null != childComponentAndViewsList && childComponentAndViewsList.size() > 0){
             for(CustomFrameLayout.ChildComponentAndView childComponentAndView : childComponentAndViewsList){
@@ -317,25 +419,30 @@ public class CardPresenter extends Presenter {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
                                             .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                                .placeholder(R.drawable.video_image_placeholder)
-                                                .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
+                                                    .placeholder(R.drawable.video_image_placeholder)
+                                                    .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
                                             .into(imageView);
                                 } else {
                                     Glide.with(mContext)
                                             .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight)
                                             .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                                .placeholder(R.drawable.poster_image_placeholder)
-                                                .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder)))
+                                                    .placeholder(R.drawable.poster_image_placeholder)
+                                                    .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder)))
                                             .into(imageView);
                                 }
 
-                                if (null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02")
-                                        || blockName.equalsIgnoreCase("grid01")
-                                        || blockName.equalsIgnoreCase("showDetail01")
-                                        || blockName.equalsIgnoreCase("tray04")
-                                        || blockName.equalsIgnoreCase("continuewatching01"))) {
-                                    imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                if (null != blockName) {
+                                    if (blockName.equalsIgnoreCase("tray01")
+                                            || blockName.equalsIgnoreCase("tray02")
+                                            || blockName.equalsIgnoreCase("grid01")
+                                            || blockName.equalsIgnoreCase("showDetail01")
+                                            || blockName.equalsIgnoreCase("tray04")
+                                            || blockName.equalsIgnoreCase("continuewatching01")) {
+                                        imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                    } else if (blockName.equalsIgnoreCase("tray03") && infoHover) {
+                                        imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, childComponentAndView.component));
+                                        imageView.setPadding(5,5,5,5);
+                                    }
                                 }
                                 break;
 
@@ -356,7 +463,7 @@ public class CardPresenter extends Presenter {
                                                     "&w=" + badgeItemWidth +
                                                     "&h=" + badgeItemHeight;
                                         }
-                                  //      imageView.setBackground(null);
+                                        //      imageView.setBackground(null);
                                         Glide.with(mContext)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
@@ -411,7 +518,7 @@ public class CardPresenter extends Presenter {
                                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
                                 spannableStringBuilder.append(" ").append(text);
                                 String fontFamily = mAppCmsPresenter.getFontFamily();
-                                String fontPath = null != fontFamily ? "font/" + fontFamily + "-ExtraBold.ttf" : "fonts/OpenSans-ExtraBold.ttf";
+                                String fontPath = null != fontFamily ? "fonts/" + fontFamily.replace(" ", "") + "-ExtraBold.ttf" : "fonts/OpenSans-ExtraBold.ttf";
                                 Typeface font = Typeface.createFromAsset(mContext.getResources().getAssets(), fontPath);
                                 spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -419,14 +526,38 @@ public class CardPresenter extends Presenter {
                             }catch (Exception e){
 
                             }
-                        } else {
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY)){
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
+                            tvTitle.setMaxLines(2);
+                        }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)){
+                           tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            tvTitle.setText(contentData.getGist().getTitle());
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                            tvTitle.setSelected(true);
+                        }else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY)){
+                            tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            try {
+                                if (contentData.getGist().getContentType() != null && contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                                    TVBaseView.setShowViewWithSubtitle(mContext,
+                                            contentData,
+                                            tvTitle);
+                                } else {
+                                    TVBaseView.setVideoViewWithSubtitle(mContext,
+                                            contentData,
+                                            tvTitle);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY)) {
+                            tvTitle.setMaxLines(childComponentAndView.component.getNumberOfLines());
+                            tvTitle.setText(contentData.getGist().getDescription());
                         }
                         //tvTitle.setSingleLine(true);
-                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                        tvTitle.setSelected(true);
-                        tvTitle.setMaxLines(2);
+//                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+//                        tvTitle.setSelected(true);
+
                         break;
 
                     case PAGE_PROGRESS_VIEW_KEY:
@@ -482,6 +613,7 @@ public class CardPresenter extends Presenter {
         }
         return face;
     }
+
     private int getEpisodeNumber(ContentDatum mainContentData, String id) {
         int returnVal = 0;
         if (mainContentData.getSeason() != null) {
@@ -504,12 +636,59 @@ public class CardPresenter extends Presenter {
 
     class CustomFrameLayout extends FrameLayout{
         List<CustomFrameLayout.ChildComponentAndView> childView = null;
+        TextView hoverTitle;
+        TextView thumbnailTitle;
+        TextView hoverSubTitle;
+        TextView hoverDescription;
+        View hoverBackground;
+        FrameLayout hoverLayout;
+
         public CustomFrameLayout(@NonNull Context context) {
             super(context);
             childView = new ArrayList<>();
+            FrameLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            hoverLayout = new FrameLayout(context);
+            hoverLayout.setLayoutParams(layoutParams);
+            this.addView(hoverLayout);
         }
 
-        public List<CustomFrameLayout.ChildComponentAndView> getChildViewList(){
+        public void setThumbnailTitle(TextView thumbnailTitle) {
+            this.thumbnailTitle = thumbnailTitle;
+        }
+
+        public TextView getHoverTitle() {
+            return hoverTitle;
+        }
+
+        public void setHoverTitle(TextView hoverTitle) {
+            this.hoverTitle = hoverTitle;
+        }
+
+        public TextView getHoverSubTitle() {
+            return hoverSubTitle;
+        }
+
+        public void setHoverSubTitle(TextView hoverSubTitle) {
+            this.hoverSubTitle = hoverSubTitle;
+        }
+
+        public TextView getHoverDescription() {
+            return hoverDescription;
+        }
+
+        public void setHoverDescription(TextView hoverDescription) {
+            this.hoverDescription = hoverDescription;
+        }
+
+        public View getHoverBackground() {
+            return hoverBackground;
+        }
+
+        public void setHoverBackground(View hoverBackground) {
+            this.hoverBackground = hoverBackground;
+        }
+
+        public List<CustomFrameLayout.ChildComponentAndView> getChildViewList() {
             return childView;
         }
 
@@ -520,9 +699,172 @@ public class CardPresenter extends Presenter {
             childView.add(childComponentAndView);
         }
 
+        @Override
+        public void setSelected(boolean selected) {
+            super.setSelected(selected);
+            if (selected) {
+                if (hoverTitle != null
+                        && hoverSubTitle != null
+                        && hoverDescription != null
+                        && hoverBackground != null
+                        && hoverLayout != null) {
+                    hoverLayout.bringToFront();
+                    hoverLayout.setVisibility(VISIBLE);
+                    startHoverAnimation(thumbnailTitle, hoverTitle, hoverSubTitle, hoverDescription, hoverBackground, false);
+                }
+            } else {
+                if (hoverTitle != null
+                        && hoverSubTitle != null
+                        && hoverDescription != null
+                        && hoverBackground != null
+                        && hoverLayout != null) {
+                    /*hoverTitle.setAlpha(0);
+                    hoverSubTitle.setAlpha(0);
+                    hoverDescription.setAlpha(0);
+                    hoverBackground.setAlpha(0);
+                    hoverTitle.clearAnimation();
+                    hoverSubTitle.clearAnimation();
+                    hoverDescription.clearAnimation();
+                    hoverBackground.clearAnimation();*/
+//                    hoverLayout.setVisibility(INVISIBLE);
+                    startHoverAnimation(thumbnailTitle, hoverTitle, hoverSubTitle, hoverDescription, hoverBackground, true);
+                }
+            }
+        }
+
+        public void startHoverAnimation(TextView thumbnailTitle,
+                                        TextView hoverTitle,
+                                        TextView hoverSubTitle,
+                                        TextView hoverDescription,
+                                        View hoverBackground,
+                                        boolean reverse) {
+
+            int translateStartPosition = 20;
+            int translateEndPosition = 0;
+            int duration = 500;
+
+            float alphaStartVal = 0f;
+            float alphaEndVal = 1f;
+            AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
+
+            if (thumbnailTitle != null) {
+                ObjectAnimator alphaThumbnail = ObjectAnimator.ofFloat(thumbnailTitle, "alpha", alphaEndVal, alphaStartVal);
+                alphaThumbnail.setDuration(duration / 2);
+                alphaThumbnail.setInterpolator(interpolator);
+
+                if (reverse) {
+                    alphaThumbnail.reverse();
+                } else {
+                    alphaThumbnail.start();
+                }
+            }
+
+            ObjectAnimator translationY = ObjectAnimator.ofFloat(hoverTitle, "translationY", translateStartPosition, translateEndPosition);
+            translationY.setDuration(duration);
+            translationY.setInterpolator(interpolator);
+
+            if (reverse) {
+                translationY.reverse();
+            } else {
+                translationY.start();
+            }
+
+            ObjectAnimator translationY1 = ObjectAnimator.ofFloat(hoverSubTitle, "translationY", translateStartPosition, translateEndPosition);
+            translationY1.setDuration(duration);
+            translationY1.setInterpolator(interpolator);
+
+            if (reverse) {
+                translationY1.reverse();
+            } else {
+                translationY1.setStartDelay(duration / 4);
+                translationY1.start();
+            }
+
+            ObjectAnimator translationY2 = ObjectAnimator.ofFloat(hoverDescription, "translationY", translateStartPosition, translateEndPosition);
+            translationY2.setDuration(duration);
+            translationY2.setInterpolator(interpolator);
+            translationY2.addListener(getAnimatorListener());
+
+            if (reverse) {
+                translationY2.reverse();
+            } else {
+                translationY2.setStartDelay(duration/2);
+                translationY2.start();
+            }
+
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(hoverTitle, "alpha", alphaStartVal, alphaEndVal);
+            alpha.setDuration(duration);
+            alpha.setInterpolator(interpolator);
+
+            if (reverse) alpha.reverse();
+            else alpha.start();
+
+            ObjectAnimator alpha1 = ObjectAnimator.ofFloat(hoverSubTitle, "alpha", alphaStartVal, alphaEndVal);
+            alpha1.setDuration(duration);
+            alpha1.setInterpolator(interpolator);
+
+            if (reverse) {
+                alpha1.reverse();
+            } else {
+                alpha1.setStartDelay(duration / 4);
+                alpha1.start();
+            }
+
+            ObjectAnimator alpha2 = ObjectAnimator.ofFloat(hoverDescription, "alpha", alphaStartVal, alphaEndVal);
+            alpha2.setDuration(duration);
+            alpha2.setInterpolator(interpolator);
+
+            if (reverse) {
+                alpha2.reverse();
+            } else {
+                alpha2.setStartDelay(duration/2);
+                alpha2.start();
+            }
+
+            ObjectAnimator alpha3 = ObjectAnimator.ofFloat(hoverBackground, "alpha", alphaStartVal, alphaEndVal);
+            alpha3.setDuration(duration);
+            alpha3.setInterpolator(interpolator);
+
+            if (reverse) alpha3.reverse();
+            else alpha3.start();
+        }
+
+        @NonNull
+        private Animator.AnimatorListener getAnimatorListener() {
+            return new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            /*CustomFrameLayout.this.hoverTitle.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverSubTitle.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverDescription.setVisibility(VISIBLE);
+                            CustomFrameLayout.this.hoverBackground.setVisibility(VISIBLE);*/
+                            CustomFrameLayout.this.hoverLayout.setVisibility(VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            if (!CustomFrameLayout.this.isSelected()) {
+                                CustomFrameLayout.this.hoverLayout.setVisibility(INVISIBLE);
+                            }
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    };
+        }
+
         public class ChildComponentAndView {
             Component component;
             View childView;
         }
+
     }
 }

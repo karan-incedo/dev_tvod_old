@@ -4,11 +4,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by ram.kailash on 2/14/2018.
  */
 @UseStag
-public class AuthorData {
+public class AuthorData implements Serializable{
 
     private String site;
     @SerializedName("id")

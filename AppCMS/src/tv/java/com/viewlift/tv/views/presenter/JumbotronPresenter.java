@@ -2,9 +2,7 @@ package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,6 +10,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -20,8 +19,7 @@ import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 
 import java.util.List;
-
-import com.viewlift.R;
+import java.util.Map;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -29,22 +27,25 @@ import com.viewlift.R;
 
 public class JumbotronPresenter extends CardPresenter {
 
+    private static final String TAG = JumbotronPresenter.class.getCanonicalName();
+    private final Component parentComponent;
     private Context mContext;
     private AppCMSPresenter mAppCMSPresenter;
 
 
-    public JumbotronPresenter(Context context , AppCMSPresenter appCMSPresenter){
-        super(context , appCMSPresenter);
+    public JumbotronPresenter(Context context, AppCMSPresenter appCMSPresenter, Component component,
+                              Map<String, AppCMSUIKeyType> appCMSUIKeyTypeMap, boolean infoHover){
+        super(context , appCMSPresenter, appCMSUIKeyTypeMap, infoHover);
         mContext = context;
         mAppCMSPresenter = appCMSPresenter;
+        this.parentComponent = component;
     }
 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
             //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
-
-            FrameLayout frameLayout = new FrameLayout(parent.getContext());
+            final CustomFrameLayout frameLayout = new CustomFrameLayout(parent.getContext());
             FrameLayout.LayoutParams layoutParams;
 
             layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT ,
@@ -63,7 +64,7 @@ public class JumbotronPresenter extends CardPresenter {
         BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
-        FrameLayout cardView = (FrameLayout) viewHolder.view;
+        CustomFrameLayout cardView = (CustomFrameLayout) viewHolder.view;
         createComponent(componentList , cardView , contentData);
     }
 
@@ -72,7 +73,7 @@ public class JumbotronPresenter extends CardPresenter {
 
     }
 
-    public void createComponent(List<Component> componentList , ViewGroup parentLayout , ContentDatum contentData ){
+    public void createComponent(List<Component> componentList , CustomFrameLayout parentLayout , ContentDatum contentData ){
         if(null != componentList && componentList.size() > 0) {
             for (Component component : componentList) {
                 AppCMSUIKeyType componentType = mAppCMSPresenter.getJsonValueKeyMap().get(component.getType());
@@ -89,24 +90,35 @@ public class JumbotronPresenter extends CardPresenter {
                     case PAGE_IMAGE_KEY:
                         ImageView imageView = new ImageView(parentLayout.getContext());
                         switch(componentKey){
-                            case PAGE_CAROUSEL_IMAGE_KEY:
+                            case PAGE_CAROUSEL_IMAGE_KEY: {
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
-                                        Utils.getViewXAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getWidth())),
-                                        Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
+                                        Utils.getViewXAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getWidth())),
+                                        Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
                                 imageView.setLayoutParams(parms);
-                                imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
+                                imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
-                                imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
+                                imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
                                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 Glide.with(mContext)
                                         .load(contentData.getGist().getVideoImageUrl())
                                         .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
-                                            .placeholder(ContextCompat.getDrawable(mContext , R.drawable.video_image_placeholder)))
+                                                .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                                .placeholder(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
                                         .into(imageView);
                                 parentLayout.addView(imageView);
                                 break;
+                            }
+                            case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
+                                createComponentView(parentComponent, parentLayout);
+                                break;
+                            }
                         }
+                    case PAGE_LABEL_KEY: {
+                        createComponentView(parentComponent, parentLayout);
+                        bindComponent(parentLayout, contentData, parentComponent.getBlockName(),
+                                parentComponent.getSettings() != null && parentComponent.getSettings().isInfoHover());
+                        break;
+                    }
                 }
             }
         }

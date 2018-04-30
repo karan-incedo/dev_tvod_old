@@ -14,6 +14,7 @@ import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -25,7 +26,7 @@ import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -40,10 +41,8 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.presenters.UrbanAirshipEventPresenter;
 
 import java.lang.ref.ReferenceQueue;
 import java.util.Map;
@@ -71,8 +70,9 @@ public class AppCMSPresenterModule {
                                                    AppCMSArticleCall appCMSArticleCall,
                                                    AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
+                                                   AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
+                                                   AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
                                                    AppCMSAudioDetailCall appCMSAudioDetailCall,
-                                                   AppCMSSSLCommerzConfigCall appCMSSSLCommerzConfigCall,
                                                    AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
@@ -126,8 +126,9 @@ public class AppCMSPresenterModule {
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
                 appCMSPlaylistCall,
+                appCMSSSLCommerzInitiateCall,
+                appCMSCCAvenueRSAKeyCall,
                 appCMSAudioDetailCall,
-                appCMSSSLCommerzConfigCall,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,

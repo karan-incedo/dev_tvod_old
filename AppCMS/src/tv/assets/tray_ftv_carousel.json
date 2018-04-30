@@ -1,0 +1,115 @@
+{
+  "id": "605b2d98-afb9-4302-9552-c7ad472dbc82",
+  "settings": {
+    "loop": true,
+    "columns": {},
+    "thumbnailType": "landscape",
+    "infoHover": true
+  },
+  "view": "AC Carousel 01",
+  "type": "AC Carousel 01",
+  "blockName": "carousel01",
+  "layout": {
+    "ftv": {
+      "padding": 425,
+      "yAxis": 0,
+      "backgroundColor": "#172e3c",
+      "xAxis": 0,
+      "height": 560
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 15,
+          "bottomMargin": 15
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "width": 855,
+              "height": 481
+            }
+          },
+          "type": "image",
+          "key": "carouselImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "width": 843,
+              "height": 470,
+              "leftMargin": 6,
+              "topMargin": 6
+            }
+          },
+          "type": "image",
+          "key": "hoverBackground"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 20,
+              "topMargin": 130,
+              "width": 820,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 20,
+          "numberOfLines": 1
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 20,
+              "topMargin": 190,
+              "width": 820,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoSubTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 12,
+          "numberOfLines": 1
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 20,
+              "topMargin": 230,
+              "width": 820,
+              "height": 400
+            }
+          },
+          "type": "label",
+          "key": "videoDescriptionOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 14,
+          "numberOfLines": 4
+        }
+      ],
+      "type": "carousel",
+      "key": "carousel"
+    }
+  ]
+}
