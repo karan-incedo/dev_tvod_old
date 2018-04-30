@@ -155,6 +155,10 @@
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_video_title_on_hover_key">videoTitleOnHover</string>
+    <string name="app_cms_page_video_sub_title_on_hover_key">videoSubTitleOnHover</string>
+    <string name="app_cms_page_video_description_on_hover_key">videoDescriptionOnHover</string>
+    <string name="app_cms_page_video_hover_background_key">hoverBackground</string>
     <string name="app_cms_page_episode_thumbnail_title_key">episodeThumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_center_horizontal_key">center_horizontal</string>
