@@ -47,7 +47,7 @@ public class AppCMSSSLCommerzInitiateCall {
     public void call(String url,
                      final Action1<SSLInitiateResponse> sslInitiateAction1,
                      String apiKey, String authToken,
-                     String planId, String transId, String sessionKey) throws IOException {
+                     String planId, String transId, String sessionKey) {
         try {
             headersMap.clear();
             headersMap.put("x-api-key", apiKey);
@@ -64,9 +64,8 @@ public class AppCMSSSLCommerzInitiateCall {
                 public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                     SSLInitiateResponse sslInitiateResponse = null;
                     if (response.body() != null) {
-                        JsonElement signInResponse = response.body();
-                        //Log.d(TAG, "Raw response: " + signInResponse.toString());
-                        sslInitiateResponse = gson.fromJson(signInResponse, SSLInitiateResponse.class);
+                        JsonElement initiateResponse = response.body();
+                        sslInitiateResponse = gson.fromJson(initiateResponse, SSLInitiateResponse.class);
                     }/* else if (response.errorBody() != null) {
                         String errorResponse = response.errorBody().string();
                         //Log.d(TAG, "Raw response: " + errorResponse);
@@ -81,7 +80,6 @@ public class AppCMSSSLCommerzInitiateCall {
                 }
             });
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
         }
     }
 }

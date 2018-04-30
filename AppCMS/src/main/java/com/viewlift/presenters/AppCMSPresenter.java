@@ -2212,7 +2212,9 @@ public class AppCMSPresenter {
                             requestAds = false;
                         }
 
-                        if (!TextUtils.isEmpty(adsUrl)) {requestAds = false;}
+                        if (!TextUtils.isEmpty(adsUrl)) {
+                            requestAds = false;
+                        }
 
                         String backgroundColor = getAppBackgroundColor();
 
@@ -3714,7 +3716,9 @@ public class AppCMSPresenter {
 
                         if (getmFireBaseAnalytics() != null)
                             getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
-                        initiateSSLCommerz(planId, transactionInfo.getTranId(), transactionInfo.getSessionkey(), new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
+                        initiateSSLCommerz(planId, transactionInfo.getTranId(),
+                                transactionInfo.getSessionkey(),
+                                new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
                             @Override
                             public void call(SSLInitiateResponse sslInitiateResponse) {
 
@@ -3735,7 +3739,7 @@ public class AppCMSPresenter {
                             }
                         });
                         Log.e(TAG, "Transaction Fail");
-                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_fail);
+                        SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
                     }
 
                     @Override
@@ -3783,20 +3787,17 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             String baseUrl = appCMSMain.getApiBaseUrl();
             String siteId = appCMSSite.getGist().getSiteInternalName();
-            try {
-                appCMSSSLCommerzInitiateCall.call(
-                        currentContext.getString(R.string.app_cms_sslcommerz_initiate_api_url,
-                                baseUrl,
-                                siteId),
-                        sslCommerzInitiateAPIAction,
-                        apikey,
-                        getAuthToken(),
-                        planId,
-                        transId,
-                        sessionKey
-                );
-            } catch (IOException e) {
-            }
+            appCMSSSLCommerzInitiateCall.call(
+                    currentContext.getString(R.string.app_cms_sslcommerz_initiate_api_url,
+                            baseUrl,
+                            siteId),
+                    sslCommerzInitiateAPIAction,
+                    apikey,
+                    getAuthToken(),
+                    planId,
+                    transId,
+                    sessionKey
+            );
         }
     }
 
@@ -3811,18 +3812,17 @@ public class AppCMSPresenter {
     public void getCCAvenueRSAKey(
             final AppCMSCCAvenueRSAKeyAPIAction rsaKeyAPIAction) {
         if (currentContext != null) {
-            try {
-                appCMSCCAvenueRSAKeyCall.call(
-                        appCMSMain.getApiBaseUrl() + "/ccavenue/ccavenue/rsakey?x=" + new Date().getTime(),
-                        rsaKeyAPIAction,
-                        apikey,
-                        getAuthToken(),
-                        planToPurchase,
-                        appCMSSite.getGist().getSiteInternalName(),
-                        getLoggedInUser()
-                );
-            } catch (IOException e) {
-            }
+            String currentDate = "" + new Date().getTime();
+            appCMSCCAvenueRSAKeyCall.call(currentContext.getString(R.string.app_cms_ccavenue_rsa_key_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    currentDate),
+                    rsaKeyAPIAction,
+                    apikey,
+                    getAuthToken(),
+                    planToPurchase,
+                    appCMSSite.getGist().getSiteInternalName(),
+                    getLoggedInUser()
+            );
         }
     }
 
@@ -5132,10 +5132,9 @@ public class AppCMSPresenter {
             downloadVideoRealm.setUserId(getLoggedInUser());
 
         }
-        try{
+        try {
             sendGaEventForDownloadedContent(downloadVideoRealm);
-        } catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         realmController.addDownload(downloadVideoRealm);
@@ -5998,13 +5997,13 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
-                  try {
-                      for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
-                          contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
-                      }
-                  }catch(Exception ex){
-                      ex.printStackTrace();
-                  }
+                try {
+                    for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
+                        contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
@@ -6939,7 +6938,7 @@ public class AppCMSPresenter {
                                         }
                                     }
                                     currentActivity.startActivity(intent);
-                                }else{
+                                } else {
 
                                     int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
@@ -6970,7 +6969,6 @@ public class AppCMSPresenter {
     }
 
 
-
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
@@ -6991,7 +6989,7 @@ public class AppCMSPresenter {
             return;
         }
 
-            if (!isNetworkConnected()) {
+        if (!isNetworkConnected()) {
             int count = tryCount;
             openDownloadScreenForNetworkError(false,
                     () -> getAudioDetail(audioId, mCurrentPlayerPosition, callBackPlaylistHelper, isPlayerScreenOpen,
@@ -7054,7 +7052,7 @@ public class AppCMSPresenter {
                                         }
                                     }
                                     currentActivity.startActivity(intent);
-                                }else{
+                                } else {
                                     int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
                                         apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
@@ -11712,7 +11710,7 @@ public class AppCMSPresenter {
                 } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
                     sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
                 }
-            }catch (Exception ex){
+            } catch (Exception ex) {
 
             }
         }
@@ -16440,7 +16438,7 @@ public class AppCMSPresenter {
     }
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
-        if(contentDatum.getGist().getUpdateDate() == null){
+        if (contentDatum.getGist().getUpdateDate() == null) {
             return "";
         }
         long currentTime = System.currentTimeMillis();
@@ -18225,11 +18223,11 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getPageType(String pageId){
+    public String getPageType(String pageId) {
         String pageType = null;
-        if(null != pageId && null != pageIdToMetaPageMap && pageIdToMetaPageMap.size() > 0) {
+        if (null != pageId && null != pageIdToMetaPageMap && pageIdToMetaPageMap.size() > 0) {
             MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-            if(null != metaPage){
+            if (null != metaPage) {
                 pageType = metaPage.getPageType();
             }
         }

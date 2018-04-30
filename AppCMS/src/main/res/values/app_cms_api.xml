@@ -708,5 +708,7 @@
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
     <!--AppCMS SSLCommerz Initiate API-->
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
+    <!--APPCMS CCAve RSA KEY-->
+    <string name="app_cms_ccavenue_rsa_key_api_url">%1$s/ccavenue/ccavenue/rsakey?x=%2$s</string>
 
 </resources>

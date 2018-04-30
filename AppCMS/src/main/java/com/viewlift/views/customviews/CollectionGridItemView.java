@@ -796,7 +796,7 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent, data, position));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
-                if (TextUtils.isEmpty(((TextView) view).getText())) {
+//                if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
@@ -1262,7 +1262,7 @@ public class CollectionGridItemView extends BaseView {
                     } else {
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
-                }
+//                }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);
