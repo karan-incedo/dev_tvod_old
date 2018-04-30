@@ -1,8 +1,0 @@
-<resources>
-    <string name="default_app_name">App CMS</string>
-    <string name="error_loading_page">Error Loading Page</string>
-    <string name="fragment_page_bundle_key">fragment_page</string>
-    <string name="app_cms_binder_key">app_cms_binder</string>
-    <string name="app_cms_bundle_key">app_cms_bundle</string>
-    <string name="launch_binder_key">launch_binder</string>
-</resources>

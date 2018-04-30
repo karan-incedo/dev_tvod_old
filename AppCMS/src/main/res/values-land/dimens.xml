@@ -1,6 +1,0 @@
-<resources>
-
-    <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">5.5%</fraction>
-    <fraction name="mainContainerWidthPercent">54%</fraction>
-    <fraction name="mainContainerHeightPercent">44.2%</fraction>
-</resources>

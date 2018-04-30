@@ -1,20 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext {
-        realmVersion = "4.3.1"
-        gradleBuildVersion = "3.0.0"
-        playServicesVersion = "3.0.0"
-    }
+    
     repositories {
-        jcenter()
-        maven { url 'https://maven.google.com' }
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath "io.realm:realm-gradle-plugin:${realmVersion}"
-        classpath "com.google.gms:google-services:${playServicesVersion}"
+        
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -23,51 +17,9 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven { url 'https://maven.google.com' }
-    }
 
-    project.ext {
-        junitVersion = "4.12"
-        mockitoVersion = "1.10.19"
-        espressoVersion = "2.2.2"
-        dexmakerVersion = "1.0"
-        androidsupportVersion = "27.1.0"
-        leanbackVersion = "25.4.0"
-        androidsupportconstraintVersion = "1.0.2"
-        glideVersion = "4.4.0"
-        daggerVersion = "2.14.1"
-        gsonVersion = "2.8.2"
-        retrofit2Version = "2.3.0"
-        okHttp3Version = "3.8.1"
-        rxandroidVersion = "1.2.0"
-        rxjavaVersion = "1.1.4"
-        jsr250_apiVersion = "1.0"
-        googleAdsInteractiveMediaV3 = "3.6.0"
-        googlePlayServicesVersion = "11.8.0"
-        crashlyticsVersion = "2.6.8@aar"
-        leakcanaryVersion = "1.5.1"
-        apptentiveVersion = "4.1.2"
-        butterknifeVersion = "8.8.1"
-        stagVersion = "2.3.1"
-        facebookSdkVersion = "[4,5)"
-        urbanAirshipVersion = "8.9.6"
-        appsFlyerVersion = "4.8.3"
-        glideTransformationVersion = "2.0.2"
-        threetenBpVersion = "1.0.5"
-        jsoupVersion = "1.10.3"
-        frescoVersion = "1.7.1"
-        multiDexVersion = "1.0.2"
-    }
-}
-
-subprojects {
-    project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
-            project.android.dexOptions.preDexLibraries = false
-        } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
-            project.android.dexOptions.preDexLibraries = false
-        }
     }
 }
 

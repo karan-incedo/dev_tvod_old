@@ -1,2 +1,0 @@
-password : hoichoi321
-alias : hoichoi

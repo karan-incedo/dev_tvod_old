@@ -1,4 +1,0 @@
-password: snagfilms
-alias: snagfilms
-Password: agendatv
-Alias: agendatv

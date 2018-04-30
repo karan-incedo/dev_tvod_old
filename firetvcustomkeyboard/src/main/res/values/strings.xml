@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">FireTV Custom Keyboard</string>
-    <string name="backspace">backspace</string>
-    <string name="appcms_keyboard_uppercase_legend">ABC</string>
-    <string name="appcms_keyboard_lowercase_legend">abc</string>
-    <string name="appcms_keyboard_number_legend">123</string>
-    <string name="appcms_keyboard_special_character_legend">#+-</string>
-</resources>
