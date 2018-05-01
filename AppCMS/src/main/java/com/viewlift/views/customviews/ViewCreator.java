@@ -1456,6 +1456,8 @@ public class ViewCreator {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                                }else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
                                                                 } else {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                                 }
@@ -1900,7 +1902,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(6);
-                }else */ if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }else */
+                if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -1911,25 +1914,25 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().contains("downloads01")) {
+                } else if (moduleInfo.getBlockName().contains("downloads01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                }else if (moduleInfo.getBlockName().contains("history01")) {
+                } else if (moduleInfo.getBlockName().contains("history01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }else if (moduleInfo.getBlockName().contains("watchlist01")) {
+                } else if (moduleInfo.getBlockName().contains("watchlist01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getSettings() != null &&
+                } else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2071,7 +2074,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */else {
+        }  */ else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2547,7 +2550,7 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            appCMSAndroidModules,((RecyclerView) componentViewResult.componentView));
+                            appCMSAndroidModules, ((RecyclerView) componentViewResult.componentView));
 
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSPlaylistAdapter);
@@ -2567,25 +2570,25 @@ public class ViewCreator {
                      * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
                      */
                     //if (appCMSPresenter.getDownlistScreenCache() == null) {
-                        ((RecyclerView) componentViewResult.componentView)
-                                .setLayoutManager(new LinearLayoutManager(context,
-                                        LinearLayoutManager.VERTICAL,
-                                        false));
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
 
-                        appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
-                                this,
-                                appCMSPresenter,
-                                component.getLayout(),
-                                false,
-                                component,
-                                jsonValueKeyMap,
-                                moduleAPI,
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT,
-                                viewType,
-                                appCMSAndroidModules);
+                    appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            component.getLayout(),
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType,
+                            appCMSAndroidModules);
 
-                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
                   /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
@@ -2628,7 +2631,7 @@ public class ViewCreator {
                                         false));
 
 
-                         appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                        appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -4836,7 +4839,7 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                     } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
-                                    }else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
                                     }
                                 } else {
@@ -6454,9 +6457,9 @@ public class ViewCreator {
         }
     }
 
-    public static void notifyDataChange(){
+    public static void notifyDataChange() {
 
-        if(appCMSUserWatHisDowAdapter != null)
+        if (appCMSUserWatHisDowAdapter != null)
             appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 
