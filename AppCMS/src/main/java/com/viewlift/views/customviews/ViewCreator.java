@@ -2552,7 +2552,7 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            appCMSAndroidModules);
+                            appCMSAndroidModules,((RecyclerView) componentViewResult.componentView));
 
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSPlaylistAdapter);

@@ -4768,7 +4768,7 @@ public class AppCMSPresenter {
         } else {
 
             // Uncomment to allow for Pause/Resume
-            if (isVideoDownloadRunning(contentDatum)) {
+/*            if (isVideoDownloadRunning(contentDatum)) {
                 if (!pauseDownload(contentDatum)) {
                     Log.e(TAG, "Failed to pause download");
                 }
@@ -4777,7 +4777,7 @@ public class AppCMSPresenter {
                 if (!resumeDownload(contentDatum)) {
                     Log.e(TAG, "Failed to resume download");
                 }
-            }
+            }*/
             String downloadURL = "";
 
             if (contentDatum.getGist() != null &&
