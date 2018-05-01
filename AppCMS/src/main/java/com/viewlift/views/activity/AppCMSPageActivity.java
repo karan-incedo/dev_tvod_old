@@ -599,7 +599,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         setCastingInstance();
                         castDisabled = false;
                     } else {
-                        CastHelper.getInstance(getApplicationContext()).disconnectChromecastOnLogout();
+                        CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
                         castDisabled = true;
                     }
                 }
