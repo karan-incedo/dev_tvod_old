@@ -3383,9 +3383,9 @@ public class ViewCreator {
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
                         // Temp removed visibility of this playlist download button
-                        ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                        ((ImageButton) componentViewResult.componentView).setVisibility(View.VISIBLE);
 
- /*                       ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setId(R.id.playlist_download_id);
@@ -3432,7 +3432,7 @@ public class ViewCreator {
                                     }
                                 }
                             }
-                        });*/
+                        });
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                       /*  ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
