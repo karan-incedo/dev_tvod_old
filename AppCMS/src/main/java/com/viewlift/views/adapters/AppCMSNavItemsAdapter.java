@@ -257,11 +257,15 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                                 null);
                                         return;
                                     }
+                                    Boolean appBarPresent=false;
+                                    if(appCMSPresenter.isViewPlanPage(navigationUser.getPageId())){
+                                        appBarPresent=true;
+                                    }
                                     if (!appCMSPresenter.navigateToPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(),
                                             navigationUser.getUrl(),
                                             false,
-                                            false,
+                                            appBarPresent,
                                             false,
                                             false,
                                             false,

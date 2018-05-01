@@ -45,7 +45,7 @@ public class AppCMSCCAvenueRSAKeyCall {
     public void call(String url,
                      final Action1<RSAKeyResponse> rsaKeyResponseAction1,
                      String apiKey, String authToken,
-                     String planId, String site, String userId) throws IOException {
+                     String planId, String site, String userId) {
         try {
             headersMap.clear();
             headersMap.put("x-api-key", apiKey);
