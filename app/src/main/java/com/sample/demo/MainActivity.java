@@ -23,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
         vlPlayer = findViewById(R.id.VLPlayerDemo);
         buttonPlay=findViewById(R.id.button2);
 
-        VLPlayerSDKKit.SDKConfig config = new VLPlayerSDKKit.SDKConfig.Builder()
-                .context(this).xApiKey("FJhLtOzPji2uvinKSTFNd8FLnnP0bNuw3qtXXALO").build();
+        VLPlayerSDKKit.SDKConfig config = new VLPlayerSDKKit.SDKConfig.Builder(this)
+                .baseURL("https://release-api.viewlift.com")
+                .siteName("snagfilms")
+                .xApiKey("FJhLtOzPji2uvinKSTFNd8FLnnP0bNuw3qtXXALO")
+                .build();
 
         VLPlayerSDKKit vlPlayerSDKKit =new  VLPlayerSDKKit().init(config);
 
