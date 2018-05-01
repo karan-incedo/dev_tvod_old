@@ -3682,6 +3682,15 @@ public class AppCMSPresenter {
         String storeId = new String(Base64.decode(getStoreId(), Base64.DEFAULT));
         String storePassword = new String(Base64.decode(getStorePwd(), Base64.DEFAULT));
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
+        initiateSSLCommerz(planId, transactionId,
+                mobile,
+                new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
+                    @Override
+                    public void call(SSLInitiateResponse sslInitiateResponse) {
+
+                    }
+                });
+
         MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(storeId,
                 storePassword, planAmt, transactionId,
                 CurrencyType.BDT, /*SdkType.LIVE */SdkType.TESTBOX, SdkCategory.BANK_LIST);
@@ -3716,14 +3725,7 @@ public class AppCMSPresenter {
 
                         if (getmFireBaseAnalytics() != null)
                             getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
-                        initiateSSLCommerz(planId, transactionInfo.getTranId(),
-                                transactionInfo.getSessionkey(),
-                                new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
-                            @Override
-                            public void call(SSLInitiateResponse sslInitiateResponse) {
 
-                            }
-                        });
                         finalizeSignupAfterCCAvenueSubscription(null);
                         SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
                         Log.d(TAG, "Transaction Successfully completed");
@@ -3732,12 +3734,7 @@ public class AppCMSPresenter {
 
                     @Override
                     public void transactionFail(TransactionInfo transactionInfo) {
-                        initiateSSLCommerz(planId, transactionInfo.getTranId(), transactionInfo.getSessionkey(), new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
-                            @Override
-                            public void call(SSLInitiateResponse sslInitiateResponse) {
 
-                            }
-                        });
                         Log.e(TAG, "Transaction Fail");
                         SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
                     }
@@ -3782,7 +3779,7 @@ public class AppCMSPresenter {
     }
 
 
-    private void initiateSSLCommerz(String planId, String transId, String sessionKey,
+    private void initiateSSLCommerz(String planId, String transId, String mobile,
                                     final AppCMSSSLCommerzInitiateAPIAction sslCommerzInitiateAPIAction) {
         if (currentContext != null) {
             String baseUrl = appCMSMain.getApiBaseUrl();
@@ -3796,7 +3793,7 @@ public class AppCMSPresenter {
                     getAuthToken(),
                     planId,
                     transId,
-                    sessionKey
+                    mobile
             );
         }
     }
@@ -11727,7 +11724,7 @@ public class AppCMSPresenter {
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
-        /*String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                 appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName());
         startLoginAsyncTask(url,
@@ -11737,7 +11734,7 @@ public class AppCMSPresenter {
                 false,
                 true,
                 true,
-                false);*/
+                false);
         updatePlaybackControl();
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
@@ -12309,7 +12306,8 @@ public class AppCMSPresenter {
     private boolean checkForSubscriptionCancellation(AppCMSUserSubscriptionPlanResult appCMSSubscriptionPlanResult) {
         try {
             ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
-            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
+            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).
+                    parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
             return subscriptionEndTime.toEpochSecond() < nowTime.toEpochSecond();
         } catch (Exception e) {
 

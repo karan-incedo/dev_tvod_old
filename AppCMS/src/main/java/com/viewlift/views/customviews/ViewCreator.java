@@ -4836,6 +4836,8 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                     } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                    }else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                        ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
                                     }
                                 } else {
                                     ((TextView) componentViewResult.componentView).setText("");

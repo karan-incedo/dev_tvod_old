@@ -47,7 +47,7 @@ public class AppCMSSSLCommerzInitiateCall {
     public void call(String url,
                      final Action1<SSLInitiateResponse> sslInitiateAction1,
                      String apiKey, String authToken,
-                     String planId, String transId, String sessionKey) {
+                     String planId, String transId, String mobile) {
         try {
             headersMap.clear();
             headersMap.put("x-api-key", apiKey);
@@ -56,7 +56,7 @@ public class AppCMSSSLCommerzInitiateCall {
             SSLInitiateBody sslInitiateBody = new SSLInitiateBody();
             sslInitiateBody.setPlanId(planId);
             sslInitiateBody.setTran_id(transId);
-            sslInitiateBody.setSessionkey(sessionKey);
+            sslInitiateBody.setPhone(mobile);
 
 
             appCMSSSLCommerzInitiateRest.initiateSSL(url, sslInitiateBody, headersMap).enqueue(new Callback<JsonElement>() {
