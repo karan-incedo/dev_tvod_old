@@ -277,9 +277,7 @@ android {
     configurations.all {
         resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
-    packagingOptions {
-        exclude 'META-INF/rxjava.properties'
-    }
+
 }
 afterEvaluate {
     if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
@@ -382,7 +380,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
     implementation  "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
+    implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     implementation  "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     implementation  "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     implementation  "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
