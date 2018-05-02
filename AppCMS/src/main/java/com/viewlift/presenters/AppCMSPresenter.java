@@ -9365,7 +9365,7 @@ public class AppCMSPresenter {
         String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        appCMSGoogleLoginCall.call(url, googleAccessToken,
+        appCMSGoogleLoginCall.call(url, googleAccessToken,apikey,
                 googleLoginResponse -> {
                     try {
                         if (googleLoginResponse != null) {
