@@ -38,11 +38,12 @@ public class AppCMSHistoryCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken,
+    public void call(String url, String authToken,String xApi,
                      final Action1<AppCMSHistoryResult> historyResultAction1) throws IOException {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+            authTokenMap.put("x-api-key", xApi);
             appCMSHistoryRest.get(url, authTokenMap).enqueue(new Callback<AppCMSHistoryResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSHistoryResult> call,
