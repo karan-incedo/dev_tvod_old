@@ -1456,7 +1456,8 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSContentDetailTask.Params params =
                     new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+                            .authToken(getAuthToken())
+                            .apiKey(apikey).build();
             new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                     appCMSContentDetail -> {
                         if (appCMSContentDetail != null) {
@@ -1790,12 +1791,12 @@ public class AppCMSPresenter {
                         () -> {
                             String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
                                     appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-                            appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+                            appCMSUserVideoStatusCall.call(url, getAuthToken(), apikey, responseAction);
                         });
             } else {
                 String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
                         appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-                appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+                appCMSUserVideoStatusCall.call(url, getAuthToken(), apikey, responseAction);
             }
         }
     }
@@ -6641,7 +6642,8 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey).build();
         new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                 appCMSContentDetail -> {
                     try {
@@ -6699,7 +6701,8 @@ public class AppCMSPresenter {
                                          AppCMSVideoPageBinder binder, Action1<Object> action1) {
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey).build();
         new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                 appCMSContentDetail -> {
                     try {
@@ -15560,7 +15563,8 @@ public class AppCMSPresenter {
                         appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSContentDetailTask.Params params =
                         new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                                .authToken(getAuthToken()).build();
+                                .authToken(getAuthToken())
+                                .apiKey(apikey).build();
 
                 new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                         appCMSContentDetail -> {
@@ -15621,6 +15625,10 @@ public class AppCMSPresenter {
                                                                 currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                                     }
                                                 }
+                                            } else {
+                                                openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                                        currentActivity.getString(R.string.app_name)),
+                                                        currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                             }
                                         });
                             } else {

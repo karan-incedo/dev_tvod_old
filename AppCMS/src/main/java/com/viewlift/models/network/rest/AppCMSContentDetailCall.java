@@ -29,11 +29,12 @@ public class AppCMSContentDetailCall {
     }
 
     @WorkerThread
-    public AppCMSContentDetail call(String url, String authToken) throws IOException {
+    public AppCMSContentDetail call(String url, String authToken, String apiKey) throws IOException {
         try {
             //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
+            authHeaders.put("x-api-key", apiKey);
             return appCMSContentDetailRest.get(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
             //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
