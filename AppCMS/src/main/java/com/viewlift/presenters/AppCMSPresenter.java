@@ -4388,7 +4388,7 @@ public class AppCMSPresenter {
                 }
             }
 
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+            appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
                         try {
                             if (addToWatchlistResult != null) {
@@ -5892,7 +5892,7 @@ public class AppCMSPresenter {
             request.setUserId(getLoggedInUser());
             request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             request.setPosition(1L);
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+            appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
                         try {
                             populateFilmsInUserWatchlist();
@@ -7268,6 +7268,7 @@ public class AppCMSPresenter {
                                         siteId,
                                         getLoggedInUser()),
                                 getAuthToken(),
+                                apikey,
                                 watchlist);
                     } catch (IOException e) {
                         //Log.e(TAG, "getWatchlistPageContent: " + e.toString());

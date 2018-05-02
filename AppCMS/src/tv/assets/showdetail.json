@@ -130,6 +130,26 @@
       "borderColor": "ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
+      "action": "addToWatchlist",
+      "text": "ADD TO WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "ExtraBold",
+      "key": "addToWatchlist"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 635,
+          "topMargin": 595,
+          "width": 250,
+          "fontSize": 11.5,
+          "height": 60
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
       "action": "watchTrailer",
       "text": "WATCH TRAILER",
       "type": "button",
@@ -247,7 +267,6 @@
               "fontWeight": "Semibold",
               "key": "episodeThumbnailTitle"
             },
-
             {
               "layout": {
                 "ftv": {
@@ -279,7 +298,6 @@
               "fontSize": 16,
               "numberOfLines": 1
             },
-
             {
               "layout": {
                 "ftv": {
