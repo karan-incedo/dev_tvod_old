@@ -1467,7 +1467,7 @@ public class AppCMSPresenter {
                             }
                             readyAction.call(currentContentDatum);
                         }
-                    }).execute(params);
+                    },apikey).execute(params);
         }
     }
 
@@ -1596,7 +1596,7 @@ public class AppCMSPresenter {
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
                         }
-                    }).execute(params);
+                    },apikey).execute(params);
         }
         return result;
     }
@@ -4386,7 +4386,7 @@ public class AppCMSPresenter {
                 }
             }
 
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+            appCMSAddToWatchlistCall.call(url, getAuthToken(),apikey,
                     addToWatchlistResult -> {
                         try {
                             if (addToWatchlistResult != null) {
@@ -5890,7 +5890,7 @@ public class AppCMSPresenter {
             request.setUserId(getLoggedInUser());
             request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             request.setPosition(1L);
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+            appCMSAddToWatchlistCall.call(url, getAuthToken(),apikey,
                     addToWatchlistResult -> {
                         try {
                             populateFilmsInUserWatchlist();
@@ -6691,7 +6691,7 @@ public class AppCMSPresenter {
                             action1.call(null);
                         }
                     }
-                }).execute(params);
+                },apikey).execute(params);
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -6795,7 +6795,7 @@ public class AppCMSPresenter {
                             action1.call(null);
                         }
                     }
-                }).execute(params);
+                },apikey).execute(params);
     }
 
     private void getAudioContent(final String apiBaseUrl,
@@ -7263,7 +7263,7 @@ public class AppCMSPresenter {
                                         apiBaseUrl, //getLoggedInUser(currentActivity,
                                         siteId,
                                         getLoggedInUser()),
-                                getAuthToken(),
+                                getAuthToken(),apikey,
                                 watchlist);
                     } catch (IOException e) {
                         //Log.e(TAG, "getWatchlistPageContent: " + e.toString());
@@ -7474,7 +7474,7 @@ public class AppCMSPresenter {
                     appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                             apiBaseUrl, getLoggedInUser(), siteiD,
                             getLoggedInUser()),
-                            getAuthToken(),
+                            getAuthToken(),apikey,
                             history);
                 } catch (IOException | NullPointerException e) {
                     //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7492,7 +7492,7 @@ public class AppCMSPresenter {
                         appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                                 apiBaseUrl, getLoggedInUser(), siteiD,
                                 getLoggedInUser()),
-                                getAuthToken(),
+                                getAuthToken(),apikey,
                                 history);
                     } catch (Exception e) {
                         //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -15042,7 +15042,7 @@ public class AppCMSPresenter {
                 new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken()).build();
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                action1).execute(params);
+                action1,apikey).execute(params);
     }
 
     public boolean launchTVButtonSelectedAction(String pagePath,
@@ -15628,7 +15628,7 @@ public class AppCMSPresenter {
                                         currentActivity.getString(R.string.app_name)),
                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                             }
-                        }).execute(params);
+                        },apikey).execute(params);
             } /*else {
                 if (watchTime >= 0) {
                     contentDatum.getGist().setWatchedTime(watchTime);

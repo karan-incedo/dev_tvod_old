@@ -18,11 +18,12 @@ public class GetAppCMSContentDetailTask {
 
     private final AppCMSContentDetailCall call;
     private final Action1<AppCMSContentDetail> readyAction;
-
+    String xApi;
     public GetAppCMSContentDetailTask(AppCMSContentDetailCall call,
-                                      Action1<AppCMSContentDetail> readyAction) {
+                                      Action1<AppCMSContentDetail> readyAction, String xApi) {
         this.call = call;
         this.readyAction = readyAction;
+        this.xApi = xApi;
     }
 
     public void execute(Params params) {
@@ -30,7 +31,7 @@ public class GetAppCMSContentDetailTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.authToken);
+                            return call.call(params.url, params.authToken,xApi);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
