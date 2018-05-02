@@ -275,6 +275,7 @@ public class CollectionGridItemView extends BaseView {
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
 
+        Log.d("bindView","Data NAme :"+data.getGist().getTitle());
         final Component childComponent = matchComponentToView(view);
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(componentViewType);
@@ -287,12 +288,16 @@ public class CollectionGridItemView extends BaseView {
                 appCMSPresenter.getUpdateDownloadImageIconActionMap();
 
         if (childComponent != null) {
+            Log.d("bindView","ChildComponent");
+
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                     childComponent, data, position));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+//            Log.d("bindView","Component Type :"+childComponent.getType());
+//            Log.d("bindView","Component Key :"+childComponent.getKey());
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
@@ -801,7 +806,7 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent, data, position));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
-                if (TextUtils.isEmpty(((TextView) view).getText())) {
+//                if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
@@ -1025,6 +1030,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
+                        Log.d("bindView","Audio Duration Key :"+data.getGist().getTitle());
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
                         ((TextView) view).setText(time);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY) {
@@ -1134,6 +1140,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
+                        Log.d("bindView","Audio Article Title Key :"+data.getGist().getTitle());
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                         ((TextView) view).setText(artist);
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
@@ -1287,7 +1294,7 @@ public class CollectionGridItemView extends BaseView {
                     } else {
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
-                }
+//                }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);
@@ -1338,6 +1345,8 @@ public class CollectionGridItemView extends BaseView {
                 view.bringToFront();
             }
             view.forceLayout();
+        }else{
+            Log.d("bindView","CollectionGridItemView else");
         }
     }
 

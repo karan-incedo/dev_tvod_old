@@ -94,6 +94,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     CollectionGridItemView[] allViews;
     public static boolean isDownloading = true, isPlaylistDownloading = false;
     private Map<String, Boolean> filmDownloadIconUpdatedMap;
+    private static RecyclerView recyclerView;
 
 
     public AppCMSPlaylistAdapter(Context context,
@@ -108,8 +109,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                  int defaultWidth,
                                  int defaultHeight,
                                  String viewType,
-                                 AppCMSAndroidModules appCMSAndroidModules) {
+                                 AppCMSAndroidModules appCMSAndroidModules,RecyclerView mRecyclerView) {
         this.mContext = context;
+        this.recyclerView = mRecyclerView;
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.parentLayout = parentLayout;
