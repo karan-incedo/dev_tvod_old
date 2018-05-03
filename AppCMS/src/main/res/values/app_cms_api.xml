@@ -592,7 +592,7 @@
     <string name="subscription_ccavenue_payment_processor">ccavenue</string>
     <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
     <string name="subscription_sslcommerz_payment_processor">sslcommerz</string>
-    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCommerz</string>
+    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCOMMERZ</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
