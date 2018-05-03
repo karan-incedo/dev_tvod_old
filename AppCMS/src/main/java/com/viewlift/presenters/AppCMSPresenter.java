@@ -1515,7 +1515,9 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
 
             new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                     appCMSVideoDetail -> {
@@ -2344,6 +2346,7 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor)) &&
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_sslcommerz_payment_processor_friendly)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION, null);
                                 } else if (isUserSubscribed() &&
@@ -2362,6 +2365,7 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor)) &&
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_sslcommerz_payment_processor_friendly)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION, null);
                                 } else if (isUserSubscribed() && TextUtils.isEmpty(paymentProcessor)) {
@@ -3683,6 +3687,15 @@ public class AppCMSPresenter {
         String storeId = new String(Base64.decode(getStoreId(), Base64.DEFAULT));
         String storePassword = new String(Base64.decode(getStorePwd(), Base64.DEFAULT));
         String planAmt = Double.toString(planToPurchaseDiscountedPrice);
+        initiateSSLCommerz(planId, transactionId,
+                mobile,
+                new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
+                    @Override
+                    public void call(SSLInitiateResponse sslInitiateResponse) {
+
+                    }
+                });
+
         MandatoryFieldModel mandatoryFieldModel = new MandatoryFieldModel(storeId,
                 storePassword, planAmt, transactionId,
                 CurrencyType.BDT, /*SdkType.LIVE */SdkType.TESTBOX, SdkCategory.BANK_LIST);
@@ -3717,14 +3730,7 @@ public class AppCMSPresenter {
 
                         if (getmFireBaseAnalytics() != null)
                             getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);*/
-                        initiateSSLCommerz(planId, transactionInfo.getTranId(),
-                                transactionInfo.getSessionkey(),
-                                new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
-                            @Override
-                            public void call(SSLInitiateResponse sslInitiateResponse) {
 
-                            }
-                        });
                         finalizeSignupAfterCCAvenueSubscription(null);
                         SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_successful);
                         Log.d(TAG, "Transaction Successfully completed");
@@ -3733,12 +3739,7 @@ public class AppCMSPresenter {
 
                     @Override
                     public void transactionFail(TransactionInfo transactionInfo) {
-                        initiateSSLCommerz(planId, transactionInfo.getTranId(), transactionInfo.getSessionkey(), new AppCMSSSLCommerzInitiateAPIAction("Inititate SSL") {
-                            @Override
-                            public void call(SSLInitiateResponse sslInitiateResponse) {
 
-                            }
-                        });
                         Log.e(TAG, "Transaction Fail");
                         SSLComerzTransactionStatus(R.string.ssl_commerz_transaction_cancel);
                     }
@@ -3783,7 +3784,7 @@ public class AppCMSPresenter {
     }
 
 
-    private void initiateSSLCommerz(String planId, String transId, String sessionKey,
+    private void initiateSSLCommerz(String planId, String transId, String mobile,
                                     final AppCMSSSLCommerzInitiateAPIAction sslCommerzInitiateAPIAction) {
         if (currentContext != null) {
             String baseUrl = appCMSMain.getApiBaseUrl();
@@ -3797,7 +3798,7 @@ public class AppCMSPresenter {
                     getAuthToken(),
                     planId,
                     transId,
-                    sessionKey
+                    mobile
             );
         }
     }
@@ -4387,6 +4388,7 @@ public class AppCMSPresenter {
                     temporaryWatchlist.remove(contentDatum.getGist().getId());
                 }
             }
+
 
             appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
@@ -7479,7 +7481,7 @@ public class AppCMSPresenter {
                     appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                             apiBaseUrl, getLoggedInUser(), siteiD,
                             getLoggedInUser()),
-                            getAuthToken(),
+                            getAuthToken(),apikey,
                             history);
                 } catch (IOException | NullPointerException e) {
                     //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7497,7 +7499,7 @@ public class AppCMSPresenter {
                         appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                                 apiBaseUrl, getLoggedInUser(), siteiD,
                                 getLoggedInUser()),
-                                getAuthToken(),
+                                getAuthToken(),apikey,
                                 history);
                     } catch (Exception e) {
                         //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -11731,7 +11733,7 @@ public class AppCMSPresenter {
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
-        /*String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                 appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName());
         startLoginAsyncTask(url,
@@ -11741,7 +11743,7 @@ public class AppCMSPresenter {
                 false,
                 true,
                 true,
-                false);*/
+                false);
         updatePlaybackControl();
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
@@ -12313,7 +12315,8 @@ public class AppCMSPresenter {
     private boolean checkForSubscriptionCancellation(AppCMSUserSubscriptionPlanResult appCMSSubscriptionPlanResult) {
         try {
             ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
-            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
+            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).
+                    parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
             return subscriptionEndTime.toEpochSecond() < nowTime.toEpochSecond();
         } catch (Exception e) {
 
@@ -15044,7 +15047,9 @@ public class AppCMSPresenter {
                 appCMSSite.getGist().getSiteInternalName());
         GetAppCMSVideoDetailAsyncTask.Params params =
                 new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                 action1).execute(params);
     }

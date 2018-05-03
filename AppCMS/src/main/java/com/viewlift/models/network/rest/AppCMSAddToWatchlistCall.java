@@ -37,13 +37,13 @@ public class AppCMSAddToWatchlistCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken, String apiKey,
+    public void call(String url, String authToken,String xApi,
                      final Action1<AppCMSAddToWatchlistResult> addToWatchlistResultAction1,
                      AddToWatchlistRequest request, boolean add) throws Exception {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
-            authTokenMap.put("x-api-key", apiKey);
+            authTokenMap.put("x-api-key", xApi);
             Call<AppCMSAddToWatchlistResult> call;
             if (add) {
                 call = appCMSAddToWatchlistRest.add(url, authTokenMap, request);
