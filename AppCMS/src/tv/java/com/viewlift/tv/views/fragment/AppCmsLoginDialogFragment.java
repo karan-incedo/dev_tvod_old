@@ -106,7 +106,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
 
 
         if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                .equals(AppCMSPresenter.TemplateType.SPORTS)) {
+                .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
             updateSubscriptionStrip();
         }else{
             subscriptionTitle.setVisibility(View.GONE);
