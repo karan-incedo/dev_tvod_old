@@ -19,13 +19,11 @@ public class GetAppCMSVideoDetailAsyncTask {
 
     private final AppCMSVideoDetailCall call;
     private final Action1<AppCMSVideoDetail> readyAction;
-    String xApi;
 
     public GetAppCMSVideoDetailAsyncTask(AppCMSVideoDetailCall call,
-                                         Action1<AppCMSVideoDetail> readyAction, String xApi) {
+                                         Action1<AppCMSVideoDetail> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
-        this.xApi = xApi;
     }
 
     public void execute(Params params) {
@@ -33,7 +31,7 @@ public class GetAppCMSVideoDetailAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.authToken,xApi);
+                            return call.call(params.url, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -53,6 +51,7 @@ public class GetAppCMSVideoDetailAsyncTask {
     public static class Params {
         String url;
         String authToken;
+        String apiKey;
         boolean loadFromFile;
 
         public static class Builder {
@@ -74,6 +73,11 @@ public class GetAppCMSVideoDetailAsyncTask {
 
             public Builder loadFromFile(boolean loadFromFile) {
                 params.loadFromFile = loadFromFile;
+                return this;
+            }
+
+            public Builder apiKey(String apiKey) {
+                params.apiKey = apiKey;
                 return this;
             }
 

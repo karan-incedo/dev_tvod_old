@@ -1515,7 +1515,9 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
 
             new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                     appCMSVideoDetail -> {
@@ -4387,7 +4389,7 @@ public class AppCMSPresenter {
                 }
             }
 
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),apikey,
+
             appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
                         try {
@@ -15045,9 +15047,11 @@ public class AppCMSPresenter {
                 appCMSSite.getGist().getSiteInternalName());
         GetAppCMSVideoDetailAsyncTask.Params params =
                 new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                action1,apikey).execute(params);
+                action1).execute(params);
     }
 
     public boolean launchTVButtonSelectedAction(String pagePath,
