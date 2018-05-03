@@ -6,7 +6,6 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -38,11 +37,12 @@ public class AppCMSWatchlistCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken,
+    public void call(String url, String authToken, String apiKey,
                      final Action1<AppCMSWatchlistResult> watchlistResultAction1) throws IOException {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+            authTokenMap.put("x-api-key", apiKey);
             System.out.println("====== "+authTokenMap.toString());
             System.out.println(url);
             appCMSWatchlistRest.get(url, authTokenMap).enqueue(new Callback<AppCMSWatchlistResult>() {
