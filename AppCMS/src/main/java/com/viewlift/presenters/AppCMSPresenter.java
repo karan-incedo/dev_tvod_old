@@ -1456,7 +1456,8 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSContentDetailTask.Params params =
                     new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+                            .authToken(getAuthToken())
+                            .apiKey(apikey).build();
             new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                     appCMSContentDetail -> {
                         if (appCMSContentDetail != null) {
@@ -1467,7 +1468,7 @@ public class AppCMSPresenter {
                             }
                             readyAction.call(currentContentDatum);
                         }
-                    },apikey).execute(params);
+                    }).execute(params);
         }
     }
 
@@ -1514,7 +1515,9 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
 
             new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                     appCMSVideoDetail -> {
@@ -1596,7 +1599,7 @@ public class AppCMSPresenter {
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
                         }
-                    },apikey).execute(params);
+                    }).execute(params);
         }
         return result;
     }
@@ -1790,12 +1793,12 @@ public class AppCMSPresenter {
                         () -> {
                             String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
                                     appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-                            appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+                            appCMSUserVideoStatusCall.call(url, getAuthToken(), apikey, responseAction);
                         });
             } else {
                 String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
                         appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-                appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+                appCMSUserVideoStatusCall.call(url, getAuthToken(), apikey, responseAction);
             }
         }
     }
@@ -4386,7 +4389,8 @@ public class AppCMSPresenter {
                 }
             }
 
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),apikey,
+
+            appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
                         try {
                             if (addToWatchlistResult != null) {
@@ -5890,7 +5894,7 @@ public class AppCMSPresenter {
             request.setUserId(getLoggedInUser());
             request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             request.setPosition(1L);
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),apikey,
+            appCMSAddToWatchlistCall.call(url, getAuthToken(), apikey,
                     addToWatchlistResult -> {
                         try {
                             populateFilmsInUserWatchlist();
@@ -6640,7 +6644,8 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey).build();
         new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                 appCMSContentDetail -> {
                     try {
@@ -6691,14 +6696,15 @@ public class AppCMSPresenter {
                             action1.call(null);
                         }
                     }
-                },apikey).execute(params);
+                }).execute(params);
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
                                          AppCMSVideoPageBinder binder, Action1<Object> action1) {
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey).build();
         new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                 appCMSContentDetail -> {
                     try {
@@ -6795,7 +6801,7 @@ public class AppCMSPresenter {
                             action1.call(null);
                         }
                     }
-                },apikey).execute(params);
+                }).execute(params);
     }
 
     private void getAudioContent(final String apiBaseUrl,
@@ -7263,7 +7269,8 @@ public class AppCMSPresenter {
                                         apiBaseUrl, //getLoggedInUser(currentActivity,
                                         siteId,
                                         getLoggedInUser()),
-                                getAuthToken(),apikey,
+                                getAuthToken(),
+                                apikey,
                                 watchlist);
                     } catch (IOException e) {
                         //Log.e(TAG, "getWatchlistPageContent: " + e.toString());
@@ -7474,7 +7481,7 @@ public class AppCMSPresenter {
                     appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                             apiBaseUrl, getLoggedInUser(), siteiD,
                             getLoggedInUser()),
-                            getAuthToken(),apikey,
+                            getAuthToken(), apikey,
                             history);
                 } catch (IOException | NullPointerException e) {
                     //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7492,7 +7499,7 @@ public class AppCMSPresenter {
                         appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                                 apiBaseUrl, getLoggedInUser(), siteiD,
                                 getLoggedInUser()),
-                                getAuthToken(),apikey,
+                                getAuthToken(), apikey,
                                 history);
                     } catch (Exception e) {
                         //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7945,7 +7952,7 @@ public class AppCMSPresenter {
                                 appCMSMain.getApiBaseUrl(),
                                 appCMSSite.getGist().getSiteInternalName());
                         appCMSUserIdentityCall.callGet(url,
-                                getAuthToken(),
+                                getAuthToken(), apikey,
                                 userIdentity -> {
                                     try {
                                         Observable.just(userIdentity)
@@ -8006,7 +8013,7 @@ public class AppCMSPresenter {
                     userIdentity.setPassword(password);
                     showLoader();
                     appCMSUserIdentityCall.callPost(url,
-                            getAuthToken(),
+                            getAuthToken(), apikey,
                             userIdentity,
                             userIdentityResult -> {
                                 sendCloseOthersAction(null, true, false);
@@ -8056,7 +8063,7 @@ public class AppCMSPresenter {
             userIdentityPassword.setNewPassword(newPassword);
             showLoader();
             appCMSUserIdentityCall.passwordPost(url,
-                    getAuthToken(), userIdentityPassword,
+                    getAuthToken(), apikey, userIdentityPassword,
                     userIdentityPasswordResult -> {
                         stopLoader();
                         try {
@@ -9365,7 +9372,7 @@ public class AppCMSPresenter {
         String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        appCMSGoogleLoginCall.call(url, googleAccessToken,
+        appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
                 googleLoginResponse -> {
                     try {
                         if (googleLoginResponse != null) {
@@ -9765,6 +9772,8 @@ public class AppCMSPresenter {
 
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
 
+            subscriptionUserEmail = null;
+            subscriptionUserPassword = null;
             setLoggedInUser(null);
             setLoggedInUserName(null);
             setLoggedInUserEmail(null);
@@ -11725,19 +11734,42 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This is a common method being used on successfull transaction of CCAVenue and SSLCommerz
+     *
+     * @param data              This is null for the time being
+     */
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
-        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                appCMSMain.getApiBaseUrl(),
-                appCMSSite.getGist().getSiteInternalName());
-        startLoginAsyncTask(url,
-                subscriptionUserEmail,
-                subscriptionUserPassword,
-                false,
-                false,
-                true,
-                true,
-                false);
+        if (isSignupFromFacebook) {
+            setFacebookAccessToken(facebookAccessToken,
+                    facebookUserId,
+                    facebookUsername,
+                    facebookEmail,
+                    true,
+                    false);
+        } else if (isSignupFromGoogle) {
+            setGoogleAccessToken(googleAccessToken,
+                    googleUserId,
+                    googleUsername,
+                    googleEmail,
+                    true,
+                    false);
+        } else {
+            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    subscriptionUserEmail,
+                    subscriptionUserPassword,
+                    false,
+                    false,
+                    true,
+                    true,
+                    false);
+        }
+        refreshSubscriptionData(null, true);
         updatePlaybackControl();
+
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
@@ -11745,27 +11777,33 @@ public class AppCMSPresenter {
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
             setAudioPlayerOpen(false);
         } else if (entitlementPendingVideoData != null) {
-            isVideoPlayerStarted = false;
-            sendRefreshPageAction();
-            sendCloseOthersAction(null, true, false);
-            launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                    entitlementPendingVideoData.action,
-                    entitlementPendingVideoData.filmTitle,
-                    entitlementPendingVideoData.extraData,
-                    entitlementPendingVideoData.contentDatum,
-                    entitlementPendingVideoData.closeLauncher,
-                    entitlementPendingVideoData.currentlyPlayingIndex,
-                    entitlementPendingVideoData.relateVideoIds);
-            if (entitlementPendingVideoData != null) {
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isVideoPlayerStarted = false;
+                    sendRefreshPageAction();
+                    sendCloseOthersAction(null, true, false);
+                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                            entitlementPendingVideoData.action,
+                            entitlementPendingVideoData.filmTitle,
+                            entitlementPendingVideoData.extraData,
+                            entitlementPendingVideoData.contentDatum,
+                            entitlementPendingVideoData.closeLauncher,
+                            entitlementPendingVideoData.currentlyPlayingIndex,
+                            entitlementPendingVideoData.relateVideoIds);
+                    if (entitlementPendingVideoData != null) {
+                        entitlementPendingVideoData.pagePath = null;
+                        entitlementPendingVideoData.action = null;
+                        entitlementPendingVideoData.filmTitle = null;
+                        entitlementPendingVideoData.extraData = null;
+                        entitlementPendingVideoData.contentDatum = null;
+                        entitlementPendingVideoData.closeLauncher = false;
+                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                        entitlementPendingVideoData.relateVideoIds = null;
+                    }
+                }
+            }, 200);
+
         } else {
             sendCloseOthersAction(null, true, false);
             runOnUiThread(new Runnable() {
@@ -11787,8 +11825,6 @@ public class AppCMSPresenter {
                 });
             }
         }
-
-        refreshSubscriptionData(null, true);
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {
@@ -15040,9 +15076,11 @@ public class AppCMSPresenter {
                 appCMSSite.getGist().getSiteInternalName());
         GetAppCMSVideoDetailAsyncTask.Params params =
                 new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                action1,apikey).execute(params);
+                action1).execute(params);
     }
 
     public boolean launchTVButtonSelectedAction(String pagePath,
@@ -15560,7 +15598,8 @@ public class AppCMSPresenter {
                         appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSContentDetailTask.Params params =
                         new GetAppCMSContentDetailTask.Params.Builder().url(url)
-                                .authToken(getAuthToken()).build();
+                                .authToken(getAuthToken())
+                                .apiKey(apikey).build();
 
                 new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                         appCMSContentDetail -> {
@@ -15621,6 +15660,10 @@ public class AppCMSPresenter {
                                                                 currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                                     }
                                                 }
+                                            } else {
+                                                openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                                        currentActivity.getString(R.string.app_name)),
+                                                        currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                             }
                                         });
                             } else {
@@ -15628,7 +15671,7 @@ public class AppCMSPresenter {
                                         currentActivity.getString(R.string.app_name)),
                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                             }
-                        },apikey).execute(params);
+                        }).execute(params);
             } /*else {
                 if (watchTime >= 0) {
                     contentDatum.getGist().setWatchedTime(watchTime);
