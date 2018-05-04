@@ -1457,6 +1457,8 @@ public class ViewCreator {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                                }else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
                                                                 } else {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                                 }
@@ -2566,7 +2568,7 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            appCMSAndroidModules);
+                            appCMSAndroidModules, ((RecyclerView) componentViewResult.componentView));
 
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSPlaylistAdapter);
@@ -2586,25 +2588,25 @@ public class ViewCreator {
                      * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
                      */
                     //if (appCMSPresenter.getDownlistScreenCache() == null) {
-                        ((RecyclerView) componentViewResult.componentView)
-                                .setLayoutManager(new LinearLayoutManager(context,
-                                        LinearLayoutManager.VERTICAL,
-                                        false));
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
 
-                        appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
-                                this,
-                                appCMSPresenter,
-                                component.getLayout(),
-                                false,
-                                component,
-                                jsonValueKeyMap,
-                                moduleAPI,
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT,
-                                viewType,
-                                appCMSAndroidModules);
+                    appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            component.getLayout(),
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType,
+                            appCMSAndroidModules);
 
-                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
                   /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
@@ -2647,7 +2649,7 @@ public class ViewCreator {
                                         false));
 
 
-                         appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                        appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                                 this,
                                 appCMSPresenter,
                                 component.getLayout(),
@@ -4773,6 +4775,8 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                     } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
                                         ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                        ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
                                     }
                                 } else {
                                     ((TextView) componentViewResult.componentView).setText("");
@@ -6389,9 +6393,9 @@ public class ViewCreator {
         }
     }
 
-    public static void notifyDataChange(){
+    public static void notifyDataChange() {
 
-        if(appCMSUserWatHisDowAdapter != null)
+        if (appCMSUserWatHisDowAdapter != null)
             appCMSUserWatHisDowAdapter.notifyDataSetChanged();
     }
 

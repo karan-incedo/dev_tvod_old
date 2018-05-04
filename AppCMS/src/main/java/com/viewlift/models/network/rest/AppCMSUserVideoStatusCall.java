@@ -29,9 +29,10 @@ public class AppCMSUserVideoStatusCall {
         this.authHeaders = new HashMap<>();
     }
 
-    public void call(String url, String authToken,
+    public void call(String url, String authToken, String apiKey,
                      final Action1<UserVideoStatusResponse> readyAction1) {
         authHeaders.put("Authorization", authToken);
+        authHeaders.put("x-api-key", apiKey);
         appCMSUserVideoStatusRest.get(url, authHeaders).enqueue(new Callback<UserVideoStatusResponse>() {
             @Override
             public void onResponse(@NonNull Call<UserVideoStatusResponse> call,

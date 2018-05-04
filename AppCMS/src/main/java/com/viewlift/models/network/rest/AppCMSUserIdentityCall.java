@@ -31,8 +31,9 @@ public class AppCMSUserIdentityCall {
         this.authHeaders = new HashMap<>();
     }
 
-    public void callGet(String url, String authToken, final Action1<UserIdentity> userIdentityAction) {
+    public void callGet(String url, String authToken,String apiKey, final Action1<UserIdentity> userIdentityAction) {
         authHeaders.put("Authorization", authToken);
+        authHeaders.put("x-api-key", apiKey);
         appCMSUserIdentityRest.get(url, authHeaders).enqueue(new Callback<UserIdentity>() {
             @Override
             public void onResponse(@NonNull Call<UserIdentity> call,
@@ -52,11 +53,12 @@ public class AppCMSUserIdentityCall {
     }
 
     public void callPost(String url,
-                         String authToken,
+                         String authToken,String apiKey,
                          UserIdentity userIdentity,
                          final Action1<UserIdentity> userIdentityAction,
                          final Action1<ResponseBody> userErrorAction) {
         authHeaders.put("Authorization", authToken);
+        authHeaders.put("x-api-key", apiKey);
         appCMSUserIdentityRest.post(url, authHeaders, userIdentity).enqueue(new Callback<UserIdentity>() {
             @Override
             public void onResponse(@NonNull Call<UserIdentity> call,
@@ -80,11 +82,12 @@ public class AppCMSUserIdentityCall {
     }
 
     public void passwordPost(String url,
-                             String authToken,
+                             String authToken,String apiKey,
                              UserIdentityPassword userIdentityPassword,
                              final Action1<UserIdentityPassword> userIdentityPasswordAction1,
                              final Action1<ResponseBody> userPasswordErrorAction) {
         authHeaders.put("resetToken", authToken);
+        authHeaders.put("x-api-key", apiKey);
         appCMSUserIdentityRest.post(url, authHeaders,
                 userIdentityPassword).enqueue(new Callback<UserIdentityPassword>() {
             @Override
