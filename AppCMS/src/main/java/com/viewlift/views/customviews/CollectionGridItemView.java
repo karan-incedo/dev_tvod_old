@@ -266,6 +266,17 @@ public class CollectionGridItemView extends BaseView {
         this.selectable = selectable;
     }
 
+    /**
+     * @param context
+     * @param view
+     * @param data
+     * @param jsonValueKeyMap
+     * @param onClickHandler
+     * @param componentViewType
+     * @param themeColor
+     * @param appCMSPresenter
+     * @param position
+     */
     public void bindChild(Context context,
                           View view,
                           final ContentDatum data,
@@ -339,26 +350,47 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
 
                         } else {
-
-
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                                 placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
-                                placeholder = R.drawable.vid_image_placeholder_land;
+                                ((ImageView) view).setImageResource(R.drawable.img_placeholder);
+                                placeholder = R.drawable.img_placeholder;
                             }
 
+                        }
+                    }
+
+                    /* set large placeholder for carosuel and video detail page */
+                    if(componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY){
+                        if (childViewHeight > childViewWidth) {
+                            placeholder = R.drawable.vid_image_placeholder_port;
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                        } else {
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                                placeholder = R.drawable.vid_image_placeholder_square;
+                            } else {
+                                if(BaseView.isTablet(context)) {
+                                    ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                    placeholder = R.drawable.vid_image_placeholder_land;
+                                }else{
+                                    ((ImageView) view).setImageResource(R.drawable.img_placeholder);
+                                    placeholder = R.drawable.img_placeholder;
+                                }
+                            }
                         }
                     }
 

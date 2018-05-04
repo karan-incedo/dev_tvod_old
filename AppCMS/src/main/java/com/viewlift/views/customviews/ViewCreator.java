@@ -1920,14 +1920,14 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                } else if (moduleInfo.getBlockName().contains("history01")) {
-
+                } else if (moduleInfo.getBlockName().contains("history01") ||
+                        moduleInfo.getBlockName().contains("history02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("watchlist01")) {
-
+                } else if (moduleInfo.getBlockName().contains("watchlist01") ||
+                        moduleInfo.getBlockName().contains("watchlist02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);

@@ -677,6 +677,7 @@
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
     <string name="app_cms_page_path_article">article</string>
     <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
+    <string name="app_cms_deep_link_path_photos">photos</string>
     <string name="app_cms_page_article_detail_module">ArticleDetailModule</string>
     <string name="app_cms_page_photo_gallery_detail_module">PhotogalleryDetailModule</string>
     <!-- AppCMS Content Types -->

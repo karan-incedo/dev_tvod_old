@@ -2021,7 +2021,7 @@ public class AppCMSPresenter {
                 getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
                     if (userVideoStatusResponse != null) {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        stopLoader();
                         AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                         appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
                         appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
