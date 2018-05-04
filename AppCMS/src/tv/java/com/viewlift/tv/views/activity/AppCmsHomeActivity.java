@@ -320,30 +320,34 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-            if (!appCMSPresenter.isUserLoggedIn()) {
-                setSubscriptionText(false);
-            } else {
+            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                if (!appCMSPresenter.isUserLoggedIn()) {
+                    setSubscriptionText(false);
+                } else {
 
-                if (appCMSPresenter.getCurrentActivity() != null) {
+                    if (appCMSPresenter.getCurrentActivity() != null) {
 
-                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                        try {
-                            if (appCMSUserSubscriptionPlanResult != null) {
-                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                    setSubscriptionText(true);
+                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                            try {
+                                if (appCMSUserSubscriptionPlanResult != null) {
+                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        setSubscriptionText(true);
+                                    } else {
+                                        setSubscriptionText(false);
+                                    }
                                 } else {
                                     setSubscriptionText(false);
                                 }
-                            } else {
+                            } catch (Exception e) {
                                 setSubscriptionText(false);
                             }
-                        } catch (Exception e) {
-                            setSubscriptionText(false);
-                        }
-                    });
+                        });
+                    }
                 }
+            } else {
+                setSubscriptionText(true);
             }
         } else {
             findViewById(R.id.subscribe_now_strip).setVisibility(View.GONE);

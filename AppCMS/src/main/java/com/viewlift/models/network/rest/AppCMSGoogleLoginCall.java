@@ -10,6 +10,9 @@ import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -31,12 +34,13 @@ public class AppCMSGoogleLoginCall {
     }
 
     public void call(String url,
-                     String googleAccessToken,
+                     String googleAccessToken,String xApi,
                      final Action1<GoogleLoginResponse> responseAction1) {
         GoogleLoginRequest googleLoginRequest = new GoogleLoginRequest();
         googleLoginRequest.setAccessToken(googleAccessToken);
-
-        appCMSGoogleLoginRest.login(url, googleLoginRequest).enqueue(new Callback<GoogleLoginResponse>() {
+        Map<String, String> authTokenMap = new HashMap<>();
+        authTokenMap.put("x-api-key", xApi);
+        appCMSGoogleLoginRest.login(url, authTokenMap,googleLoginRequest).enqueue(new Callback<GoogleLoginResponse>() {
             @Override
             public void onResponse(@NonNull Call<GoogleLoginResponse> call,
                                    @NonNull Response<GoogleLoginResponse> response) {

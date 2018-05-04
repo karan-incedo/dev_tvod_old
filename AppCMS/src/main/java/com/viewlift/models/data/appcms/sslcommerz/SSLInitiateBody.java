@@ -7,8 +7,8 @@ public class SSLInitiateBody {
     String planId;
     @SerializedName("tran_id")
     String tran_id;
-    @SerializedName("sessionkey")
-    String sessionkey;
+    @SerializedName("phone")
+    String phone;
 
     public String getPlanId() {
         return planId;
@@ -26,11 +26,11 @@ public class SSLInitiateBody {
         this.tran_id = tran_id;
     }
 
-    public String getSessionkey() {
-        return sessionkey;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setSessionkey(String sessionkey) {
-        this.sessionkey = sessionkey;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
