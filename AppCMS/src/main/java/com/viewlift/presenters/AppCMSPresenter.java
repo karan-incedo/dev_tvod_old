@@ -11734,6 +11734,11 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This is a common method being used on successfull transaction of CCAVenue and SSLCommerz
+     *
+     * @param data              This is null for the time being
+     */
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
         if (isSignupFromFacebook) {
             setFacebookAccessToken(facebookAccessToken,
@@ -11820,8 +11825,6 @@ public class AppCMSPresenter {
                 });
             }
         }
-
-
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {
