@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,7 @@ import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
+import com.viewlift.tv.views.fragment.BaseFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
@@ -70,13 +72,14 @@ import rx.functions.Action1;
 
 public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCmsNavigationFragment.OnNavigationVisibilityListener,
-        AppCmsTvErrorFragment.ErrorFragmentListener,
-        AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
+        AppCmsTvErrorFragment.ErrorFragmentListener
+        {
 
     private final String TAG = AppCmsHomeActivity.class.getName();
     private FrameLayout navHolder;
     private FrameLayout homeHolder;
     private FrameLayout shadowView;
+    RelativeLayout navParentContaineer;
     AppCmsNavigationFragment navigationFragment;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver updateHistoryDataReciever;
@@ -89,7 +92,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public boolean isActive;
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
-    private FrameLayout subNavHolder;
+   // private FrameLayout subNavHolder;
     private BroadcastReceiver updateWatchListDataReceiver;
     private AppCmsLinkYourAccountFragment appCmsLinkYourAccountFragment;
 
@@ -144,30 +147,60 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
         int bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());//Color.parseColor("#660066");
 
+        String[] color = appCMSPresenter.getAppBackgroundColor().split("#");
+        String firstColor = "#ff"+color[1];
+        String secondColor = "#00"+color[1];
+
+
         navigationFragment = AppCmsNavigationFragment.newInstance(
-                this,
                 this,
                 this,
                 appCMSBinder,
                 textColor,
                 bgColor);
 
-        appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(this, this);
+      //  appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(this, this);
 
         setContentView(R.layout.activity_app_cms_tv_home);
+
+        RelativeLayout subscribeNowStripContaineer = (RelativeLayout) findViewById(R.id.subscribe_now_strip_containeer);
+        navParentContaineer = (RelativeLayout) findViewById(R.id.navigation_layouts_container);
         navHolder = (FrameLayout) findViewById(R.id.navigation_placholder);
-        subNavHolder = (FrameLayout) findViewById(R.id.sub_navigation_placeholder);
-        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
+       // subNavHolder = (FrameLayout) findViewById(R.id.sub_navigation_placeholder);
+
+        if(appCMSPresenter.isLeftNavigationEnabled()){
             ViewGroup.LayoutParams layoutParams = navHolder.getLayoutParams();
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            ViewGroup.LayoutParams layoutParamsSubNav = subNavHolder.getLayoutParams();
+            layoutParams.width = 600;
+
+            ViewGroup.LayoutParams parentLayoutparam = navParentContaineer.getLayoutParams();
+            parentLayoutparam.height =  ViewGroup.LayoutParams.MATCH_PARENT;
+
+            navParentContaineer.bringToFront();
+            navParentContaineer.setBackground(getDrawable(R.drawable.left_nav_gradient));
+            navParentContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+            navParentContaineer.setVisibility(View.INVISIBLE);
+
+           /* ViewGroup.LayoutParams layoutParamsSubNav = subNavHolder.getLayoutParams();
             layoutParamsSubNav.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParamsSubNav.width = 600;*/
+        }
+        else if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
+            ViewGroup.LayoutParams layoutParams = navHolder.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+           /* ViewGroup.LayoutParams layoutParamsSubNav = subNavHolder.getLayoutParams();
+            layoutParamsSubNav.height = ViewGroup.LayoutParams.MATCH_PARENT;*/
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) subscribeNowStripContaineer.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.id.navigation_layouts_container);
+        }else{
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) subscribeNowStripContaineer.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.id.navigation_layouts_container);
         }
         homeHolder = (FrameLayout) findViewById(R.id.home_placeholder);
         homeHolder.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         shadowView = (FrameLayout) findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
-        setSubNavigationFragment(appCmsSubNavigationFragment, updatedAppCMSBinder);
+        //setSubNavigationFragment(appCmsSubNavigationFragment, updatedAppCMSBinder);
         setPageFragment(appCMSBinder);
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         showInfoIcon(appCMSBinder.getPageId());
@@ -209,10 +242,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                         if (isActive) {
-                            if (appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
+                            if (!appCMSPresenter.isPagePrimary(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()) &&
+                                    (appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.getTosPage().getPageId().equalsIgnoreCase(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
-                                    || appCMSPresenter.getPrivacyPolicyPage().getPageId().equalsIgnoreCase(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())) {
+                                    || appCMSPresenter.getPrivacyPolicyPage().getPageId().equalsIgnoreCase(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()))) {
                                 //check first its a request for Terms of service or Privacy Policy dialog.
                                 if ((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
                                         AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)) {
@@ -228,14 +262,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 } else {
                                     openMyProfile();
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
-                                    if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                                    /*if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                                         showSubNavigation(false, false); //close subnavigation if any.
-                                    }
+                                    }*/
                                 }
                             } else {
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
-                                showSubNavigation(false, false); //close subnavigation if any.
+                              //  showSubNavigation(false, false); //close subnavigation if any.
                                 showNavigation(false); //close navigation if any.
                             }
                         }
@@ -263,7 +297,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 } else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
                     openSearchFragment(intent);
-                    showSubNavigation(false, false); //close subnavigation if any.
+                  //  showSubNavigation(false, false); //close subnavigation if any.
                     showNavigation(false); //close navigation if any.
                 } else if (intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)) {
                     Utils.pageLoading(false, AppCmsHomeActivity.this);
@@ -754,7 +788,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             handleNavigationVisibility();
             return;
         }
-        if (isSubNavigationVisible()) {
+       /* if (isSubNavigationVisible()) {
             if (appCmsSubNavigationFragment.isTeamsShowing()) {
                 handleNavigationVisibility();
                 showSubNavigation(false, false);
@@ -763,13 +797,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 showSubNavigation(false, true);
             }
             return;
-        }
+        }*/
 
-        if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+        /*if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
             if (null != getTopFragment() && getTopFragment() instanceof AppCmsMyProfileFragment) {
                 showSubNavigation(true, false);
             }
-        }
+        }*/
 
         if (appCMSBinderStack.size() > 0) {
             appCMSBinderStack.pop();
@@ -896,9 +930,27 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         break;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         //if navigation fragment is open then hold down key event otherwise pass it.
-                        if (isNavigationVisible() && (navigationFragment.getNavMenuSubscriptionModule() != null && !navigationFragment.getNavMenuSubscriptionModule().isFocused())) {
+                        if (!appCMSPresenter.isLeftNavigationEnabled()
+                                       &&isNavigationVisible()
+                                        &&(navigationFragment.getNavMenuSubscriptionModule() != null
+                                        && !navigationFragment.getNavMenuSubscriptionModule().isFocused())) {
                             handleNavigationVisibility();
                             return true;
+                        }
+                        break;
+
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        if(appCMSPresenter.isLeftNavigationEnabled()) {
+                            if (getTopFragment() instanceof BaseFragment) {
+                                BaseFragment baseFragment = (BaseFragment) getTopFragment();
+                                if (baseFragment.isSubNavExist()) {
+                                    if(shouldShowSubLeftNav)
+                                    baseFragment.showSubNavigation(!baseFragment.isSubNavigationVisible());
+                                } else if (shouldShowLeftNav) {
+                                    handleNavigationVisibility();
+                                    hideFooterControl();
+                                }
+                            }
                         }
                         break;
                     default:
@@ -916,10 +968,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         return super.dispatchKeyEvent(event);
     }
 
-    @Override
+   /* @Override
     public void showSubNavigation(boolean shouldShow, boolean showTeams) {
         new Handler().post(() -> {
-            subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            *//*subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);*//*
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             appCmsSubNavigationFragment.setFocusable(shouldShow);
             if (shouldShow) {
@@ -927,7 +979,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 appCmsSubNavigationFragment.notifyDataSetInvalidate(showTeams);
             }
         });
-    }
+    }*/
 
     private void handleNavigationVisibility() {
         if (!appCMSBinderStack.isEmpty() && appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())) {
@@ -943,7 +995,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             if (isNavigationVisible()) {
                 showNavigation(false);
-                if (null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView() && !isSubNavigationVisible()) {
+                if (null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView() /*&& !isSubNavigationVisible()*/) {
                     browseFragment.getCustomVideoVideoPlayerView().resumePlayer();
                 }
             } else {
@@ -986,6 +1038,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         new Handler().post(() -> {
             navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            navParentContaineer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
             navigationFragment.setFocusable(shouldShow);
             if (shouldShow) {
                 // navigationFragment.setSelectorColor();
@@ -996,10 +1049,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     public boolean isNavigationVisible() {
         return (navHolder.getVisibility() == View.VISIBLE);
-    }
-
-    public boolean isSubNavigationVisible() {
-        return (subNavHolder.getVisibility() == View.VISIBLE);
     }
 
     public void openSearchFragment(Intent intent) {
@@ -1076,10 +1125,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         return R.id.navigation_placholder;
     }
 
-    @Override
+   /* @Override
     public int getSubNavigationContainer() {
         return R.id.sub_navigation_placeholder;
-    }
+    }*/
 
 
     private void updateData() {
@@ -1270,5 +1319,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
+     boolean shouldShowLeftNav = false;
+    public void shouldShowLeftNavigation(boolean shouldShowLeftnav){
+        this.shouldShowLeftNav = shouldShowLeftnav;
+    }
+
+            boolean shouldShowSubLeftNav = false;
+            public void shouldShowSubLeftNavigation(boolean shouldShowSubLeftnav){
+                this.shouldShowSubLeftNav = shouldShowSubLeftnav;
+            }
 
 }

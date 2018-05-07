@@ -330,6 +330,11 @@ public class AppCMSTVTrayAdapter
                                 });
                     }
                 }
+
+                @Override
+                public void notifyData() {
+                    notifyDataSetChanged();
+                }
             };
         }
 

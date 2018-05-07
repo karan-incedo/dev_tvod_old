@@ -65,7 +65,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
         new Handler().postDelayed(() -> {
             if(null != customVideoVideoPlayerView){
-                if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
+                if (activity.isNavigationVisible() /*|| activity.isSubNavigationVisible()*/) {
                 } else {
                     if(activity.isActive) {
                         customVideoVideoPlayerView.resumePlayer();
@@ -247,6 +247,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
                 if (rowData != null) {
+                        if(getActivity() instanceof AppCmsHomeActivity){
+                            ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
+                        }
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view

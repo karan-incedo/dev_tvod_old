@@ -189,6 +189,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.sub_nav_page_key),
+                AppCMSUIKeyType.SUB_NAV_PAGE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_detail_app_logo_key),
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY);
 

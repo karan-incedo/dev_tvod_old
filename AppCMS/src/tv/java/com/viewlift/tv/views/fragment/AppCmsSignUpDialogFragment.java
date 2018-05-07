@@ -13,8 +13,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -27,6 +30,7 @@ import com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -46,6 +50,11 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
     private Context mContext;
     private FrameLayout pageHolder;
     private TextView subscriptionTitle;
+    private RelativeLayout subNavContaineer;
+    private View loginContaineer;
+    private View signupContaineer;
+    private TextView loginView;
+    private TextView signupView;
 
 
     public AppCmsSignUpDialogFragment() {
@@ -124,21 +133,37 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
             container.removeAllViews();
         }
 
-
-        View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+        int layoutResourceId = R.layout.app_cms_login_dialog_fragment;
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            layoutResourceId = R.layout.app_cms_left_nav_login_dialog_fragment;
+        }
+        View view = inflater.inflate(layoutResourceId, null);
 
         subscriptionTitle = (TextView)view.findViewById(R.id.nav_top_line);
-        if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                .equals(AppCMSPresenter.TemplateType.SPORTS)) {
-            updateSubscriptionStrip();
-        }else{
-            subscriptionTitle.setVisibility(View.GONE);
+        if(subscriptionTitle != null) {
+            if (appCMSPresenter.getTemplateType()
+                    .equals(AppCMSPresenter.TemplateType.SPORTS)) {
+                updateSubscriptionStrip();
+            } else {
+                subscriptionTitle.setVisibility(View.GONE);
+            }
         }
 
 
         LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
-        TextView loginView = (TextView) view.findViewById(R.id.textView_login);
-        TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
+        subNavContaineer = (RelativeLayout) view.findViewById(R.id.sub_navigation_containeer);
+
+        loginContaineer = view.findViewById(R.id.nav_item_login_layout);
+        signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
+
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            subNavHolder.setOrientation(LinearLayout.VERTICAL);
+            subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        }
+
+
+        loginView = (TextView) view.findViewById(R.id.textView_login);
+        signupView = (TextView) view.findViewById(R.id.textview_signup);
 
         loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
         signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
@@ -175,19 +200,34 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
                 int keyCode = keyEvent.getKeyCode();
                 int action = keyEvent.getAction();
                 if (action == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_DPAD_LEFT:
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_RIGHT:
-                            loginView.setFocusable(true);
-                            focusSignupView(signupView,loginView);
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_UP:
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_DOWN:
-                            focusSignupView(signupView,loginView);
-                            loginView.setFocusable(false);
-                            return false;
+                    if (appCMSPresenter.isLeftNavigationEnabled()) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                toogleLeftnavPanel(false);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                                focusLoginView(signupView,loginView);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                focusSignupView(signupView,loginView);
+                                return true;
+                        }
+                    } else {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                loginView.setFocusable(true);
+                                focusSignupView(signupView,loginView);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                focusSignupView(signupView,loginView);
+                                loginView.setFocusable(false);
+                                return false;
+                        }
                     }
                 }
                 return false;
@@ -200,19 +240,34 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
                 int keyCode = keyEvent.getKeyCode();
                 int action = keyEvent.getAction();
                 if (action == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_DPAD_LEFT:
-                            loginView.setFocusable(true);
-                            focusLoginView(signupView,loginView);
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_RIGHT:
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_UP:
-                            return true;
-                        case KeyEvent.KEYCODE_DPAD_DOWN:
-                            focusSignupView(signupView,loginView);
-                            loginView.setFocusable(false);
-                            return false;
+                    if (appCMSPresenter.isLeftNavigationEnabled()) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                toogleLeftnavPanel(false);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                                focusLoginView(signupView, loginView);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                focusSignupView(signupView, loginView);
+                                return true;
+                        }
+                    } else {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                loginView.setFocusable(true);
+                                focusLoginView(signupView,loginView);
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                                return true;
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                focusSignupView(signupView,loginView);
+                                loginView.setFocusable(false);
+                                return false;
+                        }
                     }
                 }
                 return false;
@@ -238,9 +293,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
             }
         });
 
-
-
-     getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
          @Override
          public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
              if(keyCode == KeyEvent.KEYCODE_BACK
@@ -256,9 +309,32 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         pageHolder.addView(tvPageView);
         signupView.requestFocus();
 
+        if(null != tvPageView && tvPageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView){
+            TVModuleView tvModuleView = (TVModuleView)tvPageView.getChildrenContainer().getChildAt(0);
+            EditText emailBox = ((EditText)tvModuleView.findViewById(R.id.email_edit_box)) ;
+            EditText passwordBox = ((EditText)tvModuleView.findViewById(R.id.password_edit_box)) ;
+            Button signupButton = ((Button)tvModuleView.findViewById(R.id.btn_login)) ;
+            emailBox.setOnKeyListener(leftNavigationListener);
+            passwordBox.setOnKeyListener(leftNavigationListener);
+            signupButton.setOnKeyListener(leftNavigationListener);
+
+        }
+
+
         return view;
     }
 
+    View.OnKeyListener leftNavigationListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                    && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                if(appCMSPresenter.isLeftNavigationEnabled())
+                    toogleLeftnavPanel(true);
+            }
+            return false;
+        }
+    };
 
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
@@ -361,19 +437,51 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
 
 
     private void focusSignupView(TextView signupView , TextView loginView) {
-        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
+        if(appCMSPresenter.isLeftNavigationEnabled()) {
+            signupContaineer.setBackground(
+                    Utils.getNavigationSelectedState(mContext, appCMSPresenter, true, Color.parseColor(appCMSPresenter.getAppBackgroundColor())));
+        }else{
+            signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
+        }
+
         signupView.setTypeface(extraBoldTypeFace);
-        loginView.setBackground(null);
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            loginContaineer.setBackground(null);
+        }else {
+            loginView.setBackground(null);
+        }
         loginView.setTypeface(semiBoldTypeFace);
         signupView.requestFocus();
     }
 
     private void focusLoginView(TextView signupView , TextView loginView) {
-        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
+        if(appCMSPresenter.isLeftNavigationEnabled()) {
+            loginContaineer.setBackground(
+                    Utils.getNavigationSelectedState(mContext, appCMSPresenter, true, Color.parseColor(appCMSPresenter.getAppBackgroundColor())));
+        }else{
+            loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")) );
+        }
         loginView.setTypeface(extraBoldTypeFace);
-        signupView.setBackground(null);
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            signupContaineer.setBackground(null);
+        }else {
+            signupView.setBackground(null);
+        }
         signupView.setTypeface(semiBoldTypeFace);
         loginView.requestFocus();
+    }
+
+    private void toogleLeftnavPanel(boolean show){
+        if(null != subNavContaineer){
+            subNavContaineer.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+
+        if(show){
+            focusSignupView(signupView, loginView);
+        }else{
+            signupView.clearFocus();
+            subNavContaineer.clearFocus();
+        }
     }
 
 

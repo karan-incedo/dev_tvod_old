@@ -20,4 +20,5 @@ public class BrowseFragmentRowData {
          public boolean isPlayerComponent;
          public boolean isSearchPage;
          public int rowNumber;
+         public int itemPosition;
 }

@@ -2,35 +2,31 @@ package com.viewlift.tv.views.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.AccessLevels;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
-import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -68,18 +64,27 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private String mSelectedPageId = null;
     private int selectedPosition = 0;
     private List<NavigationSubItem> navigationSubItemList;
+    private CustomAdapter customAdapter = null;
 
     public static AppCmsSubNavigationFragment newInstance(Context context,
                                                           OnSubNavigationVisibilityListener listener
     ) {
         mContext = context;
         AppCmsSubNavigationFragment fragment = new AppCmsSubNavigationFragment();
-      /*  Bundle args = new Bundle();
-        args.putInt(context.getString(R.string.app_cms_text_color_key), textColor);
-        args.putInt(context.getString(R.string.app_cms_bg_color_key), bgColor);
-        fragment.setArguments(args);*/
         navigationVisibilityListener = listener;
         return fragment;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        navigationVisibilityListener.setSubnavExistence(true);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        navigationVisibilityListener.setSubnavExistence(false);
     }
 
     @Nullable
@@ -91,14 +96,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder) bundle.getBinder("app_cms_binder");
         isLoginDialogPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
-/*
-        AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
-        this.appCmsBinder = appCMSBinder;
-*/
+
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        if (!appCMSPresenter.isLeftNavigationEnabled())
+            view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 
         View navTopLine = view.findViewById(R.id.nav_top_line);
         AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -111,8 +114,31 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
+
+
+        if (appCMSPresenter.isLeftNavigationEnabled()) {
+            mRecyclerView
+                    .setLayoutManager(new LinearLayoutManager(getActivity(),
+                            LinearLayoutManager.VERTICAL,
+                            false));
+        } else {
+            mRecyclerView
+                    .setLayoutManager(new LinearLayoutManager(getActivity(),
+                            LinearLayoutManager.HORIZONTAL,
+                            false));
+        }
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+        if (appCMSPresenter.isLeftNavigationEnabled()) {
+            customAdapter = new LeftNavigationAdapter(getActivity(), textColor, bgColor,
+                    mNavigation,
+                    appCMSPresenter);
+
+            mRecyclerView.setAdapter(customAdapter);
+            setFocusable(true);
+            customAdapter.setFocusOnSelectedPage();
+            navMenuTile.setVisibility(View.GONE);
+            navTopLine.setVisibility(View.GONE);
+        } else if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
             NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
                     mNavigation,
                     appCMSPresenter);
@@ -121,26 +147,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
             setFocusable(true);
             navigationAdapter.setFocusOnSelectedPage();
             navTopLine.setVisibility(View.GONE);
-        } else {
-            navMenuTile.setText("Settings");
-            navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
-            navMenuTile.setVisibility(View.VISIBLE);
-            navMenuTile.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
-
-            STNavigationAdapter navigationAdapter = new STNavigationAdapter(
-                    getActivity(),
-                    textColor,
-                    bgColor,
-                    mNavigation,
-                    appCMSPresenter);
-
-            mRecyclerView.setAdapter(navigationAdapter);
-            setFocusable(true);
-            navigationAdapter.setFocusOnSelectedPage();
-            navTopLine.setVisibility(View.VISIBLE);
-            navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
         }
         return view;
+    }
+
+    public CustomAdapter getCustomAdapter(){
+        return customAdapter;
     }
 
     private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
@@ -163,10 +175,17 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
     public void setFocusable(boolean hasFocus) {
         if (null != mRecyclerView) {
-            if (hasFocus)
+            if (hasFocus) {
                 mRecyclerView.requestFocus();
-            else
+            } else {
                 mRecyclerView.clearFocus();
+            }
+        }
+    }
+
+    public void setFocusonSelectedItem(){
+        if(null != customAdapter){
+            customAdapter.setFocusOnSelectedPage();
         }
     }
 
@@ -188,26 +207,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
         return 0;
     }
 
-    public void notifyDataSetInvalidate(boolean showTeams) {
-        mShowTeams = showTeams;
-        if (navigationSubItemList != null) {
-            navigationSubItemList.clear();
-            if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
-                if (!showTeams) {
-                    createSubNavigationListForST();
-                    navMenuTile.setText("Settings");
-                } else {
-                    createTeamsListForST();
-                    navMenuTile.setText("Teams");
-                }
-                mRecyclerView.requestFocus();
-            }
-        }
-        if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
-            mRecyclerView.getAdapter().notifyDataSetChanged();
-        }
-    }
-
     private boolean isEndPosition() {
         return selectedPosition == navigationSubItemList.size() - 1;
     }
@@ -226,6 +225,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navigationSubItem.title = navigationUser.getTitle();
                 navigationSubItem.url = navigationUser.getUrl();
                 navigationSubItem.accessLevels = navigationUser.getAccessLevels();
+                navigationSubItem.icon = navigationUser.getIcon();
                 if (null == navigationSubItemList) {
                     navigationSubItemList = new ArrayList<NavigationSubItem>();
                 }
@@ -244,6 +244,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navigationSubItem.title = navigationFooter.getTitle();
                 navigationSubItem.url = navigationFooter.getUrl();
                 navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
+                navigationSubItem.icon = navigationFooter.getIcon();
                 if (null == navigationSubItemList) {
                     navigationSubItemList = new ArrayList<NavigationSubItem>();
                 }
@@ -252,121 +253,68 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
     }
 
-    private void createSubNavigationListForST() {
-        if (null == navigationSubItemList) {
-            navigationSubItemList = new ArrayList<>();
-        }
-
-        NavigationSubItem navigationSubItem1 = new NavigationSubItem();
-        navigationSubItem1.icon = getString(R.string.st_autoplay_icon_key);
-        if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
-            navigationSubItem1.title = "AUTOPLAY ON";
-        } else {
-            navigationSubItem1.title = "AUTOPLAY OFF";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-
-        navigationSubItem1 = new NavigationSubItem();
-        navigationSubItem1.icon = getString(R.string.st_closed_caption_icon_key);
-        if (appCMSPresenter.getClosedCaptionPreference()) {
-            navigationSubItem1.title = "CLOSED CAPTION ON";
-        } else {
-            navigationSubItem1.title = "CLOSED CAPTION OFF";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-
-        if (appCMSPresenter.isUserLoggedIn()) {
-            navigationSubItem1 = new NavigationSubItem();
-            navigationSubItem1.title = "MANAGE SUBSCRIPTION";
-            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
-            navigationSubItemList.add(navigationSubItem1);
-        } else /*Guest User*/{
-            navigationSubItem1 = new NavigationSubItem();
-            navigationSubItem1.title = "SUBSCRIBE NOW";
-            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
-            navigationSubItemList.add(navigationSubItem1);
-        }
-
-        for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
-            NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
-            if (/*(isUserLogin && navigationUser.getAccessLevels().getLoggedIn())
-                        || (!isUserLogin && navigationUser.getAccessLevels().getLoggedOut())*/
-                    !navigationUser.getAccessLevels().getLoggedOut()
-                            && appCMSPresenter.isUserLoggedIn()) {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationUser.getPageId();
-                navigationSubItem.title = navigationUser.getTitle();
-                navigationSubItem.url = navigationUser.getUrl();
-                navigationSubItem.icon = navigationUser.getIcon();
-                navigationSubItem.accessLevels = navigationUser.getAccessLevels();
-                navigationSubItemList.add(navigationSubItem);
-            }
-        }
-            /*if (!isUserLogin) {
-                return;
-            }*/
-
-            if(null != mNavigation && null != mNavigation.getNavigationFooter()) {
-                for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
-                    NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
-                    {
-                        NavigationSubItem navigationSubItem = new NavigationSubItem();
-                        navigationSubItem.pageId = navigationFooter.getPageId();
-                        navigationSubItem.title = navigationFooter.getTitle();
-                        navigationSubItem.url = navigationFooter.getUrl();
-                        navigationSubItem.icon = navigationFooter.getIcon();
-                        navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
-                        if (null == navigationSubItemList) {
-                            navigationSubItemList = new ArrayList<>();
-                        }
-                        navigationSubItemList.add(navigationSubItem);
-                    }
-                }
-            }
-        navigationSubItem1 = new NavigationSubItem();
-        if (appCMSPresenter.isUserLoggedIn()) {
-            navigationSubItem1.title = "SIGN OUT";
-            navigationSubItem1.icon = getString(R.string.st_signout_icon_key);
-        } else {
-            navigationSubItem1.icon = getString(R.string.st_signin_icon_key);
-            navigationSubItem1.title = "SIGN IN";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-    }
-
-    private void createTeamsListForST() {
-        if (null == navigationSubItemList) {
-            navigationSubItemList = new ArrayList<>();
-        }
-
-        for (NavigationPrimary primary :
-                mNavigation.getTabBar()) {
-            if (primary.getTitle().equalsIgnoreCase("teams")) {
-                if (primary.getItems() != null) {
-                    for (NavigationPrimary team :
-                            primary.getItems()) {
-                        NavigationSubItem navigationSubItem = new NavigationSubItem();
-                        navigationSubItem.pageId = team.getPageId();
-                        navigationSubItem.title = team.getTitle();
-                        navigationSubItem.url = team.getUrl();
-                        navigationSubItem.accessLevels = team.getAccessLevels();
-                        navigationSubItem.icon = team.getIcon();
-                        navigationSubItemList.add(navigationSubItem);
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean isTeamsShowing() {
-        return mShowTeams;
-    }
-
     public interface OnSubNavigationVisibilityListener {
-        void showSubNavigation(boolean shouldShow, boolean showTeams);
+        void showSubNavigation(boolean shouldShow);
+
+        void setSubnavExistence(boolean isExist);
     }
 
-    class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavItemHolder> {
+    class CustomAdapter<C extends RecyclerView.ViewHolder> extends RecyclerView.Adapter {
+        @NonNull
+        @Override
+        public CustomAdapter.CustomHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List payloads) {
+            super.onBindViewHolder(holder, position, payloads);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            int totalCount = 0;
+            if (null != navigationSubItemList)
+                totalCount = navigationSubItemList.size();
+            return totalCount;
+        }
+
+        public Object getItem(int i) {
+            return navigationSubItemList.get(i);
+        }
+
+        protected boolean tryMoveSelection(RecyclerView.LayoutManager lm, int direction) {
+            int tryFocusItem = selectedPosition + direction;
+            if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
+                notifyItemChanged(selectedPosition);
+                selectedPosition = tryFocusItem;
+                notifyItemChanged(selectedPosition);
+                lm.scrollToPosition(selectedPosition);
+                return true;
+            }
+            return true;
+        }
+
+        public void setFocusOnSelectedPage() {
+            int selectedPos = getSelectedPagePosition();
+            notifyItemChanged(selectedPosition);
+            selectedPosition = selectedPos;
+            notifyItemChanged(selectedPosition);
+        }
+
+        class CustomHolder extends RecyclerView.ViewHolder {
+            public CustomHolder(View itemView) {
+                super(itemView);
+            }
+        }
+    }
+
+    class NavigationAdapter extends CustomAdapter<CustomAdapter.CustomHolder> {
         private Context mContext;
         private LayoutInflater inflater;
         private int textColor;
@@ -389,13 +337,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
             createSubNavigationList();
         }
 
-
-        public Object getItem(int i) {
-            return navigationSubItemList.get(i);
-        }
-
         @Override
-        public NavItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public CustomHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.navigation_sub_item, parent, false);
@@ -404,28 +347,29 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(NavItemHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             final NavigationSubItem subItem = (NavigationSubItem) getItem(position);
-            holder.navItemView.setText(subItem.title.toString().toUpperCase());
-            holder.navItemView.setTag(R.string.item_position, position);
+            NavItemHolder navItemHolder = (NavItemHolder) holder;
+            navItemHolder.navItemView.setText(subItem.title.toString().toUpperCase());
+            navItemHolder.navItemView.setTag(R.string.item_position, position);
             //Log.d("NavigationAdapter", subItem.title.toString());
 
             if (selectedPosition >= 0 && selectedPosition == position) {
-                holder.navItemlayout.setBackground(
-                        Utils.getNavigationSelectedState(mContext, appCmsPresenter, true , bgColor));
-                holder.navItemView.setTypeface(extraBoldTypeFace);
+                navItemHolder.navItemlayout.setBackground(
+                        Utils.getNavigationSelectedState(mContext, appCmsPresenter, true, bgColor));
+                navItemHolder.navItemView.setTypeface(extraBoldTypeFace);
             } else {
-                holder.navItemlayout.setBackground(null);
-                holder.navItemView.setTypeface(semiBoldTypeFace);
+                navItemHolder.navItemlayout.setBackground(null);
+                navItemHolder.navItemView.setTypeface(semiBoldTypeFace);
             }
 
-            holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
+            navItemHolder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
                     if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
                             .get(navigationSubItem.title))
-                    || ANDROID_WATCHLIST_SCREEN_KEY.equals(mAppCMSBinder
+                            || ANDROID_WATCHLIST_SCREEN_KEY.equals(mAppCMSBinder
                             .getJsonValueKeyMap().get(navigationSubItem.title))) {
 
                         appCmsPresenter.showLoadingDialog(true);
@@ -457,34 +401,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             });
         }
 
-        private boolean tryMoveSelection(RecyclerView.LayoutManager lm, int direction) {
-            int tryFocusItem = selectedPosition + direction;
-            if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = tryFocusItem;
-                notifyItemChanged(selectedPosition);
-                lm.scrollToPosition(selectedPosition);
-                return true;
-            }
-            return true;
-        }
-
-        @Override
-        public int getItemCount() {
-            int totalCount = 0;
-            if (null != navigationSubItemList)
-                totalCount = navigationSubItemList.size();
-            return totalCount;
-        }
-
-        private void setFocusOnSelectedPage() {
-            int selectedPos = getSelectedPagePosition();
-            notifyItemChanged(selectedPosition);
-            selectedPosition = selectedPos;
-            notifyItemChanged(selectedPosition);
-        }
-
-        class NavItemHolder extends RecyclerView.ViewHolder {
+        class NavItemHolder extends CustomHolder {
             TextView navItemView;
             RelativeLayout navItemlayout;
 
@@ -521,354 +438,132 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
     }
 
-    class STNavigationAdapter extends RecyclerView.Adapter<STNavigationAdapter.STNavItemHolder> {
+    class LeftNavigationAdapter extends CustomAdapter<CustomAdapter.CustomHolder>{
         private Context mContext;
         private LayoutInflater inflater;
         private int textColor;
+        private int bgColor;
         private Navigation navigation;
-        private AppCMSPresenter appCMSPresenter;
+        private boolean isuserLoggedIn;
+        private AppCMSPresenter appCmsPresenter;
         private int currentNavPos;
 
-        public STNavigationAdapter(Context activity,
-                                   int textColor,
-                                   int bgColor,
-                                   Navigation navigation,
-                                   AppCMSPresenter appCMSPresenter) {
+        public LeftNavigationAdapter(Context activity,
+                                     int textColor,
+                                     int bgColor,
+                                     Navigation navigation,
+                                     AppCMSPresenter appCMSPresenter) {
             mContext = activity;
             this.textColor = textColor;
+            this.bgColor = bgColor;
             this.navigation = navigation;
-            this.appCMSPresenter = appCMSPresenter;
-            createSubNavigationListForST();
+            this.appCmsPresenter = appCMSPresenter;
+            createSubNavigationList();
         }
 
-        public Object getItem(int i) {
-            return navigationSubItemList.get(i);
-        }
 
         @Override
-        public STNavItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        public NavItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.st_navigation_item, parent, false);
-            STNavItemHolder navItemHolder = new STNavItemHolder(view);
+                    .inflate(R.layout.left_navigation_item, parent, false);
+            NavItemHolder navItemHolder = new NavItemHolder(view);
             return navItemHolder;
         }
 
         @Override
-        public void onBindViewHolder(STNavItemHolder holder, final int position) {
-            final NavigationSubItem subItem = (NavigationSubItem) getItem(holder.getAdapterPosition());
-            holder.navItemView.setText(subItem.title.toUpperCase());
-            holder.navItemView.setTag(R.string.item_position, holder.getAdapterPosition());
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            final NavigationSubItem subItem = (NavigationSubItem) getItem(position);
+            NavItemHolder navItemHolder = (NavItemHolder) holder;
+            navItemHolder.navItemView.setText(subItem.title.toString().toUpperCase());
+            navItemHolder.navItemView.setTag(R.string.item_position, position);
 
-
-            if (!mShowTeams) {
-                holder.navImageView.setPadding(0, 0, 0, 0);
-                holder.navImageView.setImageResource(subItem.icon != null
-                        ? getIcon(subItem.icon) : -1);
-                if(subItem.icon != null) {
-                    holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
-                    holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
-                }
-            } else {
-                holder.navImageView.setPadding(10, 10, 10, 10);
-                Glide.with(mContext)
-                        .load(subItem.icon)
-                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
-                        .into(holder.navImageView);
+            navItemHolder.navIconView.setImageResource(Utils.getIcon(subItem.icon,mContext));
+            if(null != navItemHolder.navIconView.getDrawable()) {
+                navItemHolder.navIconView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
+                navItemHolder.navIconView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
             }
 
-            holder.navItemLayout.setOnClickListener(new View.OnClickListener() {
+            if (selectedPosition >= 0 && selectedPosition == position) {
+                navItemHolder.navItemlayout.setBackground(
+                        Utils.getNavigationSelectedState(mContext, appCmsPresenter, true, bgColor));
+                navItemHolder.navItemView.setTypeface(extraBoldTypeFace);
+            } else {
+                navItemHolder.navItemlayout.setBackground(null);
+                navItemHolder.navItemView.setTypeface(semiBoldTypeFace);
+            }
+
+            navItemHolder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
+                    if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))
+                            || ANDROID_WATCHLIST_SCREEN_KEY.equals(mAppCMSBinder
+                            .getJsonValueKeyMap().get(navigationSubItem.title))) {
 
-                    if (navigationSubItem.title.toUpperCase().contains("AUTOPLAY")) {
-                        if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
-                            navigationSubItem.title = "Autoplay Off";
-                            appCMSPresenter.setAutoplayEnabledUserPref(mContext, false);
-                        } else {
-                            navigationSubItem.title = "Autoplay On";
-                            appCMSPresenter.setAutoplayEnabledUserPref(mContext, true);
-                        }
-                    } else if (navigationSubItem.title.toUpperCase().contains("CLOSED CAPTION")) {
-                        if (appCMSPresenter.getClosedCaptionPreference()) {
-                            navigationSubItem.title = "Closed Caption Off";
-                            appCMSPresenter.setClosedCaptionPreference(false);
-                        } else {
-                            navigationSubItem.title = "Closed Caption On";
-                            appCMSPresenter.setClosedCaptionPreference(true);
-                        }
-                    } else if (navigationSubItem.title.toUpperCase().contains("SUBSCRI")) {
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            mContext.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                            appCMSPresenter.getSubscriptionData(
-                                        appCMSUserSubscriptionPlanResult -> {
-
-                                            mContext.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                            String platform;
-                                            String status;
-                                            String varMessage = "";
-                                            if (appCMSUserSubscriptionPlanResult != null
-                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
-                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
-                                                platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
-                                                status = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-
-                                                if (status.equalsIgnoreCase("COMPLETED") ||
-                                                        status.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                    if (platform.equalsIgnoreCase("web_browser")) {
-                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
-                                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
-                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
-                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos") || platform.contains("ios_apple_tv")) {
-                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
-                                                    } else {
-                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
-                                                    }
-                                                } else {
-                                                    varMessage = mContext.getString(R.string.subscription_not_purchased);
-                                                }
-                                            } else {
-                                                varMessage = mContext.getString(R.string.subscription_not_purchased);
-                                            }
-                                            appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription), false);
-                                        }
-                                );
-                        } else {
-                            if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
-                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                                ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                        getActivity(),
-                                        appCMSPresenter,
-                                        getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                        getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                        getString(R.string.subscription),
-                                        getString(R.string.subscription_not_purchased),
-                                        getString(R.string.sign_in_text),
-                                        getString(android.R.string.cancel),
-                                        14
-                                );
-
-                                newFragment.setOnPositiveButtonClicked(s -> {
-                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                    appCMSPresenter.navigateToTVPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false,
-                                            Uri.EMPTY,
-                                            false,
-                                            false,
-                                            true);
-                                });
-                            }else{
-                                appCMSPresenter.openTVErrorDialog(
-                                        getActivity().getString(R.string.subscription_not_purchased),
-                                        getActivity().getString(R.string.subscription), false);
-                            }
-                            //appCMSPresenter.openTVErrorDialog(mContext.getString(R.string.subscription_not_purchased), mContext.getString(R.string.subscription), false);
-                        }
-                    } else if (navigationSubItem.title.toUpperCase().contains("SIGN")) {
-                        if (!appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                            appCMSPresenter.navigateToTVPage(
-                                    navigationUser.getPageId(),
-                                    navigationUser.getTitle(),
-                                    navigationUser.getUrl(),
-                                    false,
-                                    Uri.EMPTY,
-                                    false,
-                                    false,
-                                    true
-                            );
-                        } else {
-                            appCMSPresenter.logoutTV();
-                        }
-                      //  navigationVisibilityListener.showSubNavigation(false, false);
-                    } else if (navigationSubItem.title.toUpperCase().contains("ACCOUNT")) {
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            // navigationVisibilityListener.showSubNavigation(false, false);
-                            appCMSPresenter.navigateToTVPage(
-                                    navigationSubItem.pageId,
-                                    navigationSubItem.title,
-                                    navigationSubItem.url,
-                                    false,
-                                    Uri.EMPTY,
-                                    false,
-                                    true,
-                                    false);
-                        } else {
-                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                    mContext,
-                                    appCMSPresenter,
-                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                    mContext.getString(R.string.sign_in_text),
-                                    mContext.getString(R.string.open_account_dialog_text),
-                                    mContext.getString(R.string.sign_in_text),
-                                    mContext.getString(android.R.string.cancel),
-                                    14
-
-                            );
-                            newFragment.setOnPositiveButtonClicked(s -> {
-
-                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                appCMSPresenter.navigateToTVPage(
-                                        navigationUser.getPageId(),
-                                        navigationUser.getTitle(),
-                                        navigationUser.getUrl(),
-                                        false,
-                                        Uri.EMPTY,
-                                        false,
-                                        false,
-                                        true);
-                            });
-                        }
-                    } else if (navigationSubItem.title.toUpperCase().contains("CONTACT")) {
-                        //navigationVisibilityListener.showSubNavigation(false, false);
-                        appCMSPresenter.navigateToTVPage(
+                        appCmsPresenter.showLoadingDialog(true);
+                        appCmsPresenter.navigateToWatchlistPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else if (ANDROID_HISTORY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
+                        appCmsPresenter.showLoadingDialog(true);
+                        appCmsPresenter.navigateToHistoryPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else {
+                        appCmsPresenter.navigateToTVPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
                                 navigationSubItem.url,
                                 false,
                                 Uri.EMPTY,
-                                true,
-                                true,
-                                false);
-                    } else {
-                        if (navigationSubItem.pageId != null
-                                && navigationSubItem.pageId.length() > 0) {
-                            if (isTeamsShowing())
-                                navigationVisibilityListener.showSubNavigation(false, false);
-                            appCMSPresenter.navigateToTVPage(
-                                    navigationSubItem.pageId,
-                                    navigationSubItem.title,
-                                    navigationSubItem.url,
-                                    false,
-                                    Uri.EMPTY,
-                                    true,
-                                    !isTeamsShowing(),
-                                    isLoginDialogPage);
-                        } else {
-                            appCMSPresenter.openTVErrorDialog("There is some error opening " + navigationSubItem.title, "", false);
-                        }
+                                false,
+                                false,
+                                isLoginDialogPage);
                     }
-                    STNavigationAdapter.this.notifyItemChanged(holder.getAdapterPosition());
                 }
             });
         }
 
-        private int getIcon(String icon) {
-
-            int iconResId = 0;
-            if (icon.equalsIgnoreCase(getString(R.string.st_autoplay_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_autoplay;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_closed_caption_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_cc;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_manage_subscription_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_manage_subscription;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_account_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_account;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_faq_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_faq;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_contact_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_contact;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_signin_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_signin;
-            } else if (icon.equalsIgnoreCase(getString(R.string.st_signout_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_signout;
-            }else if (icon.equalsIgnoreCase(getString(R.string.st_about_us_icon_key))) {
-                iconResId = R.drawable.st_settings_icon_about_us;
-            }else if (icon.equalsIgnoreCase(getString(R.string.st_privacy_policy_icon_key))) {
-                iconResId = R.drawable.st_setting_icon_privacy_policy;
-            }
-            return iconResId;
-        }
-
-        private boolean tryMoveSelection(RecyclerView.LayoutManager lm, int direction) {
-            int tryFocusItem = selectedPosition + direction;
-            if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = tryFocusItem;
-                notifyItemChanged(selectedPosition);
-                lm.scrollToPosition(selectedPosition);
-                return true;
-            }
-            return true;
-        }
-
-        @Override
-        public int getItemCount() {
-            int totalCount = 0;
-            if (null != navigationSubItemList)
-                totalCount = navigationSubItemList.size();
-            return totalCount;
-        }
-
-        private void setFocusOnSelectedPage() {
-            int selectedPos = getSelectedPagePosition();
-            notifyItemChanged(selectedPosition);
-            selectedPosition = selectedPos;
-            notifyItemChanged(selectedPosition);
-        }
-
-        class STNavItemHolder extends RecyclerView.ViewHolder {
+        class NavItemHolder extends CustomHolder {
             TextView navItemView;
-            ImageView navImageView;
-            RelativeLayout navItemLayout;
+            LinearLayout navItemlayout;
+            ImageView navIconView;
 
-            public STNavItemHolder(View itemView) {
+            public NavItemHolder(View itemView) {
                 super(itemView);
-                setTypeFaceValue(appCMSPresenter);
+                setTypeFaceValue(appCmsPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
-                navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
-                navImageView = (ImageView) itemView.findViewById(R.id.nav_item_image);
-                navItemLayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-//                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCMSPresenter, false));
-                navItemLayout.setBackground(Utils.getMenuSelector(mContext, appCMSPresenter.getAppCtaBackgroundColor(),
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
-                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCMSPresenter)));
-                navItemView.setTypeface(semiBoldTypeFace);
-                navItemLayout.setOnFocusChangeListener((view, hasFocus) -> {
+                navItemlayout = (LinearLayout) itemView.findViewById(R.id.nav_item_layout);
+                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
 
-                    selectedPosition = (int) navItemView.getTag(R.string.item_position);
+                navIconView = (ImageView) itemView.findViewById(R.id.nav_item_image);
 
-                    /*if (hasFocus) {
-                        ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    } else {
-                        ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }*/
+                navItemlayout.setOnFocusChangeListener((view, focus) -> {
+                    if (focus)
+                        mRecyclerView.setAlpha(1f);
                 });
 
-                navItemLayout.setOnKeyListener((view, i, keyEvent) -> {
+                navItemlayout.setOnKeyListener((view, i, keyEvent) -> {
                     int keyCode = keyEvent.getKeyCode();
-                    if(keyCode == KeyEvent.KEYCODE_MENU){
-                        Toast.makeText(getActivity(),"Menu..",Toast.LENGTH_SHORT).show();
-                        return true;
-                    }
                     int action = keyEvent.getAction();
                     if (action == KeyEvent.ACTION_DOWN) {
                         switch (keyCode) {
-                            case KeyEvent.KEYCODE_DPAD_LEFT:
-                                if (isStartPosition()) {
-                                    return true;
-                                }
-                                break;
-                            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                if (isEndPosition()) {
-                                    return true;
-                                }
-                                break;
-                            case KeyEvent.KEYCODE_DPAD_DOWN:
                             case KeyEvent.KEYCODE_DPAD_UP:
-                            case KeyEvent.KEYCODE_MENU:
-                                return true;
-                        }
-                    }else if(action == KeyEvent.ACTION_UP){
-                        switch(keyCode){
-                            case KeyEvent.KEYCODE_MENU:
-                                return true;
+                                return tryMoveSelection(mRecyclerView.getLayoutManager(), -1);
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                return tryMoveSelection(mRecyclerView.getLayoutManager(), 1);
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                setFocusOnSelectedPage();
+                                navigationVisibilityListener.showSubNavigation(false);
+                                new Handler().postDelayed(() -> mRecyclerView.setAlpha(0.52f), 50);
+                                break;
                         }
                     }
                     return false;

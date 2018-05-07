@@ -3,13 +3,16 @@ package com.viewlift.tv.views.activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -20,23 +23,25 @@ import com.viewlift.tv.views.customviews.AppCMSTVTrayAdapter;
 import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
+import com.viewlift.tv.views.fragment.BaseFragment;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
 
-public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
+public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
 
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private AppCMSBinder mAppCMSBinder;
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
+    private View subNavigationPlaceholder;
+    private  RelativeLayout subNavContaineer;
 
     public static AppCmsMyProfileFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCmsMyProfileFragment appCmsTVPageFragment = new AppCmsMyProfileFragment();
         Bundle bundle = new Bundle();
         bundle.putBinder("app_cms_binder", appCMSBinder);
-        //appCmsTVPageFragment.mPageId = appCMSBinder.getScreenName();
         appCmsTVPageFragment.setArguments(bundle);
         return appCmsTVPageFragment;
     }
@@ -45,7 +50,6 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder) bundle.getBinder("app_cms_binder");
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
@@ -73,21 +77,77 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
 
         View view = inflater.inflate(R.layout.app_cms_my_profile_fragment, null);
+        subNavigationPlaceholder = view.findViewById(R.id.sub_navigation_placholder);
+        subNavContaineer = (RelativeLayout)view.findViewById(R.id.sub_navigation_containeer);
+
+        FrameLayout pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
+
         if(appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
             setSubNavigationFragment();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pageHolder.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.id.sub_navigation_placholder);
+
         } else {
-            View subNavigationPlaceholder = view.findViewById(R.id.sub_navigation_placholder);
             if (subNavigationPlaceholder != null) {
                 subNavigationPlaceholder.setVisibility(View.GONE);
+                subNavContaineer.setVisibility(View.GONE);
             }
         }
 
-        FrameLayout pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            ViewGroup.LayoutParams layoutParams = subNavigationPlaceholder.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.width = 600;
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pageHolder.getLayoutParams();
+            params.removeRule(RelativeLayout.BELOW);
+            subNavContaineer.bringToFront();
+
+
+            subNavContaineer.setBackground(getActivity().getDrawable(R.drawable.left_nav_gradient));
+            subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        }
+
         pageHolder.addView(tvPageView);
         tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         return view;
     }
 
+
+    @Override
+    public boolean isSubNavigationVisible() {
+        if(null != subNavigationPlaceholder){
+            return subNavigationPlaceholder.getVisibility() == View.VISIBLE;
+        }
+        return false;
+    }
+
+    boolean isSubNavExist = false;
+    @Override
+    public boolean isSubNavExist() {
+        return isSubNavExist;
+    }
+
+    @Override
+    public void setSubnavExistence(boolean isExist) {
+        isSubNavExist = isExist;
+    }
+
+    @Override
+    public void showSubNavigation(boolean shouldShow) {
+        if(null != subNavigationPlaceholder){
+            subNavigationPlaceholder.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
+            subNavContaineer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
+            if (null != appCmsSubNavigationFragment && null != appCmsSubNavigationFragment.getCustomAdapter()) {
+                appCmsSubNavigationFragment.setFocusonSelectedItem();
+            }
+            new Handler().post(() -> {
+                if(shouldShow && null != appCmsSubNavigationFragment){
+                    appCmsSubNavigationFragment.setFocusable(shouldShow);
+                }
+            });
+        }
+    }
 
     public void updateAdapterData(AppCMSBinder appCmsBinder) {
         try {
@@ -133,10 +193,6 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
         getChildFragmentManager().beginTransaction().replace(R.id.sub_navigation_placholder, appCmsSubNavigationFragment).commitAllowingStateLoss();
     }
 
-    @Override
-    public void showSubNavigation(boolean shouldShow, boolean showTeams) {
-
-    }
 
     public AppCMSTVViewComponent buildAppCMSViewComponent() {
         return DaggerAppCMSTVViewComponent.builder()

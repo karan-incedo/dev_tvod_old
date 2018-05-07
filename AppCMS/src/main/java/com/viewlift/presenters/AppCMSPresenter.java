@@ -630,6 +630,7 @@ public class AppCMSPresenter {
     private MetaPage articlePage;
     private MetaPage photoGalleryPage;
     private MetaPage linkAccountPage;
+    private MetaPage subNavPage;
 
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -6284,6 +6285,9 @@ public class AppCMSPresenter {
                                             List<NavigationPrimary> items,
                                             boolean launchActivity) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+        if(title.contains("Setting")){
+            appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+        }
         if (appCMSPageUI == null) {
             if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
                 RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
@@ -6305,12 +6309,18 @@ public class AppCMSPresenter {
                 return;
             }
             MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+
+            if(title.contains("Setting")){
+                metaPage = subNavPage;
+            }
+
             if (metaPage != null) {
+                MetaPage finalMetaPage = metaPage;
                 getAppCMSPage(metaPage.getPageUI(),
                         appCMSPageUIResult -> {
                             if (appCMSPageUIResult != null) {
-                                navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
-                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                navigationPages.put(finalMetaPage.getPageId(), appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(finalMetaPage.getPageName());
                                 if (action != null && actionToPageMap.containsKey(action)) {
                                     actionToPageMap.put(action, appCMSPageUIResult);
                                 }
@@ -6327,11 +6337,13 @@ public class AppCMSPresenter {
             if (null != appCMSPageUI && null != appCMSPageUI.getModuleList()
                     && appCMSPageUI.getModuleList().size() > 0) {
                 module.setId(appCMSPageUI.getModuleList().get(0).getId());
+                module.setTitle(title);
             }
             ArrayList<Module> moduleList = new ArrayList<>();
             moduleList.add(module);
             appCMSPageAPI.setModules(moduleList);
             appCMSPageAPI.setId(pageId);
+            appCMSPageAPI.setTitle(title);
             ArrayList<ContentDatum> data = new ArrayList<>();
             for (NavigationPrimary navigationPrimary : items) {
                 data.add(navigationPrimary.convertToContentDatum());
@@ -6362,6 +6374,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
 
     public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
                                         boolean launchActivity) {
@@ -13813,119 +13826,141 @@ public class AppCMSPresenter {
 
                 String action = pageNameToActionMap.get(metaPage.getPageName());
                 if (action != null && actionToPageMap.containsKey(action)) {
-                    actionToPageNameMap.put(action, metaPage.getPageName());
-                    actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
-                    actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
+                    if (action != null && actionToPageMap.containsKey(action)) {
+                        actionToPageNameMap.put(action, metaPage.getPageName());
+                        actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
+                        actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+                        loginPage = metaPage;
+                        new SoftReference<Object>(loginPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
+                        signupPage = metaPage;
+                        new SoftReference<Object>(signupPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
+                        downloadQualityPage = metaPage;
+                        new SoftReference<Object>(downloadQualityPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
+                        downloadPage = metaPage;
+                        new SoftReference<Object>(downloadPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.PRIVACY_POLICY_KEY) {
+                        privacyPolicyPage = metaPage;
+                        new SoftReference<Object>(privacyPolicyPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY) {
+                        linkAccountPage = metaPage;
+                        new SoftReference<Object>(linkAccountPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.SUB_NAV_PAGE_KEY) {
+                        subNavPage = metaPage;
+                        new SoftReference<Object>(subNavPage, referenceQueue);
+                    }
+
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
+                        tosPage = metaPage;
+                        new SoftReference<Object>(privacyPolicyPage, referenceQueue);
+                    }
+
+                    if (platformType == PlatformType.TV) {
+                        if (jsonValueKeyMap.get(metaPage.getPageName())
+                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
+                                (navigation != null &&
+                                        navigation.getNavigationPrimary() != null &&
+                                        navigation.getNavigationPrimary().get(0) != null &&
+                                        navigation.getNavigationPrimary().get(0).getPageId() != null &&
+                                        metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))) {
+                            homePage = metaPage;
+                            new SoftReference<Object>(homePage, referenceQueue);
+                        }
+                    } else if (platformType == PlatformType.ANDROID) {
+                        if (jsonValueKeyMap.get(metaPage.getPageName())
+                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
+                                (navigation != null &&
+                                        navigation.getTabBar() != null &&
+                                        navigation.getTabBar().get(0) != null &&
+                                        navigation.getTabBar().get(0).getPageId() != null &&
+                                        metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
+                            homePage = metaPage;
+                            new SoftReference<Object>(homePage, referenceQueue);
+                        }
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
+                        moviesPage = metaPage;
+                        new SoftReference<Object>(moviesPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
+                        showsPage = metaPage;
+                        new SoftReference<Object>(showsPage, referenceQueue);
+                    }
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
+                        playlistPage = metaPage;
+                        new SoftReference<Object>(playlistPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
+                        subscriptionPage = metaPage;
+                        new SoftReference<Object>(subscriptionPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
+                        historyPage = metaPage;
+                        new SoftReference<Object>(historyPage, referenceQueue);
+                    }
+
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
+                        watchlistPage = metaPage;
+                        new SoftReference<Object>(watchlistPage, referenceQueue);
+                    }
                 }
 
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
-                    loginPage = metaPage;
-                    new SoftReference<Object>(loginPage, referenceQueue);
+                int articlePageIndex = getArticlePage(metaPageList);
+                if (articlePageIndex >= 0) {
+                    articlePage = metaPageList.get(articlePageIndex);
+                    new SoftReference<Object>(articlePage, referenceQueue);
                 }
 
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
-                    signupPage = metaPage;
-                    new SoftReference<Object>(signupPage, referenceQueue);
+                int photoGalleryPageIndex = getPhotoGalleryPage(metaPageList);
+                if (photoGalleryPageIndex >= 0) {
+                    photoGalleryPage = metaPageList.get(photoGalleryPageIndex);
+                    new SoftReference<Object>(photoGalleryPage, referenceQueue);
                 }
 
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
-                    downloadQualityPage = metaPage;
-                    new SoftReference<Object>(downloadQualityPage, referenceQueue);
+                int pageToQueueIndex = -1;
+                if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
+                        && !isUserLoggedIn()) {
+                    launchType = LaunchType.LOGIN_AND_SIGNUP;
                 }
 
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
-                    downloadPage = metaPage;
-                    new SoftReference<Object>(downloadPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.PRIVACY_POLICY_KEY) {
-                    privacyPolicyPage = metaPage;
-                    new SoftReference<Object>(privacyPolicyPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY) {
-                    linkAccountPage = metaPage;
-                    new SoftReference<Object>(linkAccountPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
-                    tosPage = metaPage;
-                    new SoftReference<Object>(privacyPolicyPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
-                        (navigation != null &&
-                                navigation.getTabBar() != null &&
-                                navigation.getTabBar().get(0) != null &&
-                                navigation.getTabBar().get(0).getPageId() != null &&
-                                metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
-                    homePage = metaPage;
-                    new SoftReference<Object>(homePage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
-                    moviesPage = metaPage;
-                    new SoftReference<Object>(moviesPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
-                    showsPage = metaPage;
-                    new SoftReference<Object>(showsPage, referenceQueue);
-                }
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
-                    playlistPage = metaPage;
-                    new SoftReference<Object>(playlistPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                    subscriptionPage = metaPage;
-                    new SoftReference<Object>(subscriptionPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
-                    historyPage = metaPage;
-                    new SoftReference<Object>(historyPage, referenceQueue);
-                }
-
-                if (jsonValueKeyMap.get(metaPage.getPageName())
-                        == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
-                    watchlistPage = metaPage;
-                    new SoftReference<Object>(watchlistPage, referenceQueue);
-                }
+                pagesToProcess.addAll(metaPageList);
             }
-
-            int articlePageIndex = getArticlePage(metaPageList);
-            if (articlePageIndex >= 0) {
-                articlePage = metaPageList.get(articlePageIndex);
-                new SoftReference<Object>(articlePage, referenceQueue);
-            }
-
-            int photoGalleryPageIndex = getPhotoGalleryPage(metaPageList);
-            if (photoGalleryPageIndex >= 0) {
-                photoGalleryPage = metaPageList.get(photoGalleryPageIndex);
-                new SoftReference<Object>(photoGalleryPage, referenceQueue);
-            }
-
-            int pageToQueueIndex = -1;
-            if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
-                    && !isUserLoggedIn()) {
-                launchType = LaunchType.LOGIN_AND_SIGNUP;
-            }
-
-            pagesToProcess.addAll(metaPageList);
         }
     }
 
@@ -14382,9 +14417,25 @@ public class AppCMSPresenter {
                         NavigationPrimary searchNav = new NavigationPrimary();
                         searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
                         searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                        searchNav.setIcon(currentActivity.getString(R.string.st_search_icon_key));
                         navigation.getNavigationPrimary().add(searchNav);
                     }
                 }
+
+                //TODO :- HardCoded settings option id for now. issue is that Account and setting both have the same pageId.
+                if (navigation != null && navigation.getNavigationPrimary() != null
+                        && navigation.getNavigationPrimary().size() > 0) {
+                    for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
+                        if (navigationPrimary != null && navigationPrimary.getTitle() != null) {
+                            if (navigationPrimary.getTitle().contains("Setting")
+                                    || navigationPrimary.getTitle().contains("setting")) {
+                                navigationPrimary.setPageId(currentActivity.getString(R.string.app_cms_settings_page_tag));
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 queueMetaPages(appCMSAndroidUI.getMetaPages());
                 final MetaPage firstPage = pagesToProcess.peek();
                 //Log.d(TAG, "Processing meta pages queue");
@@ -18129,5 +18180,10 @@ public class AppCMSPresenter {
             }
         }
         return pageType;
+    }
+
+
+    public boolean isLeftNavigationEnabled(){
+        return true;
     }
 }
