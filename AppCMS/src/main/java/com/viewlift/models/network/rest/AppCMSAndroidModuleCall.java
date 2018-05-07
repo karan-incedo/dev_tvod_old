@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -33,9 +32,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Response;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -250,7 +250,7 @@ public class AppCMSAndroidModuleCall {
             return moduleDataMap;
         })
         .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
         .onErrorResumeNext(throwable -> Observable.empty())
         .subscribe((result) -> Observable.just(result)
                 .onErrorResumeNext(throwable -> Observable.empty())

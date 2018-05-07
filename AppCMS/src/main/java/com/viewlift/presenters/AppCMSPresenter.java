@@ -332,6 +332,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
@@ -342,7 +344,6 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -6223,7 +6224,7 @@ public class AppCMSPresenter {
                             return currentAppVersion;
                         })
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                         .onErrorResumeNext(throwable -> Observable.empty())
                         .subscribe((result) -> Observable.just(result)
                                 .onErrorResumeNext(throwable -> Observable.empty())
@@ -6849,7 +6850,7 @@ public class AppCMSPresenter {
                         siteId,
                         pageId);
                 AppCMSAudioDetailRest appCMSAudioDetailCallPlaylist = (AppCMSAudioDetailRest) createRetrofitService(AppCMSAudioDetailRest.class, apiBaseUrl);
-                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId).subscribeOn(Schedulers.io()).observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread())).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
                     @Override
                     public void onCompleted() {
                         Log.d("TAG", "Complete");
@@ -7958,13 +7959,13 @@ public class AppCMSPresenter {
                                 userIdentity -> {
                                     try {
                                         Observable.just(userIdentity)
-                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                                                 .onErrorResumeNext(throwable -> Observable.empty())
                                                 .subscribe(userIdentityAction);
                                     } catch (Exception e) {
                                         //Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
                                         Observable.just((UserIdentity) null)
-                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                                                 .onErrorResumeNext(throwable -> Observable.empty())
                                                 .subscribe(userIdentityAction);
                                     }
@@ -7972,7 +7973,7 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
                         //Log.e(TAG, "Error refreshing identity: " + e.getMessage());
                         Observable.just((UserIdentity) null)
-                                .observeOn(AndroidSchedulers.mainThread())
+                                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                                 .onErrorResumeNext(throwable -> Observable.empty())
                                 .subscribe(userIdentityAction);
                     }

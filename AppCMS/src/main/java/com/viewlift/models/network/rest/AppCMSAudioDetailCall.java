@@ -5,25 +5,22 @@ package com.viewlift.models.network.rest;
  */
 
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -66,7 +63,9 @@ public class AppCMSAudioDetailCall {
 
     public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction, boolean isFalse) throws IOException {
         try {
-            appCMSAudioDetailRest.getPlayList("","").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+            appCMSAudioDetailRest.getPlayList("", "").subscribeOn(Schedulers.io()).observeOn(
+                    RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread())
+            ).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
                 @Override
                 public void onCompleted() {
                     Log.d("TAG", "Complete");

@@ -3,17 +3,14 @@ package com.viewlift.views.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -32,7 +29,6 @@ import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import rx.functions.Action1;
 
 public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTraySeasonItemAdapter.ViewHolder>
         implements OnInternalEvent, AppCMSBaseAdapter {
@@ -63,7 +59,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        List<String> allEpisodeIds,
                                        AppCMSPresenter appCMSPresenter,
                                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                       String viewType) {
+                                       String viewType,
+                                       RecyclerView mRecyclerView) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
         this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();
         this.sortData();
@@ -76,6 +73,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.receivers = new ArrayList<>();
 
         this.isClickable = true;
+        this.mRecyclerView = mRecyclerView;
 
         this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
@@ -176,11 +174,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.moduleId = moduleId;
     }
 
-    private void loadImage(Context context, String url, ImageView imageView) {
-        Glide.with(context)
-                .load(Uri.decode(url))
-                .into(imageView);
-    }
+
 
     @Override
     public void receiveEvent(InternalEvent<?> event) {
@@ -400,11 +394,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         //
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        mRecyclerView = recyclerView;
-    }
+
 
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {

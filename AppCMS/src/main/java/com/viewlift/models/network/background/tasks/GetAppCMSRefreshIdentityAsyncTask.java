@@ -3,8 +3,9 @@ package com.viewlift.models.network.background.tasks;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -55,7 +56,7 @@ public class GetAppCMSRefreshIdentityAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
