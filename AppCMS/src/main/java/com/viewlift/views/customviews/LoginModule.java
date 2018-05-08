@@ -153,11 +153,18 @@ public class LoginModule extends ModuleView {
 
             topLayoutContainer.addView(loginModuleSwitcherContainer);
 
-            //ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "home.json"),
-                    AppCMSPageUI.class);
-            ModuleWithComponents module = appCMSPageUI1.getModuleList().get(12);
+            ModuleWithComponents module = null;
+            if (appCMSMain != null &&
+                    appCMSMain.getDomainName().equalsIgnoreCase("www.hoichoi.tv")) {
+                AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                        loadJsonFromAssets(context, "home.json"),
+                        AppCMSPageUI.class);
+                 module = appCMSPageUI1.getModuleList().get(12);
+
+            }else
+            {
+                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            }
 
             if (module == null) {
                 module = moduleInfo;
