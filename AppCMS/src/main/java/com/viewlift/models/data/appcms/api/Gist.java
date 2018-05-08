@@ -131,7 +131,7 @@ public class Gist implements Serializable {
 
     @SerializedName("leagues")
     @Expose
-    List<Leagues> leagues;
+    List<GameTeamGist> leagues;
 
     @SerializedName("primaryCategoryTitle")
     @Expose
@@ -139,7 +139,7 @@ public class Gist implements Serializable {
 
     @SerializedName("venues")
     @Expose
-    List<Venues> venues;
+    List<GameTeamGist> venues;
 
     @SerializedName("dataId")
     @Expose
@@ -183,11 +183,11 @@ public class Gist implements Serializable {
 
     @SerializedName("homeTeam")
     @Expose
-    HomeTeam homeTeam;
+    GameTeamGist homeTeam;
 
     @SerializedName("awayTeam")
     @Expose
-    AwayTeam awayTeam;
+    GameTeamGist awayTeam;
 
     @SerializedName("dataProvider")
     @Expose
@@ -501,11 +501,11 @@ public class Gist implements Serializable {
         this.downloadStatus = downloadStatus;
     }
 
-    public HomeTeam getHomeTeam() {
+    public GameTeamGist getHomeTeam() {
         return homeTeam;
     }
 
-    public void setHomeTeam(HomeTeam homeTeam) {
+    public void setHomeTeam(GameTeamGist homeTeam) {
         this.homeTeam = homeTeam;
     }
 
@@ -525,11 +525,11 @@ public class Gist implements Serializable {
         this.email = email;
     }
 
-    public List<Leagues> getLeagues() {
+    public List<GameTeamGist> getLeagues() {
         return leagues;
     }
 
-    public void setLeagues(List<Leagues> leagues) {
+    public void setLeagues(List<GameTeamGist> leagues) {
         this.leagues = leagues;
     }
 
@@ -541,11 +541,11 @@ public class Gist implements Serializable {
         this.primaryCategoryTitle = primaryCategoryTitle;
     }
 
-    public List<Venues> getVenues() {
+    public List<GameTeamGist> getVenues() {
         return venues;
     }
 
-    public void setVenues(List<Venues> venues) {
+    public void setVenues(List<GameTeamGist> venues) {
         this.venues = venues;
     }
 
@@ -629,11 +629,11 @@ public class Gist implements Serializable {
         this.gameSchedule = gameSchedule;
     }
 
-    public AwayTeam getAwayTeam() {
+    public GameTeamGist getAwayTeam() {
         return awayTeam;
     }
 
-    public void setAwayTeam(AwayTeam awayTeam) {
+    public void setAwayTeam(GameTeamGist awayTeam) {
         this.awayTeam = awayTeam;
     }
 
