@@ -329,7 +329,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 if(checkPlayServices()) {
                     Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                            .setFlags(
                                     Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     if (fullScreenIntent.getParcelableExtra(
                             PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
@@ -544,10 +544,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 appCMSBinder,
                                                 appCMSPresenter.isUserLoggedIn());
                                 if (appCMSBinder != null) {
-                                    appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
-                                            appCMSBinder.getPageId(),
-                                            null,
-                                            appCMSBinderAction);
+                                    try {
+                                        appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
+                                                appCMSBinder.getPageId(),
+                                                null,
+                                                appCMSBinderAction);
+                                    }catch(Exception ex){}
                                 }
                             }
                         }
@@ -593,14 +595,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.setShowNetworkConnectivity(false);
                         appCMSPresenter.cancelAlertDialog();
                     }
-
-                    if (isConnected) {
-                        setCastingInstance();
-                        castDisabled = false;
-                    } else {
-                        CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
-                        castDisabled = true;
-                    }
+                    try {
+                        if (isConnected) {
+                            setCastingInstance();
+                            castDisabled = false;
+                        } else {
+                            CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
+                            castDisabled = true;
+                        }
+                    }catch(Exception ex){}
                 }
                 if (activeNetwork != null) {
                     appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
@@ -817,13 +820,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
 
-        registerReceiver(uaReceiveChannelIdReceiver,
-                new IntentFilter("receive_ua_channel_id"));
-        registerReceiver(uaReceiveAppKeyReceiver,
-                new IntentFilter("receive_ua_app_key"));
-        registerReceiver(gmsReceiveInstanceIdReceiver,
-                new IntentFilter("receive_gms_instance_id"));
-
+        try {
+            registerReceiver(uaReceiveChannelIdReceiver,
+                    new IntentFilter("receive_ua_channel_id"));
+            registerReceiver(uaReceiveAppKeyReceiver,
+                    new IntentFilter("receive_ua_app_key"));
+            registerReceiver(gmsReceiveInstanceIdReceiver,
+                    new IntentFilter("receive_gms_instance_id"));
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         Intent registerInitReceivers = new Intent("INITIALIZATION");
         registerInitReceivers.putExtra("init_action", "register_receiver");
         sendBroadcast(registerInitReceivers);
@@ -1137,7 +1143,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         try {
             super.onResume();
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -2784,7 +2790,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
             appCMSPresenter.setCurrentArticleIndex(-1);
             action = getString(R.string.app_cms_action_articlepage_key);
-        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))) {
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
+                pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
         }
 

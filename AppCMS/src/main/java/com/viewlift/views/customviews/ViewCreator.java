@@ -21,6 +21,8 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +42,8 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -1920,14 +1924,14 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                } else if (moduleInfo.getBlockName().contains("history01")) {
-
+                } else if (moduleInfo.getBlockName().contains("history01") ||
+                        moduleInfo.getBlockName().contains("history02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("watchlist01")) {
-
+                } else if (moduleInfo.getBlockName().contains("watchlist01") ||
+                        moduleInfo.getBlockName().contains("watchlist02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
@@ -3156,12 +3160,15 @@ public class ViewCreator {
                         ) {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY) {
                     componentViewResult.componentView = new Button(context);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_CHECKBOX_KEY) {
+                    componentViewResult.componentView = new AppCompatCheckBox(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
                     componentViewResult.componentView = new Switch(context);
                 } else {
@@ -3175,6 +3182,7 @@ public class ViewCreator {
                             !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle()) &&
                             componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                            componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                             componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
@@ -3278,6 +3286,40 @@ public class ViewCreator {
                         });
                         break;
 
+                    case PAGE_CHECKBOX_KEY:
+                        AppCompatCheckBox checkBoxTCP = ((AppCompatCheckBox) componentViewResult.componentView);
+                        checkBoxTCP.setChecked(false);
+                        checkBoxTCP.setId(R.id.appCMS_tcp_check);
+                        if(component.getText() != null ) {
+                            checkBoxTCP.setText(component.getText());
+                        }
+                        if(component.getBackgroundColor() != null ) {
+                            checkBoxTCP.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        }
+                        int switchOnColor = Color.WHITE;
+                        int states[][] = {{android.R.attr.state_checked}, {}};
+                        int colors[] = {appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter.getGeneralTextColor()};
+                        CompoundButtonCompat.setButtonTintList(checkBoxTCP, new ColorStateList(states, colors));
+                        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (checkBoxTCP.getButtonDrawable() != null) {
+                                checkBoxTCP.getButtonDrawable().setColorFilter(switchOnColor, PorterDuff.Mode.MULTIPLY);
+                            }
+                        } else {
+
+                            ColorStateList colorStateList = new ColorStateList(
+                                    new int[][]{
+                                            new int[]{android.R.attr.state_checked},
+                                            new int[]{}
+                                    }, new int[]{
+                                    switchOnColor,
+                                    switchOnColor
+                            });
+
+                            checkBoxTCP.setCompoundDrawableTintList(colorStateList);
+                            checkBoxTCP.setCompoundDrawableTintMode(PorterDuff.Mode.MULTIPLY);
+                            //checkBoxTCP.setButtonTintList(colorStateList);
+                        }*/
+                        break;
                     case PAGE_BUTTON_SWITCH_KEY:
                         if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
@@ -3861,17 +3903,15 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = true;
-/*
-                                if (appCMSPresenter.isAudioAvailable()) {
-                                    deleteAllFiles = false;
-                                }
-*/
+                                appCMSPresenter.showLoadingDialog(true);
+
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 
@@ -3880,8 +3920,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
-                                            appCMSPresenter.stopLoader();
-
+                                            appCMSPresenter.showLoadingDialog(false);
                                             System.out.println("started clean download finish");
                                         }, deleteAllFiles);
                                         break;
@@ -3891,6 +3930,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearWatchlist(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 

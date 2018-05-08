@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
 
 import java.util.Map;
 
@@ -1379,6 +1381,10 @@ public abstract class BaseView extends FrameLayout {
             };
             ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
 
+            if(((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter){
+                padding = 20;
+                view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            }
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||

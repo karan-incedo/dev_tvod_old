@@ -397,7 +397,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     if (onUpdateContentDatumEvent != null) {
                                         AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
                                                 = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                                .action(getString(R.string.app_cms_page_play_key))
+                                                .action(appCMSPresenter.getStringDataById(getContext(),R.string.app_cms_page_play_key))
                                                 .closerLauncher(false)
                                                 .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
                                                 .currentlyPlayingIndex(playIndex)
@@ -1008,6 +1008,17 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onDestroyView() {
+
+        if (appCMSPresenter.isAppSVOD() && !freeContent) {
+            if (entitlementCheckTimerTask != null) {
+                entitlementCheckTimerTask.cancel();
+            }
+
+            if (entitlementCheckTimer != null) {
+                entitlementCheckTimer.cancel();
+            }
+        }
+
         videoPlayerView.setOnPlayerStateChanged(null);
         beaconPing.sendBeaconPing = false;
         beaconPing.runBeaconPing = false;
