@@ -922,8 +922,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                        handleNavigationVisibility();
-                        hideFooterControl();
+                        if(!appCMSPresenter.isLeftNavigationEnabled()) {
+                            handleNavigationVisibility();
+                            hideFooterControl();
+                        }
                         return true;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     case KeyEvent.KEYCODE_MEDIA_PLAY:
