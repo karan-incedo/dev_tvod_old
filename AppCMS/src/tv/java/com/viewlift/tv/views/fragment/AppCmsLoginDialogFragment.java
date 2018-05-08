@@ -132,210 +132,212 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
                 subscriptionTitle.setVisibility(View.GONE);
             }
 
-        if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
-            updateSubscriptionStrip();
-        }else{
-            subscriptionTitle.setVisibility(View.GONE);
-        }
+            if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
+                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                updateSubscriptionStrip();
+            } else {
+                subscriptionTitle.setVisibility(View.GONE);
+            }
 
         /*if(!appCMSPresenter.isLeftNavigationEnabled())
         view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));*/
 
 
-        LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
-        subNavContaineer = (RelativeLayout) view.findViewById(R.id.sub_navigation_containeer);
+            LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
+            subNavContaineer = (RelativeLayout) view.findViewById(R.id.sub_navigation_containeer);
 
-        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
-        view.setBackgroundColor(Color.parseColor(backGroundColor));
-        loginView = (TextView) view.findViewById(R.id.textView_login);
-        signupView = (TextView) view.findViewById(R.id.textview_signup);
-        loginIcon = (ImageView) view.findViewById(R.id.nav_item_login_image);
-        signupIcon = (ImageView) view.findViewById(R.id.nav_item_logout_image);
-        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
-        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+            String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
+            view.setBackgroundColor(Color.parseColor(backGroundColor));
+            loginView = (TextView) view.findViewById(R.id.textView_login);
+            signupView = (TextView) view.findViewById(R.id.textview_signup);
+            loginIcon = (ImageView) view.findViewById(R.id.nav_item_login_image);
+            signupIcon = (ImageView) view.findViewById(R.id.nav_item_logout_image);
+            loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+            signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
-        loginContaineer = view.findViewById(R.id.nav_item_login_layout);
-        signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
+            loginContaineer = view.findViewById(R.id.nav_item_login_layout);
+            signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
 
-        if (appCMSPresenter.isLeftNavigationEnabled()) {
-            subNavHolder.setOrientation(LinearLayout.VERTICAL);
-            subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+            if (appCMSPresenter.isLeftNavigationEnabled()) {
+                subNavHolder.setOrientation(LinearLayout.VERTICAL);
+                subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
 
-            List<NavigationUser> navigationUser = appCMSPresenter.getNavigation().getNavigationUser();
+                List<NavigationUser> navigationUser = appCMSPresenter.getNavigation().getNavigationUser();
 
-            for (NavigationUser navigation : navigationUser) {
-                String title = navigation.getTitle();
-                if (("Log In".equalsIgnoreCase(title) || "Sign In".equalsIgnoreCase(title)) && navigation.getIcon() != null){
-                    loginIcon.setImageResource(Utils.getIcon(navigation.getIcon(),mContext));
-                    if(null != loginIcon.getDrawable()) {
-                        loginIcon.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
-                        loginIcon.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
-                    }
-                }
-
-                if ("Sign Up".equalsIgnoreCase(title) && navigation.getIcon() != null){
-                    signupIcon.setImageResource(Utils.getIcon(navigation.getIcon(),mContext));
-                    if(null != signupIcon.getDrawable()) {
-                        signupIcon.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
-                        signupIcon.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
-                    }
-                }
-            }
-        }
-
-
-        loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    subNavHolder.setAlpha(1f);
-                } else {
-                    subNavHolder.setAlpha(0.52f);
-                }
-            }
-        });
-
-        signupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    subNavHolder.setAlpha(1f);
-                } else {
-                    subNavHolder.setAlpha(0.52f);
-                }
-            }
-        });
-
-        loginView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-
-                int keyCode = keyEvent.getKeyCode();
-                int action = keyEvent.getAction();
-                if (action == KeyEvent.ACTION_DOWN) {
-                    if (appCMSPresenter.isLeftNavigationEnabled()) {
-                        switch (keyCode) {
-                            case KeyEvent.KEYCODE_DPAD_LEFT:
-                            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                toogleLeftnavPanel(false);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_UP:
-                                focusLoginView(signupView, loginView);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_DOWN:
-                                focusSignupView(signupView, loginView);
-                                return true;
+                for (NavigationUser navigation : navigationUser) {
+                    String title = navigation.getTitle();
+                    if (("Log In".equalsIgnoreCase(title) || "Sign In".equalsIgnoreCase(title)) && navigation.getIcon() != null) {
+                        loginIcon.setImageResource(Utils.getIcon(navigation.getIcon(), mContext));
+                        if (null != loginIcon.getDrawable()) {
+                            loginIcon.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
+                            loginIcon.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
                         }
+                    }
+
+                    if ("Sign Up".equalsIgnoreCase(title) && navigation.getIcon() != null) {
+                        signupIcon.setImageResource(Utils.getIcon(navigation.getIcon(), mContext));
+                        if (null != signupIcon.getDrawable()) {
+                            signupIcon.getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
+                            signupIcon.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        }
+                    }
+                }
+            }
+
+
+            loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        subNavHolder.setAlpha(1f);
                     } else {
-                        switch (keyCode) {
-                            case KeyEvent.KEYCODE_DPAD_LEFT:
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                focusSignupView(signupView, loginView);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_UP:
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_DOWN:
-                                focusLoginView(signupView, loginView);
-                                return false;
-                        }
+                        subNavHolder.setAlpha(0.52f);
                     }
                 }
-                return false;
-            }
-        });
+            });
 
-        signupView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                int keyCode = keyEvent.getKeyCode();
-                int action = keyEvent.getAction();
-                if (action == KeyEvent.ACTION_DOWN) {
-                    if (appCMSPresenter.isLeftNavigationEnabled()) {
-                        switch (keyCode) {
-                            case KeyEvent.KEYCODE_DPAD_LEFT:
-                            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                toogleLeftnavPanel(false);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_UP:
-                                focusLoginView(signupView, loginView);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_DOWN:
-                                focusSignupView(signupView, loginView);
-                                return true;
-                        }
+            signupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        subNavHolder.setAlpha(1f);
                     } else {
-                        switch (keyCode) {
-                            case KeyEvent.KEYCODE_DPAD_LEFT:
-                                focusLoginView(signupView, loginView);
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_UP:
-                                return true;
-                            case KeyEvent.KEYCODE_DPAD_DOWN:
-                                focusLoginView(signupView, loginView);
-                                return false;
-                        }
+                        subNavHolder.setAlpha(0.52f);
                     }
                 }
-                return false;
-            }
-        });
+            });
 
-        focusLoginView(signupView, loginView);
+            loginView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View view, int i, KeyEvent keyEvent) {
 
-        signupView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavigationUser navigationUser = appCMSPresenter.getSignUpNavigation();
-                appCMSPresenter.navigateToTVPage(
-                        navigationUser.getPageId(),
-                        navigationUser.getTitle(),
-                        navigationUser.getUrl(),
-                        false,
-                        Uri.EMPTY,
-                        false,
-                        false,
-                        true);
-            }
-        });
-
-
-
-        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-                if(keyCode == KeyEvent.KEYCODE_BACK
-                        && event.getAction() == KeyEvent.ACTION_DOWN){
-                    if(null != onBackKeyListener)
-                        onBackKeyListener.call("");
+                    int keyCode = keyEvent.getKeyCode();
+                    int action = keyEvent.getAction();
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        if (appCMSPresenter.isLeftNavigationEnabled()) {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    toogleLeftnavPanel(false);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_UP:
+                                    focusLoginView(signupView, loginView);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
+                                    focusSignupView(signupView, loginView);
+                                    return true;
+                            }
+                        } else {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    focusSignupView(signupView, loginView);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_UP:
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
+                                    focusLoginView(signupView, loginView);
+                                    return false;
+                            }
+                        }
+                    }
+                    return false;
                 }
-                return false;
+            });
+
+            signupView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                    int keyCode = keyEvent.getKeyCode();
+                    int action = keyEvent.getAction();
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        if (appCMSPresenter.isLeftNavigationEnabled()) {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    toogleLeftnavPanel(false);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_UP:
+                                    focusLoginView(signupView, loginView);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
+                                    focusSignupView(signupView, loginView);
+                                    return true;
+                            }
+                        } else {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                    focusLoginView(signupView, loginView);
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_UP:
+                                    return true;
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
+                                    focusLoginView(signupView, loginView);
+                                    return false;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            focusLoginView(signupView, loginView);
+
+            signupView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    NavigationUser navigationUser = appCMSPresenter.getSignUpNavigation();
+                    appCMSPresenter.navigateToTVPage(
+                            navigationUser.getPageId(),
+                            navigationUser.getTitle(),
+                            navigationUser.getUrl(),
+                            false,
+                            Uri.EMPTY,
+                            false,
+                            false,
+                            true);
+                }
+            });
+
+
+            getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+                    if (keyCode == KeyEvent.KEYCODE_BACK
+                            && event.getAction() == KeyEvent.ACTION_DOWN) {
+                        if (null != onBackKeyListener)
+                            onBackKeyListener.call("");
+                    }
+                    return false;
+                }
+            });
+
+            pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
+            pageHolder.addView(tvPageView);
+
+
+            if (null != tvPageView && tvPageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView) {
+                TVModuleView tvModuleView = (TVModuleView) tvPageView.getChildrenContainer().getChildAt(0);
+                EditText emailBox = ((EditText) tvModuleView.findViewById(R.id.email_edit_box));
+                EditText passwordBox = ((EditText) tvModuleView.findViewById(R.id.password_edit_box));
+                Button activateDevice = ((Button) tvModuleView.findViewById(R.id.btn_activate_device));
+                Button loginButton = ((Button) tvModuleView.findViewById(R.id.btn_login));
+                emailBox.setOnKeyListener(leftNavigationListener);
+                passwordBox.setOnKeyListener(leftNavigationListener);
+                activateDevice.setOnKeyListener(leftNavigationListener);
+                loginButton.setOnKeyListener(leftNavigationListener);
+
             }
-        });
 
-        pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
-        pageHolder.addView(tvPageView);
-
-
-        if (null != tvPageView && tvPageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView) {
-            TVModuleView tvModuleView = (TVModuleView) tvPageView.getChildrenContainer().getChildAt(0);
-            EditText emailBox = ((EditText) tvModuleView.findViewById(R.id.email_edit_box));
-            EditText passwordBox = ((EditText) tvModuleView.findViewById(R.id.password_edit_box));
-            Button activateDevice = ((Button) tvModuleView.findViewById(R.id.btn_activate_device));
-            Button loginButton = ((Button) tvModuleView.findViewById(R.id.btn_login));
-            emailBox.setOnKeyListener(leftNavigationListener);
-            passwordBox.setOnKeyListener(leftNavigationListener);
-            activateDevice.setOnKeyListener(leftNavigationListener);
-            loginButton.setOnKeyListener(leftNavigationListener);
 
         }
-
         return view;
     }
+
 
 
     View.OnKeyListener leftNavigationListener = new View.OnKeyListener() {
