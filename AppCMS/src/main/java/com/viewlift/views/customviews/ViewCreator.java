@@ -21,6 +21,8 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +42,8 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -3156,12 +3160,15 @@ public class ViewCreator {
                         ) {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY) {
                     componentViewResult.componentView = new Button(context);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_CHECKBOX_KEY) {
+                    componentViewResult.componentView = new AppCompatCheckBox(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
                     componentViewResult.componentView = new Switch(context);
                 } else {
@@ -3175,6 +3182,7 @@ public class ViewCreator {
                             !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle()) &&
                             componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                            componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                             componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
@@ -3278,6 +3286,40 @@ public class ViewCreator {
                         });
                         break;
 
+                    case PAGE_CHECKBOX_KEY:
+                        AppCompatCheckBox checkBoxTCP = ((AppCompatCheckBox) componentViewResult.componentView);
+                        checkBoxTCP.setChecked(false);
+                        checkBoxTCP.setId(R.id.appCMS_tcp_check);
+                        if(component.getText() != null ) {
+                            checkBoxTCP.setText(component.getText());
+                        }
+                        if(component.getBackgroundColor() != null ) {
+                            checkBoxTCP.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        }
+                        int switchOnColor = Color.WHITE;
+                        int states[][] = {{android.R.attr.state_checked}, {}};
+                        int colors[] = {appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter.getGeneralTextColor()};
+                        CompoundButtonCompat.setButtonTintList(checkBoxTCP, new ColorStateList(states, colors));
+                        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (checkBoxTCP.getButtonDrawable() != null) {
+                                checkBoxTCP.getButtonDrawable().setColorFilter(switchOnColor, PorterDuff.Mode.MULTIPLY);
+                            }
+                        } else {
+
+                            ColorStateList colorStateList = new ColorStateList(
+                                    new int[][]{
+                                            new int[]{android.R.attr.state_checked},
+                                            new int[]{}
+                                    }, new int[]{
+                                    switchOnColor,
+                                    switchOnColor
+                            });
+
+                            checkBoxTCP.setCompoundDrawableTintList(colorStateList);
+                            checkBoxTCP.setCompoundDrawableTintMode(PorterDuff.Mode.MULTIPLY);
+                            //checkBoxTCP.setButtonTintList(colorStateList);
+                        }*/
+                        break;
                     case PAGE_BUTTON_SWITCH_KEY:
                         if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);

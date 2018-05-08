@@ -8329,6 +8329,75 @@ public class AppCMSPresenter {
             getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
+    /**
+     * For navigation TOS page with holding email/pwd from signup screen
+     * @param email
+     * @param password
+     */
+    public void navigatToTOSPage(String email ,String password){
+        setTempEmail(email);
+        setTempPassword(password);
+        navigatToTOSPage();
+    }
+
+    /**
+     * For navigatiting to TOS page
+     */
+    public void navigatToTOSPage(){
+        if (tosPage != null){
+            navigateToPage(tosPage.getPageId(),
+                    tosPage.getPageName(),
+                    "",
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    null);
+        }
+    }
+    String tempEmail="";
+    String tempPassword="";
+    public String getTempEmail(){
+        return tempEmail;
+    }
+    public void setTempEmail(String email){
+        this.tempEmail= email;
+    }
+    public String getTempPassword(){
+        return tempPassword;
+    }
+    public void setTempPassword(String password){
+        this.tempPassword =password;
+    }
+
+    /**
+     * Navigation Privacy Policy page with holding temp email/pwd from signup screen
+     * @param email
+     * @param password
+     */
+    public void navigatToPrivacyPolicy(String email,String password){
+        setTempEmail(email);
+        setTempPassword(password);
+        navigatToPrivacyPolicy();
+    }
+
+    /**
+     * Navigating to Policy page
+     */
+    public void navigatToPrivacyPolicy(){
+        if (privacyPolicyPage != null){
+            navigateToPage(privacyPolicyPage.getPageId(),
+                    privacyPolicyPage.getPageName(),
+                    "",
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    null);
+        }
+    }
     private void sendFirebaseAnalyticsEvents(String eventValue) {
         if (getmFireBaseAnalytics() == null)
             return;
