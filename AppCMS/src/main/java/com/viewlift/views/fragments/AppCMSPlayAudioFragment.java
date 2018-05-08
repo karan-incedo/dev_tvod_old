@@ -246,8 +246,12 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if(getActivity()!=null) {
-                    MediaControllerCompat.getMediaController(getActivity()).getTransportControls().seekTo(seekBar.getProgress());
-                    scheduleSeekbarUpdate();
+                    try {
+                        MediaControllerCompat.getMediaController(getActivity()).getTransportControls().seekTo(seekBar.getProgress());
+                        scheduleSeekbarUpdate();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             }
         });

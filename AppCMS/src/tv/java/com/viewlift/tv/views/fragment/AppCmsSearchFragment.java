@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -60,7 +59,7 @@ import rx.functions.Action1;
  * Created by nitin.tyagi on 7/21/2017.
  */
 
-public class AppCmsSearchFragment extends Fragment {
+public class AppCmsSearchFragment extends BaseFragment {
 
     private static final String TAG = AppCmsSearchFragment.class.getName();
     private static final long DELAY = 5000;
@@ -137,6 +136,17 @@ public class AppCmsSearchFragment extends Fragment {
             customKeyboard.getButtonTextColorDrawable(focusStateTextColor , unFocusStateTextColor);
         }
         customKeyboard.requestFocus();
+
+        customKeyboard.setonButtonFocusChangeListener(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean aBoolean) {
+                if(null != appCMSPresenter
+                        && null != appCMSPresenter.getCurrentActivity()
+                        && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                    ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowLeftNavigation(aBoolean);
+                }
+            }
+        });
 
         if(null != regularTypeface)
             editText.setTypeface(regularTypeface);
@@ -656,17 +666,21 @@ public class AppCmsSearchFragment extends Fragment {
         CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
+                moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                 component,
                 jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
-        for (AppCMSSearchResult searchResult : appCMSSearchResults) {
+        for (int i = 0, appCMSSearchResultsSize = appCMSSearchResults.size(); i < appCMSSearchResultsSize; i++) {
+            AppCMSSearchResult searchResult = appCMSSearchResults.get(i);
             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
             rowData.isSearchPage = true;
             rowData.contentData = searchResult.getContent();
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.itemPosition = i;
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             trayListRowAdapter.add(rowData);
             //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
         }
@@ -691,6 +705,7 @@ public class AppCmsSearchFragment extends Fragment {
                  CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                          Integer.valueOf(component.getLayout().getTv().getHeight()),
                          Integer.valueOf(component.getLayout().getTv().getWidth()),
+                         moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                          component,
                          jsonValueKeyMap
                  );
@@ -704,9 +719,11 @@ public class AppCmsSearchFragment extends Fragment {
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             rowData.rowNumber = trayIndex;
-            trayListRowAdapter.add(rowData);
             position++;
+            rowData.itemPosition = position;
+            trayListRowAdapter.add(rowData);
 
             if ((trayListRowAdapter.size()  % 4 == 0) /*already four items in the adapter*/
                     || i == appCMSSearchResults.size() - 1 /*Reached the last item*/) {
@@ -740,6 +757,25 @@ public class AppCmsSearchFragment extends Fragment {
         }
     }
 
+    @Override
+    public boolean isSubNavigationVisible() {
+        return false;
+    }
+
+    @Override
+    public boolean isSubNavExist() {
+        return false;
+    }
+
+    @Override
+    public void showSubNavigation(boolean shouldShow) {
+
+    }
+
+    @Override
+    public void setSubnavExistence(boolean isExist) {
+
+    }
 }
 
 

@@ -155,6 +155,10 @@
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_video_title_on_hover_key">videoTitleOnHover</string>
+    <string name="app_cms_page_video_sub_title_on_hover_key">videoSubTitleOnHover</string>
+    <string name="app_cms_page_video_description_on_hover_key">videoDescriptionOnHover</string>
+    <string name="app_cms_page_video_hover_background_key">hoverBackground</string>
     <string name="app_cms_page_episode_thumbnail_title_key">episodeThumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_center_horizontal_key">center_horizontal</string>
@@ -485,8 +489,6 @@
     <string name="app_cms_subscription_key">android</string>
     <string name="ua_android_device_key">android</string>
 
-    <!--AppCMS SSLCommerz credentials API-->
-    <string name="app_cms_sslcommerz_cred_api_url">%1$s/sslcommerz/config?site=%2$s&amp;device=android_phone</string>
     <!--AppCMS Subscription Plan API-->
     <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>
@@ -710,5 +712,9 @@
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
     <string name="sub_nav_page_key">Sub Navigation Screen</string>
 
+    <!--AppCMS SSLCommerz Initiate API-->
+    <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
+    <!--APPCMS CCAve RSA KEY-->
+    <string name="app_cms_ccavenue_rsa_key_api_url">%1$s/ccavenue/ccavenue/rsakey?x=%2$s</string>
 
 </resources>

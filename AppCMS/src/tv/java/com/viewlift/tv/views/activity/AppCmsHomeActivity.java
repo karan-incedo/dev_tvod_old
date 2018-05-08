@@ -241,7 +241,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                         if (isActive) {
-                            if (!appCMSPresenter.isPagePrimary(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()) &&
+                            if (/*!appCMSPresenter.isPagePrimary(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()) &&*/
                                     (appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.getTosPage().getPageId().equalsIgnoreCase(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
@@ -261,6 +261,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 } else {
                                     openMyProfile();
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                                    showNavigation(false);
                                     /*if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                                         showSubNavigation(false, false); //close subnavigation if any.
                                     }*/
@@ -353,30 +354,34 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-            if (!appCMSPresenter.isUserLoggedIn()) {
-                setSubscriptionText(false);
-            } else {
+            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                if (!appCMSPresenter.isUserLoggedIn()) {
+                    setSubscriptionText(false);
+                } else {
 
-                if (appCMSPresenter.getCurrentActivity() != null) {
+                    if (appCMSPresenter.getCurrentActivity() != null) {
 
-                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                        try {
-                            if (appCMSUserSubscriptionPlanResult != null) {
-                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                    setSubscriptionText(true);
+                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                            try {
+                                if (appCMSUserSubscriptionPlanResult != null) {
+                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        setSubscriptionText(true);
+                                    } else {
+                                        setSubscriptionText(false);
+                                    }
                                 } else {
                                     setSubscriptionText(false);
                                 }
-                            } else {
+                            } catch (Exception e) {
                                 setSubscriptionText(false);
                             }
-                        } catch (Exception e) {
-                            setSubscriptionText(false);
-                        }
-                    });
+                        });
+                    }
                 }
+            } else {
+                setSubscriptionText(true);
             }
         } else {
             findViewById(R.id.subscribe_now_strip).setVisibility(View.GONE);
@@ -920,8 +925,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                        handleNavigationVisibility();
-                        hideFooterControl();
+                        if(!appCMSPresenter.isLeftNavigationEnabled()) {
+                            handleNavigationVisibility();
+                            hideFooterControl();
+                        }
                         return true;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     case KeyEvent.KEYCODE_MEDIA_PLAY:

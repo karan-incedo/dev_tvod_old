@@ -21,13 +21,14 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
-import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
-import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSArticleCall;
 import com.viewlift.models.network.rest.AppCMSArticleRest;
-
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -42,22 +43,24 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
-import com.viewlift.models.network.rest.AppCMSPlaylistCall;
-import com.viewlift.models.network.rest.AppCMSPlaylistRest;
 import com.viewlift.models.network.rest.AppCMSPhotoGalleryCall;
 import com.viewlift.models.network.rest.AppCMSPhotoGalleryRest;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
+import com.viewlift.models.network.rest.AppCMSPlaylistRest;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigCall;
-import com.viewlift.models.network.rest.AppCMSSSLCommerzConfigRest;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
+import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLRest;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
@@ -70,8 +73,6 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
-import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
-import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
@@ -334,6 +335,17 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_sub_title_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_SUB_TITLE_ON_HOVER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_description_on_hover_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_ON_HOVER_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_hover_background_key),
+                AppCMSUIKeyType.PAGE_VIDEO_HOVER_BACKGROUND_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_description_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_read_more_text_key),
@@ -1242,14 +1254,26 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSSSLCommerzConfigRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
-        return retrofit.create(AppCMSSSLCommerzConfigRest.class);
+    public AppCMSSSLCommerzInitiateRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSSLCommerzInitiateRest.class);
     }
 
     @Provides
     @Singleton
-    public AppCMSSSLCommerzConfigCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzConfigRest configRest, Gson gson) {
-        return new AppCMSSSLCommerzConfigCall(configRest, gson);
+    public AppCMSSSLCommerzInitiateCall providesAppCMSSSLCommerzConfigCall(AppCMSSSLCommerzInitiateRest initiateRest, Gson gson) {
+        return new AppCMSSSLCommerzInitiateCall(initiateRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSCCAvenueRSAKeyRest providesAppCMSCCAvenueRSAKeyRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSCCAvenueRSAKeyRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSCCAvenueRSAKeyCall providesAppCMSCCAvenueRSAKeyCall(AppCMSCCAvenueRSAKeyRest initiateRest, Gson gson) {
+        return new AppCMSCCAvenueRSAKeyCall(initiateRest, gson);
     }
 
 

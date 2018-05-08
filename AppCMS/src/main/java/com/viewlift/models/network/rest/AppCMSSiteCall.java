@@ -2,7 +2,6 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -31,9 +30,9 @@ public class AppCMSSiteCall {
     private final Gson gson;
     private final File storageDirectory;
     private Map<String, String> headersMap;
-
     @Inject
-    public AppCMSSiteCall(AppCMSSiteRest appCMSSiteRest, Gson gson, File storageDirectory ) {
+    public AppCMSSiteCall(AppCMSSiteRest appCMSSiteRest,
+                          Gson gson, File storageDirectory) {
         this.appCMSSiteRest = appCMSSiteRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
@@ -41,15 +40,15 @@ public class AppCMSSiteCall {
     }
 
     @WorkerThread
-    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries , String apiKey) throws IOException {
+    public AppCMSSite call(String url, boolean networkDisconnected, int numberOfTries,String apiKey) throws IOException {
         try {
             //Log.d(TAG, "Attempting to retrieve site JSON: " + url);
-            AppCMSSite appCMSSite = null;
-
             headersMap.clear();
             if (!TextUtils.isEmpty(apiKey)) {
                 headersMap.put("x-api-key", apiKey);
             }
+
+            AppCMSSite appCMSSite = null;
             if (!networkDisconnected) {
                 appCMSSite = appCMSSiteRest.get(url,headersMap).execute().body();
             }
@@ -67,7 +66,7 @@ public class AppCMSSiteCall {
         }
 
         if (numberOfTries == 0) {
-            return call(url, networkDisconnected, numberOfTries + 1 , apiKey);
+            return call(url, networkDisconnected, numberOfTries + 1,apiKey);
         } else {
             try {
                 return readAppCMSSiteFromFile(getResourceFilename());

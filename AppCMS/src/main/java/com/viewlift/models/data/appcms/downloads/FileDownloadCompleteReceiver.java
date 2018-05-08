@@ -42,7 +42,7 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
         ImageDownloadQuery.setFilterById(Image_DownloadId);
         //Query the download manager about downloads that have been requested.
         Cursor cursor = downloadManager.query(ImageDownloadQuery);
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             downloadStatus(cursor, Image_DownloadId);
         }
 

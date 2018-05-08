@@ -15,5 +15,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSSiteRest {
     @GET
-    Call<AppCMSSite> get(@Url String url ,  @HeaderMap Map<String, String> headers);
+    Call<AppCMSSite> get(@Url String url, @HeaderMap Map<String, String> headers);
 }

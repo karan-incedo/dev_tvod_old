@@ -2,28 +2,22 @@ package com.viewlift.mobile;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
-
 import com.viewlift.views.components.AppCMSPresenterComponent;
-
-import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {

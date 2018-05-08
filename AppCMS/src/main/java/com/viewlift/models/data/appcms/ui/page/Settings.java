@@ -64,6 +64,10 @@ public class Settings implements Serializable {
     @Expose
     boolean isHidden;
 
+    @SerializedName("infoHover")
+    @Expose
+    boolean infoHover;
+
     public String getBackgroundColor() {
         return backgroundColor;
     }
@@ -162,5 +166,13 @@ public class Settings implements Serializable {
 
     public void setHidden(boolean hidden) {
         isHidden = hidden;
+    }
+
+    public boolean isInfoHover() {
+        return infoHover;
+    }
+
+    public void setInfoHover(boolean infoHover) {
+        this.infoHover = infoHover;
     }
 }

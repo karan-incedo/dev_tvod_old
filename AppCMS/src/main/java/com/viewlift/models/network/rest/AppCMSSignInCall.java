@@ -1,6 +1,6 @@
 package com.viewlift.models.network.rest;
 
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -10,6 +10,8 @@ import com.viewlift.models.data.appcms.ui.authentication.SignInRequest;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -25,21 +27,27 @@ public class AppCMSSignInCall {
 
     private final AppCMSSignInRest appCMSSignInRest;
     private final Gson gson;
-
+    private Map<String, String> headersMap;
     @Inject
     public AppCMSSignInCall(AppCMSSignInRest appCMSSignInRest, Gson gson) {
         this.appCMSSignInRest = appCMSSignInRest;
         this.gson = gson;
+        this.headersMap = new HashMap<>();
     }
 
-    public SignInResponse call(String url, String email, String password) {
+    public SignInResponse call(String url, String email, String password, String apiKey) {
         SignInResponse loggedInResponseResponse = null;
 
         SignInRequest signInRequest = new SignInRequest();
         signInRequest.setEmail(email);
         signInRequest.setPassword(password);
+        headersMap.clear();
+        if (!TextUtils.isEmpty(apiKey)) {
+            headersMap.put("x-api-key", apiKey);
+        }
+
         try {
-            Call<JsonElement> call = appCMSSignInRest.signin(url, signInRequest);
+            Call<JsonElement> call = appCMSSignInRest.signin(url, signInRequest,headersMap);
 
             Response<JsonElement> response = call.execute();
             if (response.body() != null) {

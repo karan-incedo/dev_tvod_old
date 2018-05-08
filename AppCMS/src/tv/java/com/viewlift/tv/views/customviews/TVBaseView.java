@@ -55,7 +55,7 @@ public abstract class TVBaseView extends FrameLayout {
     protected abstract Layout getLayout();
 
 
-    static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
+    public static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
         int number = 0;
         StringBuilder stringBuilder = new StringBuilder();
         if(data.getSeason() != null && data.getSeason().size() > 1){
@@ -79,7 +79,7 @@ public abstract class TVBaseView extends FrameLayout {
     /**
      * Fix for JM-26
      */
-    static void setVideoViewWithSubtitle(Context context, ContentDatum data, View view) {
+    public static void setVideoViewWithSubtitle(Context context, ContentDatum data, View view) {
 
         long durationInSeconds = data.getGist().getRuntime();
 

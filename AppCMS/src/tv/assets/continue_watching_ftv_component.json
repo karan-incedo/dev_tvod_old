@@ -1,5 +1,5 @@
 {
-  "id": "eeeaf583-f6f3-4a19-ac3e-ed403f8d4c1d",
+  "id": "bb6f4e60-4c2b-4133-8a27-eb295c6ceb98",
   "settings": {
     "loop": false,
     "columns": {
@@ -8,12 +8,12 @@
       "mobile": 3,
       "ott": 6
     },
-    "thumbnailType": "landscape",
-    "infoHover": false
+    "infoHover": true,
+    "thumbnailType": "landscape"
   },
-  "view": "AC Tray 01",
-  "type": "AC Tray 01",
-  "blockName": "tray02",
+  "view": "AC ContinueWatching 01",
+  "type": "AC ContinueWatching 01",
+  "blockName": "continueWatching01",
   "layout": {
     "ftv": {
       "padding": 0,
@@ -31,9 +31,9 @@
       },
       "fontFamily": "OpenSans",
       "textAlignment": "left",
+      "textCase": "caps",
       "type": "label",
       "textColor": "#008EE0",
-      "textCase": "caps",
       "fontWeight": "Semibold",
       "key": "trayTitle"
     },
@@ -44,7 +44,7 @@
           "height": 250
         }
       },
-      "trayClickAction": "lectureDetailPage",
+      "trayClickAction": "watchVideo",
       "components": [
         {
           "layout": {
@@ -88,6 +88,75 @@
           "unprogressColor": "0A151C",
           "type": "progressView",
           "key": "progressView"
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "width": 338,
+              "height": 185,
+              "leftMargin": 6,
+              "topMargin": 6
+            }
+          },
+          "type": "image",
+          "key": "hoverBackground"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 19,
+              "width": 325,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 16,
+          "numberOfLines": 1
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 65,
+              "width": 325,
+              "height": 40
+            }
+          },
+          "type": "label",
+          "key": "videoSubTitleOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 10,
+          "numberOfLines": 1
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "leftMargin": 15,
+              "topMargin": 95,
+              "width": 325,
+              "height": 100
+            }
+          },
+          "type": "label",
+          "key": "videoDescriptionOnHover",
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "fontWeight": "regular",
+          "fontSize": 12,
+          "numberOfLines": 2
         }
       ],
       "type": "collectionGrid",
