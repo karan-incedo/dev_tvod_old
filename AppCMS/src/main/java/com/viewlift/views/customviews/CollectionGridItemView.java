@@ -266,6 +266,17 @@ public class CollectionGridItemView extends BaseView {
         this.selectable = selectable;
     }
 
+    /**
+     * @param context
+     * @param view
+     * @param data
+     * @param jsonValueKeyMap
+     * @param onClickHandler
+     * @param componentViewType
+     * @param themeColor
+     * @param appCMSPresenter
+     * @param position
+     */
     public void bindChild(Context context,
                           View view,
                           final ContentDatum data,
@@ -274,6 +285,7 @@ public class CollectionGridItemView extends BaseView {
                           final String componentViewType,
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
+
 
         final Component childComponent = matchComponentToView(view);
 
@@ -335,26 +347,47 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
 
                         } else {
-
-
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                                 placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
-                                placeholder = R.drawable.vid_image_placeholder_land;
+                                ((ImageView) view).setImageResource(R.drawable.img_placeholder);
+                                placeholder = R.drawable.img_placeholder;
                             }
 
+                        }
+                    }
+
+                    /* set large placeholder for carosuel and video detail page */
+                    if(componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY){
+                        if (childViewHeight > childViewWidth) {
+                            placeholder = R.drawable.vid_image_placeholder_port;
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
+
+                        } else {
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                                placeholder = R.drawable.vid_image_placeholder_square;
+                            } else {
+                                if(BaseView.isTablet(context)) {
+                                    ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
+                                    placeholder = R.drawable.vid_image_placeholder_land;
+                                }else{
+                                    ((ImageView) view).setImageResource(R.drawable.img_placeholder);
+                                    placeholder = R.drawable.img_placeholder;
+                                }
+                            }
                         }
                     }
 
@@ -1025,7 +1058,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
-                        Log.d("bindView","Audio Duration Key :"+data.getGist().getTitle());
+//                        Log.d("bindView","Audio Duration Key :"+data.getGist().getTitle());
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
                         ((TextView) view).setText(time);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY) {
@@ -1135,6 +1168,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
+
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                         ((TextView) view).setText(artist);
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));

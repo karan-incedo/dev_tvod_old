@@ -2,37 +2,55 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import static com.viewlift.Utils.loadJsonFromAssets;
 
 /**
  * Created by viewlift on 6/28/17.
@@ -135,7 +153,19 @@ public class LoginModule extends ModuleView {
 
             topLayoutContainer.addView(loginModuleSwitcherContainer);
 
-            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleWithComponents module = null;
+            if (appCMSMain != null &&
+                    appCMSMain.getDomainName().equalsIgnoreCase("www.hoichoi.tv")) {
+                AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                        loadJsonFromAssets(context, "home.json"),
+                        AppCMSPageUI.class);
+                 module = appCMSPageUI1.getModuleList().get(12);
+
+            }else
+            {
+                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            }
+
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -191,10 +221,10 @@ public class LoginModule extends ModuleView {
                     } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                             (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
                                     launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP ||
                                     launchType == AppCMSPresenter.LaunchType.SIGNUP)) {
                         if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP ||
                                 launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                             buttonSelectors[1] = new Button(getContext());
                             LinearLayout.LayoutParams signupSelectorLayoutParams =
@@ -265,7 +295,7 @@ public class LoginModule extends ModuleView {
             if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                 selectChild(0);
                 unselectChild(1);
-            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP||
+            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP ||
                     launchType == AppCMSPresenter.LaunchType.SIGNUP) {
                 selectChild(1);
                 unselectChild(0);
@@ -302,6 +332,13 @@ public class LoginModule extends ModuleView {
         }
     }
 
+    /**
+     * Creating values for login/Signup Screen UI component
+     * @param moduleView
+     * @param subComponent
+     * @param childIndex
+     * @param appCMSAndroidModules
+     */
     private void addChildComponents(ModuleView moduleView,
                                     Component subComponent,
                                     final int childIndex,
@@ -363,29 +400,92 @@ public class LoginModule extends ModuleView {
                                 componentView.setBackgroundColor(ctaBgColor);
                             }
 
-                            componentView.setOnClickListener(v -> {
-                                //Log.d(TAG, "Button clicked: " + component.getAction());
+                            if (componentKey == AppCMSUIKeyType.PAGE_CHECKBOX_KEY) {
+                                ((AppCompatCheckBox)componentView).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                        Button btnSignup = (Button)findViewById(R.id.appCMS_sign_up_button);
 
-                                if (!appCMSPresenter.isPageLoading() &&
-                                        visibleEmailInputView != null &&
-                                        visiblePasswordInputView != null) {
-                                    appCMSPresenter.showLoadingDialog(true);
-                                    String[] authData = new String[2];
-                                    authData[0] = visibleEmailInputView.getText().toString();
-                                    authData[1] = visiblePasswordInputView.getText().toString();
+                                        if (isChecked){
+                                            btnSignup.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                            btnSignup.setEnabled(true);
+                                        }else {
+                                            btnSignup.setBackgroundColor(Color.LTGRAY);
+                                            btnSignup.setEnabled(false);
+                                        }
+                                    }
+                                });
 
-                                    appCMSPresenter.launchButtonSelectedAction(null,
-                                            component.getAction(),
-                                            null,
-                                            authData,
-                                            null,
-                                            true,
-                                            0,
-                                            null);
+                            }else{
+
+                                if ( loginInSignUpAction.equalsIgnoreCase("signup") &&
+                                        component.getText()!= null &&
+                                        !TextUtils.isEmpty(component.getText()) &&
+                                        component.getText().equalsIgnoreCase("SIGN UP")){
+                                    ((Button)componentView).setEnabled(false);
+                                    ((Button)componentView).setId(R.id.appCMS_sign_up_button);
+                                    ((Button)componentView).setBackgroundColor(Color.LTGRAY);
                                 }
-                            });
+                                componentView.setOnClickListener(v -> {
+
+                                    if (!appCMSPresenter.isPageLoading() &&
+                                            visibleEmailInputView != null &&
+                                            visiblePasswordInputView != null) {
+                                        appCMSPresenter.showLoadingDialog(true);
+                                        String[] authData = new String[2];
+                                        authData[0] = visibleEmailInputView.getText().toString();
+                                        authData[1] = visiblePasswordInputView.getText().toString();
+
+                                        appCMSPresenter.launchButtonSelectedAction(null,
+                                                component.getAction(),
+                                                null,
+                                                authData,
+                                                null,
+                                                true,
+                                                0,
+                                                null);
+                                    }
+                                });
+                            }
+
                             break;
 
+                        case PAGE_LABEL_KEY:
+                            if (component.getKey()!= null &&
+                                    !TextUtils.isEmpty(component.getKey()) &&
+                                    component.getKey().equalsIgnoreCase("signupAgrement"))
+                            {
+                                ((TextView)componentView).setText("Terms of service and Privacy Policy");
+                                SpannableStringBuilder spanTxt = new SpannableStringBuilder(
+                                        "Terms of service");
+                                spanTxt.setSpan(new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View widget) {
+                                        /*Toast.makeText(context, "Terms of services Clicked",
+                                                Toast.LENGTH_SHORT).show();*/
+                                        appCMSPresenter.navigatToTOSPage(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
+                                    }
+                                }, spanTxt.length() - "Term of services".length(), spanTxt.length(), 0);
+                                spanTxt.append(" and");
+                                spanTxt.setSpan(new ForegroundColorSpan(appCMSPresenter.getGeneralTextColor()), 17, spanTxt.length(), 0);
+                                spanTxt.append(" Privacy Policy");
+                                spanTxt.setSpan(new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View widget) {
+                                       /* Toast.makeText(context, "Privacy Policy Clicked",
+                                                Toast.LENGTH_SHORT).show();*/
+
+
+                                        appCMSPresenter.navigatToPrivacyPolicy(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
+                                    }
+                                }, spanTxt.length() - " Privacy Policy".length(), spanTxt.length(), 0);
+                                ((TextView)componentView).setMovementMethod(LinkMovementMethod.getInstance());
+                                ((TextView)componentView).setText(spanTxt, TextView.BufferType.SPANNABLE);
+
+
+
+                            }
+                            break;
                         case PAGE_TEXTFIELD_KEY:
                             switch (componentKey) {
                                 case PAGE_EMAILTEXTFIELD_KEY:
@@ -394,6 +494,12 @@ public class LoginModule extends ModuleView {
                                     appCMSPresenter.setCursorDrawableColor(emailInputViews[childIndex]);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visibleEmailInputView = emailInputViews[1];
+                                    }
+                                    if (appCMSPresenter!= null &&
+                                            appCMSPresenter.getTempEmail()!= null &&
+                                            !TextUtils.isEmpty(appCMSPresenter.getTempEmail()) &&
+                                            visibleEmailInputView != null ){
+                                        visibleEmailInputView.setText(appCMSPresenter.getTempEmail());
                                     }
                                     break;
 
@@ -436,6 +542,12 @@ public class LoginModule extends ModuleView {
                                     appCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
+                                    }
+                                    if (appCMSPresenter!= null &&
+                                            appCMSPresenter.getTempPassword()!= null &&
+                                            !TextUtils.isEmpty(appCMSPresenter.getTempPassword()) &&
+                                            visiblePasswordInputView != null){
+                                        visiblePasswordInputView.setText(appCMSPresenter.getTempPassword());
                                     }
                                     break;
 
