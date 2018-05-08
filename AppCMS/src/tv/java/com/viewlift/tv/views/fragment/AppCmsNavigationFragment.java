@@ -856,7 +856,7 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    navigationVisibilityListener.showNavigation(false);
+                    //navigationVisibilityListener.showNavigation(false);
                     Utils.pageLoading(true, getActivity());
 
                     new Handler().postDelayed(new Runnable() {

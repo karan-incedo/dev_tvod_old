@@ -251,6 +251,16 @@ public class TVCollectionGridItemView extends TVBaseView {
                     });
                     view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
+
+                    if(appCMSPresenter.isLeftNavigationEnabled()) {
+                        view.setOnFocusChangeListener((view1, b) -> {
+                            if(null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
+                            }
+                        });
+                    }
+
                 }else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY){
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),

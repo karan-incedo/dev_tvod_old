@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -182,6 +184,7 @@ public class AppCMSTVTrayAdapter
                     }
                 }
             }
+
             return new ViewHolder(collectionGridItemView);
         } else {
 
@@ -204,6 +207,13 @@ public class AppCMSTVTrayAdapter
             textView.setLayoutParams(layoutParams);
             textView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             relativeLayout.addView(textView);
+
+            if(null != appCMSPresenter
+                    && null != appCMSPresenter.getCurrentActivity()
+                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(true);
+            }
+
             return new ViewHolder(relativeLayout);
         }
     }
@@ -397,8 +407,9 @@ public class AppCMSTVTrayAdapter
 
         public ViewHolder(View itemView) {
             super(itemView);
-            if (itemView instanceof TVCollectionGridItemView)
+            if (itemView instanceof TVCollectionGridItemView) {
                 this.componentView = (TVCollectionGridItemView) itemView;
+            }
         }
     }
 

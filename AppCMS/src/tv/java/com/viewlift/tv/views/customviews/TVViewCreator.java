@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -285,6 +286,16 @@ public class TVViewCreator {
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
+            if(module.getBlockName().equalsIgnoreCase("richText01")){
+                moduleView.setOnFocusChangeListener((view, b) -> {
+                    if(null != appCMSPresenter
+                            && null != appCMSPresenter.getCurrentActivity()
+                            && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                        ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
+                    }
+                });
+            }
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
                     || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
@@ -1349,6 +1360,7 @@ public class TVViewCreator {
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 componentViewResult.componentView.setFocusable(true);
+
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
@@ -1979,6 +1991,14 @@ public class TVViewCreator {
                         });
                         break;
                     case PAGE_SETTING_LOGOUT_BUTTON_KEY:
+                        componentViewResult.componentView.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
                         componentViewResult.componentView.setOnClickListener(v -> appCMSPresenter.logoutTV());
                         break;
 
@@ -2088,6 +2108,16 @@ public class TVViewCreator {
                         } else {
                             componentViewResult.componentView.setVisibility(View.INVISIBLE);
                         }
+
+                        componentViewResult.componentView.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
+
                         break;
 
                     default:
@@ -3039,6 +3069,17 @@ public class TVViewCreator {
                         textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT
                                 | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         textInputEditText.setId(R.id.email_edit_box);
+
+                        textInputEditText.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
+
+
                         //textInputEditText.setNextFocusRightId(R.id.password_edit_box);
                         break;
                     case PAGE_PASSWORDTEXTFIELD_KEY:
@@ -3047,6 +3088,15 @@ public class TVViewCreator {
                         textInputEditText.setId(R.id.password_edit_box);
                         textInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                        textInputEditText.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
 
                         //textInputEditText.setNextFocusLeftId(R.id.email_edit_box);
                         // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
@@ -3104,7 +3154,8 @@ public class TVViewCreator {
                 componentViewResult.componentView = new ToggleSwitchView(
                         context,
                         component,
-                        jsonValueKeyMap
+                        jsonValueKeyMap,
+                        appCMSPresenter
                 );
                 break;
 

@@ -242,7 +242,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                         if (isActive) {
-                            if (!appCMSPresenter.isPagePrimary(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()) &&
+                            if (/*!appCMSPresenter.isPagePrimary(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId()) &&*/
                                     (appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.getTosPage().getPageId().equalsIgnoreCase(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
@@ -262,6 +262,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 } else {
                                     openMyProfile();
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                                    showNavigation(false);
                                     /*if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                                         showSubNavigation(false, false); //close subnavigation if any.
                                     }*/
