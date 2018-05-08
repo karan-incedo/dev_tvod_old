@@ -38,6 +38,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.StatFs;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -840,9 +842,12 @@ public class AppCMSPresenter {
 
 
     public void stopLoader() {
-        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+        try {
+            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+        }catch(Exception ex){
+        }
     }
 
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
@@ -1775,9 +1780,11 @@ public class AppCMSPresenter {
      * and then use the result to update the UI accordingly.
      */
     private void sendUpdateHistoryAction() {
-        Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
-        updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-        currentActivity.sendBroadcast(updateHistoryIntent);
+        try {
+            Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+            updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(updateHistoryIntent);
+        }catch(Exception ex){}
     }
 
     /**
@@ -4788,9 +4795,9 @@ public class AppCMSPresenter {
 
             if (contentDatum.getGist() != null &&
                     contentDatum.getGist().getMediaType() != null &&
-                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentActivity.getString(R.string.media_type_audio).toLowerCase()) &&
                     contentDatum.getGist().getContentType() != null &&
-                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                    contentDatum.getGist().getContentType().toLowerCase().contains(currentActivity.getString(R.string.content_type_audio).toLowerCase())) {
                 downloadURL = contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl();
             } else {
                 downloadURL = getDownloadURL(contentDatum);
@@ -4834,9 +4841,9 @@ public class AppCMSPresenter {
                         try {
                             if (contentDatum.getGist() != null &&
                                     contentDatum.getGist().getMediaType() != null &&
-                                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentActivity.getString(R.string.media_type_audio).toLowerCase()) &&
                                     contentDatum.getGist().getContentType() != null &&
-                                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                                    contentDatum.getGist().getContentType().toLowerCase().contains(currentActivity.getString(R.string.content_type_audio).toLowerCase())) {
                                 downloadMediaFile(contentDatum, downloadURL, 0, isFromPlaylistDownload);
                                 appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), AppCMSPresenter.this,
                                         resultAction1, getLoggedInUser());
@@ -5362,14 +5369,9 @@ public class AppCMSPresenter {
 
     @UiThread
     public boolean isVideoDownloaded(String videoId) {
-
-        if (realmController == null) {
-            try {
-                this.realmController = RealmController.with(currentActivity);
-            } catch (Exception e) {
-                return false;
-            }
-        }
+        try {
+        if (realmController == null)
+            this.realmController = RealmController.with(currentActivity);
 
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
                 getLoggedInUser());
@@ -5377,6 +5379,9 @@ public class AppCMSPresenter {
                 downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
                 (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
                         downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @UiThread
@@ -12611,6 +12616,14 @@ public class AppCMSPresenter {
                         stopLoader();
                     }
                 }, apikey).execute(params);
+    }
+
+    public String getStringDataById(Context context,int id){
+       if (Build.VERSION.SDK_INT >= 23) {
+             return context.getString(id);
+        } else {
+            return context.getResources().getString(id);
+        }
     }
 
     private void finalizeLogin(boolean forceSubscribed,
