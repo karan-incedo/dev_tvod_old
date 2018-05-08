@@ -562,7 +562,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                             case KeyEvent.KEYCODE_DPAD_RIGHT:
                             case KeyEvent.KEYCODE_DPAD_LEFT:
                                 setFocusOnSelectedPage();
-                                navigationVisibilityListener.showSubNavigation(false);
+                               // navigationVisibilityListener.showSubNavigation(false);
                                 break;
                         }
                     }
