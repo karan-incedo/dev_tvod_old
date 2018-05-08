@@ -2960,7 +2960,7 @@ public class ViewCreator {
                                                 allEpisodeIds,
                                                 appCMSPresenter,
                                                 jsonValueKeyMap,
-                                                viewType);
+                                                viewType,((RecyclerView) componentViewResult.componentView));
                                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
                                 componentViewResult.onInternalEvent = appCMSTraySeasonItemAdapter;
                                 componentViewResult.onInternalEvent.setModuleId(moduleId);

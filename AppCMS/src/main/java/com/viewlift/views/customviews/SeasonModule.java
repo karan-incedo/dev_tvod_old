@@ -25,7 +25,6 @@ import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.viewlift.Utils.loadJsonFromAssets;
@@ -144,6 +143,22 @@ public class SeasonModule extends ModuleView {
 
                 @Override
                 public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+            seasonPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    SeasonTabSelectorBus.instanceOf().setTab(position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
 
                 }
             });
