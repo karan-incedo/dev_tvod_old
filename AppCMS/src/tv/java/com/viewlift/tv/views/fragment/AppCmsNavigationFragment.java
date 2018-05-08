@@ -108,6 +108,9 @@ public class AppCmsNavigationFragment extends Fragment {
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
                             LinearLayoutManager.VERTICAL,
                             false));
+            mRecyclerView.setPadding(0,0,0,0);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
+            layoutParams.setMargins(40, 250, 0,0);
         }else{
             mRecyclerView
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
@@ -835,7 +838,7 @@ public class AppCmsNavigationFragment extends Fragment {
         @Override
         public void onBindViewHolder(NavItemHolder holder, final int position) {
             final NavigationPrimary primary = (NavigationPrimary) getItem(position);
-            holder.navItemView.setText(primary.getTitle().toUpperCase());
+            holder.navItemView.setText(primary.getTitle());
             holder.navItemView.setTag(R.string.item_position, position);
 
             holder.navIconView.setImageResource(Utils.getIcon(primary.getIcon(),mContext));
@@ -984,7 +987,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
                 // navItemlayout.setBackgroundColor(bgColor);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
-                navItemView.setTypeface(semiBoldTypeFace);
+                navItemlayout.setAlpha(0.3F);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
@@ -995,11 +998,9 @@ public class AppCmsNavigationFragment extends Fragment {
 
                         //Log.d("TAG","Nav position = "+position);
                         if (hasFocus) {
-                            navItemView.setText(text.toUpperCase());
-                            navItemView.setTypeface(extraBoldTypeFace);
+                            navItemlayout.setAlpha(1.0F);
                         } else {
-                            navItemView.setText(text.toUpperCase());
-                            navItemView.setTypeface(semiBoldTypeFace);
+                            navItemlayout.setAlpha(0.3F);
                         }
                     }
                 });

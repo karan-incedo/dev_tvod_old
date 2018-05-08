@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -19,6 +20,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -34,6 +36,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
+import com.viewlift.views.customviews.BaseView;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -340,7 +343,7 @@ public class Utils {
         });
 
         if (appCMSPresenter.isLeftNavigationEnabled()) {
-            layerDrawable.setLayerInset(0, 0, 0, 393, 0);
+            layerDrawable.setLayerInset(0, 0, 0, (int) convertDpToPixel(296, context), 0);
         } else if (isSubNavigation) {
             layerDrawable.setLayerInset(1, 0, 0, 0, 5);
         } else {
@@ -382,10 +385,7 @@ public class Utils {
         res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(primaryHover, secondaryHover));
         res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(primaryHover, secondaryHover));
         res.addState(new int[]{android.R.attr.state_selected}, getGradientDrawable(primaryHover, secondaryHover));
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
-                context,
-                android.R.color.transparent
-        )));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)));
         return res;
     }
 
@@ -950,5 +950,24 @@ public class Utils {
             }
         }
         return iconResId;
+    }
+
+    public static float convertDpToPixel(float dp, Context context) {
+        if (context != null) {
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        }
+        return 0.0f;
+    }
+
+    public static float convertPixelsToDp(float px, Context context) {
+        if (context != null) {
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+            return dp;
+        }
+        return 0.0f;
     }
 }

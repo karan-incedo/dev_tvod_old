@@ -121,6 +121,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
                             LinearLayoutManager.VERTICAL,
                             false));
+            mRecyclerView.setPadding(0,0,0,0);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
+            layoutParams.setMargins(40, 250, 0,0);
         } else {
             mRecyclerView
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
@@ -466,15 +469,14 @@ public class AppCmsSubNavigationFragment extends Fragment {
         public NavItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.left_navigation_item, parent, false);
-            NavItemHolder navItemHolder = new NavItemHolder(view);
-            return navItemHolder;
+            return new NavItemHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             final NavigationSubItem subItem = (NavigationSubItem) getItem(position);
             NavItemHolder navItemHolder = (NavItemHolder) holder;
-            navItemHolder.navItemView.setText(subItem.title.toString().toUpperCase());
+            navItemHolder.navItemView.setText(subItem.title);
             navItemHolder.navItemView.setTag(R.string.item_position, position);
 
             navItemHolder.navIconView.setImageResource(Utils.getIcon(subItem.icon,mContext));
@@ -486,10 +488,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
             if (selectedPosition >= 0 && selectedPosition == position) {
                 navItemHolder.navItemlayout.setBackground(
                         Utils.getNavigationSelectedState(mContext, appCmsPresenter, true, bgColor));
-                navItemHolder.navItemView.setTypeface(extraBoldTypeFace);
+                navItemHolder.navItemlayout.setAlpha(1.0F);
             } else {
                 navItemHolder.navItemlayout.setBackground(null);
-                navItemHolder.navItemView.setTypeface(semiBoldTypeFace);
+                navItemHolder.navItemlayout.setAlpha(0.3F);
             }
 
             navItemHolder.navItemlayout.setOnClickListener(new View.OnClickListener() {
@@ -541,13 +543,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (LinearLayout) itemView.findViewById(R.id.nav_item_layout);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
+                navItemlayout.setAlpha(0.3F);
 
+                navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false, bgColor));
                 navIconView = (ImageView) itemView.findViewById(R.id.nav_item_image);
 
-                navItemlayout.setOnFocusChangeListener((view, focus) -> {
-                    if (focus)
-                        mRecyclerView.setAlpha(1f);
-                });
+
 
                 navItemlayout.setOnKeyListener((view, i, keyEvent) -> {
                     int keyCode = keyEvent.getKeyCode();
@@ -562,7 +563,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                             case KeyEvent.KEYCODE_DPAD_LEFT:
                                 setFocusOnSelectedPage();
                                 navigationVisibilityListener.showSubNavigation(false);
-                                new Handler().postDelayed(() -> mRecyclerView.setAlpha(0.52f), 50);
                                 break;
                         }
                     }

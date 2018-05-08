@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/appcms_tv_sub_navigation_height"
         android:layout_marginTop="@dimen/appcms_tv_sub_navigation_top_margin"
-        android:visibility="visible"></FrameLayout>
+        android:visibility="visible"/>
 
     </RelativeLayout>
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +22,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -79,7 +77,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private FrameLayout navHolder;
     private FrameLayout homeHolder;
     private FrameLayout shadowView;
-    RelativeLayout navParentContaineer;
+    RelativeLayout navParentContainer;
     AppCmsNavigationFragment navigationFragment;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver updateHistoryDataReciever;
@@ -164,22 +162,23 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         setContentView(R.layout.activity_app_cms_tv_home);
 
         RelativeLayout subscribeNowStripContaineer = (RelativeLayout) findViewById(R.id.subscribe_now_strip_containeer);
-        navParentContaineer = (RelativeLayout) findViewById(R.id.navigation_layouts_container);
+        navParentContainer = (RelativeLayout) findViewById(R.id.navigation_layouts_container);
         navHolder = (FrameLayout) findViewById(R.id.navigation_placholder);
        // subNavHolder = (FrameLayout) findViewById(R.id.sub_navigation_placeholder);
 
         if(appCMSPresenter.isLeftNavigationEnabled()){
+//            navHolder.findViewById(R.id.left_menu_app_logo).setVisibility(View.VISIBLE);
             ViewGroup.LayoutParams layoutParams = navHolder.getLayoutParams();
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            layoutParams.width = 600;
+            layoutParams.width = 700;
 
-            ViewGroup.LayoutParams parentLayoutparam = navParentContaineer.getLayoutParams();
+            RelativeLayout.LayoutParams parentLayoutparam = (RelativeLayout.LayoutParams) navParentContainer.getLayoutParams();
             parentLayoutparam.height =  ViewGroup.LayoutParams.MATCH_PARENT;
-
-            navParentContaineer.bringToFront();
-            navParentContaineer.setBackground(getDrawable(R.drawable.left_nav_gradient));
-            navParentContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
-            navParentContaineer.setVisibility(View.INVISIBLE);
+            parentLayoutparam.addRule(RelativeLayout.CENTER_HORIZONTAL, R.id.navRecylerView);
+            navParentContainer.bringToFront();
+            navParentContainer.setBackground(getDrawable(R.drawable.left_nav_gradient));
+            navParentContainer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+            navParentContainer.setVisibility(View.INVISIBLE);
 
            /* ViewGroup.LayoutParams layoutParamsSubNav = subNavHolder.getLayoutParams();
             layoutParamsSubNav.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -1038,7 +1037,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         new Handler().post(() -> {
             navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-            navParentContaineer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
+            navParentContainer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
             navigationFragment.setFocusable(shouldShow);
             if (shouldShow) {
                 // navigationFragment.setSelectorColor();

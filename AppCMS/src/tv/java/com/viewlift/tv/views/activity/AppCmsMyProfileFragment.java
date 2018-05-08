@@ -95,10 +95,11 @@ public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNa
         }
 
         if(appCMSPresenter.isLeftNavigationEnabled()){
-            ViewGroup.LayoutParams layoutParams = subNavigationPlaceholder.getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) subNavigationPlaceholder.getLayoutParams();
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.width = 600;
 
+            layoutParams.setMargins(0,0,0,0);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pageHolder.getLayoutParams();
             params.removeRule(RelativeLayout.BELOW);
             subNavContaineer.bringToFront();
