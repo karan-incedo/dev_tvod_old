@@ -156,23 +156,25 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
                     appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                    appCMSNavFreeTrialButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                    appCMSNavFreeTrialButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                    appCMSNavFreeTrialButton.setVisibility(View.VISIBLE);
-                    appCMSNavFreeTrialButton.setOnClickListener(v -> {
-                        if (appCMSPresenter != null) {
-                            if (appCMSPresenter.getAppCMSMain()
-                                    .getServiceType()
-                                    .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
-                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                                appCMSPresenter.navigateToSubscriptionPlansPage(true);
-                            } else {
-                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SIGNUP);
-                                appCMSPresenter.navigateToLoginPage(false);
-                            }
-                        }
-                    });
+                } else {
+                    appCMSNavFreeTrialButton.setText(getString(R.string.app_cms_sign_up_pager_title));
                 }
+                appCMSNavFreeTrialButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                appCMSNavFreeTrialButton.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                appCMSNavFreeTrialButton.setVisibility(View.VISIBLE);
+                appCMSNavFreeTrialButton.setOnClickListener(v -> {
+                    if (appCMSPresenter != null) {
+                        if (appCMSPresenter.getAppCMSMain()
+                                .getServiceType()
+                                .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                            appCMSPresenter.navigateToSubscriptionPlansPage(true);
+                        } else {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SIGNUP);
+                            appCMSPresenter.navigateToLoginPage(false);
+                        }
+                    }
+                });
             }
         }
         setBgColor(bgColor, view);

@@ -666,6 +666,7 @@ public class AppCmsSearchFragment extends BaseFragment {
         CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
+                moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                 component,
                 jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
@@ -679,6 +680,7 @@ public class AppCmsSearchFragment extends BaseFragment {
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
             rowData.itemPosition = i;
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             trayListRowAdapter.add(rowData);
             //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
         }
@@ -703,6 +705,7 @@ public class AppCmsSearchFragment extends BaseFragment {
                  CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                          Integer.valueOf(component.getLayout().getTv().getHeight()),
                          Integer.valueOf(component.getLayout().getTv().getWidth()),
+                         moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                          component,
                          jsonValueKeyMap
                  );
@@ -716,6 +719,7 @@ public class AppCmsSearchFragment extends BaseFragment {
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
             rowData.rowNumber = trayIndex;
             position++;
             rowData.itemPosition = position;

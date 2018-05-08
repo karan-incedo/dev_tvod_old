@@ -154,60 +154,60 @@ public class AppCmsNavigationFragment extends Fragment {
             navTopLine.setVisibility(View.VISIBLE);
             navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
 
-            String message;
-            if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
-                    && null != appCMSPresenter.getNavigation().getSettings()
-                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()) {
-                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
-            } else {
-                message = getResources().getString(R.string.watch_live_text);
-            }
-
-            navMenuSubscriptionModule.setText(message);
-           // navMenuSubscriptionModule.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
-           // navMenuSubscriptionModule.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
-            navMenuSubscriptionModule.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
-                    Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter))
-                    ,null,appCMSPresenter ));
-            navMenuSubscriptionModule.setTextColor(Color.parseColor(Utils.getTextColor(getActivity(),appCMSPresenter)));
-
-            toggleVisibilityOfSubscriptionModule();
-
-            navMenuSubscriptionModule.setOnClickListener(v -> {
-
-                if (!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                    ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                            getActivity(),
-                            appCMSPresenter,
-                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                            getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                            getString(R.string.subscription),
-                            getString(R.string.subscription_not_purchased),
-                            getString(R.string.sign_in_text),
-                            getString(android.R.string.cancel),
-                            14
-                    );
-
-                    newFragment.setOnPositiveButtonClicked(s -> {
-                        NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                        appCMSPresenter.navigateToTVPage(
-                                navigationUser.getPageId(),
-                                navigationUser.getTitle(),
-                                navigationUser.getUrl(),
-                                false,
-                                Uri.EMPTY,
-                                false,
-                                false,
-                                true);
-                    });
+            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                String message;
+                if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                        && null != appCMSPresenter.getNavigation().getSettings()
+                        && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()) {
+                    message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
                 } else {
-                    appCMSPresenter.openTVErrorDialog(
-                            getActivity().getString(R.string.subscription_not_purchased),
-                            getActivity().getString(R.string.subscription), false);
+                    message = getResources().getString(R.string.watch_live_text);
                 }
-            });
+
+                navMenuSubscriptionModule.setText(message);
+                navMenuSubscriptionModule.setBackground(Utils.setButtonBackgroundSelector(getActivity(),
+                        Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter))
+                        ,null,appCMSPresenter ));
+                navMenuSubscriptionModule.setTextColor(Color.parseColor(Utils.getTextColor(getActivity(),appCMSPresenter)));
+
+                toggleVisibilityOfSubscriptionModule();
+
+                navMenuSubscriptionModule.setOnClickListener(v -> {
+
+                    if (!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                getActivity(),
+                                appCMSPresenter,
+                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                getString(R.string.subscription),
+                                getString(R.string.subscription_not_purchased),
+                                getString(R.string.sign_in_text),
+                                getString(android.R.string.cancel),
+                                14
+                        );
+
+                        newFragment.setOnPositiveButtonClicked(s -> {
+                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                            appCMSPresenter.navigateToTVPage(
+                                    navigationUser.getPageId(),
+                                    navigationUser.getTitle(),
+                                    navigationUser.getUrl(),
+                                    false,
+                                    Uri.EMPTY,
+                                    false,
+                                    false,
+                                    true);
+                        });
+                    } else {
+                        appCMSPresenter.openTVErrorDialog(
+                                getActivity().getString(R.string.subscription_not_purchased),
+                                getActivity().getString(R.string.subscription), false);
+                    }
+                });
+            }
         }
         return view;
     }
@@ -271,7 +271,9 @@ public class AppCmsNavigationFragment extends Fragment {
         if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
-        toggleVisibilityOfSubscriptionModule();
+        if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+            toggleVisibilityOfSubscriptionModule();
+        }
     }
 
     private boolean isEndPosition() {

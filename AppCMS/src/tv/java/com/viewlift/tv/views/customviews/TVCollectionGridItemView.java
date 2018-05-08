@@ -33,12 +33,10 @@ import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -215,6 +213,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                                         .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                 .into((ImageView) view);
 
+                    } else {
+                        ((ImageView) view).setImageResource(R.drawable.video_image_placeholder);
                     }
                     bringToFront = false;
                     view.setFocusable(true);

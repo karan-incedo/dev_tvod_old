@@ -33,7 +33,7 @@
               android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
   -->
 
-
+        <FrameLayout
         android:id="@+id/chromecast_live_player"
         android:layout_width="@dimen/chromecast_default_width"
         android:layout_height="@dimen/chromecast_default_height"

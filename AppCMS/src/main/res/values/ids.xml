@@ -48,6 +48,10 @@
     <item name="code_sync_text_line_header" type="id">code_sync_text_line_header</item>
     <item name="btn_activate_device" type="id">btn_activate_device</item>
     <item name="btn_login" type="id">btn_login</item>
+    <item name="videoTitleOnHover" type="id">videoTitleOnHover</item>
+    <item name="videoSubTitleOnHover" type="id">videoSubTitleOnHover</item>
+    <item name="videoDescriptionOnHover" type="id">videoDescriptionOnHover</item>
+    <item name="videoBackgroundOnHover" type="id">videoBackgroundOnHover</item>
 
 
 </resources>

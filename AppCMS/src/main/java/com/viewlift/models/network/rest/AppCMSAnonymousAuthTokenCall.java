@@ -6,7 +6,6 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.AnonymousAuthTokenResponse;
@@ -39,12 +38,12 @@ public class AppCMSAnonymousAuthTokenCall {
         this.headersMap = new HashMap<>();
     }
 
-    public void call(String url, final Action1<AnonymousAuthTokenResponse> responseAction1 , String apiKey) {
+    public void call(String url, final Action1<AnonymousAuthTokenResponse> responseAction1, String apiKey) {
         headersMap.clear();
         if (!TextUtils.isEmpty(apiKey)) {
             headersMap.put("x-api-key", apiKey);
         }
-        anonymousAuthTokenRest.get(url,headersMap).enqueue(new Callback<AnonymousAuthTokenResponse>() {
+        anonymousAuthTokenRest.get(url, headersMap).enqueue(new Callback<AnonymousAuthTokenResponse>() {
             @Override
             public void onResponse(@NonNull Call<AnonymousAuthTokenResponse> call,
                                    @NonNull Response<AnonymousAuthTokenResponse> response) {

@@ -125,6 +125,12 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             } else {
                 subscriptionTitle.setVisibility(View.GONE);
             }
+
+        if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
+                .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+            updateSubscriptionStrip();
+        }else{
+            subscriptionTitle.setVisibility(View.GONE);
         }
 
         /*if(!appCMSPresenter.isLeftNavigationEnabled())
@@ -272,7 +278,6 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                Log.d("TAG","NITS getDialog().setOnKeyListener....");
                 if(keyCode == KeyEvent.KEYCODE_BACK
                         && event.getAction() == KeyEvent.ACTION_DOWN){
                     if(null != onBackKeyListener)

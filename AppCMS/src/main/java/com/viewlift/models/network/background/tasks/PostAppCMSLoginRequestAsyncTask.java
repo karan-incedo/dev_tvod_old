@@ -19,7 +19,7 @@ public class PostAppCMSLoginRequestAsyncTask {
     private final Action1<SignInResponse> readyAction;
 
     private static final String TAG = "LoginRequestTask";
-
+    private final String apiKey;
     public static class Params {
         String url;
         String email;
@@ -48,9 +48,10 @@ public class PostAppCMSLoginRequestAsyncTask {
     }
 
     public PostAppCMSLoginRequestAsyncTask(AppCMSSignInCall call,
-                                           Action1<SignInResponse> readyAction) {
+                                           Action1<SignInResponse> readyAction, String apiKey) {
         this.call = call;
         this.readyAction = readyAction;
+        this.apiKey = apiKey;
     }
 
     public void execute(Params params) {
@@ -58,7 +59,7 @@ public class PostAppCMSLoginRequestAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.email, params.password);
+                            return call.call(params.url, params.email, params.password,apiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }

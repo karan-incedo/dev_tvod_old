@@ -249,6 +249,25 @@ public class TVViewCreator {
             }
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
                 isGrid = true;
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray01")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("carousel01")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_carousel.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray04")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray02")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("continueWatching01")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
+            }
+            if (module.getBlockName().equalsIgnoreCase("tray03")) {
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray03.json"), ModuleList.class);
             }
 
             if (null != module.getComponents() && module.getComponents().size() > 0) {
@@ -259,6 +278,7 @@ public class TVViewCreator {
             }
             return null;
         } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
+//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -489,7 +509,12 @@ public class TVViewCreator {
                 }
 
             if (moduleData != null) {
-                CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter);
+                CardPresenter cardPresenter = new JumbotronPresenter(
+                        context,
+                        appCMSPresenter,
+                        component,
+                        jsonValueKeyMap,
+                        moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover());
                 ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
                 if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                     List<ContentDatum> contentData1 = moduleData.getContentData();
@@ -508,6 +533,7 @@ public class TVViewCreator {
                             rowData.uiComponentList = components;
                             rowData.action = component.getTrayClickAction();
                             rowData.blockName = moduleUI.getBlockName();
+                            rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                             rowData.rowNumber = trayIndex;
                             rowData.itemPosition = i;
                             listRowAdapter.add(rowData);
@@ -539,6 +565,7 @@ public class TVViewCreator {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                             Integer.valueOf(component.getLayout().getTv().getHeight() != null ? component.getLayout().getTv().getHeight() : "0"),
                             Integer.valueOf(component.getLayout().getTv().getWidth() != null ? component.getLayout().getTv().getWidth() : "0"),
+                            moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover(),
                             component,
                             jsonValueKeyMap
                     );
@@ -555,6 +582,7 @@ public class TVViewCreator {
                                 rowData.uiComponentList = components;
                                 rowData.action = component.getTrayClickAction();
                                 rowData.blockName = moduleUI.getBlockName();
+                                rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                                 rowData.rowNumber = trayIndex;
                                 traylistRowAdapter.add(rowData);
                                 int noOfGridItem = DEFAULT_GRID_COLUMN;
@@ -604,6 +632,7 @@ public class TVViewCreator {
                                 rowData.uiComponentList = components;
                                 rowData.action = component.getTrayClickAction();
                                 rowData.blockName = moduleUI.getBlockName();
+                                rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                                 rowData.rowNumber = index;
                                 traylistRowAdapter.add(rowData);
                             }
@@ -621,6 +650,7 @@ public class TVViewCreator {
                                 rowData.uiComponentList = components;
                                 rowData.action = component.getTrayClickAction();
                                 rowData.blockName = moduleUI.getBlockName();
+                                rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                                 rowData.rowNumber = trayIndex;
                                 rowData.itemPosition = i;
                                 traylistRowAdapter.add(rowData);
@@ -656,6 +686,7 @@ public class TVViewCreator {
                 BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
                 browseFragmentRowData.isPlayerComponent = true;
                 browseFragmentRowData.contentData = moduleData.getContentData().get(0);
+                browseFragmentRowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                 browseFragmentRowData.rowNumber = trayIndex;
                     browseFragmentRowData.itemPosition = 0;
                 listRowAdapter.add(browseFragmentRowData);
