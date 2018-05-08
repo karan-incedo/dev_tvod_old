@@ -73,6 +73,7 @@ public class BeaconBuffer extends Thread {
 
                     if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&
                             contentDatum.getGist() != null &&contentDatum.getGist().getMediaType()!=null&&
+                            appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio) != null &&
                             contentDatum.getGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getGist().getContentType() != null &&
                             contentDatum.getGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {

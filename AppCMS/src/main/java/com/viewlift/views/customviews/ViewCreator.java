@@ -3858,17 +3858,15 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = true;
-/*
-                                if (appCMSPresenter.isAudioAvailable()) {
-                                    deleteAllFiles = false;
-                                }
-*/
+                                appCMSPresenter.showLoadingDialog(true);
+
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 
@@ -3877,8 +3875,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
-                                            appCMSPresenter.stopLoader();
-
+                                            appCMSPresenter.showLoadingDialog(false);
                                             System.out.println("started clean download finish");
                                         }, deleteAllFiles);
                                         break;
@@ -3888,6 +3885,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearWatchlist(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 

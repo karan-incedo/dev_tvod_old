@@ -71,15 +71,15 @@ public class AudioServiceHelper {
         try {
             mControlsFragment = (PlaybackControlsFragment) mActivity.getFragmentManager()
                     .findFragmentById(R.id.fragment_playback_controls);
-//        if (mControlsFragment == null) {
-//            throw new IllegalStateException("Mising fragment with id 'controls'. Cannot continue.");
-//        }
 
             hidePlaybackControls();
+
+            if(mMediaBrowser != null && !mMediaBrowser.isConnected())
+                mMediaBrowser.connect();
+
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-        mMediaBrowser.connect();
     }
 
     public void onStop() {
@@ -151,10 +151,14 @@ public class AudioServiceHelper {
             };
 
     protected void showPlaybackControls() {
-        mActivity.getFragmentManager().beginTransaction()
-                .show(mControlsFragment)
-                .commitAllowingStateLoss();
-        changeMiniControllerVisiblity(false);
+        try {
+            mActivity.getFragmentManager().beginTransaction()
+                    .show(mControlsFragment)
+                    .commitAllowingStateLoss();
+            changeMiniControllerVisiblity(false);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     public void changeMiniControllerVisiblity(boolean isShow) {
