@@ -266,6 +266,17 @@ public class CollectionGridItemView extends BaseView {
         this.selectable = selectable;
     }
 
+    /**
+     * @param context
+     * @param view
+     * @param data
+     * @param jsonValueKeyMap
+     * @param onClickHandler
+     * @param componentViewType
+     * @param themeColor
+     * @param appCMSPresenter
+     * @param position
+     */
     public void bindChild(Context context,
                           View view,
                           final ContentDatum data,
@@ -346,11 +357,11 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
-                                placeholder = R.drawable.vid_image_placeholder_square;
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                placeholder = R.drawable.vid_image_placeholder_16x9;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
-                                placeholder = R.drawable.vid_image_placeholder_land;
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                placeholder = R.drawable.vid_image_placeholder_16x9;
                             }
 
                         }
@@ -629,7 +640,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .placeholder(R.drawable.img_placeholder)
+                                        .placeholder(R.drawable.vid_image_placeholder_16x9)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
