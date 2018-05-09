@@ -12638,6 +12638,8 @@ public class AppCMSPresenter {
         if (loginFromNavPage) {
             entitlementPendingVideoData = null;
         }
+        setTempEmail("");
+        setTempPassword("");
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
