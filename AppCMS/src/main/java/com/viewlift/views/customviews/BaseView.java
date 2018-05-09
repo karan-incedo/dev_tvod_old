@@ -1269,6 +1269,8 @@ public abstract class BaseView extends FrameLayout {
                             (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
