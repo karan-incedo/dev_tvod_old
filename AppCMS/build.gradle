@@ -175,7 +175,8 @@ android {
         }
 
         ndk {
-            abiFilters "armeabi-v7a", "x86", "armeabi", "mips"
+            //abiFilters "armeabi-v7a", "x86", "armeabi", "mips"  // This was used because we were facing crash with Kiswe SDK on some of the devices 
+            abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a" // Used after changes of Android SDK version 9th May 2018 due to [armeabi, mips are no more supported] after NDK 17 upgrade.
         }
     }
     sourceSets {
