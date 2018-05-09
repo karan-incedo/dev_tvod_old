@@ -3,15 +3,17 @@ package com.viewlift.models.network.rest;
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
-import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rx.functions.Action1;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 7/6/17.
@@ -33,11 +35,16 @@ public class AppCMSFacebookLoginCall {
     public void call(String url,
                      String facebookAccessToken,
                      String userId,
+                     String xApiKey,
                      final Action1<FacebookLoginResponse> readyAction) {
         FacebookLoginRequest facebookLoginRequest = new FacebookLoginRequest();
         facebookLoginRequest.setAccessToken(facebookAccessToken);
         facebookLoginRequest.setUserId(userId);
-        appCMSFacebookLoginRest.login(url, facebookLoginRequest).enqueue(new Callback<FacebookLoginResponse>() {
+
+        Map<String, String> authTokenMap = new HashMap<>();
+        authTokenMap.put("x-api-key", xApiKey);
+
+        appCMSFacebookLoginRest.login(url, facebookLoginRequest, authTokenMap).enqueue(new Callback<FacebookLoginResponse>() {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {
                 if (response.body() != null) {
