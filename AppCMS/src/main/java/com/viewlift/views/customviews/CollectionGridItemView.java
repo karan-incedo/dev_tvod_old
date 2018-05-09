@@ -344,8 +344,6 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
 
                         } else {
-
-
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
@@ -1025,7 +1023,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setVisibility(View.VISIBLE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
-                        Log.d("bindView","Audio Duration Key :"+data.getGist().getTitle());
+//                        Log.d("bindView","Audio Duration Key :"+data.getGist().getTitle());
                         String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
                         ((TextView) view).setText(time);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY) {
