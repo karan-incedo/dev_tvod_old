@@ -10097,7 +10097,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-
+        apikey = Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)

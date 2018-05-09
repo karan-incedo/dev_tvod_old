@@ -5092,7 +5092,7 @@ public class ViewCreator {
                                     android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
                         } else {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.img_placeholder);
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.vid_image_placeholder_16x9);
                         }
                         break;
 

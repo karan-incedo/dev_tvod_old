@@ -359,8 +359,8 @@ public class CollectionGridItemView extends BaseView {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                                 placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.img_placeholder);
-                                placeholder = R.drawable.img_placeholder;
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                placeholder = R.drawable.vid_image_placeholder_16x9;
                             }
 
                         }
@@ -384,8 +384,8 @@ public class CollectionGridItemView extends BaseView {
                                     ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
                                     placeholder = R.drawable.vid_image_placeholder_land;
                                 }else{
-                                    ((ImageView) view).setImageResource(R.drawable.img_placeholder);
-                                    placeholder = R.drawable.img_placeholder;
+                                    ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                    placeholder = R.drawable.vid_image_placeholder_16x9;
                                 }
                             }
                         }
@@ -664,7 +664,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .placeholder(R.drawable.img_placeholder)
+                                        .placeholder(R.drawable.vid_image_placeholder_16x9)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
