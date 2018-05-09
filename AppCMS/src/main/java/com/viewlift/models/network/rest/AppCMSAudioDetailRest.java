@@ -5,7 +5,6 @@ package com.viewlift.models.network.rest;
  */
 
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 
 import java.util.Map;
 
@@ -18,8 +17,8 @@ import rx.Observable;
 
 public interface AppCMSAudioDetailRest {
     @GET
-    Call<AppCMSAudioDetailResult> get(@Url String url);
+    Call<AppCMSAudioDetailResult> get(@Url String url, @HeaderMap Map<String, String> headers);
 
     @GET("/content/audio")
-    Observable<AppCMSAudioDetailResult> getPlayList(@Query("site") String site,@Query("id") String id);
+    Observable<AppCMSAudioDetailResult> getPlayList(@Query("site") String site,@Query("id") String id, @HeaderMap Map<String, String> headers);
 }

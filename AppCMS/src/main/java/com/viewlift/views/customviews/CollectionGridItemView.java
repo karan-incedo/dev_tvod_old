@@ -1133,6 +1133,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
+
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                         ((TextView) view).setText(artist);
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
