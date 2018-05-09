@@ -38,8 +38,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.StatFs;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -1676,7 +1674,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
 
-            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(),
+            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
                         try {
                             if (currentActivity != null) {
@@ -3382,6 +3380,7 @@ public class AppCMSPresenter {
                             appCMSSite.getGist().getSiteInternalName(),
                             getDeviceDetail()),
                     getAuthToken(),
+                    apikey,
                     getSyncCodeAction1
             );
         } catch (Exception e) {
@@ -3397,6 +3396,7 @@ public class AppCMSPresenter {
                             "FTV",
                             appCMSSite.getGist().getSiteInternalName()),
                     getAuthToken(),
+                    apikey,
                     true,
                     new Action1<SyncDeviceCode>() {
                         @Override
@@ -3423,6 +3423,7 @@ public class AppCMSPresenter {
                                 appCMSSite.getGist().getSiteInternalName(),
                                 getDeviceDetail()),
                         getAuthToken(),
+                        apikey,
                         false,
                         new Action1<SyncDeviceCode>() {
                             @Override
@@ -4270,6 +4271,7 @@ public class AppCMSPresenter {
                             appCMSSite.getGist().getSiteInternalName());
                     GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
                             .authToken(getAuthToken())
+                            .xApiKey(apikey)
                             .url(url)
                             .build();
 
@@ -4286,6 +4288,7 @@ public class AppCMSPresenter {
                         appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
                         .authToken(getAuthToken())
+                        .xApiKey(apikey)
                         .url(url)
                         .build();
                 try {
@@ -5506,7 +5509,7 @@ public class AppCMSPresenter {
 
                                 String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
 
-                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
 
                                 new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
                                     if (appCMSStreamingInfo != null) {
@@ -5797,7 +5800,7 @@ public class AppCMSPresenter {
                 request.setContentIds(filmId);
             }
 
-            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+            appCMSDeleteHistoryCall.call(url, getAuthToken(), apikey,
                     appCMSDeleteHistoryResult -> {
                         try {
                             Observable.just(appCMSDeleteHistoryResult)
@@ -6259,7 +6262,7 @@ public class AppCMSPresenter {
             request.setUserId(getLoggedInUser());
             request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
             request.setPosition(1L);
-            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+            appCMSDeleteHistoryCall.call(url, getAuthToken(), apikey,
                     appCMSDeleteHistoryResult -> {
                         try {
                             sendUpdateHistoryAction();
@@ -6820,6 +6823,7 @@ public class AppCMSPresenter {
                                 apiBaseUrl,
                                 siteId,
                                 pageId),
+                        apikey,
                         audiDetail);
             } catch (IOException e) {
             }
@@ -6852,7 +6856,11 @@ public class AppCMSPresenter {
                         siteId,
                         pageId);
                 AppCMSAudioDetailRest appCMSAudioDetailCallPlaylist = (AppCMSAudioDetailRest) createRetrofitService(AppCMSAudioDetailRest.class, apiBaseUrl);
-                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+
+                Map<String, String> authTokenMap = new HashMap<>();
+                authTokenMap.put("x-api-key", apikey);
+
+                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId, authTokenMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
                     @Override
                     public void onCompleted() {
                         Log.d("TAG", "Complete");
@@ -7267,7 +7275,7 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSWatchlistCall.call(
                                 currentActivity.getString(R.string.app_cms_watchlist_api_url,
@@ -7299,6 +7307,7 @@ public class AppCMSPresenter {
                                 pageId,
                                 siteId
                         ),
+                        apikey,
                         playlist);
             } catch (IOException e) {
             }
@@ -7499,7 +7508,7 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                                 apiBaseUrl, getLoggedInUser(), siteiD,
@@ -7885,6 +7894,7 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             appCMSResetPasswordCall.call(url,
                     email,
+                    apikey,
                     forgotPasswordResponse -> {
                         try {
                             if (forgotPasswordResponse != null
@@ -9391,6 +9401,7 @@ public class AppCMSPresenter {
             appCMSFacebookLoginCall.call(url,
                     facebookAccessToken,
                     facebookUserId,
+                    apikey,
                     facebookLoginResponse -> {
                         waithingFor3rdPartyLogin = false;
                         if (facebookLoginResponse != null) {
@@ -10090,6 +10101,7 @@ public class AppCMSPresenter {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
+                .xApiKey(apikey)
                 .bustCache(bustCache)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
@@ -10150,7 +10162,7 @@ public class AppCMSPresenter {
     public void getAppCMSFloodLight(Context context) {
         AppCMSAPIModule appCMSAPIModule = new AppCMSAPIModule(context, currentActivity.getString(R.string.app_cms_floodlight_url_base), "");
         AppCMSFloodLightRest appCMSFloodLightRest = appCMSAPIModule.appCMSFloodLightRest(appCMSAPIModule.providesRetrofit(appCMSAPIModule.providesGson()));
-        new GetAppCMSFloodLightAsyncTask(appCMSFloodLightRest, context, new Action1() {
+        new GetAppCMSFloodLightAsyncTask(appCMSFloodLightRest, apikey, context, new Action1() {
             @Override
             public void call(Object o) {
                 String res = (String) o;
@@ -11460,7 +11472,7 @@ public class AppCMSPresenter {
         if (url != null && beaconRequests != null) {
 
             request.setBeaconRequest(beaconRequests);
-            appCMSBeaconCall.call(url, beaconResponse -> {
+            appCMSBeaconCall.call(url, apikey, beaconResponse -> {
                 try {
 
                     if (beaconResponse.beaconRequestResponse.size() > 0 &&
@@ -11515,7 +11527,7 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
-                    appCMSBeaconCall.call(url, beaconResponse -> {
+                    appCMSBeaconCall.call(url, apikey, beaconResponse -> {
                         try {
 
                             if (beaconResponse.beaconRequestResponse.size() > 0 &&
@@ -12931,6 +12943,7 @@ public class AppCMSPresenter {
             GetAppCMSRefreshIdentityAsyncTask.Params params =
                     new GetAppCMSRefreshIdentityAsyncTask.Params
                             .Builder()
+                            .xApiKey(apikey)
                             .url(url)
                             .build();
             new GetAppCMSRefreshIdentityAsyncTask(appCMSRefreshIdentityCall,
@@ -13642,6 +13655,7 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(Utils.getProperty("SiteId", currentActivity))
+                                        .xApiKey(apikey)
                                         .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13665,6 +13679,7 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(Utils.getProperty("SiteId", currentActivity))
+                            .xApiKey(apikey)
                             .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13691,6 +13706,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(appCMSMain.getAndroid())
+                            .xApiKey(apikey)
                             .loadFromFile(false)
                             .bustCache(true)
                             .build();
@@ -13725,6 +13741,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(appCMSMain.getAndroid())
+                            .xApiKey(apikey)
                             .loadFromFile(appCMSMain.shouldLoadFromFile())
                             .bustCache(false)
                             .build();
@@ -13838,6 +13855,7 @@ public class AppCMSPresenter {
                                         appCMSSite.getGist().getSiteInternalName(),
                                         "FireTv"),
                                 getAuthToken(),
+                                apikey,
                                 false,
                                 new Action1<SyncDeviceCode>() {
                                     @Override
@@ -13977,6 +13995,7 @@ public class AppCMSPresenter {
                                   Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
+                    apikey,
                     appCMSAndroidUI.getVersion(),
                     forceLoadFromNetwork,
                     bustCache,
@@ -14012,6 +14031,7 @@ public class AppCMSPresenter {
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
                         .url(url)
+                        .xApiKey(apikey)
                         .bustCache(bustCache)
                         .loadFromFile(loadFromFile)
                         .build();
@@ -14204,6 +14224,7 @@ public class AppCMSPresenter {
                 GetAppCMSPageUIAsyncTask.Params params =
                         new GetAppCMSPageUIAsyncTask.Params.Builder()
                                 .url(url)
+                                .xApiKey(apikey)
                                 .bustCache(false)
                                 .loadFromFile(loadFromFile)
                                 .metaPage(metaPage)
@@ -14547,6 +14568,7 @@ public class AppCMSPresenter {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(appCMSMain.getFireTv())
+                        .xApiKey(apikey)
                         .loadFromFile(loadFromFile)
                         .bustCache(false)
                         .build();
@@ -18091,7 +18113,7 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSPhotoGalleryCall.call(
                                 currentActivity.getString(R.string.app_cms_photogallery_api_url,
@@ -18099,6 +18121,7 @@ public class AppCMSPresenter {
                                         pageId,
                                         siteId
                                 ),
+                                apikey,
                                 photoGalleryAPIAction);
 
                     } catch (IOException e) {
@@ -18121,14 +18144,14 @@ public class AppCMSPresenter {
                         getRefreshToken());
 
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSArticleCall.call(
                                 currentActivity.getString((isDeepLink ? R.string.app_cms_article_api_url_with_perma : R.string.app_cms_article_api_url),
                                         apiBaseUrl,
                                         pageId,
                                         siteId
-                                ),
+                                ), apikey,
                                 articleAPIAction);
 
                     } catch (IOException e) {

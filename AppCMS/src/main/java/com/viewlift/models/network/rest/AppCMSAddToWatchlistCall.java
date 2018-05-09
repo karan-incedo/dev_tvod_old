@@ -6,6 +6,7 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -55,6 +56,7 @@ public class AppCMSAddToWatchlistCall {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSAddToWatchlistResult> call,
                                        @NonNull Response<AppCMSAddToWatchlistResult> response) {
+                    Log.d(TAG, "API Response Code: " + response.code());
                     if (response.body() == null) {
                         addToWatchlistResultAction1.call(null);
                     } else {

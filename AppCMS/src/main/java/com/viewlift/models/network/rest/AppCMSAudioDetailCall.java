@@ -5,12 +5,10 @@ package com.viewlift.models.network.rest;
  */
 
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,9 +39,13 @@ public class AppCMSAudioDetailCall {
         this.gson = gson;
     }
 
-    public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
+    public void call(String url, String xApiKey, final Action1<AppCMSAudioDetailResult> audioDetailResultAction) throws IOException {
         try {
-            appCMSAudioDetailRest.get(url).enqueue(new Callback<AppCMSAudioDetailResult>() {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
+            appCMSAudioDetailRest.get(url, authTokenMap).enqueue(new Callback<AppCMSAudioDetailResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSAudioDetailResult> call,
                                        @NonNull Response<AppCMSAudioDetailResult> response) {
@@ -64,9 +66,13 @@ public class AppCMSAudioDetailCall {
         }
     }
 
-    public void call(String url, final Action1<AppCMSAudioDetailResult> audioDetailResultAction, boolean isFalse) throws IOException {
+    public void call(String url, String xApiKey, final Action1<AppCMSAudioDetailResult> audioDetailResultAction, boolean isFalse) throws IOException {
         try {
-            appCMSAudioDetailRest.getPlayList("","").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
+            appCMSAudioDetailRest.getPlayList("","", authTokenMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
                 @Override
                 public void onCompleted() {
                     Log.d("TAG", "Complete");
