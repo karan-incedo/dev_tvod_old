@@ -29,9 +29,12 @@ public class AppCMSUpdateWatchHistoryCall {
 
     public void call(String url,
                      String authToken,
+                     String xApiKey,
                      UpdateHistoryRequest updateHistoryRequest,
                      final Action1<String> readyAction) {
         authHeaders.put("Authorization", authToken);
+        authHeaders.put("x-api-key", xApiKey);
+
         appCMSUpdateWatchHistoryRest.post(url,
                 authHeaders,
                 updateHistoryRequest)

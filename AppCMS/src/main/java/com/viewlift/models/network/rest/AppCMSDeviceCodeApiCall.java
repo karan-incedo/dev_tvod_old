@@ -38,11 +38,12 @@ public class AppCMSDeviceCodeApiCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken,
+    public void call(String url, String authToken, String xApiKey,
                      final Action1<GetLinkCode> getSyncCodeAction1) throws IOException {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+            authTokenMap.put("x-api-key", xApiKey);
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
 

@@ -6,6 +6,9 @@ import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordRequest;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -29,10 +32,14 @@ public class AppCMSResetPasswordCall {
         this.gson = gson;
     }
 
-    public void call(String url, String email, final Action1<ForgotPasswordResponse> readyAction) {
+    public void call(String url, String email, String xApiKey, final Action1<ForgotPasswordResponse> readyAction) {
         ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
         forgotPasswordRequest.setEmail(email);
-        appCMSResetPasswordRest.resetPassword(url, forgotPasswordRequest).enqueue(new Callback<ForgotPasswordResponse>() {
+
+        Map<String, String> authTokenMap = new HashMap<>();
+        authTokenMap.put("x-api-key", xApiKey);
+
+        appCMSResetPasswordRest.resetPassword(url, forgotPasswordRequest, authTokenMap).enqueue(new Callback<ForgotPasswordResponse>() {
             @Override
             @SuppressWarnings("ConstantConditions")
             public void onResponse(@NonNull Call<ForgotPasswordResponse> call,
