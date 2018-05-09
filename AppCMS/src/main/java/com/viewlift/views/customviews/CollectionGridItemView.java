@@ -357,8 +357,8 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
-                                placeholder = R.drawable.vid_image_placeholder_16x9;
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                                placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
                                 placeholder = R.drawable.vid_image_placeholder_16x9;
