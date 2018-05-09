@@ -1,11 +1,11 @@
 package com.viewlift.models.network.rest;
 
-import android.util.Log;
-
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,9 +29,13 @@ public class AppCMSRefreshIdentityCall {
         this.appCMSRefreshIdentityRest = appCMSRefreshIdentityRest;
     }
 
-    public RefreshIdentityResponse call(String url) {
+    public RefreshIdentityResponse call(String url, String xApiKey) {
         try {
-            return appCMSRefreshIdentityRest.get(url).execute().body();
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
+            return appCMSRefreshIdentityRest.get(url, authTokenMap).execute().body();
         } catch (JsonSyntaxException e) {
             //Log.e(TAG, "JsonSyntaxException retrieving Refresh Identity Response: " + e.toString());
         } catch (IOException e) {
@@ -40,8 +44,12 @@ public class AppCMSRefreshIdentityCall {
         return null;
     }
 
-    public void call(String url, final Action1<RefreshIdentityResponse> readyAction) {
-        appCMSRefreshIdentityRest.get(url).enqueue(new Callback<RefreshIdentityResponse>() {
+    public void call(String url, String xApiKey, final Action1<RefreshIdentityResponse> readyAction) {
+
+        Map<String, String> authTokenMap = new HashMap<>();
+        authTokenMap.put("x-api-key", xApiKey);
+
+        appCMSRefreshIdentityRest.get(url, authTokenMap).enqueue(new Callback<RefreshIdentityResponse>() {
             @Override
             public void onResponse(Call<RefreshIdentityResponse> call, Response<RefreshIdentityResponse> response) {
                 Observable.just(response.body())

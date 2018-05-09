@@ -2,8 +2,11 @@ package com.viewlift.models.network.rest;
 
 import com.google.gson.JsonElement;
 
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Url;
 
 /**
@@ -12,5 +15,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSAndroidModuleRest {
     @GET
-    Call<JsonElement> get(@Url String url);
+    Call<JsonElement> get(@Url String url, @HeaderMap Map<String, String> headers);
 }

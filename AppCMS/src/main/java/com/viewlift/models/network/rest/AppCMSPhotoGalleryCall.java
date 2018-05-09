@@ -8,10 +8,11 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.viewlift.models.data.appcms.article.AppCMSArticleResult;
 import com.viewlift.models.data.appcms.photogallery.AppCMSPhotoGalleryResult;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,11 +37,15 @@ public class AppCMSPhotoGalleryCall {
     }
 
     @WorkerThread
-    public void call(String url,
+    public void call(String url, String xApiKey,
                      final Action1<AppCMSPhotoGalleryResult> photoGalleryResultAction) throws IOException {
         Log.d(TAG,"PhotoGallery URL : "+url);
         try {
-            appCMSPhotoGalleryResult.get(url).enqueue(new Callback<AppCMSPhotoGalleryResult>() {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
+            appCMSPhotoGalleryResult.get(url, authTokenMap).enqueue(new Callback<AppCMSPhotoGalleryResult>() {
                 @Override
                 public void onResponse(Call<AppCMSPhotoGalleryResult> call, Response<AppCMSPhotoGalleryResult> response) {
                     Observable.just(response.body()).subscribe(photoGalleryResultAction);

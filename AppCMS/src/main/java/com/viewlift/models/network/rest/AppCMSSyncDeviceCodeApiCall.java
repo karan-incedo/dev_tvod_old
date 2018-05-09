@@ -38,13 +38,15 @@ public class AppCMSSyncDeviceCodeApiCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken, boolean deSyncDevice,
+    public void call(String url, String authToken, String xApiKey, boolean deSyncDevice,
                      final Action1<SyncDeviceCode> getSyncCodeAction1) throws IOException {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
+            authTokenMap.put("x-api-key", xApiKey);
+
             if (deSyncDevice) {
                 appCMSSyncDeviceCodeRest.deSyncDevice(url,authTokenMap).enqueue(new Callback<SyncDeviceCode>() {
                     @Override

@@ -1,7 +1,6 @@
 package com.viewlift.models.network.rest;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 
@@ -30,8 +29,10 @@ public class AppCMSSignedURLCall {
         this.authHeaders = new HashMap<>();
     }
 
-    public AppCMSSignedURLResult call(String authToken, String url) {
+    public AppCMSSignedURLResult call(String authToken, String xApiKey, String url) {
         authHeaders.put("Authorization", authToken);
+        authHeaders.put("x-api-key", xApiKey);
+
         try {
             //Log.d(TAG, "Auth token: " + authToken);
             //Log.d(TAG, "URL: " + url);

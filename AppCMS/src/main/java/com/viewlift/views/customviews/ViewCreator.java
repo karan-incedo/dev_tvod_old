@@ -1912,12 +1912,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().contains("selectPlan01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "select_plan.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(2);
-                }else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                } else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -5097,7 +5092,7 @@ public class ViewCreator {
                                     android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
                         } else {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.img_placeholder);
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.vid_image_placeholder_16x9);
                         }
                         break;
 

@@ -37,10 +37,14 @@ public class AppCMSPlaylistCall {
     }
 
     @WorkerThread
-    public void call(String url,
+    public void call(String url, String xApiKey,
                      final Action1<AppCMSPlaylistResult> playlistResultAction) throws IOException {
         try {
-            appCMSPlaylistRest.get(url).enqueue(new Callback<AppCMSPlaylistResult>() {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
+            appCMSPlaylistRest.get(url, authTokenMap).enqueue(new Callback<AppCMSPlaylistResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSPlaylistResult> call,
                                        @NonNull Response<AppCMSPlaylistResult> response) {
