@@ -57,6 +57,34 @@ public class Tag implements Serializable {
     @Expose
     Object description;
 
+    @SerializedName("isVisible")
+    @Expose
+    String isVisible;
+
+    @SerializedName("isOverlay")
+    @Expose
+    String isOverlay;
+
+    @SerializedName("isFreeAccess")
+    @Expose
+    String isFreeAccess;
+
+    @SerializedName("requireLogin")
+    @Expose
+    String requireLogin;
+
+    @SerializedName("images")
+    @Expose
+    String images;
+
+    @SerializedName("badgeImages")
+    @Expose
+    String badgeImages;
+
+    @SerializedName("visible")
+    @Expose
+    String visible;
+
     public String getId() {
         return id;
     }
@@ -151,5 +179,61 @@ public class Tag implements Serializable {
 
     public void setDescription(Object description) {
         this.description = description;
+    }
+
+    public String getIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(String isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public String getIsOverlay() {
+        return isOverlay;
+    }
+
+    public void setIsOverlay(String isOverlay) {
+        this.isOverlay = isOverlay;
+    }
+
+    public String getIsFreeAccess() {
+        return isFreeAccess;
+    }
+
+    public void setIsFreeAccess(String isFreeAccess) {
+        this.isFreeAccess = isFreeAccess;
+    }
+
+    public String getRequireLogin() {
+        return requireLogin;
+    }
+
+    public void setRequireLogin(String requireLogin) {
+        this.requireLogin = requireLogin;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
+
+    public String getBadgeImages() {
+        return badgeImages;
+    }
+
+    public void setBadgeImages(String badgeImages) {
+        this.badgeImages = badgeImages;
+    }
+
+    public String getVisible() {
+        return visible;
+    }
+
+    public void setVisible(String visible) {
+        this.visible = visible;
     }
 }
