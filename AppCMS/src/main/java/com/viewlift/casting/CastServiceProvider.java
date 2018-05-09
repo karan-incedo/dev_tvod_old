@@ -36,6 +36,7 @@ import com.viewlift.casting.roku.RokuWrapper;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
 import org.json.JSONException;
@@ -533,7 +534,7 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.GONE);
+        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
 
         if(mCastHelper == null)
             return;

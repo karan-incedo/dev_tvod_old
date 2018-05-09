@@ -568,7 +568,7 @@ public class ViewCreator {
             webViewUrl = context.getString(R.string.app_cms_article_api,
                     appCMSPresenter.getAppCMSMain().getDomainName(),
                     moduleAPI.getContentData().get(0).getGist().getPermalink());
-            webView.loadURL(context, appCMSPresenter, webViewUrl, key);
+            webView.loadURL(context, appCMSPresenter, webViewUrl.replaceAll("\\s+",""), key);
         }
         return webView;
     }
@@ -1912,6 +1912,16 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("selectPlan01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "select_plan.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(5);
                 } else if (moduleInfo.getBlockName().contains("bannerAd01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
