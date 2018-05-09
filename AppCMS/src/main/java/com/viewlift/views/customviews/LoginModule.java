@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -239,6 +241,7 @@ public class LoginModule extends ModuleView {
                                 selectChild(1);
                                 unselectChild(0);
                                 if (appCMSPresenter.isAppSVOD()) {
+
                                     if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
                                         //appCMSPresenter.sendCloseOthersAction(null,
                                         //true,
@@ -455,30 +458,26 @@ public class LoginModule extends ModuleView {
                                     !TextUtils.isEmpty(component.getKey()) &&
                                     component.getKey().equalsIgnoreCase("signupAgrement"))
                             {
-                                ((TextView)componentView).setText("Terms of service and Privacy Policy");
+                                ((TextView)componentView).setText("Terms of Service and Privacy Policy");
                                 SpannableStringBuilder spanTxt = new SpannableStringBuilder(
-                                        "Terms of service");
+                                        "Terms of Service");
                                 spanTxt.setSpan(new ClickableSpan() {
                                     @Override
                                     public void onClick(View widget) {
-                                        /*Toast.makeText(context, "Terms of services Clicked",
-                                                Toast.LENGTH_SHORT).show();*/
+                                        hideKeyboard((Activity) widget.getContext());
                                         appCMSPresenter.navigatToTOSPage(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
                                     }
-                                }, spanTxt.length() - "Term of services".length(), spanTxt.length(), 0);
+                                }, spanTxt.length() - "Term of Services".length(), spanTxt.length(), 0);
                                 spanTxt.append(" and");
                                 spanTxt.setSpan(new ForegroundColorSpan(appCMSPresenter.getGeneralTextColor()), 17, spanTxt.length(), 0);
                                 spanTxt.append(" Privacy Policy");
                                 spanTxt.setSpan(new ClickableSpan() {
                                     @Override
                                     public void onClick(View widget) {
-                                       /* Toast.makeText(context, "Privacy Policy Clicked",
-                                                Toast.LENGTH_SHORT).show();*/
-
-
+                                        hideKeyboard((Activity) widget.getContext());
                                         appCMSPresenter.navigatToPrivacyPolicy(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
                                     }
-                                }, spanTxt.length() - " Privacy Policy".length(), spanTxt.length(), 0);
+                                }, spanTxt.length() - "Privacy Policy".length(), spanTxt.length(), 0);
                                 ((TextView)componentView).setMovementMethod(LinkMovementMethod.getInstance());
                                 ((TextView)componentView).setText(spanTxt, TextView.BufferType.SPANNABLE);
 
@@ -567,6 +566,14 @@ public class LoginModule extends ModuleView {
                     moduleView.setComponentHasView(i, false);
                 }
             }
+        }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.findViewById(android.R.id.content);
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
