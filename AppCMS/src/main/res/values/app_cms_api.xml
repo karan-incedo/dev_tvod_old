@@ -118,6 +118,7 @@
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
     <string name="app_cms_page_button_switch_key">switchToSdCard</string>
+    <string name="app_cms_page_check_tc_policy_key">checkbox</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_ads_key">adView</string>
@@ -592,7 +593,7 @@
     <string name="subscription_ccavenue_payment_processor">ccavenue</string>
     <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
     <string name="subscription_sslcommerz_payment_processor">sslcommerz</string>
-    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCommerz</string>
+    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCOMMERZ</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
@@ -677,6 +678,7 @@
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
     <string name="app_cms_page_path_article">article</string>
     <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
+    <string name="app_cms_deep_link_path_photos">photos</string>
     <string name="app_cms_page_article_detail_module">ArticleDetailModule</string>
     <string name="app_cms_page_photo_gallery_detail_module">PhotogalleryDetailModule</string>
     <!-- AppCMS Content Types -->

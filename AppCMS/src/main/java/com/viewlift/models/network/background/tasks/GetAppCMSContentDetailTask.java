@@ -30,7 +30,7 @@ public class GetAppCMSContentDetailTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.authToken);
+                            return call.call(params.url, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -50,6 +50,7 @@ public class GetAppCMSContentDetailTask {
     public static class Params {
         String url;
         String authToken;
+        String apiKey;
         boolean loadFromFile;
 
         public static class Builder {
@@ -66,6 +67,11 @@ public class GetAppCMSContentDetailTask {
 
             public Builder authToken(String authToken) {
                 params.authToken = authToken;
+                return this;
+            }
+
+            public Builder apiKey(String apiKey) {
+                params.apiKey = apiKey;
                 return this;
             }
 
