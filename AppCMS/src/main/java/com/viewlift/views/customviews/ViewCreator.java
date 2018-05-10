@@ -55,7 +55,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -99,7 +98,7 @@ import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.customviews.download.DownloadModule2;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.plans.SubscriptionMetaDataView;
 import com.viewlift.views.customviews.plans.ViewPlansMetaDataView;
 import com.viewlift.views.customviews.season.SeasonModule;
@@ -1908,12 +1907,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else  if (moduleInfo.getBlockName().contains("downloads01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "download.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(0);
-                } else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
+                }  else if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
@@ -2101,8 +2095,8 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_TAB_KEY) {
-            moduleView = new DownloadModule2(context,
+        } /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY) {
+            moduleView = new DownloadModule(context,
                     module,
                     moduleAPI,
                     jsonValueKeyMap,
@@ -2114,7 +2108,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else {
+        } */else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -5944,8 +5938,8 @@ public class ViewCreator {
         public boolean useMarginsAsPercentagesOverride;
         public boolean useWidthOfScreen;
         boolean shouldHideModule;
-        boolean addToPageView;
-        boolean shouldHideComponent;
+        public  boolean addToPageView;
+        public boolean shouldHideComponent;
     }
 
     /**

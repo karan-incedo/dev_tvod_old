@@ -5,24 +5,21 @@ package com.viewlift.models.network.rest;
  */
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class AppCMSAudioDetailCall {
 
@@ -65,30 +62,6 @@ public class AppCMSAudioDetailCall {
         }
     }
 
-    public void call(String url, String xApiKey, final Action1<AppCMSAudioDetailResult> audioDetailResultAction, boolean isFalse) throws IOException {
-        try {
 
-            Map<String, String> authTokenMap = new HashMap<>();
-            authTokenMap.put("x-api-key", xApiKey);
-
-            appCMSAudioDetailRest.getPlayList("","", authTokenMap).subscribeOn(Schedulers.io()).observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
-                @Override
-                public void onCompleted() {
-                    Log.d("TAG", "Complete");
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    audioDetailResultAction.call(null);
-                }
-
-                @Override
-                public void onNext(AppCMSAudioDetailResult appCMSAudioDetailResult) {
-                    Observable.just(appCMSAudioDetailResult).subscribe(audioDetailResultAction);
-                }
-            });
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
-        }
-    }
 }
+

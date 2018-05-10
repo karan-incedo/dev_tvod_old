@@ -975,8 +975,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TABLAYOUT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_viewpager_type),
                 AppCMSUIKeyType.PAGE_VIEWPAGER_KEY);
-jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_tab_type),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_TAB_KEY);
 
     }
 

@@ -268,14 +268,13 @@ import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
-import com.viewlift.views.customviews.DownloadModule;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
-import com.viewlift.views.customviews.download.DownloadModule2;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -311,8 +310,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -749,7 +746,7 @@ public class AppCMSPresenter {
         DOWNLOAD_TAB_SELECTED = downloadTabSelected;
     }
 
-    private int DOWNLOAD_TAB_SELECTED = DownloadModule2.VIDEO_TAB;
+    private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
 
     static {
         System.loadLibrary("SSLKeys");

@@ -1,6 +1,5 @@
 package com.viewlift.views.adapters;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +27,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
+import static com.viewlift.views.customviews.download.DownloadModule.VIDEO_TAB;
 
 /**
  * Created by viewlift on 5/30/17.

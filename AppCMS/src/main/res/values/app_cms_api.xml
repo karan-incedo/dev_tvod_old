@@ -722,5 +722,4 @@
     <string name="app_cms_page_tabs_type">tabLayout</string>
     <string name="app_cms_page_viewpager_season_key">seasonsViewPager</string>
     <string name="app_cms_page_viewpager_type">viewPager</string>
-    <string name="app_cms_page_download_tab_type">AC Download Tabs 01</string>
 </resources>

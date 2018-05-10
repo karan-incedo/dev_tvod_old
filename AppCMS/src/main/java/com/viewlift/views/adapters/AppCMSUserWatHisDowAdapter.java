@@ -46,11 +46,10 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.DownloadModule;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
-import com.viewlift.views.customviews.download.DownloadModule2;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.ArrayList;
@@ -214,7 +213,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 break;
 
             case PAGE_DOWNLOAD_01_MODULE_KEY:
-            case PAGE_DOWNLOAD_TAB_KEY:
             case PAGE_DOWNLOAD_02_MODULE_KEY:
                 this.filmDownloadIconUpdatedMap = new HashMap<>();
                 this.isDonwloadPage = true;

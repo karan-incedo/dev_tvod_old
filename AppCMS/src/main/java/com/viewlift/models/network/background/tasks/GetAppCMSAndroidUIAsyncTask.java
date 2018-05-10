@@ -1,16 +1,13 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
-import java.io.IOException;
-
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+
+import java.io.IOException;
 
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
