@@ -275,6 +275,7 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.customviews.download.DownloadModule2;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -748,7 +749,7 @@ public class AppCMSPresenter {
         DOWNLOAD_TAB_SELECTED = downloadTabSelected;
     }
 
-    private int DOWNLOAD_TAB_SELECTED = DownloadModule.VIDEO_TAB;
+    private int DOWNLOAD_TAB_SELECTED = DownloadModule2.VIDEO_TAB;
 
     static {
         System.loadLibrary("SSLKeys");
