@@ -15,6 +15,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -518,7 +519,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateDuration(description);
                 onUpdateMetaChange.updateMetaData(description);
                 System.out.println("Decription not null");
-                getActivity().startService(new Intent(getActivity(), MusicService.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                  getContext().startForegroundService(new Intent(getContext(), MusicService.class));
+                else
+                  getContext().startService(new Intent(getActivity(), MusicService.class));
             }
         }
     }

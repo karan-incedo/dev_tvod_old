@@ -24,6 +24,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -129,7 +130,10 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            mContext.startService(i);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                              mContext.startForegroundService(i);
+                            else
+                              mContext.startService(i);
                         }
                     }
                 }
