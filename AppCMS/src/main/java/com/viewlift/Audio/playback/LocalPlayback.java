@@ -390,7 +390,8 @@ public final class LocalPlayback implements Playback {
                         ExoPlayerFactory.newSimpleInstance(
                                 mContext, new DefaultTrackSelector(), new DefaultLoadControl());
                 this.mExoPlayer.addListener(mEventListener);
-                localPlaybackInstance.mExoPlayer = mExoPlayer;
+                if(localPlaybackInstance != null)
+                    localPlaybackInstance.mExoPlayer = mExoPlayer;
             }
 
             // Android "O" makes much greater use of AudioAttributes, especially
@@ -425,7 +426,7 @@ public final class LocalPlayback implements Playback {
             appCMSPresenter.sendBeaconMessage(audioData.getGist().getId(),
                     audioData.getGist().getPermalink(),
                     null,
-                    mExoPlayer.getCurrentPosition(),
+                    mExoPlayer != null ? mExoPlayer.getCurrentPosition() : 0,
                     false,
                     AppCMSPresenter.BeaconEvent.PLAY,
                     audioData.getGist().getMediaType(),

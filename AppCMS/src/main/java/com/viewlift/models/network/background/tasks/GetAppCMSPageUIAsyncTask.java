@@ -48,6 +48,7 @@ public class GetAppCMSPageUIAsyncTask {
 
     public static class Params {
         String url;
+        String xApiKey;
         boolean loadFromFile;
         boolean bustCache;
         MetaPage metaPage;
@@ -61,6 +62,11 @@ public class GetAppCMSPageUIAsyncTask {
 
             public Builder url(String url) {
                 params.url = url;
+                return this;
+            }
+
+            public Builder xApiKey(String xApiKey) {
+                params.xApiKey = xApiKey;
                 return this;
             }
 
@@ -98,6 +104,7 @@ public class GetAppCMSPageUIAsyncTask {
                             MetaPageUI metaPageUI = new MetaPageUI();
                             metaPageUI.setMetaPage(params.metaPage);
                             metaPageUI.setAppCMSPageUI(call.call(params.url,
+                                    params.xApiKey,
                                     params.bustCache,
                                     params.loadFromFile));
                             return metaPageUI;
@@ -118,7 +125,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> {
                         try {
-                            return call.call(params.url, params.bustCache, params.loadFromFile);
+                            return call.call(params.url, params.xApiKey, params.bustCache, params.loadFromFile);
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }

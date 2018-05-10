@@ -10,6 +10,7 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -25,6 +26,7 @@ public class GetAppCMSAndroidUIAsyncTask {
 
     public static class Params {
         String url;
+        String xApiKey;
         boolean loadFromFile;
         boolean bustCache;
         public static class Builder {
@@ -34,6 +36,10 @@ public class GetAppCMSAndroidUIAsyncTask {
             }
             public Builder url(String url) {
                 params.url = url;
+                return this;
+            }
+            public Builder xApiKey(String xApiKey) {
+                params.xApiKey = xApiKey;
                 return this;
             }
             public Builder loadFromFile(boolean loadFromFile) {
@@ -67,6 +73,7 @@ public class GetAppCMSAndroidUIAsyncTask {
                     if (params != null) {
                         try {
                             return call.call(params.url,
+                                    params.xApiKey,
                                     params.loadFromFile,
                                     params.bustCache,
                                     0);

@@ -21,6 +21,8 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +42,8 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -651,7 +655,7 @@ public class ViewCreator {
         this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+   /* @SuppressWarnings({"unchecked", "ConstantConditions"})
     private void refreshPageView(PageView pageView,
                                  Context context,
                                  AppCMSPageUI appCMSPageUI,
@@ -859,9 +863,9 @@ public class ViewCreator {
                                     }
                                     CustomWebView webView = null;
                                     ((FrameLayout) view).removeAllViews();
-                                    /*if (appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey()) != null) {
+                                    *//*if (appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey()) != null) {
                                         webView = appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey());
-                                    }*/
+                                    }*//*
                                     if (webView != null) {
                                         if (webView.getParent() != null)
                                             ((ViewGroup) webView.getParent()).removeView(webView);
@@ -1057,7 +1061,7 @@ public class ViewCreator {
 
                                         List<String> filmIds = new ArrayList<>();
                                         //TODO- below is to add episodes of shows/series
-                                       /* if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                       *//* if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                                 moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null &&
@@ -1078,7 +1082,7 @@ public class ViewCreator {
                                                     }
                                                 }
                                             }
-                                        } else */
+                                        } else *//*
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
@@ -1189,9 +1193,9 @@ public class ViewCreator {
                                             } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
                                                     jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_watchlist_title);
-                                            }/* else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                                            }*//* else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_download_title);
-                                            }*/ else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                            }*//* else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
                                                     jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_history_title);
                                             }
@@ -1199,7 +1203,7 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
-                                        int placeHolderImage = /*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*/R.drawable.vid_image_placeholder_land;
+                                        int placeHolderImage = *//*BaseView.isLandscape(context) ? R.drawable.vid_image_placeholder_land : R.drawable.vid_image_placeholder_port;*//*R.drawable.vid_image_placeholder_land;
                                         ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
                                         ((ImageView) view).setImageResource(placeHolderImage);
                                         if (moduleAPI.getContentData() != null &&
@@ -1658,7 +1662,7 @@ public class ViewCreator {
             pageView.notifyAdapterDataSetChanged();
             forceRedrawOfAllChildren(pageView);
         }
-    }
+    }*/
 
     private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
         viewGroup.invalidate();
@@ -1914,6 +1918,23 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "video_detail_new.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_hub.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(5);
+                }else if (moduleInfo.getBlockName().contains("authentication01_activate_device")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(12);
+                } else if (moduleInfo.getBlockName().contains("videoPlayerInfo01__TEMP__NO_DOWNLOADS")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(13);
                 } else if (moduleInfo.getBlockName().contains("bannerAd01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
@@ -1926,14 +1947,14 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(3);
-                } else if (moduleInfo.getBlockName().contains("history01")) {
-
+                } else if (moduleInfo.getBlockName().contains("history01") ||
+                        moduleInfo.getBlockName().contains("history02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("watchlist01")) {
-
+                } else if (moduleInfo.getBlockName().contains("watchlist01") ||
+                        moduleInfo.getBlockName().contains("watchlist02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
@@ -3180,12 +3201,15 @@ public class ViewCreator {
                         ) {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY) {
                     componentViewResult.componentView = new Button(context);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_CHECKBOX_KEY) {
+                    componentViewResult.componentView = new AppCompatCheckBox(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
                     componentViewResult.componentView = new Switch(context);
                 } else {
@@ -3199,6 +3223,7 @@ public class ViewCreator {
                             !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle()) &&
                             componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                            componentKey != AppCMSUIKeyType.PAGE_CHECKBOX_KEY &&
                             componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
@@ -3302,6 +3327,40 @@ public class ViewCreator {
                         });
                         break;
 
+                    case PAGE_CHECKBOX_KEY:
+                        AppCompatCheckBox checkBoxTCP = ((AppCompatCheckBox) componentViewResult.componentView);
+                        checkBoxTCP.setChecked(false);
+                        checkBoxTCP.setId(R.id.appCMS_tcp_check);
+                        if(component.getText() != null ) {
+                            checkBoxTCP.setText(component.getText());
+                        }
+                        if(component.getBackgroundColor() != null ) {
+                            checkBoxTCP.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        }
+                        int switchOnColor = Color.WHITE;
+                        int states[][] = {{android.R.attr.state_checked}, {}};
+                        int colors[] = {appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter.getGeneralTextColor()};
+                        CompoundButtonCompat.setButtonTintList(checkBoxTCP, new ColorStateList(states, colors));
+                        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (checkBoxTCP.getButtonDrawable() != null) {
+                                checkBoxTCP.getButtonDrawable().setColorFilter(switchOnColor, PorterDuff.Mode.MULTIPLY);
+                            }
+                        } else {
+
+                            ColorStateList colorStateList = new ColorStateList(
+                                    new int[][]{
+                                            new int[]{android.R.attr.state_checked},
+                                            new int[]{}
+                                    }, new int[]{
+                                    switchOnColor,
+                                    switchOnColor
+                            });
+
+                            checkBoxTCP.setCompoundDrawableTintList(colorStateList);
+                            checkBoxTCP.setCompoundDrawableTintMode(PorterDuff.Mode.MULTIPLY);
+                            //checkBoxTCP.setButtonTintList(colorStateList);
+                        }*/
+                        break;
                     case PAGE_BUTTON_SWITCH_KEY:
                         if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
@@ -3885,17 +3944,15 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 boolean deleteAllFiles = true;
-/*
-                                if (appCMSPresenter.isAudioAvailable()) {
-                                    deleteAllFiles = false;
-                                }
-*/
+                                appCMSPresenter.showLoadingDialog(true);
+
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_01_MODULE_KEY:
                                     case PAGE_HISTORY_02_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 
@@ -3904,8 +3961,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
-                                            appCMSPresenter.stopLoader();
-
+                                            appCMSPresenter.showLoadingDialog(false);
                                             System.out.println("started clean download finish");
                                         }, deleteAllFiles);
                                         break;
@@ -3915,6 +3971,7 @@ public class ViewCreator {
                                         appCMSPresenter.clearWatchlist(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
+                                            appCMSPresenter.showLoadingDialog(false);
                                         });
                                         break;
 
@@ -4984,7 +5041,7 @@ public class ViewCreator {
                                     android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
                         } else {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.img_placeholder);
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.vid_image_placeholder_16x9);
                         }
                         break;
 

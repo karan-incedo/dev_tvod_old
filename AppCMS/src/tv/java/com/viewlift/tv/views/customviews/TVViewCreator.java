@@ -54,7 +54,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -248,25 +247,25 @@ public class TVViewCreator {
             }
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
                 isGrid = true;
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("tray01")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("carousel01")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_carousel.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_carousel.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("tray04")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("tray02")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("continueWatching01")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("tray03")) {
-                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray03.json"), ModuleList.class);
+//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray03.json"), ModuleList.class);
             }
 
             if (null != module.getComponents() && module.getComponents().size() > 0) {
@@ -277,7 +276,7 @@ public class TVViewCreator {
             }
             return null;
         } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
-            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,

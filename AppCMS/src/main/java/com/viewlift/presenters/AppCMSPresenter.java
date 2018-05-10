@@ -844,9 +844,12 @@ public class AppCMSPresenter {
 
 
     public void stopLoader() {
-        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+        try {
+            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
+        }catch(Exception ex){
+        }
     }
 
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
@@ -1675,7 +1678,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
 
-            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(),
+            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
                         try {
                             if (currentActivity != null) {
@@ -1779,9 +1782,11 @@ public class AppCMSPresenter {
      * and then use the result to update the UI accordingly.
      */
     private void sendUpdateHistoryAction() {
-        Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
-        updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-        currentActivity.sendBroadcast(updateHistoryIntent);
+        try {
+            Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+            updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(updateHistoryIntent);
+        }catch(Exception ex){}
     }
 
     /**
@@ -2025,7 +2030,7 @@ public class AppCMSPresenter {
                 getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
                     if (userVideoStatusResponse != null) {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        stopLoader();
                         AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                         appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
                         appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
@@ -3379,6 +3384,7 @@ public class AppCMSPresenter {
                             appCMSSite.getGist().getSiteInternalName(),
                             getDeviceDetail()),
                     getAuthToken(),
+                    apikey,
                     getSyncCodeAction1
             );
         } catch (Exception e) {
@@ -3394,6 +3400,7 @@ public class AppCMSPresenter {
                             "FTV",
                             appCMSSite.getGist().getSiteInternalName()),
                     getAuthToken(),
+                    apikey,
                     true,
                     new Action1<SyncDeviceCode>() {
                         @Override
@@ -3420,6 +3427,7 @@ public class AppCMSPresenter {
                                 appCMSSite.getGist().getSiteInternalName(),
                                 getDeviceDetail()),
                         getAuthToken(),
+                        apikey,
                         false,
                         new Action1<SyncDeviceCode>() {
                             @Override
@@ -4267,6 +4275,7 @@ public class AppCMSPresenter {
                             appCMSSite.getGist().getSiteInternalName());
                     GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
                             .authToken(getAuthToken())
+                            .xApiKey(apikey)
                             .url(url)
                             .build();
 
@@ -4283,6 +4292,7 @@ public class AppCMSPresenter {
                         appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
                         .authToken(getAuthToken())
+                        .xApiKey(apikey)
                         .url(url)
                         .build();
                 try {
@@ -4792,9 +4802,9 @@ public class AppCMSPresenter {
 
             if (contentDatum.getGist() != null &&
                     contentDatum.getGist().getMediaType() != null &&
-                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentActivity.getString(R.string.media_type_audio).toLowerCase()) &&
                     contentDatum.getGist().getContentType() != null &&
-                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                    contentDatum.getGist().getContentType().toLowerCase().contains(currentActivity.getString(R.string.content_type_audio).toLowerCase())) {
                 downloadURL = contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl();
             } else {
                 downloadURL = getDownloadURL(contentDatum);
@@ -4838,9 +4848,9 @@ public class AppCMSPresenter {
                         try {
                             if (contentDatum.getGist() != null &&
                                     contentDatum.getGist().getMediaType() != null &&
-                                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                                    contentDatum.getGist().getMediaType().toLowerCase().contains(currentActivity.getString(R.string.media_type_audio).toLowerCase()) &&
                                     contentDatum.getGist().getContentType() != null &&
-                                    contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                                    contentDatum.getGist().getContentType().toLowerCase().contains(currentActivity.getString(R.string.content_type_audio).toLowerCase())) {
                                 downloadMediaFile(contentDatum, downloadURL, 0, isFromPlaylistDownload);
                                 appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), AppCMSPresenter.this,
                                         resultAction1, getLoggedInUser());
@@ -5366,14 +5376,9 @@ public class AppCMSPresenter {
 
     @UiThread
     public boolean isVideoDownloaded(String videoId) {
-
-        if (realmController == null) {
-            try {
-                this.realmController = RealmController.with(currentActivity);
-            } catch (Exception e) {
-                return false;
-            }
-        }
+        try {
+        if (realmController == null)
+            this.realmController = RealmController.with(currentActivity);
 
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
                 getLoggedInUser());
@@ -5381,6 +5386,9 @@ public class AppCMSPresenter {
                 downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
                 (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
                         downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @UiThread
@@ -5505,7 +5513,7 @@ public class AppCMSPresenter {
 
                                 String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
 
-                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
 
                                 new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
                                     if (appCMSStreamingInfo != null) {
@@ -5796,7 +5804,7 @@ public class AppCMSPresenter {
                 request.setContentIds(filmId);
             }
 
-            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+            appCMSDeleteHistoryCall.call(url, getAuthToken(), apikey,
                     appCMSDeleteHistoryResult -> {
                         try {
                             Observable.just(appCMSDeleteHistoryResult)
@@ -6258,7 +6266,7 @@ public class AppCMSPresenter {
             request.setUserId(getLoggedInUser());
             request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
             request.setPosition(1L);
-            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+            appCMSDeleteHistoryCall.call(url, getAuthToken(), apikey,
                     appCMSDeleteHistoryResult -> {
                         try {
                             sendUpdateHistoryAction();
@@ -6819,6 +6827,7 @@ public class AppCMSPresenter {
                                 apiBaseUrl,
                                 siteId,
                                 pageId),
+                        apikey,
                         audiDetail);
             } catch (IOException e) {
             }
@@ -6851,7 +6860,10 @@ public class AppCMSPresenter {
                         siteId,
                         pageId);
                 AppCMSAudioDetailRest appCMSAudioDetailCallPlaylist = (AppCMSAudioDetailRest) createRetrofitService(AppCMSAudioDetailRest.class, apiBaseUrl);
-                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId).subscribeOn(Schedulers.io()).observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread())).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
+                Map<String, String> authTokenMap = new HashMap<>();
+                authTokenMap.put("x-api-key", apikey);
+
+                appCMSAudioDetailCallPlaylist.getPlayList(siteId, pageId,authTokenMap).subscribeOn(Schedulers.io()).observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread())).subscribe(new Subscriber<AppCMSAudioDetailResult>() {
                     @Override
                     public void onCompleted() {
                         Log.d("TAG", "Complete");
@@ -7266,7 +7278,7 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSWatchlistCall.call(
                                 currentActivity.getString(R.string.app_cms_watchlist_api_url,
@@ -7298,6 +7310,7 @@ public class AppCMSPresenter {
                                 pageId,
                                 siteId
                         ),
+                        apikey,
                         playlist);
             } catch (IOException e) {
             }
@@ -7485,7 +7498,7 @@ public class AppCMSPresenter {
                     appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                             apiBaseUrl, getLoggedInUser(), siteiD,
                             getLoggedInUser()),
-                            getAuthToken(),apikey,
+                            getAuthToken(), apikey,
                             history);
                 } catch (IOException | NullPointerException e) {
                     //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7498,12 +7511,12 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
                                 apiBaseUrl, getLoggedInUser(), siteiD,
                                 getLoggedInUser()),
-                                getAuthToken(),apikey,
+                                getAuthToken(), apikey,
                                 history);
                     } catch (Exception e) {
                         //Log.e(TAG, "getHistoryPageContent: " + e.toString());
@@ -7884,6 +7897,7 @@ public class AppCMSPresenter {
                     appCMSSite.getGist().getSiteInternalName());
             appCMSResetPasswordCall.call(url,
                     email,
+                    apikey,
                     forgotPasswordResponse -> {
                         try {
                             if (forgotPasswordResponse != null
@@ -7956,7 +7970,7 @@ public class AppCMSPresenter {
                                 appCMSMain.getApiBaseUrl(),
                                 appCMSSite.getGist().getSiteInternalName());
                         appCMSUserIdentityCall.callGet(url,
-                                getAuthToken(),apikey,
+                                getAuthToken(), apikey,
                                 userIdentity -> {
                                     try {
                                         Observable.just(userIdentity)
@@ -8017,7 +8031,7 @@ public class AppCMSPresenter {
                     userIdentity.setPassword(password);
                     showLoader();
                     appCMSUserIdentityCall.callPost(url,
-                            getAuthToken(),apikey,
+                            getAuthToken(), apikey,
                             userIdentity,
                             userIdentityResult -> {
                                 sendCloseOthersAction(null, true, false);
@@ -8067,7 +8081,7 @@ public class AppCMSPresenter {
             userIdentityPassword.setNewPassword(newPassword);
             showLoader();
             appCMSUserIdentityCall.passwordPost(url,
-                    getAuthToken(), apikey,userIdentityPassword,
+                    getAuthToken(), apikey, userIdentityPassword,
                     userIdentityPasswordResult -> {
                         stopLoader();
                         try {
@@ -8333,6 +8347,75 @@ public class AppCMSPresenter {
             getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
+    /**
+     * For navigation TOS page with holding email/pwd from signup screen
+     * @param email
+     * @param password
+     */
+    public void navigatToTOSPage(String email ,String password){
+        setTempEmail(email);
+        setTempPassword(password);
+        navigatToTOSPage();
+    }
+
+    /**
+     * For navigatiting to TOS page
+     */
+    public void navigatToTOSPage(){
+        if (tosPage != null){
+            navigateToPage(tosPage.getPageId(),
+                    tosPage.getPageName(),
+                    "",
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    null);
+        }
+    }
+    String tempEmail="";
+    String tempPassword="";
+    public String getTempEmail(){
+        return tempEmail;
+    }
+    public void setTempEmail(String email){
+        this.tempEmail= email;
+    }
+    public String getTempPassword(){
+        return tempPassword;
+    }
+    public void setTempPassword(String password){
+        this.tempPassword =password;
+    }
+
+    /**
+     * Navigation Privacy Policy page with holding temp email/pwd from signup screen
+     * @param email
+     * @param password
+     */
+    public void navigatToPrivacyPolicy(String email,String password){
+        setTempEmail(email);
+        setTempPassword(password);
+        navigatToPrivacyPolicy();
+    }
+
+    /**
+     * Navigating to Policy page
+     */
+    public void navigatToPrivacyPolicy(){
+        if (privacyPolicyPage != null){
+            navigateToPage(privacyPolicyPage.getPageId(),
+                    privacyPolicyPage.getPageName(),
+                    "",
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    null);
+        }
+    }
     private void sendFirebaseAnalyticsEvents(String eventValue) {
         if (getmFireBaseAnalytics() == null)
             return;
@@ -9321,6 +9404,7 @@ public class AppCMSPresenter {
             appCMSFacebookLoginCall.call(url,
                     facebookAccessToken,
                     facebookUserId,
+                    apikey,
                     facebookLoginResponse -> {
                         waithingFor3rdPartyLogin = false;
                         if (facebookLoginResponse != null) {
@@ -9376,7 +9460,7 @@ public class AppCMSPresenter {
         String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        appCMSGoogleLoginCall.call(url, googleAccessToken,apikey,
+        appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
                 googleLoginResponse -> {
                     try {
                         if (googleLoginResponse != null) {
@@ -9776,6 +9860,8 @@ public class AppCMSPresenter {
 
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
 
+            subscriptionUserEmail = null;
+            subscriptionUserPassword = null;
             setLoggedInUser(null);
             setLoggedInUserName(null);
             setLoggedInUserEmail(null);
@@ -10014,10 +10100,11 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-
+        apikey = Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
+                .xApiKey(apikey)
                 .bustCache(bustCache)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
@@ -10078,7 +10165,7 @@ public class AppCMSPresenter {
     public void getAppCMSFloodLight(Context context) {
         AppCMSAPIModule appCMSAPIModule = new AppCMSAPIModule(context, currentActivity.getString(R.string.app_cms_floodlight_url_base), "");
         AppCMSFloodLightRest appCMSFloodLightRest = appCMSAPIModule.appCMSFloodLightRest(appCMSAPIModule.providesRetrofit(appCMSAPIModule.providesGson()));
-        new GetAppCMSFloodLightAsyncTask(appCMSFloodLightRest, context, new Action1() {
+        new GetAppCMSFloodLightAsyncTask(appCMSFloodLightRest, apikey, context, new Action1() {
             @Override
             public void call(Object o) {
                 String res = (String) o;
@@ -11388,7 +11475,7 @@ public class AppCMSPresenter {
         if (url != null && beaconRequests != null) {
 
             request.setBeaconRequest(beaconRequests);
-            appCMSBeaconCall.call(url, beaconResponse -> {
+            appCMSBeaconCall.call(url, apikey, beaconResponse -> {
                 try {
 
                     if (beaconResponse.beaconRequestResponse.size() > 0 &&
@@ -11443,7 +11530,7 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
-                    appCMSBeaconCall.call(url, beaconResponse -> {
+                    appCMSBeaconCall.call(url, apikey, beaconResponse -> {
                         try {
 
                             if (beaconResponse.beaconRequestResponse.size() > 0 &&
@@ -11736,19 +11823,42 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * This is a common method being used on successfull transaction of CCAVenue and SSLCommerz
+     *
+     * @param data              This is null for the time being
+     */
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
-        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                appCMSMain.getApiBaseUrl(),
-                appCMSSite.getGist().getSiteInternalName());
-        startLoginAsyncTask(url,
-                subscriptionUserEmail,
-                subscriptionUserPassword,
-                false,
-                false,
-                true,
-                true,
-                false);
+        if (isSignupFromFacebook) {
+            setFacebookAccessToken(facebookAccessToken,
+                    facebookUserId,
+                    facebookUsername,
+                    facebookEmail,
+                    true,
+                    false);
+        } else if (isSignupFromGoogle) {
+            setGoogleAccessToken(googleAccessToken,
+                    googleUserId,
+                    googleUsername,
+                    googleEmail,
+                    true,
+                    false);
+        } else {
+            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    subscriptionUserEmail,
+                    subscriptionUserPassword,
+                    false,
+                    false,
+                    true,
+                    true,
+                    false);
+        }
+        refreshSubscriptionData(null, true);
         updatePlaybackControl();
+
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
@@ -11756,27 +11866,33 @@ public class AppCMSPresenter {
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
             setAudioPlayerOpen(false);
         } else if (entitlementPendingVideoData != null) {
-            isVideoPlayerStarted = false;
-            sendRefreshPageAction();
-            sendCloseOthersAction(null, true, false);
-            launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                    entitlementPendingVideoData.action,
-                    entitlementPendingVideoData.filmTitle,
-                    entitlementPendingVideoData.extraData,
-                    entitlementPendingVideoData.contentDatum,
-                    entitlementPendingVideoData.closeLauncher,
-                    entitlementPendingVideoData.currentlyPlayingIndex,
-                    entitlementPendingVideoData.relateVideoIds);
-            if (entitlementPendingVideoData != null) {
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isVideoPlayerStarted = false;
+                    sendRefreshPageAction();
+                    sendCloseOthersAction(null, true, false);
+                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                            entitlementPendingVideoData.action,
+                            entitlementPendingVideoData.filmTitle,
+                            entitlementPendingVideoData.extraData,
+                            entitlementPendingVideoData.contentDatum,
+                            entitlementPendingVideoData.closeLauncher,
+                            entitlementPendingVideoData.currentlyPlayingIndex,
+                            entitlementPendingVideoData.relateVideoIds);
+                    if (entitlementPendingVideoData != null) {
+                        entitlementPendingVideoData.pagePath = null;
+                        entitlementPendingVideoData.action = null;
+                        entitlementPendingVideoData.filmTitle = null;
+                        entitlementPendingVideoData.extraData = null;
+                        entitlementPendingVideoData.contentDatum = null;
+                        entitlementPendingVideoData.closeLauncher = false;
+                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                        entitlementPendingVideoData.relateVideoIds = null;
+                    }
+                }
+            }, 200);
+
         } else {
             sendCloseOthersAction(null, true, false);
             runOnUiThread(new Runnable() {
@@ -11798,8 +11914,6 @@ public class AppCMSPresenter {
                 });
             }
         }
-
-        refreshSubscriptionData(null, true);
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {
@@ -12519,6 +12633,14 @@ public class AppCMSPresenter {
                 }, apikey).execute(params);
     }
 
+    public String getStringDataById(Context context,int id){
+       if (Build.VERSION.SDK_INT >= 23) {
+             return context.getString(id);
+        } else {
+            return context.getResources().getString(id);
+        }
+    }
+
     private void finalizeLogin(boolean forceSubscribed,
                                boolean isUserSubscribed,
                                boolean followWithSubscription,
@@ -12531,6 +12653,8 @@ public class AppCMSPresenter {
         if (loginFromNavPage) {
             entitlementPendingVideoData = null;
         }
+        setTempEmail("");
+        setTempPassword("");
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -12824,6 +12948,7 @@ public class AppCMSPresenter {
             GetAppCMSRefreshIdentityAsyncTask.Params params =
                     new GetAppCMSRefreshIdentityAsyncTask.Params
                             .Builder()
+                            .xApiKey(apikey)
                             .url(url)
                             .build();
             new GetAppCMSRefreshIdentityAsyncTask(appCMSRefreshIdentityCall,
@@ -13535,6 +13660,7 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(Utils.getProperty("SiteId", currentActivity))
+                                        .xApiKey(apikey)
                                         .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13558,6 +13684,7 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(Utils.getProperty("SiteId", currentActivity))
+                            .xApiKey(apikey)
                             .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13584,6 +13711,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(appCMSMain.getAndroid())
+                            .xApiKey(apikey)
                             .loadFromFile(false)
                             .bustCache(true)
                             .build();
@@ -13618,6 +13746,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(appCMSMain.getAndroid())
+                            .xApiKey(apikey)
                             .loadFromFile(appCMSMain.shouldLoadFromFile())
                             .bustCache(false)
                             .build();
@@ -13731,6 +13860,7 @@ public class AppCMSPresenter {
                                         appCMSSite.getGist().getSiteInternalName(),
                                         "FireTv"),
                                 getAuthToken(),
+                                apikey,
                                 false,
                                 new Action1<SyncDeviceCode>() {
                                     @Override
@@ -13870,6 +14000,7 @@ public class AppCMSPresenter {
                                   Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
+                    apikey,
                     appCMSAndroidUI.getVersion(),
                     forceLoadFromNetwork,
                     bustCache,
@@ -13905,6 +14036,7 @@ public class AppCMSPresenter {
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
                         .url(url)
+                        .xApiKey(apikey)
                         .bustCache(bustCache)
                         .loadFromFile(loadFromFile)
                         .build();
@@ -14097,6 +14229,7 @@ public class AppCMSPresenter {
                 GetAppCMSPageUIAsyncTask.Params params =
                         new GetAppCMSPageUIAsyncTask.Params.Builder()
                                 .url(url)
+                                .xApiKey(apikey)
                                 .bustCache(false)
                                 .loadFromFile(loadFromFile)
                                 .metaPage(metaPage)
@@ -14440,6 +14573,7 @@ public class AppCMSPresenter {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(appCMSMain.getFireTv())
+                        .xApiKey(apikey)
                         .loadFromFile(loadFromFile)
                         .bustCache(false)
                         .build();
@@ -17984,7 +18118,7 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSPhotoGalleryCall.call(
                                 currentActivity.getString(R.string.app_cms_photogallery_api_url,
@@ -17992,6 +18126,7 @@ public class AppCMSPresenter {
                                         pageId,
                                         siteId
                                 ),
+                                apikey,
                                 photoGalleryAPIAction);
 
                     } catch (IOException e) {
@@ -18014,14 +18149,14 @@ public class AppCMSPresenter {
                         getRefreshToken());
 
 
-                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSArticleCall.call(
                                 currentActivity.getString((isDeepLink ? R.string.app_cms_article_api_url_with_perma : R.string.app_cms_article_api_url),
                                         apiBaseUrl,
                                         pageId,
                                         siteId
-                                ),
+                                ), apikey,
                                 articleAPIAction);
 
                     } catch (IOException e) {

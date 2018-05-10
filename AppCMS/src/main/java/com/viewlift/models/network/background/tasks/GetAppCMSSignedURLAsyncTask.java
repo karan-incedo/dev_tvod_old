@@ -25,6 +25,7 @@ public class GetAppCMSSignedURLAsyncTask {
 
     public static class Params {
         String authToken;
+        String xApiKey;
         String url;
         public static class Builder {
             Params params;
@@ -33,6 +34,10 @@ public class GetAppCMSSignedURLAsyncTask {
             }
             public Builder authToken(String authToken) {
                 params.authToken = authToken;
+                return this;
+            }
+            public Builder xApiKey(String xApiKey) {
+                params.xApiKey = xApiKey;
                 return this;
             }
             public Builder url(String url) {
@@ -56,7 +61,7 @@ public class GetAppCMSSignedURLAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return appCMSSignedURLCall.call(params.authToken, params.url);
+                            return appCMSSignedURLCall.call(params.authToken, params.xApiKey, params.url);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Android file with params " +
 //                                    params.toString() + ": " +

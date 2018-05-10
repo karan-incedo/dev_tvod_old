@@ -36,12 +36,13 @@ public class AppCMSBeaconCall {
     }
 
     @WorkerThread
-    public void call(String url, final Action1<BeaconResponse> action1, AppCMSBeaconRequest request) {
+    public void call(String url, String xApiKey, final Action1<BeaconResponse> action1, AppCMSBeaconRequest request) {
 
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
+            authTokenMap.put("x-api-key", xApiKey);
 
             Log.d(TAG,"Beacon request URL: " + url);
             Log.d(TAG, "Beacon request headers: " + authTokenMap);

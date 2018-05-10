@@ -54,6 +54,7 @@ public class AppCMSAndroidModuleCall {
     private static final String[][] jsonFromAssets = {
             {"trayXX", "trayXX.json"}
     };
+    private String xApiKey;
 
     @Inject
     public AppCMSAndroidModuleCall(AssetManager assetManager,
@@ -67,11 +68,14 @@ public class AppCMSAndroidModuleCall {
     }
 
     public void call(String bundleUrl,
+                     String xApiKey,
                      String version,
                      boolean forceLoadFromNetwork,
                      boolean bustCache,
                      Action1<AppCMSAndroidModules> readyAction) {
         Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
+
+        this.xApiKey = xApiKey;
 
         AppCMSAndroidModules appCMSAndroidModules = new AppCMSAndroidModules();
 
@@ -165,15 +169,17 @@ public class AppCMSAndroidModuleCall {
         Response<JsonElement> moduleListResponse = null;
         try {
 
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
 
             if (bustCache) {
                 StringBuilder urlWithCacheBuster = new StringBuilder(blocksBaseUrl);
                 urlWithCacheBuster.append("?x=");
                 urlWithCacheBuster.append(new Date().getTime());
                 moduleListResponse =
-                        appCMSAndroidModuleRest.get(urlWithCacheBuster.toString()).execute();
+                        appCMSAndroidModuleRest.get(urlWithCacheBuster.toString(), authTokenMap).execute();
             } else {
-                moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
+                moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl, authTokenMap).execute();
             }
             System.out.println("Retrieving module list from Network "+blocksBaseUrl);
             if (moduleListResponse != null &&

@@ -21,6 +21,7 @@ public class GetAppCMSRefreshIdentityAsyncTask {
 
     public static class Params {
         String url;
+        String xApiKey;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -28,6 +29,10 @@ public class GetAppCMSRefreshIdentityAsyncTask {
             }
             public Builder url(String url) {
                 params.url = url;
+                return this;
+            }
+            public Builder xApiKey(String xApiKey) {
+                params.xApiKey = xApiKey;
                 return this;
             }
             public Params build() {
@@ -48,7 +53,7 @@ public class GetAppCMSRefreshIdentityAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url);
+                            return call.call(params.url, params.xApiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }

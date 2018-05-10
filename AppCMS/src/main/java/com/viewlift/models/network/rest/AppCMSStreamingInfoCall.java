@@ -1,12 +1,13 @@
 package com.viewlift.models.network.rest;
 
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -25,10 +26,14 @@ public class AppCMSStreamingInfoCall {
     }
 
     @WorkerThread
-    public AppCMSStreamingInfo call(String url) throws IOException {
+    public AppCMSStreamingInfo call(String url, String xApiKey) throws IOException {
         try {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
             //Log.d(TAG, "Attempting to read Streaming Info JSON: " + url);
-            return appCMSStreamingInfoRest.get(url).execute().body();
+            return appCMSStreamingInfoRest.get(url, authTokenMap).execute().body();
         } catch (JsonSyntaxException e) {
             //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
