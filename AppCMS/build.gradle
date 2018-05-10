@@ -250,6 +250,7 @@ android {
         unitTests.returnDefaultValues = true
     }
     lintOptions {
+
         checkReleaseBuilds false
         abortOnError false
     }
