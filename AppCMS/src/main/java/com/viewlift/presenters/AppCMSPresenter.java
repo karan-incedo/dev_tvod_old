@@ -13932,7 +13932,6 @@ public class AppCMSPresenter {
                 pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
                 String action = pageNameToActionMap.get(metaPage.getPageName());
-                if (action != null && actionToPageMap.containsKey(action)) {
                     if (action != null && actionToPageMap.containsKey(action)) {
                         actionToPageNameMap.put(action, metaPage.getPageName());
                         actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
@@ -13990,12 +13989,12 @@ public class AppCMSPresenter {
 
                     if (platformType == PlatformType.TV) {
                         if (jsonValueKeyMap.get(metaPage.getPageName())
-                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
+                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY /*||
                                 (navigation != null &&
                                         navigation.getNavigationPrimary() != null &&
                                         navigation.getNavigationPrimary().get(0) != null &&
                                         navigation.getNavigationPrimary().get(0).getPageId() != null &&
-                                        metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))) {
+                                        metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))*/) {
                             homePage = metaPage;
                             new SoftReference<Object>(homePage, referenceQueue);
                         }
@@ -14046,7 +14045,6 @@ public class AppCMSPresenter {
                         watchlistPage = metaPage;
                         new SoftReference<Object>(watchlistPage, referenceQueue);
                     }
-                }
 
                 int articlePageIndex = getArticlePage(metaPageList);
                 if (articlePageIndex >= 0) {

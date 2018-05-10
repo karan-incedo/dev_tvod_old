@@ -332,8 +332,6 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
                 loginButton.setOnKeyListener(leftNavigationListener);
 
             }
-
-
         }
         return view;
     }

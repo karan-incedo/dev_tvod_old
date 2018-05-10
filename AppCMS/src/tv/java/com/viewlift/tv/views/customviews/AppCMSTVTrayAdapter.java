@@ -254,7 +254,7 @@ public class AppCMSTVTrayAdapter
                     if (isClickable) {
                         //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         String permalink = data.getGist().getPermalink();
-                        String action = data.getGist().getContentType().equalsIgnoreCase("SERIES") ? "showDetailPage" : defaultAction;
+                        String action = "SERIES".equalsIgnoreCase(data.getGist().getContentType()) ? "showDetailPage" : defaultAction;
                         String title = data.getGist().getTitle();
                         String hlsUrl = getHlsUrl(data);
                         String[] extraData = new String[4];
