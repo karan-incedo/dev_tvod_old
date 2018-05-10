@@ -3201,7 +3201,7 @@
             "mobile": {
               "yAxis": 0,
               "xAxis": 10,
-              "maximumWidth": 230,
+              "maximumWidth": 200,
               "fontSize": 18,
               "height": 24
             },

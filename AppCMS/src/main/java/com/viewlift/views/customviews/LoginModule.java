@@ -420,11 +420,12 @@ public class LoginModule extends ModuleView {
                                 });
 
                             }else{
-
+                                //todo temp info for Hoichoi- need to be removed after stable solution
                                 if ( loginInSignUpAction.equalsIgnoreCase("signup") &&
                                         component.getText()!= null &&
                                         !TextUtils.isEmpty(component.getText()) &&
-                                        component.getText().equalsIgnoreCase("SIGN UP")){
+                                        component.getText().equalsIgnoreCase("SIGN UP")&&
+                                        moduleInfo.getBlockName().equalsIgnoreCase("authentication01_activate_device")){
                                     ((Button)componentView).setEnabled(false);
                                     ((Button)componentView).setId(R.id.appCMS_sign_up_button);
                                     ((Button)componentView).setBackgroundColor(Color.LTGRAY);
