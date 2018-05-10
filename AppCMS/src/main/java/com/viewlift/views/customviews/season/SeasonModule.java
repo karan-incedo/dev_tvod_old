@@ -1,4 +1,4 @@
-package com.viewlift.views.customviews;
+package com.viewlift.views.customviews.season;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,6 +23,11 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSSeasonTabPagerAdapter;
+import com.viewlift.views.customviews.ModuleView;
+import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.ResizeableViewPager;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
 import java.util.Map;
@@ -115,7 +120,8 @@ public class SeasonModule extends ModuleView {
                     }
                 }
             }
-            AppCMSSeasonTabPagerAdapter adapter = new AppCMSSeasonTabPagerAdapter(recyclerViewComponent);
+            AppCMSSeasonTabPagerAdapter adapter = new AppCMSSeasonTabPagerAdapter(recyclerViewComponent, viewCreator, moduleAPI, appCMSAndroidModules,
+                    jsonValueKeyMap, appCMSPresenter, moduleInfo);
             seasonPager.setAdapter(adapter);
 
             seasonTab.setSelectedTabIndicatorColor(Color.parseColor("#ffffff"));
@@ -272,79 +278,6 @@ public class SeasonModule extends ModuleView {
 
     }
 
-    public class AppCMSSeasonTabPagerAdapter extends PagerAdapter {
-        int mCurrentPosition = -1;
-        Component subComponent;
 
-        public AppCMSSeasonTabPagerAdapter(Component subComponent) {
-            this.subComponent = subComponent;
-        }
-
-
-        @Override
-        public Object instantiateItem(ViewGroup collection, int position) {
-            viewCreator.createComponentView(getContext(),
-                    subComponent,
-                    subComponent.getLayout(),
-                    moduleAPI,
-                    appCMSAndroidModules,
-                    null,
-                    moduleInfo.getSettings(),
-                    jsonValueKeyMap,
-                    appCMSPresenter,
-                    false,
-                    moduleInfo.getView(),
-                    moduleInfo.getId());
-            View componentView = viewCreator.getComponentViewResult().componentView;
-            collection.addView(componentView);
-            return componentView;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup collection, int position, Object view) {
-            collection.removeView((View) view);
-        }
-
-        @Override
-        public int getCount() {
-            if (moduleAPI != null &&
-                    moduleAPI.getContentData() != null &&
-                    moduleAPI.getContentData().get(0) != null &&
-                    moduleAPI.getContentData().get(0).getSeason() != null)
-                return moduleAPI.getContentData().get(0).getSeason().size();
-            else
-                return 0;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if (moduleAPI != null &&
-                    moduleAPI.getContentData() != null &&
-                    moduleAPI.getContentData().get(0) != null &&
-                    moduleAPI.getContentData().get(0).getSeason() != null)
-                return moduleAPI.getContentData().get(0).getSeason().get(position).getTitle();
-            else
-                return "";
-        }
-
-        @Override
-        public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            super.setPrimaryItem(container, position, object);
-            if (position != mCurrentPosition) {
-                RecyclerView view = (RecyclerView) object;
-                ResizeableViewPager pager = (ResizeableViewPager) container;
-                if (view != null) {
-                    mCurrentPosition = position;
-                    pager.measureCurrentView(view);
-                }
-            }
-        }
-
-    }
 
 }

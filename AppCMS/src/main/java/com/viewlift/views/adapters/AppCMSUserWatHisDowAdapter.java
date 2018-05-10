@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
@@ -49,17 +50,18 @@ import com.viewlift.views.customviews.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.customviews.download.DownloadModule2;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observer;
-import rx.functions.Action1;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
@@ -162,20 +164,38 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         detectViewTypes(jsonValueKeyMap, viewType);
         sortData();
         if (isDonwloadPage) {
-            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
+            adapterData= appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video));
+            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
                 @Override
-                public void call(Object o) {
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(Object o) {
                     if (o instanceof Integer) {
-                        if ((int) o == DownloadModule.VIDEO_TAB) {
+                        if ((int) o == DownloadModule2.VIDEO_TAB) {
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video)));
                         }
-                        if ((int) o == DownloadModule.AUDIO_TAB) {
+                        if ((int) o == DownloadModule2.AUDIO_TAB) {
 
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_audio)));
                         }
                     }
                 }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
             });
+
+
         }
     }
 
@@ -194,6 +214,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 break;
 
             case PAGE_DOWNLOAD_01_MODULE_KEY:
+            case PAGE_DOWNLOAD_TAB_KEY:
             case PAGE_DOWNLOAD_02_MODULE_KEY:
                 this.filmDownloadIconUpdatedMap = new HashMap<>();
                 this.isDonwloadPage = true;
