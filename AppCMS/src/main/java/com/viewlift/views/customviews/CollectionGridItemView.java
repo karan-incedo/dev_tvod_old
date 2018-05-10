@@ -286,7 +286,6 @@ public class CollectionGridItemView extends BaseView {
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
 
-
         final Component childComponent = matchComponentToView(view);
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(componentViewType);
@@ -347,7 +346,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
@@ -363,31 +364,6 @@ public class CollectionGridItemView extends BaseView {
                                 placeholder = R.drawable.vid_image_placeholder_16x9;
                             }
 
-                        }
-                    }
-
-                    /* set large placeholder for carosuel and video detail page */
-                    if(componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY){
-                        if (childViewHeight > childViewWidth) {
-                            placeholder = R.drawable.vid_image_placeholder_port;
-                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
-
-                        } else {
-                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
-                                placeholder = R.drawable.vid_image_placeholder_square;
-                            } else {
-                                if(BaseView.isTablet(context)) {
-                                    ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
-                                    placeholder = R.drawable.vid_image_placeholder_land;
-                                }else{
-                                    ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
-                                    placeholder = R.drawable.vid_image_placeholder_16x9;
-                                }
-                            }
                         }
                     }
 
