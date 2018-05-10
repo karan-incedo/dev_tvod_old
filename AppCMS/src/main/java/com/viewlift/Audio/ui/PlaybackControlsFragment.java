@@ -193,7 +193,9 @@ public class PlaybackControlsFragment extends Fragment {
             if (resultCode == ConnectionResult.SUCCESS) {
 
                 Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                Log.e("PlaybackController","FLAG_ACTIVITY_SINGLE_TOP");
                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
                 MediaMetadataCompat metadata = null;
                 if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {

@@ -377,28 +377,32 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             controls.skipToPrevious();
         }
         if (view == playPauseTrack) {
-            PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
-            if (state != null) {
-                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-                switch (state.getState()) {
-                    case PlaybackStateCompat.STATE_PLAYING: // fall through
-                    case PlaybackStateCompat.STATE_BUFFERING:
-                        controls.pause();
-                        stopSeekbarUpdate();
-                        break;
-                    case PlaybackStateCompat.STATE_PAUSED:
-                    case PlaybackStateCompat.STATE_STOPPED:
-                        controls.play();
-                        scheduleSeekbarUpdate();
-                        audioPreview(true);
-                        break;
-                    default:
+            if(MediaControllerCompat.getMediaController(getActivity()) != null) {
+                PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
+                if (state != null) {
+                    MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+                    switch (state.getState()) {
+                        case PlaybackStateCompat.STATE_PLAYING: // fall through
+                        case PlaybackStateCompat.STATE_BUFFERING:
+                            controls.pause();
+                            stopSeekbarUpdate();
+                            break;
+                        case PlaybackStateCompat.STATE_PAUSED:
+                        case PlaybackStateCompat.STATE_STOPPED:
+                            controls.play();
+                            scheduleSeekbarUpdate();
+                            audioPreview(true);
+                            break;
+                        default:
+                    }
                 }
             }
         }
         if (view == nextTrack) {
-            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            controls.skipToNext();
+            try {
+                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+                controls.skipToNext();
+            }catch(Exception ex){}
         }
 
         if (view == playlist) {

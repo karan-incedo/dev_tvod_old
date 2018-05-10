@@ -77,6 +77,7 @@ public abstract class AppCMSDownloadRadioAdapter<T>
             View.OnClickListener clickListener = v -> {
                 downloadQualityPosition = getAdapterPosition();
                 notifyItemRangeChanged(0, mItems.size());
+                if(mItems.size() > downloadQualityPosition)
                 itemClickListener.onItemClick(mItems.get(downloadQualityPosition));
             };
 

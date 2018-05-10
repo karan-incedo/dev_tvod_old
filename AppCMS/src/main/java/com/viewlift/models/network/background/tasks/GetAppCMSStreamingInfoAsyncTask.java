@@ -1,7 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 
@@ -22,6 +20,7 @@ public class GetAppCMSStreamingInfoAsyncTask {
 
     public static class Params {
         String url;
+        String xApiKey;
         boolean loadFromFile;
         public static class Builder {
             private Params params;
@@ -30,6 +29,10 @@ public class GetAppCMSStreamingInfoAsyncTask {
             }
             public Builder url(String url) {
                 params.url = url;
+                return this;
+            }
+            public Builder xApiKey(String xApiKey) {
+                params.xApiKey = xApiKey;
                 return this;
             }
             public Builder loadFromFile(boolean loadFromFile) {
@@ -53,7 +56,7 @@ public class GetAppCMSStreamingInfoAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url);
+                            return call.call(params.url, params.xApiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }

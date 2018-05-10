@@ -497,8 +497,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         @Override
                         public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
-                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
-                            updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload,position);
+                            if(appCMSAudioDetailResult != null) {
+                                AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
+                                updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload, position);
+                            }
                         }
                     });
         }
