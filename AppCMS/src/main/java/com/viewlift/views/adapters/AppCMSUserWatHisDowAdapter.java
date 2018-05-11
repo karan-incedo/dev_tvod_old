@@ -173,10 +173,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 @Override
                 public void onNext(Object o) {
                     if (o instanceof Integer) {
-                        if ((int) o == DownloadModule2.VIDEO_TAB) {
+                        if ((int) o == DownloadModule.VIDEO_TAB) {
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video)));
                         }
-                        if ((int) o == DownloadModule2.AUDIO_TAB) {
+                        if ((int) o == DownloadModule.AUDIO_TAB) {
 
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_audio)));
                         }
