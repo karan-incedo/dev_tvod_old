@@ -878,11 +878,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
             buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+            textColor = appCMSPresenter.getGeneralTextColor();
 
         } else {
 
@@ -907,7 +907,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
         customMessageView.setText(message);
         customMessageView.setLayoutParams(textViewParams);
-        customMessageView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        customMessageView.setTextColor(appCMSPresenter.getGeneralTextColor());
         customMessageView.setTextSize(15);
         customMessageView.setPadding(20, 20, 20, 20);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

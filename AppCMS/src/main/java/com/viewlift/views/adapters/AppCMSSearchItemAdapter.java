@@ -436,7 +436,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setTextSize(textSize);
             this.filmTitle.setMaxLines(2);
 
-            this.filmTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+            this.filmTitle.setTextColor(appCMSPresenter.getGeneralTextColor());
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.titleLayout.addView(this.filmTitle);
 

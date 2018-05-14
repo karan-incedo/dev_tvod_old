@@ -3329,11 +3329,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
             buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+            textColor = appCMSPresenter.getGeneralTextColor();
         } else {
             buttonColor = Color.parseColor("#F81004");
             textColor = Color.parseColor("#ffffff");

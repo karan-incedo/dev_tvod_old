@@ -41,7 +41,7 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
+        int bgColor = appCMSPresenter.getGeneralBackgroundColor();
         int buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
         int buttonTextColor = appCMSPresenter.getBrandPrimaryCtaTextColor();
         int textColor = appCMSPresenter.getGeneralTextColor();

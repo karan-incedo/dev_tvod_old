@@ -3764,7 +3764,7 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setLayoutParams(layoutParams);
 
-                        int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                        int fillColor = appCMSPresenter.getGeneralTextColor();
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
@@ -4383,7 +4383,7 @@ public class ViewCreator {
                     } else if (component.getStyles() != null) {
                         if (!TextUtils.isEmpty(component.getStyles().getColor())) {
                             textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));
-                        } else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                        } else if (appCMSPresenter.getGeneralTextColor()!=0) {
                             textColor =
                                     Color.parseColor(getColor(context, appCMSPresenter.getAppTextColor()));
                         }
@@ -4396,7 +4396,7 @@ public class ViewCreator {
 
                     if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_TITLE) {
 
-                        int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textFontColor = appCMSPresenter.getGeneralTextColor();
                         if (!TextUtils.isEmpty(component.getTextColor())) {
                             textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                         }
@@ -4427,7 +4427,7 @@ public class ViewCreator {
                     }
                     if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE) {
 
-                        int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textFontColor = appCMSPresenter.getGeneralTextColor();
                         if (!TextUtils.isEmpty(component.getTextColor())) {
                             textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                         }
@@ -4461,9 +4461,9 @@ public class ViewCreator {
 
                     }
                     if (componentKey == AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE) {
-                        int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textBgColor = appCMSPresenter.getGeneralTextColor();
 
-                        int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textFontColor = appCMSPresenter.getGeneralTextColor();
                         if (!TextUtils.isEmpty(component.getTextColor())) {
                             textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                         }
@@ -4489,11 +4489,11 @@ public class ViewCreator {
                     }
                     if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO
                             || componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
-                        int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textBgColor = appCMSPresenter.getGeneralTextColor();
                         if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                             textBgColor = Color.parseColor(getColorWithOpacity(context, component.getBackgroundColor(), component.getOpacity()));
                         }
-                        int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        int textFontColor = appCMSPresenter.getGeneralTextColor();
                         if (!TextUtils.isEmpty(component.getTextColor())) {
                             textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                         }
@@ -4520,8 +4520,7 @@ public class ViewCreator {
                             || componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY
                             || componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY
                             || componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
-                        textColor = Color.parseColor(getColor(context,
-                                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        textColor = appCMSPresenter.getGeneralTextColor();
                         ((TextView) componentViewResult.componentView).setTextColor(textColor);
                     } else if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
                         ((TextView) componentViewResult.componentView).setTextColor(textColor);
@@ -5462,8 +5461,7 @@ public class ViewCreator {
                 } else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                         .getTextColor())) {
                     componentViewResult.componentView.
-                            setBackgroundColor(Color.parseColor(getColor(context,
-                                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
+                            setBackgroundColor(appCMSPresenter.getGeneralTextColor());
                 }
                 componentViewResult.componentView.setAlpha(0.6f);
                 break;
@@ -6502,7 +6500,7 @@ public class ViewCreator {
                     imageButton.setImageResource(R.drawable.ic_download_big);
                 }
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                int fillColor = appCMSPresenter.getGeneralTextColor();
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.requestLayout();
                 imageButton.setOnClickListener(addClickListener);

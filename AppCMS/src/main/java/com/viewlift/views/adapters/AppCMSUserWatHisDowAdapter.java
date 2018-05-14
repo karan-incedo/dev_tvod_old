@@ -259,8 +259,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
-            String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
-            emptyView.setTextColor(Color.parseColor(textColor));
+            emptyView.setTextColor(appCMSPresenter.getGeneralTextColor());
             emptyView.setTextSize(24f);
             if (isHistoryPage) {
                 emptyView.setText(mContext.getString(R.string.empty_history_list_message));
