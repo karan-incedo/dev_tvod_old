@@ -10,6 +10,8 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.viewlift.R;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -26,26 +28,32 @@ public class GetAppCMSFloodLightAsyncTask extends AsyncTask<Void, Void, String> 
     private final Context context;
     private final AppCMSFloodLightRest appCMSFloodLightRest;
     private final Action1 action1;
+    private final String xApiKey;
     private String response = "";
 
     @Inject
-    public GetAppCMSFloodLightAsyncTask(AppCMSFloodLightRest appCMSFloodLightRest, Context context, Action1 action1) {
+    public GetAppCMSFloodLightAsyncTask(AppCMSFloodLightRest appCMSFloodLightRest, String xApiKey, Context context, Action1 action1) {
         this.context = context;
         this.appCMSFloodLightRest = appCMSFloodLightRest;
         this.action1 = action1;
+        this.xApiKey = xApiKey;
     }
 
     @Override
     protected String doInBackground(Void... params) {
         AdvertisingIdClient.Info idInfo = null;
         try {
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
             idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
             String url = context.getString(R.string.app_cms_floodlight_url,
                     idInfo.getId(),
                     randInt(1, 10) + "");
             /*String url = "src=6070801;cat=appco0;type=msnbm0;dc_rdid="+advertId.trim()+
                     ";dc_lat=;tag_for_child_directed_treatment=;ord="+randInt(1,10);;*/
-            response = appCMSFloodLightRest.get(url).execute().body();
+            response = appCMSFloodLightRest.get(url, authTokenMap).execute().body();
         } catch (GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         } catch (GooglePlayServicesRepairableException e) {

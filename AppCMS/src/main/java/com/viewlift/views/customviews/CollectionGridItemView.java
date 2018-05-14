@@ -266,6 +266,17 @@ public class CollectionGridItemView extends BaseView {
         this.selectable = selectable;
     }
 
+    /**
+     * @param context
+     * @param view
+     * @param data
+     * @param jsonValueKeyMap
+     * @param onClickHandler
+     * @param componentViewType
+     * @param themeColor
+     * @param appCMSPresenter
+     * @param position
+     */
     public void bindChild(Context context,
                           View view,
                           final ContentDatum data,
@@ -275,7 +286,6 @@ public class CollectionGridItemView extends BaseView {
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
 
-//        Log.d("bindView","Data NAme :"+data.getGist().getTitle());
         final Component childComponent = matchComponentToView(view);
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(componentViewType);
@@ -288,7 +298,6 @@ public class CollectionGridItemView extends BaseView {
                 appCMSPresenter.getUpdateDownloadImageIconActionMap();
 
         if (childComponent != null) {
-            Log.d("bindView","ChildComponent");
 
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                     childComponent, data, position));
@@ -296,8 +305,6 @@ public class CollectionGridItemView extends BaseView {
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-//            Log.d("bindView","Component Type :"+childComponent.getType());
-//            Log.d("bindView","Component Key :"+childComponent.getKey());
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
@@ -348,15 +355,13 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
 
                         } else {
-
-
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                                 ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
                                 placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_land);
-                                placeholder = R.drawable.vid_image_placeholder_land;
+                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                placeholder = R.drawable.vid_image_placeholder_16x9;
                             }
 
                         }
@@ -466,7 +471,6 @@ public class CollectionGridItemView extends BaseView {
                                 imageUrl = data.getGist().getVideoImageUrl();
                             }
                         }
-                        //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
@@ -636,7 +640,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .placeholder(R.drawable.img_placeholder)
+                                        .placeholder(R.drawable.vid_image_placeholder_16x9)
                                         .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
@@ -1140,7 +1144,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
-//                        Log.d("bindView","Audio Article Title Key :"+data.getGist().getTitle());
+
                         String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
                         ((TextView) view).setText(artist);
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));

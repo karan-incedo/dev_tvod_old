@@ -354,11 +354,15 @@ public class AudioPlaylistHelper {
     }
 
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item, long mCurrentPlayerPosition) {
-        if (item.isPlayable() && appCmsPresenter.getCurrentActivity() != null) {
-            Bundle bundle = new Bundle();
-            bundle.putLong("CURRENT_POSITION", mCurrentPlayerPosition);
-            MediaControllerCompat.getMediaController(mAct).getTransportControls()
-                    .playFromMediaId(item.getMediaId(), bundle);
+        try {
+            if (item.isPlayable() && appCmsPresenter.getCurrentActivity() != null) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("CURRENT_POSITION", mCurrentPlayerPosition);
+                MediaControllerCompat.getMediaController(mAct).getTransportControls()
+                        .playFromMediaId(item.getMediaId(), bundle);
+            }
+        }catch (Throwable ex){
+            ex.printStackTrace();
         }
     }
 
