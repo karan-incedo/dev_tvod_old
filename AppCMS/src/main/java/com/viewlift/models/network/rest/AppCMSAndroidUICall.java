@@ -75,8 +75,8 @@ public class AppCMSAndroidUICall {
                     Log.d(TAG, "Total Time android.json request: " + (end - start));
                 }
             } catch (Exception e) {
-                //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
-//                    e.getMessage());
+                Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
+                    e.getMessage());
             }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
