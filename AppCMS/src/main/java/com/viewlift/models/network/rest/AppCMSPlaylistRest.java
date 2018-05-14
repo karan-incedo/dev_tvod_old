@@ -15,5 +15,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSPlaylistRest {
     @GET
-    Call<AppCMSPlaylistResult> get(@Url String url);
+    Call<AppCMSPlaylistResult> get(@Url String url, @HeaderMap Map<String, String> headers);
 }

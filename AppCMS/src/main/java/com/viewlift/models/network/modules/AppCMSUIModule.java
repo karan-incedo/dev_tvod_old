@@ -226,6 +226,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_SETTINGS_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_switch_key),
                 AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_check_tc_policy_key),
+                AppCMSUIKeyType.PAGE_CHECKBOX_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),

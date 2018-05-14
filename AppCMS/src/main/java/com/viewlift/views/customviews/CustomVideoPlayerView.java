@@ -257,6 +257,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                         }
                     }
                     appCMSPresenter.setPreviewStatus(false);
+                    if (!appCMSPresenter.isAppSVOD()){
+                        playVideos(0, contentDatum);
+                    }
                 } else {
                     if (appCMSPresenter.isUserSubscribed()) {
                         playVideos(0, contentDatum);

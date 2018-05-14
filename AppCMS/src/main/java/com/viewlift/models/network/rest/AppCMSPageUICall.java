@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +18,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -57,7 +58,7 @@ public class AppCMSPageUICall {
     }
 
     @WorkerThread
-    public AppCMSPageUI call(String url, boolean bustCache, boolean loadFromFile) throws IOException {
+    public AppCMSPageUI call(String url, String xApiKey, boolean bustCache, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
         if (loadFromFile) {
@@ -71,9 +72,9 @@ public class AppCMSPageUICall {
                         StringBuilder urlWithCacheBuster = new StringBuilder(url);
                         urlWithCacheBuster.append("&x=");
                         urlWithCacheBuster.append(new Date().getTime());
-                        appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename);
+                        appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename, xApiKey);
                     } else {
-                        appCMSPageUI = loadFromNetwork(url, filename);
+                        appCMSPageUI = loadFromNetwork(url, filename, xApiKey);
                     }
                 } catch (Exception e2) {
                     //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
@@ -85,9 +86,9 @@ public class AppCMSPageUICall {
                 StringBuilder urlWithCacheBuster = new StringBuilder(url);
                 urlWithCacheBuster.append("&x=");
                 urlWithCacheBuster.append(new Date().getTime());
-                appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename);
+                appCMSPageUI = loadFromNetwork(urlWithCacheBuster.toString(), filename, xApiKey);
             } else {
-                appCMSPageUI = loadFromNetwork(url, filename);
+                appCMSPageUI = loadFromNetwork(url, filename, xApiKey);
             }
 
             if (appCMSPageUI == null) {
@@ -102,11 +103,16 @@ public class AppCMSPageUICall {
         return appCMSPageUI;
     }
 
-    private AppCMSPageUI loadFromNetwork(String url, String filename) {
+    private AppCMSPageUI loadFromNetwork(String url, String filename, String xApiKey) {
         AppCMSPageUI appCMSPageUI = null;
         try {
+
+
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
+
             deletePreviousFiles(url);
-            appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url)
+            appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url, authTokenMap)
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {

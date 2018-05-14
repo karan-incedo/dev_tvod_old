@@ -18,6 +18,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,6 +37,7 @@ public class AppCMSMainUICall {
     private final AppCMSMainUIRest appCMSMainUIRest;
     private final Gson gson;
     private final File storageDirectory;
+    private String xApi;
 
     @Inject
     public AppCMSMainUICall(long connectionTimeout,
@@ -52,10 +55,14 @@ public class AppCMSMainUICall {
     @WorkerThread
     public AppCMSMain call(Context context,
                            String siteId,
+                           String xApi,
                            int tryCount,
                            boolean bustCache,
                            boolean networkDisconnected) {
         Date now = new Date();
+        this.xApi = xApi;
+        Map<String, String> authTokenMap = new HashMap<>();
+        authTokenMap.put("x-api-key", xApi);
 
         StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
                 Utils.getProperty("BaseUrl", context),
@@ -75,7 +82,7 @@ public class AppCMSMainUICall {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
                     long start = System.currentTimeMillis();
                     Log.d(TAG, "Start main.json request: " + start);
-                    main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
+                    main = appCMSMainUIRest.get(appCMSMainUrlSb.toString(), authTokenMap).execute().body();
                     long end = System.currentTimeMillis();
                     Log.d(TAG, "End main.json request: " + end);
                     Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
@@ -117,7 +124,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1, bustCache, networkDisconnected);
+            return call(context, siteId, xApi, tryCount + 1, bustCache, networkDisconnected);
         }
 
         return main;
