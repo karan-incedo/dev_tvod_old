@@ -568,7 +568,7 @@ public class ViewCreator {
             webViewUrl = context.getString(R.string.app_cms_article_api,
                     appCMSPresenter.getAppCMSMain().getDomainName(),
                     moduleAPI.getContentData().get(0).getGist().getPermalink());
-            webView.loadURL(context, appCMSPresenter, webViewUrl, key);
+            webView.loadURL(context, appCMSPresenter, webViewUrl.replaceAll("\\s+",""), key);
         }
         return webView;
     }
