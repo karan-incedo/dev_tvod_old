@@ -1506,9 +1506,9 @@ public class AppCMSPresenter {
                     e.printStackTrace();
                 }
             }).execute(params);
-        */
+        //*/
 
-
+  ///*
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     id,
@@ -1528,6 +1528,7 @@ public class AppCMSPresenter {
                             readyAction.call(currentContentDatum);
                         }
                     }).execute(params);
+           // */
 
         }
     }
@@ -18309,8 +18310,8 @@ public class AppCMSPresenter {
             Drawable[] drawables = new Drawable[2];
             drawables[0] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
             drawables[1] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
-            drawables[0].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
-            drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
+            drawables[0].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
+            drawables[1].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
         }

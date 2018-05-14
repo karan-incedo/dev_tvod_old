@@ -342,8 +342,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     private void updataeShuffleState() {
         if (appCMSPresenter.getAudioShuffledPreference()) {
-            int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            int tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
             applyTintToDrawable(shuffle.getBackground(), tintColor);
         } else {
 

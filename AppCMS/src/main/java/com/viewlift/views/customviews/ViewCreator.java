@@ -3251,7 +3251,7 @@ public class ViewCreator {
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)
                         && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
-                    ((Button) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                    ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
                     applyBorderToComponent(
                             context,
                             componentViewResult.componentView,
@@ -3913,10 +3913,8 @@ public class ViewCreator {
 
                         removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
 
-                        ((TextView) componentViewResult.componentView).setTextColor(Color
-                                .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-                        componentViewResult.componentView.setBackgroundColor(Color
-                                .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
                         componentViewResult.componentView.setId(R.id.remove_all_download_id);
@@ -5687,12 +5685,10 @@ public class ViewCreator {
 
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
-                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-                int switchOnColor = Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-                int switchOffColor = Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
+                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(
+                        appCMSPresenter.getBrandPrimaryCtaTextColor());
+                int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
+                int switchOffColor = appCMSPresenter.getBrandPrimaryCtaTextColor();
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{android.R.attr.state_checked},

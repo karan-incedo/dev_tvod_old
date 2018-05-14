@@ -342,8 +342,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     deleteDownloadButton.setImageBitmap(null);
                     deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                             R.drawable.ic_deleteicon));
-                    deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                            appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                    deleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                     deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                     contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
 
@@ -416,8 +415,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         finalDeleteDownloadButton.setImageBitmap(null);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 R.drawable.ic_deleteicon));
-                                                        finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                                                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                                                        finalDeleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                                                         finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 R.drawable.ic_deleteicon));
@@ -494,8 +492,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             deleteDownloadButton.setImageBitmap(null);
                             deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                     R.drawable.ic_deleteicon));
-                            deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                            deleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                             deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
                             break;
