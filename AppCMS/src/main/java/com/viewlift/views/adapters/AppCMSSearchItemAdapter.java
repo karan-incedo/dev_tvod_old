@@ -391,7 +391,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
 
             this.thumbnailInfo = new TextView(view.getContext());
-            this.thumbnailInfo.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            this.thumbnailInfo.setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
             this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.apptentive_brand_red));
             this.thumbnailInfo.setTextSize(textSize);
             RelativeLayout.LayoutParams thumbnailInfoParams =

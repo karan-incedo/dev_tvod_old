@@ -315,7 +315,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
         }
         updatePlaylistAllStatus();
     }

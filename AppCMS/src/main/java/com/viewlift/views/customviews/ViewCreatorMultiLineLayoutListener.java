@@ -124,7 +124,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     public void setSpanOnFocus(TextView textView, boolean hasFocus , int textColor){
         Spannable wordToSpan = new SpannableString(textView.getText().toString());
         ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())
+                appCMSPresenter.getBrandPrimaryCtaColor()
         );
 
         int length = wordToSpan.length();

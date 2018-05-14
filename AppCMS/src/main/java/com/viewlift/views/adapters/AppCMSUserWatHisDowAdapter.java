@@ -818,7 +818,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
         }
     }
 

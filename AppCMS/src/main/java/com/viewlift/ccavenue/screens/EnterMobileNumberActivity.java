@@ -43,8 +43,8 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
             appCMSPresenter.restrictPortraitOnly();
         }
         try {
-            String colorCode = getIntent().getStringExtra("color_theme");
-            elevated_button_card.setBackgroundColor(Color.parseColor(colorCode));
+            int colorCode = getIntent().getIntExtra("color_theme",R.color.colorNavBarText);
+            elevated_button_card.setBackgroundColor(colorCode);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

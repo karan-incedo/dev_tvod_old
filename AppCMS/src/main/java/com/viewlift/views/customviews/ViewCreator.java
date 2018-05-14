@@ -595,10 +595,10 @@ public class ViewCreator {
      * @return A string value with one prepended '#' character
      */
     public static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+        if (color!= null && color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
         }
-        return color;
+        return color != null? color :"#d8d8d8";
     }
 
     /**
@@ -1183,7 +1183,7 @@ public class ViewCreator {
                                                             videoDescription,
                                                             appCMSPresenter,
                                                             false,
-                                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                            appCMSPresenter.getBrandPrimaryCtaColor(),
                                                             false);
                                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                         }
@@ -2509,8 +2509,7 @@ public class ViewCreator {
             moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
-        int tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+        int tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
 
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
@@ -4677,7 +4676,7 @@ public class ViewCreator {
                                                     autoplayVideoDescription,
                                                     appCMSPresenter,
                                                     true,
-                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                    appCMSPresenter.getBrandPrimaryCtaColor(),
                                                     false);
                                     viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
                                 }
@@ -4716,7 +4715,7 @@ public class ViewCreator {
                                                     videoDescription,
                                                     appCMSPresenter,
                                                     false,
-                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                    appCMSPresenter.getBrandPrimaryCtaColor(),
                                                     false);
                                     textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                 }
@@ -5571,7 +5570,7 @@ public class ViewCreator {
                         starringTitle,
                         starringListSb.toString(),
                         textColor,
-                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                        appCMSPresenter.getBrandPrimaryCtaColor(),
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
