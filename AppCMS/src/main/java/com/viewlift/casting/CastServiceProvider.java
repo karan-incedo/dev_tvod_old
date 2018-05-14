@@ -534,7 +534,7 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
+        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity!= null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
 
         if(mCastHelper == null)
             return;
