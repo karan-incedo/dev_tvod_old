@@ -874,13 +874,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private void createPreviewMessageView() {
         int buttonColor, textColor;
-        if (appCMSPresenter.getAppCMSMain() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
+        if (appCMSPresenter != null &&
                 appCMSPresenter.getGeneralBackgroundColor() != 0 &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
+                appCMSPresenter.getBrandPrimaryCtaColor() != 0 ) {
             buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
             textColor = appCMSPresenter.getGeneralTextColor();
 
