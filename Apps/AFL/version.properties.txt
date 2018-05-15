@@ -1,35 +1,17 @@
-#Thu May 03 21:27:54 IST 2018
-ApptentiveSignatureKey=3662489474d4a82ad0f6dda0abfbb19c
-GcmSender=555758730103
-AppTitle=AFL
-UseHLS=true
-HostNameSuffix=*.www.arenafootball.com/
-UAirshipDevelopmentAppKey=Ob4dqq0zSeetrtGUu_e-kw
-AppName=AFL
+#Fri May 11 19:32:36 IST 2018
 AppPackageName=com.afl.arenafootballleague
-UAirshipProductionAppSecret=kscPtxeKRiui_BTeaptUDw
-TvBannerUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/tvBanner.png
-UAirshipInProduction=true
-ShortDescription=Short description will come here
-UAirshipProductionAppKey=Ob4dqq0zSeetrtGUu_e-kw
-UAirshipDevelopmentAppSecret=-kscPtxeKRiui_BTeaptUDw
+ApptentiveSignatureKey=3662489474d4a82ad0f6dda0abfbb19c
+XAPI=dxR5sdnFKQ1YB9yMNBpWu9DHqRLRleHF5Sy2fhCF
+AppVersionName=3.2
+AppVersionCode=14
 BaseUrl=https\://appcmsprod.viewlift.com
-AppIconUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/icon.png
-ApptentiveApiKey=ANDROID-ARENA-FOOTBALL-LEAGUE
+AppName=AFL
 SiteId=0000015a-a977-d135-adda-fb7fb65f0000
-FeatureGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/featureGraphic.png
-JsonKeyFile=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/googleplay_android.json
+UseHLS=true
+ApptentiveApiKey=ANDROID-ARENA-FOOTBALL-LEAGUE
+GcmSender=555758730103
 AppsFlyerDevKey=00000000000
-HostName=www.arenafootball.com
-XAPI=vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF
-PromoVideoUrl=https\://www.youtube.com/watch?v\=PDhVJfEFxik
-AppResourcesPath=https\://appcms.viewlift.com/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources
-AppsFlyerProdKey=00000000000
-Track=beta
-FullDescription=Full description will come here
-AppVersionName=2.9
-Keystorepass=hoichoi321
-AliasName=hoichoi
-AppVersionCode=12
-PromoGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/promoGraphic.png
 FacebookAppId=429210224078179
+HostName=www.arenafootball.com
+HostNameSuffix=*.www.arenafootball.com/
+AppTitle=AFL

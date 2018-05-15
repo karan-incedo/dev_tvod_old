@@ -32,6 +32,8 @@ import android.text.TextUtils;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -617,10 +619,11 @@ public final class LocalPlayback implements Playback {
         }
     }
 
-    private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
+    private final class ExoPlayerEventListener implements Player.EventListener {
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            // Nothing to do.
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
         }
 
         @Override

@@ -473,6 +473,12 @@
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
+
+
+    <!-- TODo mergeg both bellow in later implementation AppCMS Release entitlement Detail API -->
+    <string name="app_cms_release_entitlement_api_url">%1$s/entitlement/release-user-entitlement-service?id=%2$s</string>
+    <string name="app_cms_prod_entitlement_api_url">%1$s/entitlement/prod-user-entitlement-service?id=%2$s</string>
+
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
     <string name="app_cms_edit_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;contentIds=%4$s</string>

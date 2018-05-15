@@ -2634,7 +2634,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCtaBackgroundColor() != null ) {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor());
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
@@ -3329,11 +3329,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
-            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            textColor = appCMSPresenter.getGeneralTextColor();
         } else {
             buttonColor = Color.parseColor("#F81004");
             textColor = Color.parseColor("#ffffff");

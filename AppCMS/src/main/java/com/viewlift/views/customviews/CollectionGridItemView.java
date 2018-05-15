@@ -1135,7 +1135,7 @@ public class CollectionGridItemView extends BaseView {
                                                 data.getGist().getDescription(),
                                                 appCMSPresenter,
                                                 true,
-                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                                appCMSPresenter.getBrandPrimaryCtaColor(),
                                                 false);
                                 titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                             } catch (Exception e) {
@@ -1162,7 +1162,7 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            appCMSPresenter.getBrandPrimaryCtaColor(),
                                             true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
