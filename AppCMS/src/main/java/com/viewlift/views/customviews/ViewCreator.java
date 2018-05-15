@@ -5848,6 +5848,7 @@ public class ViewCreator {
                         mMediaRouteButton);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             //Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
         }
     }
