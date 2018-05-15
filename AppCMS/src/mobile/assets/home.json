@@ -3201,7 +3201,7 @@
             "mobile": {
               "yAxis": 0,
               "xAxis": 10,
-              "maximumWidth": 230,
+              "maximumWidth": 200,
               "fontSize": 18,
               "height": 24
             },
@@ -3358,9 +3358,36 @@
               "height": 432
             }
           },
-          "type": "player",
-          "key": "videoPlayer"
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 0,
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "height": 211
+                },
+                "tabletLandscape": {
+                  "yAxis": 0,
+                  "leftMargin": 0.97,
+                  "rightMargin": 0.97,
+                  "fontSize": 24,
+                  "height": 432
+                },
+                "tabletPortrait": {
+                  "yAxis": 0,
+                  "leftMargin": 1.3,
+                  "rightMargin": 1.3,
+                  "fontSize": 24,
+                  "height": 432
+                }
+              },
+              "type": "player",
+              "key": "videoPlayer"
+            }
+            ]
         },
+
         {
           "layout": {
             "mobile": {
