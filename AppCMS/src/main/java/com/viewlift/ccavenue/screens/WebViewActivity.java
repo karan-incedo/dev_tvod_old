@@ -109,14 +109,18 @@ public class WebViewActivity extends Activity {
                 new AppCMSPresenter.AppCMSCCAvenueRSAKeyAPIAction("RSA") {
                     @Override
                     public void call(RSAKeyResponse rsaKeyResponse) {
-                        dialog.dismiss();
-                        vResponse = rsaKeyResponse.getRsaToken();
-                        orderID = rsaKeyResponse.getOrderId();
-                        accessCode = rsaKeyResponse.getAccessCode();
-                        cancelRedirectURL = rsaKeyResponse.getRedirectUrl();
-                        merchantID = rsaKeyResponse.getMerchantId();
-                        readerViewAyncTask = new RenderView();
-                        readerViewAyncTask.execute();
+                        if(dialog != null && dialog.isShowing())
+                          dialog.dismiss();
+
+                        if(rsaKeyResponse != null) {
+                            vResponse = rsaKeyResponse.getRsaToken();
+                            orderID = rsaKeyResponse.getOrderId();
+                            accessCode = rsaKeyResponse.getAccessCode();
+                            cancelRedirectURL = rsaKeyResponse.getRedirectUrl();
+                            merchantID = rsaKeyResponse.getMerchantId();
+                            readerViewAyncTask = new RenderView();
+                            readerViewAyncTask.execute();
+                        }
                     }
                 });
     }
