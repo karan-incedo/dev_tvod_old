@@ -1,5 +1,6 @@
 package com.viewlift.models.network.rest;
 
+import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
 import java.util.Map;
@@ -17,4 +18,7 @@ import retrofit2.http.Url;
 public interface AppCMSVideoDetailRest {
     @GET
     Call<AppCMSVideoDetail> get(@Url String url, @HeaderMap Map<String, String> authHeaders);
+
+    @GET
+    Call<AppCMSEntitlementResponse> getEntitlementVideo(@Url String url, @HeaderMap Map<String, String> authHeaders);
 }

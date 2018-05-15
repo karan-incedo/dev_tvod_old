@@ -1189,6 +1189,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                             .getGist()
                             .getId(),
                     updatedContentDatum -> {
+                        if (updatedContentDatum==null){
+                            getActivity().finish();
+                            return;
+                        }
                         onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                         appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                             if (videoPlayerView != null && appCMSSignedURLResult != null) {
