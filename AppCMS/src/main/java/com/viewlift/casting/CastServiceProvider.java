@@ -13,10 +13,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -26,6 +28,8 @@ import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
@@ -306,28 +310,37 @@ public class CastServiceProvider {
 
     public void onActivityResume() {
 
-        refreshCastMediaIcon();
-        if (mCastSession == null) {
-            mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
-                    .getCurrentCastSession();
-        }
-        mCastHelper.setCastSessionManager();
-        if (shouldCastMiniControllerVisible()) {
-            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
-        } else {
-            AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
-        }
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mActivity);
+        if (resultCode == ConnectionResult.SUCCESS) {
 
-        createMediaChooserDialog();
-        mCastHelper.setCastDiscovery();
+            refreshCastMediaIcon();
+            if (mCastSession == null) {
+                mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
+                        .getCurrentCastSession();
+            }
+            mCastHelper.setCastSessionManager();
+            if (shouldCastMiniControllerVisible()) {
+                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+            } else {
+                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
+            }
 
-        if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-            //Log.d(TAG, "This is a default route");
-            mCastHelper.mSelectedDevice = null;
-        } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
-                == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
-            mCastHelper.isCastDeviceAvailable = true;
-            mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
+            createMediaChooserDialog();
+            mCastHelper.setCastDiscovery();
+
+            if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
+                //Log.d(TAG, "This is a default route");
+                mCastHelper.mSelectedDevice = null;
+            } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
+                    == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
+                mCastHelper.isCastDeviceAvailable = true;
+                mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
+            }
+       }else{
+
+           Log.i(TAG, "This device is not supported.");
+           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
         }
     }
 
