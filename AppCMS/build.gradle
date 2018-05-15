@@ -418,6 +418,7 @@ dependencies {
     implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation  project(':exoplayer-library')
+    implementation  project(':exoplayer-library-ui')
     implementation  project(':library')
     implementation  project(':htmlspanner')
     implementation  project(path: ':exoplayer-extension-vp9')
