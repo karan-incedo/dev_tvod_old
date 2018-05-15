@@ -661,8 +661,30 @@
 
     <string name="play_video_action">playVideo</string>
 
-    <string name="play_video_category">player-video</string>
+    <string name="json_data_msg_key">message</string>
+    <string name="json_data_time_key">timeStamp</string>
+    <string name="json_content_id_key">contentID</string>
+    <string name="json_seek_delta_key">seekDelta</string>
+    <string name="json_seek_search_string_key">searchString</string>
+    <string name="json_data_consolidation_key">collapse_key</string>
+    <string name="intent_msg_action">com.amazon.sample.admmessenger.ON_MESSAGE</string>
+    <string name="intent_msg_category">com.amazon.sample.admmessenger.MSG_CATEGORY</string>
+    <string name="adm_directive_search_and_play">SearchAndPlay</string>
+    <string name="adm_directive_search_and_display_results">SearchAndDisplayResults</string>
+    <string name="adm_directive_play">play</string>
+    <string name="adm_directive_pause">pause</string>
+    <string name="adm_directive_fast_forward">FastForward</string>
+    <string name="adm_directive_rewind">Rewind</string>
+    <string name="adm_directive_start_over">StartOver</string>
+    <string name="adm_directive_next">Next</string>
+    <string name="adm_directive_previous">Previous</string>
+    <string name="adm_directive_adjust_seek_position">AdjustSeekPosition</string>
 
+    <string name="action_not_supported">This action is not supported</string>
+    <string name="deeplink_close_player_activity_action">deeplink_close_player_activity_action</string>
+
+    <string name="server_address">https://pvfrfk0pr9.execute-api.us-east-1.amazonaws.com/saveAdmId</string>
+    <string name="LAUNCHER_DEEPLINK_ACTION">air.com.snagfilms.PLAY</string>
 
     <string name="play_audio_action">playAudio</string>
     <string name="ga_audio_download_action">From Playlist</string>
@@ -674,7 +696,7 @@
     <string name="play_audio_category">player-audio</string>
      <string name="app_cms_link_your_account_action">linkAccount</string>
     <string name="app_cms_sign_up_page_action">signUpPageAction</string>
-
+    <string name="play_video_category">player-video</string>
     <!--SSL Commerz transaction msgs-->
     <string name="ssl_commerz_transaction_fail">Transaction failed. Please try again.</string>
     <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>

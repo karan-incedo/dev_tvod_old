@@ -42,8 +42,6 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -96,17 +94,14 @@ import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
-import net.nightwhistler.htmlspanner.SpanStack;
 import net.nightwhistler.htmlspanner.TagNodeHandler;
 import net.nightwhistler.htmlspanner.handlers.StyledTextHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandler;
@@ -114,20 +109,16 @@ import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
 
-//import org.htmlcleaner.TagNode;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 import rx.functions.Action1;
 
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY;
-import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_SUBSCRIBE_EMAIL_KEY;
+
+//import org.htmlcleaner.TagNode;
 
 
 /*
@@ -294,7 +285,7 @@ public class ViewCreator {
     public static void startPlayer(AppCMSPresenter presenter) {
         if (videoPlayerView != null &&
                 !CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 
@@ -358,7 +349,7 @@ public class ViewCreator {
         }
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
 
         videoPlayerView.setFilmId(filmId);
@@ -517,7 +508,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(true);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }
@@ -539,7 +530,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(false);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }

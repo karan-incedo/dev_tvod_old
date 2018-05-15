@@ -409,6 +409,7 @@
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
+    <string name="app_cms_pagename_search_screen_key">Search Screen</string>
     <string name="app_cms_pagename_sign_up_key">Sign Up</string>
     <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 

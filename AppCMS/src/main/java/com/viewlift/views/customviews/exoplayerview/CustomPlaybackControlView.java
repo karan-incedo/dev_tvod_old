@@ -1009,6 +1009,7 @@ public class CustomPlaybackControlView extends FrameLayout {
             // Do nothing.
         }
 
+
         @Override
         public void onTracksChanged(TrackGroupArray tracks, TrackSelectionArray selections) {
             // Do nothing.
