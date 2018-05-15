@@ -690,7 +690,7 @@ public class CastHelper {
                     String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
-                    System.out.println("on progress update media id- " + currentRemoteMediaId);
+
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);

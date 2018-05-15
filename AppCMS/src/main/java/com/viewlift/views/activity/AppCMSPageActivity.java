@@ -388,25 +388,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         false,
                                         false);
 
-                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                        updatedAppCMSBinder != null &&
-                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                        appCMSPresenter.unrestrictPortraitOnly();
-                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                                ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            exitFullScreenVideoPlayer(true);
-                                        }
-                                    } else {
-                                        if (ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            ViewCreator.enableFullScreenMode();
-                                        }
-                                    }
-                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1372,35 +1353,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             pendingDeeplinkUri = null;
         }
 
-        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
-                isActive) {
-            if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
-                if (!BaseView.isTablet(this)) {
-                    appCMSPresenter.unrestrictPortraitOnly();
-                    if (BaseView.isLandscape(this) ||
-                            ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        exitFullScreenVideoPlayer(true);
-                    }
-                } else {
-                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        ViewCreator.enableFullScreenMode();
-                    }
-                }
-
-                ViewCreator.resumePlayer(appCMSPresenter, this);
-            } else {
-                if (BaseView.isTablet(this)) {
-                    appCMSPresenter.restrictPortraitOnly();
-                }
-                ViewCreator.pausePlayer();
-            }
-        }
     }
 
     private void refreshPageData() {

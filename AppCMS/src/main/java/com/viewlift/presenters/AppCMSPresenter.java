@@ -15140,10 +15140,7 @@ public class AppCMSPresenter {
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
                 String action = null;
-                if (currentActivity != null &&
-                        currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
-                    action = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
-                }
+
                 if (0 <= binder.getCurrentPlayingVideoIndex()) {
                     launchVideoPlayer(binder.getContentData(),
                             binder.getRelateVideoIds() != null &&

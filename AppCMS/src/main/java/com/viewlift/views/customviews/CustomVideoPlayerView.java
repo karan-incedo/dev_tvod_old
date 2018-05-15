@@ -90,6 +90,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private LinearLayout llTopBar;
     private TextView app_cms_video_player_title_view;
 
+    private ViewCreator.VideoPlayerContent videoPlayerContent;
+
     private TextView customMessageView;
     private LinearLayout customPlayBack;
     private String videoDataId = null;
@@ -183,6 +185,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             Log.e(TAG, e.getMessage());
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
+
+        videoPlayerContent =new ViewCreator.VideoPlayerContent();
         videoPlayerViewSingle = this;
         setFirebaseProgressHandling();
 
@@ -248,7 +252,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
                     getVideoPreview();
-                    System.out.println("entitlementCheckMultiplier--" + entitlementCheckMultiplier);
+
                     if(entitlementCheckMultiplier > 0) {
                         if (shouldRequestAds) {
                             requestAds(adsUrl);
@@ -411,6 +415,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 watchedTime = 0L;
             }
             videoTitle = contentDatum.getGist().getTitle();
+
+            videoPlayerContent.videoUrl = lastUrl;
+            videoPlayerContent.ccUrl = closedCaptionUri;
+            videoPlayerContent.videoPlayTime = getCurrentPosition()/SECS_TO_MSECS;
         }
     }
 
@@ -481,7 +489,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 pausePlayer();
                                 hideMiniPlayer = true;
                                 showPreviewFrame();
-                                System.out.println("Preview Timer Shown -" + playedVideoSecs);
+
 
                                 cancel();
                                 entitlementCheckCancelled = true;
@@ -492,7 +500,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                             playedVideoSecs++;
                             appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
-                            System.out.println("Preview Timer -" + playedVideoSecs);
+
                         }
                     });
 
@@ -1364,6 +1372,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     public interface IgetPlayerEvent {
 
         void getIsVideoPaused(boolean isVideoPaused);
+    }
+
+    public ViewCreator.VideoPlayerContent getVideoPlayerContent() {
+        return videoPlayerContent;
     }
 }
 

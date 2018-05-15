@@ -3201,7 +3201,7 @@
             "mobile": {
               "yAxis": 0,
               "xAxis": 10,
-              "maximumWidth": 200,
+              "maximumWidth": 180,
               "fontSize": 18,
               "height": 24
             },
@@ -3233,7 +3233,7 @@
             "mobile": {
               "yAxis": 24,
               "xAxis": 10,
-              "maximumWidth": 230,
+              "maximumWidth": 200,
               "fontSize": 10,
               "height": 14
             },
@@ -3288,8 +3288,33 @@
         {
           "layout": {
             "mobile": {
+              "yAxis": 7,
+              "xAxis": 289,
+              "width": 24,
+              "height": 24
+            },
+            "tabletLandscape": {
+              "yAxis": 10,
+              "xAxis": 930,
+              "width": 28,
+              "height": 28
+            },
+            "tabletPortrait": {
+              "yAxis": 10,
+              "xAxis": 679,
+              "width": 28,
+              "height": 28
+            }
+          },
+          "action": "castVideo",
+          "type": "button",
+          "key": "castButton"
+        },
+        {
+          "layout": {
+            "mobile": {
               "yAxis": 5,
-              "xAxis": 312,
+              "xAxis": 319,
               "width": 27,
               "height": 27
             },
