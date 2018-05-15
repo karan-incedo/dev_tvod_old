@@ -292,12 +292,13 @@ public class AppCMSPageFragment extends Fragment {
                 ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
             }
         }
-        if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
-            appCMSPresenter.videoPlayerView.pausePlayer();
+
+        if(appCMSPresenter != null) {
+            if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
+            }
+            appCMSPresenter.dismissPopupWindowPlayer(false);
         }
-
-        appCMSPresenter.dismissPopupWindowPlayer(false);
-
     }
 
     public void updateDataLists() {

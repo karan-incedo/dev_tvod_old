@@ -2963,7 +2963,7 @@ public class ViewCreator {
                                 AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
                                         new AppCMSTraySeasonItemAdapter(context,
                                                 collectionGridItemViewCreator,
-                                                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
+                                                moduleAPI,
                                                 component.getComponents(),
                                                 allEpisodeIds,
                                                 appCMSPresenter,

@@ -37,6 +37,10 @@ public class DownloadMediaMigration implements RealmMigration {
             realmObjectSchema.addField("mediaType",String.class);
         }
 
+        if(!realmObjectSchema.hasField("playListName")){
+            realmObjectSchema.addField("playListName",String.class);
+        }
+
         oldVersion++;
         Log.e("Migration","Migration Done");
     }

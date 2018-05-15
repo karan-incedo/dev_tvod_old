@@ -1,6 +1,7 @@
 package com.viewlift.casting;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.CastDevice;
@@ -19,6 +21,8 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -98,20 +102,28 @@ public class CastHelper {
 
 
     private CastHelper(Context mContext) {
+
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
+
         mAppContext = mContext.getApplicationContext();
-        mCastContext = CastContext.getSharedInstance(mAppContext);
-        mMediaRouteSelector = new MediaRouteSelector.Builder()
-                .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
-                .build();
-        appName = mAppContext.getResources().getString(R.string.app_name);
-        beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
 
-        mMediaRouterCallback = new MyMediaRouterCallback();
+        if (resultCode == ConnectionResult.SUCCESS) {
 
-        castCurrentMediaPosition = 0L;
+            mCastContext = CastContext.getSharedInstance(mAppContext);
+            mMediaRouteSelector = new MediaRouteSelector.Builder()
+                    .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
+                    .build();
+            appName = mAppContext.getResources().getString(R.string.app_name);
+            beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
+            mMediaRouterCallback = new MyMediaRouterCallback();
+            castCurrentMediaPosition = 0L;
+            setCastDiscovery();
+        }else{
 
-        setCastDiscovery();
-
+            Log.i(TAG, "This device is not supported.");
+            Toast.makeText(mContext, "This device is not supported. Please upgrade your play-service", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static class OnApplicationEnded {
@@ -502,6 +514,7 @@ public class CastHelper {
 
 
     private void initRemoteClientListeners() {
+
         remoteListener = new RemoteMediaClient.Listener() {
             @Override
             public void onStatusUpdated() {
