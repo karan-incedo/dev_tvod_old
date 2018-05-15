@@ -53,6 +53,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
@@ -132,10 +133,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                              mContext.startForegroundService(i);
-                            else
-                              mContext.startService(i);
+                            Utils.startService(mContext,i);
                         }
                     }
                 }

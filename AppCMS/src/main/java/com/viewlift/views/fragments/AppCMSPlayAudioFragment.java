@@ -57,6 +57,7 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
@@ -518,10 +519,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateDuration(description);
                 onUpdateMetaChange.updateMetaData(description);
                 System.out.println("Decription not null");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                  getContext().startForegroundService(new Intent(getContext(), MusicService.class));
-                else
-                  getContext().startService(new Intent(getActivity(), MusicService.class));
+                Utils.startService(getActivity(),new Intent(getContext(), MusicService.class));
             }
         }
     }

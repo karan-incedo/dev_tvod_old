@@ -1,7 +1,11 @@
 package com.viewlift;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Build;
+
+import com.viewlift.Audio.MusicService;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -40,6 +44,16 @@ public class Utils {
             return null;
         }
         return json;
+    }
+
+
+    /*The startService() method now throws an IllegalStateException if an app targeting Android 8.0 tries to use that method in a situation when it isn't permitted to create background services.
+    The new Context.startForegroundService() method starts a foreground service. The system allows apps to call Context.startForegroundService() even while the app is in the background.*/
+    public static void startService(Context context,Intent intent){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+          context.startForegroundService(intent);
+        else
+          context.startService(intent);
     }
 
 }

@@ -52,6 +52,7 @@ import com.viewlift.Audio.playback.LocalPlayback;
 import com.viewlift.Audio.playback.Playback;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.Audio.utils.CarHelper;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 
 import java.lang.ref.WeakReference;
@@ -319,11 +320,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
         //The startService() method now throws an IllegalStateException if an app targeting Android 8.0
-        //Calling startService(Intent) will keep the service running until it is explicitly killed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-         startForegroundService(new Intent(getApplicationContext(), MusicService.class));
-        else
-         startService(new Intent(getApplicationContext(), MusicService.class));
+        Utils.startService(getApplicationContext(),new Intent(getApplicationContext(), MusicService.class));
     }
 
     @Override
