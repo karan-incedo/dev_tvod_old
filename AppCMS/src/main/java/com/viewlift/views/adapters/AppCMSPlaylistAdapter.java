@@ -95,6 +95,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public static boolean isDownloading = true, isPlaylistDownloading = false;
     private Map<String, Boolean> filmDownloadIconUpdatedMap;
     private static RecyclerView recyclerView;
+    private ContentDatum audioPlayListDetail;
 
 
     public AppCMSPlaylistAdapter(Context context,
@@ -132,7 +133,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             if (moduleAPI.getContentData().get(0).getGist() != null &&
                     moduleAPI.getContentData().get(0).getGist().getMediaType() != null
                     && moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
-                adapterData.remove(0);
+                audioPlayListDetail = adapterData.remove(0);
             }
             allViews = new CollectionGridItemView[this.adapterData.size()];
         }
@@ -498,7 +499,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
                             if(appCMSAudioDetailResult != null) {
+                               // adapterData.get(i).setPlayListName(audioPlayListDetail.getGist().getTitle());
                                 AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
+                                audioApiDetail.getModules().get(0).getContentData().get(0).setPlayListName(audioPlayListDetail.getGist().getTitle());
                                 updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload, position);
                             }
                         }

@@ -318,9 +318,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
-        // The service needs to continue running even after the bound client (usually a
-        // MediaController) disconnects, otherwise the music playback will stop.
-        // Calling startService(Intent) will keep the service running until it is explicitly killed.
+        //The startService() method now throws an IllegalStateException if an app targeting Android 8.0
+        //Calling startService(Intent) will keep the service running until it is explicitly killed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
          startForegroundService(new Intent(getApplicationContext(), MusicService.class));
         else
