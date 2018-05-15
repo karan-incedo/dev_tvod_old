@@ -5205,9 +5205,13 @@ public class AppCMSPresenter {
             downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
             downloadVideoRealm.setUserId(getLoggedInUser());
 
+            if (contentDatum.getGist().getMediaType() != null && contentDatum.getGist().getMediaType().toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
+                downloadVideoRealm.setShowTitle(contentDatum.getSeriesName());
+            }
         }
         try {
-            sendGaEventForDownloadedContent(downloadVideoRealm,contentDatum.getSeriesName());
+
+            sendGaEventForDownloadedContent(downloadVideoRealm);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -11843,7 +11847,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm,String seriesName) {
+    public void sendGaEventForDownloadedContent(DownloadVideoRealm downloadVideoRealm) {
         if (downloadVideoRealm != null) {
             try {
                 String mediaType = downloadVideoRealm.getMediaType();
@@ -11862,7 +11866,7 @@ public class AppCMSPresenter {
                     sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
                             currentActivity.getResources().getString(R.string.ga_audio_download_category), title +(downloadVideoRealm.getPlayListName() != null ? " | "+downloadVideoRealm.getPlayListName() : ""));
                 } else if (mediaType != null && mediaType.toLowerCase().contains(currentActivity.getString(R.string.media_type_episode).toLowerCase())) {
-                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title +(seriesName != null ? " | "+seriesName : ""));
+                    sendGaEvent(mediaType, currentActivity.getResources().getString(R.string.ga_video_download_category), title +(downloadVideoRealm.getShowTitle() != null ? " | "+downloadVideoRealm.getShowTitle() : ""));
                 } else if (contentType != null && contentType.toLowerCase().contains(currentActivity.getString(R.string.content_type_video).toLowerCase())) {
                     sendGaEvent(contentType, currentActivity.getResources().getString(R.string.ga_video_download_category), title);
                 }
