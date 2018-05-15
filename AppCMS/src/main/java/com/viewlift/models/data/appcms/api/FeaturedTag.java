@@ -7,6 +7,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
 public class FeaturedTag {
 
     @SerializedName("id")
@@ -14,13 +15,13 @@ public class FeaturedTag {
     private String id;
     @SerializedName("publishDate")
     @Expose
-    private Object publishDate;
+    private String publishDate;
     @SerializedName("updateDate")
     @Expose
-    private Object updateDate;
+    private String updateDate;
     @SerializedName("addedDate")
     @Expose
-    private Object addedDate;
+    private String addedDate;
     @SerializedName("permalink")
     @Expose
     private String permalink;
@@ -29,7 +30,7 @@ public class FeaturedTag {
     private Object siteOwner;
     @SerializedName("registeredDate")
     @Expose
-    private Object registeredDate;
+    private String registeredDate;
     @SerializedName("originRegion")
     @Expose
     private String originRegion;
@@ -81,27 +82,27 @@ public class FeaturedTag {
         this.id = id;
     }
 
-    public Object getPublishDate() {
+    public String getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Object publishDate) {
+    public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
 
-    public Object getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Object updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Object getAddedDate() {
+    public String getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Object addedDate) {
+    public void setAddedDate(String addedDate) {
         this.addedDate = addedDate;
     }
 
@@ -121,11 +122,11 @@ public class FeaturedTag {
         this.siteOwner = siteOwner;
     }
 
-    public Object getRegisteredDate() {
+    public String getRegisteredDate() {
         return registeredDate;
     }
 
-    public void setRegisteredDate(Object registeredDate) {
+    public void setRegisteredDate(String registeredDate) {
         this.registeredDate = registeredDate;
     }
 

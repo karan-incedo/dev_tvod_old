@@ -3,7 +3,6 @@ package com.viewlift.views.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -32,8 +31,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import rx.Observable;

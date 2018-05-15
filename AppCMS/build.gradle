@@ -428,7 +428,7 @@ dependencies {
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation  project(':exoplayer-library')
     implementation  project(':exoplayer-library-ui')
-    implementationproject(':library')
+    implementation project(':library')
     implementation  project(':htmlspanner')
     implementation  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'

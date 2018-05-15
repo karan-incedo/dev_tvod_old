@@ -54,7 +54,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
