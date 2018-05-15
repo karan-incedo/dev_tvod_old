@@ -197,6 +197,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSVideoEntitlementAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.background.tasks.PostUANamedUserEventAsyncTask;
 import com.viewlift.models.network.background.tasks.StartEmailSubscripctionAsyncTask;
@@ -1456,6 +1457,61 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
+
+/*
+            //ToDo Use this for entilementnt API implementation
+            isFromEntitlementAPI = true;
+            String url = "";
+            int endPoint;
+            if(appCMSMain.getApiBaseUrl().contains("release")){
+                endPoint = R.string.app_cms_release_entitlement_api_url;
+            }else{
+                endPoint = R.string.app_cms_prod_entitlement_api_url;
+            }
+            url = currentActivity.getString(endPoint,
+                    appCMSMain.getApiBaseUrl(),
+                    id);
+            GetAppCMSVideoEntitlementAsyncTask.Params params =
+                    new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
+
+            new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
+                try{
+                    if(appCMSEntitlementResponse != null &&
+                            appCMSEntitlementResponse.isSuccess()&&
+                            appCMSEntitlementResponse.isPlayable() &&
+                            appCMSEntitlementResponse.getVideoContentDatum() != null ){
+                        ContentDatum currentContentDatum = appCMSEntitlementResponse.getVideoContentDatum();
+                        ContentDatum userHistoryContentDatum = AppCMSPresenter.this.getUserHistoryContentDatum(currentContentDatum.getGist().getId());
+                        if (userHistoryContentDatum != null) {
+                            currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                        }
+
+                        readyAction.call(currentContentDatum);
+                    }else if (appCMSEntitlementResponse != null &&
+                            !appCMSEntitlementResponse.isPlayable() &&
+                            appCMSEntitlementResponse.getErrorMessage()!= null &&
+                            !TextUtils.isEmpty(appCMSEntitlementResponse.getErrorMessage())){
+
+                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,appCMSEntitlementResponse.getErrorMessage(),false,()->{
+                            readyAction.call(null);
+                        },null);
+
+                    }else if (appCMSEntitlementResponse == null){
+                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,"Something went wrong",false,()->{
+                            readyAction.call(null);
+                    },null);
+                    }
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }).execute(params);
+        //*/
+
+  ///*
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     id,
@@ -1475,6 +1531,8 @@ public class AppCMSPresenter {
                             readyAction.call(currentContentDatum);
                         }
                     }).execute(params);
+           // */
+
         }
     }
 
@@ -1609,6 +1667,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
 
     /**
      * This returns a hashmap containing a list of download callbacks, which are used when returning to
@@ -3654,7 +3713,7 @@ public class AppCMSPresenter {
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
             intent.putExtra("si_frequency", "2");
             intent.putExtra("si_frequency_type", renewableFrequency);
-            intent.putExtra("color_theme", getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+            intent.putExtra("color_theme", getBrandPrimaryCtaColor());
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -4263,9 +4322,10 @@ public class AppCMSPresenter {
         }
     }
 
+    private boolean isFromEntitlementAPI = false;
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null) {
+        if (currentContext != null && !isFromEntitlementAPI) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
@@ -8673,7 +8733,8 @@ public class AppCMSPresenter {
                         .modules(modules)
                         .appCMSPageAPILruCache(getPageAPILruCache())
                         .build();
-                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction)
+                        .execute(params);
             }
         } else {
             if (readyAction != null) {
@@ -10131,7 +10192,6 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-
         apikey = Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
@@ -10180,6 +10240,7 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
+                        apikey = Utils.getProperty("XAPI", currentActivity);
 
                         getAppCMSSite(platformType);
                     }
@@ -12684,6 +12745,8 @@ public class AppCMSPresenter {
         if (loginFromNavPage) {
             entitlementPendingVideoData = null;
         }
+        setTempEmail("");
+        setTempPassword("");
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -18352,8 +18415,8 @@ public class AppCMSPresenter {
             Drawable[] drawables = new Drawable[2];
             drawables[0] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
             drawables[1] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
-            drawables[0].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
-            drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
+            drawables[0].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
+            drawables[1].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
         }

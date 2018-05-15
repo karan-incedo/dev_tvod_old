@@ -32,8 +32,7 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
         this.appCMSPresenter = appCMSPresenter;
         this.components = components;
         this.jsonValueKeyMap = jsonValueKeyMap;
-        this.tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+        this.tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
 
         if (appCMSPresenter.getUserDownloadQualityPref() != null) {
             for (Integer i = 0; i < items.size(); i++) {

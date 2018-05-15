@@ -1,89 +1,77 @@
 package com.viewlift.models.data.appcms.api;
 
+/**
+ * Created by anas.azeem on 5/15/2018.
+ * Owned by ViewLift, NYC
+ */
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
-
-import java.io.Serializable;
-
-@UseStag
-public class Tag implements Serializable {
+public class FeaturedTag {
 
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("publishDate")
     @Expose
-    Object publishDate;
-
+    private Object publishDate;
     @SerializedName("updateDate")
     @Expose
-    Object updateDate;
-
+    private Object updateDate;
     @SerializedName("addedDate")
     @Expose
-    Object addedDate;
-
+    private Object addedDate;
     @SerializedName("permalink")
     @Expose
-    Object permalink;
-
+    private String permalink;
     @SerializedName("siteOwner")
     @Expose
-    Object siteOwner;
-
+    private Object siteOwner;
     @SerializedName("registeredDate")
     @Expose
-    Object registeredDate;
-
+    private Object registeredDate;
+    @SerializedName("originRegion")
+    @Expose
+    private String originRegion;
     @SerializedName("title")
     @Expose
-    String title;
-
+    private String title;
     @SerializedName("titleOverride")
     @Expose
-    Object titleOverride;
-
+    private Object titleOverride;
     @SerializedName("promoImages")
     @Expose
-    Object promoImages;
-
+    private Object promoImages;
     @SerializedName("poster")
     @Expose
-    Object poster;
-
+    private Object poster;
     @SerializedName("description")
     @Expose
-    Object description;
-
+    private Object description;
     @SerializedName("isVisible")
     @Expose
-    String isVisible;
-
+    private Object isVisible;
     @SerializedName("isOverlay")
     @Expose
-    String isOverlay;
-
+    private Object isOverlay;
     @SerializedName("isFreeAccess")
     @Expose
-    String isFreeAccess;
-
+    private Object isFreeAccess;
     @SerializedName("requireLogin")
     @Expose
-    String requireLogin;
-
+    private Object requireLogin;
     @SerializedName("images")
     @Expose
-    String images;
-
+    private Object images;
     @SerializedName("badgeImages")
     @Expose
-    String badgeImages;
-
+    private Object badgeImages;
+    @SerializedName("seo")
+    @Expose
+    private Object seo;
     @SerializedName("visible")
     @Expose
-    String visible;
+    private Object visible;
 
     public String getId() {
         return id;
@@ -117,11 +105,11 @@ public class Tag implements Serializable {
         this.addedDate = addedDate;
     }
 
-    public Object getPermalink() {
+    public String getPermalink() {
         return permalink;
     }
 
-    public void setPermalink(Object permalink) {
+    public void setPermalink(String permalink) {
         this.permalink = permalink;
     }
 
@@ -139,6 +127,14 @@ public class Tag implements Serializable {
 
     public void setRegisteredDate(Object registeredDate) {
         this.registeredDate = registeredDate;
+    }
+
+    public String getOriginRegion() {
+        return originRegion;
+    }
+
+    public void setOriginRegion(String originRegion) {
+        this.originRegion = originRegion;
     }
 
     public String getTitle() {
@@ -181,59 +177,68 @@ public class Tag implements Serializable {
         this.description = description;
     }
 
-    public String getIsVisible() {
+    public Object getIsVisible() {
         return isVisible;
     }
 
-    public void setIsVisible(String isVisible) {
+    public void setIsVisible(Object isVisible) {
         this.isVisible = isVisible;
     }
 
-    public String getIsOverlay() {
+    public Object getIsOverlay() {
         return isOverlay;
     }
 
-    public void setIsOverlay(String isOverlay) {
+    public void setIsOverlay(Object isOverlay) {
         this.isOverlay = isOverlay;
     }
 
-    public String getIsFreeAccess() {
+    public Object getIsFreeAccess() {
         return isFreeAccess;
     }
 
-    public void setIsFreeAccess(String isFreeAccess) {
+    public void setIsFreeAccess(Object isFreeAccess) {
         this.isFreeAccess = isFreeAccess;
     }
 
-    public String getRequireLogin() {
+    public Object getRequireLogin() {
         return requireLogin;
     }
 
-    public void setRequireLogin(String requireLogin) {
+    public void setRequireLogin(Object requireLogin) {
         this.requireLogin = requireLogin;
     }
 
-    public String getImages() {
+    public Object getImages() {
         return images;
     }
 
-    public void setImages(String images) {
+    public void setImages(Object images) {
         this.images = images;
     }
 
-    public String getBadgeImages() {
+    public Object getBadgeImages() {
         return badgeImages;
     }
 
-    public void setBadgeImages(String badgeImages) {
+    public void setBadgeImages(Object badgeImages) {
         this.badgeImages = badgeImages;
     }
 
-    public String getVisible() {
+    public Object getSeo() {
+        return seo;
+    }
+
+    public void setSeo(Object seo) {
+        this.seo = seo;
+    }
+
+    public Object getVisible() {
         return visible;
     }
 
-    public void setVisible(String visible) {
+    public void setVisible(Object visible) {
         this.visible = visible;
     }
+
 }

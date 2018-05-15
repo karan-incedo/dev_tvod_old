@@ -7,7 +7,7 @@ import com.vimeo.stag.UseStag;
 import java.io.Serializable;
 
 @UseStag
-public class PrimaryCategory implements Serializable {
+public class DataProvider implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -16,10 +16,6 @@ public class PrimaryCategory implements Serializable {
     @SerializedName("title")
     @Expose
     String title;
-
-    @SerializedName("originRegion")
-    @Expose
-    String originRegion;
 
     public String getId() {
         return id;
@@ -35,13 +31,5 @@ public class PrimaryCategory implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getOriginRegion() {
-        return originRegion;
-    }
-
-    public void setOriginRegion(String originRegion) {
-        this.originRegion = originRegion;
     }
 }

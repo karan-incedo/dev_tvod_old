@@ -183,7 +183,8 @@ android {
         }
 
         ndk {
-            abiFilters "armeabi-v7a", "x86", "armeabi", "mips"
+            //abiFilters "armeabi-v7a", "x86", "armeabi", "mips"  // This was used because we were facing crash with Kiswe SDK on some of the devices
+            abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a" // Used after changes of Android SDK version 9th May 2018 due to [armeabi, mips are no more supported] after NDK 17 upgrade.
         }
     }
     sourceSets {
@@ -219,7 +220,7 @@ android {
 
     externalNativeBuild {
         ndkBuild {
-            path 'src/main/jni/Android.mk'
+            path 'src/jni/Android.mk'
         }
     }
 
@@ -422,13 +423,14 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    implementation "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
-    mobileImplementation "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    implementation project(':exoplayer-library')
-    implementation project(':library')
-    implementation project(':htmlspanner')
-    implementation project(path: ':exoplayer-extension-vp9')
+    implementation  "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+    implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+    mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
+    implementation  project(':exoplayer-library')
+    implementation  project(':exoplayer-library-ui')
+    implementationproject(':library')
+    implementation  project(':htmlspanner')
+    implementation  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     implementation 'com.android.volley:volley:1.0.0'
@@ -440,7 +442,7 @@ dependencies {
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->
-    dependencies.add("compile", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
+    dependencies.add("implementation", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
 }
 
 apply plugin: 'com.google.gms.google-services'

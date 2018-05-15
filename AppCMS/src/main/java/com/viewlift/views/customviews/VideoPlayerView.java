@@ -782,7 +782,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onTimelineChanged(Timeline timeline, Object o) {
+    public void onTimelineChanged(Timeline timeline, Object o, int reason) {
 
 
     }

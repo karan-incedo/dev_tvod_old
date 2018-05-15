@@ -4,6 +4,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.JsonSyntaxException;
+import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class AppCMSVideoDetailCall {
     @WorkerThread
     public AppCMSVideoDetail call(String url, String authToken,String xApi) throws IOException {
         try {
-            //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);
+
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
             authHeaders.put("x-api-key", xApi);
@@ -41,6 +42,23 @@ public class AppCMSVideoDetailCall {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
            // e.printStackTrace();
+            Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
+        }
+        return null;
+    }
+
+    @WorkerThread
+    public AppCMSEntitlementResponse callEntitlementVideo(String url, String authToken, String xApi) throws IOException {
+        try {
+            //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);
+            authHeaders.clear();
+            authHeaders.put("Authorization", authToken);
+        //    authHeaders.put("x-api-key", xApi);
+            return appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute().body();
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+        } catch (Exception e) {
+            // e.printStackTrace();
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;

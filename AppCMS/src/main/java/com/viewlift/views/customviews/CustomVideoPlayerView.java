@@ -257,6 +257,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                         }
                     }
                     appCMSPresenter.setPreviewStatus(false);
+                    if (!appCMSPresenter.isAppSVOD()){
+                        playVideos(0, contentDatum);
+                    }
                 } else {
                     if (appCMSPresenter.isUserSubscribed()) {
                         playVideos(0, contentDatum);
@@ -871,15 +874,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private void createPreviewMessageView() {
         int buttonColor, textColor;
-        if (appCMSPresenter.getAppCMSMain() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
-            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        if (appCMSPresenter != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
+                appCMSPresenter.getBrandPrimaryCtaColor() != 0 ) {
+            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            textColor = appCMSPresenter.getGeneralTextColor();
 
         } else {
 
@@ -904,7 +903,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
         customMessageView.setText(message);
         customMessageView.setLayoutParams(textViewParams);
-        customMessageView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        customMessageView.setTextColor(appCMSPresenter.getGeneralTextColor());
         customMessageView.setTextSize(15);
         customMessageView.setPadding(20, 20, 20, 20);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
