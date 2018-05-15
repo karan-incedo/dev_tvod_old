@@ -10624,7 +10624,8 @@ public class AppCMSPresenter {
                         title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
                         message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
                     }
-                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
+                    if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED ||
+                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                         title = currentActivity.getString(R.string.preview_content);
                         message = currentActivity.getString(R.string.app_cms_login_and_subscription_premium_content_required_message);
 
@@ -11925,7 +11926,13 @@ public class AppCMSPresenter {
 
         if (getAudioPlayerOpen() && isUserLoggedIn()) {
             sendRefreshPageAction();
-            sendCloseOthersAction(null, true, false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sendCloseOthersAction(null, true, false);
+                }
+            },200);
+
 
             AudioPlaylistHelper.getInstance().playAudioOnClickItem(AudioPlaylistHelper.getInstance().getLastMediaId(), 30000);
             setAudioPlayerOpen(false);
@@ -11972,11 +11979,13 @@ public class AppCMSPresenter {
                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
             }
 
+/*
             if (currentContext != null && currentContext instanceof AppCMSApplication) {
                 ((AppCMSApplication) currentContext).setOnActivityResumedAction(() -> {
                     navigateToHomePage();
                 });
             }
+*/
         }
     }
 
