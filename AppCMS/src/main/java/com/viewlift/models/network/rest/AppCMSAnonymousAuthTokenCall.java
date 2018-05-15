@@ -43,6 +43,7 @@ public class AppCMSAnonymousAuthTokenCall {
         if (!TextUtils.isEmpty(apiKey)) {
             headersMap.put("x-api-key", apiKey);
         }
+        System.out.println("url== "+url+ "== "+apiKey);
         anonymousAuthTokenRest.get(url, headersMap).enqueue(new Callback<AnonymousAuthTokenResponse>() {
             @Override
             public void onResponse(@NonNull Call<AnonymousAuthTokenResponse> call,
