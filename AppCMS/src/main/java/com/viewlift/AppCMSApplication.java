@@ -160,19 +160,19 @@ public class AppCMSApplication extends MultiDexApplication {
         Log.d(TAG, "checkIsTelevision(): " + checkIsTelevision());
 
         if (checkIsTelevision()) {
-            initADMAndAlexa();
+            try {
+                // Initialize the Alexa Video Skills Client Library first.
+                initializeAlexaClientLibrary();
+
+                // Initialize ADM.
+                initializeAdm();
+
+                AlexaClientManager.getSharedInstance().setAlexaEnabled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-    }
-
-    private void initADMAndAlexa() {
-        // Initialize the Alexa Video Skills Client Library first.
-        initializeAlexaClientLibrary();
-
-        // Initialize ADM.
-        initializeAdm();
-
-        AlexaClientManager.getSharedInstance().setAlexaEnabled(true);
     }
 
 
