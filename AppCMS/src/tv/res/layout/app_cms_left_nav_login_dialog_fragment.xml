@@ -62,8 +62,8 @@
 
                 <ImageView
                     android:id="@+id/nav_item_login_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center" />
 
                 <TextView
@@ -90,8 +90,8 @@
 
                 <ImageView
                     android:id="@+id/nav_item_logout_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="center" />
 
                 <TextView

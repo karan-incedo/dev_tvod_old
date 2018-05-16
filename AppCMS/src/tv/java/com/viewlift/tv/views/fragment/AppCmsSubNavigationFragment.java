@@ -129,6 +129,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
                             LinearLayoutManager.HORIZONTAL,
                             false));
+            ((RelativeLayout.LayoutParams)mRecyclerView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         }
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         if (appCMSPresenter.isLeftNavigationEnabled()) {
@@ -142,14 +143,15 @@ public class AppCmsSubNavigationFragment extends Fragment {
             navMenuTile.setVisibility(View.GONE);
             navTopLine.setVisibility(View.GONE);
         } else if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-            NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
+            customAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
                     mNavigation,
                     appCMSPresenter);
 
-            mRecyclerView.setAdapter(navigationAdapter);
+            mRecyclerView.setAdapter(customAdapter);
             setFocusable(true);
-            navigationAdapter.setFocusOnSelectedPage();
+            customAdapter.setFocusOnSelectedPage();
             navTopLine.setVisibility(View.GONE);
+            view.findViewById(R.id.left_menu_app_logo).setVisibility(View.INVISIBLE);
         }
         return view;
     }
@@ -478,6 +480,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             NavItemHolder navItemHolder = (NavItemHolder) holder;
             navItemHolder.navItemView.setText(subItem.title);
             navItemHolder.navItemView.setTag(R.string.item_position, position);
+            navItemHolder.navItemView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
 
             navItemHolder.navIconView.setImageResource(Utils.getIcon(subItem.icon,mContext));
             if(null != navItemHolder.navIconView.getDrawable()) {
@@ -491,7 +494,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navItemHolder.navItemlayout.setAlpha(1.0F);
             } else {
                 navItemHolder.navItemlayout.setBackground(null);
-                navItemHolder.navItemlayout.setAlpha(0.3F);
+                navItemHolder.navItemlayout.setAlpha(0.4F);
             }
 
             navItemHolder.navItemlayout.setOnClickListener(new View.OnClickListener() {
@@ -543,7 +546,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (LinearLayout) itemView.findViewById(R.id.nav_item_layout);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
-                navItemlayout.setAlpha(0.3F);
+                navItemlayout.setAlpha(0.4F);
 
                 navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false, bgColor));
                 navIconView = (ImageView) itemView.findViewById(R.id.nav_item_image);

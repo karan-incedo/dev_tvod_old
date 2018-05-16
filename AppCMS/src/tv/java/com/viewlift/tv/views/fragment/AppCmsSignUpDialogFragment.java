@@ -162,6 +162,23 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         loginContaineer = view.findViewById(R.id.nav_item_login_layout);
         signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
 
+
+        loginView = (TextView) view.findViewById(R.id.textView_login);
+        signupView = (TextView) view.findViewById(R.id.textview_signup);
+
+        loginIcon = (ImageView) view.findViewById(R.id.nav_item_login_image);
+        signupIcon = (ImageView) view.findViewById(R.id.nav_item_logout_image);
+
+        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
+
+        loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+        signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+
+
+        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
+        view.setBackgroundColor(Color.parseColor(backGroundColor));
+
         if (appCMSPresenter.isLeftNavigationEnabled()) {
             subNavHolder.setOrientation(LinearLayout.VERTICAL);
             subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
@@ -188,18 +205,6 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
             }
         }
 
-
-        loginView = (TextView) view.findViewById(R.id.textView_login);
-        signupView = (TextView) view.findViewById(R.id.textview_signup);
-
-        loginIcon = (ImageView) view.findViewById(R.id.nav_item_login_image);
-        signupIcon = (ImageView) view.findViewById(R.id.nav_item_logout_image);
-
-        loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
-        signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
-
-        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
-        view.setBackgroundColor(Color.parseColor(backGroundColor));
 
         loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

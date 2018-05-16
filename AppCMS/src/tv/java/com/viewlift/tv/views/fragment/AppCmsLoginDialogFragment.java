@@ -155,6 +155,9 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
             signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
+            loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+            signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+
             loginContaineer = view.findViewById(R.id.nav_item_login_layout);
             signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
 
@@ -328,6 +331,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
                 Button loginButton = ((Button) tvModuleView.findViewById(R.id.btn_login));
                 emailBox.setOnKeyListener(leftNavigationListener);
                 passwordBox.setOnKeyListener(leftNavigationListener);
+                if(null != activateDevice)
                 activateDevice.setOnKeyListener(leftNavigationListener);
                 loginButton.setOnKeyListener(leftNavigationListener);
 

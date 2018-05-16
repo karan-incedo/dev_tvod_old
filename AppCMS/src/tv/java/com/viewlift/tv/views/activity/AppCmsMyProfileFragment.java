@@ -85,7 +85,7 @@ public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNa
         if(appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
             setSubNavigationFragment();
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pageHolder.getLayoutParams();
-            params.addRule(RelativeLayout.BELOW, R.id.sub_navigation_placholder);
+            params.addRule(RelativeLayout.BELOW, R.id.sub_navigation_containeer);
 
         } else {
             if (subNavigationPlaceholder != null) {
@@ -103,8 +103,6 @@ public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNa
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pageHolder.getLayoutParams();
             params.removeRule(RelativeLayout.BELOW);
             subNavContaineer.bringToFront();
-
-
             subNavContaineer.setBackground(getActivity().getDrawable(R.drawable.left_nav_gradient));
             subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }

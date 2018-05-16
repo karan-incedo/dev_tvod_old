@@ -116,6 +116,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     .setLayoutManager(new LinearLayoutManager(getActivity(),
                             LinearLayoutManager.HORIZONTAL,
                             false));
+            ((RelativeLayout.LayoutParams)mRecyclerView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         }
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -140,6 +141,7 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuTile.setVisibility(View.GONE);
             navTopLine.setVisibility(View.GONE);
             navMenuSubscriptionModule.setVisibility(View.GONE);
+            view.findViewById(R.id.left_menu_app_logo).setVisibility(View.INVISIBLE);
         } else {
             STNavigationAdapter navigationAdapter = new STNavigationAdapter(
                     getActivity(),
@@ -156,6 +158,7 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuTile.setVisibility(View.VISIBLE);
             navTopLine.setVisibility(View.VISIBLE);
             navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
+            view.findViewById(R.id.left_menu_app_logo).setVisibility(View.INVISIBLE);
 
             if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
                 String message;
@@ -238,7 +241,6 @@ public class AppCmsNavigationFragment extends Fragment {
     }
 
     private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
-
         if (null == extraBoldTypeFace) {
             extraBoldComp = new Component();
             extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
@@ -341,20 +343,14 @@ public class AppCmsNavigationFragment extends Fragment {
             if (null != mSelectedPageId) {
                 if (primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
                     holder.navItemlayout.requestFocus();
-                    //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----true ");
-                } else {
+                 } else {
                     holder.navItemlayout.clearFocus();
-                    //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----false");
-                }
+                 }
             }
-
 
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    //Log.d("Navigation Click = ", primary.getTitle().toString());
-
                     navigationVisibilityListener.showNavigation(false);
                     //getActivity().sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                     Utils.pageLoading(true, getActivity());
@@ -842,6 +838,7 @@ public class AppCmsNavigationFragment extends Fragment {
             final NavigationPrimary primary = (NavigationPrimary) getItem(position);
             holder.navItemView.setText(primary.getTitle());
             holder.navItemView.setTag(R.string.item_position, position);
+            holder.navItemView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
 
             holder.navIconView.setImageResource(Utils.getIcon(primary.getIcon(),mContext));
             if(null != holder.navIconView.getDrawable()) {
@@ -987,9 +984,8 @@ public class AppCmsNavigationFragment extends Fragment {
                 navIconView = (ImageView) itemView.findViewById(R.id.nav_item_image);
                 navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false, bgColor));
 
-                // navItemlayout.setBackgroundColor(bgColor);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
-                navItemlayout.setAlpha(0.3F);
+                navItemlayout.setAlpha(0.4F);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
@@ -1002,7 +998,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         if (hasFocus) {
                             navItemlayout.setAlpha(1.0F);
                         } else {
-                            navItemlayout.setAlpha(0.3F);
+                            navItemlayout.setAlpha(0.4F);
                         }
                     }
                 });
@@ -1014,12 +1010,12 @@ public class AppCmsNavigationFragment extends Fragment {
                         int action = keyEvent.getAction();
                         if (action == KeyEvent.ACTION_DOWN) {
                             switch (keyCode) {
-                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                case KeyEvent.KEYCODE_DPAD_UP:
                                     if (isStartPosition()) {
                                         return true;
                                     }
                                     break;
-                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                case KeyEvent.KEYCODE_DPAD_DOWN:
                                     if (isEndPosition()) {
                                         return true;
                                     }

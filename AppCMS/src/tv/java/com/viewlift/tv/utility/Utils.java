@@ -917,7 +917,8 @@ public class Utils {
                 iconResId = R.drawable.st_settings_icon_cc;
             } else if (icon.equalsIgnoreCase(context.getString(R.string.st_manage_subscription_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_manage_subscription;
-            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_account_icon_key))) {
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_account_icon_key))
+                    || icon.equalsIgnoreCase(context.getString(R.string.st_user_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_account;
             } else if (icon.equalsIgnoreCase(context.getString(R.string.st_faq_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_faq;
@@ -929,11 +930,14 @@ public class Utils {
                 iconResId = R.drawable.st_settings_icon_signout;
             } else if (icon.equalsIgnoreCase(context.getString(R.string.st_about_us_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_about_us;
-            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_privacy_policy_icon_key))) {
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_privacy_policy_icon_key))
+                    || icon.equalsIgnoreCase(context.getString(R.string.st_privacy_policy_icon_key1))) {
                 iconResId = R.drawable.st_setting_icon_privacy_policy;
             }else if (icon.equalsIgnoreCase(context.getString(R.string.st_home_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_home;
-            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_show_icon_key))) {
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_tos_icon_key))) {
+                iconResId = R.drawable.icon_tos;
+            }else if (icon.equalsIgnoreCase(context.getString(R.string.st_show_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_grid;
             } else if (icon.equalsIgnoreCase(context.getString(R.string.st_teams_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_bracket;
@@ -947,6 +951,8 @@ public class Utils {
                 iconResId = R.drawable.st_menu_icon_search;
             } else if (icon.equalsIgnoreCase(context.getString(R.string.st_live_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_live;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_signup_icon_key))) {
+                iconResId = R.drawable.icon_signup;
             }
         }
         return iconResId;

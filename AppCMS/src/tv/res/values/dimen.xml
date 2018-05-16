@@ -2,7 +2,8 @@
 <resources>
     <dimen name="appcms_tv_navigation_height">60dp</dimen>
     <dimen name="appcms_tv_sub_navigation_height">40dp</dimen>
-    <dimen name="appcms_tv_navigation_textSize">20sp</dimen>
+    <dimen name="appcms_tv_navigation_textSize">14sp</dimen>
+    <dimen name="appcms_tv_leftnavigation_textSize">10sp</dimen>
     <dimen name="appcms_tv_navigation_item_padding">20dp</dimen>
     <dimen name="appcms_tv_sub_navigation_item_padding">15dp</dimen>
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>

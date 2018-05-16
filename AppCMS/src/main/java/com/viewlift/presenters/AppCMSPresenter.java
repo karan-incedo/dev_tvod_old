@@ -14496,12 +14496,15 @@ public class AppCMSPresenter {
                 if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                     //add search in navigation item.
                     NavigationPrimary myProfile = new NavigationPrimary();
-                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
-                            currentActivity.getString(R.string.profile_label)));
-                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
-                            appCMSAndroidUI.getShortAppName() != null ?
-                                    appCMSAndroidUI.getShortAppName() :
-                                    currentActivity.getString(R.string.profile_label)));
+                    if(null != currentActivity) {
+                        myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
+                                currentActivity.getString(R.string.profile_label)));
+                        myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
+                                appCMSAndroidUI.getShortAppName() != null ?
+                                        appCMSAndroidUI.getShortAppName() :
+                                        currentActivity.getString(R.string.profile_label)));
+                        myProfile.setIcon(currentActivity.getString(R.string.st_user_icon_key));
+                    }
                     navigation.getNavigationPrimary().add(myProfile);
 
                     boolean shouldAddSearch = true;
@@ -14520,9 +14523,11 @@ public class AppCMSPresenter {
                     if (shouldAddSearch) {
                         //add search in navigation item.
                         NavigationPrimary searchNav = new NavigationPrimary();
-                        searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                        searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                        searchNav.setIcon(currentActivity.getString(R.string.st_search_icon_key));
+                        if(null != currentActivity) {
+                            searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                            searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                            searchNav.setIcon(currentActivity.getString(R.string.st_search_icon_key));
+                        }
                         navigation.getNavigationPrimary().add(searchNav);
                     }
                 }
@@ -18298,7 +18303,12 @@ public class AppCMSPresenter {
     }
 
 
-    public boolean isLeftNavigationEnabled(){
-        return true;
+    public boolean isLeftNavigationEnabled() {
+        if (null != appCMSMain &&
+                null != appCMSMain.getFeatures() &&
+                null != appCMSMain.getFeatures().getNavigationType()) {
+            return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");
+        }
+        return false;
     }
 }

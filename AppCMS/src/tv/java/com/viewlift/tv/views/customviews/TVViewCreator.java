@@ -1714,7 +1714,6 @@ public class TVViewCreator {
                                                 }
                                             }
                                         });
-
                             }
 
                         }
@@ -3145,12 +3144,8 @@ public class TVViewCreator {
                 }*/
                 if (!TextUtils.isEmpty(component.getTextColor())) {
                     textInputEditText.setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
-                    textInputEditText.setHintTextColor(Utils.getButtonTextColorDrawable(
-                            component.getHintColor(),
-                            component.getHintColor(),
-                            appCMSPresenter
-                    ));
                 }
+                textInputEditText.setHintTextColor(Color.parseColor("#A6000000"));
                 setTypeFace(appCMSPresenter,context, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_tv_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,

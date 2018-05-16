@@ -3,6 +3,7 @@ package com.viewlift.tv.views.customviews;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -48,6 +49,8 @@ public class HoverCard extends LinearLayout {
         if(regularTypeFace != null)
         tvTitle.setTypeface(regularTypeFace);
         mParentLayout.setHoverTitle(tvTitle);
+        tvTitle.setSingleLine(true);
+        /*tvTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);*/
 
         Component titleComponent = new Component();
         titleComponent.setType(getResources().getString(R.string.app_cms_page_label_key));
@@ -83,7 +86,6 @@ public class HoverCard extends LinearLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         tvDescription.setAlpha(0);
-        tvDescription.setText(getResources().getString(R.string.sample_text));
         tvDescription.setLayoutParams(layoutParams);
         tvDescription.setPadding(10,10,10,0);
         mParentLayout.setHoverDescription(tvDescription);
