@@ -131,12 +131,14 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             rowData.contentData,
                             false,
                             -1,
+                            null,
                             null);
                 } else {
                     appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                            -1,
+                            0,
                             rowData.relatedVideoIds,
-                            rowData.contentData.getGist().getWatchedTime());
+                            rowData.contentData.getGist().getWatchedTime(),
+                            null);
                 }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
@@ -214,7 +216,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             title,
                             extraData,
                             data,
-                            false, -1, null)) {
+                            false,
+                            -1,
+                            null,
+                            null)) {
 
                     }
                 }

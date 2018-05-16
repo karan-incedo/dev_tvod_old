@@ -66,6 +66,14 @@ android {
     //def minsdkversion
     //def targetsdkversion
 
+    signingConfigs {
+        debug {
+            storeFile file("keystore/snagfilms.jks")
+            storePassword 'snagfilms'
+            keyAlias 'snagfilms'
+            keyPassword 'snagfilms'
+        }
+    }
     def versionPropsFile = file('src/main/assets/version.properties')
 
     if (versionPropsFile.canRead()) {
@@ -175,7 +183,7 @@ android {
         }
 
         ndk {
-            //abiFilters "armeabi-v7a", "x86", "armeabi", "mips"  // This was used because we were facing crash with Kiswe SDK on some of the devices 
+            //abiFilters "armeabi-v7a", "x86", "armeabi", "mips"  // This was used because we were facing crash with Kiswe SDK on some of the devices
             abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a" // Used after changes of Android SDK version 9th May 2018 due to [armeabi, mips are no more supported] after NDK 17 upgrade.
         }
     }
@@ -230,6 +238,7 @@ android {
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
+            signingConfig signingConfigs.debug
         }
         release {
             multiDexEnabled true
@@ -427,7 +436,8 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
-
+    provided files('libs/amazon-device-messaging-1.0.1.jar')
+    implementation project(':AlexaClientLib')
 }
 
 fileTree(dir: 'libs', include: '**/*.aar')

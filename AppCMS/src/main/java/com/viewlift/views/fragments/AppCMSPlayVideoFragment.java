@@ -1356,7 +1356,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
             videoPlayerMainContainer.setVisibility(View.VISIBLE);
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 
@@ -1383,7 +1383,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             public void onFinish() {
                 contentRatingMainContainer.setVisibility(View.GONE);
                 videoPlayerMainContainer.setVisibility(View.VISIBLE);
-                videoPlayerView.startPlayer();
+                videoPlayerView.startPlayer(true);
             }
         }.start();
     }
@@ -1519,7 +1519,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.pausePlayer();
                 }
@@ -1539,7 +1539,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onResumeVideo() {
         resumeVideo();
         if (videoPlayerView != null) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 

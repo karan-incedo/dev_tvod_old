@@ -252,9 +252,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return player != null && player.getPlayWhenReady();
     }
 
-    public void startPlayer() {
+    public void startPlayer(boolean playWhenReady) {
         if (player != null) {
-            player.setPlayWhenReady(true);
+            player.setPlayWhenReady(playWhenReady);
             if (appCMSPresenter != null) {
                 appCMSPresenter.sendKeepScreenOnAction();
             }
@@ -784,6 +784,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onTimelineChanged(Timeline timeline, Object o, int reason) {
 
+
     }
 
     @Override
@@ -1061,7 +1062,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (getPlayer() != null && getPlayer().getPlayWhenReady()) {
-                    startPlayer();
+                    startPlayer(true);
                 } else {
                     pausePlayer();
                 }

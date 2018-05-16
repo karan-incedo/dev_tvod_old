@@ -840,6 +840,7 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0),
                                             false,
                                             -1,
+                                            null,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
 //                                        //Log.e(TAG, "Could not launch action: " +
@@ -895,6 +896,7 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0),
                                             false,
                                             -1,
+                                            null,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
                                     }
@@ -1123,6 +1125,7 @@ public class TVViewCreator {
                                                 moduleAPI.getContentData().get(0),
                                                 false,
                                                 -1,
+                                                null,
                                                 null)) {
                                         }
                                     }
@@ -1158,6 +1161,7 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         -1,
+                                        null,
                                         null)) {
                                 }
                             }
@@ -1203,8 +1207,8 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         0,
-                                        null
-                                );
+                                        null,
+                                        null);
                             }
                         });
                         break;
@@ -1226,8 +1230,8 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         0,
-                                        null
-                                );
+                                        null,
+                                        null);
                             }
                         });
                         break;
@@ -1285,7 +1289,7 @@ public class TVViewCreator {
                                             null,
                                             false,
                                             0,
-                                            null);
+                                            null, null);
                                 }
                             }
                         });
@@ -2093,9 +2097,10 @@ public class TVViewCreator {
 
                                                     appCMSPresenter.launchTVVideoPlayer(
                                                             moduleAPI.getContentData().get(0),
-                                                            -1,
+                                                            0,
                                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
-                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                                            null);
 
                                                     break;
                                                 }
@@ -2647,7 +2652,8 @@ public class TVViewCreator {
                     contentDatum,
                     0,
                     relatedVideosIds,
-                    0);
+                    0,
+                    null);
 
         }
     }
@@ -2663,8 +2669,12 @@ public class TVViewCreator {
                         moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
                         moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
 
-                    appCMSPresenter.launchTVVideoPlayer(moduleAPI.getContentData().get(0),-1,
-                            null/*moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds()*/,0);
+                    appCMSPresenter.launchTVVideoPlayer(
+                            moduleAPI.getContentData().get(0),
+                            0,
+                            null/*moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds()*/,
+                            0,
+                            null);
 
                     /*
                     VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
