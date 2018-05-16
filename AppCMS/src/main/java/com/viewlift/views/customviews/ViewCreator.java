@@ -65,7 +65,6 @@ import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -133,7 +132,7 @@ import static com.viewlift.Utils.loadJsonFromAssets;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static final long SECS_TO_MSECS = 1000L;
-    private static CustomVideoPlayerView videoPlayerView;
+    private  CustomVideoPlayerView videoPlayerView;
     private static AppCMSVideoPageBinder videoPlayerViewBinder;
     private static AppCMSVideoPlayerPresenter appCMSVideoPlayerPresenter;
     private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
@@ -141,7 +140,6 @@ public class ViewCreator {
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
-    private CastServiceProvider castProvider;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
 
@@ -260,7 +258,7 @@ public class ViewCreator {
         return color1;
     }
 
-    public static void enableFullScreenMode() {
+   /* public static void enableFullScreenMode() {
         if (videoPlayerView != null) {
             videoPlayerView.enableFullScreenMode();
         }
@@ -306,7 +304,7 @@ public class ViewCreator {
             }
             videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
         }
-    }
+    }*/
 
     /*
         public static VideoPlayerView playerView(Context context,
@@ -404,7 +402,7 @@ public class ViewCreator {
 
             return videoPlayerView;
         }
-    */
+
     public static void applyChromecastButtonToFullScreenPlayer(ImageButton chromecastButton) {
         if (videoPlayerView != null) {
             videoPlayerView.setChromecastButton(chromecastButton);
@@ -438,7 +436,7 @@ public class ViewCreator {
             appCMSPresenter.unrestrictPortraitOnly();
         }
     }
-
+ */
     public static void cancelBeaconPing() {
         if (appCMSVideoPlayerPresenter != null) {
             appCMSVideoPlayerPresenter.stop();
@@ -498,7 +496,7 @@ public class ViewCreator {
         }
     }
 
-    public static void openFullScreenVideoPlayer(Activity activity) {
+   /* public static void openFullScreenVideoPlayer(Activity activity) {
         if (videoPlayerView != null && videoPlayerView.getParent() != null
                 && videoPlayerView.getParent() instanceof ViewGroup) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
@@ -543,7 +541,7 @@ public class ViewCreator {
             videoPlayerContent.fullScreenEnabled = false;
         }
     }
-
+*/
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
         CustomWebView webView = new CustomWebView(context);
@@ -565,15 +563,15 @@ public class ViewCreator {
     }
 
     private void enablePhotoGalleryButtons(Boolean prevButton, boolean nextButton, PageView pageView, AppCMSPresenter appCMSPresenter, String position) {
-        if ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(nextButton);
+        if (pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
+            pageView.findChildViewById(R.id.photo_gallery_next_button).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            pageView.findChildViewById(R.id.photo_gallery_next_button).setEnabled(nextButton);
         }
-        if ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setEnabled(prevButton);
+        if (pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
+            pageView.findChildViewById(R.id.photo_gallery_prev_button).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            pageView.findChildViewById(R.id.photo_gallery_prev_button).setEnabled(prevButton);
         }
-        if ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
+        if (pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
             ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count)).setText("" + position);
         }
     }
@@ -1945,7 +1943,7 @@ public class ViewCreator {
                 }
 
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             if (module == null) {
                 module = moduleInfo;
@@ -2388,7 +2386,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2764,7 +2762,7 @@ public class ViewCreator {
                                 context.getResources().getString(R.string.app_cms_photo_tray_module_key),
                                 appCMSAndroidModules);
 
-                        ((RecyclerView) componentViewResult.componentView).setId(R.id.photo_gallery_grid_recyclerview);
+                        componentViewResult.componentView.setId(R.id.photo_gallery_grid_recyclerview);
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
                         photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
 
@@ -2773,7 +2771,7 @@ public class ViewCreator {
                             Glide.with(imageView.getContext()).load(url).into(imageView);
                             int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                             String position = photoGallerySize == 0 ? "0/0" : (selectedPosition + 1) + "/" + photoGallerySize;
-                            if ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
+                            if (pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
                                 ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview)).scrollToPosition(selectedPosition);
                             }
 
@@ -3019,8 +3017,14 @@ public class ViewCreator {
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 } else {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
+
+
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
+
+                /*videoPlayerViewSingle.setLayoutParams(new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
+                        (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT)));
+*/
                 appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
@@ -3229,19 +3233,18 @@ public class ViewCreator {
                 switch (componentKey) {
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
-                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
-                        ((Button) componentViewResult.componentView).setEnabled(false);
+                        componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        componentViewResult.componentView.setEnabled(false);
 
-                        ((Button) componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (photoGalleryNextPreviousListener != null) {
-                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                    ;
-                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(true);
+                                    pageView.findChildViewById(R.id.photo_gallery_next_button).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                    pageView.findChildViewById(R.id.photo_gallery_next_button).setEnabled(true);
                                     photoGalleryNextPreviousListener.previousPhoto(((Button) view));
                                 }
                             }
@@ -3249,14 +3252,14 @@ public class ViewCreator {
                         break;
                     case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_next_button);
-                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                         if (moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() == null || moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() == 0) {
-                            ((Button) componentViewResult.componentView).setEnabled(false);
-                            ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                            componentViewResult.componentView.setEnabled(false);
+                            componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
                         }
-                        ((Button) componentViewResult.componentView).setOnClickListener(v -> {
+                        componentViewResult.componentView.setOnClickListener(v -> {
                             if (photoGalleryNextPreviousListener != null) {
                                 enablePhotoGalleryButtons(true, true, pageView, appCMSPresenter, "1");
                                 photoGalleryNextPreviousListener.nextPhoto(((Button) v));
@@ -3407,7 +3410,7 @@ public class ViewCreator {
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
                         // Temp removed visibility of this playlist download button
-                        ((ImageButton) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                        componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
@@ -4009,7 +4012,7 @@ public class ViewCreator {
                                         FrameLayout.LayoutParams.WRAP_CONTENT);
                         bottomBg.gravity = Gravity.BOTTOM;
                         componentViewResult.componentView.setLayoutParams(bottomBg);
-                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        componentViewResult.componentView.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
                         break;
                     case PAGE_ARTICLE_NEXT_BUTTON_KEY:
                         componentViewResult.addToPageView = true;
@@ -4023,7 +4026,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setPadding(30, 0, 30, 0);
                         componentViewResult.componentView.setId(R.id.article_next_button);
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 moduleAPI.getContentData().get(0) != null &&
@@ -4033,8 +4036,8 @@ public class ViewCreator {
 
                             List<String> articleIDs = appCMSPresenter.getRelatedArticleIds();
                             if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
-                                ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
-                                ((Button) componentViewResult.componentView).setEnabled(false);
+                                componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                componentViewResult.componentView.setEnabled(false);
                             }
                             if (appCMSPresenter.getCurrentArticleIndex() == -1) {
                                 articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
@@ -4051,8 +4054,8 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getTitle(), false,
                                             () -> {
                                                 if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
-                                                    ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
-                                                    ((Button) componentViewResult.componentView).setEnabled(false);
+                                                    componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                                    componentViewResult.componentView.setEnabled(false);
                                                 }
 
                                                 if (appCMSPresenter.getCurrentArticleIndex() > -1) {
@@ -4123,7 +4126,7 @@ public class ViewCreator {
 
                     case PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY:
                         ((Button) componentViewResult.componentView).setTextColor(ContextCompat.getColor(context, android.R.color.black));
-                        ((Button) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         ((Button) componentViewResult.componentView).setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];
@@ -4319,7 +4322,7 @@ public class ViewCreator {
                             }
                             if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                 authDateAndPhotoCount.append(" | ")
-                                        .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
+                                        .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
                             }
                             if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
                                 authDateAndPhotoCount.append(" | ")
@@ -4522,7 +4525,7 @@ public class ViewCreator {
                             }
                             if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                 authDateAndPhotoCount.append(" | ")
-                                        .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
+                                        .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
                             }
                             if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
                                 authDateAndPhotoCount.append(" | ")
@@ -4574,7 +4577,7 @@ public class ViewCreator {
                             case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
 
                                 if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
-                                    ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
+                                    componentViewResult.componentView.setId(R.id.photo_gallery_image_count);
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#FFFFFF"));
                                     int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                                     String position = photoGallerySize == 0 ? "0/0" : 1 + "/" + photoGallerySize;
@@ -4953,7 +4956,7 @@ public class ViewCreator {
                                     if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
                                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                         ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                                        ((TextView) componentViewResult.componentView).setEnabled(false);
+                                        componentViewResult.componentView.setEnabled(false);
                                     }
                                     componentViewResult.componentView.setOnClickListener(v -> {
                                         int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -4969,7 +4972,7 @@ public class ViewCreator {
                                 } else {
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                     ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                                    ((TextView) componentViewResult.componentView).setEnabled(false);
+                                    componentViewResult.componentView.setEnabled(false);
                                 }
                                 break;
 
@@ -5798,7 +5801,7 @@ public class ViewCreator {
                             ImageButton mMediaRouteButton,
                             long watchedTime) {
         try {
-            castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
+            CastServiceProvider castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
             castProvider.setAllowFreePlay(allowFreePlay);
 
             CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
@@ -6429,8 +6432,8 @@ public class ViewCreator {
 
     public static void notifyDataChange() {
 
-        if (appCMSUserWatHisDowAdapter != null)
-            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
+      /*  if (appCMSUserWatHisDowAdapter != null)
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();*/
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
@@ -6581,7 +6584,7 @@ public class ViewCreator {
                         createRoundedCorners,
                         null);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             return null;
         }

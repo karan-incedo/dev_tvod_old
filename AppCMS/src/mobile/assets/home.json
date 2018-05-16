@@ -3201,7 +3201,7 @@
             "mobile": {
               "yAxis": 0,
               "xAxis": 10,
-              "maximumWidth": 180,
+              "maximumWidth": 200,
               "fontSize": 18,
               "height": 24
             },
@@ -3294,14 +3294,14 @@
               "height": 24
             },
             "tabletLandscape": {
-              "yAxis": 10,
-              "xAxis": 930,
+              "yAxis": 15,
+              "xAxis": 890,
               "width": 28,
               "height": 28
             },
             "tabletPortrait": {
-              "yAxis": 10,
-              "xAxis": 679,
+              "yAxis": 15,
+              "xAxis": 636,
               "width": 28,
               "height": 28
             }

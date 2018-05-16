@@ -672,9 +672,9 @@ public class AppCMSPageFragment extends Fragment {
 
         void onError(AppCMSBinder appCMSBinder);
 
-        void enterFullScreenVideoPlayer();
+       // void enterFullScreenVideoPlayer();
 
-        void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
+       // void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
     }
 
     private static class OnScrollGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {

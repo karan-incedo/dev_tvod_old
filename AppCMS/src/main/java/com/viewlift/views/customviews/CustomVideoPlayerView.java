@@ -187,6 +187,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
 
         videoPlayerContent =new ViewCreator.VideoPlayerContent();
+
         videoPlayerViewSingle = this;
         setFirebaseProgressHandling();
 
