@@ -52,7 +52,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     String componentViewType,seriesName;
 
-    String componentViewType;
     RecyclerView mRecyclerView;
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,

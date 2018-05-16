@@ -128,7 +128,7 @@ public class SeasonModule extends ModuleView {
             seasonTab.setSelectedTabIndicatorHeight((int) (3 * getResources().getDisplayMetrics().density));
             seasonTab.setTabTextColors(Color.parseColor("#ffffff"),
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-            if (moduleAPI.getContentData().get(0).getSeason().size() > 3) {
+            if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
                 seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
             } else {
                 seasonTab.setTabMode(TabLayout.MODE_FIXED);
