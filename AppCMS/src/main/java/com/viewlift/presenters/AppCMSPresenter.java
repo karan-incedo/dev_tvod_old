@@ -16520,7 +16520,7 @@ public class AppCMSPresenter {
                         rootView.removeView(relativeLayoutFull);
                         relativeLayoutFull = null;
                     } catch (Exception e) {
-
+                            e.printStackTrace();
                     }
                 }, 50);
 
@@ -16531,7 +16531,11 @@ public class AppCMSPresenter {
         if (relativeLayoutFull != null) {
             relativeLayoutFull.setVisibility(View.GONE);
         }
-        restrictPortraitOnly();
+        if (BaseView.isTablet(currentActivity)){
+            unrestrictPortraitOnly();
+        } else {
+            restrictPortraitOnly();
+        }
 
 
 //        new Handler().postDelayed(() -> {

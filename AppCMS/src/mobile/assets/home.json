@@ -3269,14 +3269,14 @@
               "height": 28
             },
             "tabletLandscape": {
-              "yAxis": 12,
-              "xAxis": 898,
+              "yAxis": 159,
+              "xAxis": 960,
               "width": 28,
               "height": 28
             },
             "tabletPortrait": {
-              "yAxis": 12,
-              "xAxis": 642,
+              "yAxis": 488,
+              "xAxis": 698,
               "width": 28,
               "height": 28
             }
@@ -3373,7 +3373,8 @@
               "leftMargin": 0.97,
               "rightMargin": 0.97,
               "fontSize": 24,
-              "height": 432
+              "height": 432,
+              "width":720
             },
             "tabletPortrait": {
               "yAxis": 44,
@@ -3397,7 +3398,8 @@
                   "leftMargin": 0.97,
                   "rightMargin": 0.97,
                   "fontSize": 24,
-                  "height": 432
+                  "height": 432,
+                  "width":720
                 },
                 "tabletPortrait": {
                   "yAxis": 0,

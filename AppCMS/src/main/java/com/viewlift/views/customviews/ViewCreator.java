@@ -3023,6 +3023,10 @@ public class ViewCreator {
                 /*videoPlayerViewSingle.setLayoutParams(new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
                         (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT)));
 */
+                FrameLayout.LayoutParams videoPlayerParentLP = new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
+                        (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                videoPlayerViewSingle.setLayoutParams(videoPlayerParentLP);
+                appCMSPresenter.videoPlayerViewParent = (ViewGroup) componentViewResult.componentView;
                 appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
