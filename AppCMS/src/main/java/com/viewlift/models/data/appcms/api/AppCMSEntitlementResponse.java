@@ -2,12 +2,6 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.viewlift.models.data.appcms.audio.AudioAssets;
-import com.viewlift.models.data.appcms.playlist.AudioList;
-import com.vimeo.stag.UseStag;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class AppCMSEntitlementResponse {

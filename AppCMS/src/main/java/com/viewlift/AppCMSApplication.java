@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.amazon.alexa.vsk.clientlib.AlexaClientManager;
+import com.amazon.device.messaging.ADM;
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.viewlift.models.data.appcms.downloads.DownloadMediaMigration;
@@ -15,6 +17,8 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.realm.Realm;
@@ -151,7 +155,78 @@ public class AppCMSApplication extends MultiDexApplication {
             });
 
         }).run();
+
+
+        Log.d(TAG, "checkIsTelevision(): " + checkIsTelevision());
+
+        if (checkIsTelevision()) {
+            try {
+                // Initialize the Alexa Video Skills Client Library first.
+                initializeAlexaClientLibrary();
+
+                // Initialize ADM.
+                initializeAdm();
+
+                AlexaClientManager.getSharedInstance().setAlexaEnabled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
+
+
+    private void initializeAdm() {
+        try {
+            final ADM adm = new ADM(this);
+            if (adm.isSupported()) {
+                if (adm.getRegistrationId() == null) {
+                    // ADM is not ready now. You have to start ADM registration by calling
+                    // startRegister() API. ADM will calls onRegister() API on your ADM
+                    // handler service when ADM registration was completed with registered ADM id.
+                    adm.startRegister();
+                } else {
+                    // [IMPORTANT]
+                    // ADM down-channel is already available. This is a common case that your
+                    // application restarted. ADM manager on your Fire TV cache the previous
+                    // ADM registration info and provide it immediately when your application
+                    // is identified as restarted.
+                    //
+                    // You have to provide the retrieved ADM registration Id to the VSK Client library.
+                    final String admRegistrationId = adm.getRegistrationId();
+                    Log.i(TAG, "ADM registration Id:" + admRegistrationId);
+
+                    // Provide the acquired ADM registration ID.
+                    final AlexaClientManager alexaClientManager = AlexaClientManager.getSharedInstance();
+                    alexaClientManager.setDownChannelReady(true, admRegistrationId);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "ADM initialization has failed with exception", ex);
+        }
+    }
+
+
+
+    public void initializeAlexaClientLibrary() {
+        // Retrieve the shared instance of the AlexaClientManager
+        AlexaClientManager clientManager = AlexaClientManager.getSharedInstance();
+
+        // Gather your Skill ID and list of capabilities
+        final String alexaSkillId = "amzn1.ask.skill.3cc5691b-cd12-4429-b399-d00e8cb52fae";
+
+        // Create a list of supported capabilities in your skill.
+        List<String> capabilities = new ArrayList<>();
+        capabilities.add(AlexaClientManager.CAPABILITY_REMOTE_VIDEO_PLAYER);
+        capabilities.add(AlexaClientManager.CAPABILITY_PLAY_BACK_CONTROLLER);
+        capabilities.add(AlexaClientManager.CAPABILITY_SEEK_CONTROLLER);
+
+        clientManager.initialize(this.getApplicationContext(),
+                alexaSkillId,
+                AlexaClientManager.SKILL_STAGE_DEVELOPMENT,
+                capabilities);
+    }
+
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
@@ -173,6 +248,9 @@ public class AppCMSApplication extends MultiDexApplication {
     public void setOnActivityResumedAction(Action0 onActivityResumedAction) {
         this.onActivityResumedAction = onActivityResumedAction;
     }
-
+    private boolean checkIsTelevision() {
+        int uiMode = getResources().getConfiguration().uiMode;
+        return (uiMode & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
 
 }

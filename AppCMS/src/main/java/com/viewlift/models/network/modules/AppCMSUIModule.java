@@ -195,6 +195,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_search_screen_key),
+                AppCMSUIKeyType.PAGE_SEARCH_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),

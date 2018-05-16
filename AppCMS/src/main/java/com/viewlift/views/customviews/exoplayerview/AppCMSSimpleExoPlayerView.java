@@ -745,6 +745,7 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
             }
         }
 
+
         @Override
         public void onTracksChanged(TrackGroupArray tracks, TrackSelectionArray selections) {
             updateForCurrentTrackSelections();

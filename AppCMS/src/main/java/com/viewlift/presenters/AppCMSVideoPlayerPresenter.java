@@ -878,7 +878,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.pausePlayer();
                 }

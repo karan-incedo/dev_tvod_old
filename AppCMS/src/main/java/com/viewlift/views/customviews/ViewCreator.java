@@ -282,7 +282,7 @@ public class ViewCreator {
     public static void startPlayer(AppCMSPresenter presenter) {
         if (videoPlayerView != null &&
                 !CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 
@@ -317,91 +317,91 @@ public class ViewCreator {
                 videoPlayerContent = new VideoPlayerContent();
             }
 
-            if (appCMSVideoPlayerPresenter == null) {
-                appCMSVideoPlayerPresenter = new AppCMSVideoPlayerPresenter();
-            }
-
-            videoPlayerContent.videoUrl = videoUrl;
-            videoPlayerContent.ccUrl = ccUrl;
-
-            if (videoPlayerView == null) {
-                videoPlayerView = new VideoPlayerView(context, presenter);
-                videoPlayerView.init(context);
-                videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(context,
-                        presenter.getAppCtaBackgroundColor())));
-            } else if (videoPlayerView.getParent() != null &&
-                    videoPlayerView.getParent() instanceof ViewGroup) {
-                ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
-            }
-
-            boolean resetWatchTime = false;
-            long currentWatchedTime = videoPlayerContent.videoPlayTime;
-            if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
-                resetWatchTime = true;
-            } else {
-                currentWatchedTime = videoPlayerView.getCurrentPosition();
-            }
-
-            if (resetWatchTime) {
-                videoPlayerView.setUri(Uri.parse(videoUrl), null);
-            }
-
-            if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-                videoPlayerView.startPlayer();
-            }
-
-            videoPlayerView.setFilmId(filmId);
-            videoPlayerView.getPlayerView().setControllerAutoShow(true);
-            videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
-            videoPlayerView.getPlayerView().setVisibility(View.VISIBLE);
-
-            if (resetWatchTime) {
-                videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
-            }
-
-            appCMSVideoPlayerPresenter.updateBinder(context,
-                    presenter,
-                    videoPlayerView,
-                    new AppCMSVideoPlayerPresenter.OnClosePlayerEvent() {
-                        @Override
-                        public void closePlayer() {
-
-                        }
-
-                        @Override
-                        public void onMovieFinished() {
-
-                        }
-
-                        @Override
-                        public void onRemotePlayback(long currentPosition, int castingMode, boolean sentBeaconPlay, Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
-
-                        }
-                    },
-                    new AppCMSVideoPlayerPresenter.OnUpdateContentDatumEvent() {
-                        @Override
-                        public void updateContentDatum(ContentDatum contentDatum) {
-
-                        }
-
-                        @Override
-                        public ContentDatum getCurrentContentDatum() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<String> getCurrentRelatedVideoIds() {
-                            return null;
-                        }
-                    },
-                    videoPlayerViewBinder,
-                    0,
-                    false,
-                    null,
-                    resetWatchTime);
-
-            return videoPlayerView;
+        if (appCMSVideoPlayerPresenter == null) {
+            appCMSVideoPlayerPresenter = new AppCMSVideoPlayerPresenter();
         }
+
+        videoPlayerContent.videoUrl = videoUrl;
+        videoPlayerContent.ccUrl = ccUrl;
+
+        if (videoPlayerView == null) {
+            videoPlayerView = new VideoPlayerView(context, presenter);
+            videoPlayerView.init(context);
+            videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(context,
+                    presenter.getAppCtaBackgroundColor())));
+        } else if (videoPlayerView.getParent() != null &&
+                videoPlayerView.getParent() instanceof ViewGroup) {
+            ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+        }
+
+        boolean resetWatchTime = false;
+        long currentWatchedTime = videoPlayerContent.videoPlayTime;
+        if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
+            resetWatchTime = true;
+        } else {
+            currentWatchedTime = videoPlayerView.getCurrentPosition();
+        }
+
+        if (resetWatchTime) {
+            videoPlayerView.setUri(Uri.parse(videoUrl), null);
+        }
+
+        if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
+            videoPlayerView.startPlayer(true);
+        }
+
+        videoPlayerView.setFilmId(filmId);
+        videoPlayerView.getPlayerView().setControllerAutoShow(true);
+        videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
+        videoPlayerView.getPlayerView().setVisibility(View.VISIBLE);
+
+        if (resetWatchTime) {
+            videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+        }
+
+        appCMSVideoPlayerPresenter.updateBinder(context,
+                presenter,
+                videoPlayerView,
+                new AppCMSVideoPlayerPresenter.OnClosePlayerEvent() {
+                    @Override
+                    public void closePlayer() {
+
+                    }
+
+                    @Override
+                    public void onMovieFinished() {
+
+                    }
+
+                    @Override
+                    public void onRemotePlayback(long currentPosition, int castingMode, boolean sentBeaconPlay, Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
+
+                    }
+                },
+                new AppCMSVideoPlayerPresenter.OnUpdateContentDatumEvent() {
+                    @Override
+                    public void updateContentDatum(ContentDatum contentDatum) {
+
+                    }
+
+                    @Override
+                    public ContentDatum getCurrentContentDatum() {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getCurrentRelatedVideoIds() {
+                        return null;
+                    }
+                },
+                videoPlayerViewBinder,
+                0,
+                false,
+                null,
+                resetWatchTime);
+
+        return videoPlayerView;
+    }
 
     public static void applyChromecastButtonToFullScreenPlayer(ImageButton chromecastButton) {
         if (videoPlayerView != null) {
@@ -506,7 +506,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(true);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }
@@ -528,7 +528,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(false);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }
@@ -563,15 +563,15 @@ public class ViewCreator {
     }
 
     private void enablePhotoGalleryButtons(Boolean prevButton, boolean nextButton, PageView pageView, AppCMSPresenter appCMSPresenter, String position) {
-        if (pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
-            pageView.findChildViewById(R.id.photo_gallery_next_button).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            pageView.findChildViewById(R.id.photo_gallery_next_button).setEnabled(nextButton);
+        if ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(nextButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(nextButton);
         }
-        if (pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
-            pageView.findChildViewById(R.id.photo_gallery_prev_button).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
-            pageView.findChildViewById(R.id.photo_gallery_prev_button).setEnabled(prevButton);
+        if ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button) != null) {
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setBackgroundColor(prevButton ? appCMSPresenter.getBrandPrimaryCtaColor() : Color.parseColor("#c8c8c8"));
+            ((Button) pageView.findChildViewById(R.id.photo_gallery_prev_button)).setEnabled(prevButton);
         }
-        if (pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
+        if ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count) != null) {
             ((TextView) pageView.findChildViewById(R.id.photo_gallery_image_count)).setText("" + position);
         }
     }
@@ -2762,7 +2762,7 @@ public class ViewCreator {
                                 context.getResources().getString(R.string.app_cms_photo_tray_module_key),
                                 appCMSAndroidModules);
 
-                        componentViewResult.componentView.setId(R.id.photo_gallery_grid_recyclerview);
+                        ((RecyclerView) componentViewResult.componentView).setId(R.id.photo_gallery_grid_recyclerview);
                         ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
                         photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
 
@@ -2771,7 +2771,7 @@ public class ViewCreator {
                             Glide.with(imageView.getContext()).load(url).into(imageView);
                             int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                             String position = photoGallerySize == 0 ? "0/0" : (selectedPosition + 1) + "/" + photoGallerySize;
-                            if (pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
+                            if ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
                                 ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview)).scrollToPosition(selectedPosition);
                             }
 
@@ -3017,8 +3017,6 @@ public class ViewCreator {
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 } else {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
-
-
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
 
@@ -3233,18 +3231,18 @@ public class ViewCreator {
                 switch (componentKey) {
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
-                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                        componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
-                        componentViewResult.componentView.setEnabled(false);
+                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                        ((Button) componentViewResult.componentView).setEnabled(false);
 
-                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                        ((Button) componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (photoGalleryNextPreviousListener != null) {
-                                    pageView.findChildViewById(R.id.photo_gallery_next_button).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                    pageView.findChildViewById(R.id.photo_gallery_next_button).setEnabled(true);
+                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());;
+                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(true);
                                     photoGalleryNextPreviousListener.previousPhoto(((Button) view));
                                 }
                             }
@@ -3252,14 +3250,14 @@ public class ViewCreator {
                         break;
                     case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_next_button);
-                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                         if (moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() == null || moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() == 0) {
-                            componentViewResult.componentView.setEnabled(false);
-                            componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
+                            ((Button) componentViewResult.componentView).setEnabled(false);
+                            ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
                         }
-                        componentViewResult.componentView.setOnClickListener(v -> {
+                        ((Button) componentViewResult.componentView).setOnClickListener(v -> {
                             if (photoGalleryNextPreviousListener != null) {
                                 enablePhotoGalleryButtons(true, true, pageView, appCMSPresenter, "1");
                                 photoGalleryNextPreviousListener.nextPhoto(((Button) v));
@@ -3272,10 +3270,10 @@ public class ViewCreator {
                         AppCompatCheckBox checkBoxTCP = ((AppCompatCheckBox) componentViewResult.componentView);
                         checkBoxTCP.setChecked(false);
                         checkBoxTCP.setId(R.id.appCMS_tcp_check);
-                        if (component.getText() != null) {
+                        if(component.getText() != null ) {
                             checkBoxTCP.setText(component.getText());
                         }
-                        if (component.getBackgroundColor() != null) {
+                        if(component.getBackgroundColor() != null ) {
                             checkBoxTCP.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
                         }
                         int switchOnColor = Color.WHITE;
@@ -3410,7 +3408,7 @@ public class ViewCreator {
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
                         // Temp removed visibility of this playlist download button
-                        componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        ((ImageButton) componentViewResult.componentView).setVisibility(View.VISIBLE);
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download_big);
@@ -4012,7 +4010,7 @@ public class ViewCreator {
                                         FrameLayout.LayoutParams.WRAP_CONTENT);
                         bottomBg.gravity = Gravity.BOTTOM;
                         componentViewResult.componentView.setLayoutParams(bottomBg);
-                        componentViewResult.componentView.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                        ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
                         break;
                     case PAGE_ARTICLE_NEXT_BUTTON_KEY:
                         componentViewResult.addToPageView = true;
@@ -4026,7 +4024,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setPadding(30, 0, 30, 0);
                         componentViewResult.componentView.setId(R.id.article_next_button);
                         ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        componentViewResult.componentView.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                        ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                         if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 moduleAPI.getContentData().get(0) != null &&
@@ -4036,8 +4034,8 @@ public class ViewCreator {
 
                             List<String> articleIDs = appCMSPresenter.getRelatedArticleIds();
                             if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
-                                componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
-                                componentViewResult.componentView.setEnabled(false);
+                                ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                ((Button) componentViewResult.componentView).setEnabled(false);
                             }
                             if (appCMSPresenter.getCurrentArticleIndex() == -1) {
                                 articleIDs.add(0, moduleAPI.getContentData().get(0).getGist().getId());
@@ -4054,8 +4052,8 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getTitle(), false,
                                             () -> {
                                                 if (appCMSPresenter.getCurrentArticleIndex() == appCMSPresenter.getRelatedArticleIds().size() - 2) {
-                                                    componentViewResult.componentView.setBackgroundColor(Color.parseColor("#c8c8c8"));
-                                                    componentViewResult.componentView.setEnabled(false);
+                                                    ((Button) componentViewResult.componentView).setBackgroundColor(Color.parseColor("#c8c8c8"));
+                                                    ((Button) componentViewResult.componentView).setEnabled(false);
                                                 }
 
                                                 if (appCMSPresenter.getCurrentArticleIndex() > -1) {
@@ -4126,7 +4124,7 @@ public class ViewCreator {
 
                     case PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY:
                         ((Button) componentViewResult.componentView).setTextColor(ContextCompat.getColor(context, android.R.color.black));
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        ((Button) componentViewResult.componentView).setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         ((Button) componentViewResult.componentView).setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];
@@ -4577,7 +4575,7 @@ public class ViewCreator {
                             case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
 
                                 if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
-                                    componentViewResult.componentView.setId(R.id.photo_gallery_image_count);
+                                    ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#FFFFFF"));
                                     int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
                                     String position = photoGallerySize == 0 ? "0/0" : 1 + "/" + photoGallerySize;
@@ -4956,7 +4954,7 @@ public class ViewCreator {
                                     if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
                                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                         ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                                        componentViewResult.componentView.setEnabled(false);
+                                        ((TextView) componentViewResult.componentView).setEnabled(false);
                                     }
                                     componentViewResult.componentView.setOnClickListener(v -> {
                                         int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -4972,7 +4970,7 @@ public class ViewCreator {
                                 } else {
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                     ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                                    componentViewResult.componentView.setEnabled(false);
+                                    ((TextView) componentViewResult.componentView).setEnabled(false);
                                 }
                                 break;
 
