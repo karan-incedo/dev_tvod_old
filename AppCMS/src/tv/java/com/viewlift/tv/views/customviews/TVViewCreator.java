@@ -2171,10 +2171,10 @@ public class TVViewCreator {
                 }
 
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                String txtColor = appCMSPresenter.getAppCtaTextColor();
+                String txtColor = appCMSPresenter.getAppTextColor();
                 if(null != txtColor){
                     textColor = Color.parseColor(txtColor);
-                }else if (!TextUtils.isEmpty(component.getTextColor())) {
+                }/*else if (!TextUtils.isEmpty(component.getTextColor())) {
                     textColor = Color.parseColor(getColor(context, component.getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
@@ -2183,7 +2183,7 @@ public class TVViewCreator {
                         textColor =
                                 Color.parseColor(getColor(context, component.getStyles().getTextColor()));
                     }
-                }
+                }*/
                 if (componentKey != PAGE_API_DESCRIPTION)
                     ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 if (!gridElement) {
