@@ -153,9 +153,11 @@ public class Gist implements Serializable {
     @Expose
     String body;
 
+/*
     @SerializedName("featuredTag")
     @Expose
     String featuredTag;
+*/
 
     @SerializedName("updatedDate")
     @Expose
@@ -573,6 +575,7 @@ public class Gist implements Serializable {
         this.body = body;
     }
 
+/*
     public String getFeaturedTag() {
         return featuredTag;
     }
@@ -580,6 +583,7 @@ public class Gist implements Serializable {
     public void setFeaturedTag(String featuredTag) {
         this.featuredTag = featuredTag;
     }
+*/
 
     public String getUpdatedDate() {
         return updatedDate;

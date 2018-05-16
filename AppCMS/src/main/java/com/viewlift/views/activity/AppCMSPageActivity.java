@@ -388,25 +388,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         false,
                                         false);
 
-                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                        updatedAppCMSBinder != null &&
-                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                        appCMSPresenter.unrestrictPortraitOnly();
-                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                                ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            exitFullScreenVideoPlayer(true);
-                                        }
-                                    } else {
-                                        if (ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            ViewCreator.enableFullScreenMode();
-                                        }
-                                    }
-                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1372,35 +1353,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             pendingDeeplinkUri = null;
         }
 
-        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
-                isActive) {
-            if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
-                if (!BaseView.isTablet(this)) {
-                    appCMSPresenter.unrestrictPortraitOnly();
-                    if (BaseView.isLandscape(this) ||
-                            ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        exitFullScreenVideoPlayer(true);
-                    }
-                } else {
-                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        ViewCreator.enableFullScreenMode();
-                    }
-                }
-
-                ViewCreator.resumePlayer(appCMSPresenter, this);
-            } else {
-                if (BaseView.isTablet(this)) {
-                    appCMSPresenter.restrictPortraitOnly();
-                }
-                ViewCreator.pausePlayer();
-            }
-        }
     }
 
     private void refreshPageData() {
@@ -2634,7 +2586,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCtaBackgroundColor() != null ) {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor());
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
@@ -3329,11 +3281,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
-            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            textColor = appCMSPresenter.getGeneralTextColor();
         } else {
             buttonColor = Color.parseColor("#F81004");
             textColor = Color.parseColor("#ffffff");

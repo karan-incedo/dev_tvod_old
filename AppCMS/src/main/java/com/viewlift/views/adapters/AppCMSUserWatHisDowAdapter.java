@@ -278,8 +278,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
-            String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
-            emptyView.setTextColor(Color.parseColor(textColor));
+            emptyView.setTextColor(appCMSPresenter.getGeneralTextColor());
             emptyView.setTextSize(24f);
             if (isHistoryPage) {
                 emptyView.setText(mContext.getString(R.string.empty_history_list_message));
@@ -362,8 +361,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     deleteDownloadButton.setImageBitmap(null);
                     deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                             R.drawable.ic_deleteicon));
-                    deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                            appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                    deleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                     deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                     contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
 
@@ -436,8 +434,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         finalDeleteDownloadButton.setImageBitmap(null);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 R.drawable.ic_deleteicon));
-                                                        finalDeleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                                                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                                                        finalDeleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                                                         finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 R.drawable.ic_deleteicon));
@@ -514,8 +511,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             deleteDownloadButton.setImageBitmap(null);
                             deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                     R.drawable.ic_deleteicon));
-                            deleteDownloadButton.getBackground().setTint(Color.parseColor(AppCMSPresenter.getColor(mContext,
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())));
+                            deleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                             deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
                             break;
@@ -837,7 +833,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
         }
     }
 

@@ -419,6 +419,7 @@ dependencies {
     implementation  "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation  project(':exoplayer-library')
+    implementation  project(':exoplayer-library-ui')
     implementation  project(':library')
     implementation  project(':htmlspanner')
     implementation  project(path: ':exoplayer-extension-vp9')
@@ -432,7 +433,7 @@ dependencies {
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->
-    dependencies.add("compile", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
+    dependencies.add("implementation", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
 }
 
 apply plugin: 'com.google.gms.google-services'

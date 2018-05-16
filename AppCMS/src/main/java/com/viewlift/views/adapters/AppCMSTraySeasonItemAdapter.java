@@ -50,6 +50,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     private MotionEvent lastTouchDownEvent;
 
+    String componentViewType,seriesName;
+
     String componentViewType;
     RecyclerView mRecyclerView;
     public AppCMSTraySeasonItemAdapter(Context context,
@@ -62,8 +64,9 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        String viewType,
                                        RecyclerView mRecyclerView) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
-        this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();
+        this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();;
         this.sortData();
+        this.seriesName = moduleAPI.getContentData().get(0).getGist().getTitle();
         this.components = components;
         this.allEpisodeIds = allEpisodeIds;
         this.appCMSPresenter = appCMSPresenter;
@@ -134,7 +137,9 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     @Override
     @SuppressLint("SetTextI18n")
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         if (adapterData != null && !adapterData.isEmpty()) {
+            adapterData.get(position).setSeriesName(seriesName);
             if (0 <= position && position < adapterData.size()) {
                 for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
                     if (holder.componentView.getChild(i) instanceof TextView) {

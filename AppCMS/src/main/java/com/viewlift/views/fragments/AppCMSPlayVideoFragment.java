@@ -397,7 +397,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     if (onUpdateContentDatumEvent != null) {
                                         AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
                                                 = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                                .action(appCMSPresenter.getStringDataById(getContext(),R.string.app_cms_page_play_key))
+                                                .action(appCMSPresenter.getStringDataById(getActivity(),R.string.app_cms_page_play_key))
                                                 .closerLauncher(false)
                                                 .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
                                                 .currentlyPlayingIndex(playIndex)
@@ -1189,6 +1189,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                             .getGist()
                             .getId(),
                     updatedContentDatum -> {
+                        if (updatedContentDatum==null){
+                            getActivity().finish();
+                            return;
+                        }
                         onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                         appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                             if (videoPlayerView != null && appCMSSignedURLResult != null) {

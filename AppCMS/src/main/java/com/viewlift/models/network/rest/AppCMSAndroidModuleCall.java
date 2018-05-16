@@ -237,7 +237,6 @@ public class AppCMSAndroidModuleCall {
                     Log.d(TAG, "Start time: " + startTime);
                     ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
                     moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
-                    System.out.println("Retrieving module list from file "+ moduleDataMap.appCMSAndroidModule);
                     long endTime = new Date().getTime();
                     Log.d(TAG, "End time: " + endTime);
                     Log.d(TAG, "Time elapsed: " + (endTime - startTime));

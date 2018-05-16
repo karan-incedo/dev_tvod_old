@@ -1121,6 +1121,10 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_PLAN_PURCHASE_BUTTON_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+
+
                 case PAGE_VIDEO_CLOSE_KEY:
                     lm -= 8;
                     bm -= 8;
@@ -1187,6 +1191,7 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_VIDEO_CAST_KEY:
                 case PAGE_VIDEO_SHARE_KEY:
                     if (isTablet(getContext())) {
                         lm -= viewWidth / 2;
@@ -1271,9 +1276,9 @@ public abstract class BaseView extends FrameLayout {
                             (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY ||
-                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY ||
-                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY )) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (0 < thumbnailHeight && 0 < thumbnailWidth) {
@@ -1424,7 +1429,7 @@ public abstract class BaseView extends FrameLayout {
             if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                 viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
-            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+            } /*else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                 if (getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
                     if (!BaseView.isTablet(getContext())) {
                         if (BaseView.isLandscape(getContext())) {
@@ -1436,7 +1441,7 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
                 }
-            } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+            }*/ else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                     componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 if (0 < viewWidth && 0 < viewHeight) {
                     if (viewWidth < viewHeight) {
