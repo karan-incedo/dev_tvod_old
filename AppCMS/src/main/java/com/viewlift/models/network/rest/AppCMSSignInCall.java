@@ -28,6 +28,7 @@ public class AppCMSSignInCall {
     private final AppCMSSignInRest appCMSSignInRest;
     private final Gson gson;
     private Map<String, String> headersMap;
+
     @Inject
     public AppCMSSignInCall(AppCMSSignInRest appCMSSignInRest, Gson gson) {
         this.appCMSSignInRest = appCMSSignInRest;
@@ -47,7 +48,7 @@ public class AppCMSSignInCall {
         }
 
         try {
-            Call<JsonElement> call = appCMSSignInRest.signin(url, signInRequest,headersMap);
+            Call<JsonElement> call = appCMSSignInRest.signin(url, signInRequest, headersMap);
 
             Response<JsonElement> response = call.execute();
             if (response.body() != null) {
@@ -58,7 +59,9 @@ public class AppCMSSignInCall {
                 String errorResponse = response.errorBody().string();
                 //Log.d(TAG, "Raw response: " + errorResponse);
                 loggedInResponseResponse = new SignInResponse();
-                loggedInResponseResponse.setErrorResponse(gson.fromJson(errorResponse, ErrorResponse.class));
+                if (errorResponse != null) {
+                    loggedInResponseResponse.setErrorResponse(gson.fromJson(errorResponse, ErrorResponse.class));
+                }
             }
         } catch (JsonSyntaxException | IOException e) {
             //Log.e(TAG, "SignIn error: " + e.toString());

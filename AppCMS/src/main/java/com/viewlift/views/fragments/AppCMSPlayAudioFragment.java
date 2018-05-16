@@ -15,6 +15,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -56,6 +57,7 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
@@ -342,8 +344,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     private void updataeShuffleState() {
         if (appCMSPresenter.getAudioShuffledPreference()) {
-            int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            int tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
             applyTintToDrawable(shuffle.getBackground(), tintColor);
         } else {
 
@@ -518,7 +519,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateDuration(description);
                 onUpdateMetaChange.updateMetaData(description);
                 System.out.println("Decription not null");
-                getActivity().startService(new Intent(getActivity(), MusicService.class));
+                Utils.startService(getActivity(),new Intent(getContext(), MusicService.class));
             }
         }
     }

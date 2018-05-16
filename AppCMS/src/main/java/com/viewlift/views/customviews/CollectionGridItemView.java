@@ -352,18 +352,16 @@ public class CollectionGridItemView extends BaseView {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_port);
-
+                            Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_port);
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                                Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
                                 placeholder = R.drawable.vid_image_placeholder_square;
                             } else {
-                                ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_16x9);
+                                Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_16x9);
                                 placeholder = R.drawable.vid_image_placeholder_16x9;
                             }
-
                         }
                     }
 
@@ -402,7 +400,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                            Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
                         }
                     } else if (data.getGist() != null &&
                             data.getGist().getContentType() != null &&
@@ -450,7 +448,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(R.drawable.vid_image_placeholder_square);
+                            Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
                         }
                     } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
@@ -710,7 +708,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            ((ImageView) view).setImageResource(placeholder);
+                            Glide.with(((ImageView) view)).load(placeholder);
                         }
 
                     }
@@ -1137,7 +1135,7 @@ public class CollectionGridItemView extends BaseView {
                                                 data.getGist().getDescription(),
                                                 appCMSPresenter,
                                                 true,
-                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                                appCMSPresenter.getBrandPrimaryCtaColor(),
                                                 false);
                                 titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                             } catch (Exception e) {
@@ -1164,7 +1162,7 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            appCMSPresenter.getBrandPrimaryCtaColor(),
                                             true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {

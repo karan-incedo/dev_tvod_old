@@ -128,6 +128,24 @@ public class ContentDatum implements Serializable {
     @Expose
     List<Seo> seo = null;
 
+    private String playListName;
+    private String seriesName;
+
+    public String getSeriesName() {
+        return seriesName;
+    }
+
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
+    }
+
+    public String getPlayListName() {
+        return playListName;
+    }
+
+    public void setPlayListName(String playListName) {
+        this.playListName = playListName;
+    }
 
     public boolean isRenewable() {
         return renewable;
