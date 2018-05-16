@@ -30,7 +30,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final TextView textView;
     private final AppCMSPresenter appCMSPresenter;
     private final String title;
-    private final String fullText;
+    private String fullText;
     private boolean forceMaxLines;
     private final int moreForegroundColor;
     private final boolean useItalics;
@@ -53,6 +53,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
 
     @Override
     public void onGlobalLayout() {
+        fullText = fullText == null ? "" : fullText;
         int linesCompletelyVisible = textView.getHeight() /
                 textView.getLineHeight();
         if (textView.getLineCount() < linesCompletelyVisible) {

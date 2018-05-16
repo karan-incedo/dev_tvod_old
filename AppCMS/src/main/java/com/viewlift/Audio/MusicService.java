@@ -16,17 +16,21 @@
 
 package com.viewlift.Audio;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -48,6 +52,7 @@ import com.viewlift.Audio.playback.LocalPlayback;
 import com.viewlift.Audio.playback.Playback;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.Audio.utils.CarHelper;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 
 import java.lang.ref.WeakReference;
@@ -314,10 +319,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
-        // The service needs to continue running even after the bound client (usually a
-        // MediaController) disconnects, otherwise the music playback will stop.
-        // Calling startService(Intent) will keep the service running until it is explicitly killed.
-        startService(new Intent(getApplicationContext(), MusicService.class));
+        //The startService() method now throws an IllegalStateException if an app targeting Android 8.0
+        Utils.startService(getApplicationContext(),new Intent(getApplicationContext(), MusicService.class));
     }
 
     @Override

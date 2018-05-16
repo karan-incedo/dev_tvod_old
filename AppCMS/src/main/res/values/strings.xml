@@ -702,7 +702,7 @@
     <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>
     <string name="ssl_commerz_transaction_cancel">Your transaction was not completed as we did not receive a clear confirmation from the payment gateway. It will take us up to 15 minutes to confirm your payment. If your payment isn\'t confirmed via email within this period, please place your order again.</string>
     <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
-    <string name="ssl_commerz_transaction_successful">Transaction successful. Please wait for 3-4 hours while we update your subscription.</string>
+    <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
 </resources>
 
 

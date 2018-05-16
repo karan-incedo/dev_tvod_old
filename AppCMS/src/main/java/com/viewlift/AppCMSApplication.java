@@ -48,9 +48,9 @@ public class AppCMSApplication extends MultiDexApplication {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration
                 .Builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .migration(new DownloadMediaMigration())
-//                .deleteRealmIfMigrationNeeded()
+//                .deleteRealmIfMigrationNeeded()  // for Development purpose
                 .build();
         Realm.setDefaultConfiguration(config);
     }

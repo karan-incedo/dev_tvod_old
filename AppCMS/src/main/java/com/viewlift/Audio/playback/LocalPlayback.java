@@ -24,6 +24,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -51,6 +52,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
@@ -130,7 +132,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            mContext.startService(i);
+                            Utils.startService(mContext,i);
                         }
                     }
                 }

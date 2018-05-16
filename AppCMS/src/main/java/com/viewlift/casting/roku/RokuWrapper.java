@@ -275,7 +275,7 @@ public class RokuWrapper {
             in.close();
 
             //print result
-            System.out.println(response.toString());
+
         } catch (Exception e) {
             e.printStackTrace();
             //Log.e(TAG, e.getLocalizedMessage());
