@@ -52,7 +52,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     buildToolsVersion '27.0.3'
 
     def packageName
@@ -306,7 +306,7 @@ afterEvaluate {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation  fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
@@ -324,7 +324,7 @@ dependencies {
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$rootProject.ext.dexmakerVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation "junit:junit:$rootProject.ext.junitVersion"
-    implementation "com.android.support:multidex:$rootProject.ext.multiDexVersion"
+    implementation  "com.android.support:multidex:$rootProject.ext.multiDexVersion"
     implementation("com.android.support:support-compat:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
@@ -341,7 +341,7 @@ dependencies {
     implementation("com.android.support:support-fragment:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
-    implementation "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
+    implementation  "com.android.support:support-annotations:$rootProject.ext.androidsupportVersion"
     implementation("com.android.support:animated-vector-drawable:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'support-compat'
     })
@@ -376,37 +376,37 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvImplementation "com.android.support:leanback-v17:$rootProject.ext.leanbackVersion"
-    implementation "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
-    implementation "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
-    implementation "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
-    implementation "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
-    implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
-    implementation "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
-    implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    implementation  "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
+    tvImplementation  "com.android.support:leanback-v17:$rootProject.ext.leanbackVersion"
+    implementation  "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    implementation  "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
+    implementation  "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
+    implementation  "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
+    implementation  "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
+    implementation  "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
+    implementation  "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
+    implementation  "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
-    implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
+    implementation  "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
-    implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
-    implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
-    mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-    implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
+    implementation  "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+    implementation  "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
+    mobileImplementation  "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
+    implementation  "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-    mobileImplementation "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
-    implementation "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
+    mobileImplementation  "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+    implementation  "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
     implementation("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
-    implementation "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
+    implementation  "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     compileOnly "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     implementation("com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion", {
@@ -414,11 +414,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    implementation  "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-    implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-    implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-    tvImplementation project(path: ':firetvcustomkeyboard')
+    implementation  "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
+    implementation  "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
+    tvImplementation  project(path: ':firetvcustomkeyboard')
     implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
@@ -428,11 +428,11 @@ dependencies {
     mobileImplementation  "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation  project(':exoplayer-library')
     implementation  project(':exoplayer-library-ui')
-    implementation project(':library')
+    implementation  project(':library')
     implementation  project(':htmlspanner')
     implementation  project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+    implementation  "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
