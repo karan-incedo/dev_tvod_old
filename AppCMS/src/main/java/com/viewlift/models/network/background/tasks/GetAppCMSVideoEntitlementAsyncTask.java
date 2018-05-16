@@ -3,16 +3,13 @@ package com.viewlift.models.network.background.tasks;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
-import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
-
-import retrofit2.HttpException;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
 
 /**
  * Created by anas.azeem on 7/12/2017.
@@ -43,7 +40,7 @@ public class GetAppCMSVideoEntitlementAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 /*.subscribe(new Observer<AppCMSEntitlementResponse>() {
                     @Override
