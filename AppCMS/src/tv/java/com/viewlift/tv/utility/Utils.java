@@ -36,7 +36,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
-import com.viewlift.views.customviews.BaseView;
 
 import java.io.InputStream;
 import java.util.ArrayList;

@@ -2,9 +2,6 @@ package com.viewlift.casting.roku;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-
-import com.viewlift.casting.CastingUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
