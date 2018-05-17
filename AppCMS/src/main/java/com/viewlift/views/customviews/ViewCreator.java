@@ -4153,6 +4153,9 @@ public class ViewCreator {
                             } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
+                            if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
