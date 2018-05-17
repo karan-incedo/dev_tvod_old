@@ -110,8 +110,8 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
 
             }
         }.start();*/
-       // register();
-      //  com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+        register();
+        com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
 
     }
 
@@ -276,15 +276,15 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     /**
      * Register the app with ADM and send the registration ID to your server
      */
-  /*  private void register() {
+    private void register() {
         final ADM adm = new ADM(this);
         if (adm.isSupported()) {
             if (adm.getRegistrationId() == null) {
                 adm.startRegister();
             } else {
-                *//* Send the registration ID for this app instance to your server. *//*
-                *//* This is a redundancy since this should already have been performed at registration time from the onRegister() callback *//*
-                *//* but we do it because our python server doesn't save registration IDs. *//*
+                /* Send the registration ID for this app instance to your server.
+                 This is a redundancy since this should already have been performed at registration time from the onRegister() callback
+                 but we do it because our python server doesn't save registration IDs.*/
 
 
                 final String admRegistrationId = adm.getRegistrationId();
@@ -294,7 +294,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 srv.registerAppInstance(getApplicationContext(), adm.getRegistrationId());
             }
         }
-    }*/
+    }
 
     /**
      * Unregister the app with ADM.
