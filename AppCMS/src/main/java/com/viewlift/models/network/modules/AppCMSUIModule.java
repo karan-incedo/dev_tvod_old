@@ -195,6 +195,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_search_screen_key),
+                AppCMSUIKeyType.PAGE_SEARCH_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
@@ -716,6 +719,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SHOW_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_cast_key),
+                AppCMSUIKeyType.PAGE_VIDEO_CAST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_close_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_starrating_key),
@@ -1089,6 +1094,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_share_key),
                 AppCMSActionType.SHARE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_cast_key),
+                AppCMSActionType.CAST_VIDEO);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
                 AppCMSActionType.CLOSE);

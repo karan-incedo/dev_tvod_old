@@ -3,15 +3,11 @@ package com.viewlift.models.network.background.tasks;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
-import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 
-import retrofit2.HttpException;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
