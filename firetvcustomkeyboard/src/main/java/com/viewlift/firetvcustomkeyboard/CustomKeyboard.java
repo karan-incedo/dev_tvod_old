@@ -286,7 +286,7 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
     }
 
 
-    public ColorStateList getButtonTextColorDrawable(String defaultColor, String focusedColor){
+    public ColorStateList getButtonTextColorDrawable(String focusedColor,String defaultColor){
         String focusStateTextColor = focusedColor;
         String unFocusStateTextColor = defaultColor;
 
