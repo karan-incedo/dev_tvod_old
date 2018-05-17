@@ -187,9 +187,23 @@ public class TVViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         trayIndex = -1;
         for (int i = 0; i < modulesList.size(); i++) {
-            ModuleList module = modulesList.get(i);
-            if (!modulesToIgnore.contains(module.getView())) {
-                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+            ModuleList moduleInfo = modulesList.get(i);
+            if (!modulesToIgnore.contains(moduleInfo.getView())) {
+                Module moduleAPI = matchModuleAPIToModuleUI(moduleInfo, appCMSPageAPI, jsonValueKeyMap);
+
+                ModuleList module = appCMSPresenter.getAppCMSAndroidModules().getModuleListMap().get(moduleInfo.getBlockName());
+
+                if (module == null) {
+                    module = moduleInfo;
+                } else if (moduleInfo != null) {
+                    module.setId(moduleInfo.getId());
+                    module.setSettings(moduleInfo.getSettings());
+                    module.setSvod(moduleInfo.isSvod());
+                    module.setType(moduleInfo.getType());
+                    module.setView(moduleInfo.getView());
+                    module.setBlockName(moduleInfo.getBlockName());
+                }
+
                 View childView = createModuleView(context,
                         module,
                         moduleAPI,
