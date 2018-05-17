@@ -802,21 +802,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                !showAction.equals(action)) {
-                            if (!appCMSPresenter.launchVideoPlayer(data,
-                                    data.getGist().getId(),
-                                    currentPlayingIndex,
-                                    relatedVideoIds,
-                                    -1,
-                                    action)) {
-                                //Log.e(TAG, "Could not launch action: " +
-//                                    " permalink: " +
-//                                    permalink +
-//                                    " action: " +
-//                                    action);
-                            }
-                        } else {
+
                             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                     action,
                                     title,
@@ -831,7 +817,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    " action: " +
 //                                    action);
                             }
-                        }
+
                     }
                 }
 

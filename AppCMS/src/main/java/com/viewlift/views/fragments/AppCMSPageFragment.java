@@ -292,12 +292,13 @@ public class AppCMSPageFragment extends Fragment {
                 ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
             }
         }
-        if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
-            appCMSPresenter.videoPlayerView.pausePlayer();
+
+        if(appCMSPresenter != null) {
+            if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
+            }
+            appCMSPresenter.dismissPopupWindowPlayer(false);
         }
-
-        appCMSPresenter.dismissPopupWindowPlayer(false);
-
     }
 
     public void updateDataLists() {
@@ -671,9 +672,9 @@ public class AppCMSPageFragment extends Fragment {
 
         void onError(AppCMSBinder appCMSBinder);
 
-        void enterFullScreenVideoPlayer();
+       // void enterFullScreenVideoPlayer();
 
-        void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
+       // void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
     }
 
     private static class OnScrollGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {

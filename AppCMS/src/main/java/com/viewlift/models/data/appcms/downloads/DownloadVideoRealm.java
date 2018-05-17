@@ -19,6 +19,7 @@ import io.realm.annotations.PrimaryKey;
 
 
 public class DownloadVideoRealm extends RealmObject {
+
     @PrimaryKey
     private String videoIdDB;
     private String videoId;
@@ -56,6 +57,15 @@ public class DownloadVideoRealm extends RealmObject {
     public String artistName;
     public String directorName;
     public String songYear;
+    private String playListName;
+
+    public String getPlayListName() {
+        return playListName;
+    }
+
+    public void setPlayListName(String playListName) {
+        this.playListName = playListName;
+    }
 
     public String getArtistName() {
         return artistName;

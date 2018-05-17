@@ -63,6 +63,8 @@
     <string name="app_cms_forgot_password_title">Forgot Password</string>
     <string name="app_cms_reset_password_success_description">Follow the instructions in the email we just sent you to reset your password.</string>
     <string name="st_privacy_policy_icon_key">icon-privacy-policy</string>
+    <string name="st_privacy_policy_icon_key1">icon-privacy</string>
+    <string name="st_tos_icon_key">icon-terms</string>
     <string name="start_watching">Start Watching</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
@@ -527,7 +529,9 @@
     <string name="st_account_icon_key">icon-account</string>
     <string name="st_faq_icon_key">icon-faq</string>
     <string name="st_signin_icon_key">icon-signin</string>
+    <string name="st_user_icon_key">icon-user</string>
     <string name="st_signout_icon_key">icon-signout</string>
+    <string name="st_signup_icon_key">icon-signup</string>
     <string name="st_contact_icon_key">icon-contact</string>
     <string name="st_live_icon_key">icon-live</string>
     <string name="st_about_us_icon_key">icon-about</string>
@@ -702,7 +706,7 @@
     <string name="ssl_commerz_connection_error">Error in connectivity. Please try again.</string>
     <string name="ssl_commerz_transaction_cancel">Your transaction was not completed as we did not receive a clear confirmation from the payment gateway. It will take us up to 15 minutes to confirm your payment. If your payment isn\'t confirmed via email within this period, please place your order again.</string>
     <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
-    <string name="ssl_commerz_transaction_successful">Transaction successful. Please wait for 3-4 hours while we update your subscription.</string>
+    <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
 </resources>
 
 

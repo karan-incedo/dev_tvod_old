@@ -2,9 +2,6 @@ package com.viewlift.casting.roku;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-
-import com.viewlift.casting.CastingUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -275,7 +272,7 @@ public class RokuWrapper {
             in.close();
 
             //print result
-            System.out.println(response.toString());
+
         } catch (Exception e) {
             e.printStackTrace();
             //Log.e(TAG, e.getLocalizedMessage());

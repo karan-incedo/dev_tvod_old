@@ -810,7 +810,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
                 }
             }
-            System.out.println("streamingQualitySelectorCreatedp---"+streamingQualitySelectorCreated + "resource--" + getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)+"useHls--"+ useHls);
+
             if (playbackState == Player.STATE_READY /*checking if the playback state is ready*/
                     && getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) /*check if stream quality selector is enabled*/
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
