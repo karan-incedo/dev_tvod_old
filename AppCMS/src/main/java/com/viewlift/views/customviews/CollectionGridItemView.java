@@ -39,15 +39,12 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
-
-import net.nightwhistler.htmlspanner.TextUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -457,7 +454,7 @@ public class CollectionGridItemView extends BaseView {
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         bringToFront = false;
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
 
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getPosterImageUrl(),
@@ -604,7 +601,7 @@ public class CollectionGridItemView extends BaseView {
                                 componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
                                 0 < childViewWidth &&
                                 0 < childViewHeight) {
-                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
 
                             String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                     data.getGist().getBadgeImages().get_3x4(),

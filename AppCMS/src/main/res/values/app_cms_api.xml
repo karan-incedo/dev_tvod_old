@@ -314,6 +314,7 @@
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
+    <string name="app_cms_page_video_cast_key">castButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
@@ -409,6 +410,7 @@
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
+    <string name="app_cms_pagename_search_screen_key">Search Screen</string>
     <string name="app_cms_pagename_sign_up_key">Sign Up</string>
     <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 
@@ -432,6 +434,7 @@
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
+    <string name="app_cms_action_cast_key">castVideo</string>
     <string name="app_cms_action_close_key">close</string>
     <string name="app_cms_action_cancel_key">cancel</string>
     <string name="app_cms_action_search_key">search</string>
