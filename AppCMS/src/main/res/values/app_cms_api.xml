@@ -721,6 +721,8 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
+    <string name="sub_nav_page_key">Sub Navigation Screen</string>
+
     <!--AppCMS SSLCommerz Initiate API-->
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->
