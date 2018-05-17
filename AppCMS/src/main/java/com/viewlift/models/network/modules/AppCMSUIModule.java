@@ -828,8 +828,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_toggle_switch_type),
                 AppCMSUIKeyType.PAGE_SETTING_TOGGLE_SWITCH_TYPE);
 
-//        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
-//                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
                 AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
