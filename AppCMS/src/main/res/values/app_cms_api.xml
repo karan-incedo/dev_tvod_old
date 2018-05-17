@@ -118,6 +118,7 @@
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
     <string name="app_cms_page_button_switch_key">switchToSdCard</string>
+    <string name="app_cms_page_check_tc_policy_key">checkbox</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_ads_key">adView</string>
@@ -313,6 +314,7 @@
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
+    <string name="app_cms_page_video_cast_key">castButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
@@ -408,6 +410,7 @@
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
+    <string name="app_cms_pagename_search_screen_key">Search Screen</string>
     <string name="app_cms_pagename_sign_up_key">Sign Up</string>
     <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 
@@ -431,6 +434,7 @@
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
+    <string name="app_cms_action_cast_key">castVideo</string>
     <string name="app_cms_action_close_key">close</string>
     <string name="app_cms_action_cancel_key">cancel</string>
     <string name="app_cms_action_search_key">search</string>
@@ -471,6 +475,12 @@
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
+
+
+
+    <!-- TODo mergeg both bellow in later implementation AppCMS Release entitlement Detail API -->
+    <string name="app_cms_release_entitlement_api_url">%1$s/entitlement/release-user-entitlement-service?id=%2$s</string>
+    <string name="app_cms_prod_entitlement_api_url">%1$s/entitlement/prod-user-entitlement-service?id=%2$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
@@ -592,7 +602,7 @@
     <string name="subscription_ccavenue_payment_processor">ccavenue</string>
     <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
     <string name="subscription_sslcommerz_payment_processor">sslcommerz</string>
-    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCommerz</string>
+    <string name="subscription_sslcommerz_payment_processor_friendly">SSLCOMMERZ</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
@@ -677,6 +687,7 @@
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
     <string name="app_cms_page_path_article">article</string>
     <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
+    <string name="app_cms_deep_link_path_photos">photos</string>
     <string name="app_cms_page_article_detail_module">ArticleDetailModule</string>
     <string name="app_cms_page_photo_gallery_detail_module">PhotogalleryDetailModule</string>
     <!-- AppCMS Content Types -->

@@ -3,15 +3,11 @@ package com.viewlift.views.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Entity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +20,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.viewlift.Audio.AudioServiceHelper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
@@ -32,8 +29,6 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.downloads.DownloadStatus;
-import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
@@ -47,14 +42,10 @@ import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import rx.functions.Action1;
 
@@ -95,6 +86,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public static boolean isDownloading = true, isPlaylistDownloading = false;
     private Map<String, Boolean> filmDownloadIconUpdatedMap;
     private static RecyclerView recyclerView;
+    private ContentDatum audioPlayListDetail;
 
 
     public AppCMSPlaylistAdapter(Context context,
@@ -132,7 +124,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             if (moduleAPI.getContentData().get(0).getGist() != null &&
                     moduleAPI.getContentData().get(0).getGist().getMediaType() != null
                     && moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
-                adapterData.remove(0);
+                audioPlayListDetail = adapterData.remove(0);
             }
             allViews = new CollectionGridItemView[this.adapterData.size()];
         }
@@ -315,7 +307,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
         }
         updatePlaylistAllStatus();
     }
@@ -497,8 +489,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                         @Override
                         public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
-                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
-                            updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload,position);
+                            if(appCMSAudioDetailResult != null) {
+                               // adapterData.get(i).setPlayListName(audioPlayListDetail.getGist().getTitle());
+                                AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(id);
+                                audioApiDetail.getModules().get(0).getContentData().get(0).setPlayListName(audioPlayListDetail.getGist().getTitle());
+                                updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDowload, position);
+                            }
                         }
                     });
         }
@@ -752,7 +748,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                             UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference, id);
                     imageButton.setImageResource(R.drawable.ic_download_big);
                     imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                    int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                    int fillColor = appCMSPresenter.getGeneralTextColor();
                     imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                     imageButton.requestLayout();
                     if(addClickListener != null)

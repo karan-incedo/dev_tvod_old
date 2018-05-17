@@ -976,4 +976,32 @@ public class Utils {
         }
         return 0.0f;
     }
+
+
+    public static void broadcastCapabilities(Context context) {
+
+        boolean userIsSignedIn = false;
+       /* AppCMSPresenter appCMSPresenter = ((AppCMSApplication) ((Activity) context).getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        if (appCMSPresenter != null) {
+            userIsSignedIn = appCMSPresenter.isUserLoggedIn();
+        }*/
+        Intent intent = new Intent();
+        intent.setPackage("com.amazon.tv.launcher");
+        intent.setAction("com.amazon.device.CAPABILITIES");
+//        if (userIsSignedIn) {
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_ACTION", "air.com.snagfilms.PLAY");
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_PACKAGE", "air.com.snagfilms");
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_CLASS", "com.viewlift.tv.AppCmsTVSplashActivity");
+//            intent.putExtra("amazon.intent.extra.PLAY_INTENT_FLAGS", Intent.FLAG_ACTIVITY_NEW_TASK);
+        /*} else {
+            intent.putExtra("amazon.intent.extra.SIGNIN_INTENT_ACTION", "android.intent.action.VIEW");
+            intent.putExtra("amazon.intent.extra.PLAY_INTENT_PACKAGE", "air.com.snagfilms");
+            intent.putExtra("amazon.intent.extra.PLAY_INTENT_CLASS", "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity");
+            intent.putExtra("amazon.intent.extra.SIGNIN_INTENT_FLAGS", Intent.FLAG_ACTIVITY_NEW_TASK);
+        }*/
+        intent.putExtra("amazon.intent.extra.PARTNER_ID", "SNAEI_SF");
+
+        //Send the intent to the Launcher
+        context.sendBroadcast(intent);
+    }
 }

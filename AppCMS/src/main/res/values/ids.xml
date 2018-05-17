@@ -26,6 +26,7 @@
     <item name="exo_media_controller" type="id"/>
     <item name="exo_controller_container" type="id"/>
     <item name="seek_bar_parent" type="id"/>
+
     <item name="playlist_download_id" type="id">playlist_download_id</item>
     <item name="remove_all_download_id" type="id">remove_all_download_id</item>
 
@@ -41,6 +42,9 @@
     <item name="photo_gallery_grid_recyclerview" type="id">photoGalleryGridRecyclerView</item>
 
 
+    <item name="appCMS_tcp_check" type="id"/>
+    <item name="appCMS_sign_up_button" type="id"/>
+
     <item name="article_publisher" type="id"/>
     <item name="article_publish_date" type="id"/>
     <item name="article_feed_ads_id" type="id" />
@@ -52,6 +56,10 @@
     <item name="videoSubTitleOnHover" type="id">videoSubTitleOnHover</item>
     <item name="videoDescriptionOnHover" type="id">videoDescriptionOnHover</item>
     <item name="videoBackgroundOnHover" type="id">videoBackgroundOnHover</item>
+
+
+
+
 
 
 </resources>

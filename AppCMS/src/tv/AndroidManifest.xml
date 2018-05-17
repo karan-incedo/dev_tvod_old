@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:amazon="http://schemas.amazon.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.viewlift">
 
@@ -9,6 +10,17 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+
+    <!-- This permission ensures that no other application can intercept your
+    ADM messages. -->
+    <permission
+        android:name="air.com.viewlift.permission.RECEIVE_ADM_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="air.com.viewlift.permission.RECEIVE_ADM_MESSAGE" />
+
+    <!-- This permission allows your app access to receive push notifications
+    from ADM. -->
+    <uses-permission android:name="com.amazon.device.messaging.permission.RECEIVE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -23,13 +35,37 @@
 
     <!-- Allows changing locales -->
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="com.amazon.device.permission.COMRADE_CAPABILITIES" />
 
     <application
         android:banner="@drawable/tv_logo"
         android:label="@string/default_app_name"
-        android:icon="@drawable/app_logo_1"
-        tools:replace="android:label"
-        >
+        android:icon="@drawable/tv_logo"
+        tools:replace="android:label">
+
+        <amazon:enable-feature
+            android:name="com.amazon.device.messaging"
+            android:required="true" />
+
+        <service
+            android:name="com.viewlift.tv.adm.AppCMSADMMessageHandler"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.viewlift.tv.adm.AppCMSADMMessageAlertReceiver"
+            android:permission="com.amazon.device.messaging.permission.SEND">
+
+            <!-- To interact with ADM, your app must listen for the following intents. -->
+            <intent-filter>
+                <action android:name="com.amazon.device.messaging.intent.REGISTRATION" />
+                <action android:name="com.amazon.device.messaging.intent.RECEIVE" />
+
+                <!-- Replace the name in the category tag with your app's package name. -->
+                <category android:name="air.com.snagfilms" />
+            </intent-filter>
+        </receiver>
+
+
         <activity
             android:name="com.viewlift.tv.AppCmsTVSplashActivity"
             android:theme="@style/AppTheme">
@@ -38,17 +74,35 @@
 
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="air.com.snagfilms.PLAY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
+
         <activity
             android:name="com.viewlift.tv.views.activity.AppCmsTvErrorActivity"
-            android:label="@string/title_activity_app_cms_tv_error"></activity>
+            android:label="@string/title_activity_app_cms_tv_error" />
 
-        <activity android:name="com.viewlift.tv.views.activity.AppCmsHomeActivity"
-            android:label="AppCmsHomeActivity"/>
+        <activity
+            android:name="com.viewlift.tv.views.activity.AppCmsHomeActivity"
+            android:label="AppCmsHomeActivity" />
 
-        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity"/>
+        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity" >
+            <intent-filter>
+                <action android:name="air.com.snagfilms.PLAY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
-        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity"/>
+        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity" />
+        <receiver android:name=".tv.receiver.CapabilityRequestReceiver" >
+            <intent-filter>
+                <action android:name="com.amazon.device.REQUEST_CAPABILITIES" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

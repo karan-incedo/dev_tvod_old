@@ -24,6 +24,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -34,6 +35,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
@@ -50,6 +52,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
@@ -129,7 +132,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            mContext.startService(i);
+                            Utils.startService(mContext,i);
                         }
                     }
                 }
@@ -390,7 +393,8 @@ public final class LocalPlayback implements Playback {
                         ExoPlayerFactory.newSimpleInstance(
                                 mContext, new DefaultTrackSelector(), new DefaultLoadControl());
                 this.mExoPlayer.addListener(mEventListener);
-                localPlaybackInstance.mExoPlayer = mExoPlayer;
+                if(localPlaybackInstance != null)
+                    localPlaybackInstance.mExoPlayer = mExoPlayer;
             }
 
             // Android "O" makes much greater use of AudioAttributes, especially
@@ -425,7 +429,7 @@ public final class LocalPlayback implements Playback {
             appCMSPresenter.sendBeaconMessage(audioData.getGist().getId(),
                     audioData.getGist().getPermalink(),
                     null,
-                    mExoPlayer.getCurrentPosition(),
+                    mExoPlayer != null ? mExoPlayer.getCurrentPosition() : 0,
                     false,
                     AppCMSPresenter.BeaconEvent.PLAY,
                     audioData.getGist().getMediaType(),
@@ -612,10 +616,11 @@ public final class LocalPlayback implements Playback {
         }
     }
 
-    private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
+    private final class ExoPlayerEventListener implements Player.EventListener {
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            // Nothing to do.
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
         }
 
         @Override

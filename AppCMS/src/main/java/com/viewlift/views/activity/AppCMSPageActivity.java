@@ -329,7 +329,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 if(checkPlayServices()) {
                     Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                            .setFlags(
                                     Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     if (fullScreenIntent.getParcelableExtra(
                             PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
@@ -388,25 +388,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         false,
                                         false);
 
-                                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                        updatedAppCMSBinder != null &&
-                                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                        appCMSPresenter.unrestrictPortraitOnly();
-                                        if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                                ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            exitFullScreenVideoPlayer(true);
-                                        }
-                                    } else {
-                                        if (ViewCreator.playerViewFullScreenEnabled()) {
-                                            enterFullScreenVideoPlayer();
-                                        } else {
-                                            ViewCreator.enableFullScreenMode();
-                                        }
-                                    }
-                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -495,7 +476,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
                     return;
                 }
-                enterFullScreenVideoPlayer();
+                //enterFullScreenVideoPlayer();
             }
         };
 
@@ -512,7 +493,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     return;
                 }
                 boolean relaunchPage = intent.getBooleanExtra(getString(R.string.exit_fullscreen_relaunch_page_extra_key), true);
-                exitFullScreenVideoPlayer(relaunchPage);
+                //exitFullScreenVideoPlayer(relaunchPage);
             }
         };
 
@@ -544,10 +525,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 appCMSBinder,
                                                 appCMSPresenter.isUserLoggedIn());
                                 if (appCMSBinder != null) {
-                                    appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
-                                            appCMSBinder.getPageId(),
-                                            null,
-                                            appCMSBinderAction);
+                                    try {
+                                        appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
+                                                appCMSBinder.getPageId(),
+                                                null,
+                                                appCMSBinderAction);
+                                    }catch(Exception ex){}
                                 }
                             }
                         }
@@ -593,14 +576,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.setShowNetworkConnectivity(false);
                         appCMSPresenter.cancelAlertDialog();
                     }
-
-                    if (isConnected) {
-                        setCastingInstance();
-                        castDisabled = false;
-                    } else {
-                        CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
-                        castDisabled = true;
-                    }
+                    try {
+                        if (isConnected) {
+                            setCastingInstance();
+                            castDisabled = false;
+                        } else {
+                            CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
+                            castDisabled = true;
+                        }
+                    }catch(Exception ex){}
                 }
                 if (activeNetwork != null) {
                     appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
@@ -756,7 +740,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     return;
                 }
 
-                ViewCreator.clearPlayerView();
+                //ViewCreator.clearPlayerView();
                 handleLaunchPageAction(updatedAppCMSBinder,
                         false,
                         false,
@@ -817,13 +801,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
 
-        registerReceiver(uaReceiveChannelIdReceiver,
-                new IntentFilter("receive_ua_channel_id"));
-        registerReceiver(uaReceiveAppKeyReceiver,
-                new IntentFilter("receive_ua_app_key"));
-        registerReceiver(gmsReceiveInstanceIdReceiver,
-                new IntentFilter("receive_gms_instance_id"));
-
+        try {
+            registerReceiver(uaReceiveChannelIdReceiver,
+                    new IntentFilter("receive_ua_channel_id"));
+            registerReceiver(uaReceiveAppKeyReceiver,
+                    new IntentFilter("receive_ua_app_key"));
+            registerReceiver(gmsReceiveInstanceIdReceiver,
+                    new IntentFilter("receive_gms_instance_id"));
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         Intent registerInitReceivers = new Intent("INITIALIZATION");
         registerInitReceivers.putExtra("init_action", "register_receiver");
         sendBroadcast(registerInitReceivers);
@@ -1137,7 +1124,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         try {
             super.onResume();
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1366,35 +1353,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             pendingDeeplinkUri = null;
         }
 
-        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
-                isActive) {
-            if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
-                if (!BaseView.isTablet(this)) {
-                    appCMSPresenter.unrestrictPortraitOnly();
-                    if (BaseView.isLandscape(this) ||
-                            ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        exitFullScreenVideoPlayer(true);
-                    }
-                } else {
-                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        ViewCreator.enableFullScreenMode();
-                    }
-                }
-
-                ViewCreator.resumePlayer(appCMSPresenter, this);
-            } else {
-                if (BaseView.isTablet(this)) {
-                    appCMSPresenter.restrictPortraitOnly();
-                }
-                ViewCreator.pausePlayer();
-            }
-        }
     }
 
     private void refreshPageData() {
@@ -1785,30 +1743,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void enterFullScreenVideoPlayer() {
-        hideSystemUI(getWindow().getDecorView());
-        if (!BaseView.isLandscape(this)) {
-            appCMSPresenter.rotateToLandscape();
-        }
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.restrictLandscapeOnly();
-        }
-        if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
-        }
-        ViewCreator.openFullScreenVideoPlayer(this);
-    }
-
-    @Override
-    public void exitFullScreenVideoPlayer(boolean launchPage) {
-        showSystemUI(getWindow().getDecorView());
-        appCMSPresenter.unrestrictPortraitOnly();
-        ViewCreator.closeFullScreenVideoPlayer(this);
-        if (launchPage) {
-            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
-        }
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -2628,7 +2562,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCtaBackgroundColor() != null ) {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor());
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
@@ -2784,7 +2718,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
             appCMSPresenter.setCurrentArticleIndex(-1);
             action = getString(R.string.app_cms_action_articlepage_key);
-        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery))) {
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
+                pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
         }
 
@@ -3184,12 +3119,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getPageName() != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
 
-        } else {
+        } /*else {
             ViewCreator.pausePlayer();
             ViewCreator.clearPlayerView();
-        }
+        }*/
         ViewCreator.cancelBeaconPing();
-        ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
+       // ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
     }
 
     @Override
@@ -3254,7 +3189,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
+       /* switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 ViewCreator.pausePlayer();
                 break;
@@ -3274,7 +3209,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             default:
                 break;
-        }
+        }*/
     }
 
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
@@ -3322,11 +3257,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
-            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            textColor = appCMSPresenter.getGeneralTextColor();
         } else {
             buttonColor = Color.parseColor("#F81004");
             textColor = Color.parseColor("#ffffff");

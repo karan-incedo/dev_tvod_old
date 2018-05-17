@@ -1,19 +1,15 @@
 package com.viewlift.ccavenue.screens;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
@@ -43,8 +39,8 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
             appCMSPresenter.restrictPortraitOnly();
         }
         try {
-            String colorCode = getIntent().getStringExtra("color_theme");
-            elevated_button_card.setBackgroundColor(Color.parseColor(colorCode));
+            int colorCode = getIntent().getIntExtra("color_theme",R.color.colorNavBarText);
+            elevated_button_card.setBackgroundColor(colorCode);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

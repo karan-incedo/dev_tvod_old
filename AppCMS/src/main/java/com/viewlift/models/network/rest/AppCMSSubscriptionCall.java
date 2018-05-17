@@ -6,7 +6,6 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
@@ -37,12 +36,14 @@ public class AppCMSSubscriptionCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken,
+    public void call(String url, String authToken, String xApiKey,
                      final Action1<AppCMSSubscriptionResult> subscriptionResultAction1,
                      SubscriptionRequest request) throws Exception {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+            authTokenMap.put("x-api-key", xApiKey);
+
             appCMSSubscriptionRest.request(url, authTokenMap, request).enqueue(
                     new Callback<AppCMSSubscriptionResult>() {
                         @Override

@@ -93,6 +93,14 @@ public class AppCmsSearchFragment extends BaseFragment {
         bindSearchComponent();
     }
 
+    public static AppCmsSearchFragment newInstance(String searchString) {
+
+        Bundle args = new Bundle();
+        args.putString("searchString", searchString);
+        AppCmsSearchFragment fragment = new AppCmsSearchFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {

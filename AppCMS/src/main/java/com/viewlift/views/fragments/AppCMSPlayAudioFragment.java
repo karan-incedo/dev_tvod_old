@@ -15,6 +15,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -29,17 +30,14 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +45,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.cast.Cast;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
@@ -56,10 +53,10 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.ViewCreator;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -342,8 +339,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     private void updataeShuffleState() {
         if (appCMSPresenter.getAudioShuffledPreference()) {
-            int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            int tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
             applyTintToDrawable(shuffle.getBackground(), tintColor);
         } else {
 
@@ -377,28 +373,32 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             controls.skipToPrevious();
         }
         if (view == playPauseTrack) {
-            PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
-            if (state != null) {
-                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-                switch (state.getState()) {
-                    case PlaybackStateCompat.STATE_PLAYING: // fall through
-                    case PlaybackStateCompat.STATE_BUFFERING:
-                        controls.pause();
-                        stopSeekbarUpdate();
-                        break;
-                    case PlaybackStateCompat.STATE_PAUSED:
-                    case PlaybackStateCompat.STATE_STOPPED:
-                        controls.play();
-                        scheduleSeekbarUpdate();
-                        audioPreview(true);
-                        break;
-                    default:
+            if(MediaControllerCompat.getMediaController(getActivity()) != null) {
+                PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
+                if (state != null) {
+                    MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+                    switch (state.getState()) {
+                        case PlaybackStateCompat.STATE_PLAYING: // fall through
+                        case PlaybackStateCompat.STATE_BUFFERING:
+                            controls.pause();
+                            stopSeekbarUpdate();
+                            break;
+                        case PlaybackStateCompat.STATE_PAUSED:
+                        case PlaybackStateCompat.STATE_STOPPED:
+                            controls.play();
+                            scheduleSeekbarUpdate();
+                            audioPreview(true);
+                            break;
+                        default:
+                    }
                 }
             }
         }
         if (view == nextTrack) {
-            MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            controls.skipToNext();
+            try {
+                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+                controls.skipToNext();
+            }catch(Exception ex){}
         }
 
         if (view == playlist) {
@@ -514,7 +514,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateDuration(description);
                 onUpdateMetaChange.updateMetaData(description);
                 System.out.println("Decription not null");
-                getActivity().startService(new Intent(getActivity(), MusicService.class));
+                Utils.startService(getActivity(),new Intent(getContext(), MusicService.class));
             }
         }
     }

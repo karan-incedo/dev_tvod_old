@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -54,6 +53,7 @@ public class AppCMSAndroidModuleCall {
     private static final String[][] jsonFromAssets = {
             {"trayXX", "trayXX.json"}
     };
+    private String xApiKey;
 
     @Inject
     public AppCMSAndroidModuleCall(AssetManager assetManager,
@@ -67,11 +67,14 @@ public class AppCMSAndroidModuleCall {
     }
 
     public void call(String bundleUrl,
+                     String xApiKey,
                      String version,
                      boolean forceLoadFromNetwork,
                      boolean bustCache,
                      Action1<AppCMSAndroidModules> readyAction) {
         Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
+
+        this.xApiKey = xApiKey;
 
         AppCMSAndroidModules appCMSAndroidModules = new AppCMSAndroidModules();
 
@@ -165,15 +168,17 @@ public class AppCMSAndroidModuleCall {
         Response<JsonElement> moduleListResponse = null;
         try {
 
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("x-api-key", xApiKey);
 
             if (bustCache) {
                 StringBuilder urlWithCacheBuster = new StringBuilder(blocksBaseUrl);
                 urlWithCacheBuster.append("?x=");
                 urlWithCacheBuster.append(new Date().getTime());
                 moduleListResponse =
-                        appCMSAndroidModuleRest.get(urlWithCacheBuster.toString()).execute();
+                        appCMSAndroidModuleRest.get(urlWithCacheBuster.toString(), authTokenMap).execute();
             } else {
-                moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
+                moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl, authTokenMap).execute();
             }
             System.out.println("Retrieving module list from Network "+blocksBaseUrl);
             if (moduleListResponse != null &&
@@ -231,7 +236,6 @@ public class AppCMSAndroidModuleCall {
                     Log.d(TAG, "Start time: " + startTime);
                     ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
                     moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
-                    System.out.println("Retrieving module list from file "+ moduleDataMap.appCMSAndroidModule);
                     long endTime = new Date().getTime();
                     Log.d(TAG, "End time: " + endTime);
                     Log.d(TAG, "Time elapsed: " + (endTime - startTime));

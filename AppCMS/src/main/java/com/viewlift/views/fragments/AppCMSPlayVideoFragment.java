@@ -397,7 +397,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     if (onUpdateContentDatumEvent != null) {
                                         AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
                                                 = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                                .action(getString(R.string.app_cms_page_play_key))
+                                                .action(appCMSPresenter.getStringDataById(getActivity(),R.string.app_cms_page_play_key))
                                                 .closerLauncher(false)
                                                 .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
                                                 .currentlyPlayingIndex(playIndex)
@@ -1008,6 +1008,17 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onDestroyView() {
+
+        if (appCMSPresenter.isAppSVOD() && !freeContent) {
+            if (entitlementCheckTimerTask != null) {
+                entitlementCheckTimerTask.cancel();
+            }
+
+            if (entitlementCheckTimer != null) {
+                entitlementCheckTimer.cancel();
+            }
+        }
+
         videoPlayerView.setOnPlayerStateChanged(null);
         beaconPing.sendBeaconPing = false;
         beaconPing.runBeaconPing = false;
@@ -1178,6 +1189,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                             .getGist()
                             .getId(),
                     updatedContentDatum -> {
+                        if (updatedContentDatum==null){
+                            getActivity().finish();
+                            return;
+                        }
                         onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                         appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                             if (videoPlayerView != null && appCMSSignedURLResult != null) {
@@ -1341,7 +1356,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
             videoPlayerMainContainer.setVisibility(View.VISIBLE);
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 
@@ -1368,7 +1383,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             public void onFinish() {
                 contentRatingMainContainer.setVisibility(View.GONE);
                 videoPlayerMainContainer.setVisibility(View.VISIBLE);
-                videoPlayerView.startPlayer();
+                videoPlayerView.startPlayer(true);
             }
         }.start();
     }
@@ -1504,7 +1519,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.pausePlayer();
                 }
@@ -1524,7 +1539,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onResumeVideo() {
         resumeVideo();
         if (videoPlayerView != null) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 

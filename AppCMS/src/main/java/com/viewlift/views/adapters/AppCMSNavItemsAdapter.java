@@ -21,6 +21,8 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -35,7 +37,7 @@ import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
 public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAdapter.ViewHolder> {
     //private static final String TAG = "AppCMSNavItemsAdapter";
 
-    private final Navigation navigation;
+    private Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final int textColor;
@@ -53,12 +55,42 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                  boolean userLoggedIn,
                                  boolean userSubscribed,
                                  int textColor) {
-        this.navigation = navigation;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.userLoggedIn = userLoggedIn;
         this.userSubscribed = userSubscribed;
         this.textColor = textColor;
+//        this.navigation = navigation;
+        removePlans(navigation);
+    }
+
+    void removePlans(Navigation nav) {
+        navigation = new Navigation();
+        if (userSubscribed) {
+            navigation.setLeft(nav.getLeft());
+            navigation.setNavigationFooter(nav.getNavigationFooter());
+            navigation.setRight(nav.getRight());
+            navigation.setSettings(nav.getSettings());
+            navigation.setTabBar(nav.getTabBar());
+            List<NavigationPrimary> npList = new ArrayList<>();
+            for (int i = 0; i < nav.getNavigationPrimary().size(); i++) {
+                NavigationPrimary np = nav.getNavigationPrimary().get(i);
+                if (!appCMSPresenter.isViewPlanPage(np.getPageId())) {
+                    npList.add(np);
+                }
+            }
+            navigation.setNavigationPrimary(npList);
+            List<NavigationUser> nuList = new ArrayList<>();
+            for (int i = 0; i < nav.getNavigationUser().size(); i++) {
+                NavigationUser nu = nav.getNavigationUser().get(i);
+                if (!appCMSPresenter.isViewPlanPage(nu.getPageId())) {
+                    nuList.add(nu);
+                }
+            }
+            navigation.setNavigationUser(nuList);
+        } else {
+            navigation = nav;
+        }
     }
 
     @Override
@@ -189,7 +221,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     try {
                                         DownloadTabSelectorBus.instanceOf().setTab(VIDEO_TAB);
                                         appCMSPresenter.setDownloadTabSelected(VIDEO_TAB);
-                                    }catch(NullPointerException e){
+                                    } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
@@ -257,9 +289,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                                 null);
                                         return;
                                     }
-                                    Boolean appBarPresent=false;
-                                    if(appCMSPresenter.isViewPlanPage(navigationUser.getPageId())){
-                                        appBarPresent=true;
+                                    Boolean appBarPresent = false;
+                                    if (appCMSPresenter.isViewPlanPage(navigationUser.getPageId())) {
+                                        appBarPresent = true;
                                     }
                                     if (!appCMSPresenter.navigateToPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(),

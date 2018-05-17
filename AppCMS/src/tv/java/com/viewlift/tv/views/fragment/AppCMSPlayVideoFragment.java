@@ -139,6 +139,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String policyCookie;
     private String keyPairIdCookie;
     private ContentDatum contentDatum;
+    private boolean playWhenReady;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -742,7 +743,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
     }
 
-    private void pauseVideo() {
+    public void pauseVideo() {
        /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
@@ -766,7 +767,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 videoPlayerView.enableController();
             }
             videoPlayerInfoContainer.setVisibility(VISIBLE);
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(playWhenReady);
             //tvVideoPlayerView.resumePlayer();
             if (beaconMessageThread != null) {
                 beaconMessageThread.sendBeaconPing = true;
@@ -802,10 +803,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         appCMSPresenter.setCancelAllLoads(false);
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
-        }  /*else {
-            tvVideoPlayerView.resumePlayer();
+        }  else {
+            resumeVideo();
             Log.d(TAG, "Resuming playback");
-        }*/
+        }
 
 
         if (shouldRequestAds && !isADPlay) {
@@ -820,6 +821,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     @Override
     public void onPause() {
+        playWhenReady = videoPlayerView.getPlayer().getPlayWhenReady();
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {

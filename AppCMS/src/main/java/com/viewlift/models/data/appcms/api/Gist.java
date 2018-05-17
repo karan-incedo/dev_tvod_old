@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.List;
 
 @UseStag
 public class Gist implements Serializable {
@@ -119,6 +120,82 @@ public class Gist implements Serializable {
     @SerializedName("summaryText")
     @Expose
     String summaryText;
+
+    @SerializedName("shortName")
+    @Expose
+    String shortName;
+
+    @SerializedName("email")
+    @Expose
+    String email;
+
+    @SerializedName("leagues")
+    @Expose
+    List<GameTeamGist> leagues;
+
+    @SerializedName("primaryCategoryTitle")
+    @Expose
+    String primaryCategoryTitle;
+
+    @SerializedName("venues")
+    @Expose
+    List<GameTeamGist> venues;
+
+    @SerializedName("dataId")
+    @Expose
+    String dataId;
+
+    @SerializedName("website")
+    @Expose
+    String website;
+
+    @SerializedName("body")
+    @Expose
+    String body;
+
+    @SerializedName("featuredTag")
+    @Expose
+    FeaturedTag featuredTag;
+
+    @SerializedName("updatedDate")
+    @Expose
+    String updatedDate;
+
+    @SerializedName("ticketUrl")
+    @Expose
+    String ticketUrl;
+
+    @SerializedName("rsvpUrl")
+    @Expose
+    String rsvpUrl;
+
+    @SerializedName("livestreamUrl")
+    @Expose
+    String livestreamUrl;
+
+    @SerializedName("webliveUrl")
+    @Expose
+    String webliveUrl;
+
+    @SerializedName("gameSchedule")
+    @Expose
+    List<GameSchedule> gameSchedule = null;
+
+    @SerializedName("homeTeam")
+    @Expose
+    GameTeamGist homeTeam;
+
+    @SerializedName("awayTeam")
+    @Expose
+    GameTeamGist awayTeam;
+
+    @SerializedName("dataProvider")
+    @Expose
+    DataProvider dataProvider;
+
+    @SerializedName("metadata")
+    @Expose
+    List<MetaData> metadata = null;
 
     String artistName;
     String directorName;
@@ -422,6 +499,158 @@ public class Gist implements Serializable {
 
     public void setDownloadStatus(String downloadStatus) {
         this.downloadStatus = downloadStatus;
+    }
+
+    public GameTeamGist getHomeTeam() {
+        return homeTeam;
+    }
+
+    public void setHomeTeam(GameTeamGist homeTeam) {
+        this.homeTeam = homeTeam;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<GameTeamGist> getLeagues() {
+        return leagues;
+    }
+
+    public void setLeagues(List<GameTeamGist> leagues) {
+        this.leagues = leagues;
+    }
+
+    public String getPrimaryCategoryTitle() {
+        return primaryCategoryTitle;
+    }
+
+    public void setPrimaryCategoryTitle(String primaryCategoryTitle) {
+        this.primaryCategoryTitle = primaryCategoryTitle;
+    }
+
+    public List<GameTeamGist> getVenues() {
+        return venues;
+    }
+
+    public void setVenues(List<GameTeamGist> venues) {
+        this.venues = venues;
+    }
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public FeaturedTag getFeaturedTag() {
+        return featuredTag;
+    }
+
+    public void setFeaturedTag(FeaturedTag featuredTag) {
+        this.featuredTag = featuredTag;
+    }
+
+    public String getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(String updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public String getTicketUrl() {
+        return ticketUrl;
+    }
+
+    public void setTicketUrl(String ticketUrl) {
+        this.ticketUrl = ticketUrl;
+    }
+
+    public String getRsvpUrl() {
+        return rsvpUrl;
+    }
+
+    public void setRsvpUrl(String rsvpUrl) {
+        this.rsvpUrl = rsvpUrl;
+    }
+
+    public String getLivestreamUrl() {
+        return livestreamUrl;
+    }
+
+    public void setLivestreamUrl(String livestreamUrl) {
+        this.livestreamUrl = livestreamUrl;
+    }
+
+    public String getWebliveUrl() {
+        return webliveUrl;
+    }
+
+    public void setWebliveUrl(String webliveUrl) {
+        this.webliveUrl = webliveUrl;
+    }
+
+    public List<GameSchedule> getGameSchedule() {
+        return gameSchedule;
+    }
+
+    public void setGameSchedule(List<GameSchedule> gameSchedule) {
+        this.gameSchedule = gameSchedule;
+    }
+
+    public GameTeamGist getAwayTeam() {
+        return awayTeam;
+    }
+
+    public void setAwayTeam(GameTeamGist awayTeam) {
+        this.awayTeam = awayTeam;
+    }
+
+    public DataProvider getDataProvider() {
+        return dataProvider;
+    }
+
+    public void setDataProvider(DataProvider dataProvider) {
+        this.dataProvider = dataProvider;
+    }
+
+    public List<MetaData> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<MetaData> metadata) {
+        this.metadata = metadata;
     }
 }
 

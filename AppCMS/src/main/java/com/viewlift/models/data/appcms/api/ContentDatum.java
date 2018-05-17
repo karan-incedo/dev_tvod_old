@@ -124,8 +124,28 @@ public class ContentDatum implements Serializable {
     @Expose
     String mediaType;
 
+    @SerializedName("seo")
+    @Expose
+    List<Seo> seo = null;
 
+    private String playListName;
+    private String seriesName;
 
+    public String getSeriesName() {
+        return seriesName;
+    }
+
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
+    }
+
+    public String getPlayListName() {
+        return playListName;
+    }
+
+    public void setPlayListName(String playListName) {
+        this.playListName = playListName;
+    }
 
     public boolean isRenewable() {
         return renewable;
@@ -407,5 +427,12 @@ public class ContentDatum implements Serializable {
         this.audioAssets = audioAssets;
     }
 
+    public List<Seo> getSeo() {
+        return seo;
+    }
+
+    public void setSeo(List<Seo> seo) {
+        this.seo = seo;
+    }
 
 }

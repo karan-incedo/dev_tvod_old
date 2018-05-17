@@ -28,6 +28,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -73,6 +75,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCmsTvErrorFragment.ErrorFragmentListener {
 
     public static final String DIALOG_FRAGMENT_TAG = "text_overlay";
+    public static final int OPEN_SEARCH_RESULT_CODE = 9182389;
     private final String TAG = AppCmsHomeActivity.class.getName();
     public boolean isActive;
     RelativeLayout navParentContainer;
@@ -101,6 +104,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
+            if (getIntent().getAction().equalsIgnoreCase(getString(R.string.LAUNCHER_DEEPLINK_ACTION))) {
+                ContentDatum contentDatum = new ContentDatum();
+                Gist gist = new Gist();
+                gist.setId(getIntent().getData().toString());
+                contentDatum.setGist(gist);
+                appCMSPresenter.launchTVVideoPlayer(contentDatum, 0, null, 0, null);
+            }
+        }
         isActive = true;
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder = null;
@@ -316,6 +328,32 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
                     AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getFragmentManager().findFragmentById(R.id.home_placeholder);
                     parentFragment.updateSeasonData(appCMSSwitchSeasonBinder);
+                } else if (intent.getAction().equals(getString(R.string.intent_msg_action))) {
+//                    Toast.makeText(AppCmsHomeActivity.this, intent.getStringExtra(getString(R.string.json_data_msg_key)), Toast.LENGTH_SHORT).show();
+                    if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_play))) {
+                        String contentId = intent.getStringExtra(getString(R.string.json_content_id_key));
+                        if (contentId != null) {
+                            ContentDatum contentDatum = new ContentDatum();
+                            Gist gist = new Gist();
+                            gist.setId(contentId);
+                            contentDatum.setGist(gist);
+                            appCMSPresenter.launchTVVideoPlayer(
+                                    contentDatum,
+                                    0,
+                                    null,
+                                    0,
+                                    null);
+                        } else {
+                            Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_display_results))) {
+                        String searchString = intent.getStringExtra(getString(R.string.json_seek_search_string_key));
+                        appCMSPresenter.openSearch("Search", "Search", searchString);
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_play))) {
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_pause))) {
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_fast_forward))) {
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_rewind))) {
+                    }
                 }
             }
         };
@@ -465,6 +503,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
                 ((AppCmsMyProfileFragment) fragment).updateAdapterData(appCmsBinder);
             }
+
+            if (resultCode == OPEN_SEARCH_RESULT_CODE) {
+                new Handler().postDelayed(() -> {
+                    appCMSPresenter.openSearch("Search","Search",
+                            data.getStringExtra(getString(R.string.json_seek_search_string_key)));
+                }, 0);
+            }
         }
 
     }
@@ -474,6 +519,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         super.onResume();
         registerReceivers();
         isActive = true;
+        appCMSPresenter.tryLaunchingPlayerFromDeeplink(null);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent != null && intent.getAction() != null && intent.getData() != null) {
+            if (intent.getAction().equalsIgnoreCase(getString(R.string.LAUNCHER_DEEPLINK_ACTION))) {
+                appCMSPresenter.tryLaunchingPlayerFromDeeplink(null);
+            }
+        }
     }
 
     private void registerReceivers() {
@@ -490,7 +546,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_LINK_YOUR_ACCOUNT));
-
+        registerReceiver(presenterActionReceiver, new IntentFilter(getString(R.string.intent_msg_action)));
     }
 
     @Override
@@ -623,18 +679,18 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             retryCallBinder.getContentDatum(),
                             retryCallBinder.isCloselauncher(),
                             -1,
-                            null
-                    );
+                            null,
+                            null);
                     break;
                 case VIDEO_ACTION:
                     appCMSPresenter.launchTVVideoPlayer(
                             retryCallBinder.getContentDatum(),
-                            -1,
+                            0,
                             retryCallBinder.getContentDatum().getContentDetails() != null
                                     ? retryCallBinder.getContentDatum().getContentDetails().getRelatedVideoIds()
                                     : null,
-                            retryCallBinder.getContentDatum().getGist().getWatchedTime()
-                    );
+                            retryCallBinder.getContentDatum().getGist().getWatchedTime(),
+                            null);
 
                     break;
                 case PAGE_ACTION:
@@ -1103,7 +1159,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         if (null != fragment && fragment instanceof AppCmsSearchFragment) {
             getFragmentManager().popBackStack();
         }
-        AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
+        AppCmsSearchFragment searchFragment = AppCmsSearchFragment.newInstance(appCmsBinder.getSearchQuery().toString());
         getFragmentManager().beginTransaction().replace(R.id.home_placeholder, searchFragment,
                 tag).addToBackStack(tag).commit();
         selectNavItem(tag);
