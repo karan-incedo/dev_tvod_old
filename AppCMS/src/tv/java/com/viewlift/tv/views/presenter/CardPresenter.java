@@ -242,10 +242,11 @@ public class CardPresenter extends Presenter {
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
                                     Utils.getViewYAxisAsPerScreen(mContext, height));
-                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                            tvTitle.setSelected(true);
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
                             parentLayout.addView(tvTitle);
                             parentLayout.addChildComponentAndView(tvTitle, component);
-                            tvTitle.setMaxLines(2);
+                            tvTitle.setMaxLines(1);
                             tvTitle.setTextColor(Color.parseColor(mAppCmsPresenter.getAppCtaTextColor()));
                             parentLayout.setThumbnailTitle(tvTitle);
                         } else if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_TITLE_ON_HOVER_KEY)) {

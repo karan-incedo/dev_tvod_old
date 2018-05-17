@@ -223,7 +223,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
         clientManager.initialize(this.getApplicationContext(),
                 alexaSkillId,
-                AlexaClientManager.SKILL_STAGE_DEVELOPMENT,
+                AlexaClientManager.SKILL_STAGE_LIVE,
                 capabilities);
     }
 
