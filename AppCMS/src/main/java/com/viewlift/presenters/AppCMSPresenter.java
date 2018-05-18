@@ -3724,32 +3724,38 @@ public class AppCMSPresenter {
     }
 
     public boolean useCCAvenue() {
-        boolean useCCAve = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
-                (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
-                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
-                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
-                !TextUtils.isEmpty(countryCode) &&
-                appCMSMain != null &&
-                appCMSMain.getPaymentProviders() != null &&
-                appCMSMain.getPaymentProviders().getCcav() != null &&
-                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
-                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
+        boolean useCCAve = false;
+        if (currentActivity != null) {
+            useCCAve = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+                    (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
+                            (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                    !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                    TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                    !TextUtils.isEmpty(countryCode) &&
+                    appCMSMain != null &&
+                    appCMSMain.getPaymentProviders() != null &&
+                    appCMSMain.getPaymentProviders().getCcav() != null &&
+                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                    appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
+        }
         return useCCAve;
     }
 
     public boolean useSSLCommerz() {
-        boolean useSSLCommerz = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
-                (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
-                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
-                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
-                !TextUtils.isEmpty(countryCode) &&
-                appCMSMain != null &&
-                appCMSMain.getPaymentProviders() != null &&
-                appCMSMain.getPaymentProviders().getSslCommerz() != null &&
-                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
-                appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
+        boolean useSSLCommerz = false;
+        if (currentActivity != null) {
+            useSSLCommerz = (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+                    (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
+                            (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                    !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                    TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                    !TextUtils.isEmpty(countryCode) &&
+                    appCMSMain != null &&
+                    appCMSMain.getPaymentProviders() != null &&
+                    appCMSMain.getPaymentProviders().getSslCommerz() != null &&
+                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
+                    appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
+        }
         return useSSLCommerz;
     }
 
@@ -7362,14 +7368,16 @@ public class AppCMSPresenter {
 
                 appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
-                        appCMSWatchlistCall.call(
-                                currentActivity.getString(R.string.app_cms_watchlist_api_url,
-                                        apiBaseUrl, //getLoggedInUser(currentActivity,
-                                        siteId,
-                                        getLoggedInUser()),
-                                getAuthToken(),
-                                apikey,
-                                watchlist);
+                        if (currentActivity != null) {
+                            appCMSWatchlistCall.call(
+                                    currentActivity.getString(R.string.app_cms_watchlist_api_url,
+                                            apiBaseUrl, //getLoggedInUser(currentActivity,
+                                            siteId,
+                                            getLoggedInUser()),
+                                    getAuthToken(),
+                                    apikey,
+                                    watchlist);
+                        }
                     } catch (IOException e) {
                         //Log.e(TAG, "getWatchlistPageContent: " + e.toString());
                     }
@@ -11936,7 +11944,6 @@ public class AppCMSPresenter {
                     showTitle.substring(0, Math.min(title.length(), 500));
                     title += " | " + showTitle;
                 }
-
                 if (mediaType != null && mediaType.toLowerCase().contains(getCurrentActivity().getString(R.string.media_type_audio).toLowerCase())) {
                     sendGaEvent(currentActivity.getResources().getString(R.string.ga_audio_download_action),
                             currentActivity.getResources().getString(R.string.ga_audio_download_category), title + (downloadVideoRealm.getPlayListName() != null ? " | " + downloadVideoRealm.getPlayListName() : ""));
@@ -15126,7 +15133,7 @@ public class AppCMSPresenter {
     }
 
     public void tryLaunchingPlayerFromDeeplink(Action0 onVideoPlayerLaunchedAction) {
-        if (getIsTVAppLaunchTypeDeepLink()){
+        if (getIsTVAppLaunchTypeDeepLink()) {
             showLoadingDialog(true);
             ContentDatum contentDatum = new ContentDatum();
             Gist gist = new Gist();
@@ -15137,6 +15144,7 @@ public class AppCMSPresenter {
             setDeepLinkContentID(null);
         }
     }
+
     private void populateTVPage(AppCMSPageAPI appCMSPageAPI,
                                 AppCMSPageUI appCMSPageUI,
                                 String pageId,
@@ -15938,6 +15946,7 @@ public class AppCMSPresenter {
         searchIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(searchIntent);
     }
+
     public void launchTVVideoPlayer(final ContentDatum contentDatum,
                                     final int currentlyPlayingIndex,
                                     List<String> relateVideoIds,
@@ -16614,7 +16623,7 @@ public class AppCMSPresenter {
                         rootView.removeView(relativeLayoutFull);
                         relativeLayoutFull = null;
                     } catch (Exception e) {
-                            e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }, 50);
 
@@ -16625,7 +16634,7 @@ public class AppCMSPresenter {
         if (relativeLayoutFull != null) {
             relativeLayoutFull.setVisibility(View.GONE);
         }
-        if (BaseView.isTablet(currentActivity)){
+        if (BaseView.isTablet(currentActivity)) {
             unrestrictPortraitOnly();
         } else {
             restrictPortraitOnly();
