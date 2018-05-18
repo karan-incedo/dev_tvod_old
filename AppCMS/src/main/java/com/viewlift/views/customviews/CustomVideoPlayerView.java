@@ -636,7 +636,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 mTotalVideoDuration -= mTotalVideoDuration % 4;
                                 mProgressHandler.post(mProgressRunnable);
                             } catch (Exception e) {
-
+                                e.printStackTrace();
                             }
                         }
                         if (!sentBeaconFirstFrame) {
