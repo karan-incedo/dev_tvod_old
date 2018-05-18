@@ -124,7 +124,6 @@ import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -1459,7 +1458,6 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-
 /*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
@@ -1511,9 +1509,11 @@ public class AppCMSPresenter {
                     e.printStackTrace();
                 }
             }).execute(params);
-        //*/
+ 
+  //*/
 
             ///*
+
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     id,
@@ -15473,7 +15473,7 @@ public class AppCMSPresenter {
                             String adsUrl = null;
 
                             boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed()
-                                    && !contentDatum.getStreamingInfo().getIsLiveStream();
+                                    && contentDatum.getStreamingInfo() != null && !contentDatum.getStreamingInfo().getIsLiveStream();
                             adsUrl = getAdsUrl(pagePath);
                             if (adsUrl == null) {
                                 requestAds = false;
@@ -15969,7 +15969,7 @@ public class AppCMSPresenter {
 
             /* if (contentDatum.getContentDetails() == null)*/
             {
-                String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                /*String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
                         appCMSSite.getGist().getSiteInternalName());
@@ -15981,82 +15981,51 @@ public class AppCMSPresenter {
                 new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                         appCMSContentDetail -> {
                             if (appCMSContentDetail != null) {
-                                getUserVideoStatus(appCMSContentDetail.getGist().getId(),
+                                getUserVideoStatus(contentDatum.getGist().getId(),
                                         userVideoStatusResponse -> {
-                                            if (userVideoStatusResponse != null) {
-                                                long watchedTime = userVideoStatusResponse.getWatchedTime();
-                                                String[] extraData = new String[4];
-                                                appCMSContentDetail.getGist().setWatchedTime(watchedTime);
-                                                if (appCMSContentDetail.getStreamingInfo() != null) {
-                                                    StreamingInfo streamingInfo = appCMSContentDetail.getStreamingInfo();
-                                                    extraData[0] = contentDatum.getGist().getPermalink();
-                                                    if (streamingInfo.getVideoAssets() != null &&
-                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                                        extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                                    } else if (streamingInfo.getVideoAssets() != null &&
-                                                            streamingInfo.getVideoAssets().getMpeg() != null &&
-                                                            !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
-                                                            streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                                        extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                                    }
-                                                    extraData[2] = contentDatum.getGist().getId();
-                                                    if (appCMSContentDetail.getContentDetails() != null &&
-                                                            appCMSContentDetail.getContentDetails().getClosedCaptions() != null) {
-                                                        for (ClosedCaptions closedCaption :
-                                                                appCMSContentDetail.getContentDetails().getClosedCaptions()) {
-                                                            if (null != closedCaption && null != closedCaption.getFormat()
-                                                                    && closedCaption.getFormat().equalsIgnoreCase("SRT")) {
-                                                                extraData[3] = closedCaption.getUrl();
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                    //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
-                                                    if (!TextUtils.isEmpty(extraData[1])) {
+                                            if (userVideoStatusResponse != null) {*/
+//                                                long watchedTime = userVideoStatusResponse.getWatchedTime();
+//                                                String[] extraData = new String[4];
+//                                                contentDatum.getGist().setWatchedTime(watchedTime);
 
-                                                        List<String> relatedVideoIds;
+                                                        /*List<String> relatedVideoIds;
                                                         if (relateVideoIds == null || relateVideoIds.size() == 0) {
-                                                            relatedVideoIds = appCMSContentDetail.getContentDetails().getRelatedVideoIds();//getRecords().get(0).getContentDetails().getRelatedVideoIds();
+                                                            relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();//getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                                             // Putting the current video id on the
                                                             // zeroth position, to make sure when user
                                                             // asks Alexa to play previous video, we
                                                             // always have a previous video.
                                                             if (relatedVideoIds != null) {
-                                                                relatedVideoIds.add(0, appCMSContentDetail.getGist().getId());
+                                                                relatedVideoIds.add(0, contentDatum.getGist().getId());
                                                             }
                                                         } else {
                                                             relatedVideoIds = relateVideoIds;
-                                                        }
-                                                        ContentDatum episodeContentDatum = appCMSContentDetail.convertToContentDatum();
+                                                        }*/
+                                                        ContentDatum episodeContentDatum = contentDatum;//appCMSContentDetail.convertToContentDatum();
                                                         episodeContentDatum.setSeason(contentDatum.getSeason());
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
-                                                                appCMSContentDetail.getGist().getTitle(),
-                                                                extraData,
+                                                                contentDatum.getGist().getTitle(),
+                                                                null,
                                                                 episodeContentDatum,
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                relatedVideoIds,
+                                                                null,
                                                                 action0);
-                                                    } else {
-                                                        openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
-                                                                currentActivity.getString(R.string.app_name)),
-                                                                currentActivity.getString(R.string.app_connectivity_dialog_title), false);
-                                                    }
-                                                }
-                                            } else {
+
+//                                                }
+                                            /*} else {
                                                 openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                         currentActivity.getString(R.string.app_name)),
                                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                             }
-                                        });
-                            } else {
+                                        });*/
+                            /*} else {
                                 openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                         currentActivity.getString(R.string.app_name)),
                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                             }
-                        }).execute(params);
+                        }).execute(params);*/
             } /*else {
                 if (watchTime >= 0) {
                     contentDatum.getGist().setWatchedTime(watchTime);
