@@ -47,7 +47,7 @@ public class AppCMSBeaconCall {
 
             Log.d(TAG,"Beacon request URL: " + url);
             Log.d(TAG, "Beacon request headers: " + authTokenMap);
-           // Log.d(TAG, "Beacon request value: " + new Gson().toJson(request));
+            Log.d(TAG, "Beacon request value: " + new Gson().toJson(request));
 
             Call<BeaconResponse> call;
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
