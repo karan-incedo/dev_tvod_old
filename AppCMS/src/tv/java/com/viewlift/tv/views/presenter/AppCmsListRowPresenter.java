@@ -11,6 +11,7 @@ import android.support.v17.leanback.widget.ListRowView;
 import android.support.v17.leanback.widget.RowHeaderView;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.LinearLayout;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
 /**
@@ -183,22 +185,56 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     @Override
     protected void onRowViewSelected(RowPresenter.ViewHolder holder, boolean selected) {
         super.onRowViewSelected(holder, selected);
-        if (selected) {
+        /*if (selected) {
             try {
                 long id = holder.getRow().getId();
                 Log.d("ANAS", "id: " + id);
-                /*View view = holder.getSelectedItemViewHolder().view;
+                *//*View view = holder.getSelectedItemViewHolder().view;
                  view.setOnKeyListener((v, keyCode, event) -> {
                      if (keyCode == KeyEvent.KEYCODE_DPAD_UP
                              && event.getAction() == KeyEvent.ACTION_UP) {
                          holder.view.clearFocus();
                      }
                      return false;
-                 });*/
+                 });*//*
                 isFocusOnFirstRow = id == -1;
             } catch (Exception e) {
                 Log.d("ANAS", "Exception." + e.getLocalizedMessage());
             }
+        }*/
+
+
+        if (selected && null != holder.getRow()) {
+
+            ListRowView listRowView = (ListRowView)holder.view;
+
+            HorizontalGridView horizontalGridView = listRowView.getGridView();
+
+            int itemPos = horizontalGridView.getSelectedPosition();
+            if (itemPos < 0) { // when browsefragment is launched first time it
+                // gives position = -1
+                itemPos = 0;
+            }
+
+            View view = horizontalGridView.getChildAt(itemPos);
+            Log.d("TAG","NITS===== Row Number = "+holder.getRow().getId() + " ... Item Position = "+itemPos);
+            if (null != view) {
+                RecyclerView.ViewHolder viewHolder = horizontalGridView.getChildViewHolder(view);
+
+                if(null != mAppCMSPresenter
+                        && null != mAppCMSPresenter.getCurrentActivity()
+                        && mAppCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                    ((AppCmsHomeActivity) mAppCMSPresenter.getCurrentActivity()).shouldShowLeftNavigation((itemPos==0));
+                }
+                /*if (null != mIGridRowChangeListener) {
+                    mIGridRowChangeListener.onGridRowChanged((int)holder.getRow().getId(), itemPos,
+                            viewHolder.itemView);
+
+                }*/
+
+            }
+
         }
+
     }
 }
