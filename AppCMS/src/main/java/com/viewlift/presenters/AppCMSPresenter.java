@@ -8278,6 +8278,7 @@ public class AppCMSPresenter {
             if (isUserLoggedIn()) {
                 refreshUserSubscriptionData(() -> {
                 }, true);
+                populateFilmsInUserWatchlist();
             }
 
             loadingPage = true;
