@@ -75,7 +75,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
        progressBar.getIndeterminateDrawable().setColorFilter(
                 getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
  /*
@@ -98,7 +98,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             }
         },1000,10*1000);*/
 
-        countDownTimer = new CountDownTimer(11000 ,1000) {
+        /*countDownTimer = new CountDownTimer(11000 ,1000) {
             @Override
             public void onTick(long l) {
                 progress = progress+1;
@@ -109,7 +109,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             public void onFinish() {
 
             }
-        }.start();
+        }.start();*/
         register();
         com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
 
@@ -161,13 +161,13 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
                 showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
-                /*startLogoAnimation();
+                startLogoAnimation();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
                     }
-                },550);*/
+                },550);
             }
         }
     };
@@ -282,9 +282,9 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             if (adm.getRegistrationId() == null) {
                 adm.startRegister();
             } else {
-                /* Send the registration ID for this app instance to your server. */
-                /* This is a redundancy since this should already have been performed at registration time from the onRegister() callback */
-                /* but we do it because our python server doesn't save registration IDs. */
+                /* Send the registration ID for this app instance to your server.
+                 This is a redundancy since this should already have been performed at registration time from the onRegister() callback
+                 but we do it because our python server doesn't save registration IDs.*/
 
 
                 final String admRegistrationId = adm.getRegistrationId();

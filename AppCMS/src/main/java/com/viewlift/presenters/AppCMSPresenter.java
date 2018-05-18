@@ -14840,10 +14840,16 @@ public class AppCMSPresenter {
 
                 getAppCMSModules(appCMSAndroidUI,
                         false,
-                        false,
+                        true,
                         (appCMSAndroidModules) -> {
-                            //Log.d(TAG, "Received module list");
+
                             this.appCMSAndroidModules = appCMSAndroidModules;
+                            this.processedUIModules = true;
+                            if (processedUIModules && processedUIPages) {
+                                processedUIModules = false;
+                                finalizeLaunch(tryCount);
+                            }
+
                         });
 
                 MetaPage launchPage = homePage;
@@ -14868,7 +14874,11 @@ public class AppCMSPresenter {
                                     Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
                                     currentActivity.sendBroadcast(logoAnimIntent);
                                 }
-                                finalizeLaunch(tryCount);
+                                processedUIPages = true;
+                                 if (processedUIModules && processedUIPages) {
+                                    processedUIPages = false;
+                                     finalizeLaunch(tryCount);
+                                }
                             },
                             loadFromFile,
                             false);
