@@ -109,6 +109,16 @@
         <item>AC Banner 01</item>
     </string-array>
 
+
+
+    <!-- Names of the apps where we need Splash progress-->
+    <string-array name="app_cms_splash_progress_needed">
+        <item>com.viewlift.failarmy2</item>
+        <item>com.viewlift.jukinvideo</item>
+        <item>com.viewlift.peopleawesome</item>
+        <item>com.viewlift.thepetcollective</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>

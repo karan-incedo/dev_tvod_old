@@ -32,6 +32,9 @@ import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by viewlift on 6/22/17.
  */
@@ -39,6 +42,7 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
 
     private CountDownTimer countDownTimer;
+    private boolean needSplashProgress;
 
     private static final String TAG = "ADMMessenger";
 
@@ -50,6 +54,18 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Amazon Device Details: "+getDeviceDetail());
+        String packageName = getApplicationContext().getPackageName();
+        List<String> strings = Arrays.asList(getResources().getStringArray(R.array.app_cms_splash_progress_needed));
+
+        needSplashProgress = strings.contains(packageName);
+
+        for (String app : strings) {
+            if (packageName.contains(app)){
+                needSplashProgress = true;
+                break;
+            }
+        }
+
         AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
         if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
@@ -74,6 +90,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         }
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
         progressBar.setVisibility(View.INVISIBLE);
        progressBar.getIndeterminateDrawable().setColorFilter(
@@ -86,30 +103,30 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         progressDrawable.setColorFilter(getResources().getColor(android.R.color.holo_red_dark), android.graphics.PorterDuff.Mode.SRC_IN);
         progressBar.setProgressDrawable(progressDrawable);*/
 
+
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
 
-        /*Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                progress = progress+10;
-                progressBar.setProgress(progress);
-            }
-        },1000,10*1000);*/
 
-        /*countDownTimer = new CountDownTimer(11000 ,1000) {
-            @Override
-            public void onTick(long l) {
-                progress = progress+1;
-                progressBar.setProgress(progress);
-            }
+        if (needSplashProgress) {
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.getIndeterminateDrawable().setColorFilter(
+                    getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
+            countDownTimer = new CountDownTimer(11000 ,1000) {
+                @Override
+                public void onTick(long l) {
+                    progress = progress+1;
+                    progressBar.setProgress(progress);
+                }
 
-            @Override
-            public void onFinish() {
+                @Override
+                public void onFinish() {
 
-            }
-        }.start();*/
+                }
+            }.start();
+        }
+
         register();
         com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
 
@@ -161,13 +178,17 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
                 showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
-                startLogoAnimation();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
-                    }
-                },550);
+
+                if (!needSplashProgress) {
+                    startLogoAnimation();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
+                        }
+                    },550);
+                }
+
             }
         }
     };
