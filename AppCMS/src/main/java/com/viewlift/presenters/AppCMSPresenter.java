@@ -197,6 +197,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSVideoEntitlementAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.background.tasks.PostUANamedUserEventAsyncTask;
 import com.viewlift.models.network.background.tasks.StartEmailSubscripctionAsyncTask;
