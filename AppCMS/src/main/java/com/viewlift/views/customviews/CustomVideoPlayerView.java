@@ -627,7 +627,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
                     }
-                    if (beaconMessageThread != null && !isLiveStream) {
+                    if (beaconMessageThread != null ) {
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
                             try {
