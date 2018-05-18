@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.viewlift.tv.views.activity.AppCmsMyProfileFragment">
 
+    <RelativeLayout
+        android:id="@+id/sub_navigation_containeer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
     <FrameLayout
         android:id="@+id/sub_navigation_placholder"
         android:layout_width="match_parent"
         android:layout_height="@dimen/appcms_tv_sub_navigation_height"
         android:layout_marginTop="@dimen/appcms_tv_sub_navigation_top_margin"
-        android:visibility="visible">
-    </FrameLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/sub_navigation_placholder">
-
-        <FrameLayout
-            android:id="@+id/profile_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-        >
-
-        </FrameLayout>
+        android:visibility="visible"/>
 
     </RelativeLayout>
 
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/profile_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

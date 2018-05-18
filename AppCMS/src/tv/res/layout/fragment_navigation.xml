@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
 
     <TextView
@@ -44,12 +44,20 @@
         android:id="@+id/navRecylerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:orientation="horizontal"
         android:paddingEnd="30dp"
         android:paddingStart="30dp"
-        tools:listitem="@layout/st_navigation_item"
-        app:layoutManager="LinearLayoutManager" />
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/st_navigation_item" />
+
+    <ImageView
+        android:id="@+id/left_menu_app_logo"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="35dp"
+        android:src="@drawable/app_logo"
+        android:visibility="visible" />
 
 
 </RelativeLayout>

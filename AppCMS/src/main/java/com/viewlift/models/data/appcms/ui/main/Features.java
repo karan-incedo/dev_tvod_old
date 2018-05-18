@@ -46,6 +46,18 @@ public class Features implements Serializable {
     @Expose
     boolean trickPlay;
 
+    public String getNavigationType() {
+        return navigationType;
+    }
+
+    public void setNavigationType(String navigationType) {
+        this.navigationType = navigationType;
+    }
+
+    @SerializedName("navigation")
+    @Expose
+    String navigationType;
+
     public boolean isMobileAppDownloads() {
         return mobileAppDownloads;
     }

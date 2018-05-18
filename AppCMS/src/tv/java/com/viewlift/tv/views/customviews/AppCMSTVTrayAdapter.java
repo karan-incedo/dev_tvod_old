@@ -182,6 +182,7 @@ public class AppCMSTVTrayAdapter
                     }
                 }
             }
+
             return new ViewHolder(collectionGridItemView);
         } else {
 
@@ -204,6 +205,13 @@ public class AppCMSTVTrayAdapter
             textView.setLayoutParams(layoutParams);
             textView.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
             relativeLayout.addView(textView);
+
+            if(null != appCMSPresenter
+                    && null != appCMSPresenter.getCurrentActivity()
+                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(true);
+            }
+
             return new ViewHolder(relativeLayout);
         }
     }
@@ -244,7 +252,7 @@ public class AppCMSTVTrayAdapter
                     if (isClickable) {
                         //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         String permalink = data.getGist().getPermalink();
-                        String action = data.getGist().getContentType().equalsIgnoreCase("SERIES") ? "showDetailPage" : defaultAction;
+                        String action = "SERIES".equalsIgnoreCase(data.getGist().getContentType()) ? "showDetailPage" : defaultAction;
                         String title = data.getGist().getTitle();
                         String hlsUrl = getHlsUrl(data);
                         String[] extraData = new String[4];
@@ -334,6 +342,11 @@ public class AppCMSTVTrayAdapter
                                 });
                     }
                 }
+
+                @Override
+                public void notifyData() {
+                    notifyDataSetChanged();
+                }
             };
         }
 
@@ -396,8 +409,9 @@ public class AppCMSTVTrayAdapter
 
         public ViewHolder(View itemView) {
             super(itemView);
-            if (itemView instanceof TVCollectionGridItemView)
+            if (itemView instanceof TVCollectionGridItemView) {
                 this.componentView = (TVCollectionGridItemView) itemView;
+            }
         }
     }
 
