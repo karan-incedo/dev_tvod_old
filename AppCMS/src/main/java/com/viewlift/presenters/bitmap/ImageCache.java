@@ -472,7 +472,11 @@ public class ImageCache {
          *                               is sufficient.
          */
         public ImageCacheParams(Context context, String diskCacheDirectoryName) {
-            diskCacheDir = getDiskCacheDir(context, diskCacheDirectoryName);
+            try {
+                diskCacheDir = getDiskCacheDir(context, diskCacheDirectoryName);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
