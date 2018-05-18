@@ -627,7 +627,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
                     }
-                    if (beaconMessageThread != null && !isLiveStream) {
+                    if (beaconMessageThread != null ) {
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
                             try {
@@ -636,7 +636,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 mTotalVideoDuration -= mTotalVideoDuration % 4;
                                 mProgressHandler.post(mProgressRunnable);
                             } catch (Exception e) {
-
+                                e.printStackTrace();
                             }
                         }
                         if (!sentBeaconFirstFrame) {
