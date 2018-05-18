@@ -733,7 +733,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         null);
                                 return;
                             }
+
+                            if (action != null && !TextUtils.isEmpty(action) &&
+                                    data.getGist() != null &&
+                                    data.getGist().getContentType() != null &&
+                                    data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                                action = mContext.getString(R.string.app_cms_action_showvideopage_key);
+                            }
+
                             if (action.contains(videoAction)) {
+
                                 if (isDonwloadPage) {
                                     if (data.getGist() != null &&
                                             data.getGist().getMediaType() != null &&
@@ -776,12 +785,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         return;
                                     }
                                 }
-                                if (action.contains(trayAction) &&
-                                        data.getGist() != null &&
-                                        data.getGist().getContentType() != null &&
-                                        data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
-                                    action = mContext.getString(R.string.app_cms_action_showvideopage_key);
-                                }
+
                                 /*open video detail page*/
                                 appCMSPresenter.launchButtonSelectedAction(permalink,
                                         action,

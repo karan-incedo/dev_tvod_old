@@ -9,14 +9,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.amazon.device.messaging.ADM;
 import com.viewlift.AppCMSApplication;
@@ -33,6 +37,8 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
  */
 
 public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
+
+    private CountDownTimer countDownTimer;
 
     private static final String TAG = "ADMMessenger";
 
@@ -68,12 +74,48 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         }
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+       progressBar.getIndeterminateDrawable().setColorFilter(
+                getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
+ /*
+        progressBar.getProgressDrawable().setColorFilter(
+                getResources().getColor(R.color.splash_progress_color), android.graphics.PorterDuff.Mode.SRC_IN);*/
+
+       /* Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
+        progressDrawable.setColorFilter(getResources().getColor(android.R.color.holo_red_dark), android.graphics.PorterDuff.Mode.SRC_IN);
+        progressBar.setProgressDrawable(progressDrawable);*/
+
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
+
+        /*Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                progress = progress+10;
+                progressBar.setProgress(progress);
+            }
+        },1000,10*1000);*/
+
+        /*countDownTimer = new CountDownTimer(11000 ,1000) {
+            @Override
+            public void onTick(long l) {
+                progress = progress+1;
+                progressBar.setProgress(progress);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();*/
         register();
         com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+
     }
 
+    int progress = 0;
     private void getAppCmsMain(){
         AppCMSPresenterComponent appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
@@ -100,6 +142,8 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     @Override
     protected void onPause() {
         unregisterReceiver(broadcastReceiver);
+        if(null != countDownTimer)
+        countDownTimer.cancel();
         unregisterReceiver(msgReceiver);
         super.onPause();
     }
@@ -238,9 +282,9 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             if (adm.getRegistrationId() == null) {
                 adm.startRegister();
             } else {
-                /* Send the registration ID for this app instance to your server. */
-                /* This is a redundancy since this should already have been performed at registration time from the onRegister() callback */
-                /* but we do it because our python server doesn't save registration IDs. */
+                /* Send the registration ID for this app instance to your server.
+                 This is a redundancy since this should already have been performed at registration time from the onRegister() callback
+                 but we do it because our python server doesn't save registration IDs.*/
 
 
                 final String admRegistrationId = adm.getRegistrationId();

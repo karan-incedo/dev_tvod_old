@@ -15,7 +15,6 @@
  */
 package com.viewlift.Audio.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -50,10 +49,8 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
-import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
-import com.viewlift.views.fragments.AppCMSPlayAudioFragment;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

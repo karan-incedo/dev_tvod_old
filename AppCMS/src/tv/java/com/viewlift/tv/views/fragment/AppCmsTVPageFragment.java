@@ -39,7 +39,7 @@ import java.util.List;
  * Created by nitin.tyagi on 6/28/2017.
  */
 
-public class AppCmsTVPageFragment extends Fragment {
+public class AppCmsTVPageFragment extends BaseFragment {
 
     private FrameLayout pageContainer;
     private AppCMSBinder mAppCMSBinder;
@@ -188,7 +188,6 @@ public class AppCmsTVPageFragment extends Fragment {
                         TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
                         ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
                         int moduleChild = moduleChildContaineer.getChildCount();
-
                         for (int j = 0; j < moduleChild; j++) {
                             View view = moduleChildContaineer.getChildAt(j);
                             if (null != view) {
@@ -348,5 +347,26 @@ public class AppCmsTVPageFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isSubNavigationVisible() {
+        return false;
+    }
+
+    @Override
+    public boolean isSubNavExist() {
+        return false;
+    }
+
+
+    @Override
+    public void showSubNavigation(boolean shouldShow) {
+
+    }
+
+    @Override
+    public void setSubnavExistence(boolean isExist) {
+
     }
 }
