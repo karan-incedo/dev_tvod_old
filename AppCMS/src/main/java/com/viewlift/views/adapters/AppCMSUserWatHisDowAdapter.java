@@ -212,7 +212,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             if (isWatchlistPage || isDonwloadPage) {
                 sortByAddedDate();
             } else if (isHistoryPage) {
-                    sortByUpdateDate();
+                sortByUpdateDate();
             }
         }
     }
@@ -227,7 +227,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
                     Long.valueOf(o2.getGist().getUpdateDate())));
             Collections.reverse(adapterData);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -384,6 +384,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                     R.drawable.ic_download_queued));
                             videoSizeText.setText("Cancel".toUpperCase());
+                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
 
                             break;
                         case STATUS_RUNNING:
@@ -483,6 +484,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             deleteDownloadButton.setImageBitmap(null);
                             deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                     android.R.drawable.stat_notify_error));
+                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
                             break;
 
                         case STATUS_SUCCESSFUL:
@@ -983,8 +985,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     private void playDownloadedAudio(ContentDatum contentDatum) {
         try {
-
-
             if (contentDatum.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                     contentDatum.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
@@ -1035,7 +1035,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                         }
                     }
                     mContext.startActivity(intent);
-                }else{
+                } else {
                     int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                     if (apiAvailability.isUserResolvableError(resultCode)) {
                         apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)

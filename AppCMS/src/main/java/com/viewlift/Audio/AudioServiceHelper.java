@@ -88,7 +88,11 @@ public class AudioServiceHelper {
             controllerCompat.unregisterCallback(mMediaControllerCallback);
         }
         if (mMediaBrowser != null) {
-            mMediaBrowser.disconnect();
+            try {
+                mMediaBrowser.disconnect();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 
