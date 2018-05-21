@@ -18,6 +18,8 @@ public class BeaconPing extends Thread {
     private long beaconMsgTimeoutMsec;
     private String parentScreenName;
     private String streamId;
+    private long liveSeekCounter;
+    private static final long MILLISECONDS_PER_SECOND = 1000L *10;
     ContentDatum contentDatum;
 
     public BeaconPing(long beaconMsgTimeoutMsec,
@@ -38,6 +40,7 @@ public class BeaconPing extends Thread {
         this.isTrailer = isTrailer;
         this.streamId = streamId;
         this.contentDatum = contentDatum;
+        this.liveSeekCounter = MILLISECONDS_PER_SECOND;
     }
 
     @Override
@@ -48,12 +51,21 @@ public class BeaconPing extends Thread {
                 Thread.sleep(beaconMsgTimeoutMsec);
                 if (sendBeaconPing) {
                     long currentTime = 0;
-                    if (videoPlayerView != null) {
+                    if (videoPlayerView != null && contentDatum != null &&
+                            contentDatum.getStreamingInfo() !=null &&
+                            !contentDatum.getStreamingInfo().getIsLiveStream()) {
                         currentTime = videoPlayerView.getCurrentPosition() / 1000;
+                    }else if (contentDatum != null &&
+                            contentDatum.getStreamingInfo() !=null &&
+                            contentDatum.getStreamingInfo().getIsLiveStream()){
+                        liveSeekCounter += MILLISECONDS_PER_SECOND;
+                        currentTime = liveSeekCounter;
+                        currentTime = currentTime/ 1000;
+
                     }
                     if (appCMSPresenter != null && videoPlayerView != null
-                            && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
+                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY &&
+                            currentTime % 30 == 0) {
 
                         if (contentDatum != null && contentDatum.getMediaType() == null) {
                             contentDatum.setMediaType("video");
@@ -63,7 +75,7 @@ public class BeaconPing extends Thread {
                         appCMSPresenter.sendBeaconMessage(filmId,
                                 permaLink,
                                 parentScreenName,
-                                videoPlayerView.getCurrentPosition(),
+                                currentTime,
                                 false,
                                 AppCMSPresenter.BeaconEvent.PING,
                                 contentDatum != null ? contentDatum.getMediaType() : "Video",
@@ -92,7 +104,7 @@ public class BeaconPing extends Thread {
                             appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
                                     contentDatum.getGist().getPermalink(),
                                     null,
-                                    contentDatum.getGist().getCurrentPlayingPosition(),
+                                    currentTime,
                                     contentDatum.getGist().getCastingConnected(),
                                     AppCMSPresenter.BeaconEvent.PING,
                                     contentDatum.getGist().getMediaType(),
@@ -110,6 +122,7 @@ public class BeaconPing extends Thread {
                 e.printStackTrace();
                 //Log.e(TAG, "BeaconPingThread sleep interrupted");
             }catch (InterruptedException e) {
+                e.printStackTrace();
                 //Log.e(TAG, "BeaconPingThread sleep interrupted");
             }
         }
@@ -119,6 +132,7 @@ public class BeaconPing extends Thread {
         this.filmId = videoId;
         this.permaLink = permaLink;
         this.streamId = streamId;
+        this.liveSeekCounter = MILLISECONDS_PER_SECOND;
     }
 
     public void setFilmId(String filmId) {

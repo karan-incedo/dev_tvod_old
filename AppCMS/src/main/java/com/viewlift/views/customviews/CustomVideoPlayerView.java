@@ -1366,6 +1366,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         beaconBufferingThread.setBeaconData(videoDataId, permaLink, mStreamId);
         beaconMessageThread.setBeaconData(videoDataId, permaLink, mStreamId);
     }
+    public boolean isLiveStream(){
+        return isLiveStream;
+    }
 
     public interface IgetPlayerEvent {
 
