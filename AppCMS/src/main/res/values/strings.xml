@@ -547,6 +547,7 @@
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
     <string name="app_cms_package_name_key">app_cms_package_name</string>
     <string name="exit_fullscreen_relaunch_page_extra_key">exit_fullscreen_relaunch_page_extra</string>
+    <string name="app_cms_unable_to_play_video_error_title">Video Not Available</string>
     <string name="app_cms_video_not_available_error_title">Video Not Available</string>
     <string name="app_cms_video_not_available_error_message">Could not load the video.  Please try again later.</string>
     <string name="checking_for_existing_subscription_toast_message">Checking for existing subscription</string>
@@ -707,6 +708,9 @@
     <string name="ssl_commerz_transaction_cancel">Your transaction was not completed as we did not receive a clear confirmation from the payment gateway. It will take us up to 15 minutes to confirm your payment. If your payment isn\'t confirmed via email within this period, please place your order again.</string>
     <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
     <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
+
+    <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
+
 </resources>
 
 

@@ -1458,7 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-/*
+///*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1468,6 +1468,7 @@ public class AppCMSPresenter {
             }else{
                 endPoint = R.string.app_cms_prod_entitlement_api_url;
             }
+            endPoint =R.string.app_cms_entitlement_api_url;
             url = currentActivity.getString(endPoint,
                     appCMSMain.getApiBaseUrl(),
                     id);
@@ -1491,16 +1492,10 @@ public class AppCMSPresenter {
 
                         readyAction.call(currentContentDatum);
                     }else if (appCMSEntitlementResponse != null &&
-                            !appCMSEntitlementResponse.isPlayable() &&
-                            appCMSEntitlementResponse.getErrorMessage()!= null &&
-                            !TextUtils.isEmpty(appCMSEntitlementResponse.getErrorMessage())){
+                            appCMSEntitlementResponse.getCode() != 200){
+                        String message  = currentActivity.getString(R.string.entitlement_api_server_error,appCMSEntitlementResponse.getCode());
 
-                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,appCMSEntitlementResponse.getErrorMessage(),false,()->{
-                            readyAction.call(null);
-                        },null);
-
-                    }else if (appCMSEntitlementResponse == null){
-                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,"Something went wrong",false,()->{
+                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
                             readyAction.call(null);
                     },null);
                     }
@@ -1512,7 +1507,7 @@ public class AppCMSPresenter {
  
   //*/
 
-            ///*
+            /*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -6741,6 +6736,64 @@ public class AppCMSPresenter {
 
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
+
+        GetAppCMSVideoEntitlementAsyncTask.Params params =
+                new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+
+        new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
+            try{
+                if (appCMSEntitlementResponse != null) {
+                    binder.setContentData(appCMSEntitlementResponse.convertToContentDatum());
+                    AppCMSPageAPI pageAPI = null;
+                    for (ModuleList moduleList :
+                            appCMSPageUI.getModuleList()) {
+                        if (moduleList.getType().equals(currentActivity
+                                .getString(R.string.app_cms_page_autoplay_module_key_01)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_02)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_03)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
+                            pageAPI = appCMSEntitlementResponse.convertToAppCMSPageAPI(pageId,
+                                    moduleList.getType());
+                            break;
+                        }
+                    }
+                    if (pageAPI != null) {
+                        launchAutoplayActivity(currentActivity,
+                                appCMSPageUI,
+                                pageAPI,
+                                pageId,
+                                pageTitle,
+                                pageIdToPageNameMap.get(pageId),
+                                loadFromFile,
+                                false,
+                                true,
+                                false,
+                                false,
+                                binder,
+                                action1);
+                    }
+                } else {
+                    //Log.e(TAG, "API issue in VideoDetail call");
+                    if (platformType == PlatformType.TV) {
+                        action1.call(null);
+                    }
+                }
+            } catch (Exception e) {
+                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                if (platformType == PlatformType.TV) {
+                    action1.call(null);
+                }
+            }
+        }).execute(params);
+        /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6796,6 +6849,8 @@ public class AppCMSPresenter {
                         }
                     }
                 }).execute(params);
+
+                //*/
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -10247,11 +10302,10 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-        apikey = Utils.getProperty("XAPI", currentActivity);
+       // apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .xApiKey(apikey)
                 .bustCache(bustCache)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
@@ -10295,7 +10349,13 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        apikey = Utils.getProperty("XAPI", currentActivity);
+                        if(appCMSMain.getX_ApiKeys()!=null &&
+                                appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
+                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
+                            apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
+                        }else {
+                            apikey = Utils.getProperty("XAPI", currentActivity);
+                        }
 
                         getAppCMSSite(platformType);
                     }
@@ -11383,6 +11443,10 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case UNABLE_TO_PLAY_VIDEO:
+                    title = currentActivity.getString(R.string.app_cms_unable_to_play_video_error_title);
+                    message = optionalMessage;
+                    break;
                 case VIDEO_NOT_AVAILABLE:
                     title = currentActivity.getString(R.string.app_cms_video_not_available_error_title);
                     message = optionalMessage;
@@ -11733,7 +11797,8 @@ public class AppCMSPresenter {
             uid = getDeviceId();
         }
 
-        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+       // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        int currentPositionSecs = (int) (currentPosition);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
         }
@@ -13825,7 +13890,6 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(Utils.getProperty("SiteId", currentActivity))
-                                        .xApiKey(apikey)
                                         .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13849,7 +13913,6 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(Utils.getProperty("SiteId", currentActivity))
-                            .xApiKey(apikey)
                             .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -15397,10 +15460,11 @@ public class AppCMSPresenter {
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
-                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+
+               // changend from R.string.app_cms_content_detail_api_url to app_cms_entitlement_api_url API
+                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId,
-                        appCMSSite.getGist().getSiteInternalName());
+                        filmId);
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -15431,6 +15495,7 @@ public class AppCMSPresenter {
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                 action1).execute(params);
     }
+
 
     public boolean launchTVButtonSelectedAction(String pagePath,
                                                 String action,
@@ -17375,6 +17440,7 @@ public class AppCMSPresenter {
         SIGN_OUT,
         DOWNLOAD_VIA_MOBILE_DISABLED,
         VIDEO_NOT_AVAILABLE,
+        UNABLE_TO_PLAY_VIDEO,
         ARTICLE_API_RESPONSE_ERROR,
         OPEN_URL_IN_BROWSER
     }
