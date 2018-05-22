@@ -107,10 +107,18 @@ public class PlaybackManager implements Playback.Callback {
         int playServicesAvailable =
                 GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext);
         if (playServicesAvailable == ConnectionResult.SUCCESS) {
-            mCastSessionManager = CastContext.getSharedInstance(applicationContext).getSessionManager();
-            mCastSessionManagerListener = new CastSessionManagerListener();
-            mCastSessionManager.addSessionManagerListener(mCastSessionManagerListener,
-                    CastSession.class);
+            try {
+                mCastSessionManager = CastContext.getSharedInstance(applicationContext).getSessionManager();
+                mCastSessionManagerListener = new CastSessionManagerListener();
+                mCastSessionManager.addSessionManagerListener(mCastSessionManagerListener,
+                        CastSession.class);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
         mMediaRouter = MediaRouter.getInstance(mContext);
 

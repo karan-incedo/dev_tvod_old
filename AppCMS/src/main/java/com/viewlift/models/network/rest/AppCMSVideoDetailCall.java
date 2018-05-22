@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import retrofit2.Response;
+
 /**
  * Created by anas.azeem on 7/13/2017.
  * Owned by ViewLift, NYC
@@ -54,11 +56,23 @@ public class AppCMSVideoDetailCall {
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
         //    authHeaders.put("x-api-key", xApi);
-            return appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute().body();
+            Response<AppCMSEntitlementResponse> response= appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
+
+            if(response.isSuccessful()){
+                return response.body();
+            }else if (response.code() != 200){
+                AppCMSEntitlementResponse statusResponse = new AppCMSEntitlementResponse();
+                statusResponse.setCode(response.code());
+                statusResponse.setSuccess(false);
+                return statusResponse;
+
+            }
+
+
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
-            // e.printStackTrace();
+             e.printStackTrace();
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;

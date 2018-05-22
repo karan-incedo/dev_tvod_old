@@ -32,13 +32,18 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        setContentView(R.layout.activity_download_quality);
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_download_setting_bundle_key));
-        binder = (AppCMSDownloadQualityBinder)
-                bundleExtra.getBinder(getString(R.string.app_cms_download_setting_binder_key));
-        setContentView(R.layout.activity_download_quality);
+        try {
+            binder = (AppCMSDownloadQualityBinder)
+                    bundleExtra.getBinder(getString(R.string.app_cms_download_setting_binder_key));
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+
         //Restore the fragment's instance
         downloadQualityFragment = (AppCMSDownloadQualityFragment) getSupportFragmentManager()
                 .findFragmentByTag(TAG);
