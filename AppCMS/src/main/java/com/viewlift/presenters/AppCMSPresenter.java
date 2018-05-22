@@ -2516,7 +2516,7 @@ public class AppCMSPresenter {
                                 List<String> finalRelateVideoIds2 = relateVideoIds;
                                 getAppCMSPage(metaPage.getPageUI(),
                                         appCMSPageUIResult -> {
-                                            if (appCMSPageUIResult != null) {
+                                            if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                                 String updatedAction = pageNameToActionMap.get(metaPage.getPageName());
                                                 if (updatedAction != null && actionToPageMap.get(updatedAction) == null) {
@@ -6437,7 +6437,7 @@ public class AppCMSPresenter {
                                             List<NavigationPrimary> items,
                                             boolean launchActivity) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-        if(title.contains("Setting")){
+        if (title.contains("Setting")) {
             appCMSPageUI = navigationPages.get(subNavPage.getPageId());
         }
         if (appCMSPageUI == null) {
@@ -6462,7 +6462,7 @@ public class AppCMSPresenter {
             }
             MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
 
-            if(title.contains("Setting")){
+            if (title.contains("Setting")) {
                 metaPage = subNavPage;
             }
 
@@ -6470,7 +6470,7 @@ public class AppCMSPresenter {
                 MetaPage finalMetaPage = metaPage;
                 getAppCMSPage(metaPage.getPageUI(),
                         appCMSPageUIResult -> {
-                            if (appCMSPageUIResult != null) {
+                            if (appCMSPageUIResult != null && finalMetaPage.getPageId() != null) {
                                 navigationPages.put(finalMetaPage.getPageId(), appCMSPageUIResult);
                                 String action = pageNameToActionMap.get(finalMetaPage.getPageName());
                                 if (action != null && actionToPageMap.containsKey(action)) {
@@ -6555,7 +6555,7 @@ public class AppCMSPresenter {
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                     navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                     if (action != null && actionToPageMap.containsKey(action)) {
@@ -7261,7 +7261,7 @@ public class AppCMSPresenter {
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                     navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                     if (action != null && actionToPageMap.containsKey(action)) {
@@ -7514,7 +7514,7 @@ public class AppCMSPresenter {
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                     navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                     if (action != null && actionToPageMap.containsKey(action)) {
@@ -10512,32 +10512,33 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
-        List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
-        if (getPlatformType() == PlatformType.TV) {
-            navigationPrimaryList = navigation.getNavigationPrimary();
-        }
-        for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
-            if (pageId != null &&
-                    navigationPrimary != null &&
-                    !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
-                    !TextUtils.isEmpty(pageId) &&
-                    pageId.contains(navigationPrimary.getPageId()) &&
-                    !isViewPlanPage(pageId)) {
-                return true;
-            } else if (navigationPrimary.getItems() != null && getPlatformType() == PlatformType.ANDROID) {
-                for (NavigationPrimary item : navigationPrimary.getItems()) {
-                    if (pageId != null &&
-                            item != null &&
-                            !TextUtils.isEmpty(item.getPageId()) &&
-                            !TextUtils.isEmpty(pageId) &&
-                            pageId.contains(item.getPageId()) &&
-                            !isViewPlanPage(pageId)) {
-                        return true;
+        if (navigation != null && navigation.getTabBar() != null) {
+            List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
+            if (getPlatformType() == PlatformType.TV) {
+                navigationPrimaryList = navigation.getNavigationPrimary();
+            }
+            for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
+                if (pageId != null &&
+                        navigationPrimary != null &&
+                        !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
+                        !TextUtils.isEmpty(pageId) &&
+                        pageId.contains(navigationPrimary.getPageId()) &&
+                        !isViewPlanPage(pageId)) {
+                    return true;
+                } else if (navigationPrimary.getItems() != null && getPlatformType() == PlatformType.ANDROID) {
+                    for (NavigationPrimary item : navigationPrimary.getItems()) {
+                        if (pageId != null &&
+                                item != null &&
+                                !TextUtils.isEmpty(item.getPageId()) &&
+                                !TextUtils.isEmpty(pageId) &&
+                                pageId.contains(item.getPageId()) &&
+                                !isViewPlanPage(pageId)) {
+                            return true;
+                        }
                     }
                 }
             }
         }
-
         return false;
     }
 
@@ -14283,60 +14284,60 @@ public class AppCMSPresenter {
                 pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
                 String action = pageNameToActionMap.get(metaPage.getPageName());
-                    if (action != null && actionToPageMap.containsKey(action)) {
-                        actionToPageNameMap.put(action, metaPage.getPageName());
-                        actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
-                        actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
-                    }
+                if (action != null && actionToPageMap.containsKey(action)) {
+                    actionToPageNameMap.put(action, metaPage.getPageName());
+                    actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
+                    actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
-                        loginPage = metaPage;
-                        new SoftReference<Object>(loginPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+                    loginPage = metaPage;
+                    new SoftReference<Object>(loginPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
-                        signupPage = metaPage;
-                        new SoftReference<Object>(signupPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SIGN_UP_SCREEN_KEY) {
+                    signupPage = metaPage;
+                    new SoftReference<Object>(signupPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
-                        downloadQualityPage = metaPage;
-                        new SoftReference<Object>(downloadQualityPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
+                    downloadQualityPage = metaPage;
+                    new SoftReference<Object>(downloadQualityPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
-                        downloadPage = metaPage;
-                        new SoftReference<Object>(downloadPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
+                    downloadPage = metaPage;
+                    new SoftReference<Object>(downloadPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.PRIVACY_POLICY_KEY) {
-                        privacyPolicyPage = metaPage;
-                        new SoftReference<Object>(privacyPolicyPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.PRIVACY_POLICY_KEY) {
+                    privacyPolicyPage = metaPage;
+                    new SoftReference<Object>(privacyPolicyPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY) {
-                        linkAccountPage = metaPage;
-                        new SoftReference<Object>(linkAccountPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY) {
+                    linkAccountPage = metaPage;
+                    new SoftReference<Object>(linkAccountPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.SUB_NAV_PAGE_KEY) {
-                        subNavPage = metaPage;
-                        new SoftReference<Object>(subNavPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.SUB_NAV_PAGE_KEY) {
+                    subNavPage = metaPage;
+                    new SoftReference<Object>(subNavPage, referenceQueue);
+                }
 
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
-                        tosPage = metaPage;
-                        new SoftReference<Object>(privacyPolicyPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
+                    tosPage = metaPage;
+                    new SoftReference<Object>(privacyPolicyPage, referenceQueue);
+                }
 
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.PAGE_SEARCH_KEY) {
@@ -14344,64 +14345,64 @@ public class AppCMSPresenter {
                     new SoftReference<Object>(privacyPolicyPage, referenceQueue);
                 }
 
-                    if (platformType == PlatformType.TV) {
-                        if (jsonValueKeyMap.get(metaPage.getPageName())
-                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY /*||
+                if (platformType == PlatformType.TV) {
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY /*||
                                 (navigation != null &&
                                         navigation.getNavigationPrimary() != null &&
                                         navigation.getNavigationPrimary().get(0) != null &&
                                         navigation.getNavigationPrimary().get(0).getPageId() != null &&
                                         metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))*/) {
-                            homePage = metaPage;
-                            new SoftReference<Object>(homePage, referenceQueue);
-                        }
-                    } else if (platformType == PlatformType.ANDROID) {
-                        if (jsonValueKeyMap.get(metaPage.getPageName())
-                                == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
-                                (navigation != null &&
-                                        navigation.getTabBar() != null &&
-                                        navigation.getTabBar().get(0) != null &&
-                                        navigation.getTabBar().get(0).getPageId() != null &&
-                                        metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
-                            homePage = metaPage;
-                            new SoftReference<Object>(homePage, referenceQueue);
-                        }
+                        homePage = metaPage;
+                        new SoftReference<Object>(homePage, referenceQueue);
                     }
+                } else if (platformType == PlatformType.ANDROID) {
+                    if (jsonValueKeyMap.get(metaPage.getPageName())
+                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
+                            (navigation != null &&
+                                    navigation.getTabBar() != null &&
+                                    navigation.getTabBar().get(0) != null &&
+                                    navigation.getTabBar().get(0).getPageId() != null &&
+                                    metaPage.getPageId().equalsIgnoreCase(navigation.getTabBar().get(0).getPageId()))) {
+                        homePage = metaPage;
+                        new SoftReference<Object>(homePage, referenceQueue);
+                    }
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
-                        moviesPage = metaPage;
-                        new SoftReference<Object>(moviesPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
+                    moviesPage = metaPage;
+                    new SoftReference<Object>(moviesPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
-                        showsPage = metaPage;
-                        new SoftReference<Object>(showsPage, referenceQueue);
-                    }
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
-                        playlistPage = metaPage;
-                        new SoftReference<Object>(playlistPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
+                    showsPage = metaPage;
+                    new SoftReference<Object>(showsPage, referenceQueue);
+                }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
+                    playlistPage = metaPage;
+                    new SoftReference<Object>(playlistPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                        subscriptionPage = metaPage;
-                        new SoftReference<Object>(subscriptionPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
+                    subscriptionPage = metaPage;
+                    new SoftReference<Object>(subscriptionPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
-                        historyPage = metaPage;
-                        new SoftReference<Object>(historyPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
+                    historyPage = metaPage;
+                    new SoftReference<Object>(historyPage, referenceQueue);
+                }
 
-                    if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
-                        watchlistPage = metaPage;
-                        new SoftReference<Object>(watchlistPage, referenceQueue);
-                    }
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
+                    watchlistPage = metaPage;
+                    new SoftReference<Object>(watchlistPage, referenceQueue);
+                }
 
                 int articlePageIndex = getArticlePage(metaPageList);
                 if (articlePageIndex >= 0) {
@@ -14433,7 +14434,7 @@ public class AppCMSPresenter {
             if (appCMSPageUI == null) {
                 getAppCMSPage(metaPage.getPageUI(),
                         appCMSPageUIResult -> {
-                            if (appCMSPageUIResult != null) {
+                            if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                 navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                 String action = pageNameToActionMap.get(metaPage.getPageName());
                                 if (action != null && actionToPageMap.containsKey(action)) {
@@ -14855,7 +14856,7 @@ public class AppCMSPresenter {
                 if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                     //add search in navigation item.
                     NavigationPrimary myProfile = new NavigationPrimary();
-                    if(null != currentActivity) {
+                    if (null != currentActivity) {
                         myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
                                 currentActivity.getString(R.string.profile_label)));
                         myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
@@ -14882,7 +14883,7 @@ public class AppCMSPresenter {
                     if (shouldAddSearch) {
                         //add search in navigation item.
                         NavigationPrimary searchNav = new NavigationPrimary();
-                        if(null != currentActivity) {
+                        if (null != currentActivity) {
                             searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
                             searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
                             searchNav.setIcon(currentActivity.getString(R.string.st_search_icon_key));
@@ -14946,9 +14947,9 @@ public class AppCMSPresenter {
                                     currentActivity.sendBroadcast(logoAnimIntent);
                                 }
                                 processedUIPages = true;
-                                 if (processedUIModules && processedUIPages) {
+                                if (processedUIModules && processedUIPages) {
                                     processedUIPages = false;
-                                     finalizeLaunch(tryCount);
+                                    finalizeLaunch(tryCount);
                                 }
                             },
                             loadFromFile,
@@ -15292,7 +15293,7 @@ public class AppCMSPresenter {
             if (metaPage != null) {
                 getAppCMSPage(metaPage.getPageUI(),
                         appCMSPageUIResult -> {
-                            if (appCMSPageUIResult != null) {
+                            if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                 navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                 String action = pageNameToActionMap.get(metaPage.getPageName());
                                 if (action != null && actionToPageMap.containsKey(action)) {
@@ -15665,7 +15666,7 @@ public class AppCMSPresenter {
                         List<String> finalRelateVideoIds2 = relateVideoIds;
                         getAppCMSPage(metaPage.getPageUI(),
                                 appCMSPageUIResult -> {
-                                    if (appCMSPageUIResult != null) {
+                                    if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                         navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                         String action1 = pageNameToActionMap.get(metaPage.getPageName());
                                         if (action1 != null && actionToPageMap.containsKey(action1)) {
@@ -18241,7 +18242,7 @@ public class AppCMSPresenter {
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                     navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                     if (action != null && actionToPageMap.containsKey(action)) {
@@ -18353,7 +18354,7 @@ public class AppCMSPresenter {
                 if (metaPage != null) {
                     getAppCMSPage(metaPage.getPageUI(),
                             appCMSPageUIResult -> {
-                                if (appCMSPageUIResult != null) {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
                                     navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                     if (action != null && actionToPageMap.containsKey(action)) {
