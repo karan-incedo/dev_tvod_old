@@ -268,7 +268,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
                         .getCurrentCastSession();
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+                try {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
 
 //                if (castSession != null && castSession.isConnected()) {
 ////                    audioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, i, AudioManager.ADJUST_SAME);
