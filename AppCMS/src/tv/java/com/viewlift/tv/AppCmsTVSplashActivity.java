@@ -91,19 +91,6 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
-        progressBar.setVisibility(View.INVISIBLE);
-       progressBar.getIndeterminateDrawable().setColorFilter(
-                getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
- /*
-        progressBar.getProgressDrawable().setColorFilter(
-                getResources().getColor(R.color.splash_progress_color), android.graphics.PorterDuff.Mode.SRC_IN);*/
-
-       /* Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
-        progressDrawable.setColorFilter(getResources().getColor(android.R.color.holo_red_dark), android.graphics.PorterDuff.Mode.SRC_IN);
-        progressBar.setProgressDrawable(progressDrawable);*/
-
-
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
 
