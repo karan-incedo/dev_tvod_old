@@ -124,7 +124,6 @@ import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -1459,8 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-
-/*
+///*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1470,6 +1468,7 @@ public class AppCMSPresenter {
             }else{
                 endPoint = R.string.app_cms_prod_entitlement_api_url;
             }
+            endPoint =R.string.app_cms_entitlement_api_url;
             url = currentActivity.getString(endPoint,
                     appCMSMain.getApiBaseUrl(),
                     id);
@@ -1493,16 +1492,10 @@ public class AppCMSPresenter {
 
                         readyAction.call(currentContentDatum);
                     }else if (appCMSEntitlementResponse != null &&
-                            !appCMSEntitlementResponse.isPlayable() &&
-                            appCMSEntitlementResponse.getErrorMessage()!= null &&
-                            !TextUtils.isEmpty(appCMSEntitlementResponse.getErrorMessage())){
+                            appCMSEntitlementResponse.getCode() != 200){
+                        String message  = currentActivity.getString(R.string.entitlement_api_server_error,appCMSEntitlementResponse.getCode());
 
-                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,appCMSEntitlementResponse.getErrorMessage(),false,()->{
-                            readyAction.call(null);
-                        },null);
-
-                    }else if (appCMSEntitlementResponse == null){
-                        showDialog(DialogType.VIDEO_NOT_AVAILABLE,"Something went wrong",false,()->{
+                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
                             readyAction.call(null);
                     },null);
                     }
@@ -1511,9 +1504,11 @@ public class AppCMSPresenter {
                     e.printStackTrace();
                 }
             }).execute(params);
-        //*/
+ 
+  //*/
 
-            ///*
+            /*
+
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     id,
@@ -6741,6 +6736,64 @@ public class AppCMSPresenter {
 
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
+
+        GetAppCMSVideoEntitlementAsyncTask.Params params =
+                new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+
+        new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
+            try{
+                if (appCMSEntitlementResponse != null) {
+                    binder.setContentData(appCMSEntitlementResponse.convertToContentDatum());
+                    AppCMSPageAPI pageAPI = null;
+                    for (ModuleList moduleList :
+                            appCMSPageUI.getModuleList()) {
+                        if (moduleList.getType().equals(currentActivity
+                                .getString(R.string.app_cms_page_autoplay_module_key_01)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_02)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key_03)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||
+                                moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
+                            pageAPI = appCMSEntitlementResponse.convertToAppCMSPageAPI(pageId,
+                                    moduleList.getType());
+                            break;
+                        }
+                    }
+                    if (pageAPI != null) {
+                        launchAutoplayActivity(currentActivity,
+                                appCMSPageUI,
+                                pageAPI,
+                                pageId,
+                                pageTitle,
+                                pageIdToPageNameMap.get(pageId),
+                                loadFromFile,
+                                false,
+                                true,
+                                false,
+                                false,
+                                binder,
+                                action1);
+                    }
+                } else {
+                    //Log.e(TAG, "API issue in VideoDetail call");
+                    if (platformType == PlatformType.TV) {
+                        action1.call(null);
+                    }
+                }
+            } catch (Exception e) {
+                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                if (platformType == PlatformType.TV) {
+                    action1.call(null);
+                }
+            }
+        }).execute(params);
+        /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6796,6 +6849,8 @@ public class AppCMSPresenter {
                         }
                     }
                 }).execute(params);
+
+                //*/
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -10248,11 +10303,10 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-        apikey = Utils.getProperty("XAPI", currentActivity);
+       // apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .xApiKey(apikey)
                 .bustCache(bustCache)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
@@ -10296,7 +10350,13 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        apikey = Utils.getProperty("XAPI", currentActivity);
+                        if(appCMSMain.getX_ApiKeys()!=null &&
+                                appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
+                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
+                            apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
+                        }else {
+                            apikey = Utils.getProperty("XAPI", currentActivity);
+                        }
 
                         getAppCMSSite(platformType);
                     }
@@ -11385,6 +11445,10 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case UNABLE_TO_PLAY_VIDEO:
+                    title = currentActivity.getString(R.string.app_cms_unable_to_play_video_error_title);
+                    message = optionalMessage;
+                    break;
                 case VIDEO_NOT_AVAILABLE:
                     title = currentActivity.getString(R.string.app_cms_video_not_available_error_title);
                     message = optionalMessage;
@@ -11737,7 +11801,8 @@ public class AppCMSPresenter {
             uid = getDeviceId();
         }
 
-        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+       // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        int currentPositionSecs = (int) (currentPosition);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
         }
@@ -13829,7 +13894,6 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(Utils.getProperty("SiteId", currentActivity))
-                                        .xApiKey(apikey)
                                         .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -13853,7 +13917,6 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(Utils.getProperty("SiteId", currentActivity))
-                            .xApiKey(apikey)
                             .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -15401,10 +15464,11 @@ public class AppCMSPresenter {
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
-                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+
+               // changend from R.string.app_cms_content_detail_api_url to app_cms_entitlement_api_url API
+                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId,
-                        appCMSSite.getGist().getSiteInternalName());
+                        filmId);
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -15435,6 +15499,7 @@ public class AppCMSPresenter {
         new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                 action1).execute(params);
     }
+
 
     public boolean launchTVButtonSelectedAction(String pagePath,
                                                 String action,
@@ -15486,7 +15551,7 @@ public class AppCMSPresenter {
                             String adsUrl = null;
 
                             boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed()
-                                    && !contentDatum.getStreamingInfo().getIsLiveStream();
+                                    && contentDatum.getStreamingInfo() != null && !contentDatum.getStreamingInfo().getIsLiveStream();
                             adsUrl = getAdsUrl(pagePath);
                             if (adsUrl == null) {
                                 requestAds = false;
@@ -15983,7 +16048,7 @@ public class AppCMSPresenter {
 
             /* if (contentDatum.getContentDetails() == null)*/
             {
-                String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                /*String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
                         appCMSSite.getGist().getSiteInternalName());
@@ -15995,82 +16060,51 @@ public class AppCMSPresenter {
                 new GetAppCMSContentDetailTask(appCMSContentDetailCall,
                         appCMSContentDetail -> {
                             if (appCMSContentDetail != null) {
-                                getUserVideoStatus(appCMSContentDetail.getGist().getId(),
+                                getUserVideoStatus(contentDatum.getGist().getId(),
                                         userVideoStatusResponse -> {
-                                            if (userVideoStatusResponse != null) {
-                                                long watchedTime = userVideoStatusResponse.getWatchedTime();
-                                                String[] extraData = new String[4];
-                                                appCMSContentDetail.getGist().setWatchedTime(watchedTime);
-                                                if (appCMSContentDetail.getStreamingInfo() != null) {
-                                                    StreamingInfo streamingInfo = appCMSContentDetail.getStreamingInfo();
-                                                    extraData[0] = contentDatum.getGist().getPermalink();
-                                                    if (streamingInfo.getVideoAssets() != null &&
-                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                                        extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                                    } else if (streamingInfo.getVideoAssets() != null &&
-                                                            streamingInfo.getVideoAssets().getMpeg() != null &&
-                                                            !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
-                                                            streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                                        extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                                    }
-                                                    extraData[2] = contentDatum.getGist().getId();
-                                                    if (appCMSContentDetail.getContentDetails() != null &&
-                                                            appCMSContentDetail.getContentDetails().getClosedCaptions() != null) {
-                                                        for (ClosedCaptions closedCaption :
-                                                                appCMSContentDetail.getContentDetails().getClosedCaptions()) {
-                                                            if (null != closedCaption && null != closedCaption.getFormat()
-                                                                    && closedCaption.getFormat().equalsIgnoreCase("SRT")) {
-                                                                extraData[3] = closedCaption.getUrl();
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                    //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
-                                                    if (!TextUtils.isEmpty(extraData[1])) {
+                                            if (userVideoStatusResponse != null) {*/
+//                                                long watchedTime = userVideoStatusResponse.getWatchedTime();
+//                                                String[] extraData = new String[4];
+//                                                contentDatum.getGist().setWatchedTime(watchedTime);
 
-                                                        List<String> relatedVideoIds;
+                                                        /*List<String> relatedVideoIds;
                                                         if (relateVideoIds == null || relateVideoIds.size() == 0) {
-                                                            relatedVideoIds = appCMSContentDetail.getContentDetails().getRelatedVideoIds();//getRecords().get(0).getContentDetails().getRelatedVideoIds();
+                                                            relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();//getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                                             // Putting the current video id on the
                                                             // zeroth position, to make sure when user
                                                             // asks Alexa to play previous video, we
                                                             // always have a previous video.
                                                             if (relatedVideoIds != null) {
-                                                                relatedVideoIds.add(0, appCMSContentDetail.getGist().getId());
+                                                                relatedVideoIds.add(0, contentDatum.getGist().getId());
                                                             }
                                                         } else {
                                                             relatedVideoIds = relateVideoIds;
-                                                        }
-                                                        ContentDatum episodeContentDatum = appCMSContentDetail.convertToContentDatum();
+                                                        }*/
+                                                        ContentDatum episodeContentDatum = contentDatum;//appCMSContentDetail.convertToContentDatum();
                                                         episodeContentDatum.setSeason(contentDatum.getSeason());
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
-                                                                appCMSContentDetail.getGist().getTitle(),
-                                                                extraData,
+                                                                contentDatum.getGist().getTitle(),
+                                                                null,
                                                                 episodeContentDatum,
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                relatedVideoIds,
+                                                                null,
                                                                 action0);
-                                                    } else {
-                                                        openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
-                                                                currentActivity.getString(R.string.app_name)),
-                                                                currentActivity.getString(R.string.app_connectivity_dialog_title), false);
-                                                    }
-                                                }
-                                            } else {
+
+//                                                }
+                                            /*} else {
                                                 openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                         currentActivity.getString(R.string.app_name)),
                                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                             }
-                                        });
-                            } else {
+                                        });*/
+                            /*} else {
                                 openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                         currentActivity.getString(R.string.app_name)),
                                         currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                             }
-                        }).execute(params);
+                        }).execute(params);*/
             } /*else {
                 if (watchTime >= 0) {
                     contentDatum.getGist().setWatchedTime(watchTime);
@@ -17421,6 +17455,7 @@ public class AppCMSPresenter {
         SIGN_OUT,
         DOWNLOAD_VIA_MOBILE_DISABLED,
         VIDEO_NOT_AVAILABLE,
+        UNABLE_TO_PLAY_VIDEO,
         ARTICLE_API_RESPONSE_ERROR,
         OPEN_URL_IN_BROWSER
     }

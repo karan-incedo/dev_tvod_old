@@ -3,6 +3,9 @@ package com.viewlift.models.data.appcms.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class AppCMSEntitlementResponse {
 
@@ -33,6 +36,10 @@ public class AppCMSEntitlementResponse {
     @SerializedName("errorMessage")
     @Expose
     private  String errorMessage;
+
+    private int code;
+
+    private String message;
 
     public boolean isSuccess() {
         return success;
@@ -90,5 +97,34 @@ public class AppCMSEntitlementResponse {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+
+    public ContentDatum convertToContentDatum(){
+        return this.getVideoContentDatum();
+    }
+
+    public AppCMSPageAPI convertToAppCMSPageAPI(String Id, String moduleType) {
+        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+        Module module = new Module();
+        List<ContentDatum> data = new ArrayList<>();
+        data.add(this.getVideoContentDatum());
+
+        module.setContentData(data);
+        module.setModuleType(moduleType);
+        appCMSPageAPI.setId(Id);
+        List<Module> moduleList = new ArrayList<>();
+        moduleList.add(module);
+        appCMSPageAPI.setModules(moduleList);
+
+        return appCMSPageAPI;
     }
 }

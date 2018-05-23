@@ -26,7 +26,7 @@
             android:layout_marginLeft="15dp"
             android:letterSpacing="0.04"
             android:text="Home"
-            android:textColor="@color/color_white"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/appcms_tv_navigation_textSize" />
 
     </LinearLayout>
