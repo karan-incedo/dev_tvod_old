@@ -3751,7 +3751,9 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                     appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
         }
-        return useSSLCommerz;
+//        return useSSLCommerz;
+        // TODO: uncomment when it is enabled on web
+        return false;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
