@@ -159,7 +159,8 @@ public class PlaybackControlsFragment extends Fragment {
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
 
         try {
-            mMediaBrowser.connect();
+            if (mMediaBrowser != null && !mMediaBrowser.isConnected())
+                mMediaBrowser.connect();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
@@ -181,7 +182,7 @@ public class PlaybackControlsFragment extends Fragment {
             MediaControllerCompat mediaController = new MediaControllerCompat(getActivity(), token);
             MediaControllerCompat.setMediaController(getActivity(), mediaController);
             onConnected();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -196,7 +197,7 @@ public class PlaybackControlsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 //                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                Log.e("PlaybackController","FLAG_ACTIVITY_SINGLE_TOP");
+                Log.e("PlaybackController", "FLAG_ACTIVITY_SINGLE_TOP");
                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
                 MediaMetadataCompat metadata = null;
                 if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
@@ -210,7 +211,7 @@ public class PlaybackControlsFragment extends Fragment {
                 }
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            }else{
+            } else {
                 int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                 if (apiAvailability.isUserResolvableError(resultCode)) {
                     apiAvailability.getErrorDialog(getActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
@@ -220,7 +221,7 @@ public class PlaybackControlsFragment extends Fragment {
                     Toast.makeText(getActivity(), "This device is not supported.", Toast.LENGTH_SHORT).show();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -392,7 +393,7 @@ public class PlaybackControlsFragment extends Fragment {
             } else {
                 extra_info.setVisibility(View.GONE);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
