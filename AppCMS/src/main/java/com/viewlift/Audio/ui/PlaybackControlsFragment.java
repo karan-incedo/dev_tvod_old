@@ -158,7 +158,11 @@ public class PlaybackControlsFragment extends Fragment {
         mMediaBrowser = new MediaBrowserCompat(getActivity(),
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
 
-        mMediaBrowser.connect();
+        try {
+            mMediaBrowser.connect();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
@@ -246,6 +250,7 @@ public class PlaybackControlsFragment extends Fragment {
 
         }
         audioPreview(null);
+
     }
 
     @Override
