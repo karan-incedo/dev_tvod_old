@@ -109,6 +109,16 @@
         <item>AC Banner 01</item>
     </string-array>
 
+
+
+    <!-- Names of the apps where we need Splash progress-->
+    <string-array name="app_cms_splash_progress_needed">
+        <item>com.viewlift.failarmy2</item>
+        <item>com.viewlift.jukinvideo</item>
+        <item>com.viewlift.peopleawesome</item>
+        <item>com.viewlift.thepetcollective</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>
@@ -481,6 +491,7 @@
     <!-- TODo mergeg both bellow in later implementation AppCMS Release entitlement Detail API -->
     <string name="app_cms_release_entitlement_api_url">%1$s/entitlement/release-user-entitlement-service?id=%2$s</string>
     <string name="app_cms_prod_entitlement_api_url">%1$s/entitlement/prod-user-entitlement-service?id=%2$s</string>
+    <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
