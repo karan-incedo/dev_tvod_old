@@ -1462,13 +1462,7 @@ public class AppCMSPresenter {
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
-            int endPoint;
-            if(appCMSMain.getApiBaseUrl().contains("release")){
-                endPoint = R.string.app_cms_release_entitlement_api_url;
-            }else{
-                endPoint = R.string.app_cms_prod_entitlement_api_url;
-            }
-            endPoint =R.string.app_cms_entitlement_api_url;
+            int endPoint =R.string.app_cms_entitlement_api_url;
             url = currentActivity.getString(endPoint,
                     appCMSMain.getApiBaseUrl(),
                     id);
@@ -1493,7 +1487,8 @@ public class AppCMSPresenter {
                         readyAction.call(currentContentDatum);
                     }else if (appCMSEntitlementResponse != null &&
                             appCMSEntitlementResponse.getCode() != 200){
-                        String message  = currentActivity.getString(R.string.entitlement_api_server_error,appCMSEntitlementResponse.getCode());
+                        String message  = currentActivity.getString(R.string.entitlement_api_server_error,
+                                (appCMSEntitlementResponse.getCode()));
 
                         showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
                             readyAction.call(null);
