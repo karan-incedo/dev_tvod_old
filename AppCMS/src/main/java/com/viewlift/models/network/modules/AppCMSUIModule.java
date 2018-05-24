@@ -335,6 +335,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TRAY_SEASON_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_underline_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_UNDERLINE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_page_title_key),
+                AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_title_key),
+                AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_title_key),
+                AppCMSUIKeyType.PAGE_AWAY_TEAM_TITLE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);

@@ -14442,7 +14442,7 @@ public class AppCMSPresenter {
                 pagesToProcess.addAll(metaPageList);
             }
         }
-    }
+    //}
 
     public void cachePage(String pageId) {
         MetaPage metaPage = pageIdToMetaPageMap.get(pageId);

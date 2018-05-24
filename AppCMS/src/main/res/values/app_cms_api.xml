@@ -164,6 +164,9 @@
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_season_tray_title_key">seasonTrayTitle</string>
     <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
+    <string name="app_cms_page_schedule_page_title_key">schedulePageTitle</string>
+    <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
+    <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
