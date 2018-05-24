@@ -124,6 +124,8 @@
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
+    <string name="app_cms_page_multiple_table_view_key">multipletableView</string>
+
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_list_key">list</string>
@@ -234,6 +236,9 @@
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_show_detail_module_key">AC ShowDetail 01</string>
+    <string name="app_cms_page_team_detail_module_key">AC TeamDetail 01</string>
+    <string name="app_cms_page_multitabletray_key">AC MultiTableTray 01</string>
+
     <string name="app_cms_page_article_feed_module_key">AC ArticleFeed 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
@@ -540,6 +545,7 @@
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
+    <string name="app_cms_team_label">Team</string>
 
     <!--AppCMS AnonymousAuthToken API -->
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
@@ -693,6 +699,7 @@
     <!-- AppCMS Content Types -->
     <string name="app_cms_video_content_type">VIDEO</string>
     <string name="app_cms_series_content_type">SERIES</string>
+    <string name="app_cms_action_teamdetail_key">Team Detail</string>
 
     <string name="app_cms_action_playlistpage_key">Playlist Page</string>
     <string name="app_cms_action_musicHub_page_key">Music Hub</string>
@@ -725,5 +732,12 @@
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->
     <string name="app_cms_ccavenue_rsa_key_api_url">%1$s/ccavenue/ccavenue/rsakey?x=%2$s</string>
+
+
+    //Teams Api
+    <string name="app_cms_team_standing_api_url">https://dev-mse.viewlift.com/season/standings/15140</string>
+    <!--<string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/53006/15140</string>-->
+    <string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/%1$s/%2$s</string>
+    <string name="app_cms_team_pointstreak_apikey">6xbjymfoqfzsigLgF07l</string>
 
 </resources>

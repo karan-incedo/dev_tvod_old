@@ -1109,6 +1109,12 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
+
+                        if(appCMSUIcomponentViewType==AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY){
+                            ((TextView) view).setText(data.getTeam().getGb());
+                            ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
+
+                        }
                         if (data.getGist() != null && data.getGist().getTitle() != null) {
                             ((TextView) view).setText(data.getGist().getTitle());
                             ((TextView) view).setSingleLine(true);
