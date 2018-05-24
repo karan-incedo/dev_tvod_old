@@ -254,6 +254,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
             getPermalink(contentDatum);
             setWatchedTime(contentDatum);
+            if (contentDatum!= null &&
+                    contentDatum.isDRMEnabled()){
+                setDRMEnabled(contentDatum.isDRMEnabled());
+                setLicenseUrl(contentDatum.getStreamingInfo().getVideoAssets().getWideVine().getLicenseUrl());
+                releasePlayer();
+                init(mContext);
+
+            }
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
