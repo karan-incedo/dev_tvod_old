@@ -488,9 +488,7 @@
 
 
 
-    <!-- TODo mergeg both bellow in later implementation AppCMS Release entitlement Detail API -->
-    <string name="app_cms_release_entitlement_api_url">%1$s/entitlement/release-user-entitlement-service?id=%2$s</string>
-    <string name="app_cms_prod_entitlement_api_url">%1$s/entitlement/prod-user-entitlement-service?id=%2$s</string>
+    <!--  AppCMS entitlement Detail API -->
     <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
 
     <!-- AppCMS WatchList API -->
