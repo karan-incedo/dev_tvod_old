@@ -69,37 +69,37 @@ postBuildStatus ${17} $POST_URL "STARTED" "No ERROR" "Build Successfully Started
 fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID BUILD SUCCESSFULLY STARTED. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
 
-# rm -rf ./AppCMS/src/main/res/drawable/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable/logo.png
+rm -rf ./AppCMS/src/main/res/drawable/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable/logo.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo.png
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.png
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.png
-
-
-# rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.png
-
-# rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.png
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.png
 
 
-# rm -rf ./AppCMS/src/main/res/drawable/logo_icon.jpg
-# rm -rf ./AppCMS/src/main/res/drawable/logo_icon.png
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.png
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.png
 
-# rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.jpg
-# rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.png
+rm -rf ./AppCMS/src/main/res/drawable/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable/logo_icon.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.png
 
 
 echo "viewlift"
@@ -110,24 +110,24 @@ echo ${1}
 echo "viewlift"
 
 
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
 
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable ./AppCMS/src/main/res/drawable --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable-xhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 7 " " 0
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxxhdpi ./AppCMS/src/main/res/drawable-xxxhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 8 " " 0
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxhdpi ./AppCMS/src/main/res/drawable-xxhdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable ./AppCMS/src/main/res/drawable --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable-xhdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 7 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxxhdpi ./AppCMS/src/main/res/drawable-xxxhdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 8 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxhdpi ./AppCMS/src/main/res/drawable-xxhdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-mdpi ./AppCMS/src/main/res/drawable-mdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-mdpi ./AppCMS/src/main/res/drawable-mdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
-# aws s3 cp s3://${19}/$1/build/android/resource/drawable-hdpi ./AppCMS/src/main/res/drawable-hdpi/ --recursive
-# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
-#2: Slack Second Message. Downloading Resources
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-hdpi ./AppCMS/src/main/res/drawable-hdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
+2: Slack Second Message. Downloading Resources
 fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID DOWNLOADING RESOURCES AND METADATA. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
 
