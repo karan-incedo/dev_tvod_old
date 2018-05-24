@@ -3,15 +3,11 @@ package com.viewlift.views.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.gson.GsonBuilder;
@@ -22,13 +18,8 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
-import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
-import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.Map;
 
@@ -46,6 +37,8 @@ public class MultiTableWithSameItemsModule extends ModuleView {
 
     private final ModuleWithComponents moduleInfo;
     private final Module moduleAPI;
+    private  Module subTrayModuleAPI;
+
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
     private final ViewCreator viewCreator;
@@ -90,6 +83,8 @@ public class MultiTableWithSameItemsModule extends ModuleView {
                 jsonValueKeyMap != null &&
                 appCMSPresenter != null &&
                 viewCreator != null) {
+            subTrayModuleAPI=new Module();
+            subTrayModuleAPI=(Module) moduleAPI.clone();
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
@@ -103,7 +98,7 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             LinearLayout topLayoutContainer = new LinearLayout(getContext());
             MarginLayoutParams topLayoutContainerLayoutParams =
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            topLayoutContainerLayoutParams.setMargins(0, 100, 0, 0);
+            topLayoutContainerLayoutParams.setMargins(0, 5, 0, 0);
             topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
@@ -132,16 +127,20 @@ public class MultiTableWithSameItemsModule extends ModuleView {
                         ModuleWithComponents module2 = component;
 
                         for(int k=0;k<moduleAPI.getContentData().get(0).getMonthlySchedule().size();k++) {
+                            String key= (String) moduleAPI.getContentData().get(0).getMonthlySchedule().keySet().toArray()[k];
+                            subTrayModuleAPI.setContentData(moduleAPI.getContentData().get(0).getMonthlySchedule().get(key));
+                            subTrayModuleAPI.setContentType(subTrayModuleAPI.getContentData().get(0).getGist().getContentType());
+                            subTrayModuleAPI.setTitle(key);
                             for (int j = 0; j < component.getComponents().size(); j++) {
                                 Component subComp = component.getComponents().get(j);
                                 ModuleView moduleView1 = new ModuleView<>(context, module2, true);
-                                addChildComponents(moduleView1, subComp, appCMSAndroidModules, j);
+                                addChildComponents(moduleView1, subComp, appCMSAndroidModules, j,subTrayModuleAPI);
                                 topLayoutContainer.addView(moduleView1);
                             }
                         }
                     }else{
                         ModuleView moduleView2 = new ModuleView<>(context, module1, true);
-                        addChildComponents(moduleView2, component, appCMSAndroidModules, i);
+                        addChildComponents(moduleView2, component, appCMSAndroidModules, i, subTrayModuleAPI);
                         //moduleView2.setLayoutParams(topLayoutContainerLayoutParams);
                         topLayoutContainer.addView(moduleView2);
 
@@ -168,7 +167,7 @@ public class MultiTableWithSameItemsModule extends ModuleView {
 
     private void addChildComponents(ModuleView moduleView,
                                     Component subComponent,
-                                    final AppCMSAndroidModules appCMSAndroidModules, int i) {
+                                    final AppCMSAndroidModules appCMSAndroidModules, int i, Module subTrayModuleAPI) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         if (componentViewResult.onInternalEvent != null) {
             appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
@@ -179,7 +178,7 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             viewCreator.createComponentView(getContext(),
                     subComponent,
                     subComponent.getLayout(),
-                    moduleAPI,
+                    subTrayModuleAPI,
                     appCMSAndroidModules,
                     null,
                     moduleInfo.getSettings(),

@@ -1357,40 +1357,40 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
-        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY && ((jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_API_MULTITABLE_TEAM_MODULE_KEY))) {
-//            int padding = childComponent.getPadding();
-//            view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-//            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
-//            RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
-//                @Override
-//                public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-//                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-//                        getParent().requestDisallowInterceptTouchEvent(false);
-//                    } else {
-//                        getParent().requestDisallowInterceptTouchEvent(true);
-//                    }
-//                    return false;
-//                }
-//
-//                @Override
-//                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-//                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-//                        getParent().requestDisallowInterceptTouchEvent(false);
-//                    } else {
-//                        getParent().requestDisallowInterceptTouchEvent(true);
-//                    }
-//                }
-//
-//                @Override
-//                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//                }
-//            };
-//            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
-//
-//            if(((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter){
-//                padding = 20;
-//                view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-//            }
+        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ) {
+            int padding = childComponent.getPadding();
+            view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+            RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                @Override
+                public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
+                }
+
+                @Override
+                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+                }
+            };
+            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
+
+            if(((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter){
+                padding = 20;
+                view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            }
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
