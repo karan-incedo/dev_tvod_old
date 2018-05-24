@@ -3,26 +3,37 @@ package com.viewlift.tv;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.amazon.device.messaging.ADM;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.adm.AppCMSADMServerMsgHandler;
 import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.views.components.AppCMSPresenterComponent;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by viewlift on 6/22/17.
@@ -30,9 +41,47 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 
 public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
 
+    private CountDownTimer countDownTimer;
+    private boolean needSplashProgress;
+
+    private static final String TAG = "ADMMessenger";
+
+    /**
+     * Catches intents sent from the onMessage() callback to update the UI.
+     */
+    private BroadcastReceiver msgReceiver;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Amazon Device Details: "+getDeviceDetail());
+        String packageName = getApplicationContext().getPackageName();
+        List<String> strings = Arrays.asList(getResources().getStringArray(R.array.app_cms_splash_progress_needed));
+
+        needSplashProgress = strings.contains(packageName);
+
+        for (String app : strings) {
+            if (packageName.contains(app)){
+                needSplashProgress = true;
+                break;
+            }
+        }
+
+        AppCMSPresenter appCMSPresenter =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
+            if (getIntent().getAction().equalsIgnoreCase(getString(R.string.LAUNCHER_DEEPLINK_ACTION))) {
+                appCMSPresenter.setIsTVAppLaunchTypeDeepLink(true);
+                appCMSPresenter.setDeepLinkContentID(getIntent().getData().toString());
+
+                /*In newer Fire TVs, with version 7.1.2, the AppCMSTVVideoPlayActivity doesn't close
+                * when Alexa is requested to play a new movie, when one is already playing, to make
+                * sure the Activity gets closed and a Broadcast is sent from here and received only
+                * on the Video Activity.*/
+                Intent intent = new Intent();
+                intent.setAction(getString(R.string.deeplink_close_player_activity_action));
+                sendBroadcast(intent);
+            }
+        }
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // Activity was brought to front and not created,
             // Thus finishing this will get us to the last viewed activity
@@ -41,10 +90,36 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         }
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
+
+
+        if (needSplashProgress) {
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.getIndeterminateDrawable().setColorFilter(
+                    getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
+            countDownTimer = new CountDownTimer(11000 ,1000) {
+                @Override
+                public void onTick(long l) {
+                    progress = progress+1;
+                    progressBar.setProgress(progress);
+                }
+
+                @Override
+                public void onFinish() {
+
+                }
+            }.start();
+        }
+
+        register();
+        com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+
     }
 
+    int progress = 0;
     private void getAppCmsMain(){
         AppCMSPresenterComponent appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
@@ -65,11 +140,15 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         super.onResume();
         registerReceiver(broadcastReceiver,new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(broadcastReceiver,new IntentFilter(AppCMSPresenter.ACTION_LOGO_ANIMATION));
+        initADMReceiver();
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(broadcastReceiver);
+        if(null != countDownTimer)
+        countDownTimer.cancel();
+        unregisterReceiver(msgReceiver);
         super.onPause();
     }
 
@@ -86,13 +165,17 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
                 showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
-                startLogoAnimation();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
-                    }
-                },550);
+
+                if (!needSplashProgress) {
+                    startLogoAnimation();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
+                        }
+                    },550);
+                }
+
             }
         }
     };
@@ -158,8 +241,10 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 stringBuffer.append("FireStick  Gen = 1st");
             } else if (AMAZON_MODEL.matches("AFTRS")) {
                 stringBuffer.append("FireTV Edition ");
+            } else {
+                stringBuffer.append(AMAZON_MODEL);
             }
-            stringBuffer.append("SDK_INT = " + Build.VERSION.SDK_INT);
+            stringBuffer.append(" SDK_INT = " + Build.VERSION.SDK_INT);
         }catch (Exception e){
 
         }
@@ -195,5 +280,118 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         CustomProgressBar.getInstance(this).dismissProgressDialog();
         super.onStop();
         finish();
+    }
+    /**
+     * Register the app with ADM and send the registration ID to your server
+     */
+    private void register() {
+        final ADM adm = new ADM(this);
+        if (adm.isSupported()) {
+            if (adm.getRegistrationId() == null) {
+                adm.startRegister();
+            } else {
+                /* Send the registration ID for this app instance to your server.
+                 This is a redundancy since this should already have been performed at registration time from the onRegister() callback
+                 but we do it because our python server doesn't save registration IDs.*/
+
+
+                final String admRegistrationId = adm.getRegistrationId();
+                Log.i(TAG, "ADM registration Id:" + admRegistrationId);
+
+                final AppCMSADMServerMsgHandler srv = new AppCMSADMServerMsgHandler();
+                srv.registerAppInstance(getApplicationContext(), adm.getRegistrationId());
+            }
+        }
+    }
+
+    /**
+     * Unregister the app with ADM.
+     * Your server will get notified from the SampleADMMessageHandler:onUnregistered() callback
+     */
+    private void unregister() {
+        final ADM adm = new ADM(this);
+        if (adm.isSupported()) {
+            if (adm.getRegistrationId() != null) {
+                adm.startUnregister();
+            }
+        }
+    }
+
+
+    /**
+     * Create a {@link BroadcastReceiver} for listening to messages from ADM.
+     *
+     * @param msgKey  String to access message field from data JSON.
+     * @param timeKey String to access timeStamp field from data JSON.
+     * @return {@link BroadcastReceiver} for listening to messages from ADM.
+     */
+    private BroadcastReceiver createBroadcastReceiver(final String msgKey,
+                                                      final String timeKey) {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void onReceive(final Context context, final Intent broadcastIntent) {
+                if (broadcastIntent != null) {
+
+                    /* Extract message from the extras in the intent. */
+                    final String msg = broadcastIntent.getStringExtra(msgKey);
+                    final String srvTimeStamp = broadcastIntent.getStringExtra(timeKey);
+
+                    if (msg != null && srvTimeStamp != null) {
+                        Log.i(TAG, msg);
+
+                        /* Display the message in the UI. */
+//                        final TextView tView = (TextView)findViewById(R.id.textMsgServer);
+//                        tView.append("Server Time Stamp: " + srvTimeStamp + "\nMessage from server: " + msg + "\n\n");
+                    }
+
+                    /* Clear notifications if any. */
+                    final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.cancel(12345678);
+                }
+            }
+        };
+        return broadcastReceiver;
+    }
+
+    private void initADMReceiver() {
+
+        /* String to access message field from data JSON. */
+        final String msgKey = getString(R.string.json_data_msg_key);
+
+        /* String to access timeStamp field from data JSON. */
+        final String timeKey = getString(R.string.json_data_time_key);
+
+        /* Intent action that will be triggered in onMessage() callback. */
+        final String intentAction = getString(R.string.intent_msg_action);
+
+        /* Intent category that will be triggered in onMessage() callback. */
+        final String msgCategory = getString(R.string.intent_msg_category);
+
+        final Intent nIntent = getIntent();
+        if (nIntent != null) {
+            /* Extract message from the extras in the intent. */
+            final String msg = nIntent.getStringExtra(msgKey);
+            final String srvTimeStamp = nIntent.getStringExtra(timeKey);
+
+            /* If msgKey and timeKey extras exist then we're coming from clicking a notification intent. */
+            if (msg != null && srvTimeStamp != null) {
+                Log.i(TAG, msg);
+                /* Display the message in the UI. */
+//                final TextView tView = (TextView)findViewById(R.id.textMsgServer);
+                Log.d(TAG, "Server Time Stamp: " + srvTimeStamp + "\nMessage from server: " + msg + "\n\n");
+
+                /* Clear notifications if any. */
+                final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancel(12345678);
+            }
+        }
+
+        /* Listen for messages coming from SampleADMMessageHandler onMessage() callback. */
+        msgReceiver = createBroadcastReceiver(msgKey, timeKey);
+        final IntentFilter messageIntentFilter = new IntentFilter(intentAction);
+        messageIntentFilter.addCategory(msgCategory);
+        this.registerReceiver(msgReceiver, messageIntentFilter);
     }
 }

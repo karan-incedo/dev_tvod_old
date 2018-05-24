@@ -3,15 +3,11 @@ package com.viewlift.models.network.background.tasks;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
-import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 
-import retrofit2.HttpException;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -45,26 +41,6 @@ public class GetAppCMSVideoEntitlementAsyncTask {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorResumeNext(throwable -> Observable.empty())
-                /*.subscribe(new Observer<AppCMSEntitlementResponse>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e instanceof HttpException){
-                            Observable.just((AppCMSEntitlementResponse) ((HttpException) e).response().body()).subscribe(readyAction);
-                        }
-                    }
-
-                    @Override
-                    public void onNext(AppCMSEntitlementResponse appCMSEntitlementResponse) {
-                        if (appCMSEntitlementResponse != null && readyAction != null) {
-                            Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
-                        }
-                    }
-                });*/
                 .subscribe((result) -> {
                     if (result != null && readyAction != null) {
                         Observable.just(result).subscribe(readyAction);

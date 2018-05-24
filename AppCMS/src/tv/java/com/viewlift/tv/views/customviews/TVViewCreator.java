@@ -76,6 +76,7 @@ import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
@@ -186,9 +187,23 @@ public class TVViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         trayIndex = -1;
         for (int i = 0; i < modulesList.size(); i++) {
-            ModuleList module = modulesList.get(i);
-            if (!modulesToIgnore.contains(module.getView())) {
-                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+            ModuleList moduleInfo = modulesList.get(i);
+            if (!modulesToIgnore.contains(moduleInfo.getView())) {
+                Module moduleAPI = matchModuleAPIToModuleUI(moduleInfo, appCMSPageAPI, jsonValueKeyMap);
+
+                ModuleList module = appCMSPresenter.getAppCMSAndroidModules().getModuleListMap().get(moduleInfo.getBlockName());
+
+                if (module == null) {
+                    module = moduleInfo;
+                } else if (moduleInfo != null) {
+                    module.setId(moduleInfo.getId());
+                    module.setSettings(moduleInfo.getSettings());
+                    module.setSvod(moduleInfo.isSvod());
+                    module.setType(moduleInfo.getType());
+                    module.setView(moduleInfo.getView());
+                    module.setBlockName(moduleInfo.getBlockName());
+                }
+
                 View childView = createModuleView(context,
                         module,
                         moduleAPI,
@@ -304,6 +319,16 @@ public class TVViewCreator {
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
+            if(module.getBlockName().equalsIgnoreCase("richText01")){
+                moduleView.setOnFocusChangeListener((view, b) -> {
+                    if(null != appCMSPresenter
+                            && null != appCMSPresenter.getCurrentActivity()
+                            && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                        ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
+                    }
+                });
+            }
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
                     || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
@@ -424,6 +449,64 @@ public class TVViewCreator {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
         switch (componentType) {
+            case PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY:
+                break;
+            case PAGE_SUBSCRIBE_EMAIL_KEY:
+                break;
+            case PAGE_RATINGBAR:
+                break;
+            case PAGE_VIDEO_TYPE_KEY:
+                break;
+            case MAIN_SVOD_SERVICE_TYPE:
+                break;
+            case ANDROID_AUTH_SCREEN_KEY:
+                break;
+            case ANDROID_SPLASH_SCREEN_KEY:
+                break;
+            case ANDROID_DOWNLOAD_SETTINGS_KEY:
+                break;
+            case ANDROID_DOWNLOAD_KEY:
+                break;
+            case ANDROID_PLAYLIST_KEY:
+                break;
+            case ANDROID_HOME_SCREEN_KEY:
+                break;
+            case ANDROID_SIGN_UP_SCREEN_KEY:
+                break;
+            case ANDROID_MOVIES_SCREEN_KEY:
+                break;
+            case ANDROID_SHOWS_SCREEN_KEY:
+                break;
+            case ANDROID_SUBSCRIPTION_SCREEN_KEY:
+                break;
+            case ANDROID_HISTORY_SCREEN_KEY:
+                break;
+            case ANDROID_WATCHLIST_SCREEN_KEY:
+                break;
+            case ANDROID_ARTICLE_SCREEN_KEY:
+                break;
+            case ANDROID_PHOTOGALLERY_SCREEN_KEY:
+                break;
+            case ANDROID_HOME_NAV_KEY:
+                break;
+            case ANDROID_MOVIES_NAV_KEY:
+                break;
+            case ANDROID_WATCHLIST_NAV_KEY:
+                break;
+            case ANDROID_DOWNLOAD_NAV_KEY:
+                break;
+            case PAGE_ACTIONLABEL_KEY:
+                break;
+            case ANDROID_HISTORY_NAV_KEY:
+                break;
+            case ANDROID_SETTINGS_NAV_KEY:
+                break;
+            case PAGE_BUTTON_SWITCH_KEY:
+                break;
+            case PAGE_BUTTON_KEY:
+                break;
+            case PAGE_IMAGE_KEY:
+                break;
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
@@ -449,13 +532,14 @@ public class TVViewCreator {
                 if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                     List<ContentDatum> contentData1 = moduleData.getContentData();
                     List<Component> components = component.getComponents();
-                    for (ContentDatum contentData : contentData1) {
-                        if(contentData != null && contentData.getGist() != null
+                    for (int i = 0; i < contentData1.size(); i++) {
+                        ContentDatum contentData = contentData1.get(i);
+                        if (contentData != null && contentData.getGist() != null
                                 && contentData.getGist().getContentType() != null //video, series/show and episodic
-                                &&(contentData.getGist().getContentType().equalsIgnoreCase("video")
-                                     || contentData.getGist().getContentType().equalsIgnoreCase("series")
-                                      || contentData.getGist().getContentType().equalsIgnoreCase("show")
-                                      || contentData.getGist().getContentType().equalsIgnoreCase("episodic"))
+                                && (contentData.getGist().getContentType().equalsIgnoreCase("video")
+                                || contentData.getGist().getContentType().equalsIgnoreCase("series")
+                                || contentData.getGist().getContentType().equalsIgnoreCase("show")
+                                || contentData.getGist().getContentType().equalsIgnoreCase("episodic"))
                                 ) {
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                             rowData.contentData = contentData;
@@ -464,6 +548,7 @@ public class TVViewCreator {
                             rowData.blockName = moduleUI.getBlockName();
                             rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                             rowData.rowNumber = trayIndex;
+                            rowData.itemPosition = i;
                             listRowAdapter.add(rowData);
                         }
                         //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
@@ -474,6 +559,16 @@ public class TVViewCreator {
             }
             break;
 
+            case PAGE_ADS_KEY:
+                break;
+            case PAGE_ARTICLE_TITLE_KEY:
+                break;
+            case PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY:
+                break;
+            case PAGE_ARTICLE_DESCRIPTION_KEY:
+                break;
+            case PAGE_API_SUMMARY_TEXT_KEY:
+                break;
             case PAGE_COLLECTIONGRID_KEY:
                         /*for(Component component1 : component.getComponents()){*/
                 if (customHeaderItem == null) {
@@ -561,7 +656,8 @@ public class TVViewCreator {
                         if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                             List<ContentDatum> contentData1 = moduleData.getContentData();
                             List<Component> components = component.getComponents();
-                            for (ContentDatum contentData : contentData1) {
+                            for (int i = 0; i < contentData1.size(); i++) {
+                                ContentDatum contentData = contentData1.get(i);
                                 BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                                 rowData.contentData = contentData;
                                 rowData.uiComponentList = components;
@@ -569,9 +665,12 @@ public class TVViewCreator {
                                 rowData.blockName = moduleUI.getBlockName();
                                 rowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                                 rowData.rowNumber = trayIndex;
+                                rowData.itemPosition = i;
                                 traylistRowAdapter.add(rowData);
                             }
                             mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                        }else{
+                            trayIndex--;
                         }
                     }
                 }
@@ -602,10 +701,603 @@ public class TVViewCreator {
                 browseFragmentRowData.contentData = moduleData.getContentData().get(0);
                 browseFragmentRowData.infoHover = moduleUI.getSettings() != null && moduleUI.getSettings().isInfoHover();
                 browseFragmentRowData.rowNumber = trayIndex;
+                    browseFragmentRowData.itemPosition = 0;
                 listRowAdapter.add(browseFragmentRowData);
                 pageView.setIsStandAlonePlayerEnabled(true);
                 mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
             }
+                break;
+            case PAGE_TABLE_VIEW_KEY:
+                break;
+            case PAGE_PROGRESS_VIEW_KEY:
+                break;
+            case PAGE_LIST_VIEW_KEY:
+                break;
+            case PAGE_LIST_MODULE_KEY:
+                break;
+            case PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE:
+                break;
+            case PAGE_SHOW_PLAYER_VIEW_KEY:
+                break;
+            case PAGE_CAROUSEL_IMAGE_KEY:
+                break;
+            case PAGE_PAGE_CONTROL_VIEW_KEY:
+                break;
+            case PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY:
+                break;
+            case PAGE_SEPARATOR_VIEW_KEY:
+                break;
+            case PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY:
+                break;
+            case PAGE_SEGMENTED_VIEW_KEY:
+                break;
+            case PAGE_CASTVIEW_VIEW_KEY:
+                break;
+            case PAGE_BG_KEY:
+                break;
+            case PAGE_LOGO_KEY:
+                break;
+            case PAGE_INFO_KEY:
+                break;
+            case PAGE_PLAY_KEY:
+                break;
+            case PAGE_SHOW_KEY:
+                break;
+            case PAGE_ARTICLE_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_KEY:
+                break;
+            case PAGE_TEAMS_KEY:
+                break;
+            case PAGE_WATCH_VIDEO_KEY:
+                break;
+            case PAGE_PLAY_IMAGE_KEY:
+                break;
+            case PAGE_TRAY_TITLE_KEY:
+                break;
+            case PAGE_TRAY_SEASON_TITLE_KEY:
+                break;
+            case PAGE_THUMBNAIL_IMAGE_KEY:
+                break;
+            case PAGE_THUMBNAIL_TIME_AND_DATE_KEY:
+                break;
+            case PAGE_TRAY_TITLE_UNDERLINE_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_IMAGE_KEY:
+                break;
+            case PAGE_BADGE_IMAGE_KEY:
+                break;
+            case PAGE_THUMBNAIL_TITLE_KEY:
+                break;
+            case PAGE_EPISODE_THUMBNAIL_TITLE_KEY:
+                break;
+            case PAGE_THUMBNAIL_DESCRIPTION_KEY:
+                break;
+            case PAGE_THUMBNAIL_READ_MORE_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_CENTER_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_CENTER_HORIZONTAL_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY:
+                break;
+            case PAGE_CAROUSEL_TITLE_KEY:
+                break;
+            case PAGE_CAROUSEL_INFO_KEY:
+                break;
+            case PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY:
+                break;
+            case PAGE_ADD_TO_WATCHLIST_KEY:
+                break;
+            case PAGE_DOWNLOAD_01_MODULE_KEY:
+                break;
+            case PAGE_DOWNLOAD_02_MODULE_KEY:
+                break;
+            case PAGE_PLAYLIST_MODULE_KEY:
+                break;
+            case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
+                break;
+            case PAGE_TEXT_BOLD_KEY:
+                break;
+            case PAGE_TEXT_MEDIUM_KEY:
+                break;
+            case PAGE_TEXT_LIGHT_KEY:
+                break;
+            case PAGE_TEXT_REGULAR_KEY:
+                break;
+            case PAGE_TEXT_SEMIBOLD_KEY:
+                break;
+            case PAGE_TEXT_SEMIBOLD_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_EXTRABOLD_KEY:
+                break;
+            case PAGE_TEXT_BLACK_KEY:
+                break;
+            case PAGE_TEXT_BLACK_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_HAIRLINE_KEY:
+                break;
+            case PAGE_TEXT_HAIRLINE_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_LIGHT_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_HEAVY_KEY:
+                break;
+            case PAGE_TEXT_HEAVY_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_MEDIUM_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_THIN_KEY:
+                break;
+            case PAGE_TEXT_THIN_ITALIC_KEY:
+                break;
+            case PAGE_TEXT_OPENSANS_FONTFAMILY_KEY:
+                break;
+            case PAGE_TEXT_LATO_FONTFAMILY_KEY:
+                break;
+            case PAGE_TEXTVIEW_KEY:
+                break;
+            case PAGE_TEXTFIELD_KEY:
+                break;
+            case PAGE_EMAILTEXTFIELD_KEY:
+                break;
+            case PAGE_EMAILTEXTFIELD2_KEY:
+                break;
+            case PAGE_PASSWORDTEXTFIELD_KEY:
+                break;
+            case PAGE_PASSWORDTEXTFIELD2_KEY:
+                break;
+            case PAGE_FORGOTPASSWORD_KEY:
+                break;
+            case PAGE_RESET_PASSWORD_MODULE_KEY:
+                break;
+            case PAGE_CONTACT_US_MODULE_KEY:
+                break;
+            case PAGE_MOBILETEXTFIELD_KEY:
+                break;
+            case PAGE_AUTHENTICATION_MODULE_KEY:
+                break;
+            case PAGE_LOGIN_BUTTON_KEY:
+                break;
+            case PAGE_SIGNUP_BUTTON_KEY:
+                break;
+            case PAGE_PLAN_TITLE_KEY:
+                break;
+            case PAGE_PLAN_PRICEINFO_KEY:
+                break;
+            case PAGE_PLAN_BESTVALUE_KEY:
+                break;
+            case PAGE_PLAN_PURCHASE_BUTTON_KEY:
+                break;
+            case PAGE_PLAN_META_DATA_VIEW_KEY:
+                break;
+            case PAGE_ARTICLE_MODULE_KEY:
+                break;
+            case PAGE_HISTORY_MODULE_KEY:
+                break;
+            case PAGE_WATCHLIST_MODULE_KEY:
+                break;
+            case PAGE_HISTORY_01_MODULE_KEY:
+                break;
+            case PAGE_HISTORY_02_MODULE_KEY:
+                break;
+            case PAGE_WATCHLIST_01_MODULE_KEY:
+                break;
+            case PAGE_WATCHLIST_02_MODULE_KEY:
+                break;
+            case PAGE_CONTINUE_WATCHING_MODULE_KEY:
+                break;
+            case PAGE_SETTINGS_KEY:
+                break;
+            case PAGE_WATCHLIST_DURATION_KEY:
+                break;
+            case PAGE_WATCHLIST_DURATION_UNIT_KEY:
+                break;
+            case PAGE_WATCHLIST_DESCRIPTION_KEY:
+                break;
+            case PAGE_WATCHLIST_TITLE_KEY:
+                break;
+            case PAGE_EPISODE_TITLE_KEY:
+                break;
+            case PAGE_API_HISTORY_MODULE_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_TRAY_02_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_GRID_01_KEY:
+                break;
+            case PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY:
+                break;
+            case PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY:
+                break;
+            case PAGE_API_SHOWDETAIL_MODULE_KEY:
+                break;
+            case PAGE_SUBSCRIPTION_SELECTPLAN_KEY:
+                break;
+            case PAGE_ARTICLE_TRAY_KEY:
+                break;
+            case PAGE_SUBSCRIPTION_IMAGEROW_KEY:
+                break;
+            case PAGE_PLANMETADATATITLE_KEY:
+                break;
+            case PAGE_PLANMETADDATAIMAGE_KEY:
+                break;
+            case PAGE_PLANMETADATADEVICECOUNT_KEY:
+                break;
+            case PAGE_SETTINGS_TITLE_KEY:
+                break;
+            case PAGE_SETTINGS_NAME_VALUE_KEY:
+                break;
+            case PAGE_SETTINGS_EMAIL_TITLE_KEY:
+                break;
+            case PAGE_SETTINGS_EMAIL_VALUE_KEY:
+                break;
+            case PAGE_SETTINGS_PLAN_VALUE_KEY:
+                break;
+            case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
+                break;
+            case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
+                break;
+            case PAGE_SETTINGS_EDIT_PROFILE_KEY:
+                break;
+            case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
+                break;
+            case CONTACT_US_PHONE_LABEL:
+                break;
+            case CONTACT_US_EMAIL_LABEL:
+                break;
+            case CONTACT_US_PHONE_IMAGE:
+                break;
+            case CONTACT_US_EMAIL_IMAGE:
+                break;
+            case PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY:
+                break;
+            case PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY:
+                break;
+            case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
+                break;
+            case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
+                break;
+            case PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY:
+                break;
+            case PAGE_BACKGROUND_IMAGE_KEY:
+                break;
+            case PAGE_BACKGROUND_IMAGE_TYPE_KEY:
+                break;
+            case PAGE_TOGGLE_BUTTON_KEY:
+                break;
+            case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
+                break;
+            case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
+                break;
+            case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
+                break;
+            case PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY:
+                break;
+            case PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_TITLE_TXT_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_AUTH_TXT_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
+                break;
+            case PAGE_PHOTO_GALLERY_SELECTED_IMAGE:
+                break;
+            case PAGE_SUBSCRIPTION_PAGE_KEY:
+                break;
+            case PAGE_VIDEO_DETAILS_KEY:
+                break;
+            case PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY:
+                break;
+            case PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY:
+                break;
+            case PAGE_LOGIN_COMPONENT_KEY:
+                break;
+            case PAGE_SIGNUP_COMPONENT_KEY:
+                break;
+            case PAGE_REMOVEALL_KEY:
+                break;
+            case PAGE_VIDEO_IMAGE_KEY:
+                break;
+            case PAGE_THUMBNAIL_VIDEO_IMAGE_KEY:
+                break;
+            case PAGE_START_WATCHING_BUTTON_KEY:
+                break;
+            case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
+                break;
+            case PAGE_VIDEO_PLAY_BUTTON_KEY:
+                break;
+            case PAGE_VIDEO_DESCRIPTION_KEY:
+                break;
+            case PAGE_VIDEO_TITLE_KEY:
+                break;
+            case PAGE_SHOW_TITLE_KEY:
+                break;
+            case PAGE_SHOW_SWITCH_SEASONS_KEY:
+                break;
+            case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
+                break;
+            case PAGE_VIDEO_SUBTITLE_KEY:
+                break;
+            case PAGE_SHOW_SUBTITLE_KEY:
+                break;
+            case PAGE_VIDEO_SHARE_KEY:
+                break;
+            case PAGE_VIDEO_CLOSE_KEY:
+                break;
+            case PAGE_VIDEO_STARRATING_KEY:
+                break;
+            case PAGE_VIDEO_AGE_LABEL_KEY:
+                break;
+            case PAGE_VIDEO_CREDITS_DIRECTOR_KEY:
+                break;
+            case PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY:
+                break;
+            case PAGE_VIDEO_CREDITS_DIRECTORS_KEY:
+                break;
+            case PAGE_VIDEO_CREDITS_STARRING_KEY:
+                break;
+            case PAGE_VIDEO_WATCH_TRAILER_KEY:
+                break;
+            case PAGE_SHOW_WATCH_TRAILER_KEY:
+                break;
+            case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
+                break;
+            case PAGE_API_THUMBNAIL_URL:
+                break;
+            case PAGE_API_TITLE:
+                break;
+            case PAGE_API_DESCRIPTION:
+                break;
+            case PAGE_HEADER_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_LEFT_KEY:
+                break;
+            case PAGE_TEXTALIGNMENT_RIGHT_KEY:
+                break;
+            case PAGE_VIDEO_DETAIL_HEADER_KEY:
+                break;
+            case PAGE_EMPTY_KEY:
+                break;
+            case PAGE_NULL_KEY:
+                break;
+            case PAGE_AUTOPLAY_MODULE_KEY_01:
+                break;
+            case PAGE_AUTOPLAY_MODULE_KEY_02:
+                break;
+            case PAGE_AUTOPLAY_MODULE_KEY_03:
+                break;
+            case PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY:
+                break;
+            case PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY:
+                break;
+            case PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_DIRECTOR_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_SUB_DIRECTOR_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_COUNTDOWN_CANCELLED_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_BACK_KEY:
+                break;
+            case PAGE_CAROUSEL_MODULE_KEY:
+                break;
+            case PAGE_EVENT_CAROUSEL_MODULE_KEY:
+                break;
+            case PAGE_VIDEO_PLAYER_MODULE_KEY:
+                break;
+            case PAGE_SETTINGS_MODULE_KEY:
+                break;
+            case PAGE_TRAY_MODULE_KEY:
+                break;
+            case PAGE_TRAY_02_MODULE_KEY:
+                break;
+            case PAGE_TRAY_03_MODULE_KEY:
+                break;
+            case PAGE_AUDIO_TRAY_MODULE_KEY:
+                break;
+            case PAGE_BANNER_AD_MODULE_KEY:
+                break;
+            case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
+                break;
+            case PAGE_SEASON_TRAY_MODULE_KEY:
+                break;
+            case PAGE_GRID_MODULE_KEY:
+                break;
+            case PAGE_ARTICLE_FEED_MODULE_KEY:
+                break;
+            case PAGE_PHOTO_TRAY_MODULE_KEY:
+                break;
+            case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
+                break;
+            case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
+                break;
+            case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
+                break;
+            case PAGE_PHOTOGALLERY_PREV_GALLERY_LABEL_KEY:
+                break;
+            case PAGE_PHOTOGALLERY_GRID_KEY:
+                break;
+            case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
+                break;
+            case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
+                break;
+            case PAGE_SETTING_TOGGLE_SWITCH_TYPE:
+                break;
+            case PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY:
+                break;
+            case PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY:
+                break;
+            case RESET_PASSWORD_CANCEL_BUTTON_KEY:
+                break;
+            case RESET_PASSWORD_CONTINUE_BUTTON_KEY:
+                break;
+            case RESET_PASSWORD_TITLE_KEY:
+                break;
+            case PAGE_SETTING_LOGOUT_BUTTON_KEY:
+                break;
+            case PAGE_WATCHLIST_TITLE_LABEL:
+                break;
+            case PAGE_WATCHLIST_SUBTITLE_LABEL:
+                break;
+            case PAGE_WATCHLIST_DESCRIPTION_LABEL:
+                break;
+            case PAGE_WATCHLIST_DELETE_ITEM_BUTTON:
+                break;
+            case PAGE_HISTORY_LAST_ADDED_LABEL_KEY:
+                break;
+            case PAGE_SIGNUP_FOOTER_LABEL_KEY:
+                break;
+            case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
+                break;
+            case PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY:
+                break;
+            case PAGE_AUTOPLAY_UP_NEXT_LOADER_KEY:
+                break;
+            case PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY:
+                break;
+            case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
+                break;
+            case PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY:
+                break;
+            case PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY:
+                break;
+            case PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY:
+                break;
+            case PAGE_GRID_OPTION_KEY:
+                break;
+            case PAGE_GRID_THUMBNAIL_INFO:
+                break;
+            case PAGE_WATCHLIST_DURATION_KEY_BG:
+                break;
+            case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
+                break;
+            case PAGE_THUMBNAIL_BADGE_IMAGE:
+                break;
+            case PAGE_BANNER_IMAGE:
+                break;
+            case PAGE_BANNER_DETAIL_KEY:
+                break;
+            case PAGE_BANNER_DETAIL_BACKGROUND:
+                break;
+            case PAGE_BANNER_DETAIL_ICON:
+                break;
+            case PAGE_BANNER_DETAIL_BUTTON:
+                break;
+            case PAGE_BANNER_DETAIL_TITLE:
+                break;
+            case PAGE_PLAY_LIVE_IMAGE_KEY:
+                break;
+            case PAGE_SETTINGS_USER_EMAIL_LABEL_KEY:
+                break;
+            case PAGE_BEDGE_IMAGE_KEY:
+                break;
+            case TERMS_OF_SERVICE_KEY:
+                break;
+            case PRIVACY_POLICY_KEY:
+                break;
+            case START_WATCHING_KEY:
+                break;
+            case PAGE_DELETE_WATCHLIST_KEY:
+                break;
+            case PAGE_DELETE_HISTORY_KEY:
+                break;
+            case PAGE_GRID_BACKGROUND:
+                break;
+            case PAGE_VIDEO_PUBLISHDATE_KEY:
+                break;
+            case PAGE_WEB_VIEW_KEY:
+                break;
+            case PAGE_ARTICLE_WEB_VIEW_KEY:
+                break;
+            case PAGE_ARTICLE_PREVIOUS_BUTTON_KEY:
+                break;
+            case PAGE_ARTICLE_NEXT_BUTTON_KEY:
+                break;
+            case PAGE_FULL_SCREEN_IMAGE_KEY:
+                break;
+            case PAGE_HISTORY_DESCRIPTION_KEY:
+                break;
+            case PAGE_HISTORY_DURATION_KEY:
+                break;
+            case PAGE_HISTORY_WATCHED_TIME_KEY:
+                break;
+            case PAGE_DOWNLOAD_DESCRIPTION_KEY:
+                break;
+            case PAGE_DOWNLOAD_DURATION_KEY:
+                break;
+            case PAGE_DELETE_DOWNLOAD_KEY:
+                break;
+            case PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY:
+                break;
+            case PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY:
+                break;
+            case PAGE_ICON_IMAGE_KEY:
+                break;
+            case PAGE_ICON_LABEL_KEY:
+                break;
+            case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
+                break;
+            case RAW_HTML_TITLE_KEY:
+                break;
+            case RAW_HTML_IMAGE_KEY:
+                break;
+            case PAGE_PLAYLIST_TITLE:
+                break;
+            case PAGE_PLAYLIST_SUB_TITLE:
+                break;
+            case PAGE_PLAYLIST_AUDIO_ARTIST_TITLE:
+                break;
+            case PAGE_AUDIO_DURATION_KEY:
+                break;
+            case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
+                break;
+            case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
+                break;
+            case PAGE_LINK_YOUR_ACOOUNT_BTN_KEY:
+                break;
+            case PAGE_LINK_YOUR_ACCOUNT_TEXT_KEY:
+                break;
+            case OPEN_SIGN_UP_PAGE_BUTTON_KEY:
+                break;
+            case PAGE_LINK_YOUR_ACCOUNT_MODULE_KEY:
+                break;
+            case CANCEL_BUTTON_KEY:
+                break;
+            case REQUEST_NEW_CODE:
+                break;
+            case CODE_SYNC_TEXT_LINE_1:
+                break;
+            case CODE_SYNC_TEXT_LINE_2:
+                break;
+            case CODE_SYNC_TEXT_LINE_3:
+                break;
+            case CODE_SYNC_TEXT_LINE_HEADER:
+                break;
+            case LINK_ACCOUNT_PAGE_KEY:
                 break;
         }
     }
@@ -624,7 +1316,9 @@ public class TVViewCreator {
                 }
             }
         }
-        customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
+        trayIndex = trayIndex+1;
+        Log.d("TAG","NITS  trayIndex = "+trayIndex);
+        customHeaderItem = new CustomHeaderItem(context, trayIndex, name);
         customHeaderItem.setmIsCarousal(mIsCarousal);
         String padding = moduleUI.getLayout().getTv().getPadding();
         customHeaderItem.setmListRowLeftMargin(Integer.valueOf(padding != null ? padding : "0"));
@@ -659,7 +1353,8 @@ public class TVViewCreator {
                 }
             }
         }
-        customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
+        trayIndex = trayIndex + 1;
+        customHeaderItem = new CustomHeaderItem(context, trayIndex, name);
         customHeaderItem.setItemSpacing(component.getLayout().getTv().getItemSpacing());
         customHeaderItem.setmBackGroundColor(component.getLayout().getTv().getBackgroundColor());
         if (null != component.getLayout().getTv().getHeight()) {
@@ -709,6 +1404,7 @@ public class TVViewCreator {
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 componentViewResult.componentView.setFocusable(true);
+
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
@@ -789,6 +1485,14 @@ public class TVViewCreator {
 
                 switch (componentKey) {
                     case OPEN_SIGN_UP_PAGE_BUTTON_KEY:
+                        componentViewResult.componentView.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((false));
+                            }
+
+                        });
                         componentViewResult.componentView.setOnClickListener(v -> appCMSPresenter.navigateToSignUpPage());
                         break;
                     case PAGE_SHOW_SWITCH_SEASONS_KEY:
@@ -840,6 +1544,7 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0),
                                             false,
                                             -1,
+                                            null,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
 //                                        //Log.e(TAG, "Could not launch action: " +
@@ -895,6 +1600,7 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0),
                                             false,
                                             -1,
+                                            null,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
                                     }
@@ -1023,7 +1729,6 @@ public class TVViewCreator {
                                                 }
                                             }
                                         });
-
                             }
 
                         }
@@ -1123,6 +1828,7 @@ public class TVViewCreator {
                                                 moduleAPI.getContentData().get(0),
                                                 false,
                                                 -1,
+                                                null,
                                                 null)) {
                                         }
                                     }
@@ -1158,6 +1864,7 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         -1,
+                                        null,
                                         null)) {
                                 }
                             }
@@ -1189,6 +1896,18 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
+
+                        componentViewResult.componentView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                            @Override
+                            public void onFocusChange(View view, boolean focus) {
+                                if(focus && null != appCMSPresenter
+                                        && null != appCMSPresenter.getCurrentActivity()
+                                        && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                    ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((false));
+                                }
+
+                            }
+                        });
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -1203,12 +1922,26 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         0,
-                                        null
-                                );
+                                        null,
+                                        null);
                             }
                         });
                         break;
                     case PAGE_LINK_YOUR_ACOOUNT_BTN_KEY:
+                        componentViewResult.componentView.setId(R.id.btn_activate_device);
+
+                        componentViewResult.componentView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                            @Override
+                            public void onFocusChange(View view, boolean focus) {
+                                if(focus && null != appCMSPresenter
+                                        && null != appCMSPresenter.getCurrentActivity()
+                                        && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                    ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((true));
+                                }
+
+                            }
+                        });
+
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -1226,8 +1959,8 @@ public class TVViewCreator {
                                         null,
                                         false,
                                         0,
-                                        null
-                                );
+                                        null,
+                                        null);
                             }
                         });
                         break;
@@ -1252,6 +1985,20 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_LOGIN_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.btn_login);
+
+                        componentViewResult.componentView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                            @Override
+                            public void onFocusChange(View view, boolean focus) {
+                                if(focus && null != appCMSPresenter
+                                        && null != appCMSPresenter.getCurrentActivity()
+                                        && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                    ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((true));
+                                }
+
+                            }
+                        });
+
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -1285,12 +2032,20 @@ public class TVViewCreator {
                                             null,
                                             false,
                                             0,
-                                            null);
+                                            null, null);
                                 }
                             }
                         });
                         break;
                     case PAGE_SETTING_LOGOUT_BUTTON_KEY:
+                        componentViewResult.componentView.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
                         componentViewResult.componentView.setOnClickListener(v -> appCMSPresenter.logoutTV());
                         break;
 
@@ -1400,6 +2155,16 @@ public class TVViewCreator {
                         } else {
                             componentViewResult.componentView.setVisibility(View.INVISIBLE);
                         }
+
+                        componentViewResult.componentView.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
+
                         break;
 
                     default:
@@ -1423,10 +2188,10 @@ public class TVViewCreator {
                 }
 
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                String txtColor = appCMSPresenter.getAppCtaTextColor();
+                String txtColor = appCMSPresenter.getAppTextColor();
                 if(null != txtColor){
                     textColor = Color.parseColor(txtColor);
-                }else if (!TextUtils.isEmpty(component.getTextColor())) {
+                }/*else if (!TextUtils.isEmpty(component.getTextColor())) {
                     textColor = Color.parseColor(getColor(context, component.getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
@@ -1435,7 +2200,7 @@ public class TVViewCreator {
                         textColor =
                                 Color.parseColor(getColor(context, component.getStyles().getTextColor()));
                     }
-                }
+                }*/
                 if (componentKey != PAGE_API_DESCRIPTION)
                     ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 if (!gridElement) {
@@ -1935,7 +2700,9 @@ public class TVViewCreator {
                             }
                             break;
                         default:
-                            if (!TextUtils.isEmpty(component.getText())) {
+                            if(viewType.contains("AC SubNav")){
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                            }else if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
                     }
@@ -2093,9 +2860,10 @@ public class TVViewCreator {
 
                                                     appCMSPresenter.launchTVVideoPlayer(
                                                             moduleAPI.getContentData().get(0),
-                                                            -1,
+                                                            0,
                                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
-                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                                            null);
 
                                                     break;
                                                 }
@@ -2349,6 +3117,17 @@ public class TVViewCreator {
                         textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT
                                 | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         textInputEditText.setId(R.id.email_edit_box);
+
+                        textInputEditText.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
+
+
                         //textInputEditText.setNextFocusRightId(R.id.password_edit_box);
                         break;
                     case PAGE_PASSWORDTEXTFIELD_KEY:
@@ -2357,6 +3136,15 @@ public class TVViewCreator {
                         textInputEditText.setId(R.id.password_edit_box);
                         textInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                        textInputEditText.setOnFocusChangeListener((view, focus) -> {
+                            if(focus && null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((focus));
+                            }
+
+                        });
 
                         //textInputEditText.setNextFocusLeftId(R.id.email_edit_box);
                         // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
@@ -2374,12 +3162,8 @@ public class TVViewCreator {
                 }*/
                 if (!TextUtils.isEmpty(component.getTextColor())) {
                     textInputEditText.setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
-                    textInputEditText.setHintTextColor(Utils.getButtonTextColorDrawable(
-                            component.getHintColor(),
-                            component.getHintColor(),
-                            appCMSPresenter
-                    ));
                 }
+                textInputEditText.setHintTextColor(Color.parseColor("#A6000000"));
                 setTypeFace(appCMSPresenter,context, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_tv_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,
@@ -2414,7 +3198,8 @@ public class TVViewCreator {
                 componentViewResult.componentView = new ToggleSwitchView(
                         context,
                         component,
-                        jsonValueKeyMap
+                        jsonValueKeyMap,
+                        appCMSPresenter
                 );
                 break;
 
@@ -2647,7 +3432,8 @@ public class TVViewCreator {
                     contentDatum,
                     0,
                     relatedVideosIds,
-                    0);
+                    0,
+                    null);
 
         }
     }
@@ -2663,8 +3449,12 @@ public class TVViewCreator {
                         moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
                         moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
 
-                    appCMSPresenter.launchTVVideoPlayer(moduleAPI.getContentData().get(0),-1,
-                            null/*moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds()*/,0);
+                    appCMSPresenter.launchTVVideoPlayer(
+                            moduleAPI.getContentData().get(0),
+                            0,
+                            null/*moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds()*/,
+                            0,
+                            null);
 
                     /*
                     VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();

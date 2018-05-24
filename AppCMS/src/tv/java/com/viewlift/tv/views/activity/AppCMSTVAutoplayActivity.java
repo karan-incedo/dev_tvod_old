@@ -114,8 +114,8 @@ public class AppCMSTVAutoplayActivity extends AppCmsBaseActivity
         return 0;
     }
 
-    @Override
+    /*@Override
     public int getSubNavigationContainer() {
         return 0;
-    }
+    }*/
 }

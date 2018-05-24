@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Build;
 
-import com.viewlift.Audio.MusicService;
-
 import java.io.InputStream;
 import java.util.Properties;
 

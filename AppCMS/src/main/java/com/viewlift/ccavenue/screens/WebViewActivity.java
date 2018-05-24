@@ -45,7 +45,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Date;
 
 import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
 

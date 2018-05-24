@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
@@ -13,7 +12,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -65,7 +63,6 @@ import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -133,7 +130,7 @@ import static com.viewlift.Utils.loadJsonFromAssets;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static final long SECS_TO_MSECS = 1000L;
-    private static CustomVideoPlayerView videoPlayerView;
+    private  CustomVideoPlayerView videoPlayerView;
     private static AppCMSVideoPageBinder videoPlayerViewBinder;
     private static AppCMSVideoPlayerPresenter appCMSVideoPlayerPresenter;
     private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
@@ -141,7 +138,6 @@ public class ViewCreator {
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
-    private CastServiceProvider castProvider;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
 
@@ -260,7 +256,7 @@ public class ViewCreator {
         return color1;
     }
 
-    public static void enableFullScreenMode() {
+   /* public static void enableFullScreenMode() {
         if (videoPlayerView != null) {
             videoPlayerView.enableFullScreenMode();
         }
@@ -284,7 +280,7 @@ public class ViewCreator {
     public static void startPlayer(AppCMSPresenter presenter) {
         if (videoPlayerView != null &&
                 !CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-            videoPlayerView.startPlayer();
+            videoPlayerView.startPlayer(true);
         }
     }
 
@@ -306,7 +302,7 @@ public class ViewCreator {
             }
             videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
         }
-    }
+    }*/
 
     /*
         public static VideoPlayerView playerView(Context context,
@@ -319,92 +315,92 @@ public class ViewCreator {
                 videoPlayerContent = new VideoPlayerContent();
             }
 
-            if (appCMSVideoPlayerPresenter == null) {
-                appCMSVideoPlayerPresenter = new AppCMSVideoPlayerPresenter();
-            }
-
-            videoPlayerContent.videoUrl = videoUrl;
-            videoPlayerContent.ccUrl = ccUrl;
-
-            if (videoPlayerView == null) {
-                videoPlayerView = new VideoPlayerView(context, presenter);
-                videoPlayerView.init(context);
-                videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(context,
-                        presenter.getAppCtaBackgroundColor())));
-            } else if (videoPlayerView.getParent() != null &&
-                    videoPlayerView.getParent() instanceof ViewGroup) {
-                ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
-            }
-
-            boolean resetWatchTime = false;
-            long currentWatchedTime = videoPlayerContent.videoPlayTime;
-            if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
-                resetWatchTime = true;
-            } else {
-                currentWatchedTime = videoPlayerView.getCurrentPosition();
-            }
-
-            if (resetWatchTime) {
-                videoPlayerView.setUri(Uri.parse(videoUrl), null);
-            }
-
-            if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
-                videoPlayerView.startPlayer();
-            }
-
-            videoPlayerView.setFilmId(filmId);
-            videoPlayerView.getPlayerView().setControllerAutoShow(true);
-            videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
-            videoPlayerView.getPlayerView().setVisibility(View.VISIBLE);
-
-            if (resetWatchTime) {
-                videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
-            }
-
-            appCMSVideoPlayerPresenter.updateBinder(context,
-                    presenter,
-                    videoPlayerView,
-                    new AppCMSVideoPlayerPresenter.OnClosePlayerEvent() {
-                        @Override
-                        public void closePlayer() {
-
-                        }
-
-                        @Override
-                        public void onMovieFinished() {
-
-                        }
-
-                        @Override
-                        public void onRemotePlayback(long currentPosition, int castingMode, boolean sentBeaconPlay, Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
-
-                        }
-                    },
-                    new AppCMSVideoPlayerPresenter.OnUpdateContentDatumEvent() {
-                        @Override
-                        public void updateContentDatum(ContentDatum contentDatum) {
-
-                        }
-
-                        @Override
-                        public ContentDatum getCurrentContentDatum() {
-                            return null;
-                        }
-
-                        @Override
-                        public List<String> getCurrentRelatedVideoIds() {
-                            return null;
-                        }
-                    },
-                    videoPlayerViewBinder,
-                    0,
-                    false,
-                    null,
-                    resetWatchTime);
-
-            return videoPlayerView;
+        if (appCMSVideoPlayerPresenter == null) {
+            appCMSVideoPlayerPresenter = new AppCMSVideoPlayerPresenter();
         }
-    */
+
+        videoPlayerContent.videoUrl = videoUrl;
+        videoPlayerContent.ccUrl = ccUrl;
+
+        if (videoPlayerView == null) {
+            videoPlayerView = new VideoPlayerView(context, presenter);
+            videoPlayerView.init(context);
+            videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(context,
+                    presenter.getAppCtaBackgroundColor())));
+        } else if (videoPlayerView.getParent() != null &&
+                videoPlayerView.getParent() instanceof ViewGroup) {
+            ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+        }
+
+        boolean resetWatchTime = false;
+        long currentWatchedTime = videoPlayerContent.videoPlayTime;
+        if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
+            resetWatchTime = true;
+        } else {
+            currentWatchedTime = videoPlayerView.getCurrentPosition();
+        }
+
+        if (resetWatchTime) {
+            videoPlayerView.setUri(Uri.parse(videoUrl), null);
+        }
+
+        if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
+            videoPlayerView.startPlayer(true);
+        }
+
+        videoPlayerView.setFilmId(filmId);
+        videoPlayerView.getPlayerView().setControllerAutoShow(true);
+        videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
+        videoPlayerView.getPlayerView().setVisibility(View.VISIBLE);
+
+        if (resetWatchTime) {
+            videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+        }
+
+        appCMSVideoPlayerPresenter.updateBinder(context,
+                presenter,
+                videoPlayerView,
+                new AppCMSVideoPlayerPresenter.OnClosePlayerEvent() {
+                    @Override
+                    public void closePlayer() {
+
+                    }
+
+                    @Override
+                    public void onMovieFinished() {
+
+                    }
+
+                    @Override
+                    public void onRemotePlayback(long currentPosition, int castingMode, boolean sentBeaconPlay, Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
+
+                    }
+                },
+                new AppCMSVideoPlayerPresenter.OnUpdateContentDatumEvent() {
+                    @Override
+                    public void updateContentDatum(ContentDatum contentDatum) {
+
+                    }
+
+                    @Override
+                    public ContentDatum getCurrentContentDatum() {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getCurrentRelatedVideoIds() {
+                        return null;
+                    }
+                },
+                videoPlayerViewBinder,
+                0,
+                false,
+                null,
+                resetWatchTime);
+
+        return videoPlayerView;
+    }
+
     public static void applyChromecastButtonToFullScreenPlayer(ImageButton chromecastButton) {
         if (videoPlayerView != null) {
             videoPlayerView.setChromecastButton(chromecastButton);
@@ -438,7 +434,7 @@ public class ViewCreator {
             appCMSPresenter.unrestrictPortraitOnly();
         }
     }
-
+ */
     public static void cancelBeaconPing() {
         if (appCMSVideoPlayerPresenter != null) {
             appCMSVideoPlayerPresenter.stop();
@@ -498,7 +494,7 @@ public class ViewCreator {
         }
     }
 
-    public static void openFullScreenVideoPlayer(Activity activity) {
+   /* public static void openFullScreenVideoPlayer(Activity activity) {
         if (videoPlayerView != null && videoPlayerView.getParent() != null
                 && videoPlayerView.getParent() instanceof ViewGroup) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
@@ -508,7 +504,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(true);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }
@@ -530,7 +526,7 @@ public class ViewCreator {
                 videoPlayerView.showChromecastLiveVideoPlayer(false);
                 if (videoPlayerView.shouldPlayOnReattach() &&
                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer();
+                    videoPlayerView.startPlayer(true);
                 } else {
                     videoPlayerView.resumePlayer();
                 }
@@ -543,7 +539,7 @@ public class ViewCreator {
             videoPlayerContent.fullScreenEnabled = false;
         }
     }
-
+*/
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
         CustomWebView webView = new CustomWebView(context);
@@ -1945,7 +1941,7 @@ public class ViewCreator {
                 }
 
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             if (module == null) {
                 module = moduleInfo;
@@ -2388,7 +2384,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    static AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -3021,6 +3017,14 @@ public class ViewCreator {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
+
+                /*videoPlayerViewSingle.setLayoutParams(new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
+                        (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT)));
+*/
+                FrameLayout.LayoutParams videoPlayerParentLP = new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
+                        (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                videoPlayerViewSingle.setLayoutParams(videoPlayerParentLP);
+                appCMSPresenter.videoPlayerViewParent = (ViewGroup) componentViewResult.componentView;
                 appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
@@ -3239,8 +3243,7 @@ public class ViewCreator {
                             @Override
                             public void onClick(View view) {
                                 if (photoGalleryNextPreviousListener != null) {
-                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                    ;
+                                    ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());;
                                     ((Button) pageView.findChildViewById(R.id.photo_gallery_next_button)).setEnabled(true);
                                     photoGalleryNextPreviousListener.previousPhoto(((Button) view));
                                 }
@@ -3269,10 +3272,10 @@ public class ViewCreator {
                         AppCompatCheckBox checkBoxTCP = ((AppCompatCheckBox) componentViewResult.componentView);
                         checkBoxTCP.setChecked(false);
                         checkBoxTCP.setId(R.id.appCMS_tcp_check);
-                        if (component.getText() != null) {
+                        if(component.getText() != null ) {
                             checkBoxTCP.setText(component.getText());
                         }
-                        if (component.getBackgroundColor() != null) {
+                        if(component.getBackgroundColor() != null ) {
                             checkBoxTCP.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
                         }
                         int switchOnColor = Color.WHITE;
@@ -4148,6 +4151,9 @@ public class ViewCreator {
                             } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
+                            if (paymentProcessor!=null&&paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
@@ -4319,7 +4325,7 @@ public class ViewCreator {
                             }
                             if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                 authDateAndPhotoCount.append(" | ")
-                                        .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
+                                        .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
                             }
                             if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
                                 authDateAndPhotoCount.append(" | ")
@@ -4522,7 +4528,7 @@ public class ViewCreator {
                             }
                             if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                 authDateAndPhotoCount.append(" | ")
-                                        .append(appCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
+                                        .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
                             }
                             if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
                                 authDateAndPhotoCount.append(" | ")
@@ -5798,7 +5804,7 @@ public class ViewCreator {
                             ImageButton mMediaRouteButton,
                             long watchedTime) {
         try {
-            castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
+            CastServiceProvider castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
             castProvider.setAllowFreePlay(allowFreePlay);
 
             CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
@@ -6429,8 +6435,8 @@ public class ViewCreator {
 
     public static void notifyDataChange() {
 
-        if (appCMSUserWatHisDowAdapter != null)
-            appCMSUserWatHisDowAdapter.notifyDataSetChanged();
+      /*  if (appCMSUserWatHisDowAdapter != null)
+            appCMSUserWatHisDowAdapter.notifyDataSetChanged();*/
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
@@ -6581,7 +6587,7 @@ public class ViewCreator {
                         createRoundedCorners,
                         null);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             return null;
         }

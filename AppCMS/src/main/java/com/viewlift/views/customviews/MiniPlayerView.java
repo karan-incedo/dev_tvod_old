@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -18,8 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-
-import static com.viewlift.views.customviews.ViewCreator.getColor;
 
 /**
  * Created by sandeep.singh on 11/16/2017.

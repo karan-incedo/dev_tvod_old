@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -44,7 +43,6 @@ import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomTypefaceSpan;
-import com.viewlift.views.customviews.PageView;
 
 import java.security.MessageDigest;
 
@@ -149,11 +147,6 @@ public class AppCMSTVAutoplayFragment extends Fragment {
         if (pageView != null) {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
-            }
-            if (!BaseView.isTablet(context)) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
             }
             onPageCreation.onSuccess(binder);
         }

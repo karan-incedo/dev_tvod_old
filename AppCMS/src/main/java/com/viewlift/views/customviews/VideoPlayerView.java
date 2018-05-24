@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -38,6 +39,12 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
+import com.google.android.exoplayer2.drm.MediaDrmCallback;
+import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -94,7 +101,7 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener, DefaultDrmSessionManager.EventListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -137,6 +144,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private boolean playerJustInitialized;
     private boolean mAudioFocusGranted = false;
     private boolean playOnReattach;
+
+    private boolean isDRMEnabled;
+    private String licenseUrlDRM;
 
     private String filmId;
 
@@ -252,9 +262,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return player != null && player.getPlayWhenReady();
     }
 
-    public void startPlayer() {
+    public void startPlayer(boolean playWhenReady) {
         if (player != null) {
-            player.setPlayWhenReady(true);
+            player.setPlayWhenReady(playWhenReady);
             if (appCMSPresenter != null) {
                 appCMSPresenter.sendKeepScreenOnAction();
             }
@@ -469,7 +479,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (player != null) {
             player.release();
         }
-        player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+        if (isDRMEnabled()){
+
+            DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
+            try {
+                drmSessionManager = buildOnlineDrmSessionManager(licenseUrlDRM);
+
+                player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getContext(), drmSessionManager), trackSelector);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else {
+            player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+        }
         player.addListener(this);
         player.setVideoDebugListener(this);
         playerView.setPlayer(player);
@@ -702,6 +725,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         streamingQualitySelectorCreated = true;
     }
 
+    private DrmSessionManager<FrameworkMediaCrypto> buildOnlineDrmSessionManager(String licenseUrl) throws UnsupportedDrmException {
+        HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(getContext(), "ExoOnline"));
+        MediaDrmCallback drmCallback = new HttpMediaDrmCallback(licenseUrl, httpDataSourceFactory);
+        return DefaultDrmSessionManager.newWidevineInstance(drmCallback, null, new Handler(), this);
+    }
+
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
@@ -783,6 +812,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object o, int reason) {
+
 
     }
 
@@ -1061,7 +1091,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (getPlayer() != null && getPlayer().getPlayWhenReady()) {
-                    startPlayer();
+                    startPlayer(true);
                 } else {
                     pausePlayer();
                 }
@@ -1188,6 +1218,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public boolean fullScreenModeEnabled() {
         return fullScreenMode;
+    }
+
+    @Override
+    public void onDrmKeysLoaded() {
+
+    }
+
+    @Override
+    public void onDrmSessionManagerError(Exception e) {
+
+    }
+
+    @Override
+    public void onDrmKeysRestored() {
+
+    }
+
+    @Override
+    public void onDrmKeysRemoved() {
+
     }
 
     public interface ErrorEventListener {
@@ -1630,5 +1680,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             this.value = value;
         }
 
+    }
+
+    public void setDRMEnabled(boolean DRMEnabled) {
+        isDRMEnabled = DRMEnabled;
+    }
+
+    public boolean isDRMEnabled() {
+        return isDRMEnabled;
+    }
+
+    public void setLicenseUrl(String licenseUrl) {
+        this.licenseUrlDRM = licenseUrl;
+    }
+
+    public String getLicenseUrl() {
+        return licenseUrlDRM;
     }
 }
