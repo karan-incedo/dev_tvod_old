@@ -137,6 +137,17 @@ public class ContentDatum implements Serializable {
 
 
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    Team team;
+
+
     private String playListName;
     private String seriesName;
 
@@ -416,7 +427,20 @@ public class ContentDatum implements Serializable {
     }
 
 
+
+
+
     List<AudioList> audioList = null;
+
+    public List<Team> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(List<Team> teamList) {
+        this.teamList = teamList;
+    }
+
+    List<Team> teamList = null;
 
     public List<AudioList> getAudioList() {
         return audioList;
@@ -459,4 +483,13 @@ public class ContentDatum implements Serializable {
         this.monthlySchedule = monthlySchedule;
     }
 
+    List<ContentDatum> contentData = null;
+
+    public void setContentData(List<ContentDatum> contentData) {
+        this.contentData = contentData;
+    }
+
+    public List<ContentDatum> getContentData() {
+        return contentData;
+    }
 }

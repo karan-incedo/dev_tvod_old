@@ -98,20 +98,22 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 appCMSPresenter.cancelInternalEvents();
-                if (!appCMSPresenter.navigateToPage(navigationItem.getPageId(),
-                        navigationItem.getTitle(),
-                        navigationItem.getUrl(),
-                        false,
-                        true,
-                        false,
-                        true,
-                        false,
-                        null)) {
-                    //Log.e(TAG, "Could not navigate to page with Title: " +
-//                                        navigationFooter.getTitle() +
-//                                        " Id: " +
-//                                        navigationFooter.getPageId());
-                }
+                appCMSPresenter.navigateToTeamDetailPage("bd16d81c-4757-403b-9871-1a18b5963674", navigationItem.getTitle(), false);
+
+//                if (!appCMSPresenter.navigateToPage(navigationItem.getPageId(),
+//                        navigationItem.getTitle(),
+//                        navigationItem.getUrl(),
+//                        false,
+//                        true,
+//                        false,
+//                        true,
+//                        false,
+//                        null)) {
+//                    //Log.e(TAG, "Could not navigate to page with Title: " +
+////                                        navigationFooter.getTitle() +
+////                                        " Id: " +
+////                                        navigationFooter.getPageId());
+//                }
             });
         }
     }

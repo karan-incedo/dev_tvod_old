@@ -35,6 +35,8 @@ import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterCall;
+import com.viewlift.models.network.rest.AppCMSTeamStandingCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -72,6 +74,9 @@ public class AppCMSPresenterModule {
                                                    AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                                                    AppCMSScheduleCall appCMSScheduleCall,
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
+                                                   AppCMSTeamStandingCall appCMSTeamStandingCall,
+                                                   AppCMSTeamRoasterCall appCMSTeamRoasterCall,
+
                                                    AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
                                                    AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
                                                    AppCMSAudioDetailCall appCMSAudioDetailCall,
@@ -128,7 +133,7 @@ public class AppCMSPresenterModule {
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
                 appCMSScheduleCall,
-                appCMSPlaylistCall,
+                appCMSPlaylistCall,appCMSTeamStandingCall,appCMSTeamRoasterCall,
                 appCMSSSLCommerzInitiateCall,
                 appCMSCCAvenueRSAKeyCall,
                 appCMSAudioDetailCall,

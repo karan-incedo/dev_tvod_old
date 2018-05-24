@@ -65,6 +65,10 @@ import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterCall;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterRest;
+import com.viewlift.models.network.rest.AppCMSTeamStandingCall;
+import com.viewlift.models.network.rest.AppCMSTeamStandingRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
@@ -174,6 +178,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
                 AppCMSUIKeyType.ANDROID_PLAYLIST_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_teamdetail_key),
+                AppCMSUIKeyType.ANDROID_TEAM_DETAIL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_sign_up_key),
@@ -252,6 +258,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_table_view_key),
                 AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multiple_table_view_key),
+                AppCMSUIKeyType.PAGE_MULTI_TABLE_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_progress_view_key),
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
@@ -619,6 +627,13 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_detail_module_key),
                 AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_team_detail_module_key),
+                AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multitabletray_key),
+                AppCMSUIKeyType.PAGE_API_MULTITABLE_TEAM_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_page_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_PAGE_KEY);
@@ -1278,6 +1293,19 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSTeamStandingRest providesAppCMSStandingRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSTeamStandingRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamRoasterRest providesAppCMSRoasterRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSTeamRoasterRest.class);
+    }
+
+
+    @Provides
+    @Singleton
     public AppCMSSSLCommerzInitiateRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
         return retrofit.create(AppCMSSSLCommerzInitiateRest.class);
     }
@@ -1506,6 +1534,19 @@ public class AppCMSUIModule {
     public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
         return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
     }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamStandingCall providesAppCMSStandingCall(AppCMSTeamStandingRest appCMSStandingRest, Gson gson) {
+        return new AppCMSTeamStandingCall(appCMSStandingRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamRoasterCall providesAppCMSTeamRoasterCall(AppCMSTeamRoasterRest appCMSStandingRest, Gson gson) {
+        return new AppCMSTeamRoasterCall(appCMSStandingRest, gson);
+    }
+
 
     @Provides
     @Singleton

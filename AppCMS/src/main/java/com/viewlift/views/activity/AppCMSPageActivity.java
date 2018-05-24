@@ -2605,7 +2605,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {
                             appCMSPresenter.launchNavigationPage();
                         } else if (navigationTabTag.getPageId().equalsIgnoreCase("TEAMS") ||
-                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS")) {
+                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS") || navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAM")) {
                             appCMSPresenter.launchTeamNavPage();
                         } else if (navigationTabTag.getPageId().equals("Search Screen") ||
                                 navigationTabTag.getTabBar().getDisplayedPath().equals("Search Screen")) {
