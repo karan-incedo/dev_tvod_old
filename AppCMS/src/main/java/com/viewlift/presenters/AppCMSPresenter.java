@@ -15547,8 +15547,12 @@ public class AppCMSPresenter {
                             }
                             String adsUrl = null;
 
-                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed()
-                                    && contentDatum.getStreamingInfo() != null && !contentDatum.getStreamingInfo().getIsLiveStream();
+                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed();
+
+                            if(contentDatum.getStreamingInfo() != null && contentDatum.getStreamingInfo().getIsLiveStream()){
+                                requestAds = false;
+                            }
+
                             adsUrl = getAdsUrl(pagePath);
                             if (adsUrl == null) {
                                 requestAds = false;
