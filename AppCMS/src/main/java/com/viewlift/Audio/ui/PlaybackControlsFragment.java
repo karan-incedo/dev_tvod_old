@@ -216,10 +216,10 @@ public class PlaybackControlsFragment extends Fragment {
                 if (apiAvailability.isUserResolvableError(resultCode)) {
                     apiAvailability.getErrorDialog(getActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                             .show();
-                } else {
+                } /*else {
                     Log.i("PLaybackControls", "This device is not supported.");
                     Toast.makeText(getActivity(), "This device is not supported.", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();
