@@ -46,7 +46,7 @@ allprojects {
         jsr250_apiVersion = "1.0"
         googleAdsInteractiveMediaV3 = "3.6.0"
         googlePlayServicesVersion = "11.8.0"
-        crashlyticsVersion = "2.6.8@aar"
+        crashlyticsVersion = "2.9.2@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "4.1.2"
         butterknifeVersion = "8.8.1"

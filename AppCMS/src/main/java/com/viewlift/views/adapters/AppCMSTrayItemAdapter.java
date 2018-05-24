@@ -865,10 +865,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (apiAvailability.isUserResolvableError(resultCode)) {
                     apiAvailability.getErrorDialog((Activity)context, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                             .show();
-                } else {
+                } /*else {
                     Log.i(TAG, "This device is not supported.");
                     Toast.makeText(context, "This device is not supported.", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();

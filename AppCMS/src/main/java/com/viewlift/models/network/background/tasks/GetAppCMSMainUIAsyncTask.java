@@ -34,7 +34,6 @@ public class GetAppCMSMainUIAsyncTask {
                         try {
                             return call.call(params.context,
                                     params.siteId,
-                                    params.xApiKey,
                                     0,
                                     params.bustCache,
                                     params.networkDisconnected);
@@ -55,7 +54,6 @@ public class GetAppCMSMainUIAsyncTask {
         String siteId;
         boolean bustCache;
         boolean networkDisconnected;
-        String xApiKey;
 
         public static class Builder {
             Params params;
@@ -71,11 +69,6 @@ public class GetAppCMSMainUIAsyncTask {
 
             public Builder siteId(String siteId) {
                 params.siteId = siteId;
-                return this;
-            }
-
-            public Builder xApiKey(String xApiKey) {
-                params.xApiKey = xApiKey;
                 return this;
             }
 

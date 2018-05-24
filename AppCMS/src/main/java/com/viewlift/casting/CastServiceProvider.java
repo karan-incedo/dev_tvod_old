@@ -43,7 +43,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -337,11 +336,11 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-       }else{
+       }/*else{
 
            Log.i(TAG, "This device is not supported.");
            Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     public boolean shouldCastMiniControllerVisible() {

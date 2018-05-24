@@ -3,11 +3,9 @@ package com.viewlift.models.data.appcms.downloads;
 import android.util.Log;
 
 import io.realm.DynamicRealm;
-import io.realm.DynamicRealmObject;
 import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
-import io.realm.internal.Table;
 
 public class DownloadMediaMigration implements RealmMigration {
 

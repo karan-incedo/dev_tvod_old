@@ -3,8 +3,7 @@
     android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:orientation="vertical">
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:id="@+id/navigation_layouts_container"
@@ -16,23 +15,15 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/appcms_tv_navigation_height"
             android:animateLayoutChanges="true"
-            android:background="@color/appcms_nav_background"
             android:visibility="gone" />
 
-        <FrameLayout
-            android:id="@+id/sub_navigation_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
-            android:background="@color/appcms_nav_background"
-            android:visibility="gone" />
     </RelativeLayout>
 
 
     <RelativeLayout
+        android:id="@+id/subscribe_now_strip_containeer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/navigation_layouts_container"
         android:animateLayoutChanges="true">
 
         <TextView

@@ -15,7 +15,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -30,17 +29,14 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +44,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.cast.Cast;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
@@ -61,7 +56,6 @@ import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.ViewCreator;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -274,7 +268,11 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 CastSession castSession = CastContext.getSharedInstance(getContext()).getSessionManager()
                         .getCurrentCastSession();
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+                try {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, i, AudioManager.ADJUST_SAME);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
 
 //                if (castSession != null && castSession.isConnected()) {
 ////                    audioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, i, AudioManager.ADJUST_SAME);

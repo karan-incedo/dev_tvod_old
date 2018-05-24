@@ -1,6 +1,8 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -21,11 +23,14 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
+import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -246,6 +251,16 @@ public class TVCollectionGridItemView extends TVBaseView {
                     });
                     view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
+
+                    if(appCMSPresenter.isLeftNavigationEnabled()) {
+                        view.setOnFocusChangeListener((view1, b) -> {
+                            if(null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
+                            }
+                        });
+                    }
+
                 }else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY){
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
@@ -256,7 +271,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                    if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                    if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())
+                            && data.getGist().getVideoImageUrl().contains("http")) {
                         String imageUrl =
                                 context.getString(R.string.app_cms_image_with_resize_query,
                                         data.getGist().getVideoImageUrl(),
@@ -271,29 +287,182 @@ public class TVCollectionGridItemView extends TVBaseView {
                                 .into((ImageView) view);
 
                         bringToFront = false;
-                        view.setFocusable(true);
-                        view.setBackground(Utils.getMenuSelector(context, appCMSPresenter.getAppCtaBackgroundColor(),
-                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
-                       // view.setBackgroundResource(R.drawable.st_menu_color_selector);
-                        view.setOnClickListener(v ->
-                                {
-                           // Toast.makeText(context, "Clicked on " + data.getGist().getTitle(), Toast.LENGTH_SHORT).show();
-                            appCMSPresenter.showLoadingDialog(true);
+                    }else if(!TextUtils.isEmpty(data.getGist().getVideoImageUrl())){
+                        view.setPadding(0, 0, 0, 0);
+                        ((ImageView) view).setImageResource(Utils.getIcon(data.getGist().getVideoImageUrl(),context));
+                    }
+                    try {
+                        ((ImageView) view).getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
+                        ((ImageView) view).getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                    } catch (Exception e) {
+                    }
 
-                             appCMSPresenter.navigateToTVPage(
+                    view.setFocusable(true);
+                    view.setBackground(Utils.getMenuSelector(context, appCMSPresenter.getAppCtaBackgroundColor(),
+                            appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
+                    // view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                    view.setOnClickListener(v ->
+                    {
+                        String title = data.getGist().getTitle();
+                        if (title.toUpperCase().contains("AUTOPLAY")) {
+                            if (appCMSPresenter.getAutoplayEnabledUserPref(context)) {
+                                data.getGist().setTitle("Autoplay Off");
+                                appCMSPresenter.setAutoplayEnabledUserPref(context, false);
+                            } else {
+                                data.getGist().setTitle("Autoplay On");
+                                appCMSPresenter.setAutoplayEnabledUserPref(context, true);
+                            }
+                            onClickHandler.notifyData();
+                        } else if (title.toUpperCase().contains("CLOSED CAPTION")) {
+                            if (appCMSPresenter.getClosedCaptionPreference()) {
+                                data.getGist().setTitle("Closed Caption Off");
+                                appCMSPresenter.setClosedCaptionPreference(false);
+                            } else {
+                                data.getGist().setTitle("Closed Caption On");
+                                appCMSPresenter.setClosedCaptionPreference(true);
+                            }
+                            onClickHandler.notifyData();
+                        }else if (title.toUpperCase().contains("SUBSCRI")) {
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.showLoadingDialog(true);
+                                appCMSPresenter.getSubscriptionData(
+                                        appCMSUserSubscriptionPlanResult -> {
+
+                                            appCMSPresenter.showLoadingDialog(false);
+                                            String platform;
+                                            String status;
+                                            String varMessage = "";
+                                            if (appCMSUserSubscriptionPlanResult != null
+                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
+                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
+                                                platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
+                                                status = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+
+                                                if (status.equalsIgnoreCase("COMPLETED") ||
+                                                        status.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
+                                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
+                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos") || platform.contains("ios_apple_tv")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                                    } else {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_unknown_msg);
+                                                    }
+                                                } else {
+                                                    varMessage = context.getString(R.string.subscription_not_purchased);
+                                                }
+                                            } else {
+                                                varMessage = context.getString(R.string.subscription_not_purchased);
+                                            }
+                                            appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription), false);
+                                        }
+                                );
+                            } else {
+                                if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
+                                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                                    ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                            context,
+                                            appCMSPresenter,
+                                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                            context.getString(R.string.subscription),
+                                            context.getString(R.string.subscription_not_purchased),
+                                            context.getString(R.string.sign_in_text),
+                                            context.getString(android.R.string.cancel),
+                                            14
+                                    );
+
+                                    newFragment.setOnPositiveButtonClicked(s -> {
+                                        NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                        appCMSPresenter.navigateToTVPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false,
+                                                Uri.EMPTY,
+                                                false,
+                                                false,
+                                                true);
+                                    });
+                                }else{
+                                    appCMSPresenter.openTVErrorDialog(
+                                            context.getString(R.string.subscription_not_purchased),
+                                            context.getString(R.string.subscription), false);
+                                }
+                            }
+                        }else if (title.toUpperCase().contains("SIGN")) {
+                            if (!appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                appCMSPresenter.navigateToTVPage(
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        Uri.EMPTY,
+                                        false,
+                                        false,
+                                        true
+                                );
+                            } else {
+                                appCMSPresenter.logoutTV();
+                            }
+                            //  navigationVisibilityListener.showSubNavigation(false, false);
+                        }else if (title.toUpperCase().contains("ACCOUNT")) {
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                // navigationVisibilityListener.showSubNavigation(false, false);
+                                appCMSPresenter.navigateToTVPage(
+                                        data.getGist().getId(),
+                                        data.getGist().getTitle(),
+                                        data.getGist().getPermalink(),
+                                        false,
+                                        Uri.EMPTY,
+                                        true,
+                                        false,
+                                        false);
+                            } else {
+                                ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                        context,
+                                        appCMSPresenter,
+                                        context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                        context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                        context.getString(R.string.sign_in_text),
+                                        context.getString(R.string.open_account_dialog_text),
+                                        context.getString(R.string.sign_in_text),
+                                        context.getString(android.R.string.cancel),
+                                        14
+
+                                );
+                                newFragment.setOnPositiveButtonClicked(s -> {
+
+                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                    appCMSPresenter.navigateToTVPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false,
+                                            Uri.EMPTY,
+                                            false,
+                                            false,
+                                            true);
+                                });
+                            }
+                        }else {
+                            appCMSPresenter.showLoadingDialog(true);
+                            appCMSPresenter.navigateToTVPage(
                                     data.getGist().getId(),
-                                     data.getGist().getTitle(),
+                                    data.getGist().getTitle(),
                                     data.getGist().getPermalink(),
                                     false,
                                     Uri.EMPTY,
                                     true,
-                                   false,
+                                    false,
                                     false);
-                             mPosition = position;
-                            new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
-                        });
-
-                    }
+                        }
+                        mPosition = position;
+                        new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
+                    });
                     if (position == mPosition)
                         view.requestFocus();
                 }
@@ -443,6 +612,8 @@ public class TVCollectionGridItemView extends TVBaseView {
         void play(Component childComponent, ContentDatum data);
 
         void delete(Component childComponent, ContentDatum data);
+
+        void notifyData();
     }
 
     public static class ItemContainer {
@@ -478,4 +649,6 @@ public class TVCollectionGridItemView extends TVBaseView {
         }
         return childrenContainer;
     }
+
+
 }

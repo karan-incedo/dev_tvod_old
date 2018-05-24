@@ -65,7 +65,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
         new Handler().postDelayed(() -> {
             if(null != customVideoVideoPlayerView){
-                if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
+                if (activity.isNavigationVisible() /*|| activity.isSubNavigationVisible()*/) {
                 } else {
                     if(activity.isActive) {
                         customVideoVideoPlayerView.resumePlayer();
@@ -131,12 +131,14 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             rowData.contentData,
                             false,
                             -1,
+                            null,
                             null);
                 } else {
                     appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                            -1,
+                            0,
                             rowData.relatedVideoIds,
-                            rowData.contentData.getGist().getWatchedTime());
+                            rowData.contentData.getGist().getWatchedTime(),
+                            null);
                 }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
@@ -214,7 +216,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             title,
                             extraData,
                             data,
-                            false, -1, null)) {
+                            false,
+                            -1,
+                            null,
+                            null)) {
 
                     }
                 }
@@ -247,6 +252,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
                 if (rowData != null) {
+                        if(getActivity() instanceof AppCmsHomeActivity){
+                            ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
+                        }
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view

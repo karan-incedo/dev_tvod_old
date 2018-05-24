@@ -42,26 +42,6 @@ public class GetAppCMSVideoEntitlementAsyncTask {
                 .subscribeOn(Schedulers.io())
                 .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
-                /*.subscribe(new Observer<AppCMSEntitlementResponse>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e instanceof HttpException){
-                            Observable.just((AppCMSEntitlementResponse) ((HttpException) e).response().body()).subscribe(readyAction);
-                        }
-                    }
-
-                    @Override
-                    public void onNext(AppCMSEntitlementResponse appCMSEntitlementResponse) {
-                        if (appCMSEntitlementResponse != null && readyAction != null) {
-                            Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
-                        }
-                    }
-                });*/
                 .subscribe((result) -> {
                     if (result != null && readyAction != null) {
                         Observable.just(result).subscribe(readyAction);

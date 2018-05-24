@@ -90,6 +90,8 @@ public class AppCMSPageFragment extends Fragment {
                 shouldSendFirebaseViewItemEvent = true;
             } catch (ClassCastException e) {
                 //Log.e(TAG, "Could not attach fragment: " + e.toString());
+            } catch (NullPointerException e) {
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -110,7 +112,11 @@ public class AppCMSPageFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         if (appCMSViewComponent == null && appCMSBinder != null) {
-            appCMSViewComponent = buildAppCMSViewComponent();
+            try {
+                appCMSViewComponent = buildAppCMSViewComponent();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
 
         if (appCMSViewComponent != null) {
@@ -245,7 +251,7 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
-        } else if (!BaseView.isTablet(getContext()) && appCMSPresenter!=null) {
+        } else if (!BaseView.isTablet(getContext()) && appCMSPresenter != null) {
             appCMSPresenter.restrictPortraitOnly();
         }
         setMiniPlayer();
@@ -257,7 +263,7 @@ public class AppCMSPageFragment extends Fragment {
 
         try {
             CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -293,7 +299,7 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
 
-        if(appCMSPresenter != null) {
+        if (appCMSPresenter != null) {
             if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
             }
@@ -336,11 +342,11 @@ public class AppCMSPageFragment extends Fragment {
 
             }
         }
-    try {
-        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
-    }catch(Exception e){
+        try {
+            CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
+        } catch (Exception e) {
             e.printStackTrace();
-    }
+        }
 
     }
 
@@ -354,31 +360,32 @@ public class AppCMSPageFragment extends Fragment {
     public void onConfigurationChanged(Configuration newConfig) {
 
         super.onConfigurationChanged(newConfig);
-        appCMSPresenter.isconfig = true;
+        if (appCMSPresenter != null) {
+            appCMSPresenter.isconfig = true;
 
-        if (appCMSPresenter.isAutoRotate()) {
-            if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                    !BaseView.isTablet(getActivity())) {
+            if (appCMSPresenter.isAutoRotate()) {
+                if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                        !BaseView.isTablet(getActivity())) {
 
-                View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-                ViewGroup group = (ViewGroup) nextChild;
-                if ((group.getChildAt(0)) == null &&
-                        newConfig.orientation == Configuration.ORIENTATION_PORTRAIT &&
-                        AppCMSPresenter.isFullScreenVisible) {
-                    appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                    View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                    ViewGroup group = (ViewGroup) nextChild;
+                    if ((group.getChildAt(0)) == null &&
+                            newConfig.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                            AppCMSPresenter.isFullScreenVisible) {
+                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
 
-                } else if ((group.getChildAt(0)) != null &&
-                        !(group instanceof FullPlayerView) &&
-                        newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    } else if ((group.getChildAt(0)) != null &&
+                            !(group instanceof FullPlayerView) &&
+                            newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-                    appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
-                    appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+                        appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
+                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+                    }
                 }
             }
+            // if (!appCMSPresenter.isFullScreenVisible) {
+            handleOrientation(newConfig.orientation);
         }
-        // if (!appCMSPresenter.isFullScreenVisible) {
-        handleOrientation(newConfig.orientation);
-        // }
     }
 
     private void handleOrientation(int orientation) {
@@ -391,11 +398,12 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-    public AppCMSViewComponent buildAppCMSViewComponent() {
+    public AppCMSViewComponent buildAppCMSViewComponent() throws NullPointerException {
         String screenName = appCMSBinder.getScreenName();
         /* if (!appCMSPresenter.isPageAVideoPage(screenName)) {
             screenName = appCMSBinder.getPageId();
         }*/
+
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
@@ -672,9 +680,9 @@ public class AppCMSPageFragment extends Fragment {
 
         void onError(AppCMSBinder appCMSBinder);
 
-        void enterFullScreenVideoPlayer();
+        // void enterFullScreenVideoPlayer();
 
-        void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
+        // void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
     }
 
     private static class OnScrollGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -690,7 +698,7 @@ public class AppCMSPageFragment extends Fragment {
         @Override
         public void onGlobalLayout() {
             if (pageView != null) {
-                if (appCMSBinder != null && appCMSBinder.getPageId()!=null) {
+                if (appCMSBinder != null && appCMSBinder.getPageId() != null) {
 
                     if (appCMSBinder.isScrollOnLandscape() != BaseView.isLandscape(pageView.getContext())) {
                         appCMSBinder.setxScroll(0);

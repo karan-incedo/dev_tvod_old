@@ -266,7 +266,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
 
-    private boolean checkPlayServices(){
+    private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -274,11 +274,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
-            } else {
+            } /*else {
                 Log.i(TAG, "This device is not supported.");
                 Toast.makeText(this, "This device is not supported.", Toast.LENGTH_SHORT).show();
                 finish();
-            }
+            }*/
             return false;
         }
         return true;
@@ -318,7 +318,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         initPageActivity();
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                 try {
                     Class launchActivity = Class.forName(mobileLaunchActivity);
                     startActivity(new Intent(this, launchActivity));
@@ -327,7 +327,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 finish();
             } else {
-                if(checkPlayServices()) {
+                if (checkPlayServices()) {
                     Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                             .setFlags(
                                     Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -476,7 +476,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
                     return;
                 }
-                enterFullScreenVideoPlayer();
+                //enterFullScreenVideoPlayer();
             }
         };
 
@@ -493,7 +493,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     return;
                 }
                 boolean relaunchPage = intent.getBooleanExtra(getString(R.string.exit_fullscreen_relaunch_page_extra_key), true);
-                exitFullScreenVideoPlayer(relaunchPage);
+                //exitFullScreenVideoPlayer(relaunchPage);
             }
         };
 
@@ -530,7 +530,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 appCMSBinder.getPageId(),
                                                 null,
                                                 appCMSBinderAction);
-                                    }catch(Exception ex){}
+                                    } catch (Exception ex) {
+                                    }
                                 }
                             }
                         }
@@ -566,7 +567,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
 
                     // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
-                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo()) ) {
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
@@ -584,7 +585,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             CastHelper.getInstance(AppCMSPageActivity.this).disconnectChromecastOnLogout();
                             castDisabled = true;
                         }
-                    }catch(Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 }
                 if (activeNetwork != null) {
                     appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
@@ -740,7 +742,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     return;
                 }
 
-                ViewCreator.clearPlayerView();
+                //ViewCreator.clearPlayerView();
                 handleLaunchPageAction(updatedAppCMSBinder,
                         false,
                         false,
@@ -808,7 +810,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     new IntentFilter("receive_ua_app_key"));
             registerReceiver(gmsReceiveInstanceIdReceiver,
                     new IntentFilter("receive_gms_instance_id"));
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         Intent registerInitReceivers = new Intent("INITIALIZATION");
@@ -1252,8 +1254,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }).run();
             libsThreadExecuted = true;
         }
-        if(appCMSPresenter.isNetworkConnected()) {
-                        Apptentive.engage(this, this.getString(R.string.app_cms_apptentive_open_app_name));
+        if (appCMSPresenter.isNetworkConnected()) {
+            Apptentive.engage(this, this.getString(R.string.app_cms_apptentive_open_app_name));
         }
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -1439,24 +1441,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                         Class launchActivity = Class.forName(mobileLaunchActivity);
                         startActivity(new Intent(this, launchActivity));
                         finish();
                     } else {
-                        if(checkPlayServices()) {
-                        Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        if (intent.getParcelableExtra(
-                                PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
-                            MediaMetadataCompat description = intent.getParcelableExtra(
-                                    PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
-                            fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+                        if (checkPlayServices()) {
+                            Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                            Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            if (intent.getParcelableExtra(
+                                    PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION) != null) {
+                                MediaMetadataCompat description = intent.getParcelableExtra(
+                                        PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
+                                fullScreenIntent.putExtra(appCMSPresenter.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
 
+                            }
+                            startActivity(fullScreenIntent);
                         }
-                        startActivity(fullScreenIntent);
-                      }
                     }
                     appCMSPresenter.setAppHomeActivityCreated(true);
 
@@ -1743,30 +1745,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void enterFullScreenVideoPlayer() {
-        hideSystemUI(getWindow().getDecorView());
-        if (!BaseView.isLandscape(this)) {
-            appCMSPresenter.rotateToLandscape();
-        }
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.restrictLandscapeOnly();
-        }
-        if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
-        }
-        ViewCreator.openFullScreenVideoPlayer(this);
-    }
-
-    @Override
-    public void exitFullScreenVideoPlayer(boolean launchPage) {
-        showSystemUI(getWindow().getDecorView());
-        appCMSPresenter.unrestrictPortraitOnly();
-        ViewCreator.closeFullScreenVideoPlayer(this);
-        if (launchPage) {
-            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
-        }
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -2310,8 +2288,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-
-        appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        if (appCMSBinder.getScreenName() != null) {
+            appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        }
         setVisibilityForStartFreeTrial(appCMSBinder.getPageId());
         int lastBackStackEntry = getSupportFragmentManager().getBackStackEntryCount();
         boolean poppedStack = false;
@@ -2586,7 +2565,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCtaBackgroundColor() != null ) {
+                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCtaBackgroundColor() != null) {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor());
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
@@ -3143,12 +3122,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getPageName() != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
 
-        } else {
+        } /*else {
             ViewCreator.pausePlayer();
             ViewCreator.clearPlayerView();
-        }
+        }*/
         ViewCreator.cancelBeaconPing();
-        ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
+        // ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
     }
 
     @Override
@@ -3213,7 +3192,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
+       /* switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 ViewCreator.pausePlayer();
                 break;
@@ -3233,7 +3212,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             default:
                 break;
-        }
+        }*/
     }
 
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
