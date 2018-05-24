@@ -1488,10 +1488,15 @@ public class AppCMSPresenter {
                             appCMSEntitlementResponse.getCode() != 200){
                         String message  = currentActivity.getString(R.string.entitlement_api_server_error,
                                 (appCMSEntitlementResponse.getCode()));
+                        if (platformType.equals(PlatformType.ANDROID)) {
 
-                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
-                            readyAction.call(null);
-                    },null);
+                            showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
+                                readyAction.call(null);
+                        },null);
+                        } else if (platformType.equals(PlatformType.TV)) {
+                            String title = currentActivity.getString(R.string.app_cms_unable_to_play_video_error_title);
+                            openTVErrorDialog(message, title, false);
+                        }
                     }
 
                 }catch(Exception e){
