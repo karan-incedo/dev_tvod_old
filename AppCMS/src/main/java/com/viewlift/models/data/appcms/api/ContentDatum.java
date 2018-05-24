@@ -128,6 +128,12 @@ public class ContentDatum implements Serializable {
     @Expose
     List<Seo> seo = null;
 
+    @SerializedName("drmEnabled")
+    @Expose
+    Boolean isDRMEnabled = null;
+
+
+
     private String playListName;
     private String seriesName;
 
@@ -435,4 +441,11 @@ public class ContentDatum implements Serializable {
         this.seo = seo;
     }
 
+    public boolean isDRMEnabled(){
+        return isDRMEnabled;
+    }
+
+    public void setDRMEnabled(boolean DRMEnabled) {
+        isDRMEnabled = DRMEnabled;
+    }
 }
