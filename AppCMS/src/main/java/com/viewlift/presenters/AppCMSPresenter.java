@@ -3745,7 +3745,9 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                     appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
         }
-        return useSSLCommerz;
+//        return useSSLCommerz;
+        // TODO: uncomment when it is enabled on web
+        return false;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
@@ -10097,6 +10099,7 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
 
             AudioPlaylistHelper.getInstance().stopPlayback();
+            stopAudioServices();
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(AudioPlaylistHelper.getInstance().getCurrentMediaId(), 0);
 
         }
@@ -11584,13 +11587,15 @@ public class AppCMSPresenter {
                     }
                 }
             } else {
-                for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
-                    try {
-                        if (networkInfo.isConnectedOrConnecting()) {
-                            return true;
+                if (connectivityManager != null && connectivityManager.getAllNetworkInfo() != null) {
+                    for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
+                        try {
+                            if (networkInfo.isConnectedOrConnecting()) {
+                                return true;
+                            }
+                        } catch (Exception e) {
+                            //
                         }
-                    } catch (Exception e) {
-                        //
                     }
                 }
             }
@@ -17265,6 +17270,17 @@ public class AppCMSPresenter {
     public void setAudioPlayerOpen(boolean isAudioPlayer) {
         isAudioPlayerOpen = isAudioPlayer;
     }
+
+    public boolean isAudioActvityVisible() {
+        return isAudioActvityVisible;
+    }
+
+    public void setAudioActvityVisible(boolean audioActvityVisible) {
+        isAudioActvityVisible = audioActvityVisible;
+    }
+
+    private boolean isAudioActvityVisible;
+
 
     public String getArtistNameFromCreditBlocks(List<CreditBlock> creditBlocks) {
         StringBuilder artist = new StringBuilder();

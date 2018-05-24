@@ -318,7 +318,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         initPageActivity();
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                 try {
                     Class launchActivity = Class.forName(mobileLaunchActivity);
                     startActivity(new Intent(this, launchActivity));
@@ -1441,7 +1441,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                         Class launchActivity = Class.forName(mobileLaunchActivity);
                         startActivity(new Intent(this, launchActivity));
                         finish();
