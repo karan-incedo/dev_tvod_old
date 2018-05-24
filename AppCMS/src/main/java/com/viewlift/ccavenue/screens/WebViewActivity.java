@@ -45,7 +45,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Date;
 
 import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
 
@@ -109,14 +108,18 @@ public class WebViewActivity extends Activity {
                 new AppCMSPresenter.AppCMSCCAvenueRSAKeyAPIAction("RSA") {
                     @Override
                     public void call(RSAKeyResponse rsaKeyResponse) {
-                        dialog.dismiss();
-                        vResponse = rsaKeyResponse.getRsaToken();
-                        orderID = rsaKeyResponse.getOrderId();
-                        accessCode = rsaKeyResponse.getAccessCode();
-                        cancelRedirectURL = rsaKeyResponse.getRedirectUrl();
-                        merchantID = rsaKeyResponse.getMerchantId();
-                        readerViewAyncTask = new RenderView();
-                        readerViewAyncTask.execute();
+                        if(dialog != null && dialog.isShowing())
+                          dialog.dismiss();
+
+                        if(rsaKeyResponse != null) {
+                            vResponse = rsaKeyResponse.getRsaToken();
+                            orderID = rsaKeyResponse.getOrderId();
+                            accessCode = rsaKeyResponse.getAccessCode();
+                            cancelRedirectURL = rsaKeyResponse.getRedirectUrl();
+                            merchantID = rsaKeyResponse.getMerchantId();
+                            readerViewAyncTask = new RenderView();
+                            readerViewAyncTask.execute();
+                        }
                     }
                 });
     }

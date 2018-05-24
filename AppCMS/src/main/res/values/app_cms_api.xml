@@ -111,6 +111,16 @@
         <item>AC Banner 01</item>
     </string-array>
 
+
+
+    <!-- Names of the apps where we need Splash progress-->
+    <string-array name="app_cms_splash_progress_needed">
+        <item>com.viewlift.failarmy2</item>
+        <item>com.viewlift.jukinvideo</item>
+        <item>com.viewlift.peopleawesome</item>
+        <item>com.viewlift.thepetcollective</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>
@@ -319,6 +329,7 @@
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
+    <string name="app_cms_page_video_cast_key">castButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
@@ -415,6 +426,7 @@
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
     <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
+    <string name="app_cms_pagename_search_screen_key">Search Screen</string>
     <string name="app_cms_pagename_sign_up_key">Sign Up</string>
     <string name="app_cms_pagename_create_login_key">Create Login Screen</string>
 
@@ -438,6 +450,7 @@
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
+    <string name="app_cms_action_cast_key">castVideo</string>
     <string name="app_cms_action_close_key">close</string>
     <string name="app_cms_action_cancel_key">cancel</string>
     <string name="app_cms_action_search_key">search</string>
@@ -478,6 +491,11 @@
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
+
+
+
+    <!--  AppCMS entitlement Detail API -->
+    <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
@@ -571,7 +589,7 @@
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
-    <!--<string name="app_cms_autoplay_toggle_switch_key">autoplayToggle</string>-->
+    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
     <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
@@ -718,6 +736,8 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
+    <string name="sub_nav_page_key">Sub Navigation Screen</string>
+
     <!--AppCMS SSLCommerz Initiate API-->
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->

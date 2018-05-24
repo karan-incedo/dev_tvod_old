@@ -72,7 +72,7 @@ public class AppCMSAndroidModuleCall {
                      boolean forceLoadFromNetwork,
                      boolean bustCache,
                      Action1<AppCMSAndroidModules> readyAction) {
-        Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
+        //Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
 
         this.xApiKey = xApiKey;
 
@@ -83,11 +83,11 @@ public class AppCMSAndroidModuleCall {
                 forceLoadFromNetwork,
                 bustCache,
                 (moduleDataMap) -> {
-                    Log.d(TAG, "Retrieving list of modules at URL: module " + moduleDataMap.appCMSAndroidModule);
+                    //Log.d(TAG, "Retrieving list of modules at URL: module " + moduleDataMap.appCMSAndroidModule);
                     addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
-                    Log.d(TAG, "Retrieving list of modules at URL: module " + moduleDataMap.appCMSAndroidModule);
+                    //Log.d(TAG, "Retrieving list of modules at URL: module " + moduleDataMap.appCMSAndroidModule);
 
                     Observable.just(appCMSAndroidModules)
                             .onErrorResumeNext(throwable -> Observable.empty())
@@ -236,7 +236,6 @@ public class AppCMSAndroidModuleCall {
                     Log.d(TAG, "Start time: " + startTime);
                     ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
                     moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
-                    System.out.println("Retrieving module list from file "+ moduleDataMap.appCMSAndroidModule);
                     long endTime = new Date().getTime();
                     Log.d(TAG, "End time: " + endTime);
                     Log.d(TAG, "Time elapsed: " + (endTime - startTime));

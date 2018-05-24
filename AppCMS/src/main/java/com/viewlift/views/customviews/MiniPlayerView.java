@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -18,8 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-
-import static com.viewlift.views.customviews.ViewCreator.getColor;
 
 /**
  * Created by sandeep.singh on 11/16/2017.
@@ -166,8 +163,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
     }
 
     private void addCloseButton() {
-        int tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+        int tintColor = appCMSPresenter.getBrandPrimaryCtaColor();
         closePlayer = new ImageButton(context);
         closePlayer.setId(View.generateViewId());
         RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);

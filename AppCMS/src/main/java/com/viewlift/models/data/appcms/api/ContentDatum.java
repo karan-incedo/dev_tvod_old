@@ -131,6 +131,30 @@ public class ContentDatum implements Serializable {
 
     HashMap<String,List<ContentDatum>> monthlySchedule;
 
+    @SerializedName("drmEnabled")
+    @Expose
+    Boolean isDRMEnabled = null;
+
+
+
+    private String playListName;
+    private String seriesName;
+
+    public String getSeriesName() {
+        return seriesName;
+    }
+
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
+    }
+
+    public String getPlayListName() {
+        return playListName;
+    }
+
+    public void setPlayListName(String playListName) {
+        this.playListName = playListName;
+    }
 
     public boolean isRenewable() {
         return renewable;
@@ -420,6 +444,13 @@ public class ContentDatum implements Serializable {
         this.seo = seo;
     }
 
+    public boolean isDRMEnabled(){
+        return isDRMEnabled;
+    }
+
+    public void setDRMEnabled(boolean DRMEnabled) {
+        isDRMEnabled = DRMEnabled;
+    }
     public HashMap<String, List<ContentDatum>> getMonthlySchedule() {
         return monthlySchedule;
     }

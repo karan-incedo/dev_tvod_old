@@ -40,13 +40,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.NotificationTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -239,7 +238,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Intent i = new Intent(context, MusicService.class);
                 i.setAction(MusicService.ACTION_CMD);
                 i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP_CASTING);
-                mService.startService(i);
+                Utils.startService(mService,i);
                 break;
             default:
         }

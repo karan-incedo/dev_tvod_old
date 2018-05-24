@@ -33,21 +33,16 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.media.MediaRouter;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.SessionManager;
-import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.playback.AudioCastPlayback;
-import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.LocalPlayback;
 import com.viewlift.Audio.playback.Playback;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.Audio.utils.CarHelper;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 
 import java.lang.ref.WeakReference;
@@ -301,7 +296,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaItem>> result) {
 
-        result.sendResult(null);
+       /* try {
+            result.sendResult(null);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }*/
 
     }
 
@@ -314,10 +313,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
-        // The service needs to continue running even after the bound client (usually a
-        // MediaController) disconnects, otherwise the music playback will stop.
-        // Calling startService(Intent) will keep the service running until it is explicitly killed.
-        startService(new Intent(getApplicationContext(), MusicService.class));
+        //The startService() method now throws an IllegalStateException if an app targeting Android 8.0
+        Utils.startService(getApplicationContext(),new Intent(getApplicationContext(), MusicService.class));
     }
 
     @Override

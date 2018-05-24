@@ -22,6 +22,12 @@ public class VideoAssets implements Serializable {
     @Expose
     String hls;
 
+    @SerializedName("widevine")
+    @Expose
+    WideVine wideVine;
+
+
+
     public String getType() {
         return type;
     }
@@ -44,5 +50,13 @@ public class VideoAssets implements Serializable {
 
     public void setHls(String hls) {
         this.hls = hls;
+    }
+
+    public WideVine getWideVine() {
+        return wideVine;
+    }
+
+    public void setWideVine(WideVine wideVine) {
+        this.wideVine = wideVine;
     }
 }

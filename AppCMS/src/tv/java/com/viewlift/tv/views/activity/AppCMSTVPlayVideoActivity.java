@@ -7,19 +7,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
@@ -41,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 
@@ -52,8 +55,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent, AppCmsTvErrorFragment.ErrorFragmentListener,
         VideoPlayerView.StreamingQualitySelector {
     private static final String TAG = "TVPlayVideoActivity";
+    int ffAndRewindDelta = 10000;
 
     private BroadcastReceiver handoffReceiver;
+    private BroadcastReceiver closeActivityOnDeepLinkActionReceiver;
     private AppCMSPresenter appCMSPresenter;
     FrameLayout appCMSPlayVideoPageContainer;
 
@@ -111,21 +116,26 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                         } catch (Exception e) {
                                             //
                                         }
-                                        appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
-                                            launchVideoPlayer(updatedContentDatum.getGist() , appCMSSignedURLResult);
-                                        });
+                                            launchVideoPlayer(updatedContentDatum.getGist() , null);
                                     }
                                 });
                     }
                 } else {
-                    appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
-                        launchVideoPlayer(binder.getContentData().getGist() , appCMSSignedURLResult);
-                    });
+                        launchVideoPlayer(binder.getContentData().getGist(), null);
                 }
             }
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
+
+        closeActivityOnDeepLinkActionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (getString(R.string.deeplink_close_player_activity_action).equalsIgnoreCase(intent.getAction())) {
+                    finish();
+                }
+            }
+        };
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -195,13 +205,81 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     Utils.pageLoading(true, AppCMSTVPlayVideoActivity.this);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
                     Utils.pageLoading(false, AppCMSTVPlayVideoActivity.this);
-                } else if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
+                }/* else if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
 
+                }*/ else if (intent.getAction().equals(getString(R.string.intent_msg_action))) {
+//                    Toast.makeText(AppCMSTVPlayVideoActivity.this, intent.getStringExtra(getString(R.string.json_data_msg_key)), Toast.LENGTH_SHORT).show();
+                    if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_play))) {
+                        ContentDatum contentDatum = new ContentDatum();
+                        Gist gist = new Gist();
+                        gist.setId(intent.getStringExtra(getString(R.string.json_content_id_key)));
+                        contentDatum.setGist(gist);
+                        appCMSPresenter.launchTVVideoPlayer(
+                                contentDatum,
+                                0,
+                                null,
+                                0,
+                                () -> closePlayer()
+                        );
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_display_results))) {
+                        AppCMSTVPlayVideoActivity.this.setResult(AppCmsHomeActivity.OPEN_SEARCH_RESULT_CODE, intent);
+                        closePlayer();
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_play))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            appCMSPlayVideoFragment.resumeVideo();
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_pause))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            appCMSPlayVideoFragment.pauseVideo();
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_fast_forward))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
+                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition + ffAndRewindDelta));
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(currentPosition + ffAndRewindDelta);
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_rewind))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
+                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition - ffAndRewindDelta));
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition() - ffAndRewindDelta);
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_start_over))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(0);
+                        }
+                    }else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_next))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                        }
+                        onMovieFinished();
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_previous))) {
+                        if (currentlyPlayingIndex > 0) {
+                            playPreviousMovie();
+                        } else {
+                            if (appCMSPlayVideoFragment != null) {
+                                appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                                appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(0);
+                            }
+                        }
+                    } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_adjust_seek_position))) {
+                        if (appCMSPlayVideoFragment != null) {
+                            long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
+                            long seekDelta = intent.getLongExtra(getString(R.string.json_seek_delta_key), 0);
+                            long seekToPosition = currentPosition + seekDelta;
+                            if (seekToPosition < 0) seekToPosition = 0;
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                            appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(seekToPosition);
+                        }
+                    }
                 }
             }
         };
-
+        registerReceiver(closeActivityOnDeepLinkActionReceiver, new IntentFilter(getString(R.string.deeplink_close_player_activity_action)));
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
@@ -499,6 +577,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
             finish();
         }
+
+        appCMSPresenter.tryLaunchingPlayerFromDeeplink(new Action0() {
+            @Override
+            public void call() {
+                AppCMSTVPlayVideoActivity.this.closePlayer();
+            }
+        });
+
     }
 
     private void registerRecievers() {
@@ -509,6 +595,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+        registerReceiver(handoffReceiver, new IntentFilter(getString(R.string.intent_msg_action)));
     }
 
     @Override
@@ -528,6 +615,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(closeActivityOnDeepLinkActionReceiver);
     }
 
     @Override
@@ -550,36 +638,53 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 }
             }
 
-            try {
-                switch (event.getKeyCode()) {
-                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                        if (null != appCMSPlayVideoPageContainer) {
-                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
-                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
-                            if (appCMSPlayVideoFragment != null
-                                    && appCMSPlayVideoFragment.getVideoPlayerView() != null
-                                    && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null) {
-                                return super.dispatchKeyEvent(event)
-                                        || appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView()
-                                        .dispatchKeyEvent(event);
-                            }
+            switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_MEDIA_NEXT:
+                    if (appCMSPlayVideoFragment != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView() != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView().getPlayer() != null) {
+                        long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(currentPosition + ffAndRewindDelta);
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().setPlayWhenReady(appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().getPlayWhenReady());
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                    if (appCMSPlayVideoFragment != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView() != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null
+                            && appCMSPlayVideoFragment.getVideoPlayerView().getPlayer() != null) {
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition() - ffAndRewindDelta);
+                        appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().setPlayWhenReady(appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().getPlayWhenReady());
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    if (null != appCMSPlayVideoPageContainer) {
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
+                        if (appCMSPlayVideoFragment != null
+                                && appCMSPlayVideoFragment.getVideoPlayerView() != null
+                                && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null) {
+                            return super.dispatchKeyEvent(event)
+                                    || appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView()
+                                    .dispatchKeyEvent(event);
                         }
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_REWIND:
-                        if (null != appCMSPlayVideoPageContainer) {
-                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
-                            return super.dispatchKeyEvent(event);
-                        }
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                        if (null != appCMSPlayVideoPageContainer) {
-                            appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
-                            return super.dispatchKeyEvent(event);
-                        }
-                        break;
-                }
-            } catch (Exception e) {
-
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    if (null != appCMSPlayVideoPageContainer) {
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                        return super.dispatchKeyEvent(event);
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    if (null != appCMSPlayVideoPageContainer) {
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                        return super.dispatchKeyEvent(event);
+                    }
+                    break;
             }
         }
         return super.dispatchKeyEvent(event);
@@ -592,23 +697,50 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     @Override
     public void onMovieFinished() {
-        if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
-            if (!binder.isTrailer()
-                    && relateVideoIds != null
-                    && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
-                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
-                    @Override
-                    public void call(Object o) {
-                        closePlayer();
-                    }
-                });
+        playNextMovie();
+    }
+
+    private void playNextMovie() {
+        try {
+            if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
+                if (!binder.isTrailer()
+                        && relateVideoIds != null
+                        && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
+                    binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                            closePlayer();
+                        }
+                    });
+                } else {
+                    closePlayer();
+                }
             } else {
                 closePlayer();
             }
-        } else {
-            closePlayer();
-        }
+        } catch (IndexOutOfBoundsException e) {
+            Toast.makeText(AppCMSTVPlayVideoActivity.this, R.string.action_not_supported, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {}
+    }
+
+    private void playPreviousMovie() {
+        try {
+            if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
+                if (!binder.isTrailer()
+                        && relateVideoIds != null
+                        && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
+                    binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex - 2);
+                    appCMSPresenter.openAutoPlayScreen(binder, o -> closePlayer());
+                } else {
+                    closePlayer();
+                }
+            } else {
+                closePlayer();
+            }
+        } catch (IndexOutOfBoundsException e) {
+            Toast.makeText(AppCMSTVPlayVideoActivity.this, R.string.action_not_supported, Toast.LENGTH_SHORT).show();
+        } catch (Exception e){}
     }
 
     @Override
@@ -631,7 +763,11 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     @Override
     public List<String> getAvailableStreamingQualities() {
-        return new ArrayList<>(availableStreamingFormats.keySet());
+        if (availableStreamingFormats != null ) {
+            return new ArrayList<>(availableStreamingFormats.keySet());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override

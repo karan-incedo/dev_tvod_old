@@ -3,7 +3,6 @@ package com.viewlift.views.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -32,8 +31,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import rx.Observable;
@@ -391,7 +390,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
 
             this.thumbnailInfo = new TextView(view.getContext());
-            this.thumbnailInfo.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            this.thumbnailInfo.setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
             this.thumbnailInfo.setBackgroundColor(ContextCompat.getColor(context, R.color.apptentive_brand_red));
             this.thumbnailInfo.setTextSize(textSize);
             RelativeLayout.LayoutParams thumbnailInfoParams =
@@ -436,7 +435,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setTextSize(textSize);
             this.filmTitle.setMaxLines(2);
 
-            this.filmTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+            this.filmTitle.setTextColor(appCMSPresenter.getGeneralTextColor());
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.titleLayout.addView(this.filmTitle);
 

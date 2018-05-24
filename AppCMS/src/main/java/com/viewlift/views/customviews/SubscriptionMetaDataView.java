@@ -2,11 +2,9 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -225,7 +223,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 gridLayoutParams.setGravity(Gravity.END);
                 gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
                 ((TextView) componentViewResult.componentView)
-                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                        .setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
 
                 planLayout.addView(componentViewResult.componentView);
             }

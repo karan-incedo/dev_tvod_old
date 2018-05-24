@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.audio.LastPlayAudioDetail;
@@ -177,7 +178,7 @@ public class AudioPlaylistHelper {
 
     private void getAudioDetails(String mediaId, long currentPosition, boolean isPlayerScreenOpen) {
         try {
-            context.startService(new Intent(context, MusicService.class));
+            Utils.startService(context,new Intent(context, MusicService.class));
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
             appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, 0, null);
         }catch(Exception ex){

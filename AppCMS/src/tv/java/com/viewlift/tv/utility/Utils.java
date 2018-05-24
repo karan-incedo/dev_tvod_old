@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -19,6 +20,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -49,16 +51,15 @@ import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_
 
 public class Utils {
 
-    private static final int DEAFULT_PADDING = 0;
     public static final int STANDARD_TABLET_HEIGHT_PX = 1080;
     public static final int STANDARD_TABLET_WIDTH_PX = 1920;
-
+    private static final int DEAFULT_PADDING = 0;
 
     public static void setBrowseFragmentViewParameters(View browseFragmentView, int marginLeft,
                                                        int marginTop) {
         //View browseContainerDoc = browseFragmentView.findViewById(R.id.browse_container_dock);
         View browseContainerDoc = browseFragmentView.findViewById(R.id.browse_frame);
-        Log.d("Utils.java", "BrowseFragment Margin Left = "+marginLeft + "marginTop = "+marginTop);
+        Log.d("Utils.java", "BrowseFragment Margin Left = " + marginLeft + "marginTop = " + marginTop);
         if (null != browseContainerDoc) {
             browseContainerDoc.setBackgroundColor(Color.TRANSPARENT);
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) browseContainerDoc
@@ -82,7 +83,7 @@ public class Utils {
     }
 
 
-    public static String loadJsonFromAssets(Context context , String fileName){
+    public static String loadJsonFromAssets(Context context, String fileName) {
         String json = null;
         try {
             InputStream is = context.getAssets().open(fileName);
@@ -104,7 +105,7 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float height = getViewHeight(fireTV);
             if (height != -1.0f) {
-                return getViewYAxisAsPerScreen(context,(int)height);
+                return getViewYAxisAsPerScreen(context, (int) height);
             }
         }
         return defaultHeight;
@@ -116,8 +117,8 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float width = getViewWidth(fireTV);
             if (width != -1.0f) {
-                return getViewXAxisAsPerScreen(context,(int)width);
-               // return width;
+                return getViewXAxisAsPerScreen(context, (int) width);
+                // return width;
             }
         }
         return defaultWidth;
@@ -128,7 +129,7 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float height = getItemViewHeight(fireTV);
             if (height != -1.0f) {
-                return getViewYAxisAsPerScreen(context,(int)height);
+                return getViewYAxisAsPerScreen(context, (int) height);
             }
         }
         return defaultHeight;
@@ -140,35 +141,34 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float width = getItemViewWidth(fireTV);
             if (width != -1.0f) {
-                return getViewXAxisAsPerScreen(context,(int)width);
-               // return width;
+                return getViewXAxisAsPerScreen(context, (int) width);
+                // return width;
             }
         }
         return defaultWidth;
     }
 
 
-    public static int getViewXAxisAsPerScreen(Context context , int dimension){
-        float dim  = context.getResources().getDisplayMetrics().widthPixels
-                * ((float)dimension / STANDARD_TABLET_WIDTH_PX);
+    public static int getViewXAxisAsPerScreen(Context context, int dimension) {
+        float dim = context.getResources().getDisplayMetrics().widthPixels
+                * ((float) dimension / STANDARD_TABLET_WIDTH_PX);
         return Math.round(dim);
     }
 
 
-    public static int getViewYAxisAsPerScreen(Context context , int dimension){
-        float dim  = context.getResources().getDisplayMetrics().heightPixels
-                * ((float)dimension / STANDARD_TABLET_HEIGHT_PX);
+    public static int getViewYAxisAsPerScreen(Context context, int dimension) {
+        float dim = context.getResources().getDisplayMetrics().heightPixels
+                * ((float) dimension / STANDARD_TABLET_HEIGHT_PX);
         return Math.round(dim);
     }
-
 
 
     public static int getLeftPadding(Context context, Layout layout) {
         if (layout != null) {
             FireTV fireTV = layout.getTv();
-            if(null != fireTV && null != fireTV.getLeftMargin()){
+            if (null != fireTV && null != fireTV.getLeftMargin()) {
                 return Integer.valueOf(layout.getTv().getLeftMargin());
-            }else{
+            } else {
                 return DEAFULT_PADDING;
             }
         }
@@ -178,9 +178,9 @@ public class Utils {
     public static int getRightPadding(Context context, Layout layout) {
         if (layout != null) {
             FireTV fireTV = layout.getTv();
-            if(null != fireTV && null != fireTV.getRightMargin()){
+            if (null != fireTV && null != fireTV.getRightMargin()) {
                 return Integer.valueOf(layout.getTv().getRightMargin());
-            }else{
+            } else {
                 return DEAFULT_PADDING;
             }
         }
@@ -190,9 +190,9 @@ public class Utils {
     public static int getTopPadding(Context context, Layout layout) {
         if (layout != null) {
             FireTV fireTV = layout.getTv();
-            if(null != fireTV && null != fireTV.getTopMargin()){
+            if (null != fireTV && null != fireTV.getTopMargin()) {
                 return Integer.valueOf(layout.getTv().getTopMargin());
-            }else{
+            } else {
                 return DEAFULT_PADDING;
             }
         }
@@ -202,9 +202,9 @@ public class Utils {
     public static int getBottomPadding(Context context, Layout layout) {
         if (layout != null) {
             FireTV fireTV = layout.getTv();
-            if(null != fireTV && null != fireTV.getBottomMargin()){
+            if (null != fireTV && null != fireTV.getBottomMargin()) {
                 return Integer.valueOf(layout.getTv().getBottomMargin());
-            }else{
+            } else {
                 return DEAFULT_PADDING;
             }
         }
@@ -252,9 +252,8 @@ public class Utils {
     }
 
 
-
     public static float getFontSizeKey(Context context, Layout layout) {
-       {
+        {
             if (layout.getTv().getFontSizeKey() != null) {
                 return layout.getTv().getFontSizeKey();
             }
@@ -264,76 +263,76 @@ public class Utils {
 
 
     public static float getFontSizeValue(Context context, Layout layout) {
-            if (layout.getTv().getFontSizeValue() != null) {
-                return layout.getTv().getFontSizeValue();
-            }
+        if (layout.getTv().getFontSizeValue() != null) {
+            return layout.getTv().getFontSizeValue();
+        }
         return -1.0f;
     }
 
-    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation , int selectedColor){
+    public static StateListDrawable getNavigationSelector(Context context, AppCMSPresenter appCMSPresenter, boolean isSubNavigation, int selectedColor) {
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation , selectedColor));
-        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
-        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
+        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context, appCMSPresenter, isSubNavigation, selectedColor));
+        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context, appCMSPresenter, isSubNavigation, selectedColor));
+        res.addState(new int[]{android.R.attr.state_selected}, getNavigationSelectedState(context, appCMSPresenter, isSubNavigation, selectedColor));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)));
         return res;
     }
 
-    public static Drawable getProgressDrawable(Context context , String unProgressColor , AppCMSPresenter appCMSPresenter) {
+    public static Drawable getProgressDrawable(Context context, String unProgressColor, AppCMSPresenter appCMSPresenter) {
         ShapeDrawable shape = new ShapeDrawable();
         shape.getPaint().setStyle(Paint.Style.FILL);
-        shape.getPaint().setColor(Color.parseColor(getColor(context,unProgressColor)));
+        shape.getPaint().setColor(Color.parseColor(getColor(context, unProgressColor)));
         ShapeDrawable shapeD = new ShapeDrawable();
         shapeD.getPaint().setStyle(Paint.Style.FILL);
         shapeD.getPaint().setColor(
-                Color.parseColor(getFocusColor(context,appCMSPresenter)));
+                Color.parseColor(getFocusColor(context, appCMSPresenter)));
         ClipDrawable clipDrawable = new ClipDrawable(shapeD, Gravity.LEFT,
                 ClipDrawable.HORIZONTAL);
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
-                 shape , clipDrawable});
+                shape, clipDrawable});
         return layerDrawable;
     }
 
 
-    public static GradientDrawable getSelectedMenuState(Context context , int color){
-        GradientDrawable gradientDrawable =  new GradientDrawable();
+    public static GradientDrawable getSelectedMenuState(Context context, int color) {
+        GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setColor(color);
-        gradientDrawable.setStroke(2,color);
+        gradientDrawable.setStroke(2, color);
         return gradientDrawable;
     }
 
-    public static GradientDrawable getUnSelectedMenuState(Context context , String borderColor){
-        GradientDrawable gradientDrawable =  new GradientDrawable();
+    public static GradientDrawable getUnSelectedMenuState(Context context, String borderColor) {
+        GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setColor(ContextCompat.getColor(context, android.R.color.transparent));
-        if(null != borderColor)
-        gradientDrawable.setStroke(2,Color.parseColor(borderColor));
+        if (null != borderColor)
+            gradientDrawable.setStroke(2, Color.parseColor(borderColor));
         return gradientDrawable;
     }
 
-    public static StateListDrawable getMenuSelector(Context context , String selectedBackgroundColor , String borderColor ){
+    public static StateListDrawable getMenuSelector(Context context, String selectedBackgroundColor, String borderColor) {
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getSelectedMenuState(context , Color.parseColor(selectedBackgroundColor)));
-        res.addState(new int[]{android.R.attr.state_pressed}, getSelectedMenuState(context , Color.parseColor(selectedBackgroundColor)));
-        res.addState(new int[]{android.R.attr.state_selected}, getUnSelectedMenuState(context,borderColor));
-        res.addState(new int[]{},getUnSelectedMenuState(context , borderColor));
+        res.addState(new int[]{android.R.attr.state_focused}, getSelectedMenuState(context, Color.parseColor(selectedBackgroundColor)));
+        res.addState(new int[]{android.R.attr.state_pressed}, getSelectedMenuState(context, Color.parseColor(selectedBackgroundColor)));
+        res.addState(new int[]{android.R.attr.state_selected}, getUnSelectedMenuState(context, borderColor));
+        res.addState(new int[]{}, getUnSelectedMenuState(context, borderColor));
         return res;
     }
 
-    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter ,
-                                                           boolean isSubNavigation , int selectorColor){
+    public static LayerDrawable getNavigationSelectedState(Context context, AppCMSPresenter appCMSPresenter,
+                                                           boolean isSubNavigation, int selectorColor) {
         GradientDrawable focusedLayer = new GradientDrawable();
         focusedLayer.setShape(GradientDrawable.RECTANGLE);
-        focusedLayer.setColor(Color.parseColor(getFocusColor(context,appCMSPresenter)));
+        focusedLayer.setColor(Color.parseColor(getFocusColor(context, appCMSPresenter)));
 
         GradientDrawable transparentLayer = new GradientDrawable();
         transparentLayer.setShape(GradientDrawable.RECTANGLE);
-        if(isSubNavigation){
-           // transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
+        if (appCMSPresenter.isLeftNavigationEnabled()) {
+            transparentLayer.setColor(ContextCompat.getColor(context, R.color.transparentColor));
+        } else if (isSubNavigation) {
             transparentLayer.setColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
-        }else{
-            //transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+        } else {
             transparentLayer.setColor(selectorColor);
         }
 
@@ -342,54 +341,54 @@ public class Utils {
                 transparentLayer
         });
 
-        if(isSubNavigation){
-            layerDrawable.setLayerInset(1,0,0,0,5);
-        }else{
-            layerDrawable.setLayerInset(1,0,5,0,0);
+        if (appCMSPresenter.isLeftNavigationEnabled()) {
+            layerDrawable.setLayerInset(0, 0, 0, (int) convertDpToPixel(296, context), 0);
+        } else if (isSubNavigation) {
+            layerDrawable.setLayerInset(1, 0, 0, 0, 5);
+        } else {
+            layerDrawable.setLayerInset(1, 0, 5, 0, 0);
         }
         return layerDrawable;
     }
 
     /**
      * this method is use for setting the tray border.
+     *
      * @param context
      * @param selectedColor
      * @param component
      * @return
      */
-    public static StateListDrawable getTrayBorder(Context context , String selectedColor , Component component){
+    public static StateListDrawable getTrayBorder(Context context, String selectedColor, Component component) {
         boolean isEditText = false;
-        if(null != component){
+        if (null != component) {
             isEditText = component.getType().equalsIgnoreCase(context.getString(R.string.app_cms_page_textfield_key));
         }
 
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context,selectedColor,isEditText , component,false));
-        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context,selectedColor,isEditText , component,false));
-        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context,selectedColor,isEditText, component , false));
-        if(isEditText)
-        res.addState(new int[]{} ,getBorder(context,selectedColor,isEditText, component , true) );
+        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context, selectedColor, isEditText, component, false));
+        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context, selectedColor, isEditText, component, false));
+        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context, selectedColor, isEditText, component, false));
+        if (isEditText)
+            res.addState(new int[]{}, getBorder(context, selectedColor, isEditText, component, true));
         else
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
-                context,
-                android.R.color.transparent
-        )));
+            res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                    context,
+                    android.R.color.transparent
+            )));
         return res;
     }
 
-    public static StateListDrawable getTrayBorder(Context context , String primaryHover, String secondaryHover){
+    public static StateListDrawable getTrayBorder(Context context, String primaryHover, String secondaryHover) {
         StateListDrawable res = new StateListDrawable();
         res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(primaryHover, secondaryHover));
         res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(primaryHover, secondaryHover));
         res.addState(new int[]{android.R.attr.state_selected}, getGradientDrawable(primaryHover, secondaryHover));
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
-                context,
-                android.R.color.transparent
-        )));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)));
         return res;
     }
 
-    public static StateListDrawable getGradientTrayBorder(Context context , String primaryHover, String secondaryHover){
+    public static StateListDrawable getGradientTrayBorder(Context context, String primaryHover, String secondaryHover) {
         StateListDrawable res = new StateListDrawable();
         res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(context, primaryHover, secondaryHover));
         res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(context, primaryHover, secondaryHover));
@@ -401,7 +400,7 @@ public class Utils {
         return res;
     }
 
-    private static Drawable getGradientDrawable(Context context ,String primaryHover, String secondaryHover) {
+    private static Drawable getGradientDrawable(Context context, String primaryHover, String secondaryHover) {
 
         LayerDrawable layerDrawable = (LayerDrawable) context.getResources().getDrawable(R.drawable.player_border);
         GradientDrawable gradientDrawable = (GradientDrawable) layerDrawable.getDrawable(0);
@@ -409,18 +408,18 @@ public class Utils {
         return layerDrawable;
     }
 
-    private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
+    private static GradientDrawable getBorder(Context context, String borderColor, boolean isEditText, Component component, boolean isNormalState) {
         GradientDrawable ageBorder = new GradientDrawable();
         ageBorder.setShape(GradientDrawable.RECTANGLE);
 
-        if(isEditText)
-        ageBorder.setCornerRadius(component.getCornerRadius());
+        if (isEditText)
+            ageBorder.setCornerRadius(component.getCornerRadius());
 
-        if(!isNormalState)
-        ageBorder.setStroke(6,Color.parseColor(borderColor));
+        if (!isNormalState)
+            ageBorder.setStroke(6, Color.parseColor(borderColor));
 
-        if(isEditText && isNormalState){
-            ageBorder.setStroke(1,Color.parseColor(borderColor));
+        if (isEditText && isNormalState) {
+            ageBorder.setStroke(1, Color.parseColor(borderColor));
         }
 
         ageBorder.setColor(ContextCompat.getColor(
@@ -430,37 +429,38 @@ public class Utils {
         return ageBorder;
     }
 
-    private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
+    private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover) {
         return new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
     }
 
     /**
      * this method is use for setting the button background selector.
+     *
      * @param context
      * @param selectedColor
      * @param component
      * @return
      */
-    public static StateListDrawable setButtonBackgroundSelector(Context context ,
-                                                                int selectedColor ,
-                                                                Component component ,
-                                                                AppCMSPresenter appCMSPresenter){
+    public static StateListDrawable setButtonBackgroundSelector(Context context,
+                                                                int selectedColor,
+                                                                Component component,
+                                                                AppCMSPresenter appCMSPresenter) {
 
         String focusStateColor = null;
         String unFocusStateBorderColor = null;
         String borderWidth = null;
-        if(null != appCMSPresenter &&
+        if (null != appCMSPresenter &&
                 null != appCMSPresenter.getAppCMSMain() &&
                 null != appCMSPresenter.getAppCMSMain().getBrand() &&
                 null != appCMSPresenter.getAppCMSMain().getBrand().getCta()) {
-               if( null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
+            if (null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()) {
                 focusStateColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
             }
-            if( null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary()){
+            if (null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary()) {
                 unFocusStateBorderColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor();
                 borderWidth = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getWidth();
-                if(null != borderWidth){
-                    if(borderWidth.contains("px")){
+                if (null != borderWidth) {
+                    if (borderWidth.contains("px")) {
                         String[] bdWidth = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getWidth().split("px");
                         borderWidth = bdWidth[0];
                     }
@@ -468,7 +468,7 @@ public class Utils {
             }
         }
 
-        if(null != focusStateColor){
+        if (null != focusStateColor) {
             selectedColor = Color.parseColor(focusStateColor);
         }
 
@@ -477,11 +477,11 @@ public class Utils {
         res.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(selectedColor));
 
-        if(null != component) {
+        if (null != component) {
             GradientDrawable gradientDrawable = getButtonNormalState(context, component, unFocusStateBorderColor, borderWidth);
             if (null != gradientDrawable)
                 res.addState(new int[]{}, gradientDrawable);
-        }else{
+        } else {
             GradientDrawable gradientDrawable = getButtonDefaultState(context, unFocusStateBorderColor, borderWidth);
             if (null != gradientDrawable)
                 res.addState(new int[]{}, gradientDrawable);
@@ -489,23 +489,23 @@ public class Utils {
         return res;
     }
 
-    private static GradientDrawable getButtonDefaultState(Context context , String unFocusStateBorderColor , String borderWidth){
+    private static GradientDrawable getButtonDefaultState(Context context, String unFocusStateBorderColor, String borderWidth) {
         GradientDrawable
                 ageBorder = new GradientDrawable();
-                ageBorder.setShape(GradientDrawable.RECTANGLE);
-                ageBorder.setStroke( null != borderWidth ? Integer.valueOf(borderWidth) : 1,
-                        Color.parseColor(unFocusStateBorderColor != null ? unFocusStateBorderColor : "#000000"));
-                ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+        ageBorder.setShape(GradientDrawable.RECTANGLE);
+        ageBorder.setStroke(null != borderWidth ? Integer.valueOf(borderWidth) : 1,
+                Color.parseColor(unFocusStateBorderColor != null ? unFocusStateBorderColor : "#000000"));
+        ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
         return ageBorder;
     }
 
-    private static GradientDrawable getButtonNormalState(Context context , Component component , String unFocusStateBorderColor , String borderWidth ){
+    private static GradientDrawable getButtonNormalState(Context context, Component component, String unFocusStateBorderColor, String borderWidth) {
         GradientDrawable ageBorder = null;
         if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);
-                ageBorder.setStroke( null != borderWidth ? Integer.valueOf(borderWidth) : component.getBorderWidth(),
+                ageBorder.setStroke(null != borderWidth ? Integer.valueOf(borderWidth) : component.getBorderWidth(),
                         Color.parseColor(unFocusStateBorderColor != null ? unFocusStateBorderColor : getColor(context, component.getBorderColor())));
                 ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
             }
@@ -514,32 +514,32 @@ public class Utils {
     }
 
 
-    public static ColorStateList getButtonTextColorDrawable(String defaultColor , String focusedColor , AppCMSPresenter appCMSPresenter){
+    public static ColorStateList getButtonTextColorDrawable(String defaultColor, String focusedColor, AppCMSPresenter appCMSPresenter) {
         String focusStateTextColor = null;
         String unFocusStateTextColor = null;
-        if(null != appCMSPresenter &&
+        if (null != appCMSPresenter &&
                 null != appCMSPresenter.getAppCMSMain() &&
                 null != appCMSPresenter.getAppCMSMain().getBrand() &&
                 null != appCMSPresenter.getAppCMSMain().getBrand().getCta() &&
-                null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
+                null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()) {
             focusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor();
             unFocusStateTextColor = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getTextColor();
         }
 
-        int[][] states = new int[][] {
-                new int[] { android.R.attr.state_focused},
-                new int[] {android.R.attr.state_selected},
-                new int[] {android.R.attr.state_pressed},
-                new int[] {}
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_focused},
+                new int[]{android.R.attr.state_selected},
+                new int[]{android.R.attr.state_pressed},
+                new int[]{}
         };
 
-        if(null != focusStateTextColor){
+        if (null != focusStateTextColor) {
             focusedColor = focusStateTextColor;
         }
-        if(null != unFocusStateTextColor){
+        if (null != unFocusStateTextColor) {
             defaultColor = unFocusStateTextColor;
         }
-        int[] colors = new int[] {
+        int[] colors = new int[]{
                 Color.parseColor(focusedColor),
                 Color.parseColor(focusedColor),
                 Color.parseColor(focusedColor),
@@ -551,22 +551,23 @@ public class Utils {
 
     /**
      * this method is use for setting the textCoo
+     *
      * @param context
      * @param appCMSPresenter
      * @return
      */
-    public static ColorStateList getTextColorDrawable(Context context , AppCMSPresenter appCMSPresenter){
-        int[][] states = new int[][] {
-                new int[] { android.R.attr.state_focused},
-                new int[] {android.R.attr.state_selected},
-                new int[] {android.R.attr.state_pressed},
-                new int[] {}
+    public static ColorStateList getTextColorDrawable(Context context, AppCMSPresenter appCMSPresenter) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_focused},
+                new int[]{android.R.attr.state_selected},
+                new int[]{android.R.attr.state_pressed},
+                new int[]{}
         };
-        int[] colors = new int[] {
-                Color.parseColor(getFocusColor(context,appCMSPresenter)),
-                Color.parseColor(getFocusColor(context,appCMSPresenter)),
-                Color.parseColor(getFocusColor(context,appCMSPresenter)),
-                Color.parseColor(getTextColor(context,appCMSPresenter))
+        int[] colors = new int[]{
+                Color.parseColor(getFocusColor(context, appCMSPresenter)),
+                Color.parseColor(getFocusColor(context, appCMSPresenter)),
+                Color.parseColor(getFocusColor(context, appCMSPresenter)),
+                Color.parseColor(getTextColor(context, appCMSPresenter))
         };
         ColorStateList myList = new ColorStateList(states, colors);
         return myList;
@@ -580,8 +581,8 @@ public class Utils {
     }
 
     public static Typeface getTypeFace(Context context,
-                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                            Component component) {
+                                       Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                       Component component) {
         Typeface face = null;
         if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
@@ -605,9 +606,7 @@ public class Utils {
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
                     //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
             }
-        }
-
-        else if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+        } else if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -639,63 +638,63 @@ public class Utils {
     }
 
 
-    public static String getTextColor(Context context , AppCMSPresenter appCMSPresenter){
-        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+    public static String getTextColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, android.R.color.white)));
         //Log.d("Utils.java" , "getTextColor = "+color);
-        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
-            && null != appCMSPresenter.getAppCMSMain().getBrand()
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-       && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()){
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()) {
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
         }
         return color;
     }
 
 
-    public static String getTitleColor(Context context , AppCMSPresenter appCMSPresenter){
-        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+    public static String getTitleColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, android.R.color.white)));
         //Log.d("Utils.java" , "getTitleColor = "+color);
-        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()) {
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
         }
         return color;
     }
 
-     public static String getTitleColorForST(Context context , AppCMSPresenter appCMSPresenter){
-        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+    public static String getTitleColorForST(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, android.R.color.white)));
         //Log.d("Utils.java" , "getTitleColor = "+color);
-        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()){
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()) {
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();
         }
         return color;
     }
 
-    public static String getBackGroundColor(Context context  ,AppCMSPresenter appCMSPresenter){
-        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , R.color.dialog_bg_color)));
+    public static String getBackGroundColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.dialog_bg_color)));
         //Log.d("Utils.java" , "getBackGroundColor = "+color);
-        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()){
-            color =  appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor();
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor();
         }
         return color;
     }
 
-    public static String getFocusColor(Context context  , AppCMSPresenter appCMSPresenter){
-        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , R.color.colorAccent)));
+    public static String getFocusColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.colorAccent)));
         //Log.d("Utils.java" , "getFocusColor = "+color);
-        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
-                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
-            color =  appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
         }
         return color;
     }
@@ -726,9 +725,9 @@ public class Utils {
         return color;
     }
 
-    public static double getPercentage(long runtime , long watchedTime){
+    public static double getPercentage(long runtime, long watchedTime) {
         double percentage = 0;
-        percentage = ((double)watchedTime / (double) runtime ) * 100;
+        percentage = ((double) watchedTime / (double) runtime) * 100;
         return percentage;
     }
 
@@ -750,14 +749,14 @@ public class Utils {
 
     @NonNull
     public static ClearDialogFragment getClearDialogFragment(Context context,
-                                                       AppCMSPresenter appCMSPresenter,
-                                                       int dialogWidth,
-                                                       int dialogHeight,
-                                                       String dialogTitle,
-                                                       String dialogMessage,
-                                                       String positiveButtonText,
-                                                       String negativeButtonText,
-                                                       float messageSize) {
+                                                             AppCMSPresenter appCMSPresenter,
+                                                             int dialogWidth,
+                                                             int dialogHeight,
+                                                             String dialogTitle,
+                                                             String dialogMessage,
+                                                             String positiveButtonText,
+                                                             String negativeButtonText,
+                                                             float messageSize) {
         Bundle bundle = new Bundle();
         bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
         bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY, dialogHeight);
@@ -782,13 +781,13 @@ public class Utils {
     }
 
 
-    public static void pageLoading(final boolean shouldShowProgress , Activity activity){
+    public static void pageLoading(final boolean shouldShowProgress, Activity activity) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                if(shouldShowProgress){
-                    CustomProgressBar.getInstance(activity).showProgressDialog(activity,"Loading...");
-                }else{
+                if (shouldShowProgress) {
+                    CustomProgressBar.getInstance(activity).showProgressDialog(activity, "Loading...");
+                } else {
                     CustomProgressBar.getInstance(activity).dismissProgressDialog();
                 }
             }
@@ -847,7 +846,7 @@ public class Utils {
 
     public static List<String> getRelatedVideosInShow(List<Season_> season, int showNumber, int episodeNumber) {
         List<String> relatedVids = new ArrayList<>();
-        for (int i = showNumber; i < season.size(); i ++) {
+        for (int i = showNumber; i < season.size(); i++) {
             if (i == showNumber) {
                 for (int j = episodeNumber + 1; j < season.get(i).getEpisodes().size(); j++) {
                     relatedVids.add(season.get(i).getEpisodes().get(j).getGist().getId());
@@ -862,48 +861,146 @@ public class Utils {
     }
 
 
-     public static String convertStringIntoCamelCase(String text) {
-         try {
-             String[] words = text.toString().split(" ");
-             StringBuilder sb = new StringBuilder();
-             if (words[0].length() > 0) {
-                 sb.append(Character.toUpperCase(words[0].charAt(0)) + words[0].subSequence(1, words[0].length()).toString().toLowerCase());
-                 for (int i = 1; i < words.length; i++) {
-                     sb.append(" ");
-                     sb.append(Character.toUpperCase(words[i].charAt(0)) + words[i].subSequence(1, words[i].length()).toString().toLowerCase());
-                 }
-             }
-             return sb.toString();
-         }catch (Exception e){
-             return null;
-     }
-     }
+    public static String convertStringIntoCamelCase(String text) {
+        try {
+            String[] words = text.toString().split(" ");
+            StringBuilder sb = new StringBuilder();
+            if (words[0].length() > 0) {
+                sb.append(Character.toUpperCase(words[0].charAt(0)) + words[0].subSequence(1, words[0].length()).toString().toLowerCase());
+                for (int i = 1; i < words.length; i++) {
+                    sb.append(" ");
+                    sb.append(Character.toUpperCase(words[i].charAt(0)) + words[i].subSequence(1, words[i].length()).toString().toLowerCase());
+                }
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-     public static int getDeviceWidth(Context context){
-         return context.getResources().getDisplayMetrics().widthPixels;
-     }
+    public static int getDeviceWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
 
-     public static int getDeviceHeight(Context context){
-         return context.getResources().getDisplayMetrics().heightPixels;
-     }
+    public static int getDeviceHeight(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
 
     /**
      * Returns the complimentary (opposite) color.
+     *
      * @param color int RGB color to return the compliment of
      * @return int RGB of compliment color
      */
     public static int getComplimentColor(int color) {
-            // get existing colors
-            int alpha = Color.alpha(color);
-            int red = Color.red(color);
-            int blue = Color.blue(color);
-            int green = Color.green(color);
+        // get existing colors
+        int alpha = Color.alpha(color);
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
 
-            // find compliments
-            red = (~red) & 0xff;
-            blue = (~blue) & 0xff;
-            green = (~green) & 0xff;
+        // find compliments
+        red = (~red) & 0xff;
+        blue = (~blue) & 0xff;
+        green = (~green) & 0xff;
 
-            return Color.argb(alpha, red, green, blue);
+        return Color.argb(alpha, red, green, blue);
+    }
+
+    public static int getIcon(String icon , Context context) {
+        int iconResId = 0;
+        if(null != icon) {
+            if (icon.equalsIgnoreCase(context.getString(R.string.st_autoplay_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_autoplay;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_closed_caption_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_cc;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_manage_subscription_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_manage_subscription;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_account_icon_key))
+                    || icon.equalsIgnoreCase(context.getString(R.string.st_user_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_account;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_faq_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_faq;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_contact_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_contact;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_signin_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_signin;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_signout_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_signout;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_about_us_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_about_us;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_privacy_policy_icon_key))
+                    || icon.equalsIgnoreCase(context.getString(R.string.st_privacy_policy_icon_key1))) {
+                iconResId = R.drawable.st_setting_icon_privacy_policy;
+            }else if (icon.equalsIgnoreCase(context.getString(R.string.st_home_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_home;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_tos_icon_key))) {
+                iconResId = R.drawable.icon_tos;
+            }else if (icon.equalsIgnoreCase(context.getString(R.string.st_show_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_grid;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_teams_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_bracket;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_watchlist_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_watchlist;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_history_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_clock;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_settings_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_gear;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_search_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_search;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_live_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_live;
+            } else if (icon.equalsIgnoreCase(context.getString(R.string.st_signup_icon_key))) {
+                iconResId = R.drawable.icon_signup;
+            }
+        }
+        return iconResId;
+    }
+
+    public static float convertDpToPixel(float dp, Context context) {
+        if (context != null) {
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        }
+        return 0.0f;
+    }
+
+    public static float convertPixelsToDp(float px, Context context) {
+        if (context != null) {
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+            return dp;
+        }
+        return 0.0f;
+    }
+
+
+    public static void broadcastCapabilities(Context context) {
+
+        boolean userIsSignedIn = false;
+       /* AppCMSPresenter appCMSPresenter = ((AppCMSApplication) ((Activity) context).getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        if (appCMSPresenter != null) {
+            userIsSignedIn = appCMSPresenter.isUserLoggedIn();
+        }*/
+        Intent intent = new Intent();
+        intent.setPackage("com.amazon.tv.launcher");
+        intent.setAction("com.amazon.device.CAPABILITIES");
+//        if (userIsSignedIn) {
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_ACTION", "air.com.snagfilms.PLAY");
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_PACKAGE", "air.com.snagfilms");
+        intent.putExtra("amazon.intent.extra.PLAY_INTENT_CLASS", "com.viewlift.tv.AppCmsTVSplashActivity");
+//            intent.putExtra("amazon.intent.extra.PLAY_INTENT_FLAGS", Intent.FLAG_ACTIVITY_NEW_TASK);
+        /*} else {
+            intent.putExtra("amazon.intent.extra.SIGNIN_INTENT_ACTION", "android.intent.action.VIEW");
+            intent.putExtra("amazon.intent.extra.PLAY_INTENT_PACKAGE", "air.com.snagfilms");
+            intent.putExtra("amazon.intent.extra.PLAY_INTENT_CLASS", "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity");
+            intent.putExtra("amazon.intent.extra.SIGNIN_INTENT_FLAGS", Intent.FLAG_ACTIVITY_NEW_TASK);
+        }*/
+        intent.putExtra("amazon.intent.extra.PARTNER_ID", "SNAEI_SF");
+
+        //Send the intent to the Launcher
+        context.sendBroadcast(intent);
     }
 }

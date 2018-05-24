@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
@@ -31,7 +30,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final TextView textView;
     private final AppCMSPresenter appCMSPresenter;
     private final String title;
-    private final String fullText;
+    private String fullText;
     private boolean forceMaxLines;
     private final int moreForegroundColor;
     private final boolean useItalics;
@@ -54,6 +53,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
 
     @Override
     public void onGlobalLayout() {
+        fullText = fullText == null ? "" : fullText;
         int linesCompletelyVisible = textView.getHeight() /
                 textView.getLineHeight();
         if (textView.getLineCount() < linesCompletelyVisible) {
@@ -124,7 +124,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     public void setSpanOnFocus(TextView textView, boolean hasFocus , int textColor){
         Spannable wordToSpan = new SpannableString(textView.getText().toString());
         ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor())
+                appCMSPresenter.getBrandPrimaryCtaColor()
         );
 
         int length = wordToSpan.length();
