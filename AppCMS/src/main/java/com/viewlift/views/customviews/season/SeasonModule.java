@@ -4,34 +4,26 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.adapters.AppCMSSeasonTabPagerAdapter;
 import com.viewlift.views.customviews.ModuleView;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.ResizeableViewPager;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
-
 import java.util.Map;
-
 import static com.viewlift.Utils.loadJsonFromAssets;
 
 /**
@@ -40,9 +32,8 @@ import static com.viewlift.Utils.loadJsonFromAssets;
 
 @SuppressLint("ViewConstructor")
 public class SeasonModule extends ModuleView {
+
     private static final String TAG = SeasonModule.class.getSimpleName();
-
-
     private final ModuleWithComponents moduleInfo;
     private final Module moduleAPI;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -52,7 +43,6 @@ public class SeasonModule extends ModuleView {
     private AppCMSAndroidModules appCMSAndroidModules;
     PageView pageView;
     TabLayout seasonTab;
-    ViewPager seasonPager;
 
     @SuppressWarnings("unchecked")
     public SeasonModule(Context context,
@@ -65,12 +55,7 @@ public class SeasonModule extends ModuleView {
         super(context, moduleInfo, false);
         this.moduleInfo = moduleInfo;
         this.moduleAPI = moduleAPI;
-        /*if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null &&
-                moduleAPI.getContentData().get(0).getSeason() != null &&
-                moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
-                moduleAPI.getContentData().get(0).getSeason().get(0).getTitle().contains("Season 1")) {
-            Collections.reverse(moduleAPI.getContentData().get(0).getSeason());
-        }*/
+
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
         this.viewCreator = viewCreator;
@@ -120,20 +105,28 @@ public class SeasonModule extends ModuleView {
                     }
                 }
             }
-            AppCMSSeasonTabPagerAdapter adapter = new AppCMSSeasonTabPagerAdapter(recyclerViewComponent, viewCreator, moduleAPI, appCMSAndroidModules,
-                    jsonValueKeyMap, appCMSPresenter, moduleInfo);
-            seasonPager.setAdapter(adapter);
 
             seasonTab.setSelectedTabIndicatorColor(Color.parseColor("#ffffff"));
             seasonTab.setSelectedTabIndicatorHeight((int) (3 * getResources().getDisplayMetrics().density));
             seasonTab.setTabTextColors(Color.parseColor("#ffffff"),
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-            if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
-                seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
-            } else {
-                seasonTab.setTabMode(TabLayout.MODE_FIXED);
+
+
+            if(moduleAPI != null && moduleAPI.getContentData() != null &&  moduleAPI.getContentData().size() > 0 && moduleAPI.getContentData().get(0).getSeason() != null){
+
+                if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
+                    seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
+                } else {
+                    seasonTab.setTabMode(TabLayout.MODE_FIXED);
+                }
+
+                for(Season_ season : moduleAPI.getContentData().get(0).getSeason()){
+                    TabLayout.Tab firstTab = seasonTab.newTab();
+                    firstTab.setText(season.getTitle());
+                    seasonTab.addTab(firstTab);
+                }
             }
-            seasonTab.setupWithViewPager(seasonPager);
+
             reduceMarginsInTabs(seasonTab, 70);
             seasonTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
@@ -143,30 +136,10 @@ public class SeasonModule extends ModuleView {
                 }
 
                 @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-
-                }
+                public void onTabUnselected(TabLayout.Tab tab) {}
 
                 @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-
-                }
-            });
-            seasonPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    SeasonTabSelectorBus.instanceOf().setTab(position);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
+                public void onTabReselected(TabLayout.Tab tab) {}
             });
             View root = seasonTab.getChildAt(0);
             if (root instanceof LinearLayout) {
@@ -220,10 +193,10 @@ public class SeasonModule extends ModuleView {
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
-        if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+       /* if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
             recyclerViewComponent = subComponent;
             return;
-        }
+        }*/
 
         if (componentViewResult != null && subComponentChildContainer != null) {
             viewCreator.createComponentView(getContext(),
@@ -240,7 +213,6 @@ public class SeasonModule extends ModuleView {
                     moduleInfo.getId());
             View componentView = componentViewResult.componentView;
             if (componentView != null) {
-                if (componentType != AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
 
                     float componentYAxis = getYAxis(getContext(),
                             subComponent.getLayout(),
@@ -268,16 +240,12 @@ public class SeasonModule extends ModuleView {
                         seasonTab = (TabLayout) componentView;
                         break;
                     case PAGE_VIEWPAGER_KEY:
-                        seasonPager = (ViewPager) componentView;
+                        seasonTab = (TabLayout) componentView;
+                       // seasonPager = (ViewPager) componentView;
                         break;
                 }
             } else {
                 moduleView.setComponentHasView(i, false);
             }
-        }
-
     }
-
-
-
 }

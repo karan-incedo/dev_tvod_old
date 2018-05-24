@@ -12,12 +12,12 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.ResizeableViewPager;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.Map;
 
 public class AppCMSSeasonTabPagerAdapter extends PagerAdapter {
+
     int mCurrentPosition = -1;
     Component subComponent;
     AppCMSAndroidModules appCMSAndroidModules;
@@ -68,6 +68,7 @@ public class AppCMSSeasonTabPagerAdapter extends PagerAdapter {
         collection.removeView((View) view);
     }
 
+
     @Override
     public int getCount() {
         if (moduleAPI != null &&
@@ -98,14 +99,9 @@ public class AppCMSSeasonTabPagerAdapter extends PagerAdapter {
     @Override
     public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         super.setPrimaryItem(container, position, object);
-        if (position != mCurrentPosition) {
-            RecyclerView view = (RecyclerView) object;
-            ResizeableViewPager pager = (ResizeableViewPager) container;
-            if (view != null) {
-                mCurrentPosition = position;
-                pager.measureCurrentView(view);
-            }
-        }
+
     }
+
+
 
 }

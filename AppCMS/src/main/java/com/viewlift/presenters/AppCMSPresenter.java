@@ -65,6 +65,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -81,6 +82,7 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
@@ -269,6 +271,7 @@ import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
+import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
@@ -17400,14 +17403,14 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b = null;
-                Canvas canvas = null;
+//                Bitmap b = null;
+//                Canvas canvas = null;
                 Paint paint = null;
-                if (b == null) {
-                    b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                    canvas = new Canvas(b);
+               // if (b == null) {
+                final Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                 Canvas   canvas = new Canvas(b);
                     paint = new Paint();
-                }
+               // }
                 //Canvas canvas = new Canvas(b);
                 //Paint paint = new Paint();
 
@@ -17439,13 +17442,18 @@ public class AppCMSPresenter {
 //                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-                iv2.setImageBitmap(b);
-               /* appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+//                iv2.setImageBitmap(b);
+//                appCMSPresenter.currentActivity
+
+                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        iv2.setImageBitmap(b);
+                        iv2.postDelayed(()->{
+                            iv2.setImageBitmap(null);
+                            iv2.setImageBitmap(b);
+                        },2);
                     }
-                });*/
+                });
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

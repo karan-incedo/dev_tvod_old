@@ -407,21 +407,21 @@
                   "leftMargin": 2.67,
                   "rightMargin": 2.67,
                   "fontSize": 18,
-                  "height": 30
+                  "height": 35
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
                   "leftMargin": 0.97,
                   "rightMargin": 0.97,
                   "fontSize": 24,
-                  "height": 33
+                  "height": 35
                 },
                 "tabletPortrait": {
                   "yAxis": 0,
                   "leftMargin": 1.3,
                   "rightMargin": 1.3,
                   "fontSize": 24,
-                  "height": 33
+                  "height": 35
                 }
               },
               "type": "tabLayout",
@@ -430,24 +430,9 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": -35
-                },
-                "tabletLandscape": {
-                  "yAxis": -35
-                },
-                "tabletPortrait": {
-                  "yAxis": -35
-                }
-              },
-              "type": "viewPager",
-              "key": "seasonsViewPager"
-            },
-            {
-              "layout": {
-                "mobile": {
                   "gridHeight": 116,
                   "trayPadding": 10,
-                  "yAxis": 26,
+                  "yAxis": -35,
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "gridWidth": 370
@@ -455,7 +440,7 @@
                 "tabletLandscape": {
                   "gridHeight": 174,
                   "trayPadding": 10,
-                  "yAxis": 35,
+                  "yAxis": -35,
                   "leftMargin": 0.97,
                   "rightMargin": 0.97,
                   "gridWidth": 416
@@ -463,7 +448,7 @@
                 "tabletPortrait": {
                   "gridHeight": 128,
                   "trayPadding": 10,
-                  "yAxis": 35,
+                  "yAxis": -35,
                   "leftMargin": 1.3,
                   "rightMargin": 1.3,
                   "gridWidth": 378

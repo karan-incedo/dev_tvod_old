@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -65,7 +64,6 @@ import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -97,7 +95,6 @@ import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.plans.SubscriptionMetaDataView;
 import com.viewlift.views.customviews.plans.ViewPlansMetaDataView;
 import com.viewlift.views.customviews.season.SeasonModule;
@@ -2073,6 +2070,8 @@ public class ViewCreator {
                     appCMSAndroidModules, pageView);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
             RecyclerView view = pageView.findViewById(R.id.home_nested_scroll_view);
+
+//            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,300));
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
@@ -2621,6 +2620,10 @@ public class ViewCreator {
                         ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.features_mobile);
                     }
                 } else {
+
+                    if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY){
+                        componentViewResult.componentView = new AdjustableRecyclerView(context);
+                    }else
                     componentViewResult.componentView = new RecyclerView(context);
 
                     AppCMSViewAdapter appCMSViewAdapter;
@@ -2877,10 +2880,11 @@ public class ViewCreator {
                                                 LinearLayoutManager.VERTICAL,
                                                 false));
                             } else {*/
-                            ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new LinearLayoutManager(context,
-                                            LinearLayoutManager.VERTICAL,
-                                            false));
+
+                                ((RecyclerView) componentViewResult.componentView)
+                                        .setLayoutManager(new LinearLayoutManager(context,
+                                                LinearLayoutManager.VERTICAL,
+                                                false));
 //                            }
                         } else {
                             ((RecyclerView) componentViewResult.componentView)
@@ -3155,7 +3159,7 @@ public class ViewCreator {
                 componentViewResult.componentView = new TabLayout(context);
                 break;
             case PAGE_VIEWPAGER_KEY:
-                componentViewResult.componentView = new ResizeableViewPager(context);
+                componentViewResult.componentView = new AdjustableRecyclerView(context);
                 break;
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
