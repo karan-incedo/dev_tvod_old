@@ -8,6 +8,7 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @UseStag
@@ -127,6 +128,14 @@ public class ContentDatum implements Serializable {
     @SerializedName("seo")
     @Expose
     List<Seo> seo = null;
+
+    HashMap<String,List<ContentDatum>> monthlySchedule;
+
+    @SerializedName("drmEnabled")
+    @Expose
+    Boolean isDRMEnabled = null;
+
+
 
     public Team getTeam() {
         return team;
@@ -457,6 +466,21 @@ public class ContentDatum implements Serializable {
 
     public void setSeo(List<Seo> seo) {
         this.seo = seo;
+    }
+
+    public boolean isDRMEnabled(){
+        return isDRMEnabled;
+    }
+
+    public void setDRMEnabled(boolean DRMEnabled) {
+        isDRMEnabled = DRMEnabled;
+    }
+    public HashMap<String, List<ContentDatum>> getMonthlySchedule() {
+        return monthlySchedule;
+    }
+
+    public void setMonthlySchedule(HashMap<String, List<ContentDatum>> monthlySchedule) {
+        this.monthlySchedule = monthlySchedule;
     }
 
     List<ContentDatum> contentData = null;

@@ -125,6 +125,8 @@ public class RealmController {
             Log.e("RealmController", "LoggedIn user ID :" + userId);
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAllAsync();
         } catch (Exception e) {
+            realm = Realm.getDefaultInstance();
+            getDownloadesByUserId(userId);
             e.printStackTrace();
         }
         return null;

@@ -139,7 +139,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String policyCookie;
     private String keyPairIdCookie;
     private ContentDatum contentDatum;
-    private boolean playWhenReady;
+    private boolean playWhenReady = true;
 
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
@@ -836,6 +836,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         if (videoPlayerView.getPlayer() != null) {
+            preparePlayer();
             videoPlayerView.getPlayer().setPlayWhenReady(true);
         }
         isAdsDisplaying = false;

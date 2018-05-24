@@ -9,14 +9,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.amazon.device.messaging.ADM;
 import com.viewlift.AppCMSApplication;
@@ -28,11 +32,17 @@ import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by viewlift on 6/22/17.
  */
 
 public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
+
+    private CountDownTimer countDownTimer;
+    private boolean needSplashProgress;
 
     private static final String TAG = "ADMMessenger";
 
@@ -44,6 +54,18 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Amazon Device Details: "+getDeviceDetail());
+        String packageName = getApplicationContext().getPackageName();
+        List<String> strings = Arrays.asList(getResources().getStringArray(R.array.app_cms_splash_progress_needed));
+
+        needSplashProgress = strings.contains(packageName);
+
+        for (String app : strings) {
+            if (packageName.contains(app)){
+                needSplashProgress = true;
+                break;
+            }
+        }
+
         AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
         if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
@@ -68,12 +90,36 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         }
         setContentView(R.layout.activity_launch_tv);
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+
         imageView.setBackgroundResource(R.drawable.tv_logo);
         getAppCmsMain();
+
+
+        if (needSplashProgress) {
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_progress_bar);
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.getIndeterminateDrawable().setColorFilter(
+                    getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
+            countDownTimer = new CountDownTimer(11000 ,1000) {
+                @Override
+                public void onTick(long l) {
+                    progress = progress+1;
+                    progressBar.setProgress(progress);
+                }
+
+                @Override
+                public void onFinish() {
+
+                }
+            }.start();
+        }
+
         register();
         com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+
     }
 
+    int progress = 0;
     private void getAppCmsMain(){
         AppCMSPresenterComponent appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
@@ -100,6 +146,8 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     @Override
     protected void onPause() {
         unregisterReceiver(broadcastReceiver);
+        if(null != countDownTimer)
+        countDownTimer.cancel();
         unregisterReceiver(msgReceiver);
         super.onPause();
     }
@@ -117,13 +165,17 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
                 showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
-                startLogoAnimation();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
-                    }
-                },550);
+
+                if (!needSplashProgress) {
+                    startLogoAnimation();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
+                        }
+                    },550);
+                }
+
             }
         }
     };
@@ -238,9 +290,9 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             if (adm.getRegistrationId() == null) {
                 adm.startRegister();
             } else {
-                /* Send the registration ID for this app instance to your server. */
-                /* This is a redundancy since this should already have been performed at registration time from the onRegister() callback */
-                /* but we do it because our python server doesn't save registration IDs. */
+                /* Send the registration ID for this app instance to your server.
+                 This is a redundancy since this should already have been performed at registration time from the onRegister() callback
+                 but we do it because our python server doesn't save registration IDs.*/
 
 
                 final String admRegistrationId = adm.getRegistrationId();

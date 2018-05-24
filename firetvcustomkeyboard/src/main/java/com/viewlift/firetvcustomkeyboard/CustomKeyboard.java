@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import rx.functions.Action1;
+
 public class CustomKeyboard extends RelativeLayout implements View.OnFocusChangeListener,
         View.OnKeyListener {
 
@@ -281,14 +283,10 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         buttonDrawable.setColor(Color.parseColor(color));
         buttonDrawable.mutate();
         invalidate();
-
-
-
-
     }
 
 
-    public ColorStateList getButtonTextColorDrawable(String defaultColor, String focusedColor){
+    public ColorStateList getButtonTextColorDrawable(String focusedColor,String defaultColor){
         String focusStateTextColor = focusedColor;
         String unFocusStateTextColor = defaultColor;
 
@@ -327,6 +325,27 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         }
     }
 
+    private Action1<Boolean> spaceBtnFocusListener;
+    public void setonButtonFocusChangeListener(Action1<Boolean> action1) {
+        spaceBtnFocusListener = action1;
+    }
+
+    OnFocusChangeListener onSpaceFocusChangeListener = new OnFocusChangeListener(){
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if(null != spaceBtnFocusListener)
+            spaceBtnFocusListener.call(true);
+        }
+    };
+
+    OnFocusChangeListener onBtnFocusChangeListener = new OnFocusChangeListener(){
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if(null != spaceBtnFocusListener)
+                    spaceBtnFocusListener.call(false);
+        }
+    };
+
     private enum CurrentlySelectedKeyboardLayoutEnum {
         UPPERCASE,
         LOWERCASE,
@@ -341,7 +360,13 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
             ((Button) findViewById(R.id.btn_num_key_space)).setTextColor(txtColor);
             ((Button) findViewById(R.id.btn_sc_key_space)).setTextColor(txtColor);
 
+            ((Button) findViewById(R.id.btn_uc_key_space)).setOnFocusChangeListener(onSpaceFocusChangeListener);
+            ((Button) findViewById(R.id.btn_lc_key_space)).setOnFocusChangeListener(onSpaceFocusChangeListener);
+            ((Button) findViewById(R.id.btn_num_key_space)).setOnFocusChangeListener(onSpaceFocusChangeListener);
+            ((Button) findViewById(R.id.btn_sc_key_space)).setOnFocusChangeListener(onSpaceFocusChangeListener);
+
             ((TextView) findViewById(R.id.tv_key_uc_a)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_uc_a)).setOnFocusChangeListener(onBtnFocusChangeListener);
             ((TextView) findViewById(R.id.tv_key_uc_b)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_uc_c)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_uc_d)).setTextColor(txtColor);
@@ -369,6 +394,7 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
             ((TextView) findViewById(R.id.tv_key_uc_z)).setTextColor(txtColor);
 
             ((TextView) findViewById(R.id.tv_key_lc_a)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_lc_a)).setOnFocusChangeListener(onBtnFocusChangeListener);
             ((TextView) findViewById(R.id.tv_key_lc_b)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_lc_c)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_lc_d)).setTextColor(txtColor);
@@ -396,6 +422,7 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
             ((TextView) findViewById(R.id.tv_key_lc_z)).setTextColor(txtColor);
 
             ((TextView) findViewById(R.id.tv_key_num_1)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_num_1)).setOnFocusChangeListener(onBtnFocusChangeListener);
             ((TextView) findViewById(R.id.tv_key_num_2)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_num_3)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_num_4)).setTextColor(txtColor);
@@ -407,6 +434,7 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
             ((TextView) findViewById(R.id.tv_key_num_0)).setTextColor(txtColor);
 
             ((TextView) findViewById(R.id.tv_key_sc_exclamation)).setTextColor(txtColor);
+            ((TextView) findViewById(R.id.tv_key_sc_exclamation)).setOnFocusChangeListener(onBtnFocusChangeListener);
             ((TextView) findViewById(R.id.tv_key_sc_at_the_rate)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_sc_cent)).setTextColor(txtColor);
             ((TextView) findViewById(R.id.tv_key_sc_colon)).setTextColor(txtColor);
@@ -466,6 +494,10 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         @Override
         public void onFocusChange(View view, boolean b) {
             if(null != view) {
+
+                if(null != spaceBtnFocusListener)
+                        spaceBtnFocusListener.call(false);
+
                 if (b) {
                     ((ImageButton) view).getBackground().
                             setTint(Color.parseColor(focusedColor));

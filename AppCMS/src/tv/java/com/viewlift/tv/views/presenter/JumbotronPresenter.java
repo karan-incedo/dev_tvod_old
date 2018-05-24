@@ -17,6 +17,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.customviews.HoverCard;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class JumbotronPresenter extends CardPresenter {
     private final Component parentComponent;
     private Context mContext;
     private AppCMSPresenter mAppCMSPresenter;
+    private boolean infoHover;
 
 
     public JumbotronPresenter(Context context, AppCMSPresenter appCMSPresenter, Component component,
@@ -39,6 +41,7 @@ public class JumbotronPresenter extends CardPresenter {
         mContext = context;
         mAppCMSPresenter = appCMSPresenter;
         this.parentComponent = component;
+        this.infoHover = infoHover;
     }
 
 
@@ -55,7 +58,8 @@ public class JumbotronPresenter extends CardPresenter {
             frameLayout.setFocusable(true);
           //  frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
         frameLayout.setBackgroundColor(Color.parseColor(mAppCMSPresenter.getAppBackgroundColor()));
-            return new ViewHolder(frameLayout);
+
+        return new ViewHolder(frameLayout);
         }
 
     @Override
@@ -64,8 +68,14 @@ public class JumbotronPresenter extends CardPresenter {
         BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
+        String blockName = rowData.blockName;
         CustomFrameLayout cardView = (CustomFrameLayout) viewHolder.view;
         createComponent(componentList , cardView , contentData);
+        if(infoHover){
+            ((HoverCard)cardView.hoverLayout).removeViews();
+            ((HoverCard)cardView.hoverLayout).initViews();
+             bindComponent(cardView , contentData , blockName, rowData.infoHover);
+        }
     }
 
     @Override
@@ -91,9 +101,13 @@ public class JumbotronPresenter extends CardPresenter {
                         ImageView imageView = new ImageView(parentLayout.getContext());
                         switch(componentKey){
                             case PAGE_CAROUSEL_IMAGE_KEY: {
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
-                                        Utils.getViewXAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getWidth())),
-                                        Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                                        Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
+                                        Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
+
                                 imageView.setLayoutParams(parms);
                                 imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
@@ -106,19 +120,31 @@ public class JumbotronPresenter extends CardPresenter {
                                                 .placeholder(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder)))
                                         .into(imageView);
                                 parentLayout.addView(imageView);
+
+                                if(null != parentLayout.hoverLayout) {
+                                    FrameLayout.LayoutParams hoverParams = new FrameLayout.LayoutParams(
+                                            Utils.getViewXAxisAsPerScreen(mContext, itemWidth - gridImagePadding*2),
+                                            Utils.getViewYAxisAsPerScreen(mContext, itemHeight - gridImagePadding*2));
+
+                                    hoverParams.setMargins(gridImagePadding, gridImagePadding, 0, 0);
+                                    parentLayout.hoverLayout.setLayoutParams(hoverParams);
+                                    ((HoverCard)parentLayout.hoverLayout).setCardHeight(itemHeight);
+                                    ((HoverCard)parentLayout.hoverLayout).setCardWidth(itemWidth);
+                                }
+
                                 break;
                             }
-                            case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
+                            /*case PAGE_VIDEO_HOVER_BACKGROUND_KEY: {
                                 createComponentView(parentComponent, parentLayout);
                                 break;
-                            }
+                            }*/
                         }
-                    case PAGE_LABEL_KEY: {
+                   /* case PAGE_LABEL_KEY: {
                         createComponentView(parentComponent, parentLayout);
                         bindComponent(parentLayout, contentData, parentComponent.getBlockName(),
                                 parentComponent.getSettings() != null && parentComponent.getSettings().isInfoHover());
                         break;
-                    }
+                    }*/
                 }
             }
         }

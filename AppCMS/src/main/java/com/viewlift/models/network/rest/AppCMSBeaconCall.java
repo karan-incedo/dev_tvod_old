@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconResponse;
 
@@ -42,10 +43,11 @@ public class AppCMSBeaconCall {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
-            authTokenMap.put("x-api-key", xApiKey);
+//            authTokenMap.put("x-api-key", xApiKey);
 
             Log.d(TAG,"Beacon request URL: " + url);
             Log.d(TAG, "Beacon request headers: " + authTokenMap);
+            Log.d(TAG, "Beacon request value: " + new Gson().toJson(request));
 
             Call<BeaconResponse> call;
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
@@ -60,7 +62,7 @@ public class AppCMSBeaconCall {
 
                 @Override
                 public void onFailure(Call<BeaconResponse> call, Throwable t) {
-                    //Log.e(TAG, "onFailure: " + t.getMessage());
+                    Log.e(TAG, "Beacon  onFailure: " + t.getMessage());
                 }
             });
 

@@ -318,7 +318,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         initPageActivity();
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                 try {
                     Class launchActivity = Class.forName(mobileLaunchActivity);
                     startActivity(new Intent(this, launchActivity));
@@ -1441,7 +1441,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
-                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated() && !appCMSPresenter.isAudioActvityVisible()) {
                         Class launchActivity = Class.forName(mobileLaunchActivity);
                         startActivity(new Intent(this, launchActivity));
                         finish();
@@ -2288,8 +2288,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-
-        appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        if (appCMSBinder.getScreenName() != null) {
+            appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        }
         setVisibilityForStartFreeTrial(appCMSBinder.getPageId());
         int lastBackStackEntry = getSupportFragmentManager().getBackStackEntryCount();
         boolean poppedStack = false;

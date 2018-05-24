@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/nav_top_line"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentTop="true"
+        android:focusable="false"
+        android:textAlignment="center" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/nav_top_line">
+
+        <FrameLayout
+            android:id="@+id/profile_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sub_navigation_containeer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/left_nav_gradient"
+        android:visibility="visible">
+
+
+        <ImageView
+            android:id="@+id/left_menu_app_logo"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="35dp"
+            android:src="@drawable/app_logo"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/sub_navigation_placholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="125dp"
+            android:layout_marginStart="40dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/nav_item_login_layout"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="20dp">
+
+                <ImageView
+                    android:id="@+id/nav_item_login_image"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/textView_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:letterSpacing="0.04"
+                    android:text="Log In"
+                    android:focusable="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/appcms_tv_navigation_textSize" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nav_item_logout_layout"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="20dp">
+
+                <ImageView
+                    android:id="@+id/nav_item_logout_image"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/textview_signup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:letterSpacing="0.04"
+                    android:text="Sign Up"
+                    android:focusable="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/appcms_tv_navigation_textSize" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -77,6 +77,8 @@
 
     <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_schedule_api_url">%1$s/content/game/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
+
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
     <!--Article API-->
@@ -109,6 +111,16 @@
         <item>AC Banner 01</item>
     </string-array>
 
+
+
+    <!-- Names of the apps where we need Splash progress-->
+    <string-array name="app_cms_splash_progress_needed">
+        <item>com.viewlift.failarmy2</item>
+        <item>com.viewlift.jukinvideo</item>
+        <item>com.viewlift.peopleawesome</item>
+        <item>com.viewlift.thepetcollective</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>
@@ -132,6 +144,7 @@
     <string name="app_cms_page_list_module_key">AC List 01</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
+    <string name="app_cms_page_schedule_key_value">AC SchedulePage 01</string>
 
     <string name="app_cms_page_web_view_key">web_view</string>
     <string name="app_cms_page_article_web_view_key">webView</string>
@@ -230,6 +243,8 @@
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_tray_02_module_key">AC Tray 02</string>
     <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
+    <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
+    <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
 
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
@@ -409,6 +424,7 @@
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
+    <string name="app_cms_pagename_schedule_screen_key">Schedule Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
@@ -483,9 +499,8 @@
 
 
 
-    <!-- TODo mergeg both bellow in later implementation AppCMS Release entitlement Detail API -->
-    <string name="app_cms_release_entitlement_api_url">%1$s/entitlement/release-user-entitlement-service?id=%2$s</string>
-    <string name="app_cms_prod_entitlement_api_url">%1$s/entitlement/prod-user-entitlement-service?id=%2$s</string>
+    <!--  AppCMS entitlement Detail API -->
+    <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
@@ -580,7 +595,7 @@
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
-    <!--<string name="app_cms_autoplay_toggle_switch_key">autoplayToggle</string>-->
+    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
     <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
@@ -728,6 +743,8 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
+    <string name="sub_nav_page_key">Sub Navigation Screen</string>
+
     <!--AppCMS SSLCommerz Initiate API-->
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->

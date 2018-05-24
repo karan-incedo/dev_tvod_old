@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -32,7 +33,11 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
         downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
         //Reference Id of the Download Completed
         long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-        getDownloadedFile(referenceId);
+        try {
+            getDownloadedFile(referenceId);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void getDownloadedFile(long Image_DownloadId) {

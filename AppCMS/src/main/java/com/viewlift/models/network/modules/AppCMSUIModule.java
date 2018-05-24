@@ -55,6 +55,7 @@ import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateRest;
+import com.viewlift.models.network.rest.AppCMSScheduleRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -196,6 +197,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 AppCMSUIKeyType.LINK_ACCOUNT_PAGE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.sub_nav_page_key),
+                AppCMSUIKeyType.SUB_NAV_PAGE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_detail_app_logo_key),
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY);
 
@@ -226,7 +230,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_photogalleryscreen_key),
                 AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_schedule_screen_key),
+                AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -269,6 +274,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key_value),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_key_value),
+                AppCMSUIKeyType.PAGE_SCHEDULE_PAGE_KEY_VALUE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_player_key),
                 AppCMSUIKeyType.PAGE_SHOW_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
@@ -665,6 +672,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_02_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_module_key),
+                AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_03_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
@@ -845,8 +856,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_toggle_switch_type),
                 AppCMSUIKeyType.PAGE_SETTING_TOGGLE_SWITCH_TYPE);
 
-//        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
-//                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
                 AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
@@ -1328,6 +1339,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSArticleRest providesAppCMSArticleRest(Retrofit retrofit) {
         return retrofit.create(AppCMSArticleRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSScheduleRest providesAppCMSScheduleRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSScheduleRest.class);
     }
 
     @Provides

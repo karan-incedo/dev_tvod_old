@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.List;
 
 @UseStag
 public class AppCMSMain implements Serializable {
@@ -36,6 +37,10 @@ public class AppCMSMain implements Serializable {
     @SerializedName("internalName")
     @Expose
     String internalName;
+
+    @SerializedName("apiKeys")
+    @Expose
+    List<AppCMSXAPIKey> x_ApiKeys;
 
     @SerializedName("faqUrl")
     @Expose
@@ -390,5 +395,13 @@ public class AppCMSMain implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public List<AppCMSXAPIKey> getX_ApiKeys() {
+        return x_ApiKeys;
+    }
+
+    public void setX_ApiKeys(List<AppCMSXAPIKey> x_ApiKeys) {
+        this.x_ApiKeys = x_ApiKeys;
     }
 }

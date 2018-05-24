@@ -15,7 +15,9 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 
 import java.util.Map;
 
@@ -33,6 +35,7 @@ public class ToggleSwitchView extends TVBaseView {
     private TextView textView;
     private ImageView imageView;
     boolean isEnabled = false;
+    AppCMSPresenter appCMSPresenter;
 
     public TextView getTextView() {
         return textView;
@@ -43,11 +46,12 @@ public class ToggleSwitchView extends TVBaseView {
     }
 
     public ToggleSwitchView(Context context, Component component,
-                            Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+                            Map<String, AppCMSUIKeyType> jsonValueKeyMap, AppCMSPresenter appCMSPresenter) {
         super(context);
         mContext = context;
         mComponent = component;
         mJsonValueKeyMap = jsonValueKeyMap;
+        this.appCMSPresenter = appCMSPresenter;
         /*isEnabled = ((AppCMSApplication) mContext.getApplicationContext()).
                 getAppCMSPresenterComponent().appCMSPresenter()
                 .getAutoplayEnabledUserPref(mContext);*/
@@ -116,6 +120,13 @@ public class ToggleSwitchView extends TVBaseView {
         componentView.setLayoutParams(params);
 
         this.setOnFocusChangeListener((v, hasFocus) -> {
+
+            if(hasFocus && null != appCMSPresenter
+                    && null != appCMSPresenter.getCurrentActivity()
+                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation((hasFocus));
+            }
+
             if (hasFocus) {
                 if (isEnabled) {
                     componentView.setImageResource(R.drawable.focused_on);
@@ -130,7 +141,6 @@ public class ToggleSwitchView extends TVBaseView {
                 }
             }
         });
-
 
         imageView = componentView;
         return componentView;
