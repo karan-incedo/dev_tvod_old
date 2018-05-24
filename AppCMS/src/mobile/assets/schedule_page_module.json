@@ -31,7 +31,7 @@
           "layout": {
             "mobile": {
               "yAxis": 0,
-              "xAxis": 11,
+              "xAxis": 10,
               "width": 353,
               "height": 30,
               "fontSize": 20
@@ -54,15 +54,15 @@
           "fontFamily": "OpenSans",
           "fontWeight": "Bold",
           "type": "label",
-          "key": "scheduletitle"
+          "key": "schedulePageTitle"
         },
         {
           "layout": {
             "mobile": {
-              "yAxis": 10,
-              "xAxis": 13,
-              "width": 251,
-              "height": 10
+              "yAxis": 0,
+              "xAxis": 10,
+              "width": 0,
+              "height": 2
             },
             "tabletLandscape": {
               "yAxis": 143,
@@ -121,7 +121,8 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 10,
+                  "xAxis": 10,
+                  "yAxis": 15,
                   "leftMargin": 4.27,
                   "rightMargin": 4.27,
                   "fontSize": 18,
@@ -154,13 +155,13 @@
             {
               "layout": {
                 "mobile": {
-                  "gridHeight": 160,
+                  "gridHeight": 126,
                   "trayPadding": 10,
                   "leftMargin": 4.27,
                   "topMargin": 0,
                   "rightMargin": 0,
                   "bottomMargin": 0,
-                  "gridWidth": 178
+                  "gridWidth": 224
                 },
                 "tabletLandscape": {
                   "gridHeight": 160,
@@ -186,11 +187,11 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 109,
+                      "yAxis": 0,
                       "leftMargin": 0,
-                      "rightMargin": 15.73,
-                      "fontSize": 12,
-                      "height": 30
+                      "rightMargin": 0,
+                      "height": 126,
+                      "width": 112
                     },
                     "tabletLandscape": {
                       "yAxis": 109,
@@ -207,21 +208,18 @@
                       "height": 70
                     }
                   },
-                  "fontFamily": "Lato",
-                  "numberOfLines": 2,
-                  "textAlignment": "left",
-                  "type": "label",
-                  "textColor": "#d3d3d3",
-                  "key": "lightBackgroundLabel"
+                  "type": "separatorView",
+                  "backgroundColor": "#F1F1F1",
+                  "key": "separatorView"
                 },
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 109,
+                      "xAxis": 112,
+                      "yAxis": 0,
                       "leftMargin": 0,
-                      "rightMargin": 15.73,
-                      "fontSize": 12,
-                      "height": 30
+                      "rightMargin": 0,
+                      "height": 126
                     },
                     "tabletLandscape": {
                       "yAxis": 109,
@@ -238,20 +236,17 @@
                       "height": 70
                     }
                   },
-                  "fontFamily": "Lato",
-                  "numberOfLines": 2,
-                  "textAlignment": "left",
-                  "type": "label",
-                  "textColor": "#ffffff",
-                  "key": "darkBackgroundLabel"
+                  "type": "separatorView",
+                  "backgroundColor": "#4A4A4A",
+                  "key": "separatorView"
                 },
                 {
                   "layout": {
                     "mobile": {
                       "yAxis": 0,
-                      "xAxis": 0,
-                      "width": 178,
-                      "height": 100
+                      "xAxis": 10,
+                      "width": 24,
+                      "height": 24
                     },
                     "tabletLandscape": {
                       "yAxis": 0,
@@ -272,10 +267,10 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 0,
-                      "xAxis": 0,
-                      "width": 178,
-                      "height": 100
+                      "yAxis": 100,
+                      "xAxis": 10,
+                      "width": 24,
+                      "height": 24
                     },
                     "tabletLandscape": {
                       "yAxis": 0,
@@ -296,9 +291,10 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 109,
+                      "xAxis": 44,
+                      "yAxis": 5,
                       "leftMargin": 0,
-                      "rightMargin": 15.73,
+                      "rightMargin": 0,
                       "fontSize": 12,
                       "height": 30
                     },
@@ -327,9 +323,10 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 109,
+                      "xAxis": 44,
+                      "yAxis": 48,
                       "leftMargin": 0,
-                      "rightMargin": 15.73,
+                      "rightMargin": 0,
                       "fontSize": 12,
                       "height": 30
                     },
@@ -358,9 +355,10 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 109,
+                      "xAxis": 44,
+                      "yAxis": 96,
                       "leftMargin": 0,
-                      "rightMargin": 15.73,
+                      "rightMargin": 0,
                       "fontSize": 12,
                       "height": 30
                     },
@@ -389,10 +387,12 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 104,
-                      "leftMargin": 84.27,
+                      "xAxis": 122,
+                      "yAxis": 5,
+                      "leftMargin": 0,
                       "rightMargin": 0,
-                      "height": 28
+                      "height": 24,
+                      "width": 24
                     },
                     "tabletLandscape": {
                       "yAxis": 104,
@@ -414,10 +414,12 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 104,
-                      "leftMargin": 84.27,
+                      "xAxis": 156,
+                      "yAxis": 5,
+                      "leftMargin": 0,
                       "rightMargin": 0,
-                      "height": 28
+                      "height": 24,
+                      "width": 24
                     },
                     "tabletLandscape": {
                       "yAxis": 104,
@@ -439,10 +441,12 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 104,
-                      "leftMargin": 84.27,
-                      "rightMargin": 0,
-                      "height": 28
+                      "xAxis": 0,
+                      "yAxis": 5,
+                      "leftMargin": 0,
+                      "rightMargin": 10,
+                      "height": 24,
+                      "width": 24
                     },
                     "tabletLandscape": {
                       "yAxis": 104,
@@ -466,7 +470,7 @@
                     "mobile": {
                       "yAxis": 80,
                       "leftMargin": 0,
-                      "rightMargin": 0,
+                      "rightMargin": 10,
                       "fontSize": 12,
                       "height": 20
                     },
@@ -488,9 +492,7 @@
                   "backgroundColor": "000000",
                   "fontFamily": "Lato",
                   "numberOfLines": 1,
-                  "textAlignment": "left",
-                  "hugsContent": true,
-                  "backgroundColorAlpha": 0.56,
+                  "textAlignment": "right",
                   "type": "label",
                   "textColor": "#ffffff",
                   "key": "gameDateLabel"
@@ -498,9 +500,9 @@
                 {
                   "layout": {
                     "mobile": {
-                      "yAxis": 80,
+                      "yAxis": 96,
                       "leftMargin": 0,
-                      "rightMargin": 0,
+                      "rightMargin": 10,
                       "fontSize": 12,
                       "height": 20
                     },
@@ -522,9 +524,7 @@
                   "backgroundColor": "000000",
                   "fontFamily": "Lato",
                   "numberOfLines": 1,
-                  "textAlignment": "left",
-                  "hugsContent": true,
-                  "backgroundColorAlpha": 0.56,
+                  "textAlignment": "right",
                   "type": "label",
                   "textColor": "#ffffff",
                   "key": "gameTimeLabel"
