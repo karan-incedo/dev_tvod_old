@@ -1458,7 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-///*
+/*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1507,7 +1507,7 @@ public class AppCMSPresenter {
  
   //*/
 
-            /*
+            ///*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -6739,6 +6739,7 @@ public class AppCMSPresenter {
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
+        /*
         GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6795,7 +6796,8 @@ public class AppCMSPresenter {
                 }
             }
         }).execute(params);
-        /*
+       //*/
+       // /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -7110,10 +7112,10 @@ public class AppCMSPresenter {
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
                                         apiAvailability.getErrorDialog(currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                                 .show();
-                                    } else {
+                                    } /*else {
                                         Log.i(TAG, "This device is not supported.");
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    }*/
                                 }
                             }
 
@@ -7148,10 +7150,10 @@ public class AppCMSPresenter {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog((Activity) getCurrentActiveContext(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
-            } else {
+            }/* else {
                 Log.i(TAG, "This device is not supported.");
                 Toast.makeText(getCurrentActiveContext(), "This device is not supported.", Toast.LENGTH_SHORT).show();
-            }
+            }*/
             return;
         }
 
@@ -7223,10 +7225,10 @@ public class AppCMSPresenter {
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
                                         apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                                 .show();
-                                    } else {
+                                    }/* else {
                                         Log.i(TAG, "This device is not supported.");
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    }*/
                                 }
                             }
 

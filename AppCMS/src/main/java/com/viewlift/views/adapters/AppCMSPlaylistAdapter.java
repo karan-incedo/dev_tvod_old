@@ -362,10 +362,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
-            } else {
+            }/* else {
                 Log.i(TAG, "This device is not supported.");
                 Toast.makeText(mContext, "This device is not supported.", Toast.LENGTH_SHORT).show();
-            }
+            }*/
         }
     }
 
