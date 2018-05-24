@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -23,6 +24,9 @@ import com.viewlift.views.customviews.ModuleView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static com.viewlift.Utils.loadJsonFromAssets;
 
@@ -132,7 +136,8 @@ public class SeasonModule extends ModuleView {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     int position = tab.getPosition();
-                    SeasonTabSelectorBus.instanceOf().setTab(position);
+                    List<ContentDatum> adapterData = moduleAPI.getContentData().get(0).getSeason().get(position).getEpisodes();
+                    SeasonTabSelectorBus.instanceOf().setTab(adapterData);
                 }
 
                 @Override

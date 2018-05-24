@@ -82,19 +82,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         this.componentViewType = viewType;
 
-        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
+        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<List<ContentDatum>>(){
             @Override
             public void onSubscribe(Disposable d) {
 
             }
 
             @Override
-            public void onNext(Object o) {
-                if (o instanceof Integer) {
-                    int seasonSelected =(int) o;
-                    adapterData = moduleAPI.getContentData().get(0).getSeason().get(seasonSelected).getEpisodes();
+            public void onNext( List<ContentDatum> adapterDataSeason ) {
+                    adapterData = adapterDataSeason;
                     updateData(mRecyclerView,adapterData);
-                }
             }
 
             @Override
@@ -108,17 +105,9 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
             }
         });
 
-//        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
-//            @Override
-//            public void call(Object o) {
-//                if (o instanceof Integer) {
-//                    int seasonSelected =(int) o;
-//                    adapterData = moduleAPI.getContentData().get(0).getSeason().get(seasonSelected).getEpisodes();
-//                    updateData(mRecyclerView,adapterData);
-//                }
-//            }
-//        });
     }
+
+
 
     private void sortData() {
         if (adapterData != null) {
