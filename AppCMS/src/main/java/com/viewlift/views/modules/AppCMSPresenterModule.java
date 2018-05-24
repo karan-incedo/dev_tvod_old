@@ -27,6 +27,7 @@ import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
+import com.viewlift.models.network.rest.AppCMSScheduleCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -69,6 +70,7 @@ public class AppCMSPresenterModule {
     public AppCMSPresenter providesAppCMSPresenter(Gson gson,
                                                    AppCMSArticleCall appCMSArticleCall,
                                                    AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
+                                                   AppCMSScheduleCall appCMSScheduleCall,
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
                                                    AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
                                                    AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
@@ -125,6 +127,7 @@ public class AppCMSPresenterModule {
         return new AppCMSPresenter(gson,
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
+                appCMSScheduleCall,
                 appCMSPlaylistCall,
                 appCMSSSLCommerzInitiateCall,
                 appCMSCCAvenueRSAKeyCall,

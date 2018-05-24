@@ -97,6 +97,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sslcommerz.library.payment.Classes.PayUsingSSLCommerz;
 import com.sslcommerz.library.payment.Listener.OnPaymentResultListener;
 import com.sslcommerz.library.payment.Util.ConstantData.CurrencyType;
@@ -122,12 +123,14 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
+import com.viewlift.models.data.appcms.api.GameSchedule;
 import com.viewlift.models.data.appcms.api.GetLinkCode;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
@@ -233,6 +236,7 @@ import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
+import com.viewlift.models.network.rest.AppCMSScheduleCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -343,9 +347,11 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static com.google.android.gms.internal.zzahn.runOnUiThread;
+import static com.viewlift.Utils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -521,6 +527,7 @@ public class AppCMSPresenter {
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
     private final AppCMSArticleCall appCMSArticleCall;
     private final AppCMSPhotoGalleryCall appCMSPhotoGalleryCall;
+    private final AppCMSScheduleCall appCMSScheduleCall;
     //private final AppCMSCCAvenueCall appCMSCCAvenueCall;
     //private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
     private final String FIREBASE_SCREEN_SIGN_OUT = "sign_out";
@@ -634,6 +641,7 @@ public class AppCMSPresenter {
     private MetaPage tosPage;
     private MetaPage articlePage;
     private MetaPage photoGalleryPage;
+    private MetaPage schedulePage;
     private MetaPage linkAccountPage;
 
     private PlatformType platformType;
@@ -844,7 +852,7 @@ public class AppCMSPresenter {
             Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(stopPageLoadingActionIntent);
-        }catch(Exception ex){
+        } catch (Exception ex) {
         }
     }
 
@@ -863,6 +871,7 @@ public class AppCMSPresenter {
     public AppCMSPresenter(Gson gson,
                            AppCMSArticleCall appCMSArticleCall,
                            AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
+                           AppCMSScheduleCall appCMSScheduleCall,
                            AppCMSPlaylistCall appCMSPlaylistCall,
                            AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
                            AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
@@ -946,6 +955,7 @@ public class AppCMSPresenter {
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSArticleCall = appCMSArticleCall;
         this.appCMSPhotoGalleryCall = appCMSPhotoGalleryCall;
+        this.appCMSScheduleCall = appCMSScheduleCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
         this.appCMSBeaconCall = appCMSBeaconCall;
@@ -14145,6 +14155,12 @@ public class AppCMSPresenter {
                     watchlistPage = metaPage;
                     new SoftReference<Object>(watchlistPage, referenceQueue);
                 }
+
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY) {
+                    schedulePage = metaPage;
+                    new SoftReference<Object>(schedulePage, referenceQueue);
+                }
             }
 
             int articlePageIndex = getArticlePage(metaPageList);
@@ -18105,6 +18121,142 @@ public class AppCMSPresenter {
         }
     }
 
+    public void navigateToSchedulePage(String id,
+                                      String pageTitle,
+                                      boolean launchActivity,
+                                      Action0 callback, boolean isDeepLink) {
+
+        if (currentActivity != null && !TextUtils.isEmpty(id)) {
+            showLoader();
+
+            AppCMSPageUI appCMSPageUI = navigationPages.get(id);
+
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(id);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                    navigateToSchedulePage(id, pageTitle, launchActivity, callback, isDeepLink);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            } else {
+                getSchedulePageContent(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        id, new AppCMSScheduleAPIAction(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                id,
+                                id,
+                                pageTitle,
+                                id,
+                                launchActivity, null) {
+                            @Override
+                            public void call(List<AppCMSScheduleResult> appCMSScheduleResult) {
+                                if (appCMSScheduleResult != null) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(this.pageId
+                                            + BaseView.isLandscape(currentActivity));
+
+
+                                    AppCMSPageAPI pageAPI = null;
+                                    if (appCMSScheduleResult != null) {
+                                      pageAPI=  convertToMonthlyData(appCMSScheduleResult);
+                                        //pageAPI = appCMSScheduleResult.get(0).convertToAppCMSPageAPI(schedulePage.getPageId());
+                                    }
+                                    navigationPageData.put(this.pageId, pageAPI);
+
+                                    final StringBuffer screenName = new StringBuffer();
+                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(id))) {
+                                        screenName.append(this.pageTitle);
+                                    }
+                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                                    screenName.append(pageTitle);
+
+                                    Bundle args = getPageActivityBundle(currentActivity,
+                                            this.appCMSPageUI,
+                                            pageAPI,
+                                            this.pageId,
+                                            this.pageTitle,
+                                            this.pagePath,
+                                            screenName.toString(),
+                                            loadFromFile,
+                                            this.appbarPresent,
+                                            this.fullscreenEnabled,
+                                            this.navbarPresent,
+                                            false,
+                                            null,
+                                            ExtraScreenType.NONE);
+                                    if (args != null) {
+                                        Intent pageIntent =
+                                                new Intent(AppCMSPresenter
+                                                        .PRESENTER_NAVIGATE_ACTION);
+
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                        currentActivity.sendBroadcast(pageIntent);
+                                    }
+                                    stopLoader();
+                                } else {
+                                    stopLoader();
+                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
+                                }
+                            }
+                        });
+            }
+        }
+    }
+
+    public AppCMSPageAPI convertToMonthlyData(List<AppCMSScheduleResult> appCMSScheduleResults) {
+        final AppCMSScheduleResult[] appCMSScheduleResultData = new AppCMSScheduleResult[1];
+        HashMap<String,List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
+
+        Observable.from(appCMSScheduleResults).flatMap(new Func1<AppCMSScheduleResult, Observable<AppCMSScheduleResult>>() {
+            @Override
+            public Observable<AppCMSScheduleResult> call(AppCMSScheduleResult appCMSScheduleResult) {
+                  return Observable.just(appCMSScheduleResult);
+            }
+        }).subscribe(new Action1<AppCMSScheduleResult>() {
+            @Override
+            public void call(AppCMSScheduleResult appCMSScheduleResult) {
+                for(GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()){
+                    if(gameSchedule != null) {
+                        Long gameDate = gameSchedule.getGameDate() * 1000L;
+                        String month = getDateFormat(gameDate, "MMMM");
+
+                        ContentDatum contentDatum = new ContentDatum();
+                        contentDatum.setGist(appCMSScheduleResult.getGist());
+                        contentDatum.setCategories(appCMSScheduleResult.getCategories());
+
+                        if (monthlyGameScheduleData.containsKey(month)) {
+                            List<ContentDatum> contentDataList = monthlyGameScheduleData.get(month);
+                            contentDataList.add(contentDatum);
+                            monthlyGameScheduleData.put(month, contentDataList);
+                        } else {
+                            List<ContentDatum> lisData = new ArrayList<>();
+                            lisData.add(contentDatum);
+                            monthlyGameScheduleData.put(month, lisData);
+                        }
+                    }
+                }
+                appCMSScheduleResultData[0] =appCMSScheduleResult;
+                 appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
+            }
+        });
+       AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
+        return pageAPi;
+    }
+
     private void getPhotoGalleryPageContent(final String apiBaseUrl,
                                             final String siteId,
                                             String pageId,
@@ -18253,6 +18405,71 @@ public class AppCMSPresenter {
             drawables[1].setColorFilter(Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
+        }
+    }
+
+    private void getSchedulePageContent(final String apiBaseUrl,
+                                        final String siteId,
+                                        String pageId,
+                                        final AppCMSScheduleAPIAction scheduleAPIAction) {
+        if (currentActivity != null) {
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        getRefreshToken());
+
+
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
+                    try {
+                        appCMSScheduleCall.call(
+                                currentActivity.getString(R.string.app_cms_schedule_api_url,
+                                        apiBaseUrl,
+                                        siteId,
+                                        "1526632880", "1546194600"
+                                ), apikey,
+                                scheduleAPIAction);
+
+                    } catch (IOException e) {
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    private abstract static class AppCMSScheduleAPIAction implements Action1<List<AppCMSScheduleResult>> {
+        final boolean appbarPresent;
+        final boolean fullscreenEnabled;
+        final boolean navbarPresent;
+        final AppCMSPageUI appCMSPageUI;
+        final String action;
+        final String pageId;
+        final String pageTitle;
+        final String pagePath;
+        final boolean launchActivity;
+        final Uri searchQuery;
+
+        AppCMSScheduleAPIAction(boolean appbarPresent,
+                                boolean fullscreenEnabled,
+                                boolean navbarPresent,
+                                AppCMSPageUI appCMSPageUI,
+                                String action,
+                                String pageId,
+                                String pageTitle,
+                                String pagePath,
+                                boolean launchActivity,
+                                Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
         }
     }
 

@@ -77,6 +77,8 @@
 
     <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_schedule_api_url">%1$s/content/game/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
+
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
     <!--Article API-->
@@ -130,6 +132,7 @@
     <string name="app_cms_page_list_module_key">AC List 01</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
+    <string name="app_cms_page_schedule_key_value">AC SchedulePage 01</string>
 
     <string name="app_cms_page_web_view_key">web_view</string>
     <string name="app_cms_page_article_web_view_key">webView</string>
@@ -228,6 +231,8 @@
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_tray_02_module_key">AC Tray 02</string>
     <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
+    <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
+    <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
 
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
@@ -403,6 +408,7 @@
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
+    <string name="app_cms_pagename_schedule_screen_key">Schedule Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>

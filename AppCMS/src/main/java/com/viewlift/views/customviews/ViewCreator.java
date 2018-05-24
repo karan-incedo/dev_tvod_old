@@ -568,7 +568,7 @@ public class ViewCreator {
             webViewUrl = context.getString(R.string.app_cms_article_api,
                     appCMSPresenter.getAppCMSMain().getDomainName(),
                     moduleAPI.getContentData().get(0).getGist().getPermalink());
-            webView.loadURL(context, appCMSPresenter, webViewUrl.replaceAll("\\s+",""), key);
+            webView.loadURL(context, appCMSPresenter, webViewUrl.replaceAll("\\s+", ""), key);
         }
         return webView;
     }
@@ -1959,7 +1959,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getSettings() != null &&
+                } else if (moduleInfo.getBlockName().contains("teamSchedule01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "schedule_page_module.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(0);
+                }  else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -2101,7 +2106,20 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */ else {
+        }  */ else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+            moduleView = new MultiTableWithSameItemsModule(context,
+                    module,
+                    moduleAPI,
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    this,
+                    appCMSAndroidModules, pageView);
+            pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
+            RecyclerView view = pageView.findViewById(R.id.home_nested_scroll_view);
+            if (view != null) {
+                view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+            }
+        } else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2785,6 +2803,92 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTOGALLERY_GRID_KEY) {
+
+                        LinearLayoutManager layoutManager = null;
+                        if (BaseView.isTablet(context)) {
+                            layoutManager = BaseView.isLandscape(context) ?
+                                    new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) :
+                                    new GridLayoutManager(context, 6, GridLayoutManager.VERTICAL, false);
+                        } else {
+                            layoutManager = new GridLayoutManager(context, 3,
+                                    GridLayoutManager.VERTICAL, false);
+                        }
+
+                        ((RecyclerView) componentViewResult.componentView).setLayoutManager(layoutManager);
+                        appCMSViewAdapter = new AppCMSViewAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                context.getResources().getString(R.string.app_cms_photo_tray_module_key),
+                                appCMSAndroidModules);
+
+                        ((RecyclerView) componentViewResult.componentView).setId(R.id.photo_gallery_grid_recyclerview);
+                        ((RecyclerView) componentViewResult.componentView).addItemDecoration(new PhotoGalleryGridInsetDecoration(5, 15));
+                        photoGalleryNextPreviousListener = appCMSViewAdapter.setPhotoGalleryImageSelectionListener(photoGalleryNextPreviousListener);
+
+                        appCMSViewAdapter.setPhotoGalleryImageSelectionListener((url, selectedPosition) -> {
+                            ImageView imageView = pageView.findViewById(R.id.photo_gallery_selectedImage);
+                            Glide.with(imageView.getContext()).load(url).into(imageView);
+                            int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
+                            String position = photoGallerySize == 0 ? "0/0" : (selectedPosition + 1) + "/" + photoGallerySize;
+                            if ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview) != null) {
+                                ((RecyclerView) pageView.findChildViewById(R.id.photo_gallery_grid_recyclerview)).scrollToPosition(selectedPosition);
+                            }
+
+                            if (selectedPosition == 0) {
+                                enablePhotoGalleryButtons(false, true, pageView, appCMSPresenter, position);
+                            } else if (selectedPosition > 0 && selectedPosition < photoGallerySize - 1) {
+                                enablePhotoGalleryButtons(true, true, pageView, appCMSPresenter, position);
+                            } else {
+                                enablePhotoGalleryButtons(true, false, pageView, appCMSPresenter, position);
+                            }
+
+                        });
+
+                        if (!BaseView.isTablet(context)) {
+                            componentViewResult.useWidthOfScreen = true;
+                        }
+
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                        RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                                int action = e.getAction();
+                                switch (action) {
+                                    case MotionEvent.ACTION_MOVE:
+                                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+                                        break;
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                            }
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                            }
+                        };
+
+                        ((RecyclerView) componentViewResult.componentView).addOnItemTouchListener(mScrollTouchListener);
+                        if (pageView != null) {
+                            pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                    .adapter(appCMSViewAdapter)
+                                    .listview((RecyclerView) componentViewResult.componentView)
+                                    .id(moduleId + component.getKey())
+                                    .build());
+                        }
+                    }else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY) {
 
                         LinearLayoutManager layoutManager = null;
                         if (BaseView.isTablet(context)) {
@@ -4330,7 +4434,14 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                     }
-
+                    else  {
+                        ((TextView) componentViewResult.componentView).setText("Titile");
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                        break;
+                    }
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                             StringBuilder authDateAndPhotoCount = new StringBuilder();
@@ -5852,6 +5963,7 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                     case PAGE_DOWNLOAD_02_MODULE_KEY:
                     case PAGE_AUTHENTICATION_MODULE_KEY:
+                    case PAGE_AC_TEAM_SCHEDULE_MODULE_KEY:
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {

@@ -1120,6 +1120,11 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             ((TextView) view).setVisibility(View.VISIBLE);
                         }
+                        if(appCMSUIcomponentViewType==AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY){
+                            ((TextView) view).setText("tray item");
+
+                        }
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
@@ -1297,6 +1302,8 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent.getTextColor()));
                     } else {
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        ((TextView) view).setText("tray title");
+                        ((TextView) view).setTextColor(context.getResources().getColor(R.color.color_white));
                     }
 //                }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {

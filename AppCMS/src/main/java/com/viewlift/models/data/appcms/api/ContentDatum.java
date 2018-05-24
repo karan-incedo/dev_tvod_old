@@ -8,6 +8,7 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @UseStag
@@ -127,6 +128,8 @@ public class ContentDatum implements Serializable {
     @SerializedName("seo")
     @Expose
     List<Seo> seo = null;
+
+    HashMap<String,List<ContentDatum>> monthlySchedule;
 
 
     public boolean isRenewable() {
@@ -415,6 +418,14 @@ public class ContentDatum implements Serializable {
 
     public void setSeo(List<Seo> seo) {
         this.seo = seo;
+    }
+
+    public HashMap<String, List<ContentDatum>> getMonthlySchedule() {
+        return monthlySchedule;
+    }
+
+    public void setMonthlySchedule(HashMap<String, List<ContentDatum>> monthlySchedule) {
+        this.monthlySchedule = monthlySchedule;
     }
 
 }
