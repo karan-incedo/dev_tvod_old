@@ -10507,11 +10507,14 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
+        List<NavigationPrimary> navigationPrimaryList = null;
         if (navigation != null && navigation.getTabBar() != null) {
-            List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
-            if (getPlatformType() == PlatformType.TV) {
-                navigationPrimaryList = navigation.getNavigationPrimary();
-            }
+            navigationPrimaryList = navigation.getTabBar();
+        }
+        if (getPlatformType() == PlatformType.TV && null != navigation && null != navigation.getNavigationPrimary()) {
+            navigationPrimaryList = navigation.getNavigationPrimary();
+        }
+        if (navigationPrimaryList != null) {
             for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
                 if (pageId != null &&
                         navigationPrimary != null &&
