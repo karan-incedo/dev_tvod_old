@@ -127,7 +127,7 @@ public class MultiTableWithSameItemsModule extends ModuleView {
                         ModuleWithComponents module2 = component;
 
                         for(int k=0;k<moduleAPI.getContentData().get(0).getMonthlySchedule().size();k++) {
-                            String key= (String) moduleAPI.getContentData().get(0).getMonthlySchedule().keySet().toArray()[k];
+                             String key= (String) moduleAPI.getContentData().get(0).getMonthlySchedule().keySet().toArray()[k];
                             subTrayModuleAPI.setContentData(moduleAPI.getContentData().get(0).getMonthlySchedule().get(key));
                             subTrayModuleAPI.setContentType(subTrayModuleAPI.getContentData().get(0).getGist().getContentType());
                             subTrayModuleAPI.setTitle(key);

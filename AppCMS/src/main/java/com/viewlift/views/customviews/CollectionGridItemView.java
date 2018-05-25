@@ -932,6 +932,13 @@ public class CollectionGridItemView extends BaseView {
                                     childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
                         }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY) {
+                        ((TextView) view).setText(childComponent.getText());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(2);
