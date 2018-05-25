@@ -170,6 +170,9 @@
     <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
     <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_home_team_image_key">homTeamImage</string>
+    <string name="app_cms_page_away_team_image_key">awayTeamImage</string>
+
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>

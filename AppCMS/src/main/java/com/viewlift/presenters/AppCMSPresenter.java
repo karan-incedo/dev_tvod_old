@@ -18770,6 +18770,7 @@ public class AppCMSPresenter {
         }
     }
 
+    AppCMSPageAPI pageApi = null;
     public AppCMSPageAPI convertToMonthlyData(List<AppCMSScheduleResult> appCMSScheduleResults) {
         final AppCMSScheduleResult[] appCMSScheduleResultData = new AppCMSScheduleResult[1];
         HashMap<String,List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
@@ -18802,12 +18803,12 @@ public class AppCMSPresenter {
                         }
                     }
                 }
-                appCMSScheduleResultData[0] =appCMSScheduleResult;
-                 appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
+                //appCMSScheduleResultData[0] =appCMSScheduleResult;
+                pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
             }
         });
-       AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
-        return pageAPi;
+       //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
+        return pageApi;
     }
 
     private void getPhotoGalleryPageContent(final String apiBaseUrl,

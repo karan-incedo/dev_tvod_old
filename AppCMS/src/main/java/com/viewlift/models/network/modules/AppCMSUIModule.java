@@ -352,6 +352,14 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_image_key),
+                AppCMSUIKeyType.PAGE_HOME_TEAM_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_image_key),
+                AppCMSUIKeyType.PAGE_AWAY_TEAM_IMAGE_KEY);
+
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_date_and_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_badge_image_key),
@@ -963,7 +971,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_time_key),
                 AppCMSUIKeyType.PAGE_GAME_TIME_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_time_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_date_key),
                 AppCMSUIKeyType.PAGE_GAME_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_download_key),
                 AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY);
