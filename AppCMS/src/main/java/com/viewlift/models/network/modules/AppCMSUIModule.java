@@ -961,6 +961,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_watched_time_key),
                 AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_time_key),
+                AppCMSUIKeyType.PAGE_GAME_TIME_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_time_key),
+                AppCMSUIKeyType.PAGE_GAME_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_download_key),
                 AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_size_key),
