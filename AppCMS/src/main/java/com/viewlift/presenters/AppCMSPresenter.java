@@ -6432,7 +6432,19 @@ public class AppCMSPresenter {
                                             boolean launchActivity) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
         if (title.contains("Setting")) {
-            appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+            if(null != subNavPage) {
+                appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+            }else{
+                appCMSPageUI = new AppCMSPageUI();
+                ModuleList moduleList = new ModuleList();
+                moduleList.setBlockName("subNav01");
+                moduleList.setType("AC SubNav 01");
+                moduleList.setView("AC SubNav 01");
+                moduleList.setId("Setting");
+                ArrayList<ModuleList> moduleListArrayList = new ArrayList<ModuleList>();
+                moduleListArrayList.add(moduleList);
+                appCMSPageUI.setModuleList(moduleListArrayList);
+            }
         }
         if (appCMSPageUI == null) {
             if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
