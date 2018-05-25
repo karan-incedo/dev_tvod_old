@@ -4156,7 +4156,7 @@ public class ViewCreator {
                             } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
-                            if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                            if (paymentProcessor!=null&&paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }

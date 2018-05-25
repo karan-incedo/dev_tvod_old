@@ -339,11 +339,11 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-       }else{
+       }/*else{
 
            Log.i(TAG, "This device is not supported.");
            Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     public boolean shouldCastMiniControllerVisible() {

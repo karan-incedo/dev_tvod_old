@@ -158,7 +158,12 @@ public class PlaybackControlsFragment extends Fragment {
         mMediaBrowser = new MediaBrowserCompat(getActivity(),
                 new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
 
-        mMediaBrowser.connect();
+        try {
+            if (mMediaBrowser != null && !mMediaBrowser.isConnected())
+                mMediaBrowser.connect();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
@@ -177,7 +182,7 @@ public class PlaybackControlsFragment extends Fragment {
             MediaControllerCompat mediaController = new MediaControllerCompat(getActivity(), token);
             MediaControllerCompat.setMediaController(getActivity(), mediaController);
             onConnected();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -192,7 +197,7 @@ public class PlaybackControlsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), AppCMSPlayAudioActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 //                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                Log.e("PlaybackController","FLAG_ACTIVITY_SINGLE_TOP");
+                Log.e("PlaybackController", "FLAG_ACTIVITY_SINGLE_TOP");
                 MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
                 MediaMetadataCompat metadata = null;
                 if (controller.getMetadata() == null && AudioPlaylistHelper.getInstance().getCurrentMediaId() != null && AudioPlaylistHelper.getInstance().getMetadata(AudioPlaylistHelper.getInstance().getCurrentMediaId()) != null) {
@@ -206,17 +211,17 @@ public class PlaybackControlsFragment extends Fragment {
                 }
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            }else{
+            } else {
                 int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                 if (apiAvailability.isUserResolvableError(resultCode)) {
                     apiAvailability.getErrorDialog(getActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                             .show();
-                } else {
+                } /*else {
                     Log.i("PLaybackControls", "This device is not supported.");
                     Toast.makeText(getActivity(), "This device is not supported.", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -246,6 +251,7 @@ public class PlaybackControlsFragment extends Fragment {
 
         }
         audioPreview(null);
+
     }
 
     @Override
@@ -387,7 +393,7 @@ public class PlaybackControlsFragment extends Fragment {
             } else {
                 extra_info.setVisibility(View.GONE);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

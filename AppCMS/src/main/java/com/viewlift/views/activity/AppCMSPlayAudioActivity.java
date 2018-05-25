@@ -131,6 +131,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        appCMSPresenter.setAudioActvityVisible(false);
     }
 
     @Override
@@ -143,6 +144,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+        appCMSPresenter.setAudioActvityVisible(true);
         checkAudioDownloadStatus();
     }
 
