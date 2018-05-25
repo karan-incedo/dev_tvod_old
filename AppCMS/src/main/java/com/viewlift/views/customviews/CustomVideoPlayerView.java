@@ -102,7 +102,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private AdsLoader adsLoader;
     private AdsManager adsManager;
     private String adsUrl;
-    private boolean isAdDisplayed;
+    private boolean isAdDisplayed, isAdError;
     private boolean isAdsDisplaying;
     private Button btnLogin;
     private Button btnStartFreeTrial;
@@ -254,13 +254,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
             getPermalink(contentDatum);
             setWatchedTime(contentDatum);
-            if (contentDatum!= null &&
+            if (contentDatum != null &&
                     contentDatum.isDRMEnabled()){
                 setDRMEnabled(contentDatum.isDRMEnabled());
                 setLicenseUrl(contentDatum.getStreamingInfo().getVideoAssets().getWideVine().getLicenseUrl());
                 releasePlayer();
                 init(mContext);
-
             }
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
@@ -285,6 +284,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     } else {
                         getVideoPreview();
                         if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) {
+                            playVideos(0, contentDatum);
                             requestAds(adsUrl);
                         } else {
                             if(entitlementCheckMultiplier > 0) {
@@ -637,7 +637,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     }
                     isVideoLoaded = true;
                 }
-                if (shouldRequestAds && !isAdDisplayed && adsUrl != null) {
+                if (shouldRequestAds && !isAdDisplayed  && !isAdError && adsUrl != null) {
                     requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
@@ -775,12 +775,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     public void resumePlayerLastState() {
         if (null != getPlayer()) {
             if (isVideoPlaying) {
-              try {
-                if(new ForegroundObserver().execute(mContext).get())
-                  getPlayer().setPlayWhenReady(true);
-              }catch (Exception ex){
-                ex.printStackTrace();
-              }
+                try {
+                    if(new ForegroundObserver().execute(mContext).get())
+                        getPlayer().setPlayWhenReady(true);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
             } else {
                 getPlayer().setPlayWhenReady(false);
             }
@@ -794,6 +794,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void createLoader() {
+
         customLoaderContainer = new LinearLayout(mContext);
         customLoaderContainer.setOrientation(LinearLayout.VERTICAL);
         customLoaderContainer.setGravity(Gravity.CENTER);
@@ -814,11 +815,23 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void createCustomMessageView() {
-        customMessageContainer = new LinearLayout(mContext);
+        if (customMessageContainer == null ) {
+            customMessageContainer = new LinearLayout(mContext);
+        }else{
+            if (customMessageContainer.getParent() != null){
+                ((ViewGroup)customMessageContainer.getParent()).removeView(customMessageContainer);
+            }
+        }
         customMessageContainer.setOrientation(LinearLayout.HORIZONTAL);
         customMessageContainer.setGravity(Gravity.CENTER);
         customMessageContainer.setBackgroundColor(Color.parseColor("#d4000000"));
-        customMessageView = new TextView(mContext);
+        if (customMessageView == null ) {
+            customMessageView = new TextView(mContext);
+        }else{
+            if (customMessageView.getParent() != null){
+                ((ViewGroup)customMessageView.getParent()).removeView(customMessageView);
+            }
+        }
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         textViewParams.gravity = Gravity.CENTER;
         customMessageView.setLayoutParams(textViewParams);
@@ -829,6 +842,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         customMessageContainer.addView(customMessageView);
         customMessageContainer.setVisibility(View.INVISIBLE);
         this.addView(customMessageContainer);
+
     }
 
     public void showOverlayWhenCastingConnected() {
@@ -1057,7 +1071,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void hideRestrictedMessage() {
         if (null != customMessageContainer) {
             enableController();
-            customMessageContainer.setVisibility(View.INVISIBLE);
+            customMessageContainer.setVisibility(View.GONE);
         }
     }
 
@@ -1143,6 +1157,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void requestAds(String adTagUrl) {
+        pausePlayer();
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
             Log.d(TAG, "Requesting ads: " + adTagUrl);
             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
@@ -1178,8 +1193,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
+        isAdError = true;
         isTimerRun = true;
-        playVideos(0, onUpdatedContentDatum);
+        resumePlayer();
+
+
     }
 
     @Override

@@ -115,12 +115,15 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-
+            if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
+                    (appCMSPresenter.isPageAVideoPage(pageName)))) {
+                launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+            } else {
 
                 if (castCallBackListener != null) {
                     castCallBackListener.onCastStatusUpdate();
                 }
-
+            }
 
             stopRokuDiscovery();
         }

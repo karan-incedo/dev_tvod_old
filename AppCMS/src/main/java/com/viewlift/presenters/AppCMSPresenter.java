@@ -187,6 +187,7 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -1457,7 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-///*
+/*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1501,7 +1502,7 @@ public class AppCMSPresenter {
 
   //*/
 
-            /*
+  //          /*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -1873,6 +1874,14 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    public boolean isDownloadEnable(){
+        if(getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+            return true;
+        }
+        return false;
+    }
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
      * The token will be stored as a Shared Preference which may be used future usages.  The
@@ -6730,7 +6739,7 @@ public class AppCMSPresenter {
 
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
-
+    /*
         GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6787,7 +6796,8 @@ public class AppCMSPresenter {
                 }
             }
         }).execute(params);
-        /*
+        */
+     //   /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -10297,7 +10307,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-       // apikey =  Utils.getProperty("XAPI", currentActivity);
+        apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -10344,13 +10354,13 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        if(appCMSMain.getX_ApiKeys()!=null &&
+                        /*if(appCMSMain.getX_ApiKeys()!=null &&
                                 appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
                                 !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
                             apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
                         }else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
-                        }
+                        }*/
 
                         getAppCMSSite(platformType);
                     }

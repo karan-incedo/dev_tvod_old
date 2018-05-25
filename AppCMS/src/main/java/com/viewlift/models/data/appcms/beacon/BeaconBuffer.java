@@ -41,6 +41,7 @@ public class BeaconBuffer extends Thread {
     public void run() {
         runBeaconBuffering = true;
         while (runBeaconBuffering) {
+            long currentPosition = 0l;
             try {
                 Thread.sleep(beaconBufferTimeoutMsec);
                 if (sendBeaconBuffering) {
@@ -50,12 +51,12 @@ public class BeaconBuffer extends Thread {
                             videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) {
 
                         bufferCount++;
-
+                        currentPosition= (videoPlayerView.getCurrentPosition()/1000);
                         if (bufferCount >= 5) {
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
+                                    currentPosition,
                                     false,
                                     AppCMSPresenter.BeaconEvent.BUFFERING,
                                     "Video",
@@ -100,6 +101,7 @@ public class BeaconBuffer extends Thread {
                 }
             } catch (InterruptedException e) {
                 //Log.e(TAG, "beaconBufferingThread sleep interrupted");
+                e.printStackTrace();
             }
         }
     }
