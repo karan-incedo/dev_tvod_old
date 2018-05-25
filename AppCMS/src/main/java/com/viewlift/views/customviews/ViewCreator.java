@@ -4425,7 +4425,7 @@ public class ViewCreator {
 
 
                         if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                          }else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
                             ((TextView) componentViewResult.componentView).setText("2018 League Schedule");
                         }
