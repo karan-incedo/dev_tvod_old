@@ -187,6 +187,7 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -5946,7 +5947,7 @@ public class AppCMSPresenter {
                             resultAction1, getLoggedInUser());
                     cancelDownloadIconTimerTask(null);
                 },
-                null);
+                () -> {showLoadingDialog(false);});
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -5955,7 +5956,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
-                    null);
+                    () -> {showLoadingDialog(false);});
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
@@ -6316,7 +6317,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
-                    null);
+                    () -> {showLoadingDialog(false);});
         } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
@@ -15464,10 +15465,14 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-               // changend from R.string.app_cms_content_detail_api_url to app_cms_entitlement_api_url API
-                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+               // TODO: uncomment for entitlement API
+                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);
+                        filmId);*/
+                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSSite.getGist().getSiteInternalName());
             }
         } else {
             realmController = RealmController.with(currentActivity);
