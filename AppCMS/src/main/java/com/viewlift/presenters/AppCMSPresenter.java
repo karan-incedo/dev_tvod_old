@@ -1489,10 +1489,15 @@ public class AppCMSPresenter {
                             appCMSEntitlementResponse.getCode() != 200){
                         String message  = currentActivity.getString(R.string.entitlement_api_server_error,
                                 (appCMSEntitlementResponse.getCode()));
+                        if (platformType.equals(PlatformType.ANDROID)) {
 
-                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
-                            readyAction.call(null);
-                    },null);
+                            showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,message,false,()->{
+                                readyAction.call(null);
+                        },null);
+                        } else if (platformType.equals(PlatformType.TV)) {
+                            String title = currentActivity.getString(R.string.app_cms_unable_to_play_video_error_title);
+                            openTVErrorDialog(message, title, false);
+                        }
                     }
 
                 }catch(Exception e){
@@ -6443,7 +6448,19 @@ public class AppCMSPresenter {
                                             boolean launchActivity) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
         if (title.contains("Setting")) {
-            appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+            if(null != subNavPage) {
+                appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+            }else{
+                appCMSPageUI = new AppCMSPageUI();
+                ModuleList moduleList = new ModuleList();
+                moduleList.setBlockName("subNav01");
+                moduleList.setType("AC SubNav 01");
+                moduleList.setView("AC SubNav 01");
+                moduleList.setId("Setting");
+                ArrayList<ModuleList> moduleListArrayList = new ArrayList<ModuleList>();
+                moduleListArrayList.add(moduleList);
+                appCMSPageUI.setModuleList(moduleListArrayList);
+            }
         }
         if (appCMSPageUI == null) {
             if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
@@ -10519,11 +10536,14 @@ public class AppCMSPresenter {
     }
 
     public boolean isPagePrimary(String pageId) {
+        List<NavigationPrimary> navigationPrimaryList = null;
         if (navigation != null && navigation.getTabBar() != null) {
-            List<NavigationPrimary> navigationPrimaryList = navigation.getTabBar();
-            if (getPlatformType() == PlatformType.TV) {
-                navigationPrimaryList = navigation.getNavigationPrimary();
-            }
+            navigationPrimaryList = navigation.getTabBar();
+        }
+        if (getPlatformType() == PlatformType.TV && null != navigation && null != navigation.getNavigationPrimary()) {
+            navigationPrimaryList = navigation.getNavigationPrimary();
+        }
+        if (navigationPrimaryList != null) {
             for (NavigationPrimary navigationPrimary : navigationPrimaryList) {
                 if (pageId != null &&
                         navigationPrimary != null &&
@@ -15556,8 +15576,12 @@ public class AppCMSPresenter {
                             }
                             String adsUrl = null;
 
-                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed()
-                                    && contentDatum.getStreamingInfo() != null && !contentDatum.getStreamingInfo().getIsLiveStream();
+                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed();
+
+                            if(contentDatum.getStreamingInfo() != null && contentDatum.getStreamingInfo().getIsLiveStream()){
+                                requestAds = false;
+                            }
+
                             adsUrl = getAdsUrl(pagePath);
                             if (adsUrl == null) {
                                 requestAds = false;

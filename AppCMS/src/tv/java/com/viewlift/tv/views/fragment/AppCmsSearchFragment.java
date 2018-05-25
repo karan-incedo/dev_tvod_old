@@ -47,6 +47,7 @@ import com.viewlift.tv.views.presenter.CardPresenter;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -168,12 +169,19 @@ public class AppCmsSearchFragment extends BaseFragment {
             btnClearHistory.setTypeface(semiBoldTypeFace);
         }
 
+        String packageName = getActivity().getPackageName();
+        List<String> strings = Arrays.asList(getResources().getStringArray(R.array.app_cms_splash_progress_needed));
+
+        boolean requirelandscapeTray = strings.contains(packageName);
+
         if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
             moduleList = new GsonBuilder().create().
                     fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component_sports.json"), ModuleList.class);
         }else {
             moduleList = new GsonBuilder().create().
-                    fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+                    fromJson(Utils.loadJsonFromAssets(getActivity(),
+                            requirelandscapeTray ? "tray_ftv_component_tray02.json" : "tray_ftv_component.json")
+                            , ModuleList.class);
         }
 
         editText.addTextChangedListener(new TextWatcher() {
