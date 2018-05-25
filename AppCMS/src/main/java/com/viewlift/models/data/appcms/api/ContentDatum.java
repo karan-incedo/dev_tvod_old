@@ -469,7 +469,7 @@ public class ContentDatum implements Serializable {
     }
 
     public boolean isDRMEnabled(){
-        return isDRMEnabled;
+        return false;
     }
 
     public void setDRMEnabled(boolean DRMEnabled) {

@@ -500,12 +500,12 @@
                       "height": 30
                     },
                     "tabletPortrait": {
-                      "xAxis": 192,
+                      "xAxis": 0,
                       "yAxis": 80,
                       "leftMargin": 0,
                       "rightMargin": 10,
                       "fontSize": 12,
-                      "height": 30
+                      "height": 20
                     }
                   },
                   "fontFamily": "Lato",
