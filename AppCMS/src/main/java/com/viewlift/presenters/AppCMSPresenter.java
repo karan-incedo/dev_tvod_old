@@ -187,6 +187,7 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -1878,6 +1879,14 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    public boolean isDownloadEnable(){
+        if(getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+            return true;
+        }
+        return false;
+    }
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
      * The token will be stored as a Shared Preference which may be used future usages.  The
@@ -3750,7 +3759,9 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getSslCommerz().getCountry()) &&
                     appCMSMain.getPaymentProviders().getSslCommerz().getCountry().equalsIgnoreCase(countryCode);
         }
-        return useSSLCommerz;
+//        return useSSLCommerz;
+        // TODO: uncomment when it is enabled on web
+        return false;
     }
 
     public void initiateSSLCommerzPurchase(String mobile, String planId, String planName) {
@@ -7120,10 +7131,10 @@ public class AppCMSPresenter {
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
                                         apiAvailability.getErrorDialog(currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                                 .show();
-                                    } else {
+                                    } /*else {
                                         Log.i(TAG, "This device is not supported.");
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    }*/
                                 }
                             }
 
@@ -7158,10 +7169,10 @@ public class AppCMSPresenter {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog((Activity) getCurrentActiveContext(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
-            } else {
+            }/* else {
                 Log.i(TAG, "This device is not supported.");
                 Toast.makeText(getCurrentActiveContext(), "This device is not supported.", Toast.LENGTH_SHORT).show();
-            }
+            }*/
             return;
         }
 
@@ -7233,10 +7244,10 @@ public class AppCMSPresenter {
                                     if (apiAvailability.isUserResolvableError(resultCode)) {
                                         apiAvailability.getErrorDialog((Activity) currentActivity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                                                 .show();
-                                    } else {
+                                    }/* else {
                                         Log.i(TAG, "This device is not supported.");
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    }*/
                                 }
                             }
 
@@ -10114,6 +10125,7 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
 
             AudioPlaylistHelper.getInstance().stopPlayback();
+            stopAudioServices();
             AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(AudioPlaylistHelper.getInstance().getCurrentMediaId(), 0);
 
         }
@@ -11604,13 +11616,15 @@ public class AppCMSPresenter {
                     }
                 }
             } else {
-                for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
-                    try {
-                        if (networkInfo.isConnectedOrConnecting()) {
-                            return true;
+                if (connectivityManager != null && connectivityManager.getAllNetworkInfo() != null) {
+                    for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
+                        try {
+                            if (networkInfo.isConnectedOrConnecting()) {
+                                return true;
+                            }
+                        } catch (Exception e) {
+                            //
                         }
-                    } catch (Exception e) {
-                        //
                     }
                 }
             }
@@ -17289,6 +17303,17 @@ public class AppCMSPresenter {
     public void setAudioPlayerOpen(boolean isAudioPlayer) {
         isAudioPlayerOpen = isAudioPlayer;
     }
+
+    public boolean isAudioActvityVisible() {
+        return isAudioActvityVisible;
+    }
+
+    public void setAudioActvityVisible(boolean audioActvityVisible) {
+        isAudioActvityVisible = audioActvityVisible;
+    }
+
+    private boolean isAudioActvityVisible;
+
 
     public String getArtistNameFromCreditBlocks(List<CreditBlock> creditBlocks) {
         StringBuilder artist = new StringBuilder();

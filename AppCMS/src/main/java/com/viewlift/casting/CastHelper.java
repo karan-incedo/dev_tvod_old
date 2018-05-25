@@ -118,11 +118,11 @@ public class CastHelper {
             mMediaRouterCallback = new MyMediaRouterCallback();
             castCurrentMediaPosition = 0L;
             setCastDiscovery();
-        }else{
+        }/*else{
 
             Log.i(TAG, "This device is not supported.");
             Toast.makeText(mContext, "This device is not supported. Please upgrade your play-service", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     public static class OnApplicationEnded {

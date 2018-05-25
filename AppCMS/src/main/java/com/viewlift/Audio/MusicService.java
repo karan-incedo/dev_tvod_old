@@ -296,11 +296,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaItem>> result) {
 
-        try {
+       /* try {
             result.sendResult(null);
         } catch (IllegalStateException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
