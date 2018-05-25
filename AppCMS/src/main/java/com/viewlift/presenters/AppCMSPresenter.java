@@ -65,7 +65,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -82,7 +81,6 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
-import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
@@ -189,6 +187,7 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -269,14 +268,13 @@ import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
-import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
-import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -15467,10 +15465,14 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-               // changend from R.string.app_cms_content_detail_api_url to app_cms_entitlement_api_url API
-                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                // TODO: uncomment for entitlement API
+                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);
+                        filmId);*/
+                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSSite.getGist().getSiteInternalName());
             }
         } else {
             realmController = RealmController.with(currentActivity);
