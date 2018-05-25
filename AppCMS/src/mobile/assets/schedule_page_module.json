@@ -489,13 +489,12 @@
                       "height": 12
                     }
                   },
-                  "backgroundColor": "000000",
                   "fontFamily": "Lato",
                   "numberOfLines": 1,
                   "textAlignment": "right",
                   "type": "label",
                   "textColor": "#ffffff",
-                  "key": "gameDateLabel"
+                  "key": "gameDate"
                 },
                 {
                   "layout": {
@@ -521,13 +520,12 @@
                       "height": 15
                     }
                   },
-                  "backgroundColor": "000000",
                   "fontFamily": "Lato",
                   "numberOfLines": 1,
                   "textAlignment": "right",
                   "type": "label",
                   "textColor": "#ffffff",
-                  "key": "gameTimeLabel"
+                  "key": "gameTime"
                 }
               ],
               "isHorizontalScroll": true,

@@ -709,6 +709,8 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
+    <string name="app_cms_page_game_date_key">gameDate</string>
+    <string name="app_cms_page_game_time_key">gameTime</string>
     <string name="app_cms_page_path_article">article</string>
     <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
     <string name="app_cms_deep_link_path_photos">photos</string>
