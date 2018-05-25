@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -25,9 +26,13 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static com.viewlift.Utils.loadJsonFromAssets;
 
 /**
@@ -47,6 +52,7 @@ public class SeasonModule extends ModuleView {
     private AppCMSAndroidModules appCMSAndroidModules;
     PageView pageView;
     TabLayout seasonTab;
+    List<Season_> seasonList;
 
     @SuppressWarnings("unchecked")
     public SeasonModule(Context context,
@@ -66,6 +72,9 @@ public class SeasonModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         this.pageView = pageView;
+        seasonList=new ArrayList<>();
+        seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
+        Collections.reverse(seasonList);
         init();
     }
 
@@ -116,7 +125,7 @@ public class SeasonModule extends ModuleView {
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
 
-            if(moduleAPI != null && moduleAPI.getContentData() != null &&  moduleAPI.getContentData().size() > 0 && moduleAPI.getContentData().get(0).getSeason() != null){
+            if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().size() > 0 && moduleAPI.getContentData().get(0).getSeason() != null) {
 
                 if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
                     seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -124,7 +133,7 @@ public class SeasonModule extends ModuleView {
                     seasonTab.setTabMode(TabLayout.MODE_FIXED);
                 }
 
-                for(Season_ season : moduleAPI.getContentData().get(0).getSeason()){
+                for (Season_ season : seasonList) {
                     TabLayout.Tab firstTab = seasonTab.newTab();
                     firstTab.setText(season.getTitle());
                     seasonTab.addTab(firstTab);
@@ -136,15 +145,17 @@ public class SeasonModule extends ModuleView {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     int position = tab.getPosition();
-                    List<ContentDatum> adapterData = moduleAPI.getContentData().get(0).getSeason().get(position).getEpisodes();
+                    List<ContentDatum> adapterData = seasonList.get(position).getEpisodes();
                     SeasonTabSelectorBus.instanceOf().setTab(adapterData);
                 }
 
                 @Override
-                public void onTabUnselected(TabLayout.Tab tab) {}
+                public void onTabUnselected(TabLayout.Tab tab) {
+                }
 
                 @Override
-                public void onTabReselected(TabLayout.Tab tab) {}
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
             });
             View root = seasonTab.getChildAt(0);
             if (root instanceof LinearLayout) {
@@ -219,38 +230,38 @@ public class SeasonModule extends ModuleView {
             View componentView = componentViewResult.componentView;
             if (componentView != null) {
 
-                    float componentYAxis = getYAxis(getContext(),
+                float componentYAxis = getYAxis(getContext(),
+                        subComponent.getLayout(),
+                        0.0f);
+                if (!subComponent.isyAxisSetManually()) {
+                    setYAxis(getContext(),
                             subComponent.getLayout(),
-                            0.0f);
-                    if (!subComponent.isyAxisSetManually()) {
-                        setYAxis(getContext(),
-                                subComponent.getLayout(),
-                                componentYAxis - parentYAxis);
-                        subComponent.setyAxisSetManually(true);
-                    }
-                    subComponentChildContainer.addView(componentView);
-                    moduleView.setComponentHasView(i, true);
-                    moduleView.setViewMarginsFromComponent(subComponent,
-                            componentView,
-                            subComponent.getLayout(),
-                            subComponentChildContainer,
-                            false,
-                            jsonValueKeyMap,
-                            componentViewResult.useMarginsAsPercentagesOverride,
-                            componentViewResult.useWidthOfScreen,
-                            context.getString(R.string.app_cms_page_season_tray_module_key));
+                            componentYAxis - parentYAxis);
+                    subComponent.setyAxisSetManually(true);
                 }
-                switch (componentType) {
-                    case PAGE_TABLAYOUT_KEY:
-                        seasonTab = (TabLayout) componentView;
-                        break;
-                    case PAGE_VIEWPAGER_KEY:
-                        seasonTab = (TabLayout) componentView;
-                       // seasonPager = (ViewPager) componentView;
-                        break;
-                }
-            } else {
-                moduleView.setComponentHasView(i, false);
+                subComponentChildContainer.addView(componentView);
+                moduleView.setComponentHasView(i, true);
+                moduleView.setViewMarginsFromComponent(subComponent,
+                        componentView,
+                        subComponent.getLayout(),
+                        subComponentChildContainer,
+                        false,
+                        jsonValueKeyMap,
+                        componentViewResult.useMarginsAsPercentagesOverride,
+                        componentViewResult.useWidthOfScreen,
+                        context.getString(R.string.app_cms_page_season_tray_module_key));
             }
+            switch (componentType) {
+                case PAGE_TABLAYOUT_KEY:
+                    seasonTab = (TabLayout) componentView;
+                    break;
+                case PAGE_VIEWPAGER_KEY:
+                    seasonTab = (TabLayout) componentView;
+                    // seasonPager = (ViewPager) componentView;
+                    break;
+            }
+        } else {
+            moduleView.setComponentHasView(i, false);
+        }
     }
 }

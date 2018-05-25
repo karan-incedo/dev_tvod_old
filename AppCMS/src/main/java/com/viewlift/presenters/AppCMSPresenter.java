@@ -5948,7 +5948,7 @@ public class AppCMSPresenter {
                             resultAction1, getLoggedInUser());
                     cancelDownloadIconTimerTask(null);
                 },
-                null);
+                () -> {showLoadingDialog(false);});
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -5957,7 +5957,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
-                    null);
+                    () -> {showLoadingDialog(false);});
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
@@ -6318,7 +6318,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
-                    null);
+                    () -> {showLoadingDialog(false);});
         } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }

@@ -115,13 +115,12 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-
-
-                if (castCallBackListener != null) {
-                    castCallBackListener.onCastStatusUpdate();
-                }
-
-
+            if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
+                    appCMSPresenter.isPageAVideoPage(pageName))) {
+                launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+            } else if (castCallBackListener != null) {
+                castCallBackListener.onCastStatusUpdate();
+            }
             stopRokuDiscovery();
         }
 
@@ -278,7 +277,7 @@ public class CastServiceProvider {
                 mCastHelper.setCallBackListener(callBackCastHelper);
                 mCastHelper.setCastSessionManager();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -336,7 +335,7 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-       }/*else{
+        }/*else{
 
            Log.i(TAG, "This device is not supported.");
            Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
@@ -542,9 +541,9 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity!= null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
+        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity != null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
 
-        if(mCastHelper == null)
+        if (mCastHelper == null)
             return;
 
         //Setting the Casting Overlay for Casting

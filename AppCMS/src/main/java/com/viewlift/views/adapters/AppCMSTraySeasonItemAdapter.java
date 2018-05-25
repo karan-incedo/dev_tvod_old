@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -24,6 +25,7 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +53,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     private MotionEvent lastTouchDownEvent;
 
     String componentViewType,seriesName;
-
+    List<Season_> seasonList;
     RecyclerView mRecyclerView;
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -63,7 +65,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        String viewType,
                                        RecyclerView mRecyclerView) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
-        this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();;
+        seasonList=new ArrayList<>();
+        seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
+        Collections.reverse(seasonList);
+        this.adapterData = seasonList.get(0).getEpisodes();
         this.sortData();
         this.seriesName = moduleAPI.getContentData().get(0).getGist().getTitle();
         this.components = components;

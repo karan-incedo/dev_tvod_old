@@ -3,7 +3,9 @@ package com.viewlift.models.data.appcms.ui.main;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class AppCMSXAPIKey {
+import java.io.Serializable;
+
+public class AppCMSXAPIKey implements Serializable {
 
     @SerializedName("name")
     @Expose
