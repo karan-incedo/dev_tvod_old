@@ -432,7 +432,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        useHls = !appCMSPresenter.getAppCMSMain().isHls()?getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
+        if (appCMSPresenter!=null&&appCMSPresenter.getAppCMSMain() != null)
+            useHls = !appCMSPresenter.getAppCMSMain().isHls() ? getResources().getBoolean(R.bool.use_hls) : appCMSPresenter.getAppCMSMain().isHls();
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -479,7 +480,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (player != null) {
             player.release();
         }
-        if (isDRMEnabled()){
+        if (isDRMEnabled()) {
 
             DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
             try {
@@ -487,10 +488,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getContext(), drmSessionManager), trackSelector);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else {
+        } else {
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         }
         player.addListener(this);
@@ -613,7 +614,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * Used to extract the different tracks available in an HLS stream.
-     *
+     * <p>
      * {@link DefaultTrackSelector#getCurrentMappedTrackInfo} returns {@link MappingTrackSelector.MappedTrackInfo} object
      * </br>
      * <p>
@@ -634,7 +635,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         for (int i = 0; i < mappedTrackInfo.length; i++) {
             TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(i);
             if (trackGroups.length != 0) {
-                if (player.getRendererType(i) == C.TRACK_TYPE_VIDEO){
+                if (player.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
                     mVideoRendererIndex = i;
                     break;
                 }
@@ -650,12 +651,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
                     Format format = group.getFormat(trackIndex);
                     availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
-                            format.height == Format.NO_VALUE ? "" : format.height +"p"));
+                            format.height == Format.NO_VALUE ? "" : format.height + "p"));
                 }
             }
 
             /*the following is done to only have distinct values in the HLS track list. We are getting
-            * multiple tracks for same resolution with different bitrate.*/
+             * multiple tracks for same resolution with different bitrate.*/
             Set<HLSStreamingQuality> set = new TreeSet<>((o1, o2) -> {
                 if (o1.getValue().equalsIgnoreCase(o2.getValue())) {
                     return 0;
@@ -847,18 +848,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     ) {
                 createStreamingQualitySelectorForHLS();
 
-                   // Default "Auto" is selected
-                    currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
-                    showStreamingQualitySelector();
+                // Default "Auto" is selected
+                currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
+                showStreamingQualitySelector();
             }
         }
     }
 
     private void showStreamingQualitySelector() {
-        if(null != currentStreamingQualitySelector
+        if (null != currentStreamingQualitySelector
                 && null != appCMSPresenter
                 && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
-        currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+            currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -1184,7 +1185,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         enableFullScreenMode();
         fullScreenMode = false;
         if (appCMSPresenter != null) {
-           // appCMSPresenter.sendExitFullScreenAction(true);
+            // appCMSPresenter.sendExitFullScreenAction(true);
         }
     }
 
@@ -1248,8 +1249,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();
+
         String getStreamingQualityUrl(String streamingQuality);
+
         String getMpegResolutionFromUrl(String mpegUrl);
+
         int getMpegResolutionIndexFromUrl(String mpegUrl);
     }
 
@@ -1517,6 +1521,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<String> availableStreamingQualities;
         int selectedIndex;
         AppCMSPresenter appCMSPresenter;
+
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {
@@ -1590,6 +1595,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<HLSStreamingQuality> availableStreamingQualities;
         int selectedIndex;
         AppCMSPresenter appCMSPresenter;
+
         HLSStreamingQualitySelectorAdapter(Context context,
                                            AppCMSPresenter appCMSPresenter,
                                            List<HLSStreamingQuality> items) {
@@ -1653,7 +1659,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * Class is used to store the index and value (resolution eg. 360p) of a particular track of
-     *  an HLS stream.
+     * an HLS stream.
      */
     private static class HLSStreamingQuality {
         int index;
