@@ -288,7 +288,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
         audioManager = (AudioManager) context.getApplicationContext()
                 .getSystemService(Context.AUDIO_SERVICE);
 
-        useHls = context.getResources().getBoolean(R.bool.use_hls);
+        useHls = !appCMSPresenter.getAppCMSMain().isHls()? context.getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
         defaultVideoResolution = context.getString(R.string.default_video_resolution);
         trailerKey = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
         parentScreenName = context.getString(R.string.app_cms_beacon_video_player_parent_screen_name);

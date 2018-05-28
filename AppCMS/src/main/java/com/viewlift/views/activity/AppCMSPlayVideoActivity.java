@@ -119,7 +119,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
         String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
 
-        boolean useHls = getResources().getBoolean(R.bool.use_hls);
+        boolean useHls = !appCMSPresenter.getAppCMSMain().isHls()?getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
 
         try {
