@@ -1459,7 +1459,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-/*
+///*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1503,7 +1503,7 @@ public class AppCMSPresenter {
 
   //*/
 
-            ///*
+            /*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -1875,6 +1875,14 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    public boolean isDownloadEnable(){
+        if(getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+            return true;
+        }
+        return false;
+    }
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
      * The token will be stored as a Shared Preference which may be used future usages.  The
@@ -5948,7 +5956,9 @@ public class AppCMSPresenter {
                             resultAction1, getLoggedInUser());
                     cancelDownloadIconTimerTask(null);
                 },
-                () -> {showLoadingDialog(false);});
+                () -> {
+                    showLoadingDialog(false);
+                });
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -5957,7 +5967,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
-                    () -> {showLoadingDialog(false);});
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
@@ -6301,7 +6313,7 @@ public class AppCMSPresenter {
                             return currentAppVersion;
                         })
                         .subscribeOn(Schedulers.io())
-                        .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
+                        .observeOn(AndroidSchedulers.mainThread())
                         .onErrorResumeNext(throwable -> Observable.empty())
                         .subscribe((result) -> Observable.just(result)
                                 .onErrorResumeNext(throwable -> Observable.empty())
@@ -6318,7 +6330,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
-                    () -> {showLoadingDialog(false);});
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
@@ -6735,7 +6749,7 @@ public class AppCMSPresenter {
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
-        /*
+
         GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6792,8 +6806,9 @@ public class AppCMSPresenter {
                 }
             }
         }).execute(params);
-       //*/
-       // /*
+        /*
+
+         /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6850,7 +6865,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-                //*/
+        */
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -10303,7 +10318,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-       // apikey =  Utils.getProperty("XAPI", currentActivity);
+        // apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -10350,11 +10365,11 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        if(appCMSMain.getX_ApiKeys()!=null &&
+                        if (appCMSMain.getX_ApiKeys() != null &&
                                 appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
-                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
+                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())) {
                             apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
-                        }else {
+                        } else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
 
@@ -11801,7 +11816,7 @@ public class AppCMSPresenter {
             uid = getDeviceId();
         }
 
-       // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         int currentPositionSecs = (int) (currentPosition);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -15466,13 +15481,15 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
                 // TODO: uncomment for entitlement API
-                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);*/
+                        filmId);
+/*
                 url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
                         appCMSSite.getGist().getSiteInternalName());
+*/
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -17155,10 +17172,12 @@ public class AppCMSPresenter {
 
     public void updatePlaybackControl() {
         try {
-            Intent intent = new Intent();
-            intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
-            intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
-            currentActivity.sendBroadcast(intent);
+            if (currentActivity != null) {
+                Intent intent = new Intent();
+                intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
+                intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
+                currentActivity.sendBroadcast(intent);
+            }
         } catch (Exception ex) {
         }
     }
@@ -17622,14 +17641,14 @@ public class AppCMSPresenter {
             System.out.println("sowload percent-" + i);
 
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
-//                Bitmap b = null;
-//                Canvas canvas = null;
+                Bitmap b = null;
+                Canvas canvas = null;
                 Paint paint = null;
-               // if (b == null) {
-                final Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                 Canvas   canvas = new Canvas(b);
+                if (b == null) {
+                    b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                    canvas = new Canvas(b);
                     paint = new Paint();
-               // }
+                }
                 //Canvas canvas = new Canvas(b);
                 //Paint paint = new Paint();
 
@@ -17661,18 +17680,13 @@ public class AppCMSPresenter {
 //                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-//                iv2.setImageBitmap(b);
-//                appCMSPresenter.currentActivity
-
-                appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                iv2.setImageBitmap(b);
+               /* appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        iv2.postDelayed(()->{
-                            iv2.setImageBitmap(null);
-                            iv2.setImageBitmap(b);
-                        },2);
+                        iv2.setImageBitmap(b);
                     }
-                });
+                });*/
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
                 }

@@ -116,11 +116,15 @@ public class CastServiceProvider {
         @Override
         public void onApplicationConnected() {
             if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
-                    appCMSPresenter.isPageAVideoPage(pageName))) {
+                    (appCMSPresenter.isPageAVideoPage(pageName)))) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
-            } else if (castCallBackListener != null) {
-                castCallBackListener.onCastStatusUpdate();
+            } else {
+
+                if (castCallBackListener != null) {
+                    castCallBackListener.onCastStatusUpdate();
+                }
             }
+
             stopRokuDiscovery();
         }
 
@@ -558,7 +562,10 @@ public class CastServiceProvider {
             castChooserDialog.dismiss();
         }
 
-        if (mCastHelper.isCastDeviceAvailable) {
+        if (mCastHelper.isCastDeviceAvailable && appCMSPresenter.getAppCMSMain() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor() != null) {
             if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources()

@@ -1,5 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
+import android.util.Log;
+
 import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.network.rest.AppCMSContentDetailCall;
 
@@ -34,6 +36,7 @@ public class GetAppCMSContentDetailTask {
                             return call.call(params.url, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                     return null;
@@ -42,7 +45,7 @@ public class GetAppCMSContentDetailTask {
                 .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
-                    if (readyAction != null) {
+                    if (result!= null && readyAction != null) {
                         Observable.just(result).subscribe(readyAction);
                     }
                 });
