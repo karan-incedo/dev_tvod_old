@@ -115,12 +115,15 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-
+            if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
+                    (appCMSPresenter.isPageAVideoPage(pageName)))) {
+                launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+            } else {
 
                 if (castCallBackListener != null) {
                     castCallBackListener.onCastStatusUpdate();
                 }
-
+            }
 
             stopRokuDiscovery();
         }
@@ -542,9 +545,9 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity!= null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
+        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity != null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
 
-        if(mCastHelper == null)
+        if (mCastHelper == null)
             return;
 
         //Setting the Casting Overlay for Casting
@@ -559,7 +562,10 @@ public class CastServiceProvider {
             castChooserDialog.dismiss();
         }
 
-        if (mCastHelper.isCastDeviceAvailable) {
+        if (mCastHelper.isCastDeviceAvailable && appCMSPresenter.getAppCMSMain() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor() != null) {
             if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources()

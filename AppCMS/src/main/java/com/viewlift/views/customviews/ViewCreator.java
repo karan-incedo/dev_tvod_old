@@ -3467,39 +3467,44 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;*/
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        if (!gridElement &&
-                                moduleAPI != null &&
-                                moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null) {
-                            String userId = appCMSPresenter.getLoggedInUser();
-                            int radiusDifference = 7;
-                            if (BaseView.isTablet(context)) {
-                                radiusDifference = 4;
-                            }
-                            if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
-                                radiusDifference = 5;
+
+                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                            if (!gridElement &&
+                                    moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null) {
+                                String userId = appCMSPresenter.getLoggedInUser();
+                                int radiusDifference = 7;
                                 if (BaseView.isTablet(context)) {
-                                    radiusDifference = 3;
+                                    radiusDifference = 4;
+                                }
+                                if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
+                                    radiusDifference = 5;
+                                    if (BaseView.isTablet(context)) {
+                                        radiusDifference = 3;
+                                    }
+                                }
+
+
+
+                                    componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
+
+
+                                if (appCMSPresenter.isDownloadEnable()) {
+                                    appCMSPresenter.getUserVideoDownloadStatus(
+                                            moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                                    moduleAPI.getContentData().get(0), userId, radiusDifference,
+                                                    moduleAPI.getId()), userId);
+                                    componentViewResult.componentView.setVisibility(View.VISIBLE);
+                                } else {
+                                    componentViewResult.componentView.setVisibility(View.GONE);
                                 }
                             }
-                            appCMSPresenter.getUserVideoDownloadStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                            moduleAPI.getContentData().get(0), userId, radiusDifference,
-                                            moduleAPI.getId()), userId);
-                            componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
-                        }
 
-                        if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
-                                appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        }
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:

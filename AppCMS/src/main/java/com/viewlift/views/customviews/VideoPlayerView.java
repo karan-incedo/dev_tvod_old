@@ -102,7 +102,7 @@ import rx.functions.Action1;
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
         AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener, DefaultDrmSessionManager.EventListener {
-    private static final String TAG = "VideoPlayerFragment";
+    private static final String TAG = "VideoPlayerView";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
