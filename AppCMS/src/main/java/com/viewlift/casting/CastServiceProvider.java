@@ -280,7 +280,7 @@ public class CastServiceProvider {
                 mCastHelper.setCallBackListener(callBackCastHelper);
                 mCastHelper.setCastSessionManager();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -338,7 +338,7 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-       }/*else{
+        }/*else{
 
            Log.i(TAG, "This device is not supported.");
            Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
@@ -544,9 +544,9 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity!= null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
+        mMediaRouteButton.setVisibility(mCastHelper != null && mCastHelper.isCastDeviceAvailable ? View.VISIBLE : mActivity != null && mActivity instanceof AppCMSPageActivity ? View.GONE : View.INVISIBLE);
 
-        if(mCastHelper == null)
+        if (mCastHelper == null)
             return;
 
         //Setting the Casting Overlay for Casting
@@ -561,7 +561,10 @@ public class CastServiceProvider {
             castChooserDialog.dismiss();
         }
 
-        if (mCastHelper.isCastDeviceAvailable) {
+        if (mCastHelper.isCastDeviceAvailable && appCMSPresenter.getAppCMSMain() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral() != null && appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor() != null) {
             if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources()

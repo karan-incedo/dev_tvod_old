@@ -1458,7 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-/*
+
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1500,9 +1500,9 @@ public class AppCMSPresenter {
                 }
             }).execute(params);
 
-  //*/
 
-            ///*
+
+            /*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -5947,7 +5947,9 @@ public class AppCMSPresenter {
                             resultAction1, getLoggedInUser());
                     cancelDownloadIconTimerTask(null);
                 },
-                () -> {showLoadingDialog(false);});
+                () -> {
+                    showLoadingDialog(false);
+                });
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -5956,7 +5958,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
-                    () -> {showLoadingDialog(false);});
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
@@ -6317,7 +6321,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
-                    () -> {showLoadingDialog(false);});
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
@@ -6734,7 +6740,7 @@ public class AppCMSPresenter {
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
-        /*
+
         GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6791,8 +6797,8 @@ public class AppCMSPresenter {
                 }
             }
         }).execute(params);
-       //*/
-       // /*
+
+         /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6849,7 +6855,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-                //*/
+        */
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -10303,7 +10309,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-       // apikey =  Utils.getProperty("XAPI", currentActivity);
+        // apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -10350,11 +10356,11 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        if(appCMSMain.getX_ApiKeys()!=null &&
+                        if (appCMSMain.getX_ApiKeys() != null &&
                                 appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
-                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
+                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())) {
                             apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
-                        }else {
+                        } else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
 
@@ -11801,7 +11807,7 @@ public class AppCMSPresenter {
             uid = getDeviceId();
         }
 
-       // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         int currentPositionSecs = (int) (currentPosition);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -15465,14 +15471,16 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-               // TODO: uncomment for entitlement API
-                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                // TODO: uncomment for entitlement API
+                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);*/
+                        filmId);
+/*
                 url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
                         appCMSSite.getGist().getSiteInternalName());
+*/
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -17155,10 +17163,12 @@ public class AppCMSPresenter {
 
     public void updatePlaybackControl() {
         try {
-            Intent intent = new Intent();
-            intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
-            intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
-            currentActivity.sendBroadcast(intent);
+            if (currentActivity != null) {
+                Intent intent = new Intent();
+                intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
+                intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
+                currentActivity.sendBroadcast(intent);
+            }
         } catch (Exception ex) {
         }
     }
