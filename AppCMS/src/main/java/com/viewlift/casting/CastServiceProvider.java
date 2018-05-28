@@ -115,14 +115,15 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-
             if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
-                    appCMSPresenter.isPageAVideoPage(pageName))) {
+                    (appCMSPresenter.isPageAVideoPage(pageName)))) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
-            } else if (castCallBackListener != null) {
-                castCallBackListener.onCastStatusUpdate();
-            }
+            } else {
 
+                if (castCallBackListener != null) {
+                    castCallBackListener.onCastStatusUpdate();
+                }
+            }
 
             stopRokuDiscovery();
         }
@@ -280,7 +281,7 @@ public class CastServiceProvider {
                 mCastHelper.setCallBackListener(callBackCastHelper);
                 mCastHelper.setCastSessionManager();
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -338,7 +339,7 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-        }/*else{
+       }/*else{
 
            Log.i(TAG, "This device is not supported.");
            Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();

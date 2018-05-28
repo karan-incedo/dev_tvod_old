@@ -1458,7 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-
+///*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1500,7 +1500,7 @@ public class AppCMSPresenter {
                 }
             }).execute(params);
 
-
+  //*/
 
             /*
 
@@ -1874,6 +1874,14 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    public boolean isDownloadEnable(){
+        if(getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isMobileAppDownloads()){
+            return true;
+        }
+        return false;
+    }
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
      * The token will be stored as a Shared Preference which may be used future usages.  The
@@ -6797,6 +6805,7 @@ public class AppCMSPresenter {
                 }
             }
         }).execute(params);
+        /*
 
          /*
         GetAppCMSContentDetailTask.Params params =
