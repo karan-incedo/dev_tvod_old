@@ -1119,6 +1119,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         new Handler().post(() -> {
             navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            if(appCMSPresenter.isLeftNavigationEnabled())
             navParentContainer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
             navigationFragment.setFocusable(shouldShow);
             if (shouldShow) {

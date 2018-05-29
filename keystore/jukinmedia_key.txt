@@ -1,7 +1,7 @@
 
 FailArmy
-Alias name: failarmy
-Password: failarmy
+Alias name: jukinmedia
+Password: jukinmedia
 
 JukinVideo
 Alias name: jukinvideo
