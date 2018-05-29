@@ -7352,7 +7352,8 @@ public class AppCMSPresenter {
                             loadFromFile,
                             false);
                 }
-            } else
+            }
+            else
             {
                 getTeamRoasterContent(appCMSMain.getApiBaseUrl(),
                         appCMSSite.getGist().getSiteInternalName(),
@@ -7370,9 +7371,12 @@ public class AppCMSPresenter {
                                 if (appCMSTeamRoasterResult != null) {
 //                                    setPlayListData(appCMSPlaylistResult, this);
 
-                                    AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+//                                    AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+                                    AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentContext, "game_detail.json"),
+                                            AppCMSPageUI.class);
 
-
+                                    jsonValueKeyMap.put("AC playerState 01",AppCMSUIKeyType.PAGE_PLAYER_STATE_MODULE_KEY);
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
@@ -7415,7 +7419,7 @@ public class AppCMSPresenter {
 
                                         {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                this.appCMSPageUI,
+                                                appCMSPageUI,
                                                 pageAPI,
                                                 this.pageId,
                                                 this.pageTitle,

@@ -37,10 +37,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,6 +50,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -1874,7 +1878,17 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else*/
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+                if (moduleInfo.getBlockName().contains("gameDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "game_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("playerState01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "game_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                }else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -4428,11 +4442,18 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                          }else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
                             ((TextView) componentViewResult.componentView).setText("2018 League Schedule");
+                        }else if (component.getText()!=null ) {
+                            ((TextView) componentViewResult.componentView).setText(component.getText());
                         }
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    }else{
+                        ((TextView) componentViewResult.componentView).setText("title");
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+
                     }
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
@@ -5496,6 +5517,42 @@ public class ViewCreator {
                 componentViewResult.componentView.setAlpha(0.6f);
                 break;
 
+            case PAGE_MULTICOLUMN_TABLE_KEY:
+                componentViewResult.componentView = new LinearLayout(context);
+
+                HorizontalScrollView scrollView=new HorizontalScrollView(context);
+                componentViewResult.componentView.setBackgroundColor(R.color.color_white);
+                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+
+                TableLayout table = new TableLayout(context);
+                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+                for (int i = 0; i < 50; i++) {
+
+                    TableRow row = new TableRow(context);
+                    row.setWeightSum(2.0f);
+                    row.setPadding(1, 1, 1, 1);
+
+                    TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
+
+                    for (int j = 0; j < 8; j++) {
+                        TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
+                        TextView cell = new TextView(context);
+                        cell.setText("   cell [" + i + ", " + j + "]     "+"\n");
+                        cell.setPadding(6, 4, 6, 4);
+                        cell.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+                        cell.setLayoutParams(textViewParams);
+                        row.addView(cell);
+                    }
+                    row.setLayoutParams(params);
+                    table.addView(row, params);
+                }
+                table.setStretchAllColumns(true);
+                scrollView.addView(table);
+                ((LinearLayout) componentViewResult.componentView).addView(scrollView);
+                break;
+
             case PAGE_CASTVIEW_VIEW_KEY:
                 String fontFamilyKey = null;
                 String fontFamilyKeyTypeParsed = null;
@@ -5879,6 +5936,8 @@ public class ViewCreator {
                     case PAGE_AUTHENTICATION_MODULE_KEY:
                     case PAGE_AC_TEAM_SCHEDULE_MODULE_KEY:
                     case PAGE_API_TEAMDETAIL_MODULE_KEY:
+                    case PAGE_GAME_DETAIL_MODULE_KEY:
+                    case PAGE_PLAYER_STATE_MODULE_KEY:
 
 
                         if (appCMSPageAPI.getModules() != null

@@ -154,6 +154,9 @@
 
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
+
+    <string name="app_cms_page_multicolumn_table_key">multicolumnTableView</string>
+
     <string name="app_cms_page_article_bottom_button_background_key">articleBottomButtonBackground</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
     <string name="app_cms_page_video_detail_player_key">videodetail_player</string>
@@ -228,6 +231,9 @@
     <string name="app_cms_page_signup_key">signup button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
+    <string name="app_cms_page_game_detail_module">AC GameDetail 01</string>
+    <string name="app_cms_player_state_module">AC GameDetail 01</string>
+
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
     <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>

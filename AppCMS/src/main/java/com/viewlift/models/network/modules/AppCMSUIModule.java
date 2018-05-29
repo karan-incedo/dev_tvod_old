@@ -303,6 +303,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_separator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multicolumn_table_key),
+                AppCMSUIKeyType.PAGE_MULTICOLUMN_TABLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_bottom_button_background_key),
                 AppCMSUIKeyType.PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
@@ -681,6 +684,15 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_detail_module),
+                AppCMSUIKeyType.PAGE_GAME_DETAIL_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_player_state_module),
+                AppCMSUIKeyType.PAGE_PLAYER_STATE_MODULE_KEY);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
