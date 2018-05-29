@@ -81,6 +81,7 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
@@ -432,7 +433,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        useHls = !appCMSPresenter.getAppCMSMain().isHls()?getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
+        useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {

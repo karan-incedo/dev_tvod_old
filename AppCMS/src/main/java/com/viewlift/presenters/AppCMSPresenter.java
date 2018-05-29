@@ -10397,6 +10397,9 @@ public class AppCMSPresenter {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
 
+                            Utils.setHls(appCMSMain.isHls());
+                        
+
                         getAppCMSSite(platformType);
                     }
                 } catch (Exception e) {
