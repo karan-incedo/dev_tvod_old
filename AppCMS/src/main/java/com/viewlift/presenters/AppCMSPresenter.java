@@ -6775,7 +6775,7 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
 
-        GetAppCMSVideoEntitlementAsyncTask.Params params =
+        /*GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
                         .apiKey(apikey)
@@ -6830,10 +6830,10 @@ public class AppCMSPresenter {
                     action1.call(null);
                 }
             }
-        }).execute(params);
-        /*
+        }).execute(params);*/
 
-         /*
+
+
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6890,7 +6890,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-        */
+
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
