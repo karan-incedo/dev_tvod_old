@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
@@ -119,7 +120,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
         String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
 
-        boolean useHls = !appCMSPresenter.getAppCMSMain().isHls()?getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
+        boolean useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
 
         try {

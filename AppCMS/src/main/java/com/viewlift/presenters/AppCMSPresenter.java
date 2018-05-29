@@ -5583,101 +5583,62 @@ public class AppCMSPresenter {
                     updateContentDatum.getGist() != null &&
                     updateContentDatum.getGist().getId() != null) {
                 updateContentDatum.setSeriesName(contentDatum.getSeriesName());
+                downloadURLParsing(updateContentDatum, resultAction1,isFromPlaylistDownload);
 
-                try {
-
-                    long enqueueId;
-
-                    if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
-
-                        String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
-
-                        GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
-
-                        new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                            if (appCMSStreamingInfo != null) {
-                                updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                            }
-                        }).execute(param);
-
-                        showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
-                        return;
-                    }
-
-                    long ccEnqueueId = 0L;
-                    if (updateContentDatum.getContentDetails() != null &&
-                            updateContentDatum.getContentDetails().getClosedCaptions() != null &&
-                            !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                            updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                        ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
-                                .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
-                    }
-
-                    String downloadURL;
-
-                    int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
-                    downloadURL = getDownloadURL(updateContentDatum);
-                    downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
-
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                    showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
-                } finally {
-                    appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
-                            resultAction1, getLoggedInUser());
-                }
                /* TODO bellow code to be remove once Entitlement API will work fine for every case
                 getAppCMSSignedURL(updateContentDatum.getGist().getId(), appCMSSignedURLResult -> currentActivity.runOnUiThread(() -> {
                     if (appCMSSignedURLResult != null) {
-                        try {
-
-                            long enqueueId;
-
-                            if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
-
-                                String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
-
-                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
-
-                                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                                    if (appCMSStreamingInfo != null) {
-                                        updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                                    }
-                                }).execute(param);
-
-                                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
-                                return;
-                            }
-
-                            long ccEnqueueId = 0L;
-                            if (updateContentDatum.getContentDetails() != null &&
-                                    updateContentDatum.getContentDetails().getClosedCaptions() != null &&
-                                    !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                                    updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
-                                        .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
-                            }
-
-                            String downloadURL;
-
-                            int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
-                            downloadURL = getDownloadURL(updateContentDatum);
-                            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
-
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
-                            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
-                        } finally {
-                            appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
-                                    resultAction1, getLoggedInUser());
-                        }
+                        downloadURLParsing(updateContentDatum, resultAction1,isFromPlaylistDownload);
                     }
                 }));
                 //*/
             }
         });
+    }
+    private void downloadURLParsing(ContentDatum updateContentDatum,Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload){
+        try {
+
+            long enqueueId;
+
+            if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
+
+                String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
+
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
+
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
+                        updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                    }
+                }).execute(param);
+
+                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
+                return;
+            }
+
+            long ccEnqueueId = 0L;
+            if (updateContentDatum.getContentDetails() != null &&
+                    updateContentDatum.getContentDetails().getClosedCaptions() != null &&
+                    !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                    updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
+                        .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
+            }
+
+            String downloadURL;
+
+            int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+            downloadURL = getDownloadURL(updateContentDatum);
+            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
+        } finally {
+            appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
+                    resultAction1, getLoggedInUser());
+        }
     }
 
     private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId, boolean isFromPlaylistDownload) {
@@ -10435,6 +10396,9 @@ public class AppCMSPresenter {
                         } else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
+
+                            Utils.setHls(appCMSMain.isHls());
+                        
 
                         getAppCMSSite(platformType);
                     }

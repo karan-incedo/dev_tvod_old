@@ -17,6 +17,7 @@ import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import io.realm.RealmQuery;
 
 /**
  * Created by sandeep.singh on 7/18/2017.
@@ -315,7 +316,7 @@ public class RealmController {
     public RealmResults<UserSubscriptionPlan> getUserSubscriptionPlan(String userId) {
         try {
             if (realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).count() > 0) {
-                return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
+                return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId").findAll();
             }
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get user subscription plan " + userId + ": " + e.getMessage());
