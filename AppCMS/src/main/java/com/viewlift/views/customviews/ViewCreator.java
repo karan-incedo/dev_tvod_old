@@ -2058,6 +2058,8 @@ public class ViewCreator {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
         } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+            if (moduleAPI.getContentData().get(0).getSeason().size() == 0)
+                return null;
             if (moduleAPI.getContentData().get(0).getSeason().size() == 1 &&
                     moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().size() == 0) {
                 return null;

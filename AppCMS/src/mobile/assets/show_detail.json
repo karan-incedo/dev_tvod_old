@@ -129,7 +129,7 @@
           "layout": {
             "mobile": {
               "yAxis": 262,
-              "xAxis": 297,
+              "xAxis": 334,
               "width": 28,
               "height": 28
             },
@@ -470,7 +470,7 @@
                       "topMargin": 0,
                       "bottomMargin": 0,
                       "width": 154,
-                      "height": 87
+                      "height": 104
                     },
                     "tabletPortrait": {
                       "leftMargin": 0,
@@ -497,7 +497,7 @@
                       "topMargin": 0,
                       "bottomMargin": 0,
                       "width": 154,
-                      "height": 87
+                      "height": 104
                     },
                     "tabletPortrait": {
                       "leftMargin": 0,
@@ -514,33 +514,27 @@
                   "layout": {
                     "mobile": {
                       "leftMargin": 0,
-                      "yAxis": 87,
+                      "yAxis": 89,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 154,
-                      "thumbnailWidth": 154,
-                      "thumbnailHeight": 87,
-                      "height": 5
+                      "width": 171,
+                      "height": 7
                     },
                     "tabletLandscape": {
                       "leftMargin": 0,
-                      "yAxis": 87,
+                      "yAxis": 85.5,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 154,
-                      "thumbnailWidth": 154,
-                      "thumbnailHeight": 87,
-                      "height": 5
+                      "width": 171,
+                      "height": 7
                     },
                     "tabletPortrait": {
                       "leftMargin": 0,
-                      "yAxis": 87,
+                      "yAxis": 85.5,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 154,
-                      "thumbnailWidth": 154,
-                      "thumbnailHeight": 87,
-                      "height": 5
+                      "width": 171,
+                      "height": 7
                     }
                   },
                   "type": "progressView",
@@ -705,21 +699,21 @@
                   "layout": {
                     "mobile": {
                       "yAxis": 6,
-                      "rightMargin": 4,
-                      "width": 35,
-                      "height": 35
+                      "rightMargin": 1,
+                      "width": 32,
+                      "height": 32
                     },
                     "tabletLandscape": {
                       "yAxis": 6,
-                      "rightMargin": 4,
-                      "width": 48,
-                      "height": 48
+                      "rightMargin": 1,
+                      "width": 40,
+                      "height": 40
                     },
                     "tabletPortrait": {
                       "yAxis": 6,
-                      "rightMargin": 4,
-                      "width": 48,
-                      "height": 48
+                      "rightMargin": 1,
+                      "width": 40,
+                      "height": 40
                     }
                   },
                   "action": "download",

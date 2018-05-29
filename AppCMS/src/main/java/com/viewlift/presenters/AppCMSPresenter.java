@@ -1459,7 +1459,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-///*
+/*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1506,9 +1506,9 @@ public class AppCMSPresenter {
                 }
             }).execute(params);
 
-  //*/
+  */
 
-            /*
+
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -2487,6 +2487,7 @@ public class AppCMSPresenter {
                                 break;
 
                             case SHOW_PAGE:
+                                setSelectedSeason(0);
                                 showPage = true;
                             case VIDEO_PAGE:
                                 appbarPresent = false;
@@ -15511,15 +15512,13 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
                 // TODO: uncomment for entitlement API
-                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);
-/*
+                        filmId);*/
                 url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
                         appCMSSite.getGist().getSiteInternalName());
-*/
             }
         } else {
             realmController = RealmController.with(currentActivity);

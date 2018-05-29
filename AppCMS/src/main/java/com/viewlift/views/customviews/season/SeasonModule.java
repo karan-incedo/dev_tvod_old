@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
@@ -120,8 +121,9 @@ public class SeasonModule extends ModuleView {
                 }
             }
 
-            seasonTab.setSelectedTabIndicatorColor(Color.parseColor("#ffffff"));
-            seasonTab.setSelectedTabIndicatorHeight((int) (3 * getResources().getDisplayMetrics().density));
+//            seasonTab.setSelectedTabIndicatorColor(Color.parseColor("#ffffff"));
+//            seasonTab.setSelectedTabIndicatorHeight((int) (3 * getResources().getDisplayMetrics().density));
+            seasonTab.setSelectedTabIndicatorHeight(0);
             seasonTab.setTabTextColors(Color.parseColor("#ffffff"),
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
@@ -142,9 +144,20 @@ public class SeasonModule extends ModuleView {
                 }
             }
 
-            reduceMarginsInTabs(seasonTab, 70);
-            TabLayout.Tab tab = seasonTab.getTabAt(appCMSPresenter.getSelectedSeason());
-            tab.select();
+            reduceMarginsInTabs(seasonTab, 10);
+            new Handler().postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            seasonTab.setScrollX(seasonTab.getWidth());
+                            if (seasonTab != null)
+                                seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();
+                        }
+                    }, 100);
+           /* int right = ((ViewGroup) seasonTab.getChildAt(0)).getChildAt(appCMSPresenter.getSelectedSeason()).getRight();
+            seasonTab.scrollTo(right,0);
+            seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();*/
+
             List<ContentDatum> adapterData = seasonList.get(appCMSPresenter.getSelectedSeason()).getEpisodes();
             SeasonTabSelectorBus.instanceOf().setTab(adapterData);
             seasonTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -164,7 +177,7 @@ public class SeasonModule extends ModuleView {
                 public void onTabReselected(TabLayout.Tab tab) {
                 }
             });
-            View root = seasonTab.getChildAt(0);
+            /*View root = seasonTab.getChildAt(0);
             if (root instanceof LinearLayout) {
                 ((LinearLayout) root).setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
                 GradientDrawable drawable = new GradientDrawable();
@@ -172,7 +185,7 @@ public class SeasonModule extends ModuleView {
                 drawable.setSize(2, 1);
                 ((LinearLayout) root).setDividerPadding(10);
                 ((LinearLayout) root).setDividerDrawable(drawable);
-            }
+            }*/
             childContainer.addView(moduleView1);
             if (module.getSettings() != null && !module.getSettings().isHidden()) {
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView1, false);
