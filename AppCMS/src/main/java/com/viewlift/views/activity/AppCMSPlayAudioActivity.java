@@ -146,6 +146,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         appCMSPresenter.setAudioActvityVisible(true);
         checkAudioDownloadStatus();
+        appCMSPresenter.setCancelAllLoads(false);
     }
 
     private void checkAudioDownloadStatus(){

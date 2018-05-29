@@ -3792,8 +3792,8 @@ public class ViewCreator {
                             mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
                             mMediaRouteButton.setPadding(8, 8, 8, 8);
                             mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
-
-                            setCasting(false, //** TODO: Replace with actual value from API response *//*
+                            boolean allowFreePlay = !appCMSPresenter.isAppSVOD();
+                            setCasting(allowFreePlay, //** TODO: Replace with actual value from API response *//*
                                     appCMSPresenter,
                                     mMediaRouteButton,
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
