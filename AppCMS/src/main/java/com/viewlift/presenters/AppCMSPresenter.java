@@ -2528,7 +2528,15 @@ public class AppCMSPresenter {
                                 screenType = ExtraScreenType.NONE;
                                 break;
                         }
-                        AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+
+                        AppCMSPageUI appCMSPageUI = null;
+                        if(pagePath.equalsIgnoreCase("/player/donny-moss")){
+                             appCMSPageUI = new GsonBuilder().create().fromJson(
+                                    loadJsonFromAssets(currentActivity, "player_detail.json"),
+                                    AppCMSPageUI.class);
+                        }else{
+                             appCMSPageUI = actionToPageMap.get(action);
+                        }
 
                         if (appCMSPageUI == null) {
                             MetaPage metaPage = actionTypeToMetaPageMap.get(actionType);
@@ -2558,18 +2566,23 @@ public class AppCMSPresenter {
                                         false);
                             }
                         }
+                        String apiUrl = null;
+                        if(pagePath.equalsIgnoreCase("/player/donny-moss")){
+                            apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
+                        }else{
+                            apiUrl = getApiUrl(usePageIdQueryParam,
+                                    false,
+                                    showPage,
+                                    baseUrl,
+                                    endPoint,
+                                    siteId,
+                                    pagePath,
+                                    appCMSPageUI != null &&
+                                            appCMSPageUI.getCaching() != null &&
+                                            !appCMSPageUI.getCaching().shouldOverrideCaching() &&
+                                            appCMSPageUI.getCaching().isEnabled());
+                        }
 
-                        String apiUrl = getApiUrl(usePageIdQueryParam,
-                                false,
-                                showPage,
-                                baseUrl,
-                                endPoint,
-                                siteId,
-                                pagePath,
-                                appCMSPageUI != null &&
-                                        appCMSPageUI.getCaching() != null &&
-                                        !appCMSPageUI.getCaching().shouldOverrideCaching() &&
-                                        appCMSPageUI.getCaching().isEnabled());
                         showLoader();
                         if (appCMSPageUI != null) {
                             int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
