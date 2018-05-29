@@ -18,6 +18,8 @@ public class BeaconBuffer extends Thread {
     private String streamId;
     private int bufferCount = 0;
     ContentDatum contentDatum;
+    private long liveSeekCounter;
+    private static final long MILLISECONDS_PER_SECOND = 1L;
 
     public BeaconBuffer(long beaconBufferTimeoutMsec,
                         AppCMSPresenter appCMSPresenter,
@@ -35,15 +37,18 @@ public class BeaconBuffer extends Thread {
         this.videoPlayerView = videoPlayerView;
         this.streamId = streamId;
         this.contentDatum = contentDatum;
+        this.liveSeekCounter = MILLISECONDS_PER_SECOND;
     }
 
     @Override
     public void run() {
         runBeaconBuffering = true;
         while (runBeaconBuffering) {
+
             long currentPosition = 0l;
             try {
                 Thread.sleep(beaconBufferTimeoutMsec);
+                liveSeekCounter += MILLISECONDS_PER_SECOND;
                 if (sendBeaconBuffering) {
 
                     if (appCMSPresenter != null && videoPlayerView != null &&
@@ -51,7 +56,16 @@ public class BeaconBuffer extends Thread {
                             videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) {
 
                         bufferCount++;
-                        currentPosition= (videoPlayerView.getCurrentPosition()/1000);
+                        if (videoPlayerView != null && contentDatum != null &&
+                                contentDatum.getStreamingInfo() !=null &&
+                                !contentDatum.getStreamingInfo().getIsLiveStream()) {
+                            currentPosition = videoPlayerView.getCurrentPosition() / 1000;
+                        }else if (contentDatum != null &&
+                                contentDatum.getStreamingInfo() !=null &&
+                                contentDatum.getStreamingInfo().getIsLiveStream()){
+                            currentPosition = liveSeekCounter;
+
+                        }
                         if (bufferCount >= 5) {
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
@@ -110,6 +124,7 @@ public class BeaconBuffer extends Thread {
         this.filmId = videoId;
         this.permaLink = permaLink;
         this.streamId = streamId;
+        this.liveSeekCounter = MILLISECONDS_PER_SECOND;
     }
 
     public void setFilmId(String filmId) {
