@@ -19,6 +19,7 @@ import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -288,7 +289,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
         audioManager = (AudioManager) context.getApplicationContext()
                 .getSystemService(Context.AUDIO_SERVICE);
 
-        useHls = !appCMSPresenter.getAppCMSMain().isHls()? context.getResources().getBoolean(R.bool.use_hls):appCMSPresenter.getAppCMSMain().isHls();
+        useHls = !Utils.isHLS()? context.getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
         defaultVideoResolution = context.getString(R.string.default_video_resolution);
         trailerKey = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
         parentScreenName = context.getString(R.string.app_cms_beacon_video_player_parent_screen_name);
