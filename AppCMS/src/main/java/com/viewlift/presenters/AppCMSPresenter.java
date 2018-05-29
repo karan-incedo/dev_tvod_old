@@ -6313,7 +6313,7 @@ public class AppCMSPresenter {
                             return currentAppVersion;
                         })
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                         .onErrorResumeNext(throwable -> Observable.empty())
                         .subscribe((result) -> Observable.just(result)
                                 .onErrorResumeNext(throwable -> Observable.empty())
@@ -18719,4 +18719,15 @@ public class AppCMSPresenter {
         }
         return false;
     }
+
+    public int getSelectedSeason() {
+        return selectedSeason;
+    }
+
+    public void setSelectedSeason(int selectedSeason) {
+        this.selectedSeason = selectedSeason;
+    }
+
+    int selectedSeason=0;
+
 }

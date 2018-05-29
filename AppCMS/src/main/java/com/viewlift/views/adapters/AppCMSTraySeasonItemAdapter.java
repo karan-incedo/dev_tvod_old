@@ -52,9 +52,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     private MotionEvent lastTouchDownEvent;
 
-    String componentViewType,seriesName;
+    String componentViewType, seriesName;
     List<Season_> seasonList;
     RecyclerView mRecyclerView;
+
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                        Module moduleAPI,
@@ -65,7 +66,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        String viewType,
                                        RecyclerView mRecyclerView) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
-        seasonList=new ArrayList<>();
+        seasonList = new ArrayList<>();
         seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
         Collections.reverse(seasonList);
         this.adapterData = seasonList.get(0).getEpisodes();
@@ -87,16 +88,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         this.componentViewType = viewType;
 
-        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<List<ContentDatum>>(){
+        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<List<ContentDatum>>() {
             @Override
             public void onSubscribe(Disposable d) {
 
             }
 
             @Override
-            public void onNext( List<ContentDatum> adapterDataSeason ) {
-                    adapterData = adapterDataSeason;
-                    updateData(mRecyclerView,adapterData);
+            public void onNext(List<ContentDatum> adapterDataSeason) {
+                adapterData = adapterDataSeason;
+                updateData(mRecyclerView, adapterData);
             }
 
             @Override
@@ -111,7 +112,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         });
 
     }
-
 
 
     private void sortData() {
@@ -171,7 +171,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
-
 
 
     @Override
@@ -391,7 +390,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     public void resetData(RecyclerView listView) {
         //
     }
-
 
 
     @Override

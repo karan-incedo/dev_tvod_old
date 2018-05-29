@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -72,7 +73,7 @@ public class SeasonModule extends ModuleView {
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         this.pageView = pageView;
-        seasonList=new ArrayList<>();
+        seasonList = new ArrayList<>();
         seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
         Collections.reverse(seasonList);
         init();
@@ -127,11 +128,12 @@ public class SeasonModule extends ModuleView {
 
             if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().size() > 0 && moduleAPI.getContentData().get(0).getSeason() != null) {
 
-                if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
-                    seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
-                } else {
-                    seasonTab.setTabMode(TabLayout.MODE_FIXED);
-                }
+//                if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
+                seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
+//                } else {
+//                    seasonTab.setTabMode(TabLayout.MODE_FIXED);
+//                }
+                seasonTab.setTabGravity(Gravity.LEFT);
 
                 for (Season_ season : seasonList) {
                     TabLayout.Tab firstTab = seasonTab.newTab();
@@ -141,10 +143,15 @@ public class SeasonModule extends ModuleView {
             }
 
             reduceMarginsInTabs(seasonTab, 70);
+            TabLayout.Tab tab = seasonTab.getTabAt(appCMSPresenter.getSelectedSeason());
+            tab.select();
+            List<ContentDatum> adapterData = seasonList.get(appCMSPresenter.getSelectedSeason()).getEpisodes();
+            SeasonTabSelectorBus.instanceOf().setTab(adapterData);
             seasonTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     int position = tab.getPosition();
+                    appCMSPresenter.setSelectedSeason(position);
                     List<ContentDatum> adapterData = seasonList.get(position).getEpisodes();
                     SeasonTabSelectorBus.instanceOf().setTab(adapterData);
                 }
