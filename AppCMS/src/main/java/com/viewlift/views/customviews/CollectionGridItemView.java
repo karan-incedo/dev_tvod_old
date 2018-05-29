@@ -302,7 +302,8 @@ public class CollectionGridItemView extends BaseView {
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-            if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+            if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY)
+            {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
@@ -718,6 +719,7 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
+                    inVisibleIfSeries(data,view);  //View is invisible if ContentType is Seriese
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
@@ -963,6 +965,8 @@ public class CollectionGridItemView extends BaseView {
                         }
                         ((TextView) view).setBackgroundColor(Color.parseColor("#7D000000"));
                         ((TextView) view).setTextColor(Color.parseColor("#ffffff"));
+                        inVisibleIfSeries(data,view);  //View is invisible if ContentType is Seriese
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(3);
@@ -1526,6 +1530,17 @@ public class CollectionGridItemView extends BaseView {
         @Override
         public int hashCode() {
             return ID.hashCode();
+        }
+    }
+
+    public void inVisibleIfSeries(final ContentDatum data, final View view){
+        if (data != null &&
+                data.getGist() != null &&
+                data.getGist().getContentType() != null &&
+                data.getGist().getContentType().equalsIgnoreCase("SERIES") ){
+            view.setVisibility(GONE);
+        }else{
+            view.setVisibility(VISIBLE);
         }
     }
 

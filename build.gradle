@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        realmVersion = "4.3.1"
+        realmVersion = "5.1.0"
         gradleBuildVersion = "3.0.0"
         playServicesVersion = "3.0.0"
     }
@@ -12,7 +12,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath "com.google.gms:google-services:${playServicesVersion}"
 

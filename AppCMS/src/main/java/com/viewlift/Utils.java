@@ -54,4 +54,12 @@ public class Utils {
           context.startService(intent);
     }
 
+    private static boolean hls;
+    public static boolean isHLS(){
+        return hls;
+    }
+
+    public static void setHls(boolean hls) {
+        hls = hls;
+    }
 }

@@ -5583,55 +5583,62 @@ public class AppCMSPresenter {
                     updateContentDatum.getGist() != null &&
                     updateContentDatum.getGist().getId() != null) {
                 updateContentDatum.setSeriesName(contentDatum.getSeriesName());
+                downloadURLParsing(updateContentDatum, resultAction1,isFromPlaylistDownload);
+
+               /* TODO bellow code to be remove once Entitlement API will work fine for every case
                 getAppCMSSignedURL(updateContentDatum.getGist().getId(), appCMSSignedURLResult -> currentActivity.runOnUiThread(() -> {
                     if (appCMSSignedURLResult != null) {
-                        try {
-
-                            long enqueueId;
-
-                            if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
-
-                                String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
-
-                                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
-
-                                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                                    if (appCMSStreamingInfo != null) {
-                                        updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                                    }
-                                }).execute(param);
-
-                                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
-                                return;
-                            }
-
-                            long ccEnqueueId = 0L;
-                            if (updateContentDatum.getContentDetails() != null &&
-                                    updateContentDatum.getContentDetails().getClosedCaptions() != null &&
-                                    !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                                    updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
-                                        .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
-                            }
-
-                            String downloadURL;
-
-                            int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
-                            downloadURL = getDownloadURL(updateContentDatum);
-                            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
-
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
-                            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
-                        } finally {
-                            appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
-                                    resultAction1, getLoggedInUser());
-                        }
+                        downloadURLParsing(updateContentDatum, resultAction1,isFromPlaylistDownload);
                     }
                 }));
+                //*/
             }
         });
+    }
+    private void downloadURLParsing(ContentDatum updateContentDatum,Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload){
+        try {
+
+            long enqueueId;
+
+            if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
+
+                String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
+
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
+
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
+                        updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                    }
+                }).execute(param);
+
+                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
+                return;
+            }
+
+            long ccEnqueueId = 0L;
+            if (updateContentDatum.getContentDetails() != null &&
+                    updateContentDatum.getContentDetails().getClosedCaptions() != null &&
+                    !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                    updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
+                        .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
+            }
+
+            String downloadURL;
+
+            int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+            downloadURL = getDownloadURL(updateContentDatum);
+            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
+        } finally {
+            appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
+                    resultAction1, getLoggedInUser());
+        }
     }
 
     private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId, boolean isFromPlaylistDownload) {
@@ -5960,7 +5967,9 @@ public class AppCMSPresenter {
                             resultAction1, getLoggedInUser());
                     cancelDownloadIconTimerTask(null);
                 },
-                null);
+                () -> {
+                    showLoadingDialog(false);
+                });
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -5969,7 +5978,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
-                    null);
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
@@ -6330,7 +6341,9 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
-                    null);
+                    () -> {
+                        showLoadingDialog(false);
+                    });
         } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
@@ -6759,6 +6772,7 @@ public class AppCMSPresenter {
 
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
+
         GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6816,6 +6830,8 @@ public class AppCMSPresenter {
             }
         }).execute(params);
         /*
+
+         /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6872,7 +6888,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-                //*/
+        */
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -10326,7 +10342,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.processedUIModules = false;
         this.processedUIPages = false;
-       // apikey =  Utils.getProperty("XAPI", currentActivity);
+        // apikey =  Utils.getProperty("XAPI", currentActivity);
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -10373,13 +10389,16 @@ public class AppCMSPresenter {
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         //apikey = currentActivity.getString(R.string.x_api_key);
-                        if(appCMSMain.getX_ApiKeys()!=null &&
+                        if (appCMSMain.getX_ApiKeys() != null &&
                                 appCMSMain.getX_ApiKeys().get(0).getX_ApiKey() != null &&
-                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())){
+                                !TextUtils.isEmpty(appCMSMain.getX_ApiKeys().get(0).getX_ApiKey())) {
                             apikey = appCMSMain.getX_ApiKeys().get(0).getX_ApiKey();
-                        }else {
+                        } else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
+
+                            Utils.setHls(appCMSMain.isHls());
+                        
 
                         getAppCMSSite(platformType);
                     }
@@ -11827,7 +11846,7 @@ public class AppCMSPresenter {
             uid = getDeviceId();
         }
 
-       // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        // int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         int currentPositionSecs = (int) (currentPosition);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -15491,10 +15510,16 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-               // changend from R.string.app_cms_content_detail_api_url to app_cms_entitlement_api_url API
+                // TODO: uncomment for entitlement API
                 url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId);
+/*
+                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSSite.getGist().getSiteInternalName());
+*/
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -17181,10 +17206,12 @@ public class AppCMSPresenter {
 
     public void updatePlaybackControl() {
         try {
-            Intent intent = new Intent();
-            intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
-            intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
-            currentActivity.sendBroadcast(intent);
+            if (currentActivity != null) {
+                Intent intent = new Intent();
+                intent.setAction(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE);
+                intent.putExtra(AudioServiceHelper.APP_CMS_PLAYBACK_UPDATE_MESSAGE, true);
+                currentActivity.sendBroadcast(intent);
+            }
         } catch (Exception ex) {
         }
     }

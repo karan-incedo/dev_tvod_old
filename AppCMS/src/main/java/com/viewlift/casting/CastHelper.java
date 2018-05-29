@@ -153,7 +153,11 @@ public class CastHelper {
             mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
                     MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
             if (mActivity instanceof AppCMSPageActivity)
-                addMediaRouterDiscoveryFragment();
+                try {
+                    addMediaRouterDiscoveryFragment();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
         }
 
     }
