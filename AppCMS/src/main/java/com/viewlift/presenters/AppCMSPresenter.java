@@ -18369,7 +18369,7 @@ public class AppCMSPresenter {
                                       boolean launchActivity,
                                       Action0 callback, boolean isDeepLink) {
 
-        if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(articleId) && articlePage!= null) {
             showLoader();
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(articlePage.getPageId());
@@ -18462,6 +18462,8 @@ public class AppCMSPresenter {
                             }
                         }, isDeepLink);
             }
+        }else{
+            launchErrorActivity(PlatformType.ANDROID);
         }
     }
 
