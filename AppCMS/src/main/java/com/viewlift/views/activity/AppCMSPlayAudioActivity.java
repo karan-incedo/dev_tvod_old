@@ -120,7 +120,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     protected void onStart() {
         super.onStart();
-        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override
@@ -133,7 +132,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     protected void onDestroy() {
         super.onDestroy();
         appCMSPresenter.setAudioActvityVisible(false);
-        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override
