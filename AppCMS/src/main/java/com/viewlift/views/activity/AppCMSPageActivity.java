@@ -3122,7 +3122,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getPageName() != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
 
-        } /*else {
+        } else{
+            if (appCMSPresenter.videoPlayerView != null ) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
+            }
+        }/*else {
             ViewCreator.pausePlayer();
             ViewCreator.clearPlayerView();
         }*/
