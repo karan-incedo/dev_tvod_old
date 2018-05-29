@@ -6450,6 +6450,17 @@ public class AppCMSPresenter {
         if (title.contains("Setting")) {
             if(null != subNavPage) {
                 appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+                if(appCMSPageUI != null && ( appCMSPageUI.getModuleList() == null || appCMSPageUI.getModuleList().size() == 0)){
+                    appCMSPageUI = new AppCMSPageUI();
+                    ModuleList moduleList = new ModuleList();
+                    moduleList.setBlockName("subNav01");
+                    moduleList.setType("AC SubNav 01");
+                    moduleList.setView("AC SubNav 01");
+                    moduleList.setId("Setting");
+                    ArrayList<ModuleList> moduleListArrayList = new ArrayList<ModuleList>();
+                    moduleListArrayList.add(moduleList);
+                    appCMSPageUI.setModuleList(moduleListArrayList);
+                }
             }else{
                 appCMSPageUI = new AppCMSPageUI();
                 ModuleList moduleList = new ModuleList();
@@ -10380,7 +10391,7 @@ public class AppCMSPresenter {
                         }else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
-
+                        //apikey = Utils.getProperty("XAPI", currentActivity);
                         getAppCMSSite(platformType);
                     }
                 } catch (Exception e) {

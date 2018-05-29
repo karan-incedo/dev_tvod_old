@@ -172,8 +172,10 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
         signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
-        loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
-        signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+        if(appCMSPresenter.isLeftNavigationEnabled()) {
+            loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+            signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+        }
 
 
         String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
