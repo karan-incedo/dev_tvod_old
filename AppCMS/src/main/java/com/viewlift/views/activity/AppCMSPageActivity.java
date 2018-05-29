@@ -353,7 +353,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
                 }
             } catch (ClassCastException e) {
-                //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+                Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
             }
         }
 
@@ -2322,7 +2322,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.restartInternalEvents();
                 appCMSPresenter.dismissOpenDialogs(null);
             } catch (EmptyStackException e) {
-                //Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
+                Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
             }
         } else {
             boolean createFragment = true;
@@ -2345,7 +2345,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     getSupportFragmentManager().popBackStackImmediate();
                     createFragment = false;
                 } catch (IllegalStateException e) {
-                    //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 if ((i < distanceFromStackTop - 1) ||
                         (!configurationChanged && !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()))) {
@@ -2363,6 +2363,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     createFragment = currentAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                 } catch (Exception e) {
                     //
+                    Log.e(TAG, ""+e.toString());
+
                 }
             }
 
@@ -2372,7 +2374,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
                             && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
                 } catch (Exception e) {
-                    //
+                    Log.e(TAG, ""+e.toString());
                 }
             }
 
@@ -2428,7 +2430,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     handleNavbar(appCMSBinder);
                                 }
                             } catch (IllegalStateException e) {
-                                //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                             }
                             break;
 
@@ -2445,6 +2447,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             break;
                     }
                 } catch (Exception e) {
+                    Log.e(TAG, ""+e.toString());
+
                 }
             }
 
@@ -2977,6 +2981,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             reportFullyDrawn();
         } catch (Exception e) {
+            Log.e(TAG, ""+e.toString());
 
         }
     }
@@ -3006,7 +3011,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     CastServiceProvider.getInstance(this).showIntroOverLay();
                 }
             } catch (Exception e) {
-                //
+                Log.e(TAG, ""+e.toString());
+
             }
         }
         if (CastServiceProvider.getInstance(this).shouldCastMiniControllerVisible()) {
@@ -3036,7 +3042,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.setCurrentMediaRouteButtonParent((ViewGroup) mMediaRouteButton.getParent());
             }
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+            Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
     }
 
@@ -3060,7 +3066,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
             } catch (Exception e) {
-                //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
 
             try {

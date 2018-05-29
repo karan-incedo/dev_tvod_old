@@ -37,6 +37,8 @@ public class AppCMSPageAPICall {
 
     private final AppCMSPageAPIRest appCMSPageAPIRest;
     private final String apiKey;
+    private String tempApiKey;
+
     private final Gson gson;
     private final File storageDirectory;
     private Map<String, String> headersMap;
@@ -97,11 +99,16 @@ public class AppCMSPageAPICall {
             }
         }
 
+
+        if (pageId.equalsIgnoreCase("/player/donny-moss")) {
+            tempApiKey = "XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F";
+        } else
+            tempApiKey = apiKey;
         if (appCMSPageAPI == null) {
             try {
                 headersMap.clear();
                 if (!TextUtils.isEmpty(apiKey)) {
-                    headersMap.put("x-api-key", apiKey);
+                    headersMap.put("x-api-key", tempApiKey);
                 }
                 if (!TextUtils.isEmpty(authToken)) {
                     headersMap.put("Authorization", authToken);

@@ -2537,6 +2537,7 @@ public class AppCMSPresenter {
                         }else{
                              appCMSPageUI = actionToPageMap.get(action);
                         }
+                        jsonValueKeyMap.put("AC PlayerDetail 01",AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
 
                         if (appCMSPageUI == null) {
                             MetaPage metaPage = actionTypeToMetaPageMap.get(actionType);
@@ -2568,6 +2569,8 @@ public class AppCMSPresenter {
                         }
                         String apiUrl = null;
                         if(pagePath.equalsIgnoreCase("/player/donny-moss")){
+                            navigationPages.put("b102b0d2-503f-46af-99e7-6a4a63458d31",appCMSPageUI);
+
                             apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
                         }else{
                             apiUrl = getApiUrl(usePageIdQueryParam,
@@ -2611,6 +2614,8 @@ public class AppCMSPresenter {
                                         @Override
                                         public void call(final AppCMSPageAPI appCMSPageAPI) {
                                             if (appCMSPageAPI != null) {
+                                                navigationPageData.put(this.pageId, appCMSPageAPI);
+
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(this.action
                                                         + BaseView.isLandscape(currentActivity));
@@ -2666,6 +2671,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
 
     /**
      * This will create a Binder object containing a default set of flags used for launching the Video Player.

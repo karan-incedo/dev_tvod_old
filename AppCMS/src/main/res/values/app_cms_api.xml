@@ -232,7 +232,8 @@
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_game_detail_module">AC GameDetail 01</string>
-    <string name="app_cms_player_state_module">AC GameDetail 01</string>
+    <string name="app_cms_player_state_module">AC playerState 01</string>
+    <string name="app_cms_player_detail_module">AC PlayerDetail 01</string>
 
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
@@ -316,6 +317,7 @@
     <string name="app_cms_page_photogallery_nextButton">nextButtonPG</string>
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
+    <string name="app_cms_page_player_Img">playerImage</string>
 
     <string name="app_cms_page_history_title">My History</string>
     <string name="app_cms_page_watchlist_title">My Watchlist</string>

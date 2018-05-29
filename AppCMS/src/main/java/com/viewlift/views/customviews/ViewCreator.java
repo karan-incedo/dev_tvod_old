@@ -1940,7 +1940,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(0);
-                } else if (moduleInfo.getSettings() != null &&
+                 } else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;
@@ -1973,7 +1973,7 @@ public class ViewCreator {
                 module.setBlockName(moduleInfo.getBlockName());
             }
 
-            boolean createModule = !modulesToIgnore.contains(module.getType());
+               boolean createModule = !modulesToIgnore.contains(module.getType());
 
             if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
@@ -5184,6 +5184,20 @@ public class ViewCreator {
                         }
                         Glide.with(selectedImg.getContext()).load(selectedImgUrl).into(selectedImg);
                         break;
+
+                    case PAGE_PHOTO_PLAYER_IMAGE:
+
+                        String playerImgUrl = "";
+                        ImageView playerImageView = (ImageView) componentViewResult.componentView;
+                        playerImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        if (moduleAPI.getContentData()!= null && moduleAPI.getContentData().get(0).getGist() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getImageGist() != null) {
+                            if (moduleAPI.getContentData().get(0).getGist().getImageGist().get_3x4() != null) {
+                                playerImgUrl =moduleAPI.getContentData().get(0).getGist().getImageGist().get_3x4();
+                            }
+                        }
+                        Glide.with(playerImageView.getContext()).load(playerImgUrl).into(playerImageView);
+                        break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -5528,7 +5542,7 @@ public class ViewCreator {
                 TableLayout table = new TableLayout(context);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 10; i++) {
 
                     TableRow row = new TableRow(context);
                     row.setWeightSum(2.0f);
@@ -5938,6 +5952,7 @@ public class ViewCreator {
                     case PAGE_API_TEAMDETAIL_MODULE_KEY:
                     case PAGE_GAME_DETAIL_MODULE_KEY:
                     case PAGE_PLAYER_STATE_MODULE_KEY:
+                    case PAGE_PLAYER_DETAIL_MODULE_KEY:
 
 
                         if (appCMSPageAPI.getModules() != null
