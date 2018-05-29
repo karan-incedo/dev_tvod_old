@@ -81,6 +81,14 @@ rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.png
 rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.jpg
 rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.png
 
+
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.png
+
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.png
+
+
 rm -rf ./AppCMS/src/main/res/drawable/logo_icon.jpg
 rm -rf ./AppCMS/src/main/res/drawable/logo_icon.png
 
@@ -114,8 +122,12 @@ postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading 
 aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxhdpi ./AppCMS/src/main/res/drawable-xxhdpi/ --recursive
 postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-mdpi ./AppCMS/src/main/res/drawable-mdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
-#2: Slack Second Message. Downloading Resources
+aws s3 cp s3://${19}/$1/build/android/resource/drawable-hdpi ./AppCMS/src/main/res/drawable-hdpi/ --recursive
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
+2: Slack Second Message. Downloading Resources
 fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID DOWNLOADING RESOURCES AND METADATA. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
 
@@ -201,7 +213,7 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
 
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Generated and Preparing the Build for upload to S3 Bucket" 70 " " 0
        
-        myApkName="${4}-mobile.apk"
+        myApkName="${4}-android-${3}.apk"
 
         mv ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}"
 
@@ -209,7 +221,7 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
        
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 75 " " 0
 
-        postUpdateLink ${17} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/android/${myApkName}" 
+        postUpdateLink ${17} $UPLOAD_URL "http://appcms-config-prod.s3.amazonaws.com/$1/build/android/${myApkName}" 
 
 
         if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
