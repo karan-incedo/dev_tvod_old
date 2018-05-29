@@ -8718,11 +8718,14 @@ public class AppCMSPresenter {
         }
     }
 
-    private void launchErrorActivity(PlatformType platformType) {
+    private void launchErrorActivity(PlatformType platformType, String message) {
         if (platformType == PlatformType.ANDROID) {
             try {
                 if (!cancelLoad && !cancelAllLoads) {
                     Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
+                    if(message != null && !TextUtils.isEmpty(message)) {
+                        errorIntent.putExtra("error_message", message);
+                    }
                     currentActivity.startActivity(errorIntent);
                 }
             } catch (Exception e) {
@@ -13678,7 +13681,7 @@ public class AppCMSPresenter {
 
             }
         } else if (null != currentActivity && getPlatformType() == PlatformType.TV) {
-            launchErrorActivity(PlatformType.TV);
+            launchErrorActivity(PlatformType.TV, null);
         }
     }
 
@@ -13788,11 +13791,11 @@ public class AppCMSPresenter {
                                         break;
                                 }
                             } else {
-                                launchErrorActivity(platformType);
+                                launchErrorActivity(platformType, null);
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
-                            launchErrorActivity(platformType);
+                            launchErrorActivity(platformType, null);
                         }
                     }, apikey).execute(url, !isNetworkConnected());
         } else {
@@ -14889,7 +14892,7 @@ public class AppCMSPresenter {
                 if (tryCount < 2) {
                     getAppCMSTV(tryCount + 1);
                 } else {
-                    launchErrorActivity(PlatformType.TV);
+                    launchErrorActivity(PlatformType.TV, null);
                 }
             } else {
 
@@ -18463,7 +18466,7 @@ public class AppCMSPresenter {
                         }, isDeepLink);
             }
         }else{
-            launchErrorActivity(PlatformType.ANDROID);
+            launchErrorActivity(PlatformType.ANDROID, "Artical Page UI not available");
         }
     }
 

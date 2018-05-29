@@ -16,7 +16,9 @@ import com.viewlift.R;
  */
 
 public class AppCMSErrorFragment extends Fragment {
-    public static AppCMSErrorFragment newInstance() {
+    static String message= null;
+    public static AppCMSErrorFragment newInstance(String errorMessage) {
+        message = errorMessage;
         return new AppCMSErrorFragment();
     }
 
@@ -25,7 +27,13 @@ public class AppCMSErrorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_error_page, container, false);
         TextView errorTextView = (TextView) view.findViewById(R.id.app_cms_error_textview);
-        errorTextView.setText(Html.fromHtml(getString(R.string.error_loading_page)));
+        if (message!=null){
+            message =message +"!\nPlease try again later!";
+            errorTextView.setText( message);
+        }else {
+            errorTextView.setText(Html.fromHtml(getString(R.string.error_loading_page)));
+        }
+
         return view;
     }
 }
