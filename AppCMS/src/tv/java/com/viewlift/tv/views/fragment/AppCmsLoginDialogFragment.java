@@ -155,9 +155,11 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
             signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
-            loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
-            signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
 
+            if(appCMSPresenter.isLeftNavigationEnabled()) {
+                loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+                signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+            }
             loginContaineer = view.findViewById(R.id.nav_item_login_layout);
             signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
 
