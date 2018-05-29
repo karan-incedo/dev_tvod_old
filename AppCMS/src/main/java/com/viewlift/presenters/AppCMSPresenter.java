@@ -6465,6 +6465,17 @@ public class AppCMSPresenter {
         if (title.contains("Setting")) {
             if(null != subNavPage) {
                 appCMSPageUI = navigationPages.get(subNavPage.getPageId());
+                if(appCMSPageUI != null && ( appCMSPageUI.getModuleList() == null || appCMSPageUI.getModuleList().size() == 0)){
+                    appCMSPageUI = new AppCMSPageUI();
+                    ModuleList moduleList = new ModuleList();
+                    moduleList.setBlockName("subNav01");
+                    moduleList.setType("AC SubNav 01");
+                    moduleList.setView("AC SubNav 01");
+                    moduleList.setId("Setting");
+                    ArrayList<ModuleList> moduleListArrayList = new ArrayList<ModuleList>();
+                    moduleListArrayList.add(moduleList);
+                    appCMSPageUI.setModuleList(moduleListArrayList);
+                }
             }else{
                 appCMSPageUI = new AppCMSPageUI();
                 ModuleList moduleList = new ModuleList();
@@ -8719,11 +8730,14 @@ public class AppCMSPresenter {
         }
     }
 
-    private void launchErrorActivity(PlatformType platformType) {
+    private void launchErrorActivity(PlatformType platformType, String message) {
         if (platformType == PlatformType.ANDROID) {
             try {
                 if (!cancelLoad && !cancelAllLoads) {
                     Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
+                    if(message != null && !TextUtils.isEmpty(message)) {
+                        errorIntent.putExtra("error_message", message);
+                    }
                     currentActivity.startActivity(errorIntent);
                 }
             } catch (Exception e) {
@@ -10397,10 +10411,8 @@ public class AppCMSPresenter {
                         } else {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
-
                             Utils.setHls(appCMSMain.isHls());
                         
-
                         getAppCMSSite(platformType);
                     }
                 } catch (Exception e) {
@@ -13679,7 +13691,7 @@ public class AppCMSPresenter {
 
             }
         } else if (null != currentActivity && getPlatformType() == PlatformType.TV) {
-            launchErrorActivity(PlatformType.TV);
+            launchErrorActivity(PlatformType.TV, null);
         }
     }
 
@@ -13789,11 +13801,11 @@ public class AppCMSPresenter {
                                         break;
                                 }
                             } else {
-                                launchErrorActivity(platformType);
+                                launchErrorActivity(platformType, null);
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
-                            launchErrorActivity(platformType);
+                            launchErrorActivity(platformType, null);
                         }
                     }, apikey).execute(url, !isNetworkConnected());
         } else {
@@ -14890,7 +14902,7 @@ public class AppCMSPresenter {
                 if (tryCount < 2) {
                     getAppCMSTV(tryCount + 1);
                 } else {
-                    launchErrorActivity(PlatformType.TV);
+                    launchErrorActivity(PlatformType.TV, null);
                 }
             } else {
 
@@ -18368,7 +18380,7 @@ public class AppCMSPresenter {
                                       boolean launchActivity,
                                       Action0 callback, boolean isDeepLink) {
 
-        if (currentActivity != null && !TextUtils.isEmpty(articleId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(articleId) && articlePage!= null) {
             showLoader();
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(articlePage.getPageId());
@@ -18461,6 +18473,8 @@ public class AppCMSPresenter {
                             }
                         }, isDeepLink);
             }
+        }else{
+            launchErrorActivity(PlatformType.ANDROID, "Artical Page UI not available");
         }
     }
 

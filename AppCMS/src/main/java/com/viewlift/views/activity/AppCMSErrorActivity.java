@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
@@ -38,6 +39,8 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     private ConnectivityManager connectivityManager;
     private BroadcastReceiver networkConnectedReceiver;
     private boolean timerScheduled;
+    private String errorMessage = null;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +53,12 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_error);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment errorFragment = AppCMSErrorFragment.newInstance();
+        if (getIntent()!= null &&
+                getIntent().getStringExtra("error_message")!= null &&
+                !TextUtils.isEmpty(getIntent().getStringExtra("error_message")) ){
+            errorMessage = getIntent().getStringExtra("error_message");
+        }
+        Fragment errorFragment = AppCMSErrorFragment.newInstance(errorMessage);
         fragmentTransaction.add(R.id.error_fragment, errorFragment, ERROR_TAG);
         fragmentTransaction.commit();
 
