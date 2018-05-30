@@ -18755,7 +18755,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if (null != appCMSMain &&
+        if(!Utils.isFireTVDevice(currentContext)){
+            return true;
+        }else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");

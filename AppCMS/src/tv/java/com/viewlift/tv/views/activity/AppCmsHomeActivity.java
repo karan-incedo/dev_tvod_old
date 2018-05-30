@@ -472,7 +472,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
-            getFragmentManager().popBackStack();
+            getFragmentManager().popBackStackImmediate();
             appCMSBinderStack.pop();
         }
 
