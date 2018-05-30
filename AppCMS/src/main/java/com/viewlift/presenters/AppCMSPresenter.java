@@ -187,7 +187,6 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -1496,7 +1495,11 @@ public class AppCMSPresenter {
                         },null);
                         } else if (platformType.equals(PlatformType.TV)) {
                             String title = currentActivity.getString(R.string.app_cms_unable_to_play_video_error_title);
-                            openTVErrorDialog(message, title, false);
+                            openTVErrorDialog(appCMSEntitlementResponse.getErrorMessage() != null
+                                    ? appCMSEntitlementResponse.getErrorMessage()
+                                    : message,
+                                    title,
+                                    false);
                         }
                     }
 
