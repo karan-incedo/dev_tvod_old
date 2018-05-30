@@ -301,7 +301,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 }
             }
             setTopBarStatus();
-            //appCMSPresenter.clearPageAPIData(()->{},true);
+
         });
         videoDataId = videoId;
         sentBeaconPlay = false;
