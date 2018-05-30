@@ -1874,7 +1874,12 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else*/
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+                /*if (moduleInfo.getBlockName().contains("showDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(14);
+                } else*/ if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);

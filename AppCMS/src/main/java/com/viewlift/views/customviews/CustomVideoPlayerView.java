@@ -301,6 +301,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 }
             }
             setTopBarStatus();
+            //appCMSPresenter.clearPageAPIData(()->{},true);
         });
         videoDataId = videoId;
         sentBeaconPlay = false;
@@ -1150,7 +1151,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
             }
             if (!isLiveStream && !appCMSPresenter.isUserSubscribed()) {
-                adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+                //adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+                adsUrl = appCMSPresenter.getAdsUrl(contentDatum.getGist().getPermalink());
             }
         }
         shouldRequestAds = adsUrl != null && !TextUtils.isEmpty(adsUrl);
