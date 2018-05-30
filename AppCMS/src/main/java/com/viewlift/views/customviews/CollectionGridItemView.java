@@ -354,12 +354,16 @@ public class CollectionGridItemView extends BaseView {
                             Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_port);
                         } else {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
-                                Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
-                                placeholder = R.drawable.vid_image_placeholder_square;
-                            } else {
-                                Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_16x9);
-                                placeholder = R.drawable.vid_image_placeholder_16x9;
+                            try {
+                                if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
+                                    Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
+                                    placeholder = R.drawable.vid_image_placeholder_square;
+                                } else {
+                                    Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_16x9);
+                                    placeholder = R.drawable.vid_image_placeholder_16x9;
+                                }
+                            } catch (IllegalArgumentException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
