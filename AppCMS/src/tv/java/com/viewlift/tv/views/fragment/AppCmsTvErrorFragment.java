@@ -76,11 +76,12 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         appCMSPresenter =
                 ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
-        String textColor = Utils.getTextColor(getActivity(),appCMSPresenter);
+        String textColor = appCMSPresenter.getAppTextColor();
         String backGroundColor = appCMSPresenter.getAppBackgroundColor();
         String focusColor = Utils.getFocusColor(getActivity(),appCMSPresenter);
 
         errorTextView.setTextColor(Color.parseColor(textColor));
+        headerView.setTextColor(Color.parseColor(textColor));
 
         Button btnClose = (Button) view.findViewById(R.id.btn_close);
         Component btnComponent1 = new Component();
