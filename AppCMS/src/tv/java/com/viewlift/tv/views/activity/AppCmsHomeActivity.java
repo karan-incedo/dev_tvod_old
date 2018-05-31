@@ -380,15 +380,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.black_shadow).setVisibility(View.VISIBLE);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        if (appCMSPresenter.isLeftNavigationEnabled()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showNavigation(false);
-                }
-            }, 3000);
-        }
     }
 
     private void showMenuIcon(int visibility) {
