@@ -163,7 +163,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         detectViewTypes(jsonValueKeyMap, viewType);
         sortData();
         if (isDonwloadPage) {
-            adapterData= appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video));
+//            adapterData= appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video));
             DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
                 @Override
                 public void onSubscribe(Disposable d) {

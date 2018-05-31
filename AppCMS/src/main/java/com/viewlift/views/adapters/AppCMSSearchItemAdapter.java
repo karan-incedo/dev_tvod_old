@@ -111,9 +111,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
                     && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
                 appCMSPresenter.setCurrentArticleIndex(-1);
-                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false, null,false);
+                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false, null, false);
                 return;
-            }else if(appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+            } else if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
                     && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
                 appCMSPresenter.navigateToPhotoGalleryPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), null, false);
                 return;
@@ -134,7 +134,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSSearchResults.get(adapterPosition).getGist().getId(), 0);
                 return;
             }
-             /*Get playlist data and open playlist page*/
+            /*Get playlist data and open playlist page*/
             if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
                     && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
                 appCMSPresenter.navigateToPlaylistPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false);
@@ -144,7 +144,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             try {
                 String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
                 String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
-                if (permalink.contains(viewHolder.view.getContext().getString(R.string.app_cms_shows_deeplink_path_name))) {
+                if (permalink.contains(viewHolder.view.getContext().getString(R.string.app_cms_shows_deeplink_path_name))||
+                        appCMSSearchResults.get(adapterPosition).getGist().getContentType().equals(context.getString(R.string.app_cms_episodic_key_type))) {
                     action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
                 }
                 String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
@@ -159,7 +160,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                         0,
                         null)) {
                 }
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -256,7 +257,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     url,
                     imageWidth,
                     imageHeight);
-            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder).fitCenter();;
+            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder).fitCenter();
+            ;
 
             Glide.with(viewHolder.view.getContext())
                     .load(imageUrl).apply(requestOptions)
@@ -368,7 +370,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         FrameLayout parentLayout;
         ImageView filmThumbnail;
         ImageView gridOptions;
-        TextView filmTitle,thumbnailInfo;
+        TextView filmTitle, thumbnailInfo;
         RelativeLayout titleLayout;
         RelativeLayout filmThumbnailLayout;
 
@@ -400,7 +402,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.thumbnailInfo.setLayoutParams(thumbnailInfoParams);
 
             this.filmThumbnailLayout.addView(this.filmThumbnail);
-            this.filmThumbnailLayout.addView( this.thumbnailInfo);
+            this.filmThumbnailLayout.addView(this.thumbnailInfo);
 
             this.parentLayout.addView(this.filmThumbnailLayout);
 
@@ -450,7 +452,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     }
 
     void applySportsStyleDefault(ViewHolder viewHolder, Bitmap image) {
-        viewHolder.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(),image.getHeight()));
+        viewHolder.filmThumbnailLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), image.getHeight()));
         viewHolder.filmThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(image.getWidth(), image.getHeight()));
         viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -463,7 +465,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.filmThumbnail.setScaleType(ImageView.ScaleType.FIT_XY);
     }
 
-    private void setThumbInfoText(View view,Gist data){
+    private void setThumbInfoText(View view, Gist data) {
         String thumbInfo = null;
         if (data.getPublishDate() != null) {
             thumbInfo = getDateFormat(Long.parseLong(data.getPublishDate()), "MMM dd");

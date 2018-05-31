@@ -7,10 +7,12 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -145,6 +147,7 @@ public class SeasonModule extends ModuleView {
             }
 
             reduceMarginsInTabs(seasonTab, 10);
+            changeTabsFont(seasonTab);
             new Handler().postDelayed(
                     new Runnable() {
                         @Override
@@ -153,7 +156,7 @@ public class SeasonModule extends ModuleView {
                             if (seasonTab != null)
                                 seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();
                         }
-                    }, 100);
+                    }, 10);
            /* int right = ((ViewGroup) seasonTab.getChildAt(0)).getChildAt(appCMSPresenter.getSelectedSeason()).getRight();
             seasonTab.scrollTo(right,0);
             seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();*/
@@ -208,6 +211,25 @@ public class SeasonModule extends ModuleView {
             }
             tabLayout.requestLayout();
         }
+    }
+
+    private void changeTabsFont(TabLayout tabLayout) {
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    ((TextView) tabViewChild).setTextSize(25);
+                    ((TextView) tabViewChild).setSingleLine(false);
+                    ((TextView) tabViewChild).setEllipsize(TextUtils.TruncateAt.END);
+                    ((TextView) tabViewChild).setLines(1);
+                }
+            }
+        }
+        tabLayout.requestLayout();
     }
 
     Component recyclerViewComponent;

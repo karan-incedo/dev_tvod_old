@@ -8374,7 +8374,9 @@ public class AppCMSPresenter {
         //ViewCreator.clearPlayerView();
 
         boolean result = false;
-
+        if(currentActivity instanceof AppCMSPlayAudioActivity){
+            setCancelAllLoads(false);
+        }
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
 
             if (launched) {

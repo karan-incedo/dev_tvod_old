@@ -612,21 +612,21 @@
                   "layout": {
                     "mobile": {
                       "topMargin": 64,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 25,
                       "fontSize": 8,
                       "height": 20
                     },
                     "tabletLandscape": {
                       "topMargin": 60,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 25,
                       "fontSize": 11,
                       "height": 20
                     },
                     "tabletPortrait": {
                       "topMargin": 60,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 25,
                       "fontSize": 11,
                       "height": 20
@@ -643,21 +643,21 @@
                   "layout": {
                     "mobile": {
                       "topMargin": 78,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 25,
                       "fontSize": 8,
                       "height": 20
                     },
                     "tabletLandscape": {
                       "topMargin": 74,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 32,
                       "fontSize": 11,
                       "height": 20
                     },
                     "tabletPortrait": {
                       "topMargin": 74,
-                      "rightMargin": 6,
+                      "rightMargin": 8,
                       "width": 30,
                       "fontSize": 11,
                       "height": 20
@@ -699,19 +699,19 @@
                   "layout": {
                     "mobile": {
                       "yAxis": 6,
-                      "rightMargin": 1,
+                      "rightMargin": 6,
                       "width": 32,
                       "height": 32
                     },
                     "tabletLandscape": {
                       "yAxis": 6,
-                      "rightMargin": 1,
+                      "rightMargin": 6,
                       "width": 40,
                       "height": 40
                     },
                     "tabletPortrait": {
                       "yAxis": 6,
-                      "rightMargin": 1,
+                      "rightMargin": 6,
                       "width": 40,
                       "height": 40
                     }
