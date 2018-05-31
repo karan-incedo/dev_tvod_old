@@ -25,6 +25,67 @@ public class Gist implements Serializable {
     @Expose
     String title;
 
+    public String getWeight() {
+
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    @SerializedName("weight")
+    @Expose
+    String weight;
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    @SerializedName("dob")
+    @Expose
+    String dob;
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getBirthPlace() {
+        return birthPlace;
+    }
+
+    public void setBirthPlace(String birthPlace) {
+        this.birthPlace = birthPlace;
+    }
+
+    @SerializedName("birthPlace")
+    @Expose
+    String birthPlace;
+
+    @SerializedName("height")
+    @Expose
+    String height;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @SerializedName("firstName")
+    @Expose
+    String firstName;
+
     @SerializedName("logLine")
     @Expose
     String logLine;

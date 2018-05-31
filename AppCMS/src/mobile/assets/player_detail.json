@@ -12,7 +12,7 @@
       "components": []
     },
     {
-      "id": "4d30e510-9a02-49df-9eca-675c3fa057b0",
+      "id": "c79307cf-31b7-4af8-96ce-3a0e39bef22a",
       "settings": {},
       "view": "AC PlayerDetail 01",
       "type": "AC PlayerDetail 01",
@@ -72,7 +72,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ffffff",
           "fontWeight": "Bold",
           "key": "playerName"
         },
@@ -81,7 +81,7 @@
             "mobile": {
               "yAxis": 18,
               "xAxis": 187,
-              "width": 103,
+              "width": 210,
               "fontSize": 40,
               "height": 48
             },
@@ -105,7 +105,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ff0000",
           "fontWeight": "Black",
           "key": "playerScore"
         },
@@ -138,7 +138,7 @@
             "mobile": {
               "yAxis": 76,
               "xAxis": 20,
-              "width": 150,
+              "width": 185,
               "fontSize": 18,
               "height": 21
             },
@@ -162,7 +162,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "text": "WEIGHT DIVISION",
+          "textColor": "#9d9d9d",
           "fontWeight": "Regular",
           "key": "playerWeightDivision"
         },
@@ -170,10 +171,10 @@
           "layout": {
             "mobile": {
               "yAxis": 98,
-              "width": 150,
+              "width": 185,
               "xAxis": 20,
-              "fontSize": 24,
-              "height": 21
+              "fontSize": 18,
+              "height": 24
             },
             "tabletLandscape": {
               "yAxis": 101,
@@ -195,7 +196,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ffffff",
           "fontWeight": "Black",
           "key": "playerWeightDivisionValue"
         },
@@ -203,7 +204,7 @@
           "layout": {
             "mobile": {
               "yAxis": 203,
-              "width": 66,
+              "width": 185,
               "xAxis": 20,
               "fontSize": 18,
               "height": 21
@@ -228,7 +229,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "text": "HEIGHT",
+          "textColor": "#9d9d9d",
           "fontWeight": "Regular",
           "key": "playerHeight"
         },
@@ -237,9 +239,9 @@
             "mobile": {
               "yAxis": 225,
               "xAxis": 20,
-              "width": 59,
+              "width": 185,
               "fontSize": 18,
-              "height": 28
+              "height": 23
             },
             "tabletLandscape": {
               "yAxis": 101,
@@ -261,7 +263,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ffffff",
           "fontWeight": "Black",
           "key": "playerHeightValue"
         },
@@ -269,10 +271,10 @@
           "layout": {
             "mobile": {
               "yAxis": 140,
-              "width": 70,
+              "width": 185,
               "xAxis": 20,
               "fontSize": 18,
-              "height": 21
+              "height": 23
             },
             "tabletLandscape": {
               "yAxis": 79,
@@ -294,7 +296,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "text": "WEIGHT",
+          "textColor": "#9d9d9d",
           "fontWeight": "Regular",
           "key": "playerWeight"
         },
@@ -303,8 +306,8 @@
             "mobile": {
               "yAxis": 162,
               "xAxis": 20,
-              "width": 80,
-              "fontSize": 24,
+              "width": 185,
+              "fontSize": 18,
               "height": 28
             },
             "tabletLandscape": {
@@ -327,7 +330,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ffffff",
           "fontWeight": "Black",
           "key": "playerWeightValue"
         },
@@ -336,7 +339,7 @@
             "mobile": {
               "yAxis": 267,
               "xAxis": 20,
-              "width": 86,
+              "width": 185,
               "fontSize": 18,
               "height": 21
             },
@@ -360,7 +363,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "text": "BIRTHDAY",
+          "textColor": "#9d9d9d",
           "fontWeight": "Regular",
           "key": "playerBirthDate"
         },
@@ -371,7 +375,7 @@
               "width": 86,
               "xAxis": 20,
               "fontSize": 18,
-              "height": 28
+              "height": 24
             },
             "tabletLandscape": {
               "yAxis": 101,
@@ -393,8 +397,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
-          "fontWeight": "Black",
+          "textColor": "#ffffff",
+          "fontWeight": "Regular",
           "key": "playerBirthDateValue"
         },
         {
@@ -402,7 +406,7 @@
             "mobile": {
               "yAxis": 331,
               "xAxis": 20,
-              "width": 107,
+              "width": 185,
               "fontSize": 18,
               "height": 21
             },
@@ -426,7 +430,8 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "text": "HOMETOWN",
+          "textColor": "#9d9d9d",
           "fontWeight": "Regular",
           "key": "playerHometown"
         },
@@ -436,8 +441,8 @@
               "yAxis": 353,
               "xAxis": 20,
               "width": 158,
-              "fontSize": 24,
-              "height": 21
+              "fontSize": 18,
+              "height": 24
             },
             "tabletLandscape": {
               "yAxis": 169,
@@ -459,7 +464,7 @@
           "textAlignment": "left",
           "textStyle": "default",
           "type": "label",
-          "textColor": "#008EE0",
+          "textColor": "#ffffff",
           "fontWeight": "Black",
           "key": "playerHometownValue"
         },
@@ -570,6 +575,41 @@
         {
           "layout": {
             "mobile": {
+              "yAxis": 25,
+              "xAxis": 73,
+              "width": 185,
+              "fontSize": 18,
+              "height": 34
+            },
+            "tabletLandscape": {
+              "yAxis": 28,
+              "xAxis": 73,
+              "width": 79,
+              "fontSize": 18,
+              "height": 25
+            },
+            "tabletPortrait": {
+              "yAxis": 28,
+              "width": 79,
+              "xAxis": 73,
+              "fontSize": 18,
+              "height": 34
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "textStyle": "default",
+          "type": "label",
+          "text": "Fight History",
+          "textColor": "##9d9d9d",
+          "fontWeight": "Bold",
+          "key": "fightHistoryTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 56,
               "topMargin": 1.5,
               "leftMargin": 1.73,
               "rightMargin": 1.73

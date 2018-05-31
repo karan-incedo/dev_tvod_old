@@ -318,6 +318,22 @@
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
     <string name="app_cms_page_player_Img">playerImage</string>
+    <string name="app_cms_page_player_name_key">playerName</string>
+    <string name="app_cms_page_teamlogo_image">teamLogo</string>
+    <string name="app_cms_page_player_Weight_division_label">playerWeightDivision</string>
+    <string name="app_cms_page_player_score_label_key">playerScore</string>
+    <string name="app_cms_page_player_weightdivision_value_key">playerWeightDivisionValue</string>
+    <string name="app_cms_page_player_height_label_key">playerHeight</string>
+    <string name="app_cms_page_player_height_value_key">playerHeightValue</string>
+
+    <string name="app_cms_page_player_weight_label_key">playerWeight</string>
+    <string name="app_cms_page_player_weight_value_label_key">playerWeightValue</string>
+    <string name="app_cms_page_player_birthdate_label_key">playerBirthDate</string>
+    <string name="app_cms_page_player_birthdate_value_label_key">playerBirthDateValue</string>
+    <string name="app_cms_page_player_hometown_label_key">playerHometown</string>
+    <string name="app_cms_page_player_hometown_value_label_key">playerHometownValue</string>
+    <string name="app_cms_page_tweet_btn_key">tweetButton</string>
+    <string name="app_cms_page_fb_btn_key">FBButton</string>
 
     <string name="app_cms_page_history_title">My History</string>
     <string name="app_cms_page_watchlist_title">My Watchlist</string>
@@ -772,5 +788,6 @@
     <!--<string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/53006/15140</string>-->
     <string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/%1$s/%2$s</string>
     <string name="app_cms_team_pointstreak_apikey">6xbjymfoqfzsigLgF07l</string>
+    <string name="app_cms_event_archieve_api_url">http://app2.compuboxdata.com/compustrike_api/events_archive?api_key=eed4734a29280843c17f4233f030c6b8&amp;event_id=1&amp;format=json</string>
 
 </resources>

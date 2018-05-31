@@ -31,6 +31,8 @@ import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
+import com.viewlift.models.network.rest.AppCMSEventArchieveCall;
+import com.viewlift.models.network.rest.AppCMSEventArchieveRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -556,6 +558,31 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_Img),
                 AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weightdivision_value_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_DIVISION_VALUE_TXT_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_score_label_key),
+                AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weight_value_label_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_height_value_key),
+                AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_birthdate_value_label_key),
+                AppCMSUIKeyType.PAGE_BIRTHDATE_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_hometown_value_label_key),
+                AppCMSUIKeyType.PAGE_HOMETOWN_VALUE_TEXT);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_name_key),
+                AppCMSUIKeyType.PAGE_PLAYER_NAME_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_preButton),
                 AppCMSUIKeyType.PAGE_PHOTOGALLERY_PRE_BUTTON_KEY);
@@ -1333,6 +1360,11 @@ public class AppCMSUIModule {
         return retrofit.create(AppCMSTeamRoasterRest.class);
     }
 
+    @Provides
+    @Singleton
+    public AppCMSEventArchieveRest providesAppCMSEventArchieveRestt(Retrofit retrofit) {
+        return retrofit.create(AppCMSEventArchieveRest.class);
+    }
 
     @Provides
     @Singleton
@@ -1577,6 +1609,11 @@ public class AppCMSUIModule {
         return new AppCMSTeamRoasterCall(appCMSStandingRest, gson);
     }
 
+    @Provides
+    @Singleton
+    public AppCMSEventArchieveCall providesAppCMSEventArchieveCall(AppCMSEventArchieveRest appCMSEventArchievRest, Gson gson) {
+        return new AppCMSEventArchieveCall(appCMSEventArchievRest, gson);
+    }
 
     @Provides
     @Singleton
