@@ -4496,6 +4496,14 @@ public class AppCMSPresenter {
                                     }
                                 }
                                 populateFilmsInUserWatchlist();
+                            } else {
+                                if (platformType.equals(PlatformType.TV)) {
+                                    if (add) {
+                                        displayCustomToast("Failed to Add to Watchlist");
+                                    } else {
+                                        displayCustomToast("Failed to Remove from Watchlist");
+                                    }
+                                }
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
