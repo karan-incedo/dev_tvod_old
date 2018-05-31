@@ -100,7 +100,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             progressBar.setVisibility(View.VISIBLE);
             progressBar.getIndeterminateDrawable().setColorFilter(
                     getResources().getColor(android.R.color.white), PorterDuff.Mode.MULTIPLY);
-            countDownTimer = new CountDownTimer(11000 ,1000) {
+            countDownTimer = new CountDownTimer(11000 ,50) {
                 @Override
                 public void onTick(long l) {
                     progress = progress+1;
