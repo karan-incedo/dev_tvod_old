@@ -1458,8 +1458,7 @@ public class AppCMSPresenter {
      */
     public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
-
-/*
+///*
             //ToDo Use this for entilementnt API implementation
             isFromEntitlementAPI = true;
             String url = "";
@@ -1505,10 +1504,10 @@ public class AppCMSPresenter {
                     e.printStackTrace();
                 }
             }).execute(params);
-*/
 
+  //*/
 
-
+            /*
 
             String url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -6785,7 +6784,7 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
 
 
-        /*GetAppCMSVideoEntitlementAsyncTask.Params params =
+        GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
                         .apiKey(apikey)
@@ -6840,10 +6839,10 @@ public class AppCMSPresenter {
                     action1.call(null);
                 }
             }
-        }).execute(params);*/
+        }).execute(params);
+        /*
 
-
-
+         /*
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -6900,7 +6899,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-
+        */
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -8374,9 +8373,7 @@ public class AppCMSPresenter {
         //ViewCreator.clearPlayerView();
 
         boolean result = false;
-        if(currentActivity instanceof AppCMSPlayAudioActivity){
-            setCancelAllLoads(false);
-        }
+
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
 
             if (launched) {
@@ -15526,15 +15523,15 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
                 // TODO: uncomment for entitlement API
-                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);*/
-
+                        filmId);
+/*
                 url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
                         appCMSSite.getGist().getSiteInternalName());
-
+*/
             }
         } else {
             realmController = RealmController.with(currentActivity);
