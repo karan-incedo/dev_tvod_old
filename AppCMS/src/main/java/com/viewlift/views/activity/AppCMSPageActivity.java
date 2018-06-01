@@ -2250,15 +2250,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 closeButton.setVisibility(View.VISIBLE);
             }
 
-            if (updatedAppCMSBinder.getNavigation().getRight() != null) {
-                if (appCMSPresenter.isPageSearch(updatedAppCMSBinder.getPageId())) {
-                    mSearchTopButton.setVisibility(View.GONE);
-                } else {
-                    mSearchTopButton.setVisibility(View.VISIBLE);
-                }
-            } else {
-                mSearchTopButton.setVisibility(View.GONE);
-            }
+
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
@@ -2273,10 +2265,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 else
                     setCastingVisibility(false);
             }
+            handleSearchButtonVisiblity();
 //            setMediaRouterButtonVisibility(pageId);
         }
     }
 
+    public void handleSearchButtonVisiblity(){
+        if (updatedAppCMSBinder.getNavigation().getRight() != null) {
+            if (appCMSPresenter.isPageSearch(updatedAppCMSBinder.getPageId())) {
+                mSearchTopButton.setVisibility(View.GONE);
+            } else {
+                mSearchTopButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mSearchTopButton.setVisibility(View.GONE);
+        }
+    }
     @SuppressWarnings("ConstantConditions")
     private void handleLaunchPageAction(final AppCMSBinder appCMSBinder,
                                         boolean configurationChanged,

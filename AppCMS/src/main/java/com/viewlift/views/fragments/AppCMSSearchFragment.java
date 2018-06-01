@@ -89,7 +89,7 @@ public class AppCMSSearchFragment extends DialogFragment {
                 searchManager.getSearchableInfo(getActivity().getComponentName()),
                 true);
 
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setQueryHint(getString(R.string.search_hint_text));
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);

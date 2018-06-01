@@ -593,7 +593,7 @@ public class AppCMSPresenter {
     String loginPageUserName, loginPagePassword;
     boolean isLastStatePlaying = true;
     AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
-    private RelativeLayout relativeLayoutFull;
+    public RelativeLayout relativeLayoutFull;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -16664,11 +16664,13 @@ public class AppCMSPresenter {
             videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
         }
         if (videoPlayerView != null && videoPlayerView.getParent() != null) {
-            relativeLayoutFull = new FullPlayerView(currentActivity, this);
-            relativeLayoutFull.setVisibility(View.VISIBLE);
             if (currentActivity.findViewById(R.id.app_cms_parent_view) == null) {
                 return;
             }
+
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             currentActivity.findViewById(R.id.app_cms_parent_view).setVisibility(View.VISIBLE);
 
