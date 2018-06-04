@@ -77,6 +77,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.PhotoGalleryGridInsetDecoration;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
+import com.viewlift.models.data.appcms.ui.android.Platforms;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -3011,13 +3012,16 @@ public class ViewCreator {
 
                     if (videoPlayerViewSingle.getParent() != null)
                         ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+
+
+
+                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
+
                     if (videoId.equalsIgnoreCase(videoPlayerViewSingle.getVideoId())) {
                         videoPlayerViewSingle.resumePlayerLastState();
                     } else {
                         videoPlayerViewSingle.setVideoUri(videoId, R.string.loading_video_text);
                     }
-
-                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 } else {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
                     if(pageView != null){
@@ -3839,7 +3843,9 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
-                        if(appCMSPresenter.getTemplateType()== AppCMSPresenter.TemplateType.SPORTS){
+                        if(appCMSPresenter != null &&
+                                appCMSPresenter.getTemplateType()== AppCMSPresenter.TemplateType.SPORTS &&
+                                appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.ANDROID){
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
@@ -5773,6 +5779,10 @@ public class ViewCreator {
                 if ((castHelper.getRemoteMediaClient() != null &&
                         !castHelper.getRemoteMediaClient().isPlaying()) ||
                         (castHelper.getStartingFilmId() != null &&
+                                videoPlayerViewBinder != null &&
+                                videoPlayerViewBinder.getContentData() != null &&
+                                videoPlayerViewBinder.getContentData().getGist() != null &&
+                                videoPlayerViewBinder.getContentData().getGist().getId() != null &&
                                 !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
 
                     if (videoPlayerViewBinder != null) {

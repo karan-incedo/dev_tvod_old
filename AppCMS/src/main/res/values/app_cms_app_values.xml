@@ -50,7 +50,7 @@
 
     <bool name="display_chromecast_overlay">false</bool>
 
-    <string name="search_films">Search Films/Shows</string>
+    <string name="search_hint_text">SEARCH</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>

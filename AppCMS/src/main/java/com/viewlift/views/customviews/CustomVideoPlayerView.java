@@ -178,12 +178,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         createPreviewMessageView();
         touchToCastOverlay();
         createTopBarView();
-        try {
-            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
-        }
+        initiateStreamingId();
 
         videoPlayerContent = new ViewCreator.VideoPlayerContent();
 
@@ -584,8 +579,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                         if (appCMSPresenter.getCurrentPageName() != null &&
                                 ! TextUtils.isEmpty(appCMSPresenter.getCurrentPageName()) &&
-                                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")){
-                        //if (getPageView().findChildViewById(R.id.video_player_id) != null) {
+                                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page") &&
+                                !AppCMSPresenter.isFullScreenVisible){
+
                             appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), contentDatum -> {
                                 appCMSPresenter.launchButtonSelectedAction(contentDatum.getGist().getPermalink(),
                                         mContext.getString(R.string.app_cms_action_detailvideopage_key),
@@ -1044,7 +1040,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         View layout = li.inflate(R.layout.custom_video_player_top_bar, null, false);
         mediaButton = layout.findViewById(R.id.media_route_button);
         app_cms_video_player_done_button = layout.findViewById(R.id.app_cms_video_player_done_button);
-        app_cms_video_player_title_view = layout.findViewById(R.id.app_cms_video_player_title_view);
+        app_cms_video_player_title_view = layout.findViewById(R.id.app_cms_mini_video_player_title_view);
         app_cms_video_player_done_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1144,6 +1140,25 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     appCMSPresenter.exitFullScreenPlayer();
                     if (appCMSPresenter.videoPlayerView != null) {
                         appCMSPresenter.videoPlayerView = null;
+                    }
+
+                    if (appCMSPresenter != null &&
+                        appCMSPresenter.getCurrentPageName() != null &&
+                            ! TextUtils.isEmpty(appCMSPresenter.getCurrentPageName()) &&
+                            appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page") &&
+                            appCMSPresenter.getAutoplayEnabledUserPref(mContext) ){
+
+
+                            appCMSPresenter.launchButtonSelectedAction(onUpdatedContentDatum.getGist().getPermalink(),
+                                    mContext.getString(R.string.app_cms_action_detailvideopage_key),
+                                    onUpdatedContentDatum.getGist().getTitle(),
+                                    null,
+                                    onUpdatedContentDatum,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoId
+                            );
+
                     }
                 }
 
@@ -1505,6 +1520,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     apod,
                     isVideoDownloaded);
         }
+    }
+
+    public void initiateStreamingId(){
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
+        }
+
     }
 }
 
