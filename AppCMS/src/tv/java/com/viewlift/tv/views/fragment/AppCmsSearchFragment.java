@@ -261,6 +261,12 @@ public class AppCmsSearchFragment extends BaseFragment {
                 return false;
             }
         });
+
+        if (getArguments() != null
+                && getArguments().getString("searchString") != null) {
+            editText.setText(getArguments().getString("searchString"));
+        }
+
         return view;
     }
 

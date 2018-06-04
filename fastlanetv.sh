@@ -104,16 +104,16 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
         then
 
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Preparing Build to Upload on S3 Bucket" 75 " " 0
-        # aws s3 cp ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk s3://appcms-config/$1/build/android/
+       
         myApkName="${4}-fireTV-${3}.apk"
 
         mv ./AppCMS/build/outputs/apk/tvNonKiswe/release/AppCMS-tv-nonkiswe-release.apk "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}"
 
-        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://appcms-config-prod/$1/build/fireTv/
+        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://${15}/$1/build/fireTv/
 
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 80 " " 0
         
-        postUpdateLink ${13} $UPLOAD_URL "http://appcms-config-prod.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
+        postUpdateLink ${13} $UPLOAD_URL "http://${15}.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
 
         postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://developer.amazon.com/app-submission' target='_blank'> Amazon Appstore </a> for manual Uploading" 100 " " 0
 
