@@ -344,7 +344,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -12197,13 +12196,15 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cancelInternalEvents();
-                    restartInternalEvents();
-                }
-            });
+            if (currentActivity != null ) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        cancelInternalEvents();
+                        restartInternalEvents();
+                    }
+                });
+            }
 
 
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
