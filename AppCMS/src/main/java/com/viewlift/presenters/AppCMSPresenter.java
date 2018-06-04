@@ -4513,7 +4513,7 @@ public class AppCMSPresenter {
                                 }
                                 populateFilmsInUserWatchlist();
                             } else {
-                                
+
                                     if (add) {
                                         displayCustomToast("Failed to Add to Watchlist");
                                     } else {
