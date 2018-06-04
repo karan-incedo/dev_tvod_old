@@ -26,17 +26,18 @@ public class AppCMSEventArchieveResult {
     @SerializedName("LiveEvents")
     @Expose
     List<LiveEvents> LiveEvents = null;
-    public Module convertToAppCMSPageModule() {
-        Module module = new Module();
-        List<ContentDatum> data = new ArrayList<>();
-
-        ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setLiveEvents(LiveEvents);
-        data.add(contentDatum);
-
-        module.setContentData(data);
+    public AppCMSPageAPI convertToAppCMSPageModule(AppCMSPageAPI appCMSPageAPI) {
 
 
-        return module;
+        if(appCMSPageAPI.getModules().size()>0){
+            for(int i=0;i<appCMSPageAPI.getModules().size();i++){
+                if(appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("PersonDetailModule")){
+                    appCMSPageAPI.getModules().get(i).getContentData().get(0).setLiveEvents(LiveEvents);
+                    break;
+                }
+            }
+        }
+
+        return appCMSPageAPI;
     }
 }

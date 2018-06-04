@@ -2668,6 +2668,8 @@ public class AppCMSPresenter {
                     AppCMSPageUI.class);
         }
         jsonValueKeyMap.put("AC PlayerDetail 01", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
+//        jsonValueKeyMap.put("AC EventDetail 01", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
+        jsonValueKeyMap.put("AC EventDetail 01", AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
 
 
         String apiUrl = null;
@@ -2728,14 +2730,13 @@ public class AppCMSPresenter {
                                                 if (appCMSTeamRoasterResult != null) {
                                                     Module module=null;
                                                     if (appCMSTeamRoasterResult != null) {
-                                                        module = appCMSTeamRoasterResult.convertToAppCMSPageModule();
+                                                        pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
                                                     }
-                                                    appCMSPageAPI.getModules().add(module);
                                                     Bundle args = getPageActivityBundle(currentActivity,
                                                             appCMSPageUI,
-                                                            appCMSPageAPI,
+                                                            pageApi,
                                                             this.pageId,
-                                                            appCMSPageAPI.getTitle(),
+                                                            pageApi.getTitle(),
                                                             this.pagePath,
                                                             "",
                                                             loadFromFile,

@@ -20,6 +20,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CompoundButtonCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -2070,8 +2072,8 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY) {
-            moduleView = new DownloadModule(context,
+        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+            moduleView = new EventModule(context,
                     module,
                     moduleAPI,
                     jsonValueKeyMap,
@@ -2083,7 +2085,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */ else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
             moduleView = new MultiTableWithSameItemsModule(context,
                     module,
                     moduleAPI,
@@ -4450,12 +4452,12 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                    } else {
+                    } /*else {
                         ((TextView) componentViewResult.componentView).setText("title");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
 
-                    }
+                    }*/
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
@@ -5610,6 +5612,7 @@ public class ViewCreator {
 
             case PAGE_MULTICOLUMN_TABLE_KEY:
                 componentViewResult.componentView = new LinearLayout(context);
+                NestedScrollView nestedSCrollView = new NestedScrollView(context);
 
                 HorizontalScrollView scrollView = new HorizontalScrollView(context);
                 componentViewResult.componentView.setBackgroundColor(R.color.color_white);
@@ -5619,36 +5622,117 @@ public class ViewCreator {
                 TableLayout table = new TableLayout(context);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
-                for (int i = 0; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
-                    Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
-                    TableRow row = new TableRow(context);
-                    row.setWeightSum(2.0f);
-                    row.setPadding(1, 1, 1, 1);
 
-                    TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
+                if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
+                    for (int i = -1; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
+                        TableRow row = new TableRow(context);
+                        row.setWeightSum(2.0f);
+                        row.setPadding(1, 1, 1, 1);
 
-                    for (int j = 0; j < 8; j++) {
+                        TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
 
-                        TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
-                        TextView cell = new TextView(context);
-                        if (i == -1) {
-                            cell.setText("Round Time" + " \n");
+                        for (EventDetailsColumnsName colTitle : EventDetailsColumnsName.values()) {
+                            String cellValue = "";
+                            if (i == -1) {
+                                cellValue = colTitle.toString();
 
-                        } else {
-                            cell.setText(rounds.getRoundTime() + " \n");
+                            } else {
+                                Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
+                                if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
+
+                                    if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                            cellValue = rounds.getRound();
+                                        } else {
+                                            cellValue = "";
+                                        }
+                                    }
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
+                                    cellValue = rounds.getRoundTime();
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.FIGHTER.toString())) {
+                                    try {
+
+                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter1_FirstName();
+                                            } else {
+                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter2_FirstName();
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        cellValue = " ";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS.toString())) {
+                                    try {
+                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                        cellValue = String.valueOf(as);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS1.toString())) {
+                                    try {
+                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                        int as1 = as * 100 / (Integer.parseInt(rounds.getTotalArmStrikesThrown()));
+                                        cellValue = String.valueOf(as1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS.toString())) {
+                                    int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+                                    cellValue = String.valueOf(ls);
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS1.toString())) {
+                                    try {
+                                        int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+
+                                        int ls1 = ls * 100 / Integer.parseInt(rounds.getTotalLegStrikesThrown());
+
+                                        cellValue = String.valueOf(ls1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS.toString())) {
+                                    int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                                    cellValue = String.valueOf(gs);
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS1.toString())) {
+                                    try {
+                                        int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                                        int gs1 = gs * 100 / Integer.parseInt(rounds.getGroundStrikesThrown());
+
+                                        cellValue = String.valueOf(gs1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
+
+                                    cellValue = String.valueOf("Unknown");
+                                }
+                            }
+                            addTableRowCell(context, cellValue, row);
                         }
-                        cell.setPadding(6, 4, 6, 4);
-                        cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
-                        cell.setLayoutParams(textViewParams);
-                        row.addView(cell);
+                        row.setLayoutParams(params);
+                        table.addView(row, params);
+                        View seperatorView = new View(context);
+                        seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+                        seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                        table.addView(seperatorView);
+
+
                     }
-                    row.setLayoutParams(params);
-                    table.addView(row, params);
                 }
                 table.setStretchAllColumns(true);
                 scrollView.addView(table);
                 scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
-                ((LinearLayout) componentViewResult.componentView).addView(scrollView);
+                nestedSCrollView.addView(scrollView);
+                ((LinearLayout) componentViewResult.componentView).addView(nestedSCrollView);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -6048,7 +6132,7 @@ public class ViewCreator {
                             return appCMSPageAPI.getModules().get(appCMSPageAPI.getModules().size() - 1);
                         }
                         break;
-                    case PAGE_PLAYER_DETAIL_MODULE_KEY:
+                    case PAGE_EVENT_DETAIL_MODULE_KEY:
 
 
                         if (appCMSPageAPI.getModules() != null
@@ -6881,6 +6965,52 @@ public class ViewCreator {
             }
             return null;
         }
+    }
+
+    private void addTableRowCell(Context context, String colValue, TableRow row) {
+        TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
+        TextView cell = new TextView(context);
+        {
+            cell.setText(colValue + " \n");
+        }
+        cell.setPadding(6, 4, 6, 4);
+        cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        cell.setLayoutParams(textViewParams);
+        row.addView(cell);
+    }
+
+    public enum EventDetailsColumnsName {
+        ROUND("Round"),
+        TIME("Time"),
+        FIGHTER("Fighter"),
+        AS("AS"),
+        AS1("AS%"),
+        LS("LS"),
+        LS1("LS%"),
+        GS("GS"),
+        GS1("GS%"),
+        PLS("PLS");
+
+//        PLS("PLS");
+
+        private final String text;
+
+        /**
+         * @param text
+         */
+        EventDetailsColumnsName(final String text) {
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return text;
+        }
+
+
     }
 }
 

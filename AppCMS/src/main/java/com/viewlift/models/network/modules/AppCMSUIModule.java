@@ -727,12 +727,19 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_player_detail_module),
                 AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_event_detail_module),
+                AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_02_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
+                AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_module_key),
                 AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_03_module_key),

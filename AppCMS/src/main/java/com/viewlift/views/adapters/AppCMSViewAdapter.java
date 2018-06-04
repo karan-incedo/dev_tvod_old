@@ -532,8 +532,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                                String permalink = data.getGist().getPermalink();
-//                                String permalink = "/player/donny-moss";
+//                                String permalink = data.getGist().getPermalink();
+                                String permalink = "/player/donny-moss";
                                 String action = videoAction;
                                 if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
                                     action = childComponent.getAction();
