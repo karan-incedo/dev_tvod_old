@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
@@ -58,14 +59,22 @@ public class AppCMSVideoDetailCall {
         //    authHeaders.put("x-api-key", xApi);
             Response<AppCMSEntitlementResponse> response= appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
 
-            if(response.isSuccessful()){
-                return response.body();
-            }else if (response.code() != 200){
-                AppCMSEntitlementResponse statusResponse = new AppCMSEntitlementResponse();
-                statusResponse.setCode(response.code());
-                statusResponse.setSuccess(false);
-                return statusResponse;
 
+            if (response.isSuccessful()) {
+                return response.body();
+            } else if (response.code() != 200){
+                try {
+                    AppCMSEntitlementResponse appCMSEntitlementResponse =
+                            new Gson().fromJson(response.errorBody().string(),
+                                    AppCMSEntitlementResponse.class);
+                    appCMSEntitlementResponse.setCode(response.code());
+                    return appCMSEntitlementResponse;
+                } catch (Exception e) {
+                    AppCMSEntitlementResponse statusResponse = new AppCMSEntitlementResponse();
+                    statusResponse.setCode(response.code());
+                    statusResponse.setSuccess(false);
+                    return statusResponse;
+                }
             }
 
 
