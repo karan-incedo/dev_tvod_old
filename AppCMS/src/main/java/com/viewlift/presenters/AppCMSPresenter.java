@@ -18954,27 +18954,26 @@ public class AppCMSPresenter {
     AppCMSPageAPI pageApi = null;
 
     public AppCMSPageAPI convertToMonthlyData(List<AppCMSScheduleResult> appCMSScheduleResults) {
-        final AppCMSScheduleResult[] appCMSScheduleResultData = new AppCMSScheduleResult[1];
-        HashMap<String, List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
-
+        HashMap<String,List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
+        List<ContentDatum> contentDatumList = new ArrayList<>();
         Observable.from(appCMSScheduleResults).flatMap(new Func1<AppCMSScheduleResult, Observable<AppCMSScheduleResult>>() {
             @Override
             public Observable<AppCMSScheduleResult> call(AppCMSScheduleResult appCMSScheduleResult) {
-                return Observable.just(appCMSScheduleResult);
+                  return Observable.just(appCMSScheduleResult);
             }
         }).subscribe(new Action1<AppCMSScheduleResult>() {
             @Override
             public void call(AppCMSScheduleResult appCMSScheduleResult) {
-                for (GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()) {
-                    if (gameSchedule != null) {
+                for(GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()){
+                    if(gameSchedule != null) {
                         Long gameDate = gameSchedule.getGameDate() * 1000L;
                         String month = getDateFormat(gameDate, "MMMM");
 
                         ContentDatum contentDatum = new ContentDatum();
                         contentDatum.setGist(appCMSScheduleResult.getGist());
                         contentDatum.setCategories(appCMSScheduleResult.getCategories());
-
-                        if (monthlyGameScheduleData.containsKey(month)) {
+                        contentDatumList.add(contentDatum);
+                        /*if (monthlyGameScheduleData.containsKey(month)) {
                             List<ContentDatum> contentDataList = monthlyGameScheduleData.get(month);
                             contentDataList.add(contentDatum);
                             monthlyGameScheduleData.put(month, contentDataList);
@@ -18982,14 +18981,16 @@ public class AppCMSPresenter {
                             List<ContentDatum> lisData = new ArrayList<>();
                             lisData.add(contentDatum);
                             monthlyGameScheduleData.put(month, lisData);
-                        }
+                        }*/
+
                     }
                 }
                 //appCMSScheduleResultData[0] =appCMSScheduleResult;
-                pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
+                //pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
+                pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(contentDatumList);
             }
         });
-        //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
+       //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
         return pageApi;
     }
 

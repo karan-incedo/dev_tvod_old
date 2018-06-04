@@ -1942,7 +1942,7 @@ public class ViewCreator {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(0);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
@@ -2085,7 +2085,11 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
+
         } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
+        }  /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
             moduleView = new MultiTableWithSameItemsModule(context,
                     module,
                     moduleAPI,
@@ -2098,7 +2102,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } else {
+        }*/ else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();

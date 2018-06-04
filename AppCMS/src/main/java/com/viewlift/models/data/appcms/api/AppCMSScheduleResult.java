@@ -66,6 +66,17 @@ public class AppCMSScheduleResult {
         return appCMSPageAPI;
     }
 
+    public AppCMSPageAPI convertToAppCMSPageAPI(List<ContentDatum> data) {
+        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+        Module module = new Module();
+
+        module.setContentData(data);
+        List<Module> moduleList = new ArrayList<>();
+        moduleList.add(module);
+        appCMSPageAPI.setModules(moduleList);
+
+        return appCMSPageAPI;
+    }
     public String getId() {
         return id;
     }

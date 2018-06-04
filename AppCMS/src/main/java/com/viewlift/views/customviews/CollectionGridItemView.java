@@ -364,14 +364,15 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (data.getGist() != null &&
+                    /*if (data.getGist() != null &&
                             data.getGist().getContentType() != null &&
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_game))
                             ) {
+                        System.out.println("vinay--"+ data.getGist().getContentType());
                         int size = childViewWidth;
-                        /*if (childViewHeight< childViewWidth ) {
+                        *//*if (childViewHeight< childViewWidth ) {
                             size = childViewHeight;
-                        }*/
+                        }*//*
 
                         String imageUrl = "";
                         if ((componentKey == AppCMSUIKeyType.PAGE_HOME_TEAM_IMAGE_KEY)) {
@@ -423,7 +424,8 @@ public class CollectionGridItemView extends BaseView {
 //                                        .override(size,size)
                                     .into(((ImageView) view));
                         }
-                    } else if (data.getGist() != null &&
+                    } else*/
+                    if (data.getGist() != null &&
                             data.getGist().getContentType() != null &&
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_audio))
                             && data.getGist().getPosterImageUrl() != null && appCMSUIcomponentViewType != AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY && appCMSPresenter.isVideoDownloaded(data.getGist().getId())
@@ -435,7 +437,6 @@ public class CollectionGridItemView extends BaseView {
 
 
                         if (data.getGist() != null &&
-
                                 data.getGist().getPosterImageUrl() != null && (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) {
                             String imageUrl = data.getGist().getPosterImageUrl();
                             if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
@@ -784,6 +785,9 @@ public class CollectionGridItemView extends BaseView {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
+                }else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
+                    ((TextView) view).setText(childComponent.getText());
+                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
@@ -993,7 +997,7 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent.getTextColor()));
                         ((TextView) view).setTextColor(textColor);
                     }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY) {
+                } /*else if (componentKey == AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY) {
                     if (data.getGist() != null && data.getGist().getHomeTeam() != null && data.getGist().getHomeTeam().getGist() != null && data.getGist().getHomeTeam().getGist().getTitle() != null) {
 
                         ((TextView) view).setText(data.getGist().getHomeTeam().getGist().getTitle());
@@ -1005,28 +1009,43 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getAwayTeam().getGist().getTitle());
                         ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                     }
-                }else if (componentKey == AppCMSUIKeyType.PAGE_GAME_DATE_KEY) {
-                    if (data.getGist() != null && data.getGist().getGameSchedule() != null && data.getGist().getGameSchedule().get(0) != null
-                            && data.getGist().getGameSchedule().get(0).getGameDate() !=0) {
+                }*/ else if (componentKey == AppCMSUIKeyType.PAGE_GAME_DATE_KEY) {
+                    if (data.getGist() != null && data.getGist().getGameSchedule() != null
+                            && data.getGist().getGameSchedule().get(0) != null
+                            && data.getGist().getGameSchedule().get(0).getGameDate() != 0) {
 
-                        String date= getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate()*1000L ), "MM/dd"); ;
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
 
-                        ((TextView) view).setText(date);
+                        StringBuilder thumbInfo = new StringBuilder();
+                        thumbInfo.append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "EEEE"))
+                                 .append(" | ")
+                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "MMM dd"))
+                                 .append(", ")
+                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "yyyy"));
+
+                        thumbInfo.append(" | Doors open at ")
+                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate()), "hh:mm aa"));
+
+                        ((TextView) view).setText(thumbInfo);
                         ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                     }
-                }else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TIME_KEY) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TIME_KEY) {
                     if (data.getGist() != null && data.getGist().getGameSchedule() != null && data.getGist().getGameSchedule().get(0) != null
-                            && data.getGist().getGameSchedule().get(0).getGameTime() !=0) {
+                            && data.getGist().getGameSchedule().get(0).getGameTime() != 0) {
 
-                        String date= getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() ), "hh:mm aa"); ;
+                        String date = getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate()), "hh:mm aa");
+                        ;
 
-                        ((TextView) view).setText(date+" "+data.getGist().getGameSchedule().get(0).getGameTimeZone());
+                        ((TextView) view).setText(date + " " + data.getGist().getGameSchedule().get(0).getGameTimeZone());
                         ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                     }
-                }
-                else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                     ((TextView) view).setSingleLine(false);
                     ((TextView) view).setMaxLines(2);
                     ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -1204,22 +1223,34 @@ public class CollectionGridItemView extends BaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                         componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
 
-                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY) {
-                        ((TextView) view).setText(data.getTeam().getGb());
-                        ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
-
-                    }
-                    if (data.getGist() != null && data.getGist().getTitle() != null) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setSingleLine(true);
+                    if (childComponent.getNumberOfLines() != 0) {
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setVisibility(View.VISIBLE);
-                    }
-                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY) {
-                        ((TextView) view).setText("tray item");
-
                     }
 
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                        if (data.getGist() != null && data.getGist().getHomeTeam() != null &&
+                                data.getGist().getHomeTeam().getGist() != null &&
+                                data.getGist().getHomeTeam().getGist().getTitle() != null) {
+                            StringBuilder teamName = new StringBuilder()
+                                    .append(data.getGist().getHomeTeam().getGist().getTitle())
+                                    .append(" vs ");
+                            if(data.getGist().getAwayTeam() != null &&
+                                    data.getGist().getAwayTeam().getGist() != null &&
+                                    data.getGist().getAwayTeam().getGist().getTitle() != null){
+                                    teamName.append(data.getGist().getAwayTeam().getGist().getTitle());
+                            }
+                            ((TextView) view).setText(teamName);
+                        }
+                    }else if(appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY){
+                            ((TextView) view).setText(data.getTeam().getGb());
+                            ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
+                    }else{
+                        if (data.getGist() != null && data.getGist().getTitle() != null) {
+                            ((TextView) view).setText(data.getGist().getTitle());
+                        }
+                    }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
