@@ -1874,7 +1874,12 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else*/
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+                /*if (moduleInfo.getBlockName().contains("showDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "home.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(14);
+                } else*/ if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -3015,6 +3020,9 @@ public class ViewCreator {
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 } else {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
+                    if(pageView != null){
+                        videoPlayerViewSingle.setPageView(pageView);
+                    }
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
 
@@ -3831,61 +3839,9 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
-
-                        // NOTE: The following is a hack to add the Chromecast button to the live Video Player page until it can
-                        // be added to an AppCMS UI JSON file
-                       /* if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                                component.getKey() != null &&
-                                !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
-                                !BaseView.isTablet(context)) {
-
-                            if (!component.isWidthModified()) {
-                                component.getLayout().getMobile().setWidth(BaseView.convertDpToPixel(44, context));
-                                component.getLayout().getMobile().setHeight(BaseView.convertDpToPixel(24, context));
-                                component.setWidthModified(true);
-                            }
-
-                            ResponsiveButton shareButton = (ResponsiveButton) componentViewResult.componentView;
-                            LinearLayout.LayoutParams shareButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(24, context),
-                                            (int) BaseView.convertDpToPixel(24, context));
-                            shareButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-                            shareButton.setLayoutParams(shareButtonLayoutParams);
-                            shareButton.setPadding(6, 6, 6, 6);
-
-                            componentViewResult.componentView = new LinearLayout(context);
-                            ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-
-                            ImageButton mMediaRouteButton = appCMSPresenter.getCurrentMediaRouteButton();
-                            if (mMediaRouteButton != null) {
-                                LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
-                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                                (int) BaseView.convertDpToPixel(28, context));
-                                mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-                                mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
-                                mMediaRouteButton.setPadding(8, 8, 8, 8);
-                                mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
-
-                                setCasting(false, *//** TODO: Replace with actual value from API response *//*
-                                        appCMSPresenter,
-                                        mMediaRouteButton,
-                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-
-                                pageView.setReparentChromecastButton(false);
-
-                                if (mMediaRouteButton.getParent() != null &&
-                                        mMediaRouteButton.getParent() instanceof ViewGroup) {
-                                    ((ViewGroup) mMediaRouteButton.getParent()).removeView(mMediaRouteButton);
-                                }
-
-                                ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
-                            }
-
-                            ((LinearLayout) componentViewResult.componentView).addView(shareButton);
-
-                            componentViewResult.componentView.requestLayout();
+                        if(appCMSPresenter.getTemplateType()== AppCMSPresenter.TemplateType.SPORTS){
+                            componentViewResult.componentView.setVisibility(View.GONE);
                         }
-*/
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:

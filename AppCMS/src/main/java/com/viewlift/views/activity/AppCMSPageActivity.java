@@ -1965,6 +1965,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!castDisabled) {
             setMediaRouterButtonVisibility(appCMSBinder.getPageId());
         }
+        appCMSPresenter.setCurrentPageName(appCMSBinder.getPageId());
         createFragment(appCMSBinder);
     }
 
