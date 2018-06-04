@@ -16,6 +16,7 @@ import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
+import com.viewlift.models.network.rest.AppCMSEventArchieveCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
@@ -76,6 +77,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
                                                    AppCMSTeamStandingCall appCMSTeamStandingCall,
                                                    AppCMSTeamRoasterCall appCMSTeamRoasterCall,
+                                                   AppCMSEventArchieveCall appCMSEventArchieveCall,
 
                                                    AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
                                                    AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
@@ -133,7 +135,7 @@ public class AppCMSPresenterModule {
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
                 appCMSScheduleCall,
-                appCMSPlaylistCall,appCMSTeamStandingCall,appCMSTeamRoasterCall,
+                appCMSPlaylistCall,appCMSTeamStandingCall,appCMSTeamRoasterCall,appCMSEventArchieveCall,
                 appCMSSSLCommerzInitiateCall,
                 appCMSCCAvenueRSAKeyCall,
                 appCMSAudioDetailCall,

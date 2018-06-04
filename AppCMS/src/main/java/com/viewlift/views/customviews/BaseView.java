@@ -1391,7 +1391,13 @@ public abstract class BaseView extends FrameLayout {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
-        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+        } else if (componentType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY ) {
+            int padding = childComponent.getPadding();
+            view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+
+        }
+        else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {

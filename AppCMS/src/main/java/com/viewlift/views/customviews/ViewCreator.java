@@ -20,6 +20,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CompoundButtonCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,10 +39,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,6 +52,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -67,6 +73,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.Rounds;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Tag;
 import com.viewlift.models.data.appcms.api.VideoAssets;
@@ -1874,7 +1881,17 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else*/
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+                if (moduleInfo.getBlockName().contains("gameDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "game_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().contains("playerState01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "game_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(2);
+                } else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -2055,8 +2072,8 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        } /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY) {
-            moduleView = new DownloadModule(context,
+        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+            moduleView = new EventModule(context,
                     module,
                     moduleAPI,
                     jsonValueKeyMap,
@@ -2068,7 +2085,11 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }  */ /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
+        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
+        }  /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
             moduleView = new MultiTableWithSameItemsModule(context,
                     module,
                     moduleAPI,
@@ -4426,14 +4447,21 @@ public class ViewCreator {
 
                         if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
                             ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
-                         }else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
+                        } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
                             ((TextView) componentViewResult.componentView).setText("2018 League Schedule");
+                        } else if (component.getText() != null) {
+                            ((TextView) componentViewResult.componentView).setText(component.getText());
                         }
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                    }
+                    } /*else {
+                        ((TextView) componentViewResult.componentView).setText("title");
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+
+                    }*/
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
@@ -4498,6 +4526,7 @@ public class ViewCreator {
                             component.getTextAlignment().equals(context.getString(R.string.app_cms_text_alignment_right))) {
                         componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
                     }
+
 
                     if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_TITLE) {
 
@@ -4634,10 +4663,85 @@ public class ViewCreator {
                                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
                     }
 
+
                     if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                         ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                     }
 
+
+                    if (moduleType == AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY) {
+
+
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_WEIGHT_DIVISION_VALUE_TXT_KEY) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getMetadata() != null) {
+                                for (int i = 0; i < moduleAPI.getContentData().get(0).getGist().getMetadata().size(); i++) {
+                                    if (moduleAPI.getContentData().get(0).getGist().getMetadata().get(i).getName().equalsIgnoreCase("weight_division")) {
+                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getMetadata().get(i).getValue());
+
+                                    }
+                                }
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PLAYER_NAME_KEY) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getFirstName() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getFirstName());
+
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getFirstName() != null) {
+                                for (int i = 0; i < moduleAPI.getContentData().get(0).getGist().getMetadata().size(); i++) {
+                                    if (moduleAPI.getContentData().get(0).getGist().getMetadata().get(i).getName().equalsIgnoreCase("record")) {
+                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getMetadata().get(i).getValue());
+
+                                    }
+                                }
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_WEIGHT_VALUE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getWeight() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getWeight());
+
+                            }
+                        }
+
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getHeight() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getHeight());
+
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getHeight() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getHeight());
+
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_BIRTHDATE_VALUE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getDob() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getDob());
+
+                            }
+                        }
+                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_HOMETOWN_VALUE_TEXT) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getBirthPlace() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getBirthPlace());
+
+                            }
+                        }
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    }
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
                             StringBuilder authDateAndPhotoCount = new StringBuilder();
@@ -5163,6 +5267,20 @@ public class ViewCreator {
                         }
                         Glide.with(selectedImg.getContext()).load(selectedImgUrl).into(selectedImg);
                         break;
+
+                    case PAGE_PHOTO_PLAYER_IMAGE:
+
+                        String playerImgUrl = "";
+                        ImageView playerImageView = (ImageView) componentViewResult.componentView;
+                        playerImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getGist() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getImageGist() != null) {
+                            if (moduleAPI.getContentData().get(0).getGist().getImageGist().get_3x4() != null) {
+                                playerImgUrl = moduleAPI.getContentData().get(0).getGist().getImageGist().get_3x4();
+                            }
+                        }
+                        Glide.with(playerImageView.getContext()).load(playerImgUrl).into(playerImageView);
+                        break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -5494,6 +5612,131 @@ public class ViewCreator {
                             setBackgroundColor(appCMSPresenter.getGeneralTextColor());
                 }
                 componentViewResult.componentView.setAlpha(0.6f);
+                break;
+
+            case PAGE_MULTICOLUMN_TABLE_KEY:
+                componentViewResult.componentView = new LinearLayout(context);
+                NestedScrollView nestedSCrollView = new NestedScrollView(context);
+
+                HorizontalScrollView scrollView = new HorizontalScrollView(context);
+                componentViewResult.componentView.setBackgroundColor(R.color.color_white);
+                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+
+                TableLayout table = new TableLayout(context);
+                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+
+                if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
+                    for (int i = -1; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
+                        TableRow row = new TableRow(context);
+                        row.setWeightSum(2.0f);
+                        row.setPadding(1, 1, 1, 1);
+
+                        TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
+
+                        for (EventDetailsColumnsName colTitle : EventDetailsColumnsName.values()) {
+                            String cellValue = "";
+                            if (i == -1) {
+                                cellValue = colTitle.toString();
+
+                            } else {
+                                Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
+                                if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
+
+                                    if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                            cellValue = rounds.getRound();
+                                        } else {
+                                            cellValue = "";
+                                        }
+                                    }
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
+                                    cellValue = rounds.getRoundTime();
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.FIGHTER.toString())) {
+                                    try {
+
+                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter1_FirstName();
+                                            } else {
+                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter2_FirstName();
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        cellValue = " ";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS.toString())) {
+                                    try {
+                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                        cellValue = String.valueOf(as);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS1.toString())) {
+                                    try {
+                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                        int as1 = as * 100 / (Integer.parseInt(rounds.getTotalArmStrikesThrown()));
+                                        cellValue = String.valueOf(as1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS.toString())) {
+                                    int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+                                    cellValue = String.valueOf(ls);
+
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS1.toString())) {
+                                    try {
+                                        int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+
+                                        int ls1 = ls * 100 / Integer.parseInt(rounds.getTotalLegStrikesThrown());
+
+                                        cellValue = String.valueOf(ls1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS.toString())) {
+                                    int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                                    cellValue = String.valueOf(gs);
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS1.toString())) {
+                                    try {
+                                        int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                                        int gs1 = gs * 100 / Integer.parseInt(rounds.getGroundStrikesThrown());
+
+                                        cellValue = String.valueOf(gs1);
+                                    } catch (Exception e) {
+                                        cellValue = "0";
+                                        Log.e(i + "-" + colTitle.toString(), e.toString());
+                                    }
+                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
+
+                                    cellValue = String.valueOf("Unknown");
+                                }
+                            }
+                            addTableRowCell(context, cellValue, row);
+                        }
+                        row.setLayoutParams(params);
+                        table.addView(row, params);
+                        View seperatorView = new View(context);
+                        seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+                        seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                        table.addView(seperatorView);
+
+
+                    }
+                }
+                table.setStretchAllColumns(true);
+                scrollView.addView(table);
+                scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                nestedSCrollView.addView(scrollView);
+                ((LinearLayout) componentViewResult.componentView).addView(nestedSCrollView);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -5879,6 +6122,7 @@ public class ViewCreator {
                     case PAGE_AUTHENTICATION_MODULE_KEY:
                     case PAGE_AC_TEAM_SCHEDULE_MODULE_KEY:
                     case PAGE_API_TEAMDETAIL_MODULE_KEY:
+                    case PAGE_GAME_DETAIL_MODULE_KEY:
 
 
                         if (appCMSPageAPI.getModules() != null
@@ -5886,7 +6130,20 @@ public class ViewCreator {
                             return appCMSPageAPI.getModules().get(0);
                         }
                         break;
+                    case PAGE_PLAYER_STATE_MODULE_KEY:
+                        if (appCMSPageAPI.getModules() != null
+                                && !appCMSPageAPI.getModules().isEmpty()) {
+                            return appCMSPageAPI.getModules().get(appCMSPageAPI.getModules().size() - 1);
+                        }
+                        break;
+                    case PAGE_EVENT_DETAIL_MODULE_KEY:
 
+
+                        if (appCMSPageAPI.getModules() != null
+                                && !appCMSPageAPI.getModules().isEmpty()) {
+                            return appCMSPageAPI.getModules().get(2);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -6712,6 +6969,52 @@ public class ViewCreator {
             }
             return null;
         }
+    }
+
+    private void addTableRowCell(Context context, String colValue, TableRow row) {
+        TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
+        TextView cell = new TextView(context);
+        {
+            cell.setText(colValue + " \n");
+        }
+        cell.setPadding(6, 4, 6, 4);
+        cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        cell.setLayoutParams(textViewParams);
+        row.addView(cell);
+    }
+
+    public enum EventDetailsColumnsName {
+        ROUND("Round"),
+        TIME("Time"),
+        FIGHTER("Fighter"),
+        AS("AS"),
+        AS1("AS%"),
+        LS("LS"),
+        LS1("LS%"),
+        GS("GS"),
+        GS1("GS%"),
+        PLS("PLS");
+
+//        PLS("PLS");
+
+        private final String text;
+
+        /**
+         * @param text
+         */
+        EventDetailsColumnsName(final String text) {
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return text;
+        }
+
+
     }
 }
 

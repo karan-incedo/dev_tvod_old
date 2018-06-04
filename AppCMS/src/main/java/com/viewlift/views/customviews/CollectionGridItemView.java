@@ -1426,6 +1426,10 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
+                }else if(childComponent.getText()!=null && !TextUtils.isEmpty(childComponent.getText())){
+                    ((TextView) view).setText(childComponent.getText());
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
                 }
 //                }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {

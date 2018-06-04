@@ -485,6 +485,16 @@ public class ContentDatum implements Serializable {
 
     List<ContentDatum> contentData = null;
 
+    public List<com.viewlift.models.data.appcms.api.LiveEvents> getLiveEvents() {
+        return LiveEvents;
+    }
+
+    public void setLiveEvents(List<com.viewlift.models.data.appcms.api.LiveEvents> liveEvents) {
+        LiveEvents = liveEvents;
+    }
+
+    List<LiveEvents> LiveEvents = null;
+
     public void setContentData(List<ContentDatum> contentData) {
         this.contentData = contentData;
     }
