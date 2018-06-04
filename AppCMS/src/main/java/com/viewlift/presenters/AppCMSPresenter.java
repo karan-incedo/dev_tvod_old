@@ -4512,6 +4512,14 @@ public class AppCMSPresenter {
                                     }
                                 }
                                 populateFilmsInUserWatchlist();
+                            } else {
+                                if (platformType.equals(PlatformType.TV)) {
+                                    if (add) {
+                                        displayCustomToast("Failed to Add to Watchlist");
+                                    } else {
+                                        displayCustomToast("Failed to Remove from Watchlist");
+                                    }
+                                }
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
@@ -18784,7 +18792,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if (null != appCMSMain &&
+        if(!Utils.isFireTVDevice(currentContext)){
+            return true;
+        }else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");
