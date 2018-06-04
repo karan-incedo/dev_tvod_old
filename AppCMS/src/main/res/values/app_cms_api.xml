@@ -262,6 +262,7 @@
 
     <string name="app_cms_page_article_feed_module_key">AC ArticleFeed 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
+    <string name="app_cms_page_game_tickets_key">tickets</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
     <string name="app_cms_page_planmetadatadevicecount_key">planMetaDataDeviceCount</string>
