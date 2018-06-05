@@ -155,7 +155,7 @@
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
 
-    <string name="app_cms_page_multicolumn_table_key">multicolumnTableView</string>
+    <string name="app_cms_page_multicolumn_table_key">fightStatsView</string>
 
     <string name="app_cms_page_article_bottom_button_background_key">articleBottomButtonBackground</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
@@ -327,6 +327,7 @@
     <string name="app_cms_page_player_weightdivision_value_key">playerWeightDivisionValue</string>
     <string name="app_cms_page_player_height_label_key">playerHeight</string>
     <string name="app_cms_page_player_height_value_key">playerHeightValue</string>
+    <string name="app_cms_page_fight_selection_label_key">fightDropDown</string>
 
     <string name="app_cms_page_player_weight_label_key">playerWeight</string>
     <string name="app_cms_page_player_weight_value_label_key">playerWeightValue</string>

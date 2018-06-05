@@ -563,6 +563,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WEIGHT_DIVISION_VALUE_TXT_KEY);
 
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fight_selection_label_key),
+                AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_score_label_key),
                 AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT);
 
