@@ -346,7 +346,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -4517,6 +4516,14 @@ public class AppCMSPresenter {
                                     }
                                 }
                                 populateFilmsInUserWatchlist();
+                            } else {
+
+                                    if (add) {
+                                        displayCustomToast("Failed to Add to Watchlist");
+                                    } else {
+                                        displayCustomToast("Failed to Remove from Watchlist");
+                                    }
+
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
@@ -12200,13 +12207,15 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cancelInternalEvents();
-                    restartInternalEvents();
-                }
-            });
+            if (currentActivity != null ) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        cancelInternalEvents();
+                        restartInternalEvents();
+                    }
+                });
+            }
 
 
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
@@ -18784,7 +18793,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if (null != appCMSMain &&
+        if(!Utils.isFireTVDevice(currentContext)){
+            return true;
+        }else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");
