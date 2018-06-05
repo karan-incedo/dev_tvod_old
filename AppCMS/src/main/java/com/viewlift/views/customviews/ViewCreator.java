@@ -4719,7 +4719,8 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null) {
                                     if (moduleAPI.getContentData().get(0).getGist() != null &&
                                             !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) &&
-                                            moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.app_cms_video_content_type))) {
+                                            moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.app_cms_video_content_type)) &&
+                                            appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT) {
                                         setViewWithSubtitle(context, moduleAPI.getContentData().get(0),
                                                 componentViewResult.componentView);
                                     } else if (moduleAPI.getContentData().get(0).getSeason() != null) {
