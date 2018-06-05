@@ -160,7 +160,7 @@ public class AppCmsNavigationFragment extends Fragment {
             navTopLine.setBackgroundColor(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)));
             view.findViewById(R.id.left_menu_app_logo).setVisibility(View.INVISIBLE);
 
-            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+            if (appCMSPresenter.isAppSVOD()) {
                 String message;
                 if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
                         && null != appCMSPresenter.getNavigation().getSettings()
@@ -276,7 +276,7 @@ public class AppCmsNavigationFragment extends Fragment {
         if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
-        if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+        if (appCMSPresenter.isAppSVOD()) {
             toggleVisibilityOfSubscriptionModule();
         }
     }
@@ -1054,16 +1054,18 @@ public class AppCmsNavigationFragment extends Fragment {
         }
         navigationSubItemList.add(navigationSubItem1);
 
-        if (appCMSPresenter.isUserLoggedIn()) {
-            navigationSubItem1 = new NavigationPrimary();
-            navigationSubItem1.setTitle("MANAGE SUBSCRIPTION");
-            navigationSubItem1.setIcon(getString(R.string.st_manage_subscription_icon_key));
-            navigationSubItemList.add(navigationSubItem1);
-        } else /*Guest User*/{
-            navigationSubItem1 = new NavigationPrimary();
-            navigationSubItem1.setTitle("SUBSCRIBE NOW");
-            navigationSubItem1.setIcon(getString(R.string.st_manage_subscription_icon_key));
-            navigationSubItemList.add(navigationSubItem1);
+        if (appCMSPresenter.isAppSVOD()) {
+            if (appCMSPresenter.isUserLoggedIn()) {
+                navigationSubItem1 = new NavigationPrimary();
+                navigationSubItem1.setTitle("MANAGE SUBSCRIPTION");
+                navigationSubItem1.setIcon(getString(R.string.st_manage_subscription_icon_key));
+                navigationSubItemList.add(navigationSubItem1);
+            } else /*Guest User*/{
+                navigationSubItem1 = new NavigationPrimary();
+                navigationSubItem1.setTitle("SUBSCRIBE NOW");
+                navigationSubItem1.setIcon(getString(R.string.st_manage_subscription_icon_key));
+                navigationSubItemList.add(navigationSubItem1);
+            }
         }
 
         Navigation navigation = appCMSPresenter.getNavigation();

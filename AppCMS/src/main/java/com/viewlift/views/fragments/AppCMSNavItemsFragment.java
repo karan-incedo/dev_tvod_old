@@ -164,9 +164,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavFreeTrialButton.setVisibility(View.VISIBLE);
                 appCMSNavFreeTrialButton.setOnClickListener(v -> {
                     if (appCMSPresenter != null) {
-                        if (appCMSPresenter.getAppCMSMain()
-                                .getServiceType()
-                                .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                        if (appCMSPresenter.isAppSVOD()) {
                             appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                             appCMSPresenter.navigateToSubscriptionPlansPage(true);
                         } else {
