@@ -108,10 +108,12 @@ public class WebViewActivity extends Activity {
                 new AppCMSPresenter.AppCMSCCAvenueRSAKeyAPIAction("RSA") {
                     @Override
                     public void call(RSAKeyResponse rsaKeyResponse) {
-                        if(dialog != null && dialog.isShowing())
-                          dialog.dismiss();
-
-                        if(rsaKeyResponse != null) {
+                        if (dialog != null && dialog.isShowing())
+                            dialog.dismiss();
+                        if (rsaKeyResponse == null) {
+                            displaySuccessPaymentDialog("Unable to connect to server!", "Retry Later");
+                        }
+                        if (rsaKeyResponse != null) {
                             vResponse = rsaKeyResponse.getRsaToken();
                             orderID = rsaKeyResponse.getOrderId();
                             accessCode = rsaKeyResponse.getAccessCode();

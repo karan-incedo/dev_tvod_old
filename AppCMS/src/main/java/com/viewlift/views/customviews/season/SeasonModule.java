@@ -2,8 +2,8 @@ package com.viewlift.views.customviews.season;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.GsonBuilder;
@@ -31,9 +30,7 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,12 +122,22 @@ public class SeasonModule extends ModuleView {
 
 //            seasonTab.setSelectedTabIndicatorColor(Color.parseColor("#ffffff"));
 //            seasonTab.setSelectedTabIndicatorHeight((int) (3 * getResources().getDisplayMetrics().density));
-            seasonTab.setSelectedTabIndicatorHeight(0);
-            seasonTab.setTabTextColors(Color.parseColor("#ffffff"),
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
 
-            if (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().size() > 0 && moduleAPI.getContentData().get(0).getSeason() != null) {
+            int[][] states = new int[][]{
+                    new int[]{-android.R.attr.state_selected}, // not selected
+                    new int[]{android.R.attr.state_selected}  // selected
+            };
+
+            int[] colors = new int[]{
+                    Color.WHITE,
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())
+            };
+
+            ColorStateList myList = new ColorStateList(states, colors);
+            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                    moduleAPI.getContentData().size() > 0 &&
+                    moduleAPI.getContentData().get(0).getSeason() != null) {
 
 //                if (moduleAPI.getContentData().get(0).getSeason().size() > 2) {
                 seasonTab.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -139,27 +146,39 @@ public class SeasonModule extends ModuleView {
 //                }
                 seasonTab.setTabGravity(Gravity.LEFT);
 
-                for (Season_ season : seasonList) {
+                for (int i = 0; i < seasonList.size(); i++) {
+
+                    TextView tab = new TextView(context);
+                    tab.setText(seasonList.get(i).getTitle().toUpperCase());
+                    tab.setTextSize(20f);
+                    tab.setTextColor(myList);
+                    tab.setSingleLine(false);
+                    tab.setEllipsize(TextUtils.TruncateAt.END);
+                    tab.setLines(1);
                     TabLayout.Tab firstTab = seasonTab.newTab();
-                    firstTab.setText(season.getTitle());
                     seasonTab.addTab(firstTab);
+                    seasonTab.getTabAt(i).setCustomView(tab);
+//                    TabLayout.Tab firstTab = seasonTab.newTab();
+//                    firstTab.setText(season.getTitle().toUpperCase());
+
                 }
+                seasonTab.setSelectedTabIndicatorHeight(0);
+                seasonTab.setTabTextColors(Color.parseColor("#ffffff"),
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
             }
 
             reduceMarginsInTabs(seasonTab, 10);
-            changeTabsFont(seasonTab);
             new Handler().postDelayed(
                     new Runnable() {
                         @Override
                         public void run() {
-                            seasonTab.setScrollX(seasonTab.getWidth());
-                            if (seasonTab != null)
+                            if (seasonTab != null && appCMSPresenter.getSelectedSeason() != 0) {
+                                seasonTab.setScrollX(seasonTab.getWidth());
                                 seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();
+                            }
                         }
-                    }, 10);
-           /* int right = ((ViewGroup) seasonTab.getChildAt(0)).getChildAt(appCMSPresenter.getSelectedSeason()).getRight();
-            seasonTab.scrollTo(right,0);
-            seasonTab.getTabAt(appCMSPresenter.getSelectedSeason()).select();*/
+                    }, 1);
+
 
             List<ContentDatum> adapterData = seasonList.get(appCMSPresenter.getSelectedSeason()).getEpisodes();
             SeasonTabSelectorBus.instanceOf().setTab(adapterData);
@@ -213,24 +232,6 @@ public class SeasonModule extends ModuleView {
         }
     }
 
-    private void changeTabsFont(TabLayout tabLayout) {
-        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
-        int tabsCount = vg.getChildCount();
-        for (int j = 0; j < tabsCount; j++) {
-            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
-            int tabChildsCount = vgTab.getChildCount();
-            for (int i = 0; i < tabChildsCount; i++) {
-                View tabViewChild = vgTab.getChildAt(i);
-                if (tabViewChild instanceof TextView) {
-                    ((TextView) tabViewChild).setTextSize(25);
-                    ((TextView) tabViewChild).setSingleLine(false);
-                    ((TextView) tabViewChild).setEllipsize(TextUtils.TruncateAt.END);
-                    ((TextView) tabViewChild).setLines(1);
-                }
-            }
-        }
-        tabLayout.requestLayout();
-    }
 
     Component recyclerViewComponent;
 

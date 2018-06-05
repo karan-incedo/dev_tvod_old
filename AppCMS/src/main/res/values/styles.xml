@@ -105,7 +105,4 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="TabLayout_Theme" parent="@style/AppTheme">
-        <item name="android:singleLine">true</item>
-    </style>
 </resources>

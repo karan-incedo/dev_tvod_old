@@ -6277,6 +6277,7 @@ public class ViewCreator {
 
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
+                        imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
                         break;

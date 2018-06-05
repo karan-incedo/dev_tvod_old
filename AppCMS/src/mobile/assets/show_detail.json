@@ -517,7 +517,7 @@
                       "yAxis": 89,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 171,
+                      "width": 155,
                       "height": 7
                     },
                     "tabletLandscape": {
@@ -525,7 +525,7 @@
                       "yAxis": 85.5,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 171,
+                      "width": 155,
                       "height": 7
                     },
                     "tabletPortrait": {
@@ -533,7 +533,7 @@
                       "yAxis": 85.5,
                       "rightMargin": 0,
                       "bottomMargin": 0,
-                      "width": 171,
+                      "width": 155,
                       "height": 7
                     }
                   },

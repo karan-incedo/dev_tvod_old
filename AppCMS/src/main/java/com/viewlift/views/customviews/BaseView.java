@@ -1072,11 +1072,7 @@ public abstract class BaseView extends FrameLayout {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                    view instanceof Spinner) {
-                viewHeight = LayoutParams.WRAP_CONTENT;
-                viewWidth = LayoutParams.WRAP_CONTENT;
-            }
+
 
             AppCMSUIKeyType componentViewType = jsonValueKeyMap.get(viewType);
             if (componentViewType == null) {
