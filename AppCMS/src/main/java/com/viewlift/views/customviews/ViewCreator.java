@@ -3181,9 +3181,6 @@ public class ViewCreator {
             case PAGE_TABLAYOUT_KEY:
                 componentViewResult.componentView = new TabLayout(context);
                 break;
-            case PAGE_VIEWPAGER_KEY:
-                componentViewResult.componentView = new AdjustableRecyclerView(context);
-                break;
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY ||

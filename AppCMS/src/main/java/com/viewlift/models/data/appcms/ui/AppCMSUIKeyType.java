@@ -365,7 +365,6 @@ public enum AppCMSUIKeyType {
     LINK_ACCOUNT_PAGE_KEY,
     SUB_NAV_PAGE_KEY,
     PAGE_TABLAYOUT_KEY,
-    PAGE_VIEWPAGER_KEY,
 }
 
 

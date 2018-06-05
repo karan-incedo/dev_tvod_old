@@ -7,11 +7,16 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -298,13 +303,10 @@ public class SeasonModule extends ModuleView {
                 case PAGE_TABLAYOUT_KEY:
                     seasonTab = (TabLayout) componentView;
                     break;
-                case PAGE_VIEWPAGER_KEY:
-                    seasonTab = (TabLayout) componentView;
-                    // seasonPager = (ViewPager) componentView;
-                    break;
             }
         } else {
             moduleView.setComponentHasView(i, false);
         }
     }
+
 }

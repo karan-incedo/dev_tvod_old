@@ -164,7 +164,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         sortData();
         if (isDonwloadPage) {
 //            adapterData= appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video));
-            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
+            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>() {
                 @Override
                 public void onSubscribe(Disposable d) {
 
@@ -401,11 +401,18 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             appCMSPresenter.getLoggedInUser());
 
                     switch (contentDatum.getGist().getDownloadStatus()) {
+                        case STATUS_FAILED:
+                            Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
+                            deleteDownloadButton.setImageResource(android.R.drawable.stat_sys_warning);
+                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
+                            break;
+                        case STATUS_PAUSED:
+                            deleteDownloadButton.setImageResource(R.drawable.ic_download_queued);
+                            videoSizeText.setText("Cancel".toUpperCase());
+                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
+                            break;
                         case STATUS_PENDING:
-                            deleteButton.setImageBitmap(null);
-                            deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
-                                    R.drawable.ic_download_queued));
-                            deleteButton.invalidate();
+                            deleteDownloadButton.setImageResource(R.drawable.ic_download_queued);
                             videoSizeText.setText("Cancel".toUpperCase());
                             videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
 
@@ -504,26 +511,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             }
                             break;
 
-                        case STATUS_FAILED:
-                            Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
-                            deleteDownloadButton.setImageBitmap(null);
-                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
-                                    android.R.drawable.stat_notify_error));
-                            deleteDownloadButton.invalidate();
-                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-                            break;
-
-                        case STATUS_COMPLETED:
-                            if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED
-                                    && contentDatum.getGist().getLocalFileUrl().contains("data")) {
-                                DownloadVideoRealm videoRealm = appCMSPresenter.getRealmController().getDownloadById(contentDatum.getGist().getId());
-                                contentDatum.getGist().setPosterImageUrl(videoRealm.getPosterFileURL());
-                                contentDatum.getGist().setLocalFileUrl(videoRealm.getLocalURI());
-                                loadImage(mContext, contentDatum.getGist().getPosterImageUrl(), thumbnailImage);
-                                thumbnailImage.invalidate();
-//                                notifyItemChanged(position);
-                            }
-                            break;
                         case STATUS_SUCCESSFUL:
                             Log.e(TAG, "Film download successful: " + contentDatum.getGist().getId());
                             deleteDownloadButton.setImageBitmap(null);
@@ -535,13 +522,22 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
 
                             break;
+                        case STATUS_COMPLETED:
+                            if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED
+                                    && contentDatum.getGist().getLocalFileUrl().contains("data")) {
+                                DownloadVideoRealm videoRealm = appCMSPresenter.getRealmController().getDownloadById(contentDatum.getGist().getId());
+                                contentDatum.getGist().setPosterImageUrl(videoRealm.getPosterFileURL());
+                                contentDatum.getGist().setLocalFileUrl(videoRealm.getLocalURI());
+                                loadImage(mContext, contentDatum.getGist().getPosterImageUrl(), thumbnailImage);
+                                thumbnailImage.invalidate();
+//                                notifyItemChanged(position);
+                            }
+                            break;
+
 
                         case STATUS_INTERRUPTED:
                             Log.e(TAG, "Film download interrupted: " + contentDatum.getGist().getId());
-                            deleteDownloadButton.setImageBitmap(null);
-                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
-                                    android.R.drawable.stat_sys_warning));
-                            deleteDownloadButton.invalidate();
+                            deleteDownloadButton.setImageResource(android.R.drawable.stat_sys_warning);
                             videoSize.setText("Re-Try".toUpperCase());
                             int finalRadiusDifference1 = radiusDifference;
                             ImageButton finaldeleteDownloadButton1 = deleteDownloadButton;
@@ -552,14 +548,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 //                        videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
                             break;
 
-                        case STATUS_PAUSED:
-                            deleteDownloadButton.setImageBitmap(null);
-                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
-                                    R.drawable.ic_download_queued));
-                            deleteDownloadButton.invalidate();
-                            videoSizeText.setText("Cancel".toUpperCase());
-                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-                            break;
+
                         default:
                             Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
                             deleteDownloadButton.setImageBitmap(null);

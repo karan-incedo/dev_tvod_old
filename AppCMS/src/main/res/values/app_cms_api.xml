@@ -740,5 +740,4 @@
     <string name="app_cms_page_tabs_season_key">seasonTabs</string>
     <string name="app_cms_page_tabs_type">tabLayout</string>
     <string name="app_cms_page_viewpager_season_key">seasonsViewPager</string>
-    <string name="app_cms_page_viewpager_type">viewPager</string>
 </resources>
