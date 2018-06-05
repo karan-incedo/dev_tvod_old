@@ -779,6 +779,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_removeall_key),
                 AppCMSUIKeyType.PAGE_REMOVEALL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_tickets_key),
+                AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_image_video_key),
