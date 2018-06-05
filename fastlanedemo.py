@@ -11,15 +11,11 @@ import time;
 
 
 fileDirPath = os.path.dirname(os.path.abspath(__file__))
-
 print fileDirPath
-
 platform = sys.argv[1];
 print platform
 url = sys.argv[2];
 print url
-
-print "******************************************"
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36',
@@ -28,23 +24,13 @@ headers = {
 
 url=url+"?x="+str(time.time())
 r = requests.get(url, headers=headers)
-
-
 urllib.urlcleanup()
 response = urllib.urlopen(url)
 urllib.urlcleanup()
-
 data = json.loads(r.text, object_pairs_hook=OrderedDict)
-
 mySplashBackground="#000000"
-
-
 # print (data)
-
-
 print "******************************************8"
-
-
 file = open(fileDirPath + '/AppCMS/src/main/assets/version.properties', 'w')
 file.close()
 
@@ -56,6 +42,17 @@ print('Upload Host Name --> ' + uploadHostName)
 bucketName = sys.argv[6]
 myEmailId=sys.argv[7]
 sampleSlackWebHookUrl="https://hooks.slack.com/services/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"
+
+myApiSecretKey="myApiSecretKey";
+
+if bucketName=="appcms-config":
+    global myApiSecretKey
+    myApiSecretKey="df0813d31adc3b10b9884f5caf57d26a"
+
+if bucketName=="appcms-config-prod":
+    global myApiSecretKey
+    myApiSecretKey="25db16e90345ea2bb1960ede8ee97bdb"
+    
 
 siteId = ""
 baseUrl = ""
@@ -93,17 +90,16 @@ keyval = ""
 googleCredentialsFile = "googleCredentialsFile"
 x = XMLBuilder('resources') 
 
-
 print "**************platform**********build*****************siteName*************"
-
 print platform
 print buildId
 print siteName
 
-print "*******************************************************"
 
 
-
+print "myApiSecretKey"
+print myApiSecretKey
+print "myApiSecretKey"
 
 # def buildFailError():
 #     failParams=options[:buildid] + " " + options[:posturl] +  " " + "'FAILED_BUILD_ERROR'" + " " + "'Build Failure. Execution failed '" + " " + "'Build Failed'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
@@ -120,7 +116,7 @@ def getKeyStorePassword():
         'fieldName' : 'keystorePassword'
     }
     # Adding empty header as parameters are being sent in payload
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     # print(r.json()["data"])
     keystorePass = r.json()["data"]
@@ -139,7 +135,7 @@ def getServicesFile():
         'fieldName' : 'googleServicesFile'
     }
     # Adding empty header as parameters are being sent in payload
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
    
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     # print(r.json()["data"])
@@ -174,7 +170,7 @@ def getCredentailsFile():
         'fieldName' : 'googleCredentialFile'
     }
     # Adding empty header as parameters are being sent in payload
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
 
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     print r.status_code
@@ -364,16 +360,13 @@ for k in data.keys():
         keyval = "FacebookAppId" + ":" + data[k]
         facebookAppId = data[k]
 
-   elif k == "splashBackgroud":
-        keyval = "splashBackgroud" + ":" + data[k]
+    elif k == "splashBackgroud":
         x.color(data[k], name='splashbackgroundColor') 
         etree_node = ~x
         print str(x) 
         print "---------------------------- Theme ----------------------------"
         with open(fileDirPath + "/AppCMS/src/main/res/values/colors.xml", "w") as myfile:
             myfile.write(str(x).encode("utf-8") + "\n")
-
-
 
     elif k == "appsFlyerDevKey":
         # keyval = "AppsFlyerDevKey" + ":" + data[k]
@@ -405,11 +398,14 @@ for k in data.keys():
     elif k == "theme":
         print "---------------------------- Theme ----------------------------"
 
-        if data[k]["statusBar"]["backgroundColor"] is None:
-            x.color("#000000", name='colorPrimaryDark') 
+        if data[k]["statusBar"] is None:
+            print "statusBar is Null"
         else:
-            print(data[k]["statusBar"]["backgroundColor"])
-            x.color(data[k]["statusBar"]["backgroundColor"], name='colorPrimaryDark') 
+            if data[k]["statusBar"]["backgroundColor"] is None:
+                x.color("#000000", name='colorPrimaryDark') 
+            else:
+                print(data[k]["statusBar"]["backgroundColor"])
+                x.color(data[k]["statusBar"]["backgroundColor"], name='colorPrimaryDark') 
 
         if data[k]["general"]["backgroundColor"] is None:
              x.color("#1d5f79", name='colorPrimary') 
@@ -424,8 +420,10 @@ for k in data.keys():
             print(data[k]["cta"]['primary']["backgroundColor"])
             x.color(data[k]["cta"]['primary']["backgroundColor"], name='colorAccent')  
     
-
-        x.color(data[k]["general"]["backgroundColor"], name='backgroundColor') 
+        if data[k]["general"]["backgroundColor"] is None:
+            x.color("#000000", name='backgroundColor') 
+        else:
+            x.color(data[k]["general"]["backgroundColor"], name='backgroundColor') 
 
         x.color('#8F000000', name='blackTransparentColor') 
         x.color('#8c8c8c', name='colorNavBarText') 
@@ -442,11 +440,6 @@ for k in data.keys():
          myfile.write(keyval.encode("utf-8") + "\n")
 
 
-        # whatsNew = "Here details regarding what's new you are providing for this version"
-        # with open(fileDirPath + "/fastlane/metadata/android/en-US/changelogs/"+appVersionCode+".txt", "w") as myfile:
-        # myfile.write(whatsNew.encode("utf-8")+"\n")
-
-
 def getApptentiveSignatureKey():
     url = uploadHostName + '/appcms/build/data'
     payload = {
@@ -455,7 +448,7 @@ def getApptentiveSignatureKey():
         'siteInternalName' : siteName,
         'fieldName' : 'apptentiveAppSignature'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     credentailsData = r.json()["data"]
     print credentailsData
@@ -470,7 +463,7 @@ def getApptentiveApiKey():
         'siteInternalName' : siteName,
         'fieldName' : 'apptentiveAppKey'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     if r.status_code==200:
         credentailsData = r.json()["data"]
@@ -481,7 +474,7 @@ def getApptentiveApiKey():
     return credentailsData
 
 
-
+ 
 def getFaceBookAppId():
     url = uploadHostName + '/appcms/build/data'
     payload = {
@@ -490,7 +483,7 @@ def getFaceBookAppId():
         'siteInternalName' : siteName,
         'fieldName' : 'facebookId'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     credentailsData = r.json()["data"]
     print credentailsData
@@ -505,7 +498,7 @@ def getGcmSenderId():
         'siteInternalName' : siteName,
         'fieldName' : 'googleServicesFile'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     credentailsData = r.json()["data"]
     return credentailsData
@@ -519,7 +512,7 @@ def getDevAppKey():
         'siteInternalName' : siteName,
         'fieldName' : 'googleServicesFile'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     credentailsData = r.json()["data"]
     return credentailsData
@@ -533,16 +526,10 @@ def getDevAppSecret():
         'siteInternalName' : siteName,
         'fieldName' : 'googleServicesFile'
     }
-    headers = {"Content-Type": "application/json","secretKey" : "25db16e90345ea2bb1960ede8ee97bdb"}
+    headers = {"Content-Type": "application/json","secretKey" : myApiSecretKey}
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     credentailsData = r.json()["data"]
     return credentailsData
-
-print "++++++++++++++++++++++++++++"
-# getFaceBookAppId()
-# getApptentiveApiKey()
-# getApptentiveSignatureKey()
-print "++++++++++++++++++++++++++++"
 
 
 versionCodeValue = 1
@@ -568,7 +555,7 @@ keyval = "HostNameSuffix" + ":" + myHostNameSuffix
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
 
-keyval = "BaseUrl" + ":" + "https\://appcmsprod.viewlift.com"
+keyval = "BaseUrl" + ":" + baseUrl
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
 
@@ -610,7 +597,6 @@ keystorePass = getKeyStorePassword()
 appVersionCode = 1
 shortDescription = shortDescription.replace(" ", "_")
 whatsNew = whatsNew.replace(" ", "_")
-
 
 track="beta"
 
