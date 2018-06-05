@@ -71,6 +71,7 @@ import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
+import com.viewlift.models.data.appcms.api.Fights;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Rounds;
@@ -501,52 +502,53 @@ public class ViewCreator {
         }
     }
 
-   /* public static void openFullScreenVideoPlayer(Activity activity) {
-        if (videoPlayerView != null && videoPlayerView.getParent() != null
-                && videoPlayerView.getParent() instanceof ViewGroup) {
-            PageView pageViewAncestor = videoPlayerView.getPageView();
-            if (pageViewAncestor != null) {
-                pageViewAncestor.openViewInFullScreen(videoPlayerView,
-                        (ViewGroup) videoPlayerView.getParent());
-                videoPlayerView.showChromecastLiveVideoPlayer(true);
-                if (videoPlayerView.shouldPlayOnReattach() &&
-                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer(true);
-                } else {
-                    videoPlayerView.resumePlayer();
-                }
-            }
-            videoPlayerView.disableFullScreenMode();
-        }
+    /* public static void openFullScreenVideoPlayer(Activity activity) {
+         if (videoPlayerView != null && videoPlayerView.getParent() != null
+                 && videoPlayerView.getParent() instanceof ViewGroup) {
+             PageView pageViewAncestor = videoPlayerView.getPageView();
+             if (pageViewAncestor != null) {
+                 pageViewAncestor.openViewInFullScreen(videoPlayerView,
+                         (ViewGroup) videoPlayerView.getParent());
+                 videoPlayerView.showChromecastLiveVideoPlayer(true);
+                 if (videoPlayerView.shouldPlayOnReattach() &&
+                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
+                     videoPlayerView.startPlayer(true);
+                 } else {
+                     videoPlayerView.resumePlayer();
+                 }
+             }
+             videoPlayerView.disableFullScreenMode();
+         }
 
-        if (videoPlayerContent != null) {
-            videoPlayerContent.fullScreenEnabled = true;
-        }
-    }
+         if (videoPlayerContent != null) {
+             videoPlayerContent.fullScreenEnabled = true;
+         }
+     }
 
-    public static void closeFullScreenVideoPlayer(Activity activity) {
-        if (videoPlayerView != null) {
-            PageView pageViewAncestor = videoPlayerView.getPageView();
-            if (pageViewAncestor != null) {
-                pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
-                        (ViewGroup) videoPlayerView.getParent());
-                videoPlayerView.showChromecastLiveVideoPlayer(false);
-                if (videoPlayerView.shouldPlayOnReattach() &&
-                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
-                    videoPlayerView.startPlayer(true);
-                } else {
-                    videoPlayerView.resumePlayer();
-                }
-            }
+     public static void closeFullScreenVideoPlayer(Activity activity) {
+         if (videoPlayerView != null) {
+             PageView pageViewAncestor = videoPlayerView.getPageView();
+             if (pageViewAncestor != null) {
+                 pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
+                         (ViewGroup) videoPlayerView.getParent());
+                 videoPlayerView.showChromecastLiveVideoPlayer(false);
+                 if (videoPlayerView.shouldPlayOnReattach() &&
+                         !CastServiceProvider.getInstance(activity).isCastingConnected()) {
+                     videoPlayerView.startPlayer(true);
+                 } else {
+                     videoPlayerView.resumePlayer();
+                 }
+             }
 
-            videoPlayerView.enableFullScreenMode();
-        }
+             videoPlayerView.enableFullScreenMode();
+         }
 
-        if (videoPlayerContent != null) {
-            videoPlayerContent.fullScreenEnabled = false;
-        }
-    }
-*/
+         if (videoPlayerContent != null) {
+             videoPlayerContent.fullScreenEnabled = false;
+         }
+     }
+ */
+    String[] country = {"India", "USA", "China", "Japan", "Other",};
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
         CustomWebView webView = new CustomWebView(context);
@@ -4378,11 +4380,13 @@ public class ViewCreator {
                     }
                 }
 
+
                 if (showTrayLabel) {
                     List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
                     numSeasons = seasons.size();
 
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
+
 
                     try {
                         componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
@@ -4432,6 +4436,63 @@ public class ViewCreator {
                     seasonTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                     ((Spinner) componentViewResult.componentView).setAdapter(seasonTrayAdapter);
+                } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY) {
+                    List<Fights> fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights();
+                    componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
+
+
+                    try {
+                        componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
+                                getColor(context,
+                                        appCMSPresenter.getAppCtaBackgroundColor())),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } catch (Exception e) {
+                        //
+                    }
+                    ArrayAdapter<String> FightTrayAdapter = new FightSmmaryAdapterView(context,
+                            appCMSPresenter,
+                            component,
+                            jsonValueKeyMap);
+
+                    ArrayList<Fights> listFight=new ArrayList<Fights>();
+
+                    for (int i = 0; i < fights.size(); i++) {
+                        listFight.add(fights.get(0));
+                        if (!TextUtils.isEmpty(fights.get(0).getFighter1_FirstName())) {
+                            FightTrayAdapter.add(fights.get(0).getFighter1_FirstName());
+                        } else {
+                            StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
+                            seasonTitleSb.append(context.getString(R.string.blank_separator));
+                            seasonTitleSb.append(i + 1);
+                            FightTrayAdapter.add(seasonTitleSb.toString());
+                        }
+                    }
+//                    componentViewResult.onInternalEvent
+                            OnFightSelectedListener onItemSelectListener=   new OnFightSelectedListener(listFight);
+                    try {
+                        componentViewResult.onInternalEvent.setModuleId(moduleId);
+
+                        componentViewResult.componentView.setEnabled(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ((Spinner) componentViewResult.componentView).setOnItemSelectedListener(onItemSelectListener);
+//                    try {
+//                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
+//                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
+//                    } catch (Exception e) {
+//                        //
+//                    }
+
+//                    ArrayAdapter aa = new ArrayAdapter(context, android.R.layout.simple_spinner_item, country);
+//                    aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    try {
+//                        FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                        ((Spinner) componentViewResult.componentView).setAdapter(FightTrayAdapter);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     componentViewResult.componentView = new TextView(context);
 
@@ -5616,127 +5677,8 @@ public class ViewCreator {
 
             case PAGE_MULTICOLUMN_TABLE_KEY:
                 componentViewResult.componentView = new LinearLayout(context);
-                NestedScrollView nestedSCrollView = new NestedScrollView(context);
-
-                HorizontalScrollView scrollView = new HorizontalScrollView(context);
-                componentViewResult.componentView.setBackgroundColor(R.color.color_white);
-                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
-
-                TableLayout table = new TableLayout(context);
-                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-
-                if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
-                    for (int i = -1; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
-                        TableRow row = new TableRow(context);
-                        row.setWeightSum(2.0f);
-                        row.setPadding(1, 1, 1, 1);
-
-                        TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
-
-                        for (EventDetailsColumnsName colTitle : EventDetailsColumnsName.values()) {
-                            String cellValue = "";
-                            if (i == -1) {
-                                cellValue = colTitle.toString();
-
-                            } else {
-                                Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
-                                if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
-
-                                    if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
-                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
-                                            cellValue = rounds.getRound();
-                                        } else {
-                                            cellValue = "";
-                                        }
-                                    }
-
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
-                                    cellValue = rounds.getRoundTime();
-
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.FIGHTER.toString())) {
-                                    try {
-
-                                        if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
-                                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
-                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter1_FirstName();
-                                            } else {
-                                                cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter2_FirstName();
-                                            }
-                                        }
-                                    } catch (Exception e) {
-                                        cellValue = " ";
-                                        Log.e(i + "-" + colTitle.toString(), e.toString());
-                                    }
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS.toString())) {
-                                    try {
-                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
-                                        cellValue = String.valueOf(as);
-                                    } catch (Exception e) {
-                                        cellValue = "0";
-                                        Log.e(i + "-" + colTitle.toString(), e.toString());
-                                    }
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS1.toString())) {
-                                    try {
-                                        int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
-                                        int as1 = as * 100 / (Integer.parseInt(rounds.getTotalArmStrikesThrown()));
-                                        cellValue = String.valueOf(as1);
-                                    } catch (Exception e) {
-                                        cellValue = "0";
-                                        Log.e(i + "-" + colTitle.toString(), e.toString());
-                                    }
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS.toString())) {
-                                    int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
-                                    cellValue = String.valueOf(ls);
-
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS1.toString())) {
-                                    try {
-                                        int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
-
-                                        int ls1 = ls * 100 / Integer.parseInt(rounds.getTotalLegStrikesThrown());
-
-                                        cellValue = String.valueOf(ls1);
-                                    } catch (Exception e) {
-                                        cellValue = "0";
-
-                                        Log.e(i + "-" + colTitle.toString(), e.toString());
-                                    }
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS.toString())) {
-                                    int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
-                                    cellValue = String.valueOf(gs);
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS1.toString())) {
-                                    try {
-                                        int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
-                                        int gs1 = gs * 100 / Integer.parseInt(rounds.getGroundStrikesThrown());
-
-                                        cellValue = String.valueOf(gs1);
-                                    } catch (Exception e) {
-                                        cellValue = "0";
-                                        Log.e(i + "-" + colTitle.toString(), e.toString());
-                                    }
-                                } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
-
-                                    cellValue = String.valueOf("Unknown");
-                                }
-                            }
-                            addTableRowCell(context, cellValue, row);
-                        }
-                        row.setLayoutParams(params);
-                        table.addView(row, params);
-                        View seperatorView = new View(context);
-                        seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
-                        seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-                        table.addView(seperatorView);
-
-
-                    }
-                }
-                table.setStretchAllColumns(true);
-                scrollView.addView(table);
-                scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
-                nestedSCrollView.addView(scrollView);
-                ((LinearLayout) componentViewResult.componentView).addView(nestedSCrollView);
+                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap);
+                ((LinearLayout) componentViewResult.componentView).addView(TableView);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -6152,6 +6094,133 @@ public class ViewCreator {
         return null;
     }
 
+
+    private View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+
+
+        NestedScrollView nestedSCrollView = new NestedScrollView(context);
+
+        HorizontalScrollView scrollView = new HorizontalScrollView(context);
+        componentViewResult.componentView.setBackgroundColor(R.color.color_white);
+        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+        ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+
+        TableLayout table = new TableLayout(context);
+        table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+
+        if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
+            for (int i = -1; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
+                TableRow row = new TableRow(context);
+                row.setWeightSum(2.0f);
+                row.setPadding(1, 1, 1, 1);
+
+                TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1f);
+
+                for (EventDetailsColumnsName colTitle : EventDetailsColumnsName.values()) {
+                    String cellValue = "";
+                    if (i == -1) {
+                        cellValue = colTitle.toString();
+
+                    } else {
+                        Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
+                        if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
+
+                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                    cellValue = rounds.getRound();
+                                } else {
+                                    cellValue = "";
+                                }
+                            }
+
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
+                            cellValue = rounds.getRoundTime();
+
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.FIGHTER.toString())) {
+                            try {
+
+                                if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
+                                    if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                        cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter1_FirstName();
+                                    } else {
+                                        cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter2_FirstName();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                cellValue = " ";
+                                Log.e(i + "-" + colTitle.toString(), e.toString());
+                            }
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS.toString())) {
+                            try {
+                                int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                cellValue = String.valueOf(as);
+                            } catch (Exception e) {
+                                cellValue = "0";
+                                Log.e(i + "-" + colTitle.toString(), e.toString());
+                            }
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.AS1.toString())) {
+                            try {
+                                int as = Integer.parseInt(rounds.getPowerArmStrikesLanded()) + Integer.parseInt(rounds.getNonPowerArmStrikesLanded());
+                                int as1 = as * 100 / (Integer.parseInt(rounds.getTotalArmStrikesThrown()));
+                                cellValue = String.valueOf(as1);
+                            } catch (Exception e) {
+                                cellValue = "0";
+                                Log.e(i + "-" + colTitle.toString(), e.toString());
+                            }
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS.toString())) {
+                            int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+                            cellValue = String.valueOf(ls);
+
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.LS1.toString())) {
+                            try {
+                                int ls = Integer.parseInt(rounds.getNonPowerLegStrikesLanded()) + Integer.parseInt(rounds.getPowerLegStrikesLanded());
+
+                                int ls1 = ls * 100 / Integer.parseInt(rounds.getTotalLegStrikesThrown());
+
+                                cellValue = String.valueOf(ls1);
+                            } catch (Exception e) {
+                                cellValue = "0";
+
+                                Log.e(i + "-" + colTitle.toString(), e.toString());
+                            }
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS.toString())) {
+                            int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                            cellValue = String.valueOf(gs);
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.GS1.toString())) {
+                            try {
+                                int gs = Integer.parseInt(rounds.getPowerGroundStrikesLanded()) + Integer.parseInt(rounds.getNonPowerGroundStrikesLanded());
+                                int gs1 = gs * 100 / Integer.parseInt(rounds.getGroundStrikesThrown());
+
+                                cellValue = String.valueOf(gs1);
+                            } catch (Exception e) {
+                                cellValue = "0";
+                                Log.e(i + "-" + colTitle.toString(), e.toString());
+                            }
+                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
+
+                            cellValue = String.valueOf("Unknown");
+                        }
+                    }
+                    addTableRowCell(context, cellValue, row);
+                }
+                row.setLayoutParams(params);
+                table.addView(row, params);
+                View seperatorView = new View(context);
+                seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+                seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                table.addView(seperatorView);
+
+
+            }
+        }
+        table.setStretchAllColumns(true);
+        scrollView.addView(table);
+        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+        nestedSCrollView.addView(scrollView);
+        return nestedSCrollView;
+    }
+
     /**
      * This applies a visual border around an input view.
      *
@@ -6370,6 +6439,193 @@ public class ViewCreator {
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
 
+        }
+    }
+
+
+    private static class OnFightSelectedListener implements
+            AdapterView.OnItemSelectedListener,
+            OnInternalEvent {
+
+        private List<Fights> fightData;
+        private List<OnInternalEvent> onInternalEvents;
+        private String moduleId;
+
+        public OnFightSelectedListener(List<Fights> fightData) {
+            this.fightData = fightData;
+            this.onInternalEvents = new ArrayList<>();
+        }
+
+        @Override
+        public void addReceiver(OnInternalEvent e) {
+
+        }
+
+        @Override
+        public void sendEvent(InternalEvent<?> event) {
+            int internalEventsSize = onInternalEvents != null ? onInternalEvents.size() : 0;
+//            for (int i = 0; i < internalEventsSize; i++) {
+//                onInternalEvents.get(i).receiveEvent(event);
+//            }
+        }
+
+        @Override
+        public void receiveEvent(InternalEvent<?> event) {
+
+        }
+
+        @Override
+        public void cancel(boolean cancel) {
+
+        }
+
+        @Override
+        public String getModuleId() {
+            return moduleId;
+        }
+
+        @Override
+        public void setModuleId(String moduleId) {
+            this.moduleId = moduleId;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            System.out.println("on item selection");
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
+
+    private static class FightSmmaryAdapterView extends ArrayAdapter<String> {
+        private AppCMSPresenter appCMSPresenter;
+        private Component component;
+        private Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+
+        public FightSmmaryAdapterView(Context context,
+                                      AppCMSPresenter appCMSPresenter,
+                                      Component component,
+                                      Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+            super(context, R.layout.season_title_dropdown);
+            this.appCMSPresenter = appCMSPresenter;
+            this.component = component;
+            this.jsonValueKeyMap = jsonValueKeyMap;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View result = null;
+            if (convertView != null && convertView instanceof TextView) {
+                result = convertView;
+            } else if (parent != null) {
+                result = LayoutInflater.from(parent.getContext()).inflate(R.layout.season_title_dropdown,
+                        parent,
+                        false);
+
+                try {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getCta().getPrimary().getTextColor())) {
+                        ((TextView) result).setTextColor(
+                                Color.parseColor(
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
+                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                    }
+                } catch (Exception e) {
+                    //
+                }
+
+                try {
+                    result.setBackgroundColor(Color.parseColor(
+                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor())));
+                } catch (Exception e) {
+                    //
+                }
+
+                if (component.getFontSize() > 0) {
+                    ((TextView) result).setTextSize(component.getFontSize());
+                } else if (BaseView.getFontSize(parent.getContext(), component.getLayout()) > 0) {
+                    ((TextView) result).setTextSize(BaseView.getFontSize(parent.getContext(), component.getLayout()));
+                }
+
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                    setTypeFace(parent.getContext(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) result);
+                }
+
+                result.setPadding(8, 0, 8, 0);
+            }
+
+            ((TextView) result).setText(getItem(position));
+//            ((TextView) result).setTextColor(R.color.color_white);
+            System.out.println("on selection show-"+getItem(position));
+
+            return result;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View result = null;
+            if (convertView != null && convertView instanceof TextView) {
+                result = convertView;
+            } else if (parent != null) {
+                result = LayoutInflater.from(parent.getContext()).inflate(R.layout.season_title_dropdown,
+                        parent,
+                        false);
+
+                try {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getCta().getPrimary().getTextColor())) {
+                        ((TextView) result).setTextColor(
+                                Color.parseColor(
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
+                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                    }
+                } catch (Exception e) {
+                    //
+                }
+
+                try {
+                    result.setBackgroundColor(Color.parseColor(
+                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor())));
+                } catch (Exception e) {
+                    //
+                }
+
+                if (component.getFontSize() > 0) {
+                    ((TextView) result).setTextSize(component.getFontSize());
+                } else if (BaseView.getFontSize(parent.getContext(), component.getLayout()) > 0) {
+                    ((TextView) result).setTextSize(BaseView.getFontSize(parent.getContext(), component.getLayout()));
+                }
+
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                    setTypeFace(parent.getContext(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) result);
+                }
+
+                result.setPadding(8, 8, 8, 8);
+            }
+
+            if (result != null) {
+                ((TextView) result).setText(getItem(position));
+                System.out.println("on selection-"+getItem(position));
+//                ((TextView) result).setTextColor(R.color.color_white);
+            }
+
+            return result;
         }
     }
 

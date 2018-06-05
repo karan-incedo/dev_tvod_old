@@ -26,12 +26,19 @@ public class AppCMSEventArchieveResult {
     @SerializedName("LiveEvents")
     @Expose
     List<LiveEvents> LiveEvents = null;
+
     public AppCMSPageAPI convertToAppCMSPageModule(AppCMSPageAPI appCMSPageAPI) {
 
+        for (int i = 0; i < 4; i++) {
 
-        if(appCMSPageAPI.getModules().size()>0){
-            for(int i=0;i<appCMSPageAPI.getModules().size();i++){
-                if(appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("PersonDetailModule")){
+            Fights fight = new Fights();
+            fight=LiveEvents.get(0).getFights().get(0);
+            fight.setFighter1_FirstName("test"+i);
+            LiveEvents.get(0).getFights().add(fight);
+        }
+        if (appCMSPageAPI.getModules().size() > 0) {
+            for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
+                if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("PersonDetailModule")) {
                     appCMSPageAPI.getModules().get(i).getContentData().get(0).setLiveEvents(LiveEvents);
                     break;
                 }
