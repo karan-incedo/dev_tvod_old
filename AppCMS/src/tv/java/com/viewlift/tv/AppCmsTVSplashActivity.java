@@ -114,8 +114,10 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             }.start();
         }
 
-        register();
-        com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+        if (Utils.isFireTVDevice(getApplicationContext())) {
+            register();
+            com.viewlift.tv.utility.Utils.broadcastCapabilities(this);
+        }
 
     }
 
@@ -140,7 +142,9 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         super.onResume();
         registerReceiver(broadcastReceiver,new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(broadcastReceiver,new IntentFilter(AppCMSPresenter.ACTION_LOGO_ANIMATION));
-        initADMReceiver();
+        if (Utils.isFireTVDevice(getApplicationContext())) {
+            initADMReceiver();
+        }
     }
 
     @Override
@@ -148,7 +152,8 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         unregisterReceiver(broadcastReceiver);
         if(null != countDownTimer)
         countDownTimer.cancel();
-        unregisterReceiver(msgReceiver);
+        if (Utils.isFireTVDevice(getApplicationContext()))
+          unregisterReceiver(msgReceiver);
         super.onPause();
     }
 
@@ -219,12 +224,12 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
     }
 
 
+
     private String getDeviceDetail(){
         StringBuffer stringBuffer = new StringBuffer();
         try {
-            final String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
             String AMAZON_MODEL = Build.MODEL;
-            if (getPackageManager().hasSystemFeature(AMAZON_FEATURE_FIRE_TV)) {
+            if (Utils.isFireTVDevice(getApplicationContext())) {
                 stringBuffer.append("FireTV :: ");
             } else {
                 stringBuffer.append("NOT A FireTV :: ");
