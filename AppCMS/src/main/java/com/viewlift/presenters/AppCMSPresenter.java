@@ -2175,10 +2175,8 @@ public class AppCMSPresenter {
 
                     isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
-                    boolean svodServiceType =
-                            appCMSMain.getServiceType()
-                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-                    if (svodServiceType &&
+
+                    if (isAppSVOD() &&
                             !isTrailer &&
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
@@ -13032,9 +13030,7 @@ public class AppCMSPresenter {
             cacheNavItems();
 
             //Log.d(TAG, "Logging in");
-            if (appCMSMain.getServiceType()
-                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                    refreshSubscriptionData) {
+            if (isAppSVOD() && refreshSubscriptionData) {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
                     updatePlaybackControl();
@@ -14506,8 +14502,7 @@ public class AppCMSPresenter {
                 }
 
                 int pageToQueueIndex = -1;
-                if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
-                        && !isUserLoggedIn()) {
+                if (isAppSVOD() && !isUserLoggedIn()) {
                     launchType = LaunchType.LOGIN_AND_SIGNUP;
                 }
 
