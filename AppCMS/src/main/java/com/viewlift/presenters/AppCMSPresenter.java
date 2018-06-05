@@ -344,7 +344,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -593,7 +592,7 @@ public class AppCMSPresenter {
     String loginPageUserName, loginPagePassword;
     boolean isLastStatePlaying = true;
     AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper;
-    private RelativeLayout relativeLayoutFull;
+    public RelativeLayout relativeLayoutFull;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -4512,13 +4511,13 @@ public class AppCMSPresenter {
                                 }
                                 populateFilmsInUserWatchlist();
                             } else {
-                                if (platformType.equals(PlatformType.TV)) {
+
                                     if (add) {
                                         displayCustomToast("Failed to Add to Watchlist");
                                     } else {
                                         displayCustomToast("Failed to Remove from Watchlist");
                                     }
-                                }
+
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
@@ -8400,7 +8399,9 @@ public class AppCMSPresenter {
         //ViewCreator.clearPlayerView();
 
         boolean result = false;
-
+        if(currentActivity instanceof AppCMSPlayAudioActivity){
+            setCancelAllLoads(false);
+        }
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
 
             if (launched) {
@@ -12201,13 +12202,15 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cancelInternalEvents();
-                    restartInternalEvents();
-                }
-            });
+            if (currentActivity != null ) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        cancelInternalEvents();
+                        restartInternalEvents();
+                    }
+                });
+            }
 
 
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
@@ -16667,11 +16670,13 @@ public class AppCMSPresenter {
             videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
         }
         if (videoPlayerView != null && videoPlayerView.getParent() != null) {
-            relativeLayoutFull = new FullPlayerView(currentActivity, this);
-            relativeLayoutFull.setVisibility(View.VISIBLE);
             if (currentActivity.findViewById(R.id.app_cms_parent_view) == null) {
                 return;
             }
+
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             currentActivity.findViewById(R.id.app_cms_parent_view).setVisibility(View.VISIBLE);
 
