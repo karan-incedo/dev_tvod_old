@@ -2110,7 +2110,7 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY:
-                        if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                        if (appCMSPresenter.isAppSVOD()) {
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
                                     appCMSPresenter.getSubscriptionData(
@@ -2598,7 +2598,7 @@ public class TVViewCreator {
                             break;
 
                         case PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY:
-                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                            if (appCMSPresenter.isAppSVOD()) {
                                 TextView tvEndDate = (TextView) componentViewResult.componentView;
                                 if (appCMSPresenter.getActiveSubscriptionEndDate() != null) {
                                     String strDate = appCMSPresenter.getActiveSubscriptionEndDate().substring(0, 10);
@@ -2614,7 +2614,7 @@ public class TVViewCreator {
                             }
                             break;
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
-                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                            if (appCMSPresenter.isAppSVOD()) {
                                 TextView tv = (TextView) componentViewResult.componentView;
                                 tv.setEllipsize(TextUtils.TruncateAt.MARQUEE);
                                 tv.setSelected(true);
@@ -2661,7 +2661,7 @@ public class TVViewCreator {
                             break;
 
                         case PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY:
-                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                            if (appCMSPresenter.isAppSVOD()) {
                                 if (!TextUtils.isEmpty(component.getText())) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText());
                                 }
