@@ -122,6 +122,9 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (adapterData.size() == 0) {
+            return new ViewHolder(new View(parent.getContext()));
+        }
         View view = collectionGridItemViewCreator.createView(parent.getContext());
         AppCMSTraySeasonItemAdapter.ViewHolder viewHolder = new AppCMSTraySeasonItemAdapter.ViewHolder(view);
         return viewHolder;
@@ -400,6 +403,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         listView.setAdapter(this);
         listView.invalidate();
         notifyDataSetChanged();
+
     }
 
     @Override
@@ -416,7 +420,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
+            if (itemView instanceof CollectionGridItemView)
+                this.componentView = (CollectionGridItemView) itemView;
         }
     }
 }
