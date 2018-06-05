@@ -397,7 +397,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+            if (appCMSPresenter.isAppSVOD()) {
                 if (!appCMSPresenter.isUserLoggedIn()) {
                     setSubscriptionText(false);
                 } else {
