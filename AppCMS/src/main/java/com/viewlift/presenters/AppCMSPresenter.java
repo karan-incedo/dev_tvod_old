@@ -2667,16 +2667,17 @@ public class AppCMSPresenter {
                     loadJsonFromAssets(currentActivity, "player_detail.json"),
                     AppCMSPageUI.class);
         }
-        jsonValueKeyMap.put("AC PlayerDetail 01", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
+        jsonValueKeyMap.put("eventDetail", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
 //        jsonValueKeyMap.put("AC EventDetail 01", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
-        jsonValueKeyMap.put("AC EventDetail 01", AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
+        jsonValueKeyMap.put("AC FightDetail 01", AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
 
 
         String apiUrl = null;
         if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
             navigationPages.put("b102b0d2-503f-46af-99e7-6a4a63458d31", appCMSPageUI);
 
-            apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
+            apiUrl ="https://release-api.viewlift.com/content/pages?site=qa-capitalone-arena&includeContent=true&path=/events/valor-vs-philadelphia-soul-june2-2018";
+            //apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
         }
 
         showLoader();
@@ -9081,6 +9082,10 @@ public class AppCMSPresenter {
         if (appCMSPageAPICall == null ||
                 appCMSStreamingInfoCall == null ||
                 appCMSVideoDetailCall == null) {
+
+            if (pageId.equalsIgnoreCase("/player/donny-moss")) {
+                apikey = "XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F";
+            }
             AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                     .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
                             appCMSMain.getApiBaseUrl(),

@@ -25,6 +25,26 @@ public class GameSchedule implements Serializable {
     @Expose
     long gameTime;
 
+    @SerializedName("eventTime")
+    @Expose
+    long eventTime;
+
+    @SerializedName("doorTime")
+    @Expose
+    String doorTime;
+
+    @SerializedName("eventDate")
+    @Expose
+    long eventDate;
+
+    @SerializedName("showTime")
+    @Expose
+    boolean showTime;
+
+    @SerializedName("eventTimeZone")
+    @Expose
+    String eventTimeZone;
+
     @SerializedName("gameDoorTime")
     @Expose
     long gameDoorTime;
@@ -79,6 +99,46 @@ public class GameSchedule implements Serializable {
 
     public void setGameDate(long gameDate) {
         this.gameDate = gameDate;
+    }
+
+    public long getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public String getDoorTime() {
+        return doorTime;
+    }
+
+    public void setDoorTime(String doorTime) {
+        this.doorTime = doorTime;
+    }
+
+    public long getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(long eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public boolean getShowTime() {
+        return showTime;
+    }
+
+    public void setShowTime(boolean showTime) {
+        this.showTime = showTime;
+    }
+
+    public String getEventTimeZone() {
+        return eventTimeZone;
+    }
+
+    public void setEventTimeZone(String eventTimeZone) {
+        this.eventTimeZone = eventTimeZone;
     }
 
 }

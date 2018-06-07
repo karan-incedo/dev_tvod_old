@@ -38,7 +38,7 @@ public class AppCMSEventArchieveResult {
         }
         if (appCMSPageAPI.getModules().size() > 0) {
             for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
-                if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("PersonDetailModule")) {
+                if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("EventDetailModule")) {
                     appCMSPageAPI.getModules().get(i).getContentData().get(0).setLiveEvents(LiveEvents);
                     break;
                 }
