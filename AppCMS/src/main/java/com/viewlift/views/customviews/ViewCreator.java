@@ -6197,7 +6197,7 @@ public class ViewCreator {
                             return appCMSPageAPI.getModules().get(0);
                         }
                         break;
-                    case PAGE_PLAYER_STATE_MODULE_KEY:
+                    case PAGE_FIGHT_SUMMARY_MODULE_KEY:
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
                             return appCMSPageAPI.getModules().get(appCMSPageAPI.getModules().size() - 1);

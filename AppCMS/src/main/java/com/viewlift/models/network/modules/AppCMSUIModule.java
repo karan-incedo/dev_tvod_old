@@ -743,8 +743,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_GAME_DETAIL_MODULE_KEY);
 
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_player_state_module),
-                AppCMSUIKeyType.PAGE_PLAYER_STATE_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_fightsummary_key_type),
+                AppCMSUIKeyType.PAGE_FIGHT_SUMMARY_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_player_detail_module),
                 AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);

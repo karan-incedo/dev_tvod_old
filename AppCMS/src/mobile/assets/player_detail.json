@@ -232,7 +232,7 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 226,
+              "yAxis": 528,
               "leftMargin": 0,
               "rightMargin": 0,
               "height": 450
@@ -257,7 +257,7 @@
             "infoHover": true,
             "thumbnailType": "portrait"
           },
-          "view": "AC playerState ",
+          "key": "fightSummary",
           "components": [
             {
               "layout": {
@@ -312,7 +312,7 @@
                 }
               },
               "type": "separatorView",
-              "backgroundColor": "#ffffff"
+              "backgroundColor": "#d6202d"
             },
             {
               "layout": {
@@ -497,7 +497,7 @@
             }
           ],
           "id": "3f255c6f-8e39-4182-9307-d1342e59fe70",
-          "type": "AC playerState 01"
+          "type": "fightSummary"
         }
       ]
     },

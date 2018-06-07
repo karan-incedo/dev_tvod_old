@@ -233,7 +233,7 @@
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_game_detail_module">AC GameDetail 01</string>
-    <string name="app_cms_player_state_module">AC playerState 01</string>
+    <string name="app_cms_fightsummary_key_type">fightSummary</string>
     <string name="app_cms_player_detail_module">eventDetail</string>
     <string name="app_cms_event_detail_module">AC FightDetail 01</string>
     <string name="app_cms_page_event_details_key">eventDetails</string>
