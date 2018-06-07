@@ -4897,14 +4897,7 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#80000000"));
                         }
                     }
-                    if (componentKey == AppCMSUIKeyType.PAGE_STATE_LABEL_TXT_KEY || componentKey == AppCMSUIKeyType.PAGE_TABEL_LABEL_HEADER_TXT_KEY) {
-                        int textFontColor = 0;
-                        if (!TextUtils.isEmpty(component.getTextColor())) {
-                            textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
-                        }
-                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
-                        ((TextView) componentViewResult.componentView).setText(component.getText());
-                    }
+
                     if (!gridElement) {
                         switch (componentKey) {
                             case PAGE_API_TITLE:
@@ -4929,8 +4922,10 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                    if (component.getNumberOfLines() != 0) {
+                                        ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
+                                    }
                                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                                    ((TextView) componentViewResult.componentView).setMaxLines(1);
                                 }
                                 break;
 
@@ -5160,6 +5155,52 @@ public class ViewCreator {
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
 
+                                }
+
+                                break;
+
+                            case PAGE_GAME_DATE_KEY:
+                                if (moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null) {
+                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                                    String eventdate = AppCMSPresenter.getDateFormat(date*1000L,"MM/yyyy");
+                                    StringBuilder builder = new StringBuilder(eventdate);
+                                    builder.append(" - ");
+                                    builder.append(AppCMSPresenter.getDateFormat( moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime(),"hh:mm aa"));
+
+                                    /*//long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
+
+                                    long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                    String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
+
+                                    StringBuilder builder = new StringBuilder(secondsToTime);
+
+                                    if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                        publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                        String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
+                                        builder.append(" | ");
+                                        builder.append(publishDate);
+                                    }*/
+
+                                    ((TextView) componentViewResult.componentView).setText(builder);
+                                }
+
+                                break;
+
+                            case PAGE_VENUE_LABEL_KEY:
+                                if (moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getVenue() != null) {
+                                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0)
+                                            .getGist().getEventSchedule().get(0).getVenue().toString());
                                 }
 
                                 break;
@@ -5548,7 +5589,9 @@ public class ViewCreator {
                                 }
                             } else if (viewWidth > 0) {
                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() == null ?
+                                                moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl() :
+                                                moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
                                         viewWidth,
                                         viewHeight);
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
@@ -6165,7 +6208,7 @@ public class ViewCreator {
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
-                            return appCMSPageAPI.getModules().get(2);
+                            return appCMSPageAPI.getModules().get(1);
                         }
                         break;
                     default:

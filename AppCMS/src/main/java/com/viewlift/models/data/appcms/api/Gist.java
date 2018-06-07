@@ -242,6 +242,10 @@ public class Gist implements Serializable {
     @Expose
     List<GameSchedule> gameSchedule = null;
 
+    @SerializedName("eventSchedule")
+    @Expose
+    List<GameSchedule> eventSchedule = null;
+
     @SerializedName("homeTeam")
     @Expose
     GameTeamGist homeTeam;
@@ -686,8 +690,16 @@ public class Gist implements Serializable {
         return gameSchedule;
     }
 
+    public List<GameSchedule> getEventSchedule() {
+        return eventSchedule;
+    }
+
     public void setGameSchedule(List<GameSchedule> gameSchedule) {
         this.gameSchedule = gameSchedule;
+    }
+
+    public void setEventSchedule(List<GameSchedule> eventSchedule) {
+        this.eventSchedule = eventSchedule;
     }
 
     public GameTeamGist getAwayTeam() {

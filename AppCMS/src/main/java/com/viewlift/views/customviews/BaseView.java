@@ -1229,6 +1229,17 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_VENUE_LABEL_KEY:
+                case PAGE_GAME_DATE_KEY:
+                    if (childComponent.getTextAlignment().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_text_alignment_right))) {
+                        gravity = Gravity.END;
+                        rm += convertDpToPixel(10, getContext());
+                        view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+                    } else {
+                        gravity = Gravity.START;
+                    }
+                    break;
+
                 case PAGE_PLAN_PRICEINFO_KEY:
                     lm += convertDpToPixel(8, getContext());
                     break;

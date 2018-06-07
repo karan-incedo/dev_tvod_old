@@ -248,6 +248,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_venue_label_key),
+                AppCMSUIKeyType.PAGE_VENUE_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ads_key),
                 AppCMSUIKeyType.PAGE_ADS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),
@@ -475,7 +477,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_event_details_key),
+                AppCMSUIKeyType.PAGE_EVENT_DETAILS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),

@@ -133,6 +133,7 @@
     <string name="app_cms_page_check_tc_policy_key">checkbox</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_venue_label_key">venueLabel</string>
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
@@ -233,8 +234,9 @@
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_game_detail_module">AC GameDetail 01</string>
     <string name="app_cms_player_state_module">AC playerState 01</string>
-    <string name="app_cms_player_detail_module">AC PlayerDetail 01</string>
-    <string name="app_cms_event_detail_module">AC EventDetail 01</string>
+    <string name="app_cms_player_detail_module">eventDetail</string>
+    <string name="app_cms_event_detail_module">AC FightDetail 01</string>
+    <string name="app_cms_page_event_details_key">eventDetails</string>
 
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
