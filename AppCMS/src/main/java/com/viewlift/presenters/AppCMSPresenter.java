@@ -2715,7 +2715,7 @@ public class AppCMSPresenter {
 
                                 getEventsArchieve(appCMSMain.getApiBaseUrl(),
                                         appCMSSite.getGist().getSiteInternalName(),
-                                        pageId, new AppCMSEventArchieveAPIAction(false,
+                                        pageId, new AppCMSEventArchieveAPIAction(true,
                                                 false,
                                                 true,
                                                 appCMSPageUI,
@@ -2728,6 +2728,10 @@ public class AppCMSPresenter {
                                             @Override
                                             public void call(AppCMSEventArchieveResult appCMSTeamRoasterResult) {
                                                 if (appCMSTeamRoasterResult != null) {
+
+                                                    appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
+                                                            loadJsonFromAssets(currentActivity, "player_detail_data.json"),
+                                                            AppCMSEventArchieveResult.class);
                                                     Module module=null;
                                                     if (appCMSTeamRoasterResult != null) {
                                                         pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
@@ -7769,6 +7773,12 @@ public class AppCMSPresenter {
             }
         }
     }
+
+
+    public void setSelectedFightId(){
+
+    }
+
 
     private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,

@@ -579,18 +579,21 @@
             "mobile": {
               "yAxis": 528,
               "leftMargin": 0,
-              "rightMargin": 0
+              "rightMargin": 0,
+              "height": 450
             },
             "tabletLandscape": {
               "yAxis": 528,
               "leftMargin": 0,
               "xAxis": 0,
+              "height": 450,
               "rightMargin": 0
             },
             "tabletPortrait": {
               "yAxis": 651,
               "leftMargin": 0,
               "xAxis": 0,
+              "height": 450,
               "rightMargin": 0
             }
           },
@@ -606,23 +609,20 @@
                 "mobile": {
                   "yAxis": 25,
                   "xAxis": 10,
-                  "width": 185,
-                  "fontSize": 18,
-                  "height": 34
+                  "fontSize": 22,
+                  "height": 40
                 },
                 "tabletLandscape": {
                   "yAxis": 28,
-                  "xAxis": 73,
-                  "width": 79,
-                  "fontSize": 18,
-                  "height": 25
+                  "xAxis": 10,
+                  "fontSize": 22,
+                  "height": 40
                 },
                 "tabletPortrait": {
                   "yAxis": 28,
-                  "width": 79,
-                  "xAxis": 73,
-                  "fontSize": 18,
-                  "height": 34
+                  "xAxis": 10,
+                  "fontSize": 22,
+                  "height": 40
                 }
               },
               "fontFamily": "Lato",
@@ -631,28 +631,28 @@
               "textStyle": "default",
               "type": "label",
               "text": "Fight Summary",
-              "textColor": "##9d9d9d",
+              "textColor": "#ffffff",
               "fontWeight": "Bold",
               "key": "statsViewHeader"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 60,
+                  "yAxis": 65,
                   "height": 1,
-                  "leftMargin": 0,
-                  "rightMargin": 0
+                  "leftMargin": 10,
+                  "rightMargin": 10
                 },
                 "tabletLandscape": {
-                  "yAxis": 60,
-                  "leftMargin": 0,
-                  "rightMargin": 0,
+                  "yAxis": 65,
+                  "leftMargin": 10,
+                  "rightMargin": 10,
                   "height": 1
                 },
                 "tabletPortrait": {
-                  "yAxis": 60,
-                  "leftMargin": 0,
-                  "rightMargin": 0,
+                  "yAxis": 65,
+                  "leftMargin": 10,
+                  "rightMargin": 10,
                   "height": 1
                 }
               },
@@ -662,25 +662,50 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 65,
-                  "leftMargin": 2.67,
-                  "rightMargin": 2.67,
-                  "fontSize": 20,
-                  "height": 40
+                  "width": 200,
+                  "leftMargin": 10,
+                  "yAxis": 70
                 },
                 "tabletLandscape": {
-                  "yAxis": 65,
-                  "leftMargin": 0.97,
-                  "rightMargin": 0.97,
-                  "fontSize": 24,
-                  "height": 40
+                  "yAxis": 72,
+                  "xAxis": 10,
+                  "height": 450,
+                  "width": 200
                 },
                 "tabletPortrait": {
-                  "yAxis": 65,
-                  "leftMargin": 1.3,
-                  "rightMargin": 1.3,
+                  "xAxis": 10,
+                  "yAxis": 72,
+                  "height": 450,
+                  "width": 200
+                }
+              },
+              "type": "fightListParentView",
+              "key": "fightListParentView",
+              "isVisibleForPhone": false,
+              "isVisibleForTablet": true
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 70,
+                  "leftMargin": 10,
+                  "rightMargin": 10,
+                  "fontSize": 20,
+                  "height": 50
+                },
+                "tabletLandscape": {
+                  "yAxis": 70,
+                  "leftMargin": 10,
+                  "rightMargin": 10,
                   "fontSize": 24,
-                  "height": 40
+                  "height": 50
+                },
+                "tabletPortrait": {
+                  "yAxis": 70,
+                  "leftMargin": 10,
+                  "rightMargin": 10,
+                  "fontSize": 24,
+                  "height": 50
                 }
               },
               "fontFamily": "OpenSans",
@@ -688,31 +713,33 @@
               "textAlignment": "left",
               "type": "label",
               "textColor": "#ffffff",
+              "fontWeight": "Semibold",
               "isVisibleForPhone": true,
+              "isVisibleForTablet": false,
               "key": "fightDropDown"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 110,
+                  "yAxis": 75,
                   "xAxis": 10,
                   "width": 185,
                   "fontSize": 18,
                   "height": 34
                 },
                 "tabletLandscape": {
-                  "yAxis": 110,
-                  "xAxis": 73,
-                  "width": 79,
+                  "yAxis": 75,
+                  "xAxis": 20,
+                  "width": 100,
                   "fontSize": 18,
-                  "height": 25
+                  "height": 35
                 },
                 "tabletPortrait": {
-                  "yAxis": 110,
-                  "width": 79,
-                  "xAxis": 73,
+                  "yAxis": 75,
+                  "width": 100,
+                  "xAxis": 20,
                   "fontSize": 18,
-                  "height": 34
+                  "height": 35
                 }
               },
               "fontFamily": "Lato",
@@ -721,33 +748,54 @@
               "textStyle": "default",
               "type": "label",
               "text": "FIGHTS",
-              "textColor": "##9d9d9d",
+              "textColor": "#ffffff",
               "fontWeight": "Bold",
               "key": "tableHeaderLabel",
-              "isVisibleForPhone": false
+              "isVisibleForPhone": false,
+              "isVisibleForTablet": true
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 120,
+                  "leftMargin": 10,
+                  "rightMargin": 10
+                },
+                "tabletLandscape": {
+                  "yAxis": 70,
+                  "leftMargin": 200,
+                  "rightMargin": 10
+                },
+                "tabletPortrait": {
+                  "yAxis": 70,
+                  "leftMargin": 200,
+                  "rightMargin": 10
+                }
+              },
+              "backgroundColor": "#ffffff",
+              "type": "fightStatsView",
+              "key": "fightStatsView"
             },
             {
               "layout": {
                 "mobile": {
                   "gridHeight": 80,
                   "leftMargin": 0,
-                  "yAxis": 125,
-                  "rightMargin": 0,
-                  "bottomMargin": 9
+                  "yAxis": 125
                 },
                 "tabletLandscape": {
-                  "gridHeight": 80,
+                  "gridHeight": 40,
                   "leftMargin": 0,
-                  "yAxis": 125,
-                  "rightMargin": 0,
-                  "bottomMargin": 7.81
+                  "yAxis": 110,
+                  "xAxis": 10,
+                  "width": 200
                 },
                 "tabletPortrait": {
-                  "gridHeight": 80,
+                  "gridHeight": 40,
                   "leftMargin": 0,
-                  "yAxis": 125,
-                  "rightMargin": 0,
-                  "bottomMargin": 5.86
+                  "yAxis": 110,
+                  "xAxis": 10,
+                  "width": 200
                 }
               },
               "components": [
@@ -765,15 +813,15 @@
                       "leftMargin": 25,
                       "topMargin": 1.3,
                       "rightMargin": 0,
-                      "width": 350,
+                      "width": 150,
                       "fontSize": 14,
                       "height": 19
                     },
                     "tabletPortrait": {
-                      "leftMargin": 25,
+                      "leftMargin": 20,
                       "topMargin": 0.3,
                       "rightMargin": 0,
-                      "width": 250,
+                      "width": 150,
                       "fontSize": 14,
                       "height": 19
                     }
@@ -781,6 +829,7 @@
                   "fontFamily": "OpenSans",
                   "textAlignment": "left",
                   "type": "label",
+                  "text": "title",
                   "textColor": "#ffffff",
                   "fontWeight": "Semibold",
                   "key": "fightNameLabel"
@@ -788,30 +837,8 @@
               ],
               "type": "tableView",
               "key": "fightListTable",
-              "isVisibleForPhone": false
-            },
-            {
-              "layout": {
-                "mobile": {
-                  "yAxis": 120,
-                  "xAxis": 10,
-                  "leftMargin": 1.73,
-                  "rightMargin": 1.73
-                },
-                "tabletLandscape": {
-                  "yAxis": 120,
-                  "leftMargin": 0.68,
-                  "rightMargin": 0.68
-                },
-                "tabletPortrait": {
-                  "yAxis": 120,
-                  "leftMargin": 0.91,
-                  "rightMargin": 0.91
-                }
-              },
-              "backgroundColor": "#ffffff",
-              "type": "fightStatsView",
-              "key": "fightStatsView"
+              "isVisibleForPhone": false,
+              "isVisibleForTablet": true
             }
           ],
           "id": "3f255c6f-8e39-4182-9307-d1342e59fe70",

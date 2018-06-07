@@ -260,6 +260,7 @@
     <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
     <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
     <string name="app_cms_page_event_details_module_key">AC EventDetail 01</string>
+    <string name="app_cms_page_fight_table_key">fightListTable</string>
 
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
@@ -309,6 +310,7 @@
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
+    <string name="app_cms_fight_list_module_key">fightListParentView</string>
 
     <!--PHOTO_GALLERY-TAG-->
     <string name="app_cms_page_photogallery_title">photoTitle</string>
@@ -329,6 +331,8 @@
     <string name="app_cms_page_player_height_label_key">playerHeight</string>
     <string name="app_cms_page_player_height_value_key">playerHeightValue</string>
     <string name="app_cms_page_fight_selection_label_key">fightDropDown</string>
+    <string name="app_cms_page_tableHeaderLabel_label_key">tableHeaderLabel</string>
+    <string name="app_cms_page_statsViewHeader_label_key">statsViewHeader</string>
 
     <string name="app_cms_page_player_weight_label_key">playerWeight</string>
     <string name="app_cms_page_player_weight_value_label_key">playerWeightValue</string>
@@ -364,6 +368,7 @@
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
+    <string name="app_cms_page_fighter_name_label_key">fightNameLabel</string>
 
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>

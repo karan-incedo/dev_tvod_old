@@ -18,6 +18,26 @@ public class Fights implements Serializable {
     @Expose
     public String Fighter2_LastName;
 
+    @SerializedName("Fighter2Id")
+    @Expose
+    public String Fighter2Id;
+
+    @SerializedName("Fighter2_FirstName")
+    @Expose
+    public String Fighter2_FirstName;
+
+    @SerializedName("ScheduledRounds")
+    @Expose
+    public String ScheduledRounds;
+
+    @SerializedName("SequenceNumber")
+    @Expose
+    public String SequenceNumber;
+
+    @SerializedName("Title")
+    @Expose
+    public String Title;
+
     public String getFightStatus() {
         return FightStatus;
     }
@@ -114,11 +134,11 @@ public class Fights implements Serializable {
         Fighter1_Id = fighter1_Id;
     }
 
-    public List<com.viewlift.models.data.appcms.api.Rounds> getRounds() {
+    public List<Rounds> getRounds() {
         return Rounds;
     }
 
-    public void setRounds(List<com.viewlift.models.data.appcms.api.Rounds> rounds) {
+    public void setRounds(List<Rounds> rounds) {
         Rounds = rounds;
     }
 
@@ -161,26 +181,6 @@ public class Fights implements Serializable {
     public void setFighter1_LastName(String fighter1_LastName) {
         Fighter1_LastName = fighter1_LastName;
     }
-
-    @SerializedName("Fighter2Id")
-    @Expose
-    public String Fighter2Id;
-
-    @SerializedName("Fighter2_FirstName")
-    @Expose
-    public String Fighter2_FirstName;
-
-    @SerializedName("ScheduledRounds")
-    @Expose
-    public String ScheduledRounds;
-
-    @SerializedName("SequenceNumber")
-    @Expose
-    public String SequenceNumber;
-
-    @SerializedName("Title")
-    @Expose
-    public String Title;
 
     @SerializedName("Fighter1_FirstName")
     @Expose

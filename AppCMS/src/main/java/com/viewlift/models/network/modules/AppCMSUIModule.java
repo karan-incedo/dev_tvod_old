@@ -563,6 +563,14 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WEIGHT_DIVISION_VALUE_TXT_KEY);
 
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tableHeaderLabel_label_key),
+                AppCMSUIKeyType.PAGE_TABEL_LABEL_HEADER_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_statsViewHeader_label_key),
+                AppCMSUIKeyType.PAGE_STATE_LABEL_TXT_KEY);
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fight_selection_label_key),
                 AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY);
 
@@ -629,6 +637,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_fight_list_module_key),
+                AppCMSUIKeyType.PAGE_FIGHT_LIST_PARENT_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key2),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
@@ -660,6 +672,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_last_added_label),
                 AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_name_label_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
@@ -740,7 +756,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fight_table_key),
+                AppCMSUIKeyType.PAGE_FIGHT_TABLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
                 AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_module_key),

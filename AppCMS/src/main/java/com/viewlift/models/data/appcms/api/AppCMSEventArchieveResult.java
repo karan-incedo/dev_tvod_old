@@ -29,13 +29,13 @@ public class AppCMSEventArchieveResult {
 
     public AppCMSPageAPI convertToAppCMSPageModule(AppCMSPageAPI appCMSPageAPI) {
 
-        for (int i = 0; i < 4; i++) {
-
-            Fights fight = new Fights();
-            fight=LiveEvents.get(0).getFights().get(0);
-            fight.setFighter1_FirstName("test"+i);
-            LiveEvents.get(0).getFights().add(fight);
-        }
+//        for (int i = 0; i < 4; i++) {
+//
+//            Fights fight = new Fights();
+//            fight=LiveEvents.get(0).getFights().get(0);
+//            fight.setFighter1_FirstName("test"+i);
+//            LiveEvents.get(0).getFights().add(fight);
+//        }
         if (appCMSPageAPI.getModules().size() > 0) {
             for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
                 if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("PersonDetailModule")) {
