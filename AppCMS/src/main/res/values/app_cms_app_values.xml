@@ -71,8 +71,6 @@
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
 
-    <bool name="show_navbar">false</bool>
-
     <bool name="enable_stream_quality_selection">true</bool>
 
     <bool name="sort_plans_in_ascending_order">false</bool>

@@ -3260,7 +3260,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     public void startFreeTrialTool() {
         if(appCMSPresenter != null &&
-                appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")){
+                appCMSPresenter.isAppSVOD()){
         int buttonColor, textColor;
 
         buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
@@ -3296,7 +3296,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     void setVisibilityForStartFreeTrial(String pageId) {
         if (appCMSPresenter.getNavigation() != null &&
-                appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD") &&
+                appCMSPresenter.isAppSVOD() &&
                 appCMSPresenter.getNavigation().getSettings() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&

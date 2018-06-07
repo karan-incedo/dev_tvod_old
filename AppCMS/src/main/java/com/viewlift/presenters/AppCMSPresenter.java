@@ -2512,9 +2512,8 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
-                                //Todo need to manage it depend on Template
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar) ||
-                                        getTemplateType() == TemplateType.SPORTS) {
+                                //If  Template is Sports AppBar and NevBar will present at video details page
+                                if (getTemplateType() == TemplateType.SPORTS) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
