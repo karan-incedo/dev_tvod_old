@@ -59,13 +59,6 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
 
         needSplashProgress = strings.contains(packageName);
 
-        for (String app : strings) {
-            if (packageName.contains(app)){
-                needSplashProgress = true;
-                break;
-            }
-        }
-
         AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
         if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
@@ -222,7 +215,6 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
             }
         });
     }
-
 
 
     private String getDeviceDetail(){
