@@ -134,6 +134,7 @@
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_venue_label_key">venueLabel</string>
+    <string name="app_cms_page_upcoming_timer_key">upcomingTimer</string>
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>

@@ -253,6 +253,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_venue_label_key),
                 AppCMSUIKeyType.PAGE_VENUE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upcoming_timer_key),
+                AppCMSUIKeyType.PAGE_UPCOMING_TIMER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ads_key),
                 AppCMSUIKeyType.PAGE_ADS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),

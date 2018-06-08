@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -28,9 +29,14 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.text.style.AlignmentSpan;
+import android.text.style.MetricAffectingSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -114,6 +120,7 @@ import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -4932,11 +4939,16 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                                     if (component.getNumberOfLines() != 0) {
+                                        ((TextView) componentViewResult.componentView).setSingleLine(false);
                                         ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                     }
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                                    if(moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
+                                            moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_event))) {
+                                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                    }
                                 }
                                 break;
 
@@ -5198,6 +5210,7 @@ public class ViewCreator {
                                     }*/
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
+                                    ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 }
 
                                 break;
@@ -5215,6 +5228,21 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 }
 
+                                break;
+
+                            case PAGE_UPCOMING_TIMER_KEY:
+                                if (moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null);{
+
+                                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                startTimer(500000,eventDate,((TextView) componentViewResult.componentView));
+                                ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+                                }
                                 break;
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
@@ -7424,6 +7452,31 @@ public class ViewCreator {
         row.addView(cell);
     }
 
+    private static CountDownTimer countDownTimer;
+        private void startTimer(int noOfMinutes,long eventTime ,TextView countdownTimerText) {
+            countDownTimer = new CountDownTimer(eventTime, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    long currentTimeMillis = System.currentTimeMillis();
+                    long remainingTime = (eventTime*1000L) - currentTimeMillis;
+                    String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime,"dd:hh:mm:ss").split(":");
+                    String spannableString = scheduleTime[0] + " D " + scheduleTime[1] + " H " + scheduleTime[2] + " M " +
+                            scheduleTime[3] +" S";
+                    SpannableString spannableString1 = new SpannableString(spannableString);
+                    spannableString1.setSpan(new RelativeSizeSpan(2f),0,2,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableString1.setSpan(new CustomCharacterSpan(), 3, 4,
+                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    countdownTimerText.setText(spannableString);
+
+                }
+
+                public void onFinish() {
+                    countdownTimerText.setText("TIME'S UP!!"); //On finish change timer text
+                    countDownTimer = null;//set CountDownTimer to null
+                    //startTimer.setText(getString(R.string.start_timer));//Change button text
+                }
+            }.start();
+        }
+
     public enum EventDetailsColumnsName {
         ROUND("Round"),
         TIME("Time"),
@@ -7457,5 +7510,26 @@ public class ViewCreator {
 
 
     }
+    public static class CustomCharacterSpan extends MetricAffectingSpan {
+        double ratio = 0.3;
+
+        public CustomCharacterSpan() {
+        }
+
+        public CustomCharacterSpan(double ratio) {
+            this.ratio = ratio;
+        }
+
+        @Override
+        public void updateDrawState(TextPaint paint) {
+            paint.baselineShift += (int) (paint.ascent() * ratio);
+        }
+
+        @Override
+        public void updateMeasureState(TextPaint paint) {
+            paint.baselineShift += (int) (paint.ascent() * ratio);
+        }
+    }
 }
+
 
