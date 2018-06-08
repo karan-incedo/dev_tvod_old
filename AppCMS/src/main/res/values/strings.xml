@@ -647,7 +647,7 @@
     <string name="content_type_series">SERIES</string>
     <string name="content_type_show">SHOW</string>
     <string name="content_type_game">GAME</string>
-
+    <string name="content_type_event">EVENT</string>
 
     <!-- Notificaiton Channel -->
     <string name="notification_channel">UAMP_Channel_ID</string>
