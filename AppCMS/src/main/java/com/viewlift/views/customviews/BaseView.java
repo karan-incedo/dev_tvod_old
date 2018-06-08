@@ -1312,8 +1312,7 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_WATCHLIST_DURATION_KEY_BG:
                 case PAGE_HISTORY_DURATION_KEY:
-                case PAGE_DOWNLOAD_DURATION_KEY:
-                case PAGE_GRID_THUMBNAIL_INFO:
+                case PAGE_DOWNLOAD_DURATION_KEY: case PAGE_GRID_THUMBNAIL_INFO:
                 case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
                     int padding = childComponent.getPadding();
                     view.setPadding(padding, 0, padding, 0);

@@ -626,6 +626,8 @@ public class AppCMSPresenter {
     private SubscriptionFlowContent subscriptionFlowContent;
     private boolean loadFromFile;
     private boolean loadingPage;
+    private int fightSelectId;
+
     private AppCMSMain appCMSMain;
     private AppCMSSite appCMSSite;
     private Queue<MetaPage> pagesToProcess;
@@ -2676,7 +2678,7 @@ public class AppCMSPresenter {
         if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
             navigationPages.put("b102b0d2-503f-46af-99e7-6a4a63458d31", appCMSPageUI);
 
-            apiUrl ="https://release-api.viewlift.com/content/pages?site=qa-capitalone-arena&includeContent=true&path=/events/valor-vs-philadelphia-soul-june2-2018";
+            apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-capitalone-arena&includeContent=true&path=/events/valor-vs-philadelphia-soul-june2-2018";
             //apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
         }
 
@@ -2716,7 +2718,7 @@ public class AppCMSPresenter {
 
                                 getEventsArchieve(appCMSMain.getApiBaseUrl(),
                                         appCMSSite.getGist().getSiteInternalName(),
-                                        pageId, new AppCMSEventArchieveAPIAction(false,
+                                        pageId, new AppCMSEventArchieveAPIAction(true,
                                                 false,
                                                 true,
                                                 appCMSPageUI,
@@ -2729,10 +2731,16 @@ public class AppCMSPresenter {
                                             @Override
                                             public void call(AppCMSEventArchieveResult appCMSTeamRoasterResult) {
                                                 if (appCMSTeamRoasterResult != null) {
-                                                    Module module=null;
+
+                                                    appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
+                                                            loadJsonFromAssets(currentActivity, "player_detail_data.json"),
+                                                            AppCMSEventArchieveResult.class);
+                                                    Module module = null;
                                                     if (appCMSTeamRoasterResult != null) {
                                                         pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
                                                     }
+                                                    //by default select first item of fight
+                                                    setSelectedFightId(0);
                                                     Bundle args = getPageActivityBundle(currentActivity,
                                                             appCMSPageUI,
                                                             pageApi,
@@ -7492,7 +7500,7 @@ public class AppCMSPresenter {
                                             loadJsonFromAssets(currentContext, "game_detail.json"),
                                             AppCMSPageUI.class);
 
-                                    jsonValueKeyMap.put("AC playerState 01",AppCMSUIKeyType.PAGE_PLAYER_STATE_MODULE_KEY);
+                                    jsonValueKeyMap.put("AC playerState 01", AppCMSUIKeyType.PAGE_FIGHT_SUMMARY_MODULE_KEY);
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
@@ -7533,7 +7541,7 @@ public class AppCMSPresenter {
                                     }
 
 
-                                        {
+                                    {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 appCMSPageUI,
                                                 pageAPI,
@@ -7770,6 +7778,16 @@ public class AppCMSPresenter {
             }
         }
     }
+
+
+    public void setSelectedFightId(int fightId) {
+        this.fightSelectId = fightId;
+    }
+
+    public int getSelectedFightId() {
+        return  fightSelectId ;
+    }
+
 
     private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,
@@ -18959,18 +18977,18 @@ public class AppCMSPresenter {
     AppCMSPageAPI pageApi = null;
 
     public AppCMSPageAPI convertToMonthlyData(List<AppCMSScheduleResult> appCMSScheduleResults) {
-        HashMap<String,List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
+        HashMap<String, List<ContentDatum>> monthlyGameScheduleData = new HashMap<>();
         List<ContentDatum> contentDatumList = new ArrayList<>();
         Observable.from(appCMSScheduleResults).flatMap(new Func1<AppCMSScheduleResult, Observable<AppCMSScheduleResult>>() {
             @Override
             public Observable<AppCMSScheduleResult> call(AppCMSScheduleResult appCMSScheduleResult) {
-                  return Observable.just(appCMSScheduleResult);
+                return Observable.just(appCMSScheduleResult);
             }
         }).subscribe(new Action1<AppCMSScheduleResult>() {
             @Override
             public void call(AppCMSScheduleResult appCMSScheduleResult) {
-                for(GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()){
-                    if(gameSchedule != null) {
+                for (GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()) {
+                    if (gameSchedule != null) {
                         Long gameDate = gameSchedule.getGameDate() * 1000L;
                         String month = getDateFormat(gameDate, "MMMM");
 
@@ -18995,7 +19013,7 @@ public class AppCMSPresenter {
                 pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(contentDatumList);
             }
         });
-       //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
+        //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
         return pageApi;
     }
 

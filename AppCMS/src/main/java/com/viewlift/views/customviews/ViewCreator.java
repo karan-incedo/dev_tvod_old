@@ -103,6 +103,7 @@ import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSArticleFeedViewAdapter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
+import com.viewlift.views.adapters.AppCMSFightSelectionAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
@@ -2433,6 +2434,7 @@ public class ViewCreator {
     }
 
     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
+    AppCMSFightSelectionAdapter appcmsFightSelectionAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2554,6 +2556,47 @@ public class ViewCreator {
                             .listview((RecyclerView) componentViewResult.componentView)
                             .id(moduleId + component.getKey())
                             .build());
+                } else if (moduleType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+                    componentViewResult.componentView = new RecyclerView(context);
+
+                    /*
+                     * get cache of recycler view if already created . need to clear cached  when opening first time this screen using same adapter and recycler view
+                     * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
+                     */
+                    //if (appCMSPresenter.getDownlistScreenCache() == null) {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
+
+                    appcmsFightSelectionAdapter = new AppCMSFightSelectionAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            component.getLayout(),
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType,
+                            appCMSAndroidModules);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appcmsFightSelectionAdapter);
+
+                  /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                    } else {
+                        (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
+                    }*/
+                    componentViewResult.onInternalEvent = appcmsFightSelectionAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    if (pageView != null) {
+                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                .adapter(appcmsFightSelectionAdapter)
+                                .listview((RecyclerView) componentViewResult.componentView)
+                                .id(moduleId + component.getKey())
+                                .build());
+                    }
                 } else if (moduleType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
                     componentViewResult.componentView = new RecyclerView(context);
 
@@ -3119,6 +3162,20 @@ public class ViewCreator {
                     }
                 }
                 break;
+
+            case PAGE_FIGHT_LIST_PARENT_MODULE_KEY:
+
+                componentViewResult.componentView = new LinearLayout(context);
+
+                LinearLayout.LayoutParams layoutParamsFightView =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.MATCH_PARENT);
+                ((LinearLayout) componentViewResult.componentView).setLayoutParams(layoutParamsFightView);
+                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.VERTICAL);
+                ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
+
+                break;
+
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
                 String videoId = null;
@@ -4438,6 +4495,7 @@ public class ViewCreator {
                         } catch (Exception e) {
                             //
                         }
+
                     }
 
                     seasonTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -4445,14 +4503,29 @@ public class ViewCreator {
                     ((Spinner) componentViewResult.componentView).setAdapter(seasonTrayAdapter);
                 } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY) {
                     List<Fights> fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights();
-                    componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
+                    componentViewResult.componentView = new LinearLayout(context);
+                    LinearLayout.LayoutParams layoutParamsDetail =
+                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT);
+                    ((LinearLayout) componentViewResult.componentView).setLayoutParams(layoutParamsDetail);
+                    ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                    ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.LEFT);
+                    ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
 
-
+                    Spinner spinnerFight = new Spinner(context, Spinner.MODE_DROPDOWN);
+                    spinnerFight.setLayoutParams(layoutParamsDetail);
+//                    try {
+//                        componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
+//                                getColor(context,
+//                                        "#ffffff")),
+//                                PorterDuff.Mode.SRC_ATOP);
+//                    } catch (Exception e) {
+//                        //
+//                    }
                     try {
-                        componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
-                                getColor(context,
-                                        appCMSPresenter.getAppCtaBackgroundColor())),
-                                PorterDuff.Mode.SRC_ATOP);
+//                        ((Spinner) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
+                        spinnerFight.setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
+                                getColor(context, "#d6202d"))));
                     } catch (Exception e) {
                         //
                     }
@@ -4460,30 +4533,26 @@ public class ViewCreator {
                             appCMSPresenter,
                             component,
                             jsonValueKeyMap);
+                    FightTrayAdapter.setDropDownViewResource(R.drawable.left_arrow);
 
                     ArrayList<Fights> listFight = new ArrayList<Fights>();
 
                     for (int i = 0; i < fights.size(); i++) {
                         listFight.add(fights.get(0));
-                        if (!TextUtils.isEmpty(fights.get(0).getFighter1_FirstName())) {
-                            FightTrayAdapter.add(fights.get(0).getFighter1_FirstName());
-                        } else {
-                            StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                            seasonTitleSb.append(context.getString(R.string.blank_separator));
-                            seasonTitleSb.append(i + 1);
-                            FightTrayAdapter.add(seasonTitleSb.toString());
+                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_FirstName())) {
+                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_FirstName() + "/" + fights.get(i).getFighter2_FirstName());
                         }
                     }
 //                    componentViewResult.onInternalEvent
-                    OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight);
+                    OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
                     try {
                         componentViewResult.onInternalEvent.setModuleId(moduleId);
 
-                        componentViewResult.componentView.setEnabled(true);
+                        spinnerFight.setEnabled(true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    ((Spinner) componentViewResult.componentView).setOnItemSelectedListener(onItemSelectListener);
+                    spinnerFight.setOnItemSelectedListener(onItemSelectListener);
 //                    try {
 //                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
 //                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
@@ -4496,10 +4565,12 @@ public class ViewCreator {
                     try {
 //                        FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                        ((Spinner) componentViewResult.componentView).setAdapter(FightTrayAdapter);
+                        spinnerFight.setAdapter(FightTrayAdapter);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
                 } else {
                     componentViewResult.componentView = new TextView(context);
 
@@ -4578,6 +4649,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     }
+
 
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
                         textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppTextColor()));
@@ -4662,6 +4734,8 @@ public class ViewCreator {
                         break;
 
                     }
+
+
                     if (componentKey == AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE) {
                         int textBgColor = appCMSPresenter.getGeneralTextColor();
 
@@ -5744,8 +5818,9 @@ public class ViewCreator {
 
             case PAGE_MULTICOLUMN_TABLE_KEY:
                 componentViewResult.componentView = new LinearLayout(context);
-                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap);
-                ((LinearLayout) componentViewResult.componentView).addView(TableView);
+//                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
+//                ((LinearLayout) componentViewResult.componentView).addView(TableView);
+                ((LinearLayout) componentViewResult.componentView).setId(R.id.fight_stats_id);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -6139,7 +6214,7 @@ public class ViewCreator {
                             return appCMSPageAPI.getModules().get(0);
                         }
                         break;
-                    case PAGE_PLAYER_STATE_MODULE_KEY:
+                    case PAGE_FIGHT_SUMMARY_MODULE_KEY:
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
                             return appCMSPageAPI.getModules().get(appCMSPageAPI.getModules().size() - 1);
@@ -6162,22 +6237,22 @@ public class ViewCreator {
     }
 
 
-    private View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+    public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
 
         NestedScrollView nestedSCrollView = new NestedScrollView(context);
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
-        componentViewResult.componentView.setBackgroundColor(R.color.color_white);
-        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-        ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+        scrollView.setBackgroundColor(R.color.color_white);
+//        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
 
         TableLayout table = new TableLayout(context);
         table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
 
-        if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
-            for (int i = -1; i < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().size(); i++) {
+        if (fights != null) {
+            for (int i = -1; i < fights.getRounds().size(); i++) {
                 TableRow row = new TableRow(context);
                 row.setWeightSum(2.0f);
                 row.setPadding(1, 1, 1, 1);
@@ -6190,11 +6265,11 @@ public class ViewCreator {
                         cellValue = colTitle.toString();
 
                     } else {
-                        Rounds rounds = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i);
+                        Rounds rounds = fights.getRounds().get(i);
                         if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
 
-                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
-                                if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                            if (fights != null) {
+                                if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
                                     cellValue = rounds.getRound();
                                 } else {
                                     cellValue = "";
@@ -6202,16 +6277,19 @@ public class ViewCreator {
                             }
 
                         } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
-                            cellValue = rounds.getRoundTime();
-
+                            if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                cellValue = rounds.getRoundTime();
+                            } else {
+                                cellValue = "";
+                            }
                         } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.FIGHTER.toString())) {
                             try {
 
-                                if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0) != null) {
-                                    if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
-                                        cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter1_FirstName();
+                                if (fights != null) {
+                                    if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                        cellValue = fights.getFighter1_FirstName();
                                     } else {
-                                        cellValue = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(0).getFighter2_FirstName();
+                                        cellValue = fights.getFighter2_FirstName();
                                     }
                                 }
                             } catch (Exception e) {
@@ -6501,6 +6579,7 @@ public class ViewCreator {
             if (0 <= position && position < seasonData.size()) {
                 sendEvent(new InternalEvent<>(seasonData.get(position).getEpisodes()));
             }
+
         }
 
         @Override
@@ -6510,17 +6589,29 @@ public class ViewCreator {
     }
 
 
-    private static class OnFightSelectedListener implements
+    private class OnFightSelectedListener implements
             AdapterView.OnItemSelectedListener,
             OnInternalEvent {
 
         private List<Fights> fightData;
+        Fights fights;
         private List<OnInternalEvent> onInternalEvents;
         private String moduleId;
+        private Context context;
+        private Module moduleAPI;
+        Component component;
+        AppCMSPresenter appCMSPresenter;
+        Map<String, AppCMSUIKeyType> jsonValueKeyMap;
 
-        public OnFightSelectedListener(List<Fights> fightData) {
+        public OnFightSelectedListener(List<Fights> fightData, AppCMSPresenter appCMSPresenter, Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
             this.fightData = fightData;
             this.onInternalEvents = new ArrayList<>();
+            this.appCMSPresenter = appCMSPresenter;
+            this.context = context;
+            this.moduleAPI = moduleAPI;
+            this.component = component;
+            this.jsonValueKeyMap = jsonValueKeyMap;
+
         }
 
         @Override
@@ -6559,11 +6650,29 @@ public class ViewCreator {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             System.out.println("on item selection");
+
+            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null) {
+
+                fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(position);
+            }
+
+            createFightStateRecorsView(context,appCMSPresenter,moduleAPI,component,jsonValueKeyMap,fights);
         }
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
+        }
+    }
 
+    public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights){
+
+        LinearLayout fightStatsView = appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
+
+        if(fights!=null){
+            ((LinearLayout) fightStatsView).removeAllViews();
+
+            View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
+            ((LinearLayout) fightStatsView).addView(TableView);
         }
     }
 
@@ -6598,21 +6707,21 @@ public class ViewCreator {
                             .getCta().getPrimary().getTextColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
-                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
+                                                .getGeneral()
+                                                .getBackgroundColor())));
                     }
                 } catch (Exception e) {
                     //
                 }
 
-                try {
-                    result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
-                } catch (Exception e) {
-                    //
-                }
+//                try {
+//                    result.setBackgroundColor(Color.parseColor(
+//                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
+//                                    .getBrand().getCta().getPrimary().getBackgroundColor())));
+//                } catch (Exception e) {
+//                    //
+//                }
 
                 if (component.getFontSize() > 0) {
                     ((TextView) result).setTextSize(component.getFontSize());
@@ -6653,21 +6762,21 @@ public class ViewCreator {
                             .getCta().getPrimary().getTextColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
-                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
+                                                .getGeneral()
+                                                .getBackgroundColor())));
                     }
                 } catch (Exception e) {
                     //
                 }
 
-                try {
-                    result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
-                } catch (Exception e) {
-                    //
-                }
+//                try {
+//                    result.setBackgroundColor(Color.parseColor(
+//                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
+//                                    .getBrand().getCta().getPrimary().getBackgroundColor())));
+//                } catch (Exception e) {
+//                    //
+//                }
 
                 if (component.getFontSize() > 0) {
                     ((TextView) result).setTextSize(component.getFontSize());

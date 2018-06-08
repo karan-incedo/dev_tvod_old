@@ -2,8 +2,6 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.widget.LinearLayout;
 
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
@@ -21,6 +20,8 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.viewlift.Utils.loadJsonFromAssets;
@@ -42,12 +43,8 @@ public class EventModule extends ModuleView {
     private final AppCMSPresenter appCMSPresenter;
     private final ViewCreator viewCreator;
     Context context;
-    private ModuleView[] childViews;
-    private GradientDrawable[] underlineViews;
-    private int underlineColor;
-    private int transparentColor;
-    private int bgColor;
-    private int loginBorderPadding;
+    private  Module subTrayModuleAPI;
+
     private AppCMSAndroidModules appCMSAndroidModules;
     PageView pageView;
 
@@ -67,9 +64,7 @@ public class EventModule extends ModuleView {
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
         this.viewCreator = viewCreator;
-        this.childViews = new ModuleView[NUM_CHILD_VIEWS];
-        this.underlineViews = new GradientDrawable[NUM_CHILD_VIEWS];
-        this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
+
         this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         this.pageView = pageView;
@@ -83,11 +78,9 @@ public class EventModule extends ModuleView {
                 appCMSPresenter != null &&
                 viewCreator != null) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-            underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
-            transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
 
-            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            subTrayModuleAPI=new Module();
+            subTrayModuleAPI=(Module) moduleAPI.clone();
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
             NestedScrollView scrollView = new NestedScrollView(getContext());
@@ -125,8 +118,25 @@ public class EventModule extends ModuleView {
                         Component component1 = component.getComponents().get(j);
 
 //                        ModuleView moduleView2 = new ModuleView<>(context, module2, true);
+                        if (jsonValueKeyMap.get(component1.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_TABLE_KEY) {
+                            List<ContentDatum> data = new ArrayList<>();
 
-                        addChildComponents(moduleView1, component1, appCMSAndroidModules, j);
+                            for(int k=0;k< moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size();k++){
+
+
+                                ContentDatum contentData = new ContentDatum();
+                                contentData.setFights(moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k));
+                                data.add(contentData);
+
+
+                            }
+                            subTrayModuleAPI.setContentData(data);
+                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j,subTrayModuleAPI);
+
+                        }else{
+                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j,moduleAPI);
+
+                        }
 //                    View childView = viewCreator.createModuleView(context, module, moduleAPI,
 //                            appCMSAndroidModules,
 //                            pageView,
@@ -165,7 +175,7 @@ public class EventModule extends ModuleView {
 
     private void addChildComponents(ModuleView moduleView,
                                     Component subComponent,
-                                    final AppCMSAndroidModules appCMSAndroidModules, int i) {
+                                    final AppCMSAndroidModules appCMSAndroidModules, int i, Module subTrayModuleAPI) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         if (componentViewResult.onInternalEvent != null) {
             appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
@@ -176,7 +186,7 @@ public class EventModule extends ModuleView {
             viewCreator.createComponentView(getContext(),
                     subComponent,
                     subComponent.getLayout(),
-                    moduleAPI,
+                    subTrayModuleAPI,
                     appCMSAndroidModules,
                     null,
                     moduleInfo.getSettings(),
