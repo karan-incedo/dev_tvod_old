@@ -38,6 +38,17 @@ public class Fights implements Serializable {
     @Expose
     public String Title;
 
+
+    public String getFightSerialNo() {
+        return fightSerialNo;
+    }
+
+    public void setFightSerialNo(String fightSerialNo) {
+        this.fightSerialNo = fightSerialNo;
+    }
+
+    public String fightSerialNo;
+
     public String getFightStatus() {
         return FightStatus;
     }

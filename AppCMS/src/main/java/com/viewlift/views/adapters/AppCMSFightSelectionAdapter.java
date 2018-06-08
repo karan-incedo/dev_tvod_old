@@ -178,7 +178,16 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         bindView(holder.componentView, adapterData.get(position), position);
-        holder.componentView.setBackgroundColor(Color.parseColor("#000000"));
+
+//        holder.componentView.
+        if (position == appCMSPresenter.getSelectedFightId()) {
+            holder.componentView.setBackgroundColor(Color.parseColor("#d6202d"));
+            Fights fights = moduleAPI.getContentData().get(position).getFights();
+            viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
+
+        } else {
+            holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
+        }
 
     }
 
@@ -223,11 +232,12 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
 
-                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
+                        appCMSPresenter.setSelectedFightId(clickPosition);
+//                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 
-                        Fights fights = moduleAPI.getContentData().get(clickPosition).getFights();
-
-                        viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
+//                        Fights fights = moduleAPI.getContentData().get(clickPosition).getFights();
+                        notifyDataSetChanged();
+//                        viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
                     }
                 }
 
@@ -247,9 +257,6 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
                     componentViewType,
                     appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
         }
-        Fights fights = moduleAPI.getContentData().get(0).getFights();
-
-        viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
 
     }
 

@@ -224,8 +224,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_articlescreen_key),
                 AppCMSUIKeyType.ANDROID_ARTICLE_SCREEN_KEY);
@@ -234,6 +236,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_schedule_screen_key),
                 AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -352,6 +355,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_UNDERLINE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_page_title_key),
                 AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_title_key),
                 AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_title_key),
@@ -1112,6 +1117,10 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_history_screen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
+
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                context.getString(R.string.app_cms_pagename_schedule_screen_key));
+
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 context.getString(R.string.app_cms_action_watchlistpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
