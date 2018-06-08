@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,10 +95,9 @@ public class AppCmsTVPageFragment extends BaseFragment {
         }
 
         if (tvPageView != null) {
-            if (tvPageView.getParent() != null) {
-                ((ViewGroup) tvPageView.getParent()).removeAllViews();
-            }
-            //onPageCreation.onSuccess(appCMSBinder);
+                if (tvPageView.getParent() != null) {
+                    ((ViewGroup) tvPageView.getParent()).removeAllViews();
+                }
         }
         if (container != null) {
             container.removeAllViews();
@@ -110,6 +109,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                 browseFragment.setPageView(tvPageView);
                 browseFragment.setmRowsAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
+                Log.d("TAG","TESTS .. ScreenName = "+mAppCMSBinder.getScreenName());
             } else {
                refreshBrowseFragment();
             }

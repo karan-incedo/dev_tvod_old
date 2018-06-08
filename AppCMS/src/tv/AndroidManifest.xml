@@ -38,10 +38,10 @@
     <uses-permission android:name="com.amazon.device.permission.COMRADE_CAPABILITIES" />
 
     <application
-        android:banner="@drawable/tv_logo"
+        android:banner="@drawable/androidtv_banner_image"
         android:label="@string/default_app_name"
         android:icon="@drawable/tv_logo"
-        tools:replace="android:label">
+         tools:replace="android:label">
 
         <amazon:enable-feature
             android:name="com.amazon.device.messaging"
@@ -68,10 +68,9 @@
 
         <activity
             android:name="com.viewlift.tv.AppCmsTVSplashActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
@@ -83,20 +82,24 @@
 
         <activity
             android:name="com.viewlift.tv.views.activity.AppCmsTvErrorActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:label="@string/title_activity_app_cms_tv_error" />
 
         <activity
             android:name="com.viewlift.tv.views.activity.AppCmsHomeActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:label="AppCmsHomeActivity" />
 
-        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity" >
+        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="air.com.snagfilms.PLAY"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity" />
+        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <receiver android:name=".tv.receiver.CapabilityRequestReceiver" >
             <intent-filter>
                 <action android:name="com.amazon.device.REQUEST_CAPABILITIES" />
