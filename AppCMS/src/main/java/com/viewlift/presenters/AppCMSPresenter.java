@@ -2666,7 +2666,7 @@ public class AppCMSPresenter {
         AppCMSPageUI appCMSPageUI = null;
         if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
             appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(currentActivity, "player_detail.json"),
+                    loadJsonFromAssets(currentActivity, "event_detail.json"),
                     AppCMSPageUI.class);
         }
         jsonValueKeyMap.put("eventDetail", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
