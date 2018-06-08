@@ -1426,7 +1426,12 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
-                }else if(childComponent.getText()!=null && !TextUtils.isEmpty(childComponent.getText())){
+                } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY ) {
+                    ((TextView) view).setText("title new");
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
+                }
+                else if(childComponent.getText()!=null && !TextUtils.isEmpty(childComponent.getText())){
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));

@@ -57,6 +57,7 @@ public class ContentDatum implements Serializable {
     @SerializedName("userId")
     @Expose
     String userId;
+    public Fights Fights;
 
     @SerializedName("showQueue")
     @Expose
@@ -266,6 +267,14 @@ public class ContentDatum implements Serializable {
 
     public void setContentDetails(ContentDetails contentDetails) {
         this.contentDetails = contentDetails;
+    }
+
+    public Fights getFights() {
+        return Fights;
+    }
+
+    public void setFights(Fights fights) {
+        Fights = fights;
     }
 
     public StreamingInfo getStreamingInfo() {

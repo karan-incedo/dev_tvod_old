@@ -114,7 +114,7 @@ public class LiveEvents implements Serializable {
     @Expose
     public String EventCity;
 
-    @SerializedName("EventDate")
+    @SerializedName("standings")
     @Expose
     public String EventDate;
 }
