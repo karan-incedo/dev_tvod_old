@@ -1238,7 +1238,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
         isAdError = true;
         isTimerRun = true;
-        resumePlayer();
+        if (appCMSPresenter != null &&
+                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
+            resumePlayer();
+        }
 
 
     }

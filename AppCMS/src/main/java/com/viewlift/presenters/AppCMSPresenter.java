@@ -11605,6 +11605,7 @@ public class AppCMSPresenter {
                                     onDismissAction.call();
                                 }
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 //Log.e(TAG, "Error closing cancellation dialog: " + e.getMessage());
                             }
                         });
