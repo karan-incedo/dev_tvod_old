@@ -1953,6 +1953,11 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
+                }else if (moduleInfo.getBlockName().contains("personDetail02")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "person_detail.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
@@ -3220,6 +3225,12 @@ public class ViewCreator {
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
+
+
+            case PAGE_UPCOMING_TIMER_KEY:
+                componentViewResult.componentView = new LinearLayout(context);
+                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            break;
 
             case PAGE_WEB_VIEW_KEY:
                 CustomWebView webView = null;
@@ -5207,20 +5218,6 @@ public class ViewCreator {
 
                                 break;
 
-                            case PAGE_UPCOMING_TIMER_KEY:
-                                if (moduleAPI != null &&
-                                        moduleAPI.getContentData() != null &&
-                                        !moduleAPI.getContentData().isEmpty() &&
-                                        moduleAPI.getContentData().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null);{
-
-                                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                startTimer(500000,eventDate,((TextView) componentViewResult.componentView));
-                                ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
-                                }
-                                break;
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -6207,7 +6204,7 @@ public class ViewCreator {
                     case PAGE_AC_TEAM_SCHEDULE_MODULE_KEY:
                     case PAGE_API_TEAMDETAIL_MODULE_KEY:
                     case PAGE_GAME_DETAIL_MODULE_KEY:
-
+                    case PAGE_PERSON_DETAIL_MODULE_KEY:
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {

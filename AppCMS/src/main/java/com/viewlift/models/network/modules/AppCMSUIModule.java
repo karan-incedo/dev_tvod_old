@@ -234,6 +234,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_schedule_screen_key),
                 AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_person_screen_key),
+                AppCMSUIKeyType.ANDROID_PERSON_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -783,6 +785,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_feed_module_key),
                 AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_person_details_module_key),
+                AppCMSUIKeyType.PAGE_PERSON_DETAIL_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_module_key),
                 AppCMSUIKeyType.PAGE_GRID_MODULE_KEY);
 

@@ -658,6 +658,7 @@ public class AppCMSPresenter {
     private MetaPage tosPage;
     private MetaPage searchPage;
     private MetaPage articlePage;
+    private MetaPage personPage;
     private MetaPage photoGalleryPage;
     private MetaPage schedulePage;
     private MetaPage linkAccountPage;
@@ -14767,6 +14768,12 @@ public class AppCMSPresenter {
                         == AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY) {
                     schedulePage = metaPage;
                     new SoftReference<Object>(schedulePage, referenceQueue);
+                }
+
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_PERSON_SCREEN_KEY) {
+                    personPage = metaPage;
+                    new SoftReference<Object>(personPage, referenceQueue);
                 }
             }
 
