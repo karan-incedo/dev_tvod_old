@@ -2,9 +2,9 @@
 
 buildscript {
     ext {
-        realmVersion = "4.3.1"
-        gradleBuildVersion = "3.0.0"
-        playServicesVersion = "3.0.0"
+        realmVersion = "5.1.0"
+        gradleBuildVersion = "3.1.2"
+        playServicesVersion = "4.0.1"
     }
     repositories {
         jcenter()
@@ -12,7 +12,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath "com.google.gms:google-services:${playServicesVersion}"
 
@@ -25,6 +25,7 @@ allprojects {
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }
+        google()
     }
 
     project.ext {
@@ -44,7 +45,8 @@ allprojects {
         rxjavaVersion = "1.1.4"
         jsr250_apiVersion = "1.0"
         googleAdsInteractiveMediaV3 = "3.6.0"
-        googlePlayServicesVersion = "11.8.0"
+        googlePlayServicesVersion = "15.0.1"
+        fireBasePlayServicesVersion = "16.0.0"
         crashlyticsVersion = "2.9.2@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "4.1.2"

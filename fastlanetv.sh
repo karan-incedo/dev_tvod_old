@@ -89,6 +89,10 @@ postBuildStatus ${13} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading 
 
 postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build is In Progress." 25 " " 0
 
+rm -rf ./AppCMS/build/outputs/apk/tvnonkiswe/release/AppCMS-tv-nonkiswe-release-unsigned.apk
+rm -rf ./AppCMS/build/outputs/apk/tvnonkiswe/release/AppCMS-tv-nonkiswe-release.apk
+rm -rf ./AppCMS/build/outputs/apk/tvnonkiswe/release/AppCMS-tv-nonkiswe-release-unaligned.apk
+
 fastlane android tvbeta app_package_name:$6 buildid:${13} app_apk_path:./AppCMS/build/outputs/apk/tvNonKiswe/debug/AppCMS-tv-nonkiswe-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/tvnonkiswe/debug/AppCMS-tv-nonkiswe-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${16} apk_path:./AppCMS/build/outputs/apk/tvnonkiswe/release/AppCMS-tv-nonkiswe-release-unsigned.apk mySlackUrl:"{18}" myAppName:${4} myAppVersion:${3} myEmailId:${17} myBuildId:${13}
 
 IS_APP_SUCCESS="$?"
@@ -100,14 +104,16 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
         then
 
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Preparing Build to Upload on S3 Bucket" 75 " " 0
-        # aws s3 cp ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-debug.apk s3://appcms-config/$1/build/android/
-        myApkName="${4}-tv.apk"
+       
+        myApkName="${4}-fireTV-${3}.apk"
+
         mv ./AppCMS/build/outputs/apk/tvNonKiswe/release/AppCMS-tv-nonkiswe-release.apk "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}"
 
-        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://appcms-config/$1/build/fireTv/
+        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://${15}/$1/build/fireTv/
 
         postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 80 " " 0
-        postUpdateLink ${13} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
+        
+        postUpdateLink ${13} $UPLOAD_URL "http://${15}.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
 
         postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://developer.amazon.com/app-submission' target='_blank'> Amazon Appstore </a> for manual Uploading" 100 " " 0
 
@@ -118,6 +124,12 @@ else
         trap "echo exitting because my child killed me due to asset file not found" 0
         exit 1
 fi
+
+
+
+
+
+
 
 
 

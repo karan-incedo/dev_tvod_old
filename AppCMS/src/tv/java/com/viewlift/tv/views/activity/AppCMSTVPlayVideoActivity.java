@@ -306,7 +306,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         String closedCaptionUrl = null;
         title = gist.getTitle();
         String fontColor = binder.getFontColor();
-        boolean useHls = getResources().getBoolean(R.bool.use_hls);
+        boolean useHls = !com.viewlift.Utils.isHLS()?getResources().getBoolean(R.bool.use_hls): com.viewlift.Utils.isHLS();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
         if (binder.getContentData() != null &&
                 binder.getContentData().getStreamingInfo() != null &&
@@ -418,7 +418,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
      */
     @Nullable
     private String getVideoUrl(VideoAssets videoAssets) {
-        boolean useHls = getResources().getBoolean(R.bool.use_hls);
+        boolean useHls = !com.viewlift.Utils.isHLS()?getResources().getBoolean(R.bool.use_hls): com.viewlift.Utils.isHLS();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
         String videoUrl = null;
         if (useHls) {

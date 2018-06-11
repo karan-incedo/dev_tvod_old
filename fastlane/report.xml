@@ -5,12 +5,189 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: Verifying fastlane version" time="0.001728">
+      <testcase classname="fastlane.lanes" name="00: Verifying fastlane version" time="0.002696">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.001034">
+      <testcase classname="fastlane.lanes" name="01: default_platform" time="0.003543">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="02: slack_train_start" time="0.002281">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="03: Switch to android slackSendMessage lane" time="0.0021">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="04: slack" time="0.604977">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="05: slack_train" time="0.609629">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="06: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Cleaning the Project' 30 false 0" time="0.640152">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="07: gradle" time="13.767019">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: slack_train" time="0.482573">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Generating the Debug Build and preparing for unit test cases' 35 false 0" time="0.74638">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: slack_train" time="0.475186">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="11: gradle" time="104.515245">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="12: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Running the unit test cases' 40 false 0" time="0.905381">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="13: slack_train" time="0.607098">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="14: gradle" time="31.97901">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="15: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Capturing the Phone screenshots' 45 false 0" time="0.687833">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="16: slack_train" time="0.527878">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="17: Switch to android phones_screenshots lane" time="0.003">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="18: adb -s emulator-5554 shell input keyevent 82" time="0.391783">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="19: capture_android_screenshots" time="96.398018">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="20: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Capturing the Tablet Screenshots' 50 false 0" time="0.721081">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="21: slack_train" time="0.582685">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="22: Switch to android teninchtablet_screenshots lane" time="0.003226">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="23: adb -s emulator-5558 shell input keyevent 82" time="0.020819">
+        
+          <failure message="/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/actions/actions_helper.rb:48:in `execute_action'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/fast_file.rb:186:in `sh'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/fast_file.rb:181:in `sh'&#10;Fastfile:311:in `block (2 levels) in parsing_binding'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/lane.rb:33:in `call'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/runner.rb:204:in `try_switch_to_lane'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/runner.rb:146:in `trigger_action_by_name'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/fast_file.rb:149:in `method_missing'&#10;Fastfile:107:in `block (2 levels) in parsing_binding'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/lane.rb:33:in `call'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/runner.rb:49:in `block in execute'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/runner.rb:45:in `chdir'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/runner.rb:45:in `execute'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/lane_manager.rb:59:in `cruise_lane'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/command_line_handler.rb:36:in `handle'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/commands_generator.rb:107:in `block (2 levels) in run'&#10;/Library/Ruby/Gems/2.3.0/gems/commander-fastlane-4.4.6/lib/commander/command.rb:178:in `call'&#10;/Library/Ruby/Gems/2.3.0/gems/commander-fastlane-4.4.6/lib/commander/command.rb:153:in `run'&#10;/Library/Ruby/Gems/2.3.0/gems/commander-fastlane-4.4.6/lib/commander/runner.rb:476:in `run_active_command'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:75:in `run!'&#10;/Library/Ruby/Gems/2.3.0/gems/commander-fastlane-4.4.6/lib/commander/delegates.rb:15:in `run!'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/commands_generator.rb:332:in `run'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/commands_generator.rb:41:in `start'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/fastlane/lib/fastlane/cli_tools_distributor.rb:108:in `take_off'&#10;/Library/Ruby/Gems/2.3.0/gems/fastlane-2.96.1/bin/fastlane:20:in `&lt;top (required)&gt;'&#10;/usr/local/bin/fastlane:22:in `load'&#10;/usr/local/bin/fastlane:22:in `&lt;main&gt;'&#10;&#10;Exit status of command 'adb -s emulator-5558 shell input keyevent 82' was 1 instead of 0.&#10;error: device 'emulator-5558' not found&#10;" />
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="24: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Creating the Release Build' 55 false 0" time="0.687989">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="25: slack_train" time="1.111461">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="26: gradle" time="71.521511">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="27: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Generating the Signed Build with unique keystore' 62 false 0" time="0.696074">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="28: slack_train" time="1.139829">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="29: sign_apk" time="8.092264">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="30: slack_train" time="1.030724">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="31: ./PostBuildStatus.sh 295 http://qa-tools.viewlift.com/pfl/android/appcms/build/status 'BUILD_PROGRESS' 'NO ERROR' 'Optimizing and Zip Alignining the Build for reducing the Build Size' 65 false 0" time="0.636016">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="32: slack_train" time="0.492633">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="33: zipalign" time="1.834125">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="34: slack_train" time="0.462685">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="35: Switch to android slackSendMessage lane" time="0.002155">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="36: slack" time="0.850309">
         
       </testcase>
     

@@ -77,7 +77,7 @@ public class CardPresenter extends Presenter {
         this.trayBackground = mComponent.getTrayBackground();
         mJsonKeyValuemap = jsonKeyValuemap;
         borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
-        this.infoHover = true;
+        this.infoHover = infoHover;
     }
 
 

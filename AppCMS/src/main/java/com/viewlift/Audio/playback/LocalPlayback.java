@@ -131,7 +131,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            Utils.startService(mContext,i);
+                            Utils.startService(mContext, i);
                         }
                     }
                 }
@@ -372,7 +372,7 @@ public final class LocalPlayback implements Playback {
         //reset last save position
         AudioPlaylistHelper.getInstance().saveLastPlayPositionDetails(mCurrentMediaId, 0);
         //if media has changed then load new audio url
-        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && (AudioPlaylistHelper.getInstance().isLastStatePause())) || (AudioPlaylistHelper.getInstance().getAppCmsPresenter() !=null && AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload())) {
+        if (mediaHasChanged || mExoPlayer == null || (currentPosition > 0 && (AudioPlaylistHelper.getInstance().isLastStatePause())) || (AudioPlaylistHelper.getInstance().getAppCmsPresenter() != null && AudioPlaylistHelper.getInstance().getAppCmsPresenter().getAudioReload())) {
 
             AudioPlaylistHelper.getInstance().getAppCmsPresenter().setAudioReload(false);
             mListener.onMetadataChanged(item);
@@ -392,7 +392,7 @@ public final class LocalPlayback implements Playback {
                         ExoPlayerFactory.newSimpleInstance(
                                 mContext, new DefaultTrackSelector(), new DefaultLoadControl());
                 this.mExoPlayer.addListener(mEventListener);
-                if(localPlaybackInstance != null)
+                if (localPlaybackInstance != null)
                     localPlaybackInstance.mExoPlayer = mExoPlayer;
             }
 
@@ -421,7 +421,7 @@ public final class LocalPlayback implements Playback {
 
         configurePlayerState();
         mCallback.onPlaybackStatusChanged(getState());
-        if (appCMSPresenter!=null && appCMSPresenter.getAudioReload()) {
+        if (appCMSPresenter != null && appCMSPresenter.getAudioReload()) {
             relaodAudioItem();
         }
         if (!sentBeaconPlay && appCMSPresenter != null) {
@@ -527,23 +527,25 @@ public final class LocalPlayback implements Playback {
      * settings.
      */
     private void configurePlayerState() {
-        if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_NO_DUCK) {
-            // We don't have audio focus and can't duck, so we have to pause
-            pause();
-        } else {
-            registerAudioNoisyReceiver();
-
-            if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_CAN_DUCK) {
-                // We're permitted to play, but only if we 'duck', ie: play softly
-                mExoPlayer.setVolume(VOLUME_DUCK);
+        if (mExoPlayer != null) {
+            if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_NO_DUCK) {
+                // We don't have audio focus and can't duck, so we have to pause
+                pause();
             } else {
-                mExoPlayer.setVolume(VOLUME_NORMAL);
-            }
+                registerAudioNoisyReceiver();
 
-            // If we were playing when we lost focus, we need to resume playing.
-            if (mPlayOnFocusGain) {
-                mExoPlayer.setPlayWhenReady(true);
-                mPlayOnFocusGain = false;
+                if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_CAN_DUCK) {
+                    // We're permitted to play, but only if we 'duck', ie: play softly
+                    mExoPlayer.setVolume(VOLUME_DUCK);
+                } else {
+                    mExoPlayer.setVolume(VOLUME_NORMAL);
+                }
+
+                // If we were playing when we lost focus, we need to resume playing.
+                if (mPlayOnFocusGain) {
+                    mExoPlayer.setPlayWhenReady(true);
+                    mPlayOnFocusGain = false;
+                }
             }
         }
     }

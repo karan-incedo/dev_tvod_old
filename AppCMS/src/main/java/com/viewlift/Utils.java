@@ -14,6 +14,8 @@ import java.util.Properties;
 
 public class Utils {
 
+    private static String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
+
     public static String getProperty(String key, Context context) {
         Properties properties = new Properties();
         AssetManager assetManager = context.getAssets();
@@ -54,4 +56,16 @@ public class Utils {
           context.startService(intent);
     }
 
+    private static boolean hls;
+    public static boolean isHLS(){
+        return hls;
+    }
+
+    public static void setHls(boolean hls) {
+        hls = hls;
+    }
+
+    public static boolean isFireTVDevice(Context context){
+        return context.getPackageManager().hasSystemFeature(AMAZON_FEATURE_FIRE_TV);
+    }
 }

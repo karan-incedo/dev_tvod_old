@@ -81,6 +81,21 @@ rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo.png
 rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.jpg
 rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo.png
 
+
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo.png
+
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.jpg
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo.png
+
+
+
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo_icon.png
+
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo_icon.jpg
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo_icon.png
+
 rm -rf ./AppCMS/src/main/res/drawable/logo_icon.jpg
 rm -rf ./AppCMS/src/main/res/drawable/logo_icon.png
 
@@ -94,6 +109,36 @@ rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.jpg
 rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.png
 
 
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable-mdpi/logo_icon.9.png
+
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable-hdpi/logo_icon.9.png
+
+rm -rf ./AppCMS/src/main/res/drawable/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable/logo_icon.9.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xhdpi/logo_icon.9.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxxhdpi/logo_icon.9.png
+
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.9.jpg
+rm -rf ./AppCMS/src/main/res/drawable-xxhdpi/logo_icon.9.png
+
+
+
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_16x9.jpg
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_16x9.png
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_land.jpg
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_port.jpg
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_land.png
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_port.png
+
+
+
+
 echo "viewlift"
 
 echo $1
@@ -102,20 +147,9 @@ echo ${1}
 echo "viewlift"
 
 
-aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
-
 aws s3 cp s3://${19}/$1/build/android/resource/drawable ./AppCMS/src/main/res/drawable --recursive
 postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 6 " " 0
-aws s3 cp s3://${19}/$1/build/android/resource/drawable-xhdpi ./AppCMS/src/main/res/drawable-xhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 7 " " 0
-aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxxhdpi ./AppCMS/src/main/res/drawable-xxxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 8 " " 0
-aws s3 cp s3://${19}/$1/build/android/resource/drawable-xxhdpi ./AppCMS/src/main/res/drawable-xxhdpi/ --recursive
-postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the build drawable resources" 9 " " 0
 
-
-#2: Slack Second Message. Downloading Resources
 fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID DOWNLOADING RESOURCES AND METADATA. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
 
 
@@ -146,6 +180,10 @@ rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-nonkisw
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release-unsigned.apk
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release.apk
 
+rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-kiswe-debug.apk 
+rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-kiswe-debug-androidTest.apk  
+rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-kiswe-release-unsigned.apk
+rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-kiswe-release.apk
 
 fastlane supply init --package_name $6 --json_key ./googleplay_android.json
 
@@ -188,6 +226,7 @@ fi
 
 postBuildStatus ${17} $POST_URL "CONFIGURING_BUILD" "No ERROR" "Checking if app already exists on the App Store" 25 " " 0
 
+
 fastlane android buildLane app_package_name:$6 buildid:${17} app_apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/debug/AppCMS-mobile-nonkiswe-debug.apk tests_apk_path:./AppCMS/build/outputs/apk/androidTest/mobileNonKiswe/debug/AppCMS-mobile-nonkiswe-debug-androidTest.apk posturl:$POST_URL keystore_path:$8 alias:${9} storepass:${20} apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release-unsigned.apk track:${10} json_key_file:./googleplay_android.json username:"Viewlift fastlane" mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
 
 IS_APP_SUCCESS="$?"
@@ -201,7 +240,7 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
 
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Generated and Preparing the Build for upload to S3 Bucket" 70 " " 0
        
-        myApkName="${4}-mobile.apk"
+        myApkName="${4}-android-${3}.apk"
 
         mv ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}"
 
@@ -209,8 +248,7 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
        
         postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 75 " " 0
 
-        postUpdateLink ${17} $UPLOAD_URL "http://appcms-config.s3.amazonaws.com/$1/build/android/${myApkName}" 
-
+        postUpdateLink ${17} $UPLOAD_URL "http://${19}.s3.amazonaws.com/$1/build/android/${myApkName}" 
 
         if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
                 then
@@ -226,7 +264,6 @@ if [ "$IS_APP_SUCCESS" -eq "0" ]
                 trap "echo exiting because first apk is not Present on playstore" 0
                 exit 1
         fi
-
 else
         echo "Error Building"
         # postBuildStatus ${17} $POST_URL "FAILED_BUILD_ERROR" "ERROR" "Build Generaton Failed" 65 " " 0

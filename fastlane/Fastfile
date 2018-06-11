@@ -171,7 +171,7 @@ platform :android do
          # sh "../../../PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "BUILD_PROGRESS" + " " + "No ERROR" + " " + "CLEANING THE PROJECT" + 30 + " " + 0
          sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Cleaning the Project'"+ " " + progress.to_s  + " false " + myBuildVersion.to_s
 
-         # gradle(task: "clean")
+         gradle(task: "clean")
 
          slack_train()
 
@@ -179,23 +179,12 @@ platform :android do
          myBuildVersion =0 
          sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Preparing for build Creation'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
 
-         # #Generate Assemble Debug build
-         # gradle(task: "assembleDebug")
-
-         # #Generate Assemble Test build
-         # gradle(task: "assembleAndroidTest")
-
          # #Capture tv screenshots
          #  begin
          #     tv_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
          #     rescue => ex
          #        UI.error("Something went wrong: #{ex}")
          #  end
-
-         #Post status on UI
-         # sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" SCREEN_SHOT_CAPTURED ''"
-
-         #Generate Assemble Release build
 
          progress = 50
          myBuildVersion =0 
@@ -215,7 +204,6 @@ platform :android do
          myBuildVersion =0 
          sh "./PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl] + " BUILD_PROGRESS "+ "No_ERROR " + "'Signing the Build with Secure Keystore'" + " " + progress.to_s  + " false " + myBuildVersion.to_s
 
-         puts "dasnjlasdlnasnlnaskldnklansdklnasdlknkasdnknalk"
          puts options[:keystore_path]
          puts options[:alias]
          puts options[:storepass]

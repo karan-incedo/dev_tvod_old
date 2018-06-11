@@ -380,15 +380,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.black_shadow).setVisibility(View.VISIBLE);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        if (appCMSPresenter.isLeftNavigationEnabled()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showNavigation(false);
-                }
-            }, 3000);
-        }
     }
 
     private void showMenuIcon(int visibility) {
@@ -406,7 +397,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+            if (appCMSPresenter.isAppSVOD()) {
                 if (!appCMSPresenter.isUserLoggedIn()) {
                     setSubscriptionText(false);
                 } else {
@@ -472,7 +463,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
-            getFragmentManager().popBackStack();
+            getFragmentManager().popBackStackImmediate();
             appCMSBinderStack.pop();
         }
 
@@ -1119,6 +1110,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         new Handler().post(() -> {
             navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            if(appCMSPresenter.isLeftNavigationEnabled())
             navParentContainer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
             navigationFragment.setFocusable(shouldShow);
             if (shouldShow) {

@@ -159,6 +159,14 @@ public class AppCMSMain implements Serializable {
     @Expose
     CustomerService customerService;
 
+    @SerializedName("hls")
+    @Expose
+    boolean hls;
+
+    @SerializedName("casting")
+    @Expose
+    boolean casting;
+
 
 
     public String getId() {
@@ -403,5 +411,21 @@ public class AppCMSMain implements Serializable {
 
     public void setX_ApiKeys(List<AppCMSXAPIKey> x_ApiKeys) {
         this.x_ApiKeys = x_ApiKeys;
+    }
+
+    public boolean isHls() {
+        return hls;
+    }
+
+    public void setHls(boolean hls) {
+        this.hls = hls;
+    }
+
+    public boolean isCasting() {
+        return casting;
+    }
+
+    public void setCasting(boolean casting) {
+        this.casting = casting;
     }
 }
