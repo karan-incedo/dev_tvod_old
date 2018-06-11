@@ -2096,8 +2096,6 @@ public class ViewCreator {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
 
-        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
-
         }  /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
 
             moduleView = new MultiTableWithSameItemsModule(context,
@@ -2583,6 +2581,7 @@ public class ViewCreator {
                             appCMSAndroidModules);
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appcmsFightSelectionAdapter);
+                    ((RecyclerView) componentViewResult.componentView).setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
 
                   /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
@@ -3172,7 +3171,9 @@ public class ViewCreator {
                                 LinearLayout.LayoutParams.MATCH_PARENT);
                 ((LinearLayout) componentViewResult.componentView).setLayoutParams(layoutParamsFightView);
                 ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.VERTICAL);
-                ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
+                if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
+                    ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                }
 
                 break;
 
@@ -4581,21 +4582,22 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                     }
-                    if (moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
-
-
-                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
-                        } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText("2018 League Schedule");
-                        } else if (component.getText() != null) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
-                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
-                        ((TextView) componentViewResult.componentView).setSingleLine(true);
-                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                    } /*else {
+//                    if (moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+//
+//
+//                        if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
+//                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+//                        } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
+//                            ((TextView) componentViewResult.componentView).setText("2018 League Schedule");
+//                        } else if (component.getText() != null) {
+//                            ((TextView) componentViewResult.componentView).setText(component.getText());
+//                        }
+//                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
+//                        ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
+//                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+//                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+//                    }
+                    /*else {
                         ((TextView) componentViewResult.componentView).setText("title");
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#ffffff"));
                         ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
@@ -4904,7 +4906,14 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#80000000"));
                         }
                     }
-
+                    if (componentKey == AppCMSUIKeyType.PAGE_STATE_LABEL_TXT_KEY || componentKey == AppCMSUIKeyType.PAGE_TABEL_LABEL_HEADER_TXT_KEY) {
+                        int textFontColor = 0;
+                        if (!TextUtils.isEmpty(component.getTextColor())) {
+                            textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                        }
+                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                        ((TextView) componentViewResult.componentView).setText(component.getText());
+                    }
                     if (!gridElement) {
                         switch (componentKey) {
                             case PAGE_API_TITLE:
@@ -4933,6 +4942,8 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setSingleLine(false);
                                         ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                     }
+                                    ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+
                                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                                     if(moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_event))) {
@@ -5178,13 +5189,25 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null) {
-
-                                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                                    String date = AppCMSPresenter.getDateFormat(eventDate*1000L,"MM/yyyy");
-
-                                    StringBuilder builder = new StringBuilder(date);
+                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                                    String eventdate = AppCMSPresenter.getDateFormat(date * 1000L, "MM/yyyy");
+                                    StringBuilder builder = new StringBuilder(eventdate);
                                     builder.append(" - ");
-                                    builder.append(AppCMSPresenter.getDateFormat( moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime(),"hh:mm aa"));
+                                    builder.append(AppCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime(), "hh:mm aa"));
+
+                                    /*//long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
+
+                                    long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                    String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
+
+                                    StringBuilder builder = new StringBuilder(secondsToTime);
+
+                                    if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                        publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                        String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
+                                        builder.append(" | ");
+                                        builder.append(publishDate);
+                                    }*/
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
@@ -6240,10 +6263,10 @@ public class ViewCreator {
     public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
 
+        boolean isHeader = false;
         NestedScrollView nestedSCrollView = new NestedScrollView(context);
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
-        scrollView.setBackgroundColor(R.color.color_white);
 //        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
 
@@ -6263,8 +6286,10 @@ public class ViewCreator {
                     String cellValue = "";
                     if (i == -1) {
                         cellValue = colTitle.toString();
-
+                        isHeader = true;
                     } else {
+                        isHeader = false;
+
                         Rounds rounds = fights.getRounds().get(i);
                         if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
 
@@ -6347,7 +6372,7 @@ public class ViewCreator {
                             cellValue = String.valueOf("Unknown");
                         }
                     }
-                    addTableRowCell(context, cellValue, row);
+                    addTableRowCell(context, cellValue, row, isHeader);
                 }
                 row.setLayoutParams(params);
                 table.addView(row, params);
@@ -6361,7 +6386,9 @@ public class ViewCreator {
         }
         table.setStretchAllColumns(true);
         scrollView.addView(table);
-        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+        scrollView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+//        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
         nestedSCrollView.addView(scrollView);
         return nestedSCrollView;
     }
@@ -6656,7 +6683,7 @@ public class ViewCreator {
                 fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(position);
             }
 
-            createFightStateRecorsView(context,appCMSPresenter,moduleAPI,component,jsonValueKeyMap,fights);
+            createFightStateRecorsView(context, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
         }
 
         @Override
@@ -6664,11 +6691,11 @@ public class ViewCreator {
         }
     }
 
-    public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights){
+    public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
         LinearLayout fightStatsView = appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
 
-        if(fights!=null){
+        if (fights != null) {
             ((LinearLayout) fightStatsView).removeAllViews();
 
             View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
@@ -6742,7 +6769,6 @@ public class ViewCreator {
 
             ((TextView) result).setText(getItem(position));
 //            ((TextView) result).setTextColor(R.color.color_white);
-            System.out.println("on selection show-" + getItem(position));
 
             return result;
         }
@@ -7403,14 +7429,25 @@ public class ViewCreator {
         }
     }
 
-    private void addTableRowCell(Context context, String colValue, TableRow row) {
+    private void addTableRowCell(Context context, String colValue, TableRow row, boolean isHeader) {
         TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
         TextView cell = new TextView(context);
-        {
-            cell.setText(colValue + " \n");
+
+        if (isHeader) {
+            cell.setPadding(6, 4, 6, 4);
+            cell.setTypeface(cell.getTypeface(), Typeface.ITALIC);
+            cell.setTextSize(20);
+            cell.setText(colValue + "  ");
+
+
+        } else {
+            cell.setPadding(6, 15, 6, 15);
+            cell.setTextSize(18);
+            cell.setText(colValue + "  ");
+
         }
-        cell.setPadding(6, 4, 6, 4);
         cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        cell.setGravity(Gravity.CENTER_VERTICAL);
         cell.setLayoutParams(textViewParams);
         row.addView(cell);
     }

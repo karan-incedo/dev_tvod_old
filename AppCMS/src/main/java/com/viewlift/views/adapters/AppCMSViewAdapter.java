@@ -532,8 +532,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-//                                String permalink = data.getGist().getPermalink();
-                                String permalink = "/player/donny-moss";
+                                String permalink = data.getGist().getPermalink();
                                 String action = videoAction;
                                 if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
                                     action = childComponent.getAction();
@@ -590,10 +589,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     appCMSPresenter.navigateToTeamDetailPage("acd7eac5-8bba-46bb-b337-b475df5ef680", data.getGist().getTitle(), false);
                                     return;
                                 }
-                                if (permalink.equalsIgnoreCase("/player/donny-moss")) {
-                                    appCMSPresenter.navigateToPlayerDetailPage(permalink);
-                                    return;
-                                }
+
                                 if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,
                                             openOptionsAction,
@@ -614,7 +610,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);
-                                    appCMSPresenter.navigateToSchedulePage("e79fc083-34af-4e53-a215-b45adb65404c", "Team Schedule", false, null, false);
+//                                    appCMSPresenter.navigateToSchedulePage("e79fc083-34af-4e53-a215-b45adb65404c", "Team Schedule", false, null, false);
                                     return;
                                 }
                                 //PHOTOGALLERY

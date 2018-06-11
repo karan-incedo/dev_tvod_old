@@ -94,7 +94,7 @@ public class EventModule extends ModuleView {
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
             AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "player_detail.json"),
+                    loadJsonFromAssets(context, "event_detail.json"),
                     AppCMSPageUI.class);
             ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
             if (module == null) {
@@ -125,6 +125,7 @@ public class EventModule extends ModuleView {
 
 
                                 ContentDatum contentData = new ContentDatum();
+                                moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k+1+"");
                                 contentData.setFights(moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k));
                                 data.add(contentData);
 
@@ -137,35 +138,11 @@ public class EventModule extends ModuleView {
                             addChildComponents(moduleView1, component1, appCMSAndroidModules, j,moduleAPI);
 
                         }
-//                    View childView = viewCreator.createModuleView(context, module, moduleAPI,
-//                            appCMSAndroidModules,
-//                            pageView,
-//                            jsonValueKeyMap,
-//                            appCMSPresenter);
                     }
                     topLayoutContainer.addView(moduleView1);
 
-
-//                        addChildComponents(moduleView1, component, appCMSAndroidModules, i);
-//                    topLayoutContainer.addView(moduleView1);
-//                    View childView = viewCreator.createModuleView(context, module, moduleAPI,
-//                            appCMSAndroidModules,
-//                            pageView,
-//                            jsonValueKeyMap,
-//                            appCMSPresenter);
                 }
             }
-//            if (module != null && module.getComponents() != null) {
-//                for (int i = 0; i < module.getComponents().size(); i++) {
-//                    Component component = module.getComponents().get(i);
-//                    ModuleView moduleView1 = new ModuleView<>(context, module, true);
-//
-//                        addChildComponents(moduleView1, component, appCMSAndroidModules, i);
-//
-//                    topLayoutContainer.addView(moduleView1);
-//
-//                }
-//            }
             scrollView.addView(topLayoutContainer);
             pageView.addView(scrollView);
             childContainer.addView(pageView);

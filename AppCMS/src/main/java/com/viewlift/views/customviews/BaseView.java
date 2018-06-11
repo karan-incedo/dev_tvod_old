@@ -1173,7 +1173,7 @@ public abstract class BaseView extends FrameLayout {
                         } else {
                             tm -= viewHeight * 5;
                         }
-                    } else  {
+                    } else {
                         tm -= viewHeight * 2;
                     }
                     viewHeight *= 2;
@@ -1288,7 +1288,7 @@ public abstract class BaseView extends FrameLayout {
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY ||
-                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY )) {
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (0 < thumbnailHeight && 0 < thumbnailWidth) {
@@ -1312,7 +1312,8 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_WATCHLIST_DURATION_KEY_BG:
                 case PAGE_HISTORY_DURATION_KEY:
-                case PAGE_DOWNLOAD_DURATION_KEY: case PAGE_GRID_THUMBNAIL_INFO:
+                case PAGE_DOWNLOAD_DURATION_KEY:
+                case PAGE_GRID_THUMBNAIL_INFO:
                 case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
                     int padding = childComponent.getPadding();
                     view.setPadding(padding, 0, padding, 0);
@@ -1367,10 +1368,12 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
-        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ) {
+        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+            if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+                viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+            }
             RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
                 @Override
                 public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -1397,17 +1400,16 @@ public abstract class BaseView extends FrameLayout {
             };
             ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
 
-            if(((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter){
+            if (((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
-        } else if (componentType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY ) {
+        } else if (componentType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
 
-        }
-        else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {

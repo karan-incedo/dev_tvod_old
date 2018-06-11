@@ -1010,9 +1010,9 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                     }
                 }*/ else if (componentKey == AppCMSUIKeyType.PAGE_GAME_DATE_KEY) {
-                    if (data.getGist() != null && data.getGist().getGameSchedule() != null
-                            && data.getGist().getGameSchedule().get(0) != null
-                            && data.getGist().getGameSchedule().get(0).getGameDate() != 0) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null
+                            && data.getGist().getEventSchedule().get(0) != null
+                            && data.getGist().getEventSchedule().get(0).getEventDate() != 0) {
 
                         if (childComponent.getNumberOfLines() != 0) {
                             ((TextView) view).setSingleLine(false);
@@ -1021,28 +1021,28 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         StringBuilder thumbInfo = new StringBuilder();
-                        thumbInfo.append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "EEEE"))
+                        thumbInfo.append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "EEEE"))
                                  .append(" | ")
-                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "MMM dd"))
+                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "MMM dd"))
                                  .append(", ")
-                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate() * 1000L), "yyyy"));
+                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "yyyy"));
 
                         thumbInfo.append(" | Doors open at ")
-                                 .append(getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate()), "hh:mm aa"));
+                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
 
                         ((TextView) view).setText(thumbInfo);
-                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TIME_KEY) {
-                    if (data.getGist() != null && data.getGist().getGameSchedule() != null && data.getGist().getGameSchedule().get(0) != null
-                            && data.getGist().getGameSchedule().get(0).getGameTime() != 0) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null && data.getGist().getEventSchedule().get(0) != null
+                            && data.getGist().getEventSchedule().get(0).getEventDate() != 0) {
 
-                        String date = getDateFormat((data.getGist().getGameSchedule().get(0).getGameDate()), "hh:mm aa");
+                        String date = getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa");
                         ;
 
-                        ((TextView) view).setText(date + " " + data.getGist().getGameSchedule().get(0).getGameTimeZone());
-                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        ((TextView) view).setText(date + " " + data.getGist().getEventSchedule().get(0).getEventTimeZone());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
@@ -1229,7 +1229,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     }
 
-                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                   /* if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
                         if (data.getGist() != null && data.getGist().getHomeTeam() != null &&
                                 data.getGist().getHomeTeam().getGist() != null &&
                                 data.getGist().getHomeTeam().getGist().getTitle() != null) {
@@ -1243,7 +1243,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                             ((TextView) view).setText(teamName);
                         }
-                    }else if(appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY){
+                    }else */if(appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY){
                             ((TextView) view).setText(data.getTeam().getGb());
                             ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
                     }else{
@@ -1427,9 +1427,13 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
                 } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY ) {
-                    ((TextView) view).setText("title new");
+
+                    if(data.getFights().getFighter1_FirstName()!=null && data.getFights().getFighter2_FirstName()!=null ){
+                        ((TextView) view).setText(data.getFights().getFightSerialNo()+" "+data.getFights().getFighter1_FirstName()+"/"+data.getFights().getFighter2_FirstName());
+                    }
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
+                    ((TextView) view).setGravity(Gravity.CENTER_VERTICAL);
                 }
                 else if(childComponent.getText()!=null && !TextUtils.isEmpty(childComponent.getText())){
                     ((TextView) view).setText(childComponent.getText());
