@@ -31,6 +31,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsBaseActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
@@ -870,6 +871,9 @@ public class AppCmsNavigationFragment extends Fragment {
                             } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                                     getString(R.string.profile_label)))) {
                                 NavigationUser navigationUser = getNavigationUser();
+                                if(null != getActivity() && getActivity() instanceof AppCmsBaseActivity){
+                                    ((AppCmsBaseActivity) getActivity()).setProfileFirstTime(true);
+                                }
                                 if (navigationUser != null) {
                                     if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
                                             .getJsonValueKeyMap().get(navigationUser.getTitle()))

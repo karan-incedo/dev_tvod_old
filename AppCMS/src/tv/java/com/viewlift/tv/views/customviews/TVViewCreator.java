@@ -307,29 +307,18 @@ public class TVViewCreator {
                     && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
                 Glide.with(context).asBitmap().load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                         .into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
-                        TVBaseView.DEVICE_HEIGHT) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                        finalPageView.setBackground(drawable);
-                        finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#DD000000"));
-                    }
-                });
+                                TVBaseView.DEVICE_HEIGHT) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                                finalPageView.setBackground(drawable);
+                                finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#DD000000"));
+                            }
+                        });
             }
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
-
-            if(module.getBlockName().equalsIgnoreCase("richText01")){
-                moduleView.setOnFocusChangeListener((view, b) -> {
-                    if(null != appCMSPresenter
-                            && null != appCMSPresenter.getCurrentActivity()
-                            && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
-                        ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
-                    }
-                });
-            }
-
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
                     || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                 if (null == moduleAPI
@@ -363,6 +352,14 @@ public class TVViewCreator {
                                     }
                         });
                     }
+                }
+            }
+
+            if(null != module && module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))){
+                if(null != appCMSPresenter
+                        && null != appCMSPresenter.getCurrentActivity()
+                        && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                    ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(true);
                 }
             }
 
@@ -449,64 +446,6 @@ public class TVViewCreator {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
         switch (componentType) {
-            case PAGE_SUBSCRIBE_EMAIL_GO_BUTTON_KEY:
-                break;
-            case PAGE_SUBSCRIBE_EMAIL_KEY:
-                break;
-            case PAGE_RATINGBAR:
-                break;
-            case PAGE_VIDEO_TYPE_KEY:
-                break;
-            case MAIN_SVOD_SERVICE_TYPE:
-                break;
-            case ANDROID_AUTH_SCREEN_KEY:
-                break;
-            case ANDROID_SPLASH_SCREEN_KEY:
-                break;
-            case ANDROID_DOWNLOAD_SETTINGS_KEY:
-                break;
-            case ANDROID_DOWNLOAD_KEY:
-                break;
-            case ANDROID_PLAYLIST_KEY:
-                break;
-            case ANDROID_HOME_SCREEN_KEY:
-                break;
-            case ANDROID_SIGN_UP_SCREEN_KEY:
-                break;
-            case ANDROID_MOVIES_SCREEN_KEY:
-                break;
-            case ANDROID_SHOWS_SCREEN_KEY:
-                break;
-            case ANDROID_SUBSCRIPTION_SCREEN_KEY:
-                break;
-            case ANDROID_HISTORY_SCREEN_KEY:
-                break;
-            case ANDROID_WATCHLIST_SCREEN_KEY:
-                break;
-            case ANDROID_ARTICLE_SCREEN_KEY:
-                break;
-            case ANDROID_PHOTOGALLERY_SCREEN_KEY:
-                break;
-            case ANDROID_HOME_NAV_KEY:
-                break;
-            case ANDROID_MOVIES_NAV_KEY:
-                break;
-            case ANDROID_WATCHLIST_NAV_KEY:
-                break;
-            case ANDROID_DOWNLOAD_NAV_KEY:
-                break;
-            case PAGE_ACTIONLABEL_KEY:
-                break;
-            case ANDROID_HISTORY_NAV_KEY:
-                break;
-            case ANDROID_SETTINGS_NAV_KEY:
-                break;
-            case PAGE_BUTTON_SWITCH_KEY:
-                break;
-            case PAGE_BUTTON_KEY:
-                break;
-            case PAGE_IMAGE_KEY:
-                break;
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
@@ -558,17 +497,6 @@ public class TVViewCreator {
                 }
             }
             break;
-
-            case PAGE_ADS_KEY:
-                break;
-            case PAGE_ARTICLE_TITLE_KEY:
-                break;
-            case PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY:
-                break;
-            case PAGE_ARTICLE_DESCRIPTION_KEY:
-                break;
-            case PAGE_API_SUMMARY_TEXT_KEY:
-                break;
             case PAGE_COLLECTIONGRID_KEY:
                         /*for(Component component1 : component.getComponents()){*/
                 if (customHeaderItem == null) {
@@ -707,598 +635,7 @@ public class TVViewCreator {
                 mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
             }
                 break;
-            case PAGE_TABLE_VIEW_KEY:
-                break;
-            case PAGE_PROGRESS_VIEW_KEY:
-                break;
-            case PAGE_LIST_VIEW_KEY:
-                break;
-            case PAGE_LIST_MODULE_KEY:
-                break;
-            case PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE:
-                break;
-            case PAGE_SHOW_PLAYER_VIEW_KEY:
-                break;
-            case PAGE_CAROUSEL_IMAGE_KEY:
-                break;
-            case PAGE_PAGE_CONTROL_VIEW_KEY:
-                break;
-            case PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY:
-                break;
-            case PAGE_SEPARATOR_VIEW_KEY:
-                break;
-            case PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY:
-                break;
-            case PAGE_SEGMENTED_VIEW_KEY:
-                break;
-            case PAGE_CASTVIEW_VIEW_KEY:
-                break;
-            case PAGE_BG_KEY:
-                break;
-            case PAGE_LOGO_KEY:
-                break;
-            case PAGE_INFO_KEY:
-                break;
-            case PAGE_PLAY_KEY:
-                break;
-            case PAGE_SHOW_KEY:
-                break;
-            case PAGE_ARTICLE_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_KEY:
-                break;
-            case PAGE_TEAMS_KEY:
-                break;
-            case PAGE_WATCH_VIDEO_KEY:
-                break;
-            case PAGE_PLAY_IMAGE_KEY:
-                break;
-            case PAGE_TRAY_TITLE_KEY:
-                break;
-            case PAGE_TRAY_SEASON_TITLE_KEY:
-                break;
-            case PAGE_THUMBNAIL_IMAGE_KEY:
-                break;
-            case PAGE_THUMBNAIL_TIME_AND_DATE_KEY:
-                break;
-            case PAGE_TRAY_TITLE_UNDERLINE_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_IMAGE_KEY:
-                break;
-            case PAGE_BADGE_IMAGE_KEY:
-                break;
-            case PAGE_THUMBNAIL_TITLE_KEY:
-                break;
-            case PAGE_EPISODE_THUMBNAIL_TITLE_KEY:
-                break;
-            case PAGE_THUMBNAIL_DESCRIPTION_KEY:
-                break;
-            case PAGE_THUMBNAIL_READ_MORE_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_CENTER_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_CENTER_HORIZONTAL_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY:
-                break;
-            case PAGE_CAROUSEL_TITLE_KEY:
-                break;
-            case PAGE_CAROUSEL_INFO_KEY:
-                break;
-            case PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY:
-                break;
-            case PAGE_ADD_TO_WATCHLIST_KEY:
-                break;
-            case PAGE_DOWNLOAD_01_MODULE_KEY:
-                break;
-            case PAGE_DOWNLOAD_02_MODULE_KEY:
-                break;
-            case PAGE_PLAYLIST_MODULE_KEY:
-                break;
-            case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
-                break;
-            case PAGE_TEXT_BOLD_KEY:
-                break;
-            case PAGE_TEXT_MEDIUM_KEY:
-                break;
-            case PAGE_TEXT_LIGHT_KEY:
-                break;
-            case PAGE_TEXT_REGULAR_KEY:
-                break;
-            case PAGE_TEXT_SEMIBOLD_KEY:
-                break;
-            case PAGE_TEXT_SEMIBOLD_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_EXTRABOLD_KEY:
-                break;
-            case PAGE_TEXT_BLACK_KEY:
-                break;
-            case PAGE_TEXT_BLACK_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_HAIRLINE_KEY:
-                break;
-            case PAGE_TEXT_HAIRLINE_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_LIGHT_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_HEAVY_KEY:
-                break;
-            case PAGE_TEXT_HEAVY_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_MEDIUM_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_THIN_KEY:
-                break;
-            case PAGE_TEXT_THIN_ITALIC_KEY:
-                break;
-            case PAGE_TEXT_OPENSANS_FONTFAMILY_KEY:
-                break;
-            case PAGE_TEXT_LATO_FONTFAMILY_KEY:
-                break;
-            case PAGE_TEXTVIEW_KEY:
-                break;
-            case PAGE_TEXTFIELD_KEY:
-                break;
-            case PAGE_EMAILTEXTFIELD_KEY:
-                break;
-            case PAGE_EMAILTEXTFIELD2_KEY:
-                break;
-            case PAGE_PASSWORDTEXTFIELD_KEY:
-                break;
-            case PAGE_PASSWORDTEXTFIELD2_KEY:
-                break;
-            case PAGE_FORGOTPASSWORD_KEY:
-                break;
-            case PAGE_RESET_PASSWORD_MODULE_KEY:
-                break;
-            case PAGE_CONTACT_US_MODULE_KEY:
-                break;
-            case PAGE_MOBILETEXTFIELD_KEY:
-                break;
-            case PAGE_AUTHENTICATION_MODULE_KEY:
-                break;
-            case PAGE_LOGIN_BUTTON_KEY:
-                break;
-            case PAGE_SIGNUP_BUTTON_KEY:
-                break;
-            case PAGE_PLAN_TITLE_KEY:
-                break;
-            case PAGE_PLAN_PRICEINFO_KEY:
-                break;
-            case PAGE_PLAN_BESTVALUE_KEY:
-                break;
-            case PAGE_PLAN_PURCHASE_BUTTON_KEY:
-                break;
-            case PAGE_PLAN_META_DATA_VIEW_KEY:
-                break;
-            case PAGE_ARTICLE_MODULE_KEY:
-                break;
-            case PAGE_HISTORY_MODULE_KEY:
-                break;
-            case PAGE_WATCHLIST_MODULE_KEY:
-                break;
-            case PAGE_HISTORY_01_MODULE_KEY:
-                break;
-            case PAGE_HISTORY_02_MODULE_KEY:
-                break;
-            case PAGE_WATCHLIST_01_MODULE_KEY:
-                break;
-            case PAGE_WATCHLIST_02_MODULE_KEY:
-                break;
-            case PAGE_CONTINUE_WATCHING_MODULE_KEY:
-                break;
-            case PAGE_SETTINGS_KEY:
-                break;
-            case PAGE_WATCHLIST_DURATION_KEY:
-                break;
-            case PAGE_WATCHLIST_DURATION_UNIT_KEY:
-                break;
-            case PAGE_WATCHLIST_DESCRIPTION_KEY:
-                break;
-            case PAGE_WATCHLIST_TITLE_KEY:
-                break;
-            case PAGE_EPISODE_TITLE_KEY:
-                break;
-            case PAGE_API_HISTORY_MODULE_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_TRAY_02_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_GRID_01_KEY:
-                break;
-            case PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY:
-                break;
-            case PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY:
-                break;
-            case PAGE_API_SHOWDETAIL_MODULE_KEY:
-                break;
-            case PAGE_SUBSCRIPTION_SELECTPLAN_KEY:
-                break;
-            case PAGE_ARTICLE_TRAY_KEY:
-                break;
-            case PAGE_SUBSCRIPTION_IMAGEROW_KEY:
-                break;
-            case PAGE_PLANMETADATATITLE_KEY:
-                break;
-            case PAGE_PLANMETADDATAIMAGE_KEY:
-                break;
-            case PAGE_PLANMETADATADEVICECOUNT_KEY:
-                break;
-            case PAGE_SETTINGS_TITLE_KEY:
-                break;
-            case PAGE_SETTINGS_NAME_VALUE_KEY:
-                break;
-            case PAGE_SETTINGS_EMAIL_TITLE_KEY:
-                break;
-            case PAGE_SETTINGS_EMAIL_VALUE_KEY:
-                break;
-            case PAGE_SETTINGS_PLAN_VALUE_KEY:
-                break;
-            case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
-                break;
-            case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                break;
-            case PAGE_SETTINGS_EDIT_PROFILE_KEY:
-                break;
-            case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
-                break;
-            case CONTACT_US_PHONE_LABEL:
-                break;
-            case CONTACT_US_EMAIL_LABEL:
-                break;
-            case CONTACT_US_PHONE_IMAGE:
-                break;
-            case CONTACT_US_EMAIL_IMAGE:
-                break;
-            case PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY:
-                break;
-            case PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY:
-                break;
-            case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
-                break;
-            case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
-                break;
-            case PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY:
-                break;
-            case PAGE_BACKGROUND_IMAGE_KEY:
-                break;
-            case PAGE_BACKGROUND_IMAGE_TYPE_KEY:
-                break;
-            case PAGE_TOGGLE_BUTTON_KEY:
-                break;
-            case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                break;
-            case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
-                break;
-            case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
-                break;
-            case PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY:
-                break;
-            case PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_TITLE_TXT_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_AUTH_TXT_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_SUBTITLE_TXT_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
-                break;
-            case PAGE_PHOTO_GALLERY_SELECTED_IMAGE:
-                break;
-            case PAGE_SUBSCRIPTION_PAGE_KEY:
-                break;
-            case PAGE_VIDEO_DETAILS_KEY:
-                break;
-            case PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY:
-                break;
-            case PAGE_DOWNLOAD_AUDIO_TAB_COMPONENT_KEY:
-                break;
-            case PAGE_LOGIN_COMPONENT_KEY:
-                break;
-            case PAGE_SIGNUP_COMPONENT_KEY:
-                break;
-            case PAGE_REMOVEALL_KEY:
-                break;
-            case PAGE_VIDEO_IMAGE_KEY:
-                break;
-            case PAGE_THUMBNAIL_VIDEO_IMAGE_KEY:
-                break;
-            case PAGE_START_WATCHING_BUTTON_KEY:
-                break;
-            case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
-                break;
-            case PAGE_VIDEO_PLAY_BUTTON_KEY:
-                break;
-            case PAGE_VIDEO_DESCRIPTION_KEY:
-                break;
-            case PAGE_VIDEO_TITLE_KEY:
-                break;
-            case PAGE_SHOW_TITLE_KEY:
-                break;
-            case PAGE_SHOW_SWITCH_SEASONS_KEY:
-                break;
-            case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
-                break;
-            case PAGE_VIDEO_SUBTITLE_KEY:
-                break;
-            case PAGE_SHOW_SUBTITLE_KEY:
-                break;
-            case PAGE_VIDEO_SHARE_KEY:
-                break;
-            case PAGE_VIDEO_CLOSE_KEY:
-                break;
-            case PAGE_VIDEO_STARRATING_KEY:
-                break;
-            case PAGE_VIDEO_AGE_LABEL_KEY:
-                break;
-            case PAGE_VIDEO_CREDITS_DIRECTOR_KEY:
-                break;
-            case PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY:
-                break;
-            case PAGE_VIDEO_CREDITS_DIRECTORS_KEY:
-                break;
-            case PAGE_VIDEO_CREDITS_STARRING_KEY:
-                break;
-            case PAGE_VIDEO_WATCH_TRAILER_KEY:
-                break;
-            case PAGE_SHOW_WATCH_TRAILER_KEY:
-                break;
-            case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-                break;
-            case PAGE_API_THUMBNAIL_URL:
-                break;
-            case PAGE_API_TITLE:
-                break;
-            case PAGE_API_DESCRIPTION:
-                break;
-            case PAGE_HEADER_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_LEFT_KEY:
-                break;
-            case PAGE_TEXTALIGNMENT_RIGHT_KEY:
-                break;
-            case PAGE_VIDEO_DETAIL_HEADER_KEY:
-                break;
-            case PAGE_EMPTY_KEY:
-                break;
-            case PAGE_NULL_KEY:
-                break;
-            case PAGE_AUTOPLAY_MODULE_KEY_01:
-                break;
-            case PAGE_AUTOPLAY_MODULE_KEY_02:
-                break;
-            case PAGE_AUTOPLAY_MODULE_KEY_03:
-                break;
-            case PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY:
-                break;
-            case PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY:
-                break;
-            case PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_DIRECTOR_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_SUB_DIRECTOR_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_COUNTDOWN_CANCELLED_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_BACK_KEY:
-                break;
-            case PAGE_CAROUSEL_MODULE_KEY:
-                break;
-            case PAGE_EVENT_CAROUSEL_MODULE_KEY:
-                break;
-            case PAGE_VIDEO_PLAYER_MODULE_KEY:
-                break;
-            case PAGE_SETTINGS_MODULE_KEY:
-                break;
-            case PAGE_TRAY_MODULE_KEY:
-                break;
-            case PAGE_TRAY_02_MODULE_KEY:
-                break;
-            case PAGE_TRAY_03_MODULE_KEY:
-                break;
-            case PAGE_AUDIO_TRAY_MODULE_KEY:
-                break;
-            case PAGE_BANNER_AD_MODULE_KEY:
-                break;
-            case PAGE_MEDIAM_RECTANGLE_AD_MODULE_KEY:
-                break;
-            case PAGE_SEASON_TRAY_MODULE_KEY:
-                break;
-            case PAGE_GRID_MODULE_KEY:
-                break;
-            case PAGE_ARTICLE_FEED_MODULE_KEY:
-                break;
-            case PAGE_PHOTO_TRAY_MODULE_KEY:
-                break;
-            case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
-                break;
-            case PAGE_PHOTOGALLERY_NEXT_BUTTON_KEY:
-                break;
-            case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
-                break;
-            case PAGE_PHOTOGALLERY_PREV_GALLERY_LABEL_KEY:
-                break;
-            case PAGE_PHOTOGALLERY_GRID_KEY:
-                break;
-            case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
-                break;
-            case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                break;
-            case PAGE_SETTING_TOGGLE_SWITCH_TYPE:
-                break;
-            case PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY:
-                break;
-            case PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY:
-                break;
-            case RESET_PASSWORD_CANCEL_BUTTON_KEY:
-                break;
-            case RESET_PASSWORD_CONTINUE_BUTTON_KEY:
-                break;
-            case RESET_PASSWORD_TITLE_KEY:
-                break;
-            case PAGE_SETTING_LOGOUT_BUTTON_KEY:
-                break;
-            case PAGE_WATCHLIST_TITLE_LABEL:
-                break;
-            case PAGE_WATCHLIST_SUBTITLE_LABEL:
-                break;
-            case PAGE_WATCHLIST_DESCRIPTION_LABEL:
-                break;
-            case PAGE_WATCHLIST_DELETE_ITEM_BUTTON:
-                break;
-            case PAGE_HISTORY_LAST_ADDED_LABEL_KEY:
-                break;
-            case PAGE_SIGNUP_FOOTER_LABEL_KEY:
-                break;
-            case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
-                break;
-            case PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY:
-                break;
-            case PAGE_AUTOPLAY_UP_NEXT_LOADER_KEY:
-                break;
-            case PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY:
-                break;
-            case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
-                break;
-            case PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY:
-                break;
-            case PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY:
-                break;
-            case PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY:
-                break;
-            case PAGE_GRID_OPTION_KEY:
-                break;
-            case PAGE_GRID_THUMBNAIL_INFO:
-                break;
-            case PAGE_WATCHLIST_DURATION_KEY_BG:
-                break;
-            case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
-                break;
-            case PAGE_THUMBNAIL_BADGE_IMAGE:
-                break;
-            case PAGE_BANNER_IMAGE:
-                break;
-            case PAGE_BANNER_DETAIL_KEY:
-                break;
-            case PAGE_BANNER_DETAIL_BACKGROUND:
-                break;
-            case PAGE_BANNER_DETAIL_ICON:
-                break;
-            case PAGE_BANNER_DETAIL_BUTTON:
-                break;
-            case PAGE_BANNER_DETAIL_TITLE:
-                break;
-            case PAGE_PLAY_LIVE_IMAGE_KEY:
-                break;
-            case PAGE_SETTINGS_USER_EMAIL_LABEL_KEY:
-                break;
-            case PAGE_BEDGE_IMAGE_KEY:
-                break;
-            case TERMS_OF_SERVICE_KEY:
-                break;
-            case PRIVACY_POLICY_KEY:
-                break;
-            case START_WATCHING_KEY:
-                break;
-            case PAGE_DELETE_WATCHLIST_KEY:
-                break;
-            case PAGE_DELETE_HISTORY_KEY:
-                break;
-            case PAGE_GRID_BACKGROUND:
-                break;
-            case PAGE_VIDEO_PUBLISHDATE_KEY:
-                break;
-            case PAGE_WEB_VIEW_KEY:
-                break;
-            case PAGE_ARTICLE_WEB_VIEW_KEY:
-                break;
-            case PAGE_ARTICLE_PREVIOUS_BUTTON_KEY:
-                break;
-            case PAGE_ARTICLE_NEXT_BUTTON_KEY:
-                break;
-            case PAGE_FULL_SCREEN_IMAGE_KEY:
-                break;
-            case PAGE_HISTORY_DESCRIPTION_KEY:
-                break;
-            case PAGE_HISTORY_DURATION_KEY:
-                break;
-            case PAGE_HISTORY_WATCHED_TIME_KEY:
-                break;
-            case PAGE_DOWNLOAD_DESCRIPTION_KEY:
-                break;
-            case PAGE_DOWNLOAD_DURATION_KEY:
-                break;
-            case PAGE_DELETE_DOWNLOAD_KEY:
-                break;
-            case PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY:
-                break;
-            case PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY:
-                break;
-            case PAGE_ICON_IMAGE_KEY:
-                break;
-            case PAGE_ICON_LABEL_KEY:
-                break;
-            case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
-                break;
-            case RAW_HTML_TITLE_KEY:
-                break;
-            case RAW_HTML_IMAGE_KEY:
-                break;
-            case PAGE_PLAYLIST_TITLE:
-                break;
-            case PAGE_PLAYLIST_SUB_TITLE:
-                break;
-            case PAGE_PLAYLIST_AUDIO_ARTIST_TITLE:
-                break;
-            case PAGE_AUDIO_DURATION_KEY:
-                break;
-            case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
-                break;
-            case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
-                break;
-            case PAGE_LINK_YOUR_ACOOUNT_BTN_KEY:
-                break;
-            case PAGE_LINK_YOUR_ACCOUNT_TEXT_KEY:
-                break;
-            case OPEN_SIGN_UP_PAGE_BUTTON_KEY:
-                break;
-            case PAGE_LINK_YOUR_ACCOUNT_MODULE_KEY:
-                break;
-            case CANCEL_BUTTON_KEY:
-                break;
-            case REQUEST_NEW_CODE:
-                break;
-            case CODE_SYNC_TEXT_LINE_1:
-                break;
-            case CODE_SYNC_TEXT_LINE_2:
-                break;
-            case CODE_SYNC_TEXT_LINE_3:
-                break;
-            case CODE_SYNC_TEXT_LINE_HEADER:
-                break;
-            case LINK_ACCOUNT_PAGE_KEY:
-                break;
+
         }
     }
 
@@ -2054,6 +1391,16 @@ public class TVViewCreator {
                         if (moduleAPI.getContentData() != null
                                 && moduleAPI.getContentData().size() > 0) {
                             Button buttonRemoveAll = (Button) componentViewResult.componentView;
+                            buttonRemoveAll.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                @Override
+                                public void onFocusChange(View view, boolean b) {
+                                    if(null != appCMSPresenter
+                                            && null != appCMSPresenter.getCurrentActivity()
+                                            && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                        ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(true);
+                                    }
+                                }
+                            });
                             buttonRemoveAll.setId(R.id.appcms_removeall);
                             buttonRemoveAll.setOnClickListener(v -> {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
@@ -2250,6 +1597,17 @@ public class TVViewCreator {
                                         textView);
 
                                 ((ScrollView) componentViewResult.componentView).addView(textView);
+
+
+                                if(null != viewType && viewType.equalsIgnoreCase(context.getString(R.string.app_cms_ancillary_pages_module))){
+                                    textView.setOnFocusChangeListener((view, b) -> {
+                                        if(null != appCMSPresenter
+                                                && null != appCMSPresenter.getCurrentActivity()
+                                                && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                            ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(b);
+                                        }
+                                    });
+                                }
                             }
 
 

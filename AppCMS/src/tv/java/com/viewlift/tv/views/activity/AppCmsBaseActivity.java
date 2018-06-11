@@ -13,6 +13,7 @@ import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 
 public abstract class AppCmsBaseActivity extends AppCompatActivity {
 
+    private boolean isProfileFirstTime;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
@@ -31,5 +32,13 @@ public abstract class AppCmsBaseActivity extends AppCompatActivity {
     }*/
 
     public abstract int getNavigationContainer();
-   // public abstract int getSubNavigationContainer();
+
+    public boolean isProfileFirstTime() {
+        return isProfileFirstTime;
+    }
+
+    public void setProfileFirstTime(boolean profileFirstTime) {
+        isProfileFirstTime = profileFirstTime;
+    }
+    // public abstract int getSubNavigationContainer();
 }

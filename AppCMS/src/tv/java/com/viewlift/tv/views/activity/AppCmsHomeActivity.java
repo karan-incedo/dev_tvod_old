@@ -1,8 +1,5 @@
 package com.viewlift.tv.views.activity;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -275,11 +275,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     /*if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                                         showSubNavigation(false, false); //close subnavigation if any.
                                     }*/
-                                }
+                            }
                             } else {
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
-                                //  showSubNavigation(false, false); //close subnavigation if any.
                                 showNavigation(false); //close navigation if any.
                             }
                         }
@@ -382,6 +381,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+
     private void showMenuIcon(int visibility) {
         if (null != findViewById(R.id.info_icon))
             findViewById(R.id.info_icon).setVisibility(
@@ -461,9 +461,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
         String tag = getTag(updatedAppCMSBinder);
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
-        if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
-            getSupportFragmentManager().popBackStackImmediate();
+        Fragment previousFragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
+        if (null != previousFragment && previousFragment instanceof AppCmsMyProfileFragment) {
+            getSupportFragmentManager().popBackStack();
             appCMSBinderStack.pop();
         }
 
@@ -471,8 +471,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this, updatedAppCMSBinder);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         fragmentTransaction.replace(R.id.home_placeholder, appCmsMyProfileFragment, tag).addToBackStack(tag).commitAllowingStateLoss();
+
     }
 
     @Override

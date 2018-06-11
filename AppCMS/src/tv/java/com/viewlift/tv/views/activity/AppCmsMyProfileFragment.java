@@ -104,6 +104,13 @@ public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNa
             subNavContaineer.bringToFront();
             subNavContaineer.setBackground(getActivity().getDrawable(R.drawable.left_nav_gradient));
             subNavContaineer.getBackground().setTint(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+
+            if(null != getActivity() && getActivity() instanceof AppCmsBaseActivity){
+                if(!((AppCmsBaseActivity) getActivity()).isProfileFirstTime()){
+                    showSubNavigation(false);
+                }
+            }
+
         }
 
         pageHolder.addView(tvPageView);
@@ -140,7 +147,7 @@ public class AppCmsMyProfileFragment extends BaseFragment implements AppCmsSubNa
                 appCmsSubNavigationFragment.setFocusonSelectedItem();
             }
             new Handler().post(() -> {
-                if(shouldShow && null != appCmsSubNavigationFragment){
+                if(/*shouldShow && */null != appCmsSubNavigationFragment){
                     appCmsSubNavigationFragment.setFocusable(shouldShow);
                 }
             });
