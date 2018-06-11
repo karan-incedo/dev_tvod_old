@@ -2662,12 +2662,12 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public void navigateToPlayerDetailPage(String pagePathValue) {
-        String pagePath = pagePathValue;
+    public void navigateToPlayerDetailPage(String contentType) {
+        String pagePath = "/player/donny-moss";
         AppCMSPageUI appCMSPageUI = null;
         if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
             appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(currentActivity, "player_detail.json"),
+                    loadJsonFromAssets(currentActivity, "event_detail.json"),
                     AppCMSPageUI.class);
         }
         jsonValueKeyMap.put("eventDetail", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
@@ -7786,7 +7786,7 @@ public class AppCMSPresenter {
     }
 
     public int getSelectedFightId() {
-        return  fightSelectId ;
+        return fightSelectId;
     }
 
 
@@ -14763,7 +14763,11 @@ public class AppCMSPresenter {
                     watchlistPage = metaPage;
                     new SoftReference<Object>(watchlistPage, referenceQueue);
                 }
-
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY) {
+                    watchlistPage = metaPage;
+                    new SoftReference<Object>(watchlistPage, referenceQueue);
+                }
                 if (jsonValueKeyMap.get(metaPage.getPageName())
                         == AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY) {
                     schedulePage = metaPage;
@@ -18886,14 +18890,16 @@ public class AppCMSPresenter {
     }
 
     public void navigateToSchedulePage(String id,
-                                       String pageTitle,
-                                       boolean launchActivity,
-                                       Action0 callback, boolean isDeepLink) {
+                                       String pageTitle, String url,
+                                       boolean launchActivity
+    ) {
 
         if (currentActivity != null && !TextUtils.isEmpty(id)) {
             showLoader();
-
-            AppCMSPageUI appCMSPageUI = navigationPages.get(id);
+            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(currentActivity, "schedule_page_module.json"),
+                    AppCMSPageUI.class);
+//            AppCMSPageUI appCMSPageUI = navigationPages.get(id);
 
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(id);
@@ -18906,7 +18912,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToSchedulePage(id, pageTitle, launchActivity, callback, isDeepLink);
+                                    navigateToSchedulePage(id, pageTitle, url, launchActivity);
                                 }
                             },
                             loadFromFile,
@@ -18994,7 +19000,7 @@ public class AppCMSPresenter {
         }).subscribe(new Action1<AppCMSScheduleResult>() {
             @Override
             public void call(AppCMSScheduleResult appCMSScheduleResult) {
-                for (GameSchedule gameSchedule : appCMSScheduleResult.getGist().getGameSchedule()) {
+                for (GameSchedule gameSchedule : appCMSScheduleResult.getGist().getEventSchedule()) {
                     if (gameSchedule != null) {
                         Long gameDate = gameSchedule.getGameDate() * 1000L;
                         String month = getDateFormat(gameDate, "MMMM");
@@ -19192,7 +19198,7 @@ public class AppCMSPresenter {
                                 currentActivity.getString(R.string.app_cms_schedule_api_url,
                                         apiBaseUrl,
                                         siteId,
-                                        "1526632880", "1546194600"
+                                        "1512000000", "1543536000"
                                 ), apikey,
                                 scheduleAPIAction);
 

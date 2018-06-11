@@ -321,9 +321,9 @@
     {
       "id": "46d6af05-b494-4978-ab57-1e1d57444a8c",
       "settings": {},
-      "view": "AC Footer 02",
-      "type": "AC Footer 02",
-      "blockName": "footer02"
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01"
     }
   ],
   "caching": {

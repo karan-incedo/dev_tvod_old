@@ -356,6 +356,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_UNDERLINE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_page_title_key),
                 AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_title_key),
                 AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_title_key),
@@ -1118,6 +1120,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_history_screen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                context.getString(R.string.app_cms_pagename_schedule_screen_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 context.getString(R.string.app_cms_action_watchlistpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),

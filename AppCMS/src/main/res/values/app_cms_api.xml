@@ -77,7 +77,7 @@
 
     <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
 
-    <string name="app_cms_schedule_api_url">%1$s/content/game/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
+    <string name="app_cms_schedule_api_url">%1$s/content/event/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
 
@@ -172,6 +172,8 @@
     <string name="app_cms_page_season_tray_title_key">seasonTrayTitle</string>
     <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
     <string name="app_cms_page_schedule_page_title_key">schedulePageTitle</string>
+    <string name="app_cms_page_schedule_key">Schedule</string>
+
     <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
     <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
@@ -464,6 +466,8 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
+    <string name="app_cms_pagename_achedule_screen_key">My Watchlist</string>
+
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>

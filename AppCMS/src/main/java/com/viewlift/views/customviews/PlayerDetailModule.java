@@ -104,7 +104,7 @@ public class PlayerDetailModule extends ModuleView {
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
             AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "player_detail.json"),
+                    loadJsonFromAssets(context, "event_detail.json"),
                     AppCMSPageUI.class);
             ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
             if (module == null) {

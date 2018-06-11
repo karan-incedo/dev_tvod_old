@@ -161,7 +161,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.navigateToSubscriptionPlansPage(true);
                         } else if (titleKey == AppCMSUIKeyType.PAGE_TEAMS_KEY) {
                             appCMSPresenter.launchTeamNavPage();
-                        } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                        }
+                        else if (titleKey == AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY) {
+                            appCMSPresenter.navigateToSchedulePage(navigationPrimary.getPageId(),
+                                    navigationPrimary.getTitle(), navigationPrimary.getUrl(), false);
+                        }
+                        else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
@@ -226,7 +231,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+                                case ANDROID_SCHEDULE_SCREEN_KEY:
+                                case PAGE_SCHEDULE_SCREEN_TITLE_KEY:
+//                                    appCMSPresenter.showLoadingDialog(true);
 
+                                    appCMSPresenter.navigateToSchedulePage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                    break;
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                 case ANDROID_WATCHLIST_SCREEN_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
