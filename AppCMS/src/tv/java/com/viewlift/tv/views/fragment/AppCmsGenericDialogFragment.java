@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -113,26 +112,30 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
     private void updateSubscriptionStrip() {
         /*Check Subscription in case of SPORTS TEMPLATE*/
         if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-            if (!appCMSPresenter.isUserLoggedIn()) {
-                setSubscriptionText(false);
-            } else {
-                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                    try {
-                        if (appCMSUserSubscriptionPlanResult != null) {
-                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                setSubscriptionText(true);
+            if (appCMSPresenter.isAppSVOD()) {
+                if (!appCMSPresenter.isUserLoggedIn()) {
+                    setSubscriptionText(false);
+                } else {
+                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                        try {
+                            if (appCMSUserSubscriptionPlanResult != null) {
+                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                    setSubscriptionText(true);
+                                } else {
+                                    setSubscriptionText(false);
+                                }
                             } else {
                                 setSubscriptionText(false);
                             }
-                        } else {
+                        } catch (Exception e) {
                             setSubscriptionText(false);
                         }
-                    } catch (Exception e) {
-                        setSubscriptionText(false);
-                    }
-                });
+                    });
+                }
+            } else {
+                setSubscriptionText(true);
             }
         }else{
             subscriptionTitle.setVisibility(View.GONE);
