@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
@@ -35,6 +36,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private final String TAG = AppCmsBrowseFragment.class.getName();
     private View view;
     private TVPageView pageView;
+    private String screenName;
 
 
     public static AppCmsBrowseFragment newInstance(Context context){
@@ -73,6 +75,18 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 }
             }
         },50);
+
+        /* if the current screen in a video page, then the layout containing the BrowseFragment
+        * is given a height based on the row height we get from Page UI json, instead of match parent*/
+        if (screenName.toLowerCase().contains("video page")) {
+            FrameLayout browseFrame = getActivity().findViewById(R.id.appcms_browsefragment);
+            ViewGroup.LayoutParams layoutParams = browseFrame.getLayoutParams();
+            int rowHeight = Integer.parseInt(((BrowseFragmentRowData) ((ListRow) mRowsAdapter.get(0)).getAdapter().get(0)).uiComponentList.get(0).getLayout().getTv().getHeight());
+            // this 160 value includes header and the empty space other than the actual row item
+            layoutParams.height = 160 + rowHeight;
+            browseFrame.setLayoutParams(layoutParams);
+
+        }
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -148,6 +162,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public boolean hasFocus() {
         return (null != view && view.hasFocus());
+    }
+
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
     }
 
     private class ItemViewClickedListener implements OnItemViewClickedListener {

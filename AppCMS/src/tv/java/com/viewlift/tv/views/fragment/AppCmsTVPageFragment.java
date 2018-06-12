@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,6 +108,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
                 browseFragment.setPageView(tvPageView);
                 browseFragment.setmRowsAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
+                browseFragment.setScreenName(mAppCMSBinder.getScreenName());
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
             } else {
                refreshBrowseFragment();
@@ -198,6 +198,14 @@ public class AppCmsTVPageFragment extends BaseFragment {
                                     break;
                                 } else if (view.isFocusable()) {
                                     view.requestFocus();
+                                    /* in case of a video page we have included a scroll view to
+                                    * enable scrolling when related video tray items were getting
+                                    * cut-off from the bottom. BrowseFragment, by default, gets
+                                    * the focus, to avoid page being scrolled to the bottom, this
+                                    * following statement is added.*/
+                                    if (tvPageView.getScrollView() != null){
+                                        tvPageView.getScrollView().scrollTo(0,0);
+                                    }
                                     break;
                                 } else {
                                     view.clearFocus();
