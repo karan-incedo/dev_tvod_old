@@ -4945,7 +4945,7 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                                    if(moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
+                                    if (moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_event))) {
                                         ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                     }
@@ -5236,14 +5236,16 @@ public class ViewCreator {
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null);{
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null)
+                                    ;
+                            {
 
                                 long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
                                 ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                startTimer(500000,eventDate,((TextView) componentViewResult.componentView));
+                                startTimer(500000, eventDate, ((TextView) componentViewResult.componentView));
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER_VERTICAL);
-                                }
-                                break;
+                            }
+                            break;
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -5843,6 +5845,8 @@ public class ViewCreator {
                 componentViewResult.componentView = new LinearLayout(context);
 //                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
 //                ((LinearLayout) componentViewResult.componentView).addView(TableView);
+//                ((LinearLayout) componentViewResult.componentView ).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+
                 ((LinearLayout) componentViewResult.componentView).setId(R.id.fight_stats_id);
                 break;
 
@@ -6260,20 +6264,37 @@ public class ViewCreator {
     }
 
 
-    public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
+    public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights, AppCMSPresenter appCMSPresenter) {
 
 
         boolean isHeader = false;
         NestedScrollView nestedSCrollView = new NestedScrollView(context);
+        nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+
+//        NestedScrollView nestedSCrollViewData = new NestedScrollView(context);
+//        nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
 //        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
 
         TableLayout table = new TableLayout(context);
         table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
+        RecyclerView homeRec = (RecyclerView) appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+        table.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    homeRec.requestDisallowInterceptTouchEvent(false);
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    homeRec.requestDisallowInterceptTouchEvent(true);
+
+                }
+                return false;
+            }
+        });
         if (fights != null) {
             for (int i = -1; i < fights.getRounds().size(); i++) {
                 TableRow row = new TableRow(context);
@@ -6390,6 +6411,7 @@ public class ViewCreator {
 
 //        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
         nestedSCrollView.addView(scrollView);
+//        nestedSCrollViewData.addView(nestedSCrollView);
         return nestedSCrollView;
     }
 
@@ -6693,13 +6715,17 @@ public class ViewCreator {
 
     public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
-        LinearLayout fightStatsView = appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
+        LinearLayout fightStatsView = (LinearLayout) appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
 
         if (fights != null) {
-            ((LinearLayout) fightStatsView).removeAllViews();
+            (fightStatsView).removeAllViews();
 
-            View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
-            ((LinearLayout) fightStatsView).addView(TableView);
+            View tableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights, appCMSPresenter);
+
+            if (tableView.getParent() != null)
+                ((ViewGroup) tableView.getParent()).removeView(tableView);
+
+            (fightStatsView).addView(tableView);
         }
     }
 
@@ -7453,29 +7479,30 @@ public class ViewCreator {
     }
 
     private static CountDownTimer countDownTimer;
-        private void startTimer(int noOfMinutes,long eventTime ,TextView countdownTimerText) {
-            countDownTimer = new CountDownTimer(eventTime, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    long currentTimeMillis = System.currentTimeMillis();
-                    long remainingTime = (eventTime*1000L) - currentTimeMillis;
-                    String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime,"dd:hh:mm:ss").split(":");
-                    String spannableString = scheduleTime[0] + " D " + scheduleTime[1] + " H " + scheduleTime[2] + " M " +
-                            scheduleTime[3] +" S";
-                    SpannableString spannableString1 = new SpannableString(spannableString);
-                    spannableString1.setSpan(new RelativeSizeSpan(2f),0,2,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableString1.setSpan(new CustomCharacterSpan(), 3, 4,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    countdownTimerText.setText(spannableString);
 
-                }
+    private void startTimer(int noOfMinutes, long eventTime, TextView countdownTimerText) {
+        countDownTimer = new CountDownTimer(eventTime, 1000) {
+            public void onTick(long millisUntilFinished) {
+                long currentTimeMillis = System.currentTimeMillis();
+                long remainingTime = (eventTime * 1000L) - currentTimeMillis;
+                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
+                String spannableString = scheduleTime[0] + " D " + scheduleTime[1] + " H " + scheduleTime[2] + " M " +
+                        scheduleTime[3] + " S";
+                SpannableString spannableString1 = new SpannableString(spannableString);
+                spannableString1.setSpan(new RelativeSizeSpan(2f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString1.setSpan(new CustomCharacterSpan(), 3, 4,
+                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                countdownTimerText.setText(spannableString);
 
-                public void onFinish() {
-                    countdownTimerText.setText("TIME'S UP!!"); //On finish change timer text
-                    countDownTimer = null;//set CountDownTimer to null
-                    //startTimer.setText(getString(R.string.start_timer));//Change button text
-                }
-            }.start();
-        }
+            }
+
+            public void onFinish() {
+                countdownTimerText.setText("TIME'S UP!!"); //On finish change timer text
+                countDownTimer = null;//set CountDownTimer to null
+                //startTimer.setText(getString(R.string.start_timer));//Change button text
+            }
+        }.start();
+    }
 
     public enum EventDetailsColumnsName {
         ROUND("Round"),
@@ -7510,6 +7537,7 @@ public class ViewCreator {
 
 
     }
+
     public static class CustomCharacterSpan extends MetricAffectingSpan {
         double ratio = 0.3;
 

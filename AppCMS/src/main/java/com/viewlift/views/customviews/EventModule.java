@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -43,7 +44,7 @@ public class EventModule extends ModuleView {
     private final AppCMSPresenter appCMSPresenter;
     private final ViewCreator viewCreator;
     Context context;
-    private  Module subTrayModuleAPI;
+    private Module subTrayModuleAPI;
 
     private AppCMSAndroidModules appCMSAndroidModules;
     PageView pageView;
@@ -79,19 +80,22 @@ public class EventModule extends ModuleView {
                 viewCreator != null) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
 
-            subTrayModuleAPI=new Module();
-            subTrayModuleAPI=(Module) moduleAPI.clone();
+            subTrayModuleAPI = new Module();
+            subTrayModuleAPI = (Module) moduleAPI.clone();
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
             NestedScrollView scrollView = new NestedScrollView(getContext());
 
             LinearLayout topLayoutContainer = new LinearLayout(getContext());
             MarginLayoutParams topLayoutContainerLayoutParams =
-                    new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             topLayoutContainerLayoutParams.setMargins(0, 0, 0, 0);
             topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
+            scrollView.setLayoutParams(topLayoutContainerLayoutParams);
+            scrollView.setFillViewport(true);
+            scrollView.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
 
             AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                     loadJsonFromAssets(context, "event_detail.json"),
@@ -121,21 +125,21 @@ public class EventModule extends ModuleView {
                         if (jsonValueKeyMap.get(component1.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_TABLE_KEY) {
                             List<ContentDatum> data = new ArrayList<>();
 
-                            for(int k=0;k< moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size();k++){
+                            for (int k = 0; k < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size(); k++) {
 
 
                                 ContentDatum contentData = new ContentDatum();
-                                moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k+1+"");
+                                moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k + 1 + "");
                                 contentData.setFights(moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k));
                                 data.add(contentData);
 
 
                             }
                             subTrayModuleAPI.setContentData(data);
-                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j,subTrayModuleAPI);
+                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j, subTrayModuleAPI);
 
-                        }else{
-                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j,moduleAPI);
+                        } else {
+                            addChildComponents(moduleView1, component1, appCMSAndroidModules, j, moduleAPI);
 
                         }
                     }
@@ -144,9 +148,10 @@ public class EventModule extends ModuleView {
                 }
             }
             scrollView.addView(topLayoutContainer);
-            pageView.addView(scrollView);
-            childContainer.addView(pageView);
+//            pageView.addView(scrollView);
 
+            childContainer.addView(scrollView);
+//            pageView.addView(childContainer);
         }
     }
 
