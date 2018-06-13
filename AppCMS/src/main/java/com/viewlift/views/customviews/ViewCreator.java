@@ -2818,7 +2818,7 @@ public class ViewCreator {
                             @Override
                             public int getSpanSize(int position) {
                                 switch(appCMSBenefitPlanPageAdapter.getItemViewType(position)){
-                                    case AppCMSBenefitPlanPageAdapter.TYPE_HEADER:
+                                    case AppCMSBenefitPlanPageAdapter.TYPE_FOOTER:
                                         return 2;
                                     case AppCMSBenefitPlanPageAdapter.TYPE_ITEM:
                                         return 1;

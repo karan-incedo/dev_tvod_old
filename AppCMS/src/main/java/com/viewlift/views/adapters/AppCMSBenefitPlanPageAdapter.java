@@ -54,7 +54,7 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
     private boolean useParentSize;
     private AppCMSUIKeyType viewTypeKey;
     private boolean isClickable;
-    public static final int TYPE_HEADER = 2;
+    public static final int TYPE_FOOTER = 2;
     public static final int TYPE_ITEM = 1;
 
     public AppCMSBenefitPlanPageAdapter(Context context,
@@ -146,7 +146,7 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
         if (position < settings.getItems().size()) {
             return TYPE_ITEM;
         } else {
-            return TYPE_HEADER;
+            return TYPE_FOOTER;
         }
 
     }
