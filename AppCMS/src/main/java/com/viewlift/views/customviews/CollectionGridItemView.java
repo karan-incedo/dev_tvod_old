@@ -42,6 +42,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.plans.SubscriptionMetaDataView;
 import com.viewlift.views.customviews.plans.ViewPlansMetaDataView;
@@ -283,7 +284,7 @@ public class CollectionGridItemView extends BaseView {
                           final OnClickHandler onClickHandler,
                           final String componentViewType,
                           int themeColor,
-                          AppCMSPresenter appCMSPresenter, int position) {
+                          AppCMSPresenter appCMSPresenter, int position, Settings settings) {
 
         final Component childComponent = matchComponentToView(view);
 
@@ -297,9 +298,10 @@ public class CollectionGridItemView extends BaseView {
                 appCMSPresenter.getUpdateDownloadImageIconActionMap();
 
         if (childComponent != null) {
-
-            view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data, position));
+            if (data != null) {
+                view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                        childComponent, data, position));
+            }
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -308,6 +310,7 @@ public class CollectionGridItemView extends BaseView {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
@@ -347,6 +350,7 @@ public class CollectionGridItemView extends BaseView {
 
                     if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                         if (childViewHeight > childViewWidth) {
                             placeholder = R.drawable.vid_image_placeholder_port;
@@ -368,19 +372,14 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if (data.getGist() != null &&
+                    if (data != null && data.getGist() != null &&
                             data.getGist().getContentType() != null &&
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_audio))
-                            && data.getGist().getPosterImageUrl() != null && appCMSUIcomponentViewType != AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY && appCMSPresenter.isVideoDownloaded(data.getGist().getId())
-                            ) {
+                            && data.getGist().getPosterImageUrl() != null &&
+                            appCMSUIcomponentViewType != AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY &&
+                            appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                         int size = childViewWidth;
-                        /*if (childViewHeight< childViewWidth ) {
-                            size = childViewHeight;
-                        }*/
-
-
                         if (data.getGist() != null &&
-
                                 data.getGist().getPosterImageUrl() != null && (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) {
                             String imageUrl = data.getGist().getPosterImageUrl();
                             if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
@@ -393,8 +392,6 @@ public class CollectionGridItemView extends BaseView {
                                     .fitCenter();
 //                            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START) && context != null && appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && !appCMSPresenter.getCurrentActivity().isFinishing()) {
-
-
                                 Glide.with(context.getApplicationContext())
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -405,7 +402,7 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
                         }
-                    } else if (data.getGist() != null &&
+                    } else if (data != null && data.getGist() != null &&
                             data.getGist().getContentType() != null &&
                             data.getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_audio))
                             && appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
@@ -453,9 +450,35 @@ public class CollectionGridItemView extends BaseView {
                             ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                             Glide.with((ImageView) view).load(R.drawable.vid_image_placeholder_square);
                         }
+                    } else if (
+                            settings != null && settings.getItems() != null &&
+                                    !TextUtils.isEmpty(settings.getItems().get(position).getImageUrl()) &&
+                                    (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY)) {
+                        bringToFront = false;
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                settings.getItems().get(position).getImageUrl(),
+                                childViewWidth,
+                                childViewHeight);
+                        try {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            } else {
+                                ((ImageView) view).setBackgroundResource(placeholder);
+                            }
+                        } catch (Exception e) {
+                            //
+                        }
                     } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
-                            childViewWidth > 0 &&
+                            childViewWidth > 0 && data != null &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -595,7 +618,7 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
-                    } else if (data.getGist() != null &&
+                    } else if (data != null && data.getGist() != null &&
                             data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
@@ -920,6 +943,15 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setTextColor(textColor);
                         }*/
 
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TITLE_KEY &&
+                        settings != null && settings.getItems() != null &&
+                        !TextUtils.isEmpty(settings.getItems().get(position).getTitle())) {
+                    ((TextView) view).setText(settings.getItems().get(position).getTitle());
+                    if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                        int textColor = Color.parseColor(getColor(getContext(),
+                                childComponent.getTextColor()));
+                        ((TextView) view).setTextColor(textColor);
+                    }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
                     if (childComponent.getNumberOfLines() != 0) {
                         ((TextView) view).setSingleLine(false);
