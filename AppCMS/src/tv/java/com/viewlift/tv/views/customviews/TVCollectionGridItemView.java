@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
@@ -29,7 +28,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.text.MessageFormat;
@@ -234,10 +232,17 @@ public class TVCollectionGridItemView extends TVBaseView {
                                 && keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
                                 && clickable[0]) {
                             appCMSPresenter.showLoadingDialog(true);
-                            onClickHandler.play(
-                                    childComponent,
-                                    data);
-                            clickable[0] = false;
+                            if("SERIES".equalsIgnoreCase(data.getGist().getContentType())){
+                                onClickHandler.click(
+                                        TVCollectionGridItemView.this,
+                                        childComponent,
+                                        data);
+                            }else {
+                                onClickHandler.play(
+                                        childComponent,
+                                        data);
+                            }
+                                clickable[0] = false;
                             new android.os.Handler().postDelayed(() -> clickable[0] = true, 3000);
                             return true;
                         } else if(event.getAction() == KeyEvent.ACTION_DOWN
@@ -474,6 +479,11 @@ public class TVCollectionGridItemView extends TVBaseView {
                             childComponent,
                             data));
                     view.setFocusable(false);
+                    if("SERIES".equalsIgnoreCase(data.getGist().getContentType())){
+                        view.setVisibility(View.INVISIBLE);
+                    }else{
+                        view.setVisibility(View.VISIBLE);
+                    }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON) {
                     view.setNextFocusUpId(R.id.appcms_removeall);
                     view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));

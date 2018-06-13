@@ -964,19 +964,24 @@ public class TVViewCreator {
 
 
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.getUserVideoStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(),
-                                    userVideoStatusResponse -> {
-                                        if (null != userVideoStatusResponse) {
-                                            queued[0] = userVideoStatusResponse.getQueued();
-                                            //Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
-                                            if (queued[0]) {
-                                                btn.setText(context.getString(R.string.remove_from_watchlist));
-                                            } else {
-                                                btn.setText(context.getString(R.string.add_to_watchlist));
+                            try {
+                                appCMSPresenter.getUserVideoStatus(
+                                        moduleAPI.getContentData().get(0).getGist().getId(),
+                                        userVideoStatusResponse -> {
+                                            if (null != userVideoStatusResponse) {
+                                                queued[0] = userVideoStatusResponse.getQueued();
+                                                //Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
+                                                if (queued[0]) {
+                                                    btn.setText(context.getString(R.string.remove_from_watchlist));
+                                                } else {
+                                                    btn.setText(context.getString(R.string.add_to_watchlist));
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                btn.setText(context.getString(R.string.add_to_watchlist));
+                            }
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
@@ -1182,7 +1187,7 @@ public class TVViewCreator {
 
                     case PAGE_PLAY_KEY:
                     case PAGE_PLAY_IMAGE_KEY:
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
+                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;

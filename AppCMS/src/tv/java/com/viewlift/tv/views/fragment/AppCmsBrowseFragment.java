@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
@@ -35,6 +36,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private final String TAG = AppCmsBrowseFragment.class.getName();
     private View view;
     private TVPageView pageView;
+    private String screenName;
 
 
     public static AppCmsBrowseFragment newInstance(Context context){
@@ -73,6 +75,18 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 }
             }
         },50);
+
+        /* if the current screen in a video page, then the layout containing the BrowseFragment
+        * is given a height based on the row height we get from Page UI json, instead of match parent*/
+        if (screenName.toLowerCase().contains("video page")) {
+            FrameLayout browseFrame = getActivity().findViewById(R.id.appcms_browsefragment);
+            ViewGroup.LayoutParams layoutParams = browseFrame.getLayoutParams();
+            int rowHeight = Integer.parseInt(((BrowseFragmentRowData) ((ListRow) mRowsAdapter.get(0)).getAdapter().get(0)).uiComponentList.get(0).getLayout().getTv().getHeight());
+            // this 160 value includes header and the empty space other than the actual row item
+            layoutParams.height = 160 + rowHeight;
+            browseFrame.setLayoutParams(layoutParams);
+
+        }
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -150,6 +164,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         return (null != view && view.hasFocus());
     }
 
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
+    }
+
     private class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
@@ -166,8 +184,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             customVideoVideoPlayerView.performLoginButtonClick();
                         }
                         else{
-                         customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
-                         customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                            customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                            customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                         }
                         return;
                     }
@@ -252,17 +270,17 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
                 if (rowData != null) {
-                        if(getActivity() instanceof AppCmsHomeActivity){
-                            ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
-                        }
+                    if(getActivity() instanceof AppCmsHomeActivity){
+                        ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
+                    }
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view
                                 && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomTVVideoPlayerView){
                             customVideoVideoPlayerView  =  (CustomTVVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
                             if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
-                               customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
-                               customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                                customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                                customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                             }
                         }
                         Utils.setBrowseFragmentViewParameters(view,
@@ -271,9 +289,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         isPlayerComponentSelected = true;
                         showMoreContentIcon();
                     } else if(rowData.isSearchPage){
-                       new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
-                               (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
-                               (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
+                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     } else if (null != rowData.blockName && rowData.blockName.equalsIgnoreCase("showDetail01")){
                         new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_show_season_margin_left),
