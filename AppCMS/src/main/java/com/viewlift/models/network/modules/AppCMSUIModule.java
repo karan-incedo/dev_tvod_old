@@ -334,6 +334,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_plan_feature_image_key),
+                AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_plan_feature_title_key),
+                AppCMSUIKeyType.PAGE_PLAN_FEATURE_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_date_and_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_badge_image_key),
@@ -615,6 +619,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_02_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_03_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photo_gallery_02_key),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TRAY_02_KEY);
@@ -630,6 +636,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_imagetextrow_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_imagetextrow_02_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_season_tray_module_key),
                 AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY);

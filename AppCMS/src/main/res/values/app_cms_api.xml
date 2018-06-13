@@ -97,6 +97,7 @@
         <item>AC Footer 01</item>
         <item>AC Footer 02</item>
         <item>AC RawHtml 01</item>
+        <item>AC ImageTextRow 02</item>
     </string-array>
 
 
@@ -162,6 +163,8 @@
     <string name="app_cms_page_season_tray_title_key">seasonTrayTitle</string>
     <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_plan_feature_image_key">planFeatureImage</string>
+    <string name="app_cms_page_plan_feature_title_key">planFeatureTitle</string>
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
@@ -371,10 +374,12 @@
 
 
     <!-- Subscription Keys -->
+    <string name="app_cms_page_subscription_selectionplan_03_key">AC SelectPlan 03</string>
     <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
+    <string name="app_cms_page_subscription_imagetextrow_02_key">AC ImageTextRow 02</string>
     <string name="app_cms_page_article_tray_key">AC ArticleTray 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
