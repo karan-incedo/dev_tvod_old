@@ -29,6 +29,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ModuleView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -150,12 +151,15 @@ public class SeasonModule extends ModuleView {
 //                    seasonTab.setTabMode(TabLayout.MODE_FIXED);
 //                }
                 seasonTab.setTabGravity(Gravity.LEFT);
-
+                seasonTab.setId(R.id.sesaontab);
                 for (int i = 0; i < seasonList.size(); i++) {
-
                     TextView tab = new TextView(context);
-                    tab.setText(seasonList.get(i).getTitle().toUpperCase());
-                    tab.setTextSize(20f);
+                    tab.setText(seasonList.get(i).getTitle());
+                    if (BaseView.isTablet(context)) {
+                        tab.setTextSize(20f);
+                    } else {
+                        tab.setTextSize(18f);
+                    }
                     tab.setTextColor(myList);
                     tab.setSingleLine(false);
                     tab.setEllipsize(TextUtils.TruncateAt.END);
@@ -163,9 +167,6 @@ public class SeasonModule extends ModuleView {
                     TabLayout.Tab firstTab = seasonTab.newTab();
                     seasonTab.addTab(firstTab);
                     seasonTab.getTabAt(i).setCustomView(tab);
-//                    TabLayout.Tab firstTab = seasonTab.newTab();
-//                    firstTab.setText(season.getTitle().toUpperCase());
-
                 }
                 seasonTab.setSelectedTabIndicatorHeight(0);
                 seasonTab.setTabTextColors(Color.parseColor("#ffffff"),

@@ -350,7 +350,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 radiusDifference = 3;
             }
             if (contentDatum.getGist() != null) {
-                deleteDownloadButton.setTag(contentDatum.getGist().getId());
                 final ImageButton deleteButton = deleteDownloadButton;
                 final TextView videoSizeText = videoSize;
 
@@ -389,7 +388,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         deleteButton.setImageBitmap(null);
                                         deleteButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                                 R.drawable.ic_download_queued));
-                                        deleteButton.invalidate();
                                         videoSizeText.setText("Cancel".toUpperCase());
 
                                     }
@@ -401,21 +399,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             appCMSPresenter.getLoggedInUser());
 
                     switch (contentDatum.getGist().getDownloadStatus()) {
-                        case STATUS_FAILED:
-                            Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
-                            deleteDownloadButton.setImageResource(android.R.drawable.stat_sys_warning);
-                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-                            break;
-                        case STATUS_PAUSED:
-                            deleteDownloadButton.setImageResource(R.drawable.ic_download_queued);
-                            videoSizeText.setText("Cancel".toUpperCase());
-                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-                            break;
                         case STATUS_PENDING:
-                            deleteDownloadButton.setImageResource(R.drawable.ic_download_queued);
+                            deleteDownloadButton.setImageBitmap(null);
+                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                    R.drawable.ic_download_queued));
                             videoSizeText.setText("Cancel".toUpperCase());
                             videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
-
                             break;
                         case STATUS_RUNNING:
                             int finalRadiusDifference = radiusDifference;
@@ -483,7 +472,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         finalDeleteDownloadButton.setImageBitmap(null);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 android.R.drawable.stat_sys_warning));
-                                                        finalDeleteDownloadButton.invalidate();
                                                         finalVideoSize.setText("Re-Try".toUpperCase());
                                                         finalVideoSize.setOnClickListener(v -> restartDownloadVideo(contentDatum, position, finalDeleteDownloadButton, finalRadiusDifference));
                                                     } else if (userVideoDownloadStatus.getDownloadStatus() == STATUS_RUNNING) {
@@ -491,10 +479,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
                                                                 R.drawable.ic_download_queued));
-                                                        finalDeleteDownloadButton.invalidate();
                                                         finalVideoSize.setText("Cancel".toUpperCase());
 
                                                     }
+                                                    finalDeleteDownloadButton.postInvalidate();
                                                     contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                                 }
                                             },
@@ -511,6 +499,14 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             }
                             break;
 
+                        case STATUS_FAILED:
+                            Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
+                            deleteDownloadButton.setImageBitmap(null);
+                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
+                                    android.R.drawable.stat_notify_error));
+                            videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
+                            break;
+
                         case STATUS_SUCCESSFUL:
                             Log.e(TAG, "Film download successful: " + contentDatum.getGist().getId());
                             deleteDownloadButton.setImageBitmap(null);
@@ -518,26 +514,14 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                     R.drawable.ic_deleteicon));
                             deleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                             deleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                            deleteDownloadButton.invalidate();
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
-
                             break;
-                        case STATUS_COMPLETED:
-                            if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED
-                                    && contentDatum.getGist().getLocalFileUrl().contains("data")) {
-                                DownloadVideoRealm videoRealm = appCMSPresenter.getRealmController().getDownloadById(contentDatum.getGist().getId());
-                                contentDatum.getGist().setPosterImageUrl(videoRealm.getPosterFileURL());
-                                contentDatum.getGist().setLocalFileUrl(videoRealm.getLocalURI());
-                                loadImage(mContext, contentDatum.getGist().getPosterImageUrl(), thumbnailImage);
-                                thumbnailImage.invalidate();
-//                                notifyItemChanged(position);
-                            }
-                            break;
-
 
                         case STATUS_INTERRUPTED:
                             Log.e(TAG, "Film download interrupted: " + contentDatum.getGist().getId());
-                            deleteDownloadButton.setImageResource(android.R.drawable.stat_sys_warning);
+                            deleteDownloadButton.setImageBitmap(null);
+                            deleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
+                                    android.R.drawable.stat_sys_warning));
                             videoSize.setText("Re-Try".toUpperCase());
                             int finalRadiusDifference1 = radiusDifference;
                             ImageButton finaldeleteDownloadButton1 = deleteDownloadButton;
@@ -548,13 +532,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 //                        videoSize.setOnClickListener(v -> deleteDownloadVideo(contentDatum, position));
                             break;
 
-
-                        default:
-                            Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
+                        case STATUS_PAUSED:
                             deleteDownloadButton.setImageBitmap(null);
                             deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                     R.drawable.ic_download_queued));
-                            deleteDownloadButton.invalidate();
+                            videoSizeText.setText("Cancel".toUpperCase());
+
+                            break;
+                        default:
+                            Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
+                            deleteDownloadButton.setImageBitmap(null);
                             break;
                     }
                 }
@@ -851,7 +838,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position,null);
         }
     }
 

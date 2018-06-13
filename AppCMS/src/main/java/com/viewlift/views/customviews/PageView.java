@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,6 +56,7 @@ public class PageView extends BaseView {
 
     private boolean ignoreScroll;
     private FrameLayout headerView;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -207,7 +209,7 @@ public class PageView extends BaseView {
                 LinearLayoutManager.VERTICAL,
                 false));
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
-        ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
+        ((RecyclerView) childrenContainer).addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -227,8 +229,19 @@ public class PageView extends BaseView {
                 }
 
                 ignoreScroll = false;
+
+                /*TabLayout tab = findViewById(R.id.sesaontab);
+                if (tab != null) {
+                    int[] location = new int[2];
+                    tab.getLocationOnScreen(location);
+                    int x = location[0];
+                    int y = location[1];
+                    Log.e("x", "" + x);
+                    Log.e("y", "" + y);
+                }*/
             }
         });
+
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -314,7 +327,7 @@ public class PageView extends BaseView {
 
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
+            appCMSPageViewAdapter.notifyItemRangeChanged(1, appCMSPageViewAdapter.getItemCount());
         }
     }
 
@@ -335,6 +348,7 @@ public class PageView extends BaseView {
 
     public interface OnScrollChangeListener {
         void onScroll(int dx, int dy);
+
         void setCurrentPosition(int position);
     }
 
@@ -355,10 +369,10 @@ public class PageView extends BaseView {
 
     public void scrollToPosition(int position) {
         if (childrenContainer != null) {
-            if (position==0) {
+            if (position == 0) {
                 childrenContainer.scrollBy(position, position);
-            }else {
-                 ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+            } else {
+                ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
             }
         }
     }
@@ -368,9 +382,9 @@ public class PageView extends BaseView {
         int height;
     }
 
-    public void addToHeaderView(View view){
+    public void addToHeaderView(View view) {
         headerView.addView(view);
-        if(headerView.getParent() == null){
+        if (headerView.getParent() == null) {
             addView(headerView);
             headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }

@@ -316,8 +316,8 @@
     <string name="app_cms_delete_all_history_items_message">Do you want to delete all videos from history?</string>
 
     <string name="app_cms_delete_watchlist_alert_title">Delete Watchlist</string>
-    <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete video from watchlist?</string>
-    <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all videos from watchlist?</string>
+    <string name="app_cms_delete_one_watchlist_item_message">Do you want to delete this content from watchlist?</string>
+    <string name="app_cms_delete_all_watchlist_items_message">Do you want to delete all content from watchlist?</string>
 
     <string name="app_cms_download_retry_alert_title">Download could not finish</string>
     <string name="app_cms_re_download_item_message">A network issue occurred, would you like to cancel this download or retry?</string>
