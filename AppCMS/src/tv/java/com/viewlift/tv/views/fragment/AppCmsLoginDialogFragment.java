@@ -130,14 +130,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             } else {
                 subscriptionTitle.setVisibility(View.GONE);
             }
-
-            if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.isAppSVOD()) {
-                updateSubscriptionStrip();
-            } else {
-                subscriptionTitle.setVisibility(View.GONE);
-            }
-
+        }
         /*if(!appCMSPresenter.isLeftNavigationEnabled())
         view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));*/
 
@@ -337,7 +330,6 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
                 loginButton.setOnKeyListener(leftNavigationListener);
 
             }
-        }
         return view;
     }
 
