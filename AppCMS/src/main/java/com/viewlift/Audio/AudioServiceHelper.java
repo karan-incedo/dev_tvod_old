@@ -9,10 +9,12 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
@@ -73,9 +75,9 @@ public class AudioServiceHelper {
                     .findFragmentById(R.id.fragment_playback_controls);
 
             hidePlaybackControls();
-
-            if(mMediaBrowser != null && !mMediaBrowser.isConnected())
-                mMediaBrowser.connect();
+            if(mMediaBrowser != null && !mMediaBrowser.isConnected()) {
+                 mMediaBrowser.connect();
+            }
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
@@ -201,7 +203,7 @@ public class AudioServiceHelper {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
         if (mediaController == null ||
 //                mediaController.getMetadata() == null ||
-                mediaController.getPlaybackState() == null) {
+                (mediaController != null && mediaController.getPlaybackState() == null)) {
             return false;
         }
         switch (mediaController.getPlaybackState().getState()) {

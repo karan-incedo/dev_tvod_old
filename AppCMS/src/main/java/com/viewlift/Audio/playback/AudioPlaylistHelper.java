@@ -178,7 +178,6 @@ public class AudioPlaylistHelper {
 
     private void getAudioDetails(String mediaId, long currentPosition, boolean isPlayerScreenOpen) {
         try {
-            Utils.startService(context,new Intent(context, MusicService.class));
             indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
             appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, isPlayerScreenOpen, true, 0, null);
         }catch(Exception ex){

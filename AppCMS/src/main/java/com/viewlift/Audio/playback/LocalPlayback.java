@@ -131,7 +131,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            Utils.startService(mContext, i);
+                           // Utils.startService(mContext, i);
                         }
                     }
                 }
@@ -218,7 +218,7 @@ public final class LocalPlayback implements Playback {
 
         mCurrentMediaId = null;
         giveUpAudioFocus();
-        unregisterAudioNoisyReceiver();
+       // unregisterAudioNoisyReceiver();
         releaseResources(true);
         if (beaconPing != null) {
             beaconPing.sendBeaconPing = false;
@@ -262,7 +262,7 @@ public final class LocalPlayback implements Playback {
             mProgressHandler = null;
         }
         giveUpAudioFocus();
-        unregisterAudioNoisyReceiver();
+        //unregisterAudioNoisyReceiver();
         releaseResources(true);
     }
 
@@ -338,7 +338,7 @@ public final class LocalPlayback implements Playback {
         appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
-        registerAudioNoisyReceiver();
+       // registerAudioNoisyReceiver();
         if (audioData != null) {
             audioData.getGist().setAudioPlaying(false);
         }
@@ -474,7 +474,7 @@ public final class LocalPlayback implements Playback {
 
         // While paused, retain the player instance, but give up audio focus.
         releaseResources(false);
-        unregisterAudioNoisyReceiver();
+        //unregisterAudioNoisyReceiver();
         if (beaconPing != null) {
             beaconPing.sendBeaconPing = false;
         }
@@ -489,7 +489,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void seekTo(long position) {
         if (mExoPlayer != null) {
-            registerAudioNoisyReceiver();
+           // registerAudioNoisyReceiver();
             mExoPlayer.seekTo(position);
         }
     }
@@ -532,7 +532,7 @@ public final class LocalPlayback implements Playback {
                 // We don't have audio focus and can't duck, so we have to pause
                 pause();
             } else {
-                registerAudioNoisyReceiver();
+              //  registerAudioNoisyReceiver();
 
                 if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_CAN_DUCK) {
                     // We're permitted to play, but only if we 'duck', ie: play softly
