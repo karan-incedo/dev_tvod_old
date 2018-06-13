@@ -1073,7 +1073,6 @@ public abstract class BaseView extends FrameLayout {
             }
 
 
-
             AppCMSUIKeyType componentViewType = jsonValueKeyMap.get(viewType);
             if (componentViewType == null) {
                 componentViewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1169,7 +1168,7 @@ public abstract class BaseView extends FrameLayout {
                         } else {
                             tm -= viewHeight * 5;
                         }
-                    } else  {
+                    } else {
                         tm -= viewHeight * 2;
                     }
                     viewHeight *= 2;
@@ -1273,7 +1272,7 @@ public abstract class BaseView extends FrameLayout {
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY ||
-                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY )) {
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (0 < thumbnailHeight && 0 < thumbnailWidth) {
@@ -1383,7 +1382,7 @@ public abstract class BaseView extends FrameLayout {
             };
             ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
 
-            if(((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter){
+            if (((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
@@ -1421,7 +1420,9 @@ public abstract class BaseView extends FrameLayout {
 
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
-            if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+            if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY) {
+                gravity = Gravity.CENTER;
+            } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                 viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
             } /*else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
@@ -1466,13 +1467,17 @@ public abstract class BaseView extends FrameLayout {
             layoutParams.gravity = gravity;
         }
 
+
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
             if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
-            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
+            }/*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                layoutParams.height=BaseView.getDeviceHeight();
+
+            }*/ else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
                 tm *= +1.6;
                 layoutParams.setMargins(lm, tm, rm, bm);
             }

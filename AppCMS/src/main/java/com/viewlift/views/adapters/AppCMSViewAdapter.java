@@ -117,7 +117,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (this.viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
-           /*remove data from 1st position since it contains photogallery details*/
+            /*remove data from 1st position since it contains photogallery details*/
             if (adapterData.get(0).getStreamingInfo() != null) {
                 List<ContentDatum> data = new ArrayList<>();
                 data.addAll(moduleAPI.getContentData());
@@ -234,13 +234,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 false,
                 useRoundedCorners(), this.viewTypeKey);
 
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
             applyBgColorToChildren(view, selectedColor);
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-            if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+            if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY&&
+                    viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
                 setBorder(view, unselectedColor);
             }
         }
@@ -352,6 +355,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
             int selectableIndex = -1;
             for (int i = 0; i < adapterData.size(); i++) {
@@ -366,6 +370,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
             if (selectableIndex == position) {
                 if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY &&
+                        viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY &&
                         viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY &&
                         viewTypeKey != AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
                     holder.componentView.setSelectable(true);
@@ -376,6 +381,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
 
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                     viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
                     viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
                 holder.componentView.setSelectable(true);
@@ -482,7 +488,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     }
                 };
 
-            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
@@ -690,12 +697,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
                     component, data, position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY
                 || viewTypeKey == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY) {
             //
@@ -752,7 +761,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     } else if (contentType.equals(fullLengthFeatureType)) {
                         action = videoAction;
                     }
-                     /*get audio details on tray click item and play song*/
+                    /*get audio details on tray click item and play song*/
                     if (data.getGist() != null &&
                             data.getGist().getMediaType() != null &&
                             data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
@@ -769,7 +778,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         return;
                     }
 
-                                /*Get playlist data and open playlist page*/
+                    /*Get playlist data and open playlist page*/
                     if (data.getGist() != null && data.getGist().getMediaType() != null
                             && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
                         appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), false);
@@ -803,20 +812,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         }
                     } else {
 
-                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                    action,
-                                    title,
-                                    null,
-                                    null,
-                                    false,
-                                    currentPlayingIndex,
-                                    relatedVideoIds)) {
-                                //Log.e(TAG, "Could not launch action: " +
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                action,
+                                title,
+                                null,
+                                null,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            //Log.e(TAG, "Could not launch action: " +
 //                                    " permalink: " +
 //                                    permalink +
 //                                    " action: " +
 //                                    action);
-                            }
+                        }
 
                     }
                 }
@@ -834,7 +843,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     componentViewType,
                     appCMSPresenter.getBrandPrimaryCtaColor(),
                     appCMSPresenter,
-                    position);
+                    position, null);
         }
     }
 
@@ -942,7 +951,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     private void sortPlansByPriceInDescendingOrder() {
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && adapterData != null) {
+        if ((viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY
+        ||viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) && adapterData != null) {
 
             Collections.sort(adapterData,
                     (datum1, datum2) -> {
