@@ -157,6 +157,8 @@ public class ViewCreator {
     private HtmlSpanner htmlSpanner;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
+    private CountDownTimer countDownTimer = null;
+    private final int countDownIntervalInMillis = 1000;
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -1954,7 +1956,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().contains("personDetail02")) {
+                } else if (moduleInfo.getBlockName().contains("personDetail02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "person_detail.json"),
                             AppCMSPageUI.class);
@@ -3206,7 +3208,6 @@ public class ViewCreator {
                         ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
 
 
-
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
 
                     if (videoId.equalsIgnoreCase(videoPlayerViewSingle.getVideoId())) {
@@ -3216,7 +3217,7 @@ public class ViewCreator {
                     }
                 } else {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
-                    if(pageView != null){
+                    if (pageView != null) {
                         videoPlayerViewSingle.setPageView(pageView);
                     }
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
@@ -3225,8 +3226,8 @@ public class ViewCreator {
                 /*videoPlayerViewSingle.setLayoutParams(new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
                         (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT)));
 */
-                FrameLayout.LayoutParams videoPlayerParentLP = new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
-                        (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                FrameLayout.LayoutParams videoPlayerParentLP = new FrameLayout.LayoutParams((int) BaseView.getViewWidth(context, component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
+                        (int) BaseView.getViewHeight(context, component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
                 videoPlayerViewSingle.setLayoutParams(videoPlayerParentLP);
                 appCMSPresenter.videoPlayerViewParent = (ViewGroup) componentViewResult.componentView;
                 appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
@@ -3235,9 +3236,42 @@ public class ViewCreator {
                 break;
 
             case PAGE_UPCOMING_TIMER_KEY:
+                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getGist() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
+
                 componentViewResult.componentView = new LinearLayout(context);
-                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            break;
+                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
+
+                for (int count = 0; count < 4; count++) {
+                    LinearLayout linearLayout = new LinearLayout(context);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                    params.setMargins(3, 0, 3, 0);
+                    linearLayout.setLayoutParams(params);
+
+                    linearLayout.setGravity(Gravity.CENTER);
+                    linearLayout.setBackgroundColor(Color.parseColor("#000000"));
+                    linearLayout.setAlpha(0.6f);
+                    for (int textView = 0; textView < 2; textView++) {
+                        TextView text = new TextView(context);
+                        text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        text.setGravity(Gravity.CENTER);
+                        text.setPadding(3, 0, 3, 0);
+                        text.setTextSize(26);
+                        text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        linearLayout.addView(text);
+                    }
+                    ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
+                }
+                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                startTimer(context, appCMSPresenter, eventDate);
+                break;
 
             case PAGE_WEB_VIEW_KEY:
                 CustomWebView webView = null;
@@ -3678,42 +3712,41 @@ public class ViewCreator {
                         break;*/
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
 
-                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                            componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                            if (!gridElement &&
-                                    moduleAPI != null &&
-                                    moduleAPI.getContentData() != null &&
-                                    !moduleAPI.getContentData().isEmpty() &&
-                                    moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getGist() != null) {
-                                String userId = appCMSPresenter.getLoggedInUser();
-                                int radiusDifference = 7;
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                        if (!gridElement &&
+                                moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty() &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null) {
+                            String userId = appCMSPresenter.getLoggedInUser();
+                            int radiusDifference = 7;
+                            if (BaseView.isTablet(context)) {
+                                radiusDifference = 4;
+                            }
+                            if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
+                                radiusDifference = 5;
                                 if (BaseView.isTablet(context)) {
-                                    radiusDifference = 4;
-                                }
-                                if (moduleAPI.getContentData().get(0).getGist().getMediaType() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase())) {
-                                    radiusDifference = 5;
-                                    if (BaseView.isTablet(context)) {
-                                        radiusDifference = 3;
-                                    }
-                                }
-
-
-
-                                    componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
-
-
-                                if (appCMSPresenter.isDownloadEnable()) {
-                                    appCMSPresenter.getUserVideoDownloadStatus(
-                                            moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                                    moduleAPI.getContentData().get(0), userId, radiusDifference,
-                                                    moduleAPI.getId()), userId);
-                                    componentViewResult.componentView.setVisibility(View.VISIBLE);
-                                } else {
-                                    componentViewResult.componentView.setVisibility(View.GONE);
+                                    radiusDifference = 3;
                                 }
                             }
+
+
+                            componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
+
+
+                            if (appCMSPresenter.isDownloadEnable()) {
+                                appCMSPresenter.getUserVideoDownloadStatus(
+                                        moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                                moduleAPI.getContentData().get(0), userId, radiusDifference,
+                                                moduleAPI.getId()), userId);
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            } else {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
+                        }
 
                         break;
 
@@ -4041,9 +4074,9 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
-                        if(appCMSPresenter != null &&
-                                appCMSPresenter.getTemplateType()== AppCMSPresenter.TemplateType.SPORTS &&
-                                appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.ANDROID){
+                        if (appCMSPresenter != null &&
+                                appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS &&
+                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
@@ -4910,7 +4943,7 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
                                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                                    if(moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
+                                    if (moduleAPI.getContentData().get(0).getGist().getContentType() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.content_type_event))) {
                                         ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                     }
@@ -5182,6 +5215,10 @@ public class ViewCreator {
 
                                 break;
 
+                            case PAGE_TIMER_TITLE_KEY:
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
+                                break;
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -7394,30 +7431,42 @@ public class ViewCreator {
         row.addView(cell);
     }
 
-    private static CountDownTimer countDownTimer;
-        private void startTimer(int noOfMinutes,long eventTime ,TextView countdownTimerText) {
-            countDownTimer = new CountDownTimer(eventTime, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    long currentTimeMillis = System.currentTimeMillis();
-                    long remainingTime = (eventTime*1000L) - currentTimeMillis;
-                    String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime,"dd:hh:mm:ss").split(":");
-                    String spannableString = scheduleTime[0] + " D " + scheduleTime[1] + " H " + scheduleTime[2] + " M " +
-                            scheduleTime[3] +" S";
-                    SpannableString spannableString1 = new SpannableString(spannableString);
-                    spannableString1.setSpan(new RelativeSizeSpan(2f),0,2,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableString1.setSpan(new CustomCharacterSpan(), 3, 4,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    countdownTimerText.setText(spannableString);
+    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventTime) {
+        countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
+            public void onTick(long millisUntilFinished) {
+                long currentTimeMillis = System.currentTimeMillis();
+                long remainingTime = (eventTime * 1000L) - currentTimeMillis;
 
-                }
+                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
+                String[] timerText = context.getResources().getStringArray(R.array.timer_text);
 
-                public void onFinish() {
-                    countdownTimerText.setText("TIME'S UP!!"); //On finish change timer text
-                    countDownTimer = null;//set CountDownTimer to null
-                    //startTimer.setText(getString(R.string.start_timer));//Change button text
+                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
+                        appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                    LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                    for (int i = 0; i < linearLayout.getChildCount(); i++) {
+                        LinearLayout childLinearLayout = (LinearLayout) linearLayout.getChildAt(i);
+                        TextView time = ((TextView) childLinearLayout.getChildAt(0));
+                        TextView timeFormat = ((TextView) childLinearLayout.getChildAt(1));
+
+                        time.setText(scheduleTime[i]);
+                        time.setTypeface(time.getTypeface(), Typeface.BOLD);
+
+                        timeFormat.setText(timerText[i]);
+                        timeFormat.setTextSize(14);
+                    }
+                } else {
+                    countDownTimer.onFinish();
                 }
-            }.start();
-        }
+            }
+
+            public void onFinish() {
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
+            }
+        }.start();
+    }
 
     public enum EventDetailsColumnsName {
         ROUND("Round"),
@@ -7452,6 +7501,7 @@ public class ViewCreator {
 
 
     }
+
     public static class CustomCharacterSpan extends MetricAffectingSpan {
         double ratio = 0.3;
 
