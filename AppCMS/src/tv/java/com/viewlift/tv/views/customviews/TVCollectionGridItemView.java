@@ -468,8 +468,20 @@ public class TVCollectionGridItemView extends TVBaseView {
                         mPosition = position;
                         new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
                     });
-                    if (position == mPosition)
+                    if (position == mPosition) {
                         view.requestFocus();
+                    }
+
+                    view.setOnFocusChangeListener(new OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View view, boolean b) {
+                            if(null != appCMSPresenter
+                                    && null != appCMSPresenter.getCurrentActivity()
+                                    && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                                ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowLeftNavigation(position == 0);
+                            }
+                        }
+                    });
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
