@@ -98,7 +98,6 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
         <item>AC RawHtml 01</item>
-        <item>AC WebFrame 01</item>
     </string-array>
 
 
@@ -266,6 +265,7 @@
     <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
     <string name="app_cms_page_event_details_module_key">AC EventDetail 01</string>
     <string name="app_cms_page_fight_table_key">fightListTable</string>
+    <string name="app_cms_page_person_details_module_key">AC PersonDetail 02</string>
 
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
@@ -471,6 +471,7 @@
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_schedule_screen_key">Schedule Page</string>
+    <string name="app_cms_pagename_person_screen_key">Person Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>

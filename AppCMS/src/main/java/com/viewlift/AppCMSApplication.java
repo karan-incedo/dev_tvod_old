@@ -159,7 +159,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
         Log.d(TAG, "checkIsTelevision(): " + checkIsTelevision());
 
-        if (checkIsTelevision()) {
+        if (Utils.isFireTVDevice(getApplicationContext()) && checkIsTelevision()) {
             try {
                 // Initialize the Alexa Video Skills Client Library first.
                 initializeAlexaClientLibrary();

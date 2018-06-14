@@ -572,7 +572,6 @@
     <string name="pop_dialog_facebook">Facebook</string>
     <string name="pop_dialog_instagram">Instagram</string>
     <string name="dialog_close_button">Close</string>
-    <string name="app_template_type">sports_template</string>
 
     <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
 

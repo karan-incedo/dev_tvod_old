@@ -112,9 +112,9 @@
               "fontWeight": "ExtraBold",
               "fontFamily": "Lato",
               "textAlignment":"center",
-              "type": "label",
-              "key": "upcomingTimer",
-              "background":"#FFFFFF"
+              "type": "timer",
+              "key": "timer",
+              "background":"#000000"
             },
             {
               "layout": {

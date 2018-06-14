@@ -887,12 +887,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
         );
-        appCMSNavFreeTrialTool.setOnClickListener(v -> {
-            if (appCMSPresenter != null) {
-                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                appCMSPresenter.navigateToSubscriptionPlansPage(true);
-            }
-        });
+
 
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mSearchTopButton.setOnClickListener(v -> {
@@ -1965,6 +1960,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!castDisabled) {
             setMediaRouterButtonVisibility(appCMSBinder.getPageId());
         }
+        appCMSPresenter.setCurrentPageName(appCMSBinder.getPageId());
         createFragment(appCMSBinder);
     }
 
@@ -2249,15 +2245,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 closeButton.setVisibility(View.VISIBLE);
             }
 
-            if (updatedAppCMSBinder.getNavigation().getRight() != null) {
-                if (appCMSPresenter.isPageSearch(updatedAppCMSBinder.getPageId())) {
-                    mSearchTopButton.setVisibility(View.GONE);
-                } else {
-                    mSearchTopButton.setVisibility(View.VISIBLE);
-                }
-            } else {
-                mSearchTopButton.setVisibility(View.GONE);
-            }
+
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
@@ -2272,10 +2260,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 else
                     setCastingVisibility(false);
             }
+            handleSearchButtonVisiblity();
 //            setMediaRouterButtonVisibility(pageId);
         }
     }
 
+    public void handleSearchButtonVisiblity(){
+        if (updatedAppCMSBinder.getNavigation().getRight() != null) {
+            if (appCMSPresenter.isPageSearch(updatedAppCMSBinder.getPageId())) {
+                mSearchTopButton.setVisibility(View.GONE);
+            } else {
+                mSearchTopButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mSearchTopButton.setVisibility(View.GONE);
+        }
+    }
     @SuppressWarnings("ConstantConditions")
     private void handleLaunchPageAction(final AppCMSBinder appCMSBinder,
                                         boolean configurationChanged,
@@ -3128,7 +3128,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getPageName() != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
 
-        } /*else {
+        } else{
+            if (appCMSPresenter.videoPlayerView != null ) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
+            }
+        }/*else {
             ViewCreator.pausePlayer();
             ViewCreator.clearPlayerView();
         }*/
@@ -3261,20 +3265,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void startFreeTrialTool() {
+        if(appCMSPresenter != null &&
+                appCMSPresenter.isAppSVOD()){
         int buttonColor, textColor;
-        if (appCMSPresenter.getAppCMSMain() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
-                appCMSPresenter.getGeneralBackgroundColor() != 0 &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
-            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
-            textColor = appCMSPresenter.getGeneralTextColor();
-        } else {
-            buttonColor = Color.parseColor("#F81004");
-            textColor = Color.parseColor("#ffffff");
-        }
+
+        buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+        textColor = appCMSPresenter.getGeneralTextColor();
 
         appCMSNavFreeTrialTool.setTextColor(textColor);
         appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
@@ -3293,11 +3289,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSNavFreeTrialTool.setText(content);
             }
         }
+        appCMSNavFreeTrialTool.setOnClickListener(v -> {
+            if (appCMSPresenter != null) {
+                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                appCMSPresenter.navigateToSubscriptionPlansPage(true);
+            }
+        });
+
+    }
 
     }
 
     void setVisibilityForStartFreeTrial(String pageId) {
         if (appCMSPresenter.getNavigation() != null &&
+                appCMSPresenter.isAppSVOD() &&
                 appCMSPresenter.getNavigation().getSettings() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&

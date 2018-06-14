@@ -134,7 +134,7 @@ public class ContentDatum implements Serializable {
 
     @SerializedName("drmEnabled")
     @Expose
-    Boolean isDRMEnabled = null;
+    boolean isDRMEnabled = false;
 
 
 

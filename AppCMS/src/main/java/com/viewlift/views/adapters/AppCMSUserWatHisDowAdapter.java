@@ -960,14 +960,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     private void playDownloaded(ContentDatum data, int position) {
         List<String> relatedVideoIds = new ArrayList<>();
-        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
-            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
-                    null,
-                    false,
-                    null,
-                    null);
-            return;
+        if (!appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+            if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                    data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
+                        null,
+                        false,
+                        null,
+                        null);
+                return;
+            }
         }
 
         String permalink = data.getGist().getPermalink();

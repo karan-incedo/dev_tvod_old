@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,7 +132,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             }
 
             if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.isAppSVOD()) {
                 updateSubscriptionStrip();
             } else {
                 subscriptionTitle.setVisibility(View.GONE);
@@ -155,9 +154,11 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             loginView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
             signupView.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
 
-            loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
-            signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
 
+            if(appCMSPresenter.isLeftNavigationEnabled()) {
+                loginView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+                signupView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
+            }
             loginContaineer = view.findViewById(R.id.nav_item_login_layout);
             signupContaineer = view.findViewById(R.id.nav_item_logout_layout);
 

@@ -268,7 +268,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         beaconBufferingTimeoutMsec = getActivity().getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
         parentScreenName = getActivity().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
-
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(title);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
+        }
         setRetainInstance(true);
     }
 
@@ -285,12 +290,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
-        }
-        try {
-            mStreamId = appCMSPresenter.getStreamingId(title);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
 
 
@@ -834,7 +833,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
+        Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getErrorCode() + "~~~~~~~" + adErrorEvent.getError().getMessage());
         if (videoPlayerView.getPlayer() != null) {
             preparePlayer();
             videoPlayerView.getPlayer().setPlayWhenReady(true);

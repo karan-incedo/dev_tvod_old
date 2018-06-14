@@ -38,8 +38,9 @@ public class AppCMSContentDetailCall {
             return appCMSContentDetailRest.get(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
             //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+            e.printStackTrace();
         } catch (Exception e) {
-            // e.printStackTrace();
+             e.printStackTrace();
             //Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;
