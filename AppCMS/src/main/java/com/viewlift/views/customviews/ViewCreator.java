@@ -3290,7 +3290,7 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
 
-                componentViewResult.componentView = new LinearLayout(context);
+                    componentViewResult.componentView = new LinearLayout(context);
                 ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
                 ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
