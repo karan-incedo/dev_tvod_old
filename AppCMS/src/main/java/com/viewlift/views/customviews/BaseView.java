@@ -23,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSRosterAdapter;
 
 import java.util.Map;
 
@@ -1371,36 +1372,39 @@ public abstract class BaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-            if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
-                viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+            if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_TRAY_06_MODULE_KEY) {
+
+                if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+                    viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+                }
+
+                RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                        if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                            getParent().requestDisallowInterceptTouchEvent(false);
+                        } else {
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+                        if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                            getParent().requestDisallowInterceptTouchEvent(false);
+                        } else {
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                    }
+
+                    @Override
+                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+                    }
+                };
+                ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
             }
-            RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
-                @Override
-                public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-                        getParent().requestDisallowInterceptTouchEvent(false);
-                    } else {
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                    }
-                    return false;
-                }
-
-                @Override
-                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-                        getParent().requestDisallowInterceptTouchEvent(false);
-                    } else {
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                    }
-                }
-
-                @Override
-                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                }
-            };
-            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
-
-            if (((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) {
+            if ((((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) ) {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }

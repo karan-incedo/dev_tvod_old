@@ -37,12 +37,12 @@ public class AppCMSEventArchieveCall {
     }
 
     @WorkerThread
-    public void call(String url, String xApiKey,
+    public void call(String url, String eventId,
                      final Action1<AppCMSEventArchieveResult> eventArchieveResultAction) throws IOException {
         try {
 
             Map<String, String> authTokenMap = new HashMap<>();
-            authTokenMap.put("apikey", xApiKey);
+//            authTokenMap.put("apikey", xApiKey);
 
             appCMSEventArchieveRest.get(url, authTokenMap).enqueue(new Callback<AppCMSEventArchieveResult>() {
                 @Override

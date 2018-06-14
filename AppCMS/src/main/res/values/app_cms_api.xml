@@ -80,6 +80,7 @@
     <string name="app_cms_schedule_api_url">%1$s/content/event/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
+    <string name="app_cms_roster_data_page_api_url">%1$s/search/v2/list?site=%2$s&amp;type=%3$s</string>
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
@@ -109,7 +110,6 @@
         <item>AC Footer 02</item>
         <item>AC Banner 01</item>
     </string-array>
-
 
 
     <!-- Names of the apps where we need Splash progress-->
@@ -172,7 +172,7 @@
     <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
     <string name="app_cms_page_schedule_page_title_key">schedulePageTitle</string>
     <string name="app_cms_page_schedule_key">Schedule</string>
-
+    <string name="app_cms_page_roster_key">Roster</string>
     <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
     <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
@@ -262,7 +262,11 @@
     <string name="app_cms_page_tray_02_module_key">AC Tray 02</string>
     <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
     <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
+    <string name="app_cms_page_tray_06_module_key">AC Tray 06</string>
+
     <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
+    <string name="app_cms_roster_page_module_key">AC FighterRoster 01</string>
+
     <string name="app_cms_page_event_details_module_key">AC EventDetail 01</string>
     <string name="app_cms_page_fight_table_key">fightListTable</string>
     <string name="app_cms_page_person_details_module_key">AC PersonDetail 02</string>
@@ -328,19 +332,24 @@
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
     <string name="app_cms_page_player_Img">playerImage</string>
+    <string name="app_cms_page_player_team_title_label_key">playerTeamTitleLabel</string>
+    <string name="app_cms_page_player_team_Img">playerTeamImage</string>
+    <string name="app_cms_page_player_record_label_key">playerRecordLabel</string>
+
     <string name="app_cms_page_player_name_key">playerName</string>
     <string name="app_cms_page_teamlogo_image">teamLogo</string>
     <string name="app_cms_page_player_Weight_division_label">playerWeightDivision</string>
-    <string name="app_cms_page_player_score_label_key">playerScore</string>
+    <string name="app_cms_page_player_score_label_key">playerScoreLabel</string>
     <string name="app_cms_page_player_weightdivision_value_key">playerWeightDivisionValue</string>
-    <string name="app_cms_page_player_height_label_key">playerHeight</string>
-    <string name="app_cms_page_player_height_value_key">playerHeightValue</string>
+    <string name="app_cms_page_player_height_label_key">playerHeightLabel</string>
+    <string name="app_cms_page_player_height_value_key">playerHeightValueLabel</string>
     <string name="app_cms_page_fight_selection_label_key">fightDropDown</string>
     <string name="app_cms_page_tableHeaderLabel_label_key">tableHeaderLabel</string>
     <string name="app_cms_page_statsViewHeader_label_key">statsViewHeader</string>
+    <string name="app_cms_page_roster_title_key">rosterTitle</string>
 
-    <string name="app_cms_page_player_weight_label_key">playerWeight</string>
-    <string name="app_cms_page_player_weight_value_label_key">playerWeightValue</string>
+    <string name="app_cms_page_player_weight_label_key">playerWeightLabel</string>
+    <string name="app_cms_page_player_weight_value_label_key">playerWeightValueLabel</string>
     <string name="app_cms_page_player_birthdate_label_key">playerBirthDate</string>
     <string name="app_cms_page_player_birthdate_value_label_key">playerBirthDateValue</string>
     <string name="app_cms_page_player_hometown_label_key">playerHometown</string>
@@ -471,8 +480,10 @@
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
     <string name="app_cms_pagename_schedule_screen_key">Schedule Page</string>
-    <string name="app_cms_pagename_person_screen_key">Person Page</string>
+    <string name="app_cms_pagename_person_screen_key">Person Detail</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
+    <string name="app_cms_pagename_eventscreen_key">Event Page</string>
+
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
@@ -543,7 +554,6 @@
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
-
 
 
     <!--  AppCMS entitlement Detail API -->
@@ -804,7 +814,7 @@
     <string name="app_cms_team_standing_api_url">https://dev-mse.viewlift.com/season/standings/15140</string>
     <!--<string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/53006/15140</string>-->
     <string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/%1$s/%2$s</string>
-    <string name="app_cms_team_pointstreak_apikey">6xbjymfoqfzsigLgF07l</string>
-    <string name="app_cms_event_archieve_api_url">http://app2.compuboxdata.com/compustrike_api/events_archive?api_key=eed4734a29280843c17f4233f030c6b8&amp;event_id=1&amp;format=json</string>
+    <string name="app_cms_team_pointstreak_apikey">eed4734a29280843c17f4233f030c6b8</string>
+    <string name="app_cms_event_archieve_api_url">http://app2.compuboxdata.com/compustrike_api/events_archive?api_key=%1$s&amp;event_id=%2$s&amp;format=json</string>
 
 </resources>
