@@ -158,6 +158,8 @@ public class ViewCreator {
     private HtmlSpanner htmlSpanner;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
+    private CountDownTimer countDownTimer = null;
+    private final int countDownIntervalInMillis = 1000;
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -3282,8 +3284,41 @@ public class ViewCreator {
                 break;
 
             case PAGE_UPCOMING_TIMER_KEY:
+                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getGist() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
+
                 componentViewResult.componentView = new LinearLayout(context);
-                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
+
+                for (int count = 0; count < 4; count++) {
+                    LinearLayout linearLayout = new LinearLayout(context);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                    params.setMargins(3, 0, 3, 0);
+                    linearLayout.setLayoutParams(params);
+
+                    linearLayout.setGravity(Gravity.CENTER);
+                    linearLayout.setBackgroundColor(Color.parseColor("#000000"));
+                    linearLayout.setAlpha(0.6f);
+                    for (int textView = 0; textView < 2; textView++) {
+                        TextView text = new TextView(context);
+                        text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        text.setGravity(Gravity.CENTER);
+                        text.setPadding(3, 0, 3, 0);
+                        text.setTextSize(26);
+                        text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        linearLayout.addView(text);
+                    }
+                    ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
+                }
+                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                startTimer(context, appCMSPresenter, eventDate);
                 break;
 
             case PAGE_WEB_VIEW_KEY:
@@ -5257,6 +5292,11 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 }
 
+                                break;
+
+                            case PAGE_TIMER_TITLE_KEY:
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
                                 break;
 
 
@@ -7496,28 +7536,39 @@ public class ViewCreator {
         row.addView(cell);
     }
 
-    private static CountDownTimer countDownTimer;
-
-    private void startTimer(int noOfMinutes, long eventTime, TextView countdownTimerText) {
-        countDownTimer = new CountDownTimer(eventTime, 1000) {
+    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventTime) {
+        countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
                 long currentTimeMillis = System.currentTimeMillis();
                 long remainingTime = (eventTime * 1000L) - currentTimeMillis;
-                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
-                String spannableString = scheduleTime[0] + " D " + scheduleTime[1] + " H " + scheduleTime[2] + " M " +
-                        scheduleTime[3] + " S";
-                SpannableString spannableString1 = new SpannableString(spannableString);
-                spannableString1.setSpan(new RelativeSizeSpan(2f), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                spannableString1.setSpan(new CustomCharacterSpan(), 3, 4,
-                        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-                countdownTimerText.setText(spannableString);
 
+                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
+                String[] timerText = context.getResources().getStringArray(R.array.timer_text);
+
+                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
+                        appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                    LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                    for (int i = 0; i < linearLayout.getChildCount(); i++) {
+                        LinearLayout childLinearLayout = (LinearLayout) linearLayout.getChildAt(i);
+                        TextView time = ((TextView) childLinearLayout.getChildAt(0));
+                        TextView timeFormat = ((TextView) childLinearLayout.getChildAt(1));
+
+                        time.setText(scheduleTime[i]);
+                        time.setTypeface(time.getTypeface(), Typeface.BOLD);
+
+                        timeFormat.setText(timerText[i]);
+                        timeFormat.setTextSize(14);
+                    }
+                } else {
+                    countDownTimer.onFinish();
+                }
             }
 
             public void onFinish() {
-                countdownTimerText.setText("TIME'S UP!!"); //On finish change timer text
-                countDownTimer = null;//set CountDownTimer to null
-                //startTimer.setText(getString(R.string.start_timer));//Change button text
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
             }
         }.start();
     }

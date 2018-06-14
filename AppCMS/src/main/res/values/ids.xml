@@ -13,6 +13,7 @@
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
     <item name="video_player_id" type="id">video_player_id</item>
+    <item name="timer_id" type="id">timer_id</item>
     <item name="recyclerview_tray" type="id"/>
     <item name="video_play_image" type="id"/>
     <item name="play_live_image_id" type="id"/>

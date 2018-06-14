@@ -151,7 +151,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 } else {
                     appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
                 }*/
-                if (appCMSPresenter.getNavigation() != null &&
+                if (appCMSPresenter.getAppCMSMain()
+                        .getServiceType()
+                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key)) &&
+                        appCMSPresenter.getNavigation() != null &&
                         appCMSPresenter.getNavigation().getSettings() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
