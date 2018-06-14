@@ -3264,21 +3264,46 @@
           "layout": {
             "mobile": {
               "yAxis": 262,
+              "xAxis": 297,
+              "width": 28,
+              "height": 28
+            },
+            "tabletLandscape": {
+              "yAxis": 10,
+              "xAxis": 929,
+              "width": 28,
+              "height": 28
+            },
+            "tabletPortrait": {
+              "yAxis": 10,
+              "xAxis": 673,
+              "width": 28,
+              "height": 28
+            }
+          },
+          "action": "addToWatchlist",
+          "type": "button",
+          "key": "watchlistButton"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 262,
               "xAxis": 266,
               "width": 28,
               "height": 28
             },
             "tabletLandscape": {
-              "yAxis": 159,
-              "xAxis": 960,
-              "width": 28,
-              "height": 28
+              "yAxis": 10,
+              "xAxis": 902,
+              "width": 25,
+              "height": 25
             },
             "tabletPortrait": {
-              "yAxis": 488,
-              "xAxis": 698,
-              "width": 28,
-              "height": 28
+              "yAxis": 10,
+              "xAxis": 647,
+              "width": 25,
+              "height": 25
             }
           },
           "action": "addToDownload",
@@ -3295,13 +3320,13 @@
             },
             "tabletLandscape": {
               "yAxis": 15,
-              "xAxis": 890,
+              "xAxis": 862,
               "width": 28,
               "height": 28
             },
             "tabletPortrait": {
               "yAxis": 15,
-              "xAxis": 636,
+              "xAxis": 610,
               "width": 28,
               "height": 28
             }
@@ -3507,31 +3532,6 @@
           "textColor": "#d7d7d7",
           "fontWeight": "Extrabold",
           "key": "ageLabel"
-        },
-        {
-          "layout": {
-            "mobile": {
-              "yAxis": 262,
-              "xAxis": 297,
-              "width": 28,
-              "height": 28
-            },
-            "tabletLandscape": {
-              "yAxis": 10,
-              "xAxis": 929,
-              "width": 28,
-              "height": 28
-            },
-            "tabletPortrait": {
-              "yAxis": 10,
-              "xAxis": 673,
-              "width": 28,
-              "height": 28
-            }
-          },
-          "action": "addToWatchlist",
-          "type": "button",
-          "key": "watchlistButton"
         },
         {
           "layout": {

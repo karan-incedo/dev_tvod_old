@@ -109,6 +109,7 @@ android {
         renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
+        project.ext.set("archivesBaseName", customApplicationId+"-" + appVersionName)
     }
     flavorDimensions "green", "blue"
     productFlavors {
@@ -383,10 +384,17 @@ dependencies {
     implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+
+    implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
-    implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
     mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
+
+
+    implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
+    implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
+
+
     implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
@@ -404,11 +412,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-    implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
+
+
     implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-    implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
+
     tvImplementation project(path: ':firetvcustomkeyboard')
     implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
@@ -422,7 +431,7 @@ dependencies {
     implementation project(':library')
     implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
-    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
+    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'

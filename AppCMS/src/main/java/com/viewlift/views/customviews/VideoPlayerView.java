@@ -1497,7 +1497,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     result = dataSource.read(buffer, offset, readLength);
                 }
             } else {
-                result = dataSource.read(buffer, offset, readLength);
+                try {
+                    result = dataSource.read(buffer, offset, readLength);
+                }catch (NullPointerException exception){
+                    exception.printStackTrace();
+                }
             }
             return result;
         }
