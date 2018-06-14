@@ -323,6 +323,16 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     private void downloadView(ContentDatum contentDatum, CollectionGridItemView componentView, int position) {
         String userId = appCMSPresenter.getLoggedInUser();
         TextView videoSize = null;
@@ -439,7 +449,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                                 R.drawable.ic_deleteicon));
                                                         finalDeleteDownloadButton.invalidate();
 
-                                                        if (contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
+                                                        if (contentDatum.getGist().getMediaType() != null && contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
                                                             contentDatum.getGist().setPosterImageUrl(userVideoDownloadStatus.getPosterUri());
                                                             loadImage(mContext, userVideoDownloadStatus.getPosterUri(), finalThumbnailImage);
 
@@ -838,7 +848,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position,null);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position, null);
         }
     }
 

@@ -329,7 +329,11 @@ public class CastServiceProvider {
             }
 
             createMediaChooserDialog();
-            mCastHelper.setCastDiscovery();
+            try {
+                mCastHelper.setCastDiscovery();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
 
             if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
                 //Log.d(TAG, "This is a default route");
@@ -424,7 +428,7 @@ public class CastServiceProvider {
     private void createMediaChooserDialog() {
         castChooserDialog = new CastChooserDialog(mActivity, callBackRokuMediaSelection);
         mCastHelper.routes.clear();
-        if (mCastHelper.mMediaRouter != null) {
+        if (mCastHelper.mMediaRouter != null&&mCastHelper.mMediaRouter.getRoutes() != null) {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 
