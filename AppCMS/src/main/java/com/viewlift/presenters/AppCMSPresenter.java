@@ -1504,7 +1504,7 @@ public class AppCMSPresenter {
                                             : message,
                                     false,
                                     () -> {
-                                        readyAction.call(null);
+                                        getCurrentActivity().finish();
                                     },
                                     null);
 
