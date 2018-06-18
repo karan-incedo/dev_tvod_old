@@ -58,6 +58,7 @@ public class TVPageView extends FrameLayout {
             scrollView = new ScrollView(context);
             scrollView.setId(R.id.scrollview);
             scrollView.setSmoothScrollingEnabled(true);
+            scrollView.setFillViewport(true);
             ScrollView.LayoutParams scrollLayoutParams = new ScrollView.LayoutParams(
                     ScrollView.LayoutParams.MATCH_PARENT,
                     ScrollView.LayoutParams.MATCH_PARENT);
