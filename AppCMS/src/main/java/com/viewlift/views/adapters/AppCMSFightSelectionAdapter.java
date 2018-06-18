@@ -182,13 +182,15 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
 //        holder.componentView.
         if (position == appCMSPresenter.getSelectedFightId()) {
             holder.componentView.setBackgroundColor(Color.parseColor("#d6202d"));
+            holder.componentView.setBackgroundResource(R.drawable.fight_selector);
             Fights fights = moduleAPI.getContentData().get(position).getFights();
             viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
 
         } else {
+            holder.componentView.setBackgroundResource(0);
+
             holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
         }
-
     }
 
 

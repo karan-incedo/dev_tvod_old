@@ -5900,10 +5900,10 @@ public class ViewCreator {
 //                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
 //                ((LinearLayout) componentViewResult.componentView).addView(TableView);
 //                ((LinearLayout) componentViewResult.componentView ).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                Fights fights = moduleAPI.getContentData().get(appCMSPresenter.getSelectedFightId()).getFights();
+//                Fights fights = moduleAPI.getContentData().get(appCMSPresenter.getSelectedFightId()).getFights();
                 ((LinearLayout) componentViewResult.componentView).setId(R.id.fight_stats_id);
 
-                createFightStateRecorsView(context, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
+//                createFightStateRecorsView(context, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
 
                 break;
 
@@ -6336,19 +6336,19 @@ public class ViewCreator {
         table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
         RecyclerView homeRec = (RecyclerView) appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
-        table.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    homeRec.requestDisallowInterceptTouchEvent(false);
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    homeRec.requestDisallowInterceptTouchEvent(true);
-
-                }
-                return false;
-            }
-        });
+//        table.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//
+//                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+//                    homeRec.requestDisallowInterceptTouchEvent(false);
+//                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+//                    homeRec.requestDisallowInterceptTouchEvent(true);
+//
+//                }
+//                return false;
+//            }
+//        });
         if (fights != null && fights.getRounds().size() > 0) {
             for (int i = -1; i < fights.getRounds().size(); i++) {
                 TableRow row = new TableRow(context);
@@ -7560,6 +7560,7 @@ public class ViewCreator {
                         timeFormat.setTextSize(14);
                     }
                 } else {
+                    if(countDownTimer!=null)
                     countDownTimer.onFinish();
                 }
             }

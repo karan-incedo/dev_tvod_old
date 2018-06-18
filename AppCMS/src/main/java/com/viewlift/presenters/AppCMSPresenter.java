@@ -353,6 +353,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
@@ -2703,26 +2704,6 @@ public class AppCMSPresenter {
         return result;
     }
     public void navigateToEventDetailPage(String permaLink) {
-//        String pagePath = "/player/donny-moss";
-////        AppCMSPageUI appCMSPageUI = null;
-////        if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
-////            appCMSPageUI = new GsonBuilder().create().fromJson(
-////                    loadJsonFromAssets(currentActivity, "event_detail.json"),
-////                    AppCMSPageUI.class);
-////        }
-//        jsonValueKeyMap.put("eventDetail", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
-////        jsonValueKeyMap.put("AC EventDetail 01", AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
-//        jsonValueKeyMap.put("AC FightDetail 01", AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
-//
-//
-//        String apiUrl1 = null;
-//        if (pagePath.equalsIgnoreCase("/player/donny-moss")) {
-////            navigationPages.put("b102b0d2-503f-46af-99e7-6a4a63458d31", appCMSPageUI);
-//
-//            apiUrl1 = "https://release-api.viewlift.com/content/pages?site=qa-capitalone-arena&includeContent=true&path=/events/valor-vs-philadelphia-soul-june2-2018";
-//            //apiUrl = "https://release-api.viewlift.com/content/pages?site=qa-major-league-lacrosse&path=/player/donny-moss&includeContent=true&includeWatchHistory=true&userId=null";
-//        }
-
         String pagePath = permaLink;
 
         if (currentActivity != null && !TextUtils.isEmpty(permaLink) && articlePage != null) {
@@ -2810,9 +2791,9 @@ public class AppCMSPresenter {
                                                 public void call(AppCMSEventArchieveResult appCMSTeamRoasterResult) {
                                                     if (appCMSTeamRoasterResult != null) {
 
-//                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
-//                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
-//                                                                AppCMSEventArchieveResult.class);
+                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
+                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
+                                                                AppCMSEventArchieveResult.class);
                                                         Module module = null;
                                                         if (appCMSTeamRoasterResult != null) {
                                                             pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
@@ -6682,6 +6663,41 @@ public class AppCMSPresenter {
                                 Observable.just((AppCMSPlaylistResult) null)
                                         .onErrorResumeNext(throwable -> Observable.empty())
                                         .subscribe(appCMSPlaylistResultAction);
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void getScheduleRefreshData(final Action1<List<AppCMSScheduleResult>> appCMSScheduleResultAction, String playlistId) {
+        if (currentActivity != null) {
+            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
+
+            MetaPage metaPage = pageIdToMetaPageMap.get(schedulePage.getPageId());
+
+
+
+            getSchedulePageContent(appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    metaPage.getPageId(), new AppCMSScheduleAPIAction(true,
+                            false,
+                            true,
+                            appCMSPageUI,
+                            metaPage.getPageId(),
+                            metaPage.getPageId(),
+                            metaPage.getPageName(),
+                            metaPage.getPageId(),
+                            false, null) {
+                        @Override
+                        public void call(List<AppCMSScheduleResult> appCMSScheduleResult) {
+                            if (appCMSScheduleResult != null) {
+                                Observable.just(appCMSScheduleResult)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(appCMSScheduleResultAction);
+                            } else {
+                                Observable.just((AppCMSScheduleResult) null)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe((Observer<? super AppCMSScheduleResult>) appCMSScheduleResultAction);
                             }
                         }
                     });
@@ -15351,6 +15367,9 @@ public class AppCMSPresenter {
 
     public boolean isPlaylistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && playlistPage != null && pageId.equals(playlistPage.getPageId());
+    }
+    public boolean isSchedulePage(String pageId) {
+        return !TextUtils.isEmpty(pageId) && schedulePage != null && pageId.equals(schedulePage.getPageId());
     }
 
     private int getSigninPage(List<MetaPage> metaPageList) {

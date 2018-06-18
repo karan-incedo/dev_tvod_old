@@ -2805,6 +2805,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             }, appCMSBinder.getPagePath());
+        }else if (appCMSPresenter.isSchedulePage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getScheduleRefreshData(appCMSPlaylistResultAction -> {
+                if (appCMSPlaylistResultAction != null) {
+                    AppCMSPageAPI pageAPI =
+                            appCMSPresenter.convertToMonthlyData(appCMSPlaylistResultAction);
+//                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+//                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(pageAPI);
+
+                    //Log.d(TAG, "Updated watched history for loaded displays");
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            }, appCMSBinder.getPagePath());
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
