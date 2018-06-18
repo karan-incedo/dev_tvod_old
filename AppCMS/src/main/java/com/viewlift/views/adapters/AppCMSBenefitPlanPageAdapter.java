@@ -2,12 +2,9 @@ package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -113,16 +111,15 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
                     this.componentViewType,
                     false,
                     false, this.viewTypeKey);
-
-
             return new ViewHolder(view);
         } else {
-            TextView emptyView = new TextView(mContext);
-            emptyView.setTextColor(appCMSPresenter.getGeneralTextColor());
-            emptyView.setTextSize(16f);
-            emptyView.setGravity(Gravity.CENTER);
-            emptyView.setText("See terms of use and privacy policy for more details");
-            emptyView.setLinkTextColor(Color.BLUE);
+            TextView termsView = new TextView(mContext);
+            termsView.setTextColor(appCMSPresenter.getGeneralTextColor());
+            termsView.setTextSize(16f);
+            termsView.setPadding(5, 15, 5, 15);
+            termsView.setGravity(Gravity.CENTER);
+            termsView.setText("See terms of use and privacy policy for more details");
+            termsView.setLinkTextColor(ContextCompat.getColor(mContext, R.color.splashbackgroundColor));
             ClickableSpan tosClick = new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
@@ -135,9 +132,9 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
                     appCMSPresenter.navigateToPrivacyPolicy();
                 }
             };
-            appCMSPresenter.makeTextViewLinks(emptyView, new String[]{
+            appCMSPresenter.makeTextViewLinks(termsView, new String[]{
                     "terms of use", "privacy policy"}, new ClickableSpan[]{tosClick, privacyClick});
-            return new ViewHolder(emptyView);
+            return new ViewHolder(termsView);
         }
     }
 
@@ -218,11 +215,13 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-        int childCount = holder.componentView.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View child = holder.componentView.getChild(i);
-            if (child instanceof ImageView) {
-                Glide.with(child.getContext()).clear(child);
+        if (holder.componentView != null) {
+            int childCount = holder.componentView.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = holder.componentView.getChild(i);
+                if (child instanceof ImageView) {
+                    Glide.with(child.getContext()).clear(child);
+                }
             }
         }
     }
