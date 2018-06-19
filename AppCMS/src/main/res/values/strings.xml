@@ -713,7 +713,7 @@
 
     <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
     <string name="timer_until_face_off">TIME UNTIL FACEOFF</string>
-    TIMER UNTIL FACEOFF
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="timer_text">
         <item>D</item>
