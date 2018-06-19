@@ -1226,6 +1226,14 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_PLAN_PRICEINFO_KEY:
                     lm += convertDpToPixel(8, getContext());
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                        gravity = Gravity.CENTER_VERTICAL;
+                    }
+                    break;
+                case PAGE_PLAN_FEATURE_TEXT_KEY:
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                        gravity = Gravity.CENTER_VERTICAL;
+                    }
                     break;
 
                 case PAGE_SETTINGS_PLAN_VALUE_KEY:
@@ -1421,7 +1429,7 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY) {
-                gravity = Gravity.CENTER;
+                gravity = Gravity.CENTER_HORIZONTAL;
             } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                 viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
