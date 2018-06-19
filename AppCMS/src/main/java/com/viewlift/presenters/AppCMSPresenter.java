@@ -6034,6 +6034,7 @@ public class AppCMSPresenter {
                             Observable.just(addToWatchlistResult)
                                     .onErrorResumeNext(throwable -> Observable.empty())
                                     .subscribe(resultAction1);
+                            temporaryWatchlist.clear();
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
                         }
