@@ -1350,7 +1350,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     signUpDialog = null;
                 }
             }
-        }, 50);
+        }, 100);
 
     }
 
@@ -1363,7 +1363,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     loginDialog = null;
                 }
             }
-        }, 50);
+        }, 100);
 
     }
 

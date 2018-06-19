@@ -500,6 +500,13 @@ public class TVCollectionGridItemView extends TVBaseView {
                     view.setNextFocusUpId(R.id.appcms_removeall);
                     view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));
                     view.setFocusable(true);
+                    view.setOnFocusChangeListener(new OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View view, boolean b) {
+                            ((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).shouldShowSubLeftNavigation(false);
+                        }
+                    });
+
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {

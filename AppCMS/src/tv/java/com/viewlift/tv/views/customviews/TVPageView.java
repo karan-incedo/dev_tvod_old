@@ -65,6 +65,7 @@ public class TVPageView extends FrameLayout {
             scrollView.setLayoutParams(scrollLayoutParams);
             // to hide the scroll bar in the right
             scrollView.setVerticalScrollBarEnabled(false);
+            scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
             this.addView(scrollView);
         }
     }
