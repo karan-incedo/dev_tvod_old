@@ -121,7 +121,9 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
+import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -187,10 +189,12 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSShowDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
@@ -233,6 +237,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -601,6 +606,7 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private AppCMSContentDetailCall appCMSContentDetailCall;
+    private AppCMSShowDetailCall appCMSShowDetailCall;
     private Activity currentActivity;
     private boolean isAppHomeActivityCreated = false;
     private Context currentContext;
@@ -8847,6 +8853,7 @@ public class AppCMSPresenter {
             appCMSGetSyncCodeApiCall = appCMSAPIComponent.appCmsGetSyncCodeAPICall();
             appCmsSyncDeviceCodeAPICall = appCMSAPIComponent.appCmsSyncDeviceCodeAPICall();
             appCMSContentDetailCall = appCMSAPIComponent.appCMSContentDetailCall();
+            appCMSShowDetailCall = appCMSAPIComponent.appCMSShowDetailCall();
 
 
         }
@@ -18792,5 +18799,17 @@ public class AppCMSPresenter {
         return false;
     }
 
-
+    public void getShowDetails(String showId, final Action1<AppCMSShowDetail> action1) {
+        String url = currentContext.getString(R.string.app_cms_show_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                showId,
+                appCMSSite.getGist().getSiteInternalName());
+        GetAppCMSShowDetailAsyncTask.Params params =
+                new GetAppCMSShowDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+        new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
+                action1).execute(params);
+    }
 }
