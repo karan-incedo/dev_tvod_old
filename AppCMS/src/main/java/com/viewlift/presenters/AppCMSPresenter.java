@@ -600,7 +600,7 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private AppCMSContentDetailCall appCMSContentDetailCall;
-    private Activity currentActivity;
+    private AppCompatActivity currentActivity;
     private boolean isAppHomeActivityCreated = false;
     private Context currentContext;
     private Navigation navigation;
@@ -13428,12 +13428,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public Activity getCurrentActivity() {
+    public AppCompatActivity getCurrentActivity() {
         return currentActivity;
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = activity;
+        this.currentActivity = (AppCompatActivity) activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);

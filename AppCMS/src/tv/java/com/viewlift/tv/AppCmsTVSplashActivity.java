@@ -1,8 +1,6 @@
 package com.viewlift.tv;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +15,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,7 +39,7 @@ import java.util.List;
  * Created by viewlift on 6/22/17.
  */
 
-public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
+public class AppCmsTVSplashActivity extends AppCompatActivity implements AppCmsTvErrorFragment.ErrorFragmentListener {
 
     private CountDownTimer countDownTimer;
     private boolean needSplashProgress;
@@ -261,7 +261,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
         Bundle bundle = new Bundle();
         bundle.putBoolean(getString(R.string.retry_key) , true);
         bundle.putBoolean(getString(R.string.register_internet_receiver_key) , shouldRegisterInternetReciever);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         AppCmsTvErrorFragment errorActivityFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
         errorActivityFragment.setErrorListener(this);

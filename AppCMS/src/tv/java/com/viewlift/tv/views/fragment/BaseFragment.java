@@ -1,14 +1,7 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Fragment;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.viewlift.R;
+import android.support.v4.app.Fragment;
 
 /**
  * Created by nitin.tyagi on 7/24/2017.
