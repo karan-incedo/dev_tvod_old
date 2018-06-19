@@ -2791,9 +2791,9 @@ public class AppCMSPresenter {
                                                 public void call(AppCMSEventArchieveResult appCMSTeamRoasterResult) {
                                                     if (appCMSTeamRoasterResult != null) {
 
-                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
-                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
-                                                                AppCMSEventArchieveResult.class);
+//                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
+//                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
+//                                                                AppCMSEventArchieveResult.class);
                                                         Module module = null;
                                                         if (appCMSTeamRoasterResult != null) {
                                                             pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);

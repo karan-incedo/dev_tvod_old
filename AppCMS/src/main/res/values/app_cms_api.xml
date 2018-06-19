@@ -124,6 +124,7 @@
         <item>720p</item>
         <item>360p</item>
     </string-array>
+    <string name="app_cms_page_watch_live_button_key">watchLiveButton</string>
 
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
@@ -179,6 +180,8 @@
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_home_team_image_key">homTeamImage</string>
     <string name="app_cms_page_away_team_image_key">awayTeamImage</string>
+    <string name="app_cms_page_schedule_title_key">scheduleTitle</string>
+    <string name="app_cms_page_schedule_game_Date_key">gameDate</string>
 
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
@@ -267,6 +270,7 @@
 
     <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
     <string name="app_cms_roster_page_module_key">AC FighterRoster 01</string>
+    <string name="app_cms_page_parent_bg_key">parentview</string>
 
     <string name="app_cms_page_event_details_module_key">AC EventDetail 01</string>
     <string name="app_cms_page_fight_table_key">fightListTable</string>

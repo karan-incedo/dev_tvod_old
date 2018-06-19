@@ -500,7 +500,13 @@ public class CollectionGridItemView extends BaseView {
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
 
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        bringToFront = false;
+
+                        if(moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY){
+                            bringToFront = true;
+                        }else{
+                            bringToFront = false;
+                        }
+
                         String imageUrl = null;
                         if (data.getGist().getVideoImageUrl() != null) {
                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -1012,7 +1018,33 @@ public class CollectionGridItemView extends BaseView {
                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
 
                         ((TextView) view).setText(thumbInfo);
-                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }else{
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_SCHEDULE_TITLE_KEY) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        ((TextView) view).setText(data.getGist().getTitle() );
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }else{
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_TEAM_TITLE_TXT_KEY) {

@@ -500,6 +500,13 @@ public class ViewCreator {
                     }
                     break;
 
+                case PAGE_TEXT_BLACK_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.defaultFromStyle(Typeface.ITALIC);
+                    }
+                    break;
+
                 default:
                     face = appCMSPresenter.getRegularFontFace();
                     if (face == null) {
@@ -3522,6 +3529,10 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
+                    case PAGE_WATCH_LIVE_BUTTON_KEY:
+                        (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+                        ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
@@ -4576,7 +4587,6 @@ public class ViewCreator {
                         //
                     }
                     try {
-//                        ((Spinner) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
                         spinnerFight.setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
                                 getColor(context, "#d6202d"))));
                     } catch (Exception e) {
@@ -4586,16 +4596,17 @@ public class ViewCreator {
                             appCMSPresenter,
                             component,
                             jsonValueKeyMap);
-                    FightTrayAdapter.setDropDownViewResource(R.drawable.left_arrow);
 
                     ArrayList<Fights> listFight = new ArrayList<Fights>();
 
                     for (int i = 0; i < fights.size(); i++) {
                         listFight.add(fights.get(0));
-                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_FirstName())) {
-                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_FirstName() + "/" + fights.get(i).getFighter2_FirstName());
+                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
+                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_LastName() + "/" + fights.get(i).getFighter2_LastName());
                         }
                     }
+
+                    System.out.println("set fight selection adapter");
 //                    componentViewResult.onInternalEvent
                     OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
                     try {
@@ -4605,7 +4616,10 @@ public class ViewCreator {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    System.out.println("after set fight selection adapter");
+
                     spinnerFight.setOnItemSelectedListener(onItemSelectListener);
+                    spinnerFight.setSelection(0);
 //                    try {
 //                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
 //                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
@@ -5892,7 +5906,11 @@ public class ViewCreator {
                     componentViewResult.componentView.
                             setBackgroundColor(appCMSPresenter.getGeneralTextColor());
                 }
-                componentViewResult.componentView.setAlpha(0.6f);
+                if (moduleType != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY && moduleType != AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
+                    componentViewResult.componentView.setAlpha(0.6f);
+
+                }
                 break;
 
             case PAGE_MULTICOLUMN_TABLE_KEY:
@@ -6326,29 +6344,36 @@ public class ViewCreator {
 
 
         boolean isHeader = false;
-        NestedScrollView nestedSCrollView = new NestedScrollView(context);
-        nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+//        LinearLayout tableParentLayout = new LinearLayout(context);
+//        tableParentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//        tableParentLayout.setOrientation(LinearLayout.VERTICAL);
+        NestedScrollView nestedSCrollView = new NestedScrollView(context);
+        nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+
 
         TableLayout table = new TableLayout(context);
         table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
+        TableLayout tableHeader = new TableLayout(context);
+        tableHeader.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        tableHeader.setGravity(Gravity.CENTER);
         RecyclerView homeRec = (RecyclerView) appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
-//        table.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//
-//                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-//                    homeRec.requestDisallowInterceptTouchEvent(false);
-//                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//                    homeRec.requestDisallowInterceptTouchEvent(true);
-//
-//                }
-//                return false;
-//            }
-//        });
+        table.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    homeRec.requestDisallowInterceptTouchEvent(false);
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    homeRec.requestDisallowInterceptTouchEvent(true);
+
+                }
+                return false;
+            }
+        });
         if (fights != null && fights.getRounds().size() > 0) {
             for (int i = -1; i < fights.getRounds().size(); i++) {
                 TableRow row = new TableRow(context);
@@ -6387,9 +6412,9 @@ public class ViewCreator {
 
                                 if (fights != null) {
                                     if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase(fights.getFighter1_Id())) {
-                                        cellValue = fights.getFighter1_FirstName();
+                                        cellValue = fights.getFighter1_LastName();
                                     } else {
-                                        cellValue = fights.getFighter2_FirstName();
+                                        cellValue = fights.getFighter2_LastName();
                                     }
                                 }
                             } catch (Exception e) {
@@ -6450,23 +6475,46 @@ public class ViewCreator {
                     addTableRowCell(context, cellValue, row, isHeader);
                 }
                 row.setLayoutParams(params);
-                table.addView(row, params);
-                View seperatorView = new View(context);
-                seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
-                seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-                table.addView(seperatorView);
 
+
+                //if row is for header then keep it outside nested scrollview
+//                if (i == -1) {
+//                    tableHeader.addView(row, params);
+//                    View seperatorView = new View(context);
+//                    seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+//                    seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+//                    tableHeader.setStretchAllColumns(true);
+//
+//                    tableHeader.addView(seperatorView);
+//                    tableParentLayout.addView(tableHeader);
+//                } else
+                {
+                    table.addView(row, params);
+                    View seperatorView = new View(context);
+                    seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+                    seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                    table.addView(seperatorView);
+                }
 
             }
+        } else {
+            TextView cell = new TextView(context);
+            cell.setTextSize(15);
+
+            cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
+            cell.setGravity(Gravity.CENTER);
+            cell.setText(context.getResources().getString(R.string.no_fight_records));
+            table.addView(cell);
         }
         table.setStretchAllColumns(true);
-        scrollView.addView(table);
-        scrollView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        nestedSCrollView.addView(table);
+//        tableParentLayout.addView(nestedSCrollView);
+        nestedSCrollView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
 //        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
-        nestedSCrollView.addView(scrollView);
+        scrollView.addView(nestedSCrollView);
 //        nestedSCrollViewData.addView(nestedSCrollView);
-        return nestedSCrollView;
+        return scrollView;
     }
 
     /**
@@ -7520,17 +7568,16 @@ public class ViewCreator {
         if (isHeader) {
             cell.setPadding(6, 4, 6, 4);
             cell.setTypeface(cell.getTypeface(), Typeface.ITALIC);
-            cell.setTextSize(20);
+            cell.setTextSize(15);
             cell.setText(colValue + "  ");
 
-
         } else {
-            cell.setPadding(6, 15, 6, 15);
-            cell.setTextSize(18);
+            cell.setPadding(6, 20, 6, 20);
+            cell.setTextSize(15);
             cell.setText(colValue + "  ");
 
         }
-        cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
         cell.setGravity(Gravity.CENTER_VERTICAL);
         cell.setLayoutParams(textViewParams);
         row.addView(cell);
@@ -7560,8 +7607,8 @@ public class ViewCreator {
                         timeFormat.setTextSize(14);
                     }
                 } else {
-                    if(countDownTimer!=null)
-                    countDownTimer.onFinish();
+                    if (countDownTimer != null)
+                        countDownTimer.onFinish();
                 }
             }
 
