@@ -10,14 +10,18 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -210,7 +214,7 @@ public class CollectionGridItemView extends BaseView {
             if (createRoundedCorners) {
                 ((CardView) childrenContainer).setRadius(14);
                 setBackgroundResource(android.R.color.transparent);
-                if (!component.getAction().equalsIgnoreCase("purchasePlan")) {
+                if (component.getAction() != null && !component.getAction().equalsIgnoreCase("purchasePlan")) {
                     childrenContainer.setBackgroundResource(android.R.color.transparent);
                 }
             } else {
@@ -1208,6 +1212,17 @@ public class CollectionGridItemView extends BaseView {
                         e.printStackTrace();
                     }
                     ((TextView) view).setVisibility(View.VISIBLE);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
+                    if (data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
+                            data.getPlanDetails().get(0).getFeatureDetails() != null &&
+                            data.getPlanDetails().get(0).getFeatureDetails().size() != 0 &&
+                            data.getPlanDetails().get(0).getFeatureDetails().get(0) != null &&
+                            data.getPlanDetails().get(0).getFeatureDetails().get(0).getTextToDisplay() != null) {
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setText(data.getPlanDetails().get(0).getFeatureDetails().get(0).getTextToDisplay());
+                    }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                     ((TextView) view).setText(data.getName());
                     if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||
@@ -1292,42 +1307,58 @@ public class CollectionGridItemView extends BaseView {
                                     recurringPaymentAmount);
                         }
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                        StringBuilder planAmt = new StringBuilder();
                         if (currency != null) {
-                            stringBuilder.append(currency.getSymbol());
+                            planAmt.append(currency.getSymbol());
                         }
-
-                        stringBuilder.append(formattedRecurringPaymentAmount);
-                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        planAmt.append(formattedRecurringPaymentAmount);
+                        StringBuilder planDuration = new StringBuilder();
+                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
+                                appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
                             if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.forward_slash));
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.plan_type_month));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.forward_slash));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.plan_type_month));
                             }
                             if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.forward_slash));
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.plan_type_year));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.forward_slash));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.plan_type_year));
                             }
                             if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.forward_slash));
-                                stringBuilder.append(" ");
-                                stringBuilder.append(context.getString(R.string.plan_type_day));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.forward_slash));
+                                planDuration.append(" ");
+                                planDuration.append(context.getString(R.string.plan_type_day));
                             }
                         }
-                        ((TextView) view).setText(stringBuilder.toString());
+                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                            StringBuilder plan = new StringBuilder();
+                            String pay = "PAY";
+                            plan.append(pay);
+                            plan.append(" ");
+                            plan.append(planAmt.toString());
+                            plan.append(planDuration.toString());
+                            Spannable   text = new SpannableString(plan.toString());
+                            text.setSpan(new AbsoluteSizeSpan(35), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new AbsoluteSizeSpan(50), pay.length(), pay.length() + planAmt.toString().length()+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length()+1,
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new AbsoluteSizeSpan(35), pay.length() + planAmt.toString().length()+1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            ((TextView) view).setText(text,  TextView.BufferType.SPANNABLE);
+                        } else {
+                            StringBuilder plan = new StringBuilder();
+                            plan.append(planAmt.toString());
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)
+                                plan.append(planDuration.toString());
+
+                            ((TextView) view).setText(plan.toString());
+                        }
                         ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                     }
-
                     ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-
-                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
-                    ((TextView) view).setText(childComponent.getText());
-                    ((TextView) view).setTextColor(Color.parseColor(
-                            childComponent.getTextColor()));
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
