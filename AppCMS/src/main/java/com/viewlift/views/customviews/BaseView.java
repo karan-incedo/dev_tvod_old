@@ -1408,6 +1408,11 @@ public abstract class BaseView extends FrameLayout {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
+
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                padding = 70;
+                view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            }
         } else if (componentType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));

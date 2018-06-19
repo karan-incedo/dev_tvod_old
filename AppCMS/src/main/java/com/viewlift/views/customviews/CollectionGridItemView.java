@@ -774,6 +774,7 @@ public class CollectionGridItemView extends BaseView {
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
                     ((TextView) view).setText(childComponent.getText());
+                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {

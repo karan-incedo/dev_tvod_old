@@ -3293,6 +3293,10 @@ public class ViewCreator {
             case PAGE_UPCOMING_TIMER_KEY:
                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
                         moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                        moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
+                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0") &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
@@ -3325,7 +3329,12 @@ public class ViewCreator {
                     ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
                 }
                 long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                startTimer(context, appCMSPresenter, eventDate);
+                long currentTimeMillis = System.currentTimeMillis();
+                long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+
+                if (remainingTime > 0) {
+                    startTimer(context, appCMSPresenter, eventDate);
+                }
                 break;
 
             case PAGE_WEB_VIEW_KEY:
@@ -3530,8 +3539,17 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_WATCH_LIVE_BUTTON_KEY:
-                        (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
-                        ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                                moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null) {
+                            ((Button) componentViewResult.componentView).setId(R.id.watch_live_button);
+                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+                                (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+                                ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                            } else {
+                                (componentViewResult.componentView).setVisibility(View.GONE);
+                            }
+                        }
                         break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
@@ -5309,8 +5327,17 @@ public class ViewCreator {
                                 break;
 
                             case PAGE_TIMER_TITLE_KEY:
-                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
+                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0")) {
+
+                                    ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                    ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
+                                    ((TextView) componentViewResult.componentView).setId(R.id.timer_until_face_off);
+                                }
                                 break;
 
 
@@ -7584,6 +7611,7 @@ public class ViewCreator {
     }
 
     private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventTime) {
+
         countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
                 long currentTimeMillis = System.currentTimeMillis();
@@ -7613,6 +7641,20 @@ public class ViewCreator {
             }
 
             public void onFinish() {
+                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
+                        appCMSPresenter.getCurrentActivity().findViewById(R.id.watch_live_button) != null) {
+                    Button watchLive = appCMSPresenter.getCurrentActivity().findViewById(R.id.watch_live_button);
+                    watchLive.setVisibility(View.VISIBLE);
+                }
+
+                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
+                        appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                    TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                    LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                    timerTile.setVisibility(View.GONE);
+                    linearLayout.setVisibility(View.GONE);
+                }
+
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                     countDownTimer = null;
