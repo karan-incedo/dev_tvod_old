@@ -64,12 +64,8 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     AppCMSAndroidModules appCMSAndroidModules;
     private boolean useParentSize;
     private AppCMSUIKeyType viewTypeKey;
-    private int unselectedColor;
     private int selectedColor;
     private boolean isClickable;
-    private String purchasePlanAction;
-    private MotionEvent lastTouchDownEvent;
-    private Gist preGist;
 
     public AppCMSPlansAdapter(Context context,
                               ViewCreator viewCreator,
@@ -97,27 +93,18 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         } else {
             this.adapterData = new ArrayList<>();
         }
-
         this.componentViewType = viewType;
         this.viewTypeKey = jsonValueKeyMap.get(componentViewType);
         if (this.viewTypeKey == null) {
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
-
-
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
-        this.purchasePlanAction = getPurchasePlanAction(context);
-
-        this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getBackgroundColor());
         this.isClickable = true;
-
         this.setHasStableIds(false);
-
-
         this.appCMSAndroidModules = appCMSAndroidModules;
 
     }
@@ -182,7 +169,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
             bindView(holder.componentView, adapterData.get(position), position);
         }
-
+        holder.componentView.setSelectable(true);
     }
 
     @Override
@@ -201,9 +188,6 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
-
-        //sortPlan(); as per MSEAN-1434
-
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
@@ -221,7 +205,8 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
                                       Component childComponent,
                                       ContentDatum data, int clickPosition) {
                         if (isClickable) {
-                            subcriptionPlanClick( data);
+                            subcriptionPlanClick(collectionGridItemView, data);
+
                         }
                     }
 
@@ -246,39 +231,42 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         }
     }
 
-    void subcriptionPlanClick(ContentDatum data) {
-        double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
-        if (price == 0) {
-            price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
-        }
-
-        double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
-
-        boolean upgradesAvailable = false;
-        for (ContentDatum plan : adapterData) {
-            if (plan != null &&
-                    plan.getPlanDetails() != null &&
-                    !plan.getPlanDetails().isEmpty() &&
-                    ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
-                            price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
-                            (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
-                                    price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
-                upgradesAvailable = true;
+    void subcriptionPlanClick(CollectionGridItemView collectionGridItemView, ContentDatum data) {
+        if (collectionGridItemView.isSelectable()) {
+            double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
+            if (price == 0) {
+                price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
             }
+
+            double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
+
+            boolean upgradesAvailable = false;
+            for (ContentDatum plan : adapterData) {
+                if (plan != null &&
+                        plan.getPlanDetails() != null &&
+                        !plan.getPlanDetails().isEmpty() &&
+                        ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
+                                price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
+                                (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
+                                        price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
+                    upgradesAvailable = true;
+                }
+            }
+
+            appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                    data.getId(),
+                    data.getPlanDetails().get(0).getCountryCode(),
+                    data.getName(),
+                    price,
+                    discountedPrice,
+                    data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
+                    data.getPlanDetails().get(0).getCountryCode(),
+                    data.getRenewable(),
+                    data.getRenewalCycleType(),
+                    upgradesAvailable);
+        } else {
+            collectionGridItemView.performClick();
         }
-
-        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                data.getId(),
-                data.getPlanDetails().get(0).getCountryCode(),
-                data.getName(),
-                price,
-                discountedPrice,
-                data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
-                data.getPlanDetails().get(0).getCountryCode(),
-                data.getRenewable(),
-                data.getRenewalCycleType(),
-                upgradesAvailable);
-
     }
 
     public boolean isClickable() {
@@ -290,21 +278,6 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         isClickable = clickable;
     }
 
-    private String getPurchasePlanAction(Context context) {
-        return context.getString(R.string.app_cms_action_purchase_plan);
-    }
-
-    @Override
-    public void onViewRecycled(ViewHolder holder) {
-        super.onViewRecycled(holder);
-        int childCount = holder.componentView.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View child = holder.componentView.getChild(i);
-            if (child instanceof ImageView) {
-                Glide.with(child.getContext()).clear(child);
-            }
-        }
-    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CollectionGridItemView componentView;
