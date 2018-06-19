@@ -1240,7 +1240,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         isTimerRun = true;
         if (appCMSPresenter != null &&
                 appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
-            resumePlayer();
+            playVideos(0,onUpdatedContentDatum);
         }
 
 

@@ -106,6 +106,7 @@ import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSFightSelectionAdapter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSRosterAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -496,6 +497,13 @@ public class ViewCreator {
                         face = Typeface.createFromAsset(context.getAssets(),
                                 context.getString(R.string.opensans_extrabold_ttf));
                         appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+
+                case PAGE_TEXT_BLACK_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.defaultFromStyle(Typeface.ITALIC);
                     }
                     break;
 
@@ -1904,6 +1912,11 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
+                } else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "roster.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
@@ -2104,7 +2117,7 @@ public class ViewCreator {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
 
-        }  /*else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+        } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
 
             moduleView = new MultiTableWithSameItemsModule(context,
                     module,
@@ -2118,7 +2131,7 @@ public class ViewCreator {
             if (view != null) {
                 view.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
             }
-        }*/ else {
+        } else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
                 ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2441,6 +2454,7 @@ public class ViewCreator {
 
     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = null;
     AppCMSFightSelectionAdapter appcmsFightSelectionAdapter = null;
+    AppCMSRosterAdapter appcmsRosterAdapter = null;
 
     /**
      * This method is used to create an individual component view, which may by a recycler view,
@@ -2600,6 +2614,47 @@ public class ViewCreator {
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appcmsFightSelectionAdapter)
+                                .listview((RecyclerView) componentViewResult.componentView)
+                                .id(moduleId + component.getKey())
+                                .build());
+                    }
+                } else if (moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+                    componentViewResult.componentView = new RecyclerView(context);
+
+                    /*
+                     * get cache of recycler view if already created . need to clear cached  when opening first time this screen using same adapter and recycler view
+                     * Currenlty cleared cache on following method navigateTODownloadPAge() , navigateToWatchlistPage() , navigateToHistoryPage()
+                     */
+                    //if (appCMSPresenter.getDownlistScreenCache() == null) {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
+
+                    appcmsRosterAdapter = new AppCMSRosterAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            component.getLayout(),
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType,
+                            appCMSAndroidModules);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appcmsRosterAdapter);
+
+                  /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
+                    } else {
+                        (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
+                    }*/
+                    componentViewResult.onInternalEvent = appcmsRosterAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    if (pageView != null) {
+                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                .adapter(appcmsRosterAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleId + component.getKey())
                                 .build());
@@ -3242,7 +3297,7 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
 
-                componentViewResult.componentView = new LinearLayout(context);
+                    componentViewResult.componentView = new LinearLayout(context);
                 ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
                 ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
@@ -3474,6 +3529,10 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
+                    case PAGE_WATCH_LIVE_BUTTON_KEY:
+                        (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+                        ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                        break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
                         ((Button) componentViewResult.componentView).setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
@@ -4519,16 +4578,15 @@ public class ViewCreator {
 
                     Spinner spinnerFight = new Spinner(context, Spinner.MODE_DROPDOWN);
                     spinnerFight.setLayoutParams(layoutParamsDetail);
-//                    try {
-//                        componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
-//                                getColor(context,
-//                                        "#ffffff")),
-//                                PorterDuff.Mode.SRC_ATOP);
-//                    } catch (Exception e) {
-//                        //
-//                    }
                     try {
-//                        ((Spinner) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
+                        spinnerFight.getBackground().setColorFilter(Color.parseColor(
+                                getColor(context,
+                                        "#ffffff")),
+                                PorterDuff.Mode.SRC_ATOP);
+                    } catch (Exception e) {
+                        //
+                    }
+                    try {
                         spinnerFight.setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
                                 getColor(context, "#d6202d"))));
                     } catch (Exception e) {
@@ -4538,16 +4596,17 @@ public class ViewCreator {
                             appCMSPresenter,
                             component,
                             jsonValueKeyMap);
-                    FightTrayAdapter.setDropDownViewResource(R.drawable.left_arrow);
 
                     ArrayList<Fights> listFight = new ArrayList<Fights>();
 
                     for (int i = 0; i < fights.size(); i++) {
                         listFight.add(fights.get(0));
-                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_FirstName())) {
-                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_FirstName() + "/" + fights.get(i).getFighter2_FirstName());
+                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
+                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_LastName() + "/" + fights.get(i).getFighter2_LastName());
                         }
                     }
+
+                    System.out.println("set fight selection adapter");
 //                    componentViewResult.onInternalEvent
                     OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
                     try {
@@ -4557,7 +4616,10 @@ public class ViewCreator {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    System.out.println("after set fight selection adapter");
+
                     spinnerFight.setOnItemSelectedListener(onItemSelectListener);
+                    spinnerFight.setSelection(0);
 //                    try {
 //                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
 //                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
@@ -4912,6 +4974,22 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                         ((TextView) componentViewResult.componentView).setText(component.getText());
                     }
+                    if (componentKey == AppCMSUIKeyType.PAGE_ROSTER_TITLE_TXT_KEY) {
+                        int textFontColor = 0;
+                        if (!TextUtils.isEmpty(component.getTextColor())) {
+                            textFontColor = Color.parseColor(getColor(context, "#000000"));
+                        }
+                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                        ((TextView) componentViewResult.componentView).setText("Title");
+                    }
+                    if ((moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY)) {
+                        int textFontColor = 0;
+                        if (!TextUtils.isEmpty(component.getTextColor())) {
+                            textFontColor = Color.parseColor(getColor(context, "#000000"));
+                        }
+                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                        ((TextView) componentViewResult.componentView).setText("tray Title");
+                    }
                     if (!gridElement) {
                         switch (componentKey) {
                             case PAGE_API_TITLE:
@@ -4998,6 +5076,21 @@ public class ViewCreator {
                                         seasonTitleSb.append(context.getString(R.string.blank_separator));
                                         seasonTitleSb.append(1);
                                         ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
+                                    }
+                                } else if (moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+
+                                    if (moduleAPI != null &&
+                                            moduleAPI.getContentData() != null &&
+                                            moduleAPI.getContentData().get(0) != null &&
+                                            moduleAPI.getContentData().get(0).getTeam() != null &&
+                                            moduleAPI.getContentData().get(0).getTeam().getName() != null) {
+                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getTeam().getName());
+                                        int textFontColor = 0;
+
+                                        if (!TextUtils.isEmpty(component.getTextColor())) {
+                                            textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                                        }
+                                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                                     }
                                 }
                                 break;
@@ -5219,6 +5312,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
                                 break;
+
 
                             case PAGE_VIDEO_AGE_LABEL_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -5577,7 +5671,8 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                 (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
-                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()))) {
+                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) ||
+                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl()))) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -5590,7 +5685,7 @@ public class ViewCreator {
                             ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
+                                        moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl(),
                                         viewWidth,
                                         viewHeight);
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
@@ -5811,14 +5906,23 @@ public class ViewCreator {
                     componentViewResult.componentView.
                             setBackgroundColor(appCMSPresenter.getGeneralTextColor());
                 }
-                componentViewResult.componentView.setAlpha(0.6f);
+                if (moduleType != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY && moduleType != AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+
+                    componentViewResult.componentView.setAlpha(0.6f);
+
+                }
                 break;
 
             case PAGE_MULTICOLUMN_TABLE_KEY:
                 componentViewResult.componentView = new LinearLayout(context);
 //                View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
 //                ((LinearLayout) componentViewResult.componentView).addView(TableView);
+//                ((LinearLayout) componentViewResult.componentView ).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//                Fights fights = moduleAPI.getContentData().get(appCMSPresenter.getSelectedFightId()).getFights();
                 ((LinearLayout) componentViewResult.componentView).setId(R.id.fight_stats_id);
+
+//                createFightStateRecorsView(context, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
+
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -6206,6 +6310,7 @@ public class ViewCreator {
                     case PAGE_API_TEAMDETAIL_MODULE_KEY:
                     case PAGE_GAME_DETAIL_MODULE_KEY:
                     case PAGE_PERSON_DETAIL_MODULE_KEY:
+                    case PAGE_AC_ROSTER_MODULE_KEY:
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
@@ -6235,21 +6340,41 @@ public class ViewCreator {
     }
 
 
-    public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
+    public View setFightSummaryModule(Context context, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights, AppCMSPresenter appCMSPresenter) {
 
 
         boolean isHeader = false;
-        NestedScrollView nestedSCrollView = new NestedScrollView(context);
+
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
-//        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT));
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+//        LinearLayout tableParentLayout = new LinearLayout(context);
+//        tableParentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//        tableParentLayout.setOrientation(LinearLayout.VERTICAL);
+        NestedScrollView nestedSCrollView = new NestedScrollView(context);
+        nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
+
 
         TableLayout table = new TableLayout(context);
         table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        TableLayout tableHeader = new TableLayout(context);
+        tableHeader.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        tableHeader.setGravity(Gravity.CENTER);
+        RecyclerView homeRec = (RecyclerView) appCMSPresenter.getCurrentActivity().findViewById(R.id.home_nested_scroll_view);
+        table.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    homeRec.requestDisallowInterceptTouchEvent(false);
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    homeRec.requestDisallowInterceptTouchEvent(true);
 
-        if (fights != null) {
+                }
+                return false;
+            }
+        });
+        if (fights != null && fights.getRounds().size() > 0) {
             for (int i = -1; i < fights.getRounds().size(); i++) {
                 TableRow row = new TableRow(context);
                 row.setWeightSum(2.0f);
@@ -6269,7 +6394,7 @@ public class ViewCreator {
                         if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.ROUND.toString())) {
 
                             if (fights != null) {
-                                if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                                if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase(fights.getFighter1_Id())) {
                                     cellValue = rounds.getRound();
                                 } else {
                                     cellValue = "";
@@ -6277,7 +6402,7 @@ public class ViewCreator {
                             }
 
                         } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.TIME.toString())) {
-                            if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
+                            if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase(fights.getFighter1_Id())) {
                                 cellValue = rounds.getRoundTime();
                             } else {
                                 cellValue = "";
@@ -6286,10 +6411,10 @@ public class ViewCreator {
                             try {
 
                                 if (fights != null) {
-                                    if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase("1")) {
-                                        cellValue = fights.getFighter1_FirstName();
+                                    if (fights.getRounds().get(i).getFighterId().equalsIgnoreCase(fights.getFighter1_Id())) {
+                                        cellValue = fights.getFighter1_LastName();
                                     } else {
-                                        cellValue = fights.getFighter2_FirstName();
+                                        cellValue = fights.getFighter2_LastName();
                                     }
                                 }
                             } catch (Exception e) {
@@ -6342,30 +6467,54 @@ public class ViewCreator {
                                 cellValue = "0";
                                 Log.e(i + "-" + colTitle.toString(), e.toString());
                             }
-                        } else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
+                        } /*else if (colTitle.toString().equalsIgnoreCase(EventDetailsColumnsName.PLS.toString())) {
 
                             cellValue = String.valueOf("Unknown");
-                        }
+                        }*/
                     }
                     addTableRowCell(context, cellValue, row, isHeader);
                 }
                 row.setLayoutParams(params);
-                table.addView(row, params);
-                View seperatorView = new View(context);
-                seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
-                seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
-                table.addView(seperatorView);
 
+
+                //if row is for header then keep it outside nested scrollview
+//                if (i == -1) {
+//                    tableHeader.addView(row, params);
+//                    View seperatorView = new View(context);
+//                    seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+//                    seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+//                    tableHeader.setStretchAllColumns(true);
+//
+//                    tableHeader.addView(seperatorView);
+//                    tableParentLayout.addView(tableHeader);
+//                } else
+                {
+                    table.addView(row, params);
+                    View seperatorView = new View(context);
+                    seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+                    seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                    table.addView(seperatorView);
+                }
 
             }
+        } else {
+            TextView cell = new TextView(context);
+            cell.setTextSize(15);
+
+            cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
+            cell.setGravity(Gravity.CENTER);
+            cell.setText(context.getResources().getString(R.string.no_fight_records));
+            table.addView(cell);
         }
         table.setStretchAllColumns(true);
-        scrollView.addView(table);
-        scrollView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        nestedSCrollView.addView(table);
+//        tableParentLayout.addView(nestedSCrollView);
+        nestedSCrollView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
 //        scrollView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
-        nestedSCrollView.addView(scrollView);
-        return nestedSCrollView;
+        scrollView.addView(nestedSCrollView);
+//        nestedSCrollViewData.addView(nestedSCrollView);
+        return scrollView;
     }
 
     /**
@@ -6672,13 +6821,17 @@ public class ViewCreator {
 
     public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
-        LinearLayout fightStatsView = appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
+        LinearLayout fightStatsView = (LinearLayout) appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
 
         if (fights != null) {
-            ((LinearLayout) fightStatsView).removeAllViews();
+            (fightStatsView).removeAllViews();
 
-            View TableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights);
-            ((LinearLayout) fightStatsView).addView(TableView);
+            View tableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights, appCMSPresenter);
+
+            if (tableView.getParent() != null)
+                ((ViewGroup) tableView.getParent()).removeView(tableView);
+
+            (fightStatsView).addView(tableView);
         }
     }
 
@@ -7415,17 +7568,16 @@ public class ViewCreator {
         if (isHeader) {
             cell.setPadding(6, 4, 6, 4);
             cell.setTypeface(cell.getTypeface(), Typeface.ITALIC);
-            cell.setTextSize(20);
+            cell.setTextSize(15);
             cell.setText(colValue + "  ");
 
-
         } else {
-            cell.setPadding(6, 15, 6, 15);
-            cell.setTextSize(18);
+            cell.setPadding(6, 20, 6, 20);
+            cell.setTextSize(15);
             cell.setText(colValue + "  ");
 
         }
-        cell.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
         cell.setGravity(Gravity.CENTER_VERTICAL);
         cell.setLayoutParams(textViewParams);
         row.addView(cell);
@@ -7455,7 +7607,8 @@ public class ViewCreator {
                         timeFormat.setTextSize(14);
                     }
                 } else {
-                    countDownTimer.onFinish();
+                    if (countDownTimer != null)
+                        countDownTimer.onFinish();
                 }
             }
 
@@ -7477,8 +7630,8 @@ public class ViewCreator {
         LS("LS"),
         LS1("LS%"),
         GS("GS"),
-        GS1("GS%"),
-        PLS("PLS");
+        GS1("GS%");
+//        PLS("PLS");
 
 //        PLS("PLS");
 

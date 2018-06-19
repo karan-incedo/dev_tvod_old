@@ -6,6 +6,7 @@
 
     <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
     <item name="fight_stats_id" type="id">fight_stats_id</item>
+    <item name="fight_scroll_id" type="id">fight_scroll_id</item>
 
     <item name="subscribe_edit_text_id" type="id">subscribe_edit_text_id</item>
     <item name="download_quality_selection_list" type="id">download_quality_selection_list</item>

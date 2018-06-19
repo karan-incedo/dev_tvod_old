@@ -119,6 +119,19 @@ public class ContentDatum implements Serializable {
     @SerializedName("title")
     @Expose
     String title;
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
+
+    @SerializedName("dataId")
+    @Expose
+    String dataId;
+
     @SerializedName("contentType")
     @Expose
     String contentType;
@@ -136,7 +149,27 @@ public class ContentDatum implements Serializable {
     @Expose
     boolean isDRMEnabled = false;
 
+    Players players;
 
+    public void setPlayersData(Players players) {
+        this.players = players;
+    }
+    public Players getPlayersData() {
+        return players;
+    }
+
+
+
+    List<Players> playersList;
+
+
+    public List<Players> getPlayers() {
+        return playersList;
+    }
+
+    public void setPlayers(List<Players> players) {
+        this.playersList = players;
+    }
 
     public Team getTeam() {
         return team;
@@ -458,7 +491,6 @@ public class ContentDatum implements Serializable {
     public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
-
     AudioAssets audioAssets = null;
 
     public AudioAssets getAudioAssets() {

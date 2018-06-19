@@ -100,9 +100,6 @@ public class AppCMSPageAPICall {
         }
 
 
-        if (pageId.equalsIgnoreCase("/player/donny-moss")) {
-            tempApiKey = "XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F";
-        } else
             tempApiKey = apiKey;
         if (appCMSPageAPI == null) {
             try {

@@ -166,6 +166,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.navigateToSchedulePage(navigationPrimary.getPageId(),
                                     navigationPrimary.getTitle(), navigationPrimary.getUrl(), false);
                         }
+                        else if (titleKey == AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY) {
+                            appCMSPresenter.navigateToRosterPage(navigationPrimary.getPageId(),
+                                    navigationPrimary.getTitle(), false);
+                        }
                         else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
@@ -238,6 +242,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.navigateToSchedulePage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+                                case PAGE_ROSTER_SCREEN_TITLE_KEY:
+//                                    appCMSPresenter.showLoadingDialog(true);
+                                    appCMSPresenter.navigateToRosterPage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), false);
+                                    break;
+
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                 case ANDROID_WATCHLIST_SCREEN_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {

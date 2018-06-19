@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @UseStag
-public class Module implements Serializable,Cloneable {
+public class Module implements Serializable, Cloneable {
 
     @SerializedName("id")
     @Expose
@@ -131,10 +131,10 @@ public class Module implements Serializable,Cloneable {
     }
 
 
-
     public void setContentData(List<ContentDatum> contentData) {
         this.contentData = contentData;
     }
+
 
     public String getModuleType() {
         return moduleType;
@@ -215,6 +215,7 @@ public class Module implements Serializable,Cloneable {
     public void setRawText(String rawText) {
         this.rawText = rawText;
     }
+
     public Object clone() {
         //shallow copy
         try {

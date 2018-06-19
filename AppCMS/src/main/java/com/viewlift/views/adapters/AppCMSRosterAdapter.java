@@ -1,74 +1,38 @@
 package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.viewlift.Audio.playback.AudioPlaylistHelper;
-import com.viewlift.Audio.playback.PlaybackManager;
-import com.viewlift.R;
-import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Fights;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.StreamingInfo;
-import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.audio.AudioAssets;
-import com.viewlift.models.data.appcms.audio.Mp3;
-import com.viewlift.models.data.appcms.downloads.DownloadStatus;
-import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSPlayAudioActivity;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
-import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import rx.functions.Action1;
-
-import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
-import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
 
 /*
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFightSelectionAdapter.ViewHolder>
+public class AppCMSRosterAdapter extends RecyclerView.Adapter<AppCMSRosterAdapter.ViewHolder>
         implements AppCMSBaseAdapter, OnInternalEvent {
     private static final String TAG = "AppCMSFightSelectionAdapter";
 
@@ -98,18 +62,18 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
     private String moduleId;
     RecyclerView mRecyclerView;
 
-    public AppCMSFightSelectionAdapter(Context context,
-                                       ViewCreator viewCreator,
-                                       AppCMSPresenter appCMSPresenter,
-                                       Layout parentLayout,
-                                       boolean useParentSize,
-                                       Component component,
-                                       Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                       Module moduleAPI,
-                                       int defaultWidth,
-                                       int defaultHeight,
-                                       String viewType,
-                                       AppCMSAndroidModules appCMSAndroidModules) {
+    public AppCMSRosterAdapter(Context context,
+                               ViewCreator viewCreator,
+                               AppCMSPresenter appCMSPresenter,
+                               Layout parentLayout,
+                               boolean useParentSize,
+                               Component component,
+                               Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                               Module moduleAPI,
+                               int defaultWidth,
+                               int defaultHeight,
+                               String viewType,
+                               AppCMSAndroidModules appCMSAndroidModules) {
         this.mContext = context;
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
@@ -179,18 +143,9 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
     public void onBindViewHolder(ViewHolder holder, int position) {
         bindView(holder.componentView, adapterData.get(position), position);
 
-//        holder.componentView.
-        if (position == appCMSPresenter.getSelectedFightId()) {
-//            holder.componentView.setBackgroundColor(Color.parseColor("#d6202d"));
-            holder.componentView.setBackgroundResource(R.drawable.fight_selector);
-            Fights fights = moduleAPI.getContentData().get(position).getFights();
-            viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
+        holder.componentView.setBackgroundColor(Color.parseColor("#F1F1F1"));
 
-        } else {
-            holder.componentView.setBackgroundResource(0);
 
-//            holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
-        }
     }
 
 
@@ -233,8 +188,8 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
                                   Component childComponent,
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
+                        appCMSPresenter.navigateToPersonDetailsPage(data.getPlayersData().getData().getPermalink(), "", false, null, false);
 
-                        appCMSPresenter.setSelectedFightId(clickPosition);
 //                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 
 //                        Fights fights = moduleAPI.getContentData().get(clickPosition).getFights();

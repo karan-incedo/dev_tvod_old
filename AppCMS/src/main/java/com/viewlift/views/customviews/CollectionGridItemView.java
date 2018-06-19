@@ -302,13 +302,14 @@ public class CollectionGridItemView extends BaseView {
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-            if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY)
-            {
+            if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
                     int placeholder = R.drawable.vid_image_placeholder_land;
@@ -453,7 +454,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
-                            childViewWidth > 0 &&
+                            childViewWidth > 0 && data!=null &&data.getGist()!=null && data.getGist().getPosterImageUrl()!=null&&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -499,7 +500,13 @@ public class CollectionGridItemView extends BaseView {
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
 
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        bringToFront = false;
+
+                        if(moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY){
+                            bringToFront = true;
+                        }else{
+                            bringToFront = false;
+                        }
+
                         String imageUrl = null;
                         if (data.getGist().getVideoImageUrl() != null) {
                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -557,7 +564,7 @@ public class CollectionGridItemView extends BaseView {
                                     data.getGist().getVideoImageUrl(),
                                     deviceWidth,
                                     childViewHeight);
-                        } else if (data.getGist() != null && data.getGist().getImageGist() != null && data.getGist().getImageGist().get_16x9() != null){
+                        } else if (data.getGist() != null && data.getGist().getImageGist() != null && data.getGist().getImageGist().get_16x9() != null) {
                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                     data.getGist().getImageGist().get_16x9(),
                                     deviceWidth,
@@ -667,7 +674,44 @@ public class CollectionGridItemView extends BaseView {
                                 .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+                        String imageUrl = "";
+                        if (data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages().get_3x4() != null) {
+                                imageUrl = data.getPlayersData().getData().getImages().get_3x4().getUrl();
+                            }
+                        }
+                        ImageView imageView = (ImageView) view;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        RequestOptions requestOptions = new RequestOptions()
+                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .apply(requestOptions)
+                                .into(imageView);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+                        String imageUrl = "";
+                        if (data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages().get_1x1() != null) {
+                                imageUrl = data.getPlayersData().getData().getImages().get_1x1().getUrl();
+                            }
+                        }
+                        ImageView imageView = (ImageView) view;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        RequestOptions requestOptions = new RequestOptions()
+                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .apply(requestOptions)
+                                .into(imageView);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     }
+
                     if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                         placeholder = R.drawable.vid_image_placeholder_square;
                         int size = (int) getViewWidth(context, childComponent.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT);
@@ -722,15 +766,15 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
-                    inVisibleIfSeries(data,view);  //View is invisible if ContentType is Seriese
+                    inVisibleIfSeries(data, view);  //View is invisible if ContentType is Seriese
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
-                }else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
                     ((TextView) view).setText(childComponent.getText());
-                     viewsToUpdateOnClickEvent.add(view);
+                    viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
@@ -814,73 +858,33 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
 //                if (TextUtils.isEmpty(((TextView) view).getText())) {
-                    if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
-                            !TextUtils.isEmpty(data.getGist().getTitle())) {
-                        ((TextView) view).setText(data.getGist().getTitle());
+                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
+                        !TextUtils.isEmpty(data.getGist().getTitle())) {
+                    ((TextView) view).setText(data.getGist().getTitle());
 
-                        //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        if (component != null &&
-                                component.getView() != null &&
-                                component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                            if (childComponent.getNumberOfLines() != 0) {
-                                ((TextView) view).setSingleLine(false);
-                                ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            }
-                            if (BaseView.isTablet(view.getContext())) {
-                                if (isLandscape(getContext()) == true) {
-                                    ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                } else {
-                                    setBorder(((TextView) view));
-                                    ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
-                                }
-                            } else {
+                    //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    if (component != null &&
+                            component.getView() != null &&
+                            component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        if (BaseView.isTablet(view.getContext())) {
+                            if (isLandscape(getContext()) == true) {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                                ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                            }
-                        } else {
-                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
-                                if (appCMSPresenter.getAppCMSMain() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
-                                        ) {
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
-                                }else{
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                }
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                             } else {
-                                ((TextView) view).setTextColor(Color.parseColor(
-                                        childComponent.getTextColor()));
+                                setBorder(((TextView) view));
+                                ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                             }
-                        }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
-                            if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-                                String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
-                                ((TextView) view).setMaxLines(1);
-                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                                ((TextView) view).setText(artist);
-                                view.setPadding(10,
-                                        0,
-                                        10,
-                                        0);
-                            }
-
-                        } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
-                            ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
                         } else {
-                            ViewCreator.setViewWithSubtitle(getContext(), data, view);
+                            ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                         }
-                        if (TextUtils.isEmpty(((TextView) view).getText().toString())) {
-                            view.setVisibility(INVISIBLE);
-                        } else {
-                            view.setVisibility(VISIBLE);
-                        }
-                        if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context)) {
+                    } else {
+                        if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
                             if (appCMSPresenter.getAppCMSMain() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
@@ -889,32 +893,72 @@ public class CollectionGridItemView extends BaseView {
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
                                     ) {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
-                            }else{
+                            } else {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                             }
                         } else {
-                            ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                            ((TextView) view).setTextColor(Color.parseColor(
+                                    childComponent.getTextColor()));
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
+                    if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
+                        if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
+                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+                            ((TextView) view).setMaxLines(1);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(artist);
+                            view.setPadding(10,
+                                    0,
+                                    10,
+                                    0);
                         }
 
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
-                        if (childComponent.getNumberOfLines() != 0) {
-                            ((TextView) view).setSingleLine(false);
-                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        }
-                        if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
-                            ((TextView) view).setGravity(Gravity.RIGHT);
-                            StringBuffer publishDate = new StringBuffer();
-                            if (data.getContentDetails().getAuthor().getPublishDate() != null) {
-                                publishDate.append("|");
-                                publishDate.append(data.getContentDetails().getAuthor().getPublishDate().toString());
-                            }
-                            ((TextView) view).setText(data.getContentDetails().getAuthor().getName() + publishDate.toString());
+                    } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
+                        ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
+                    } else {
+                        ViewCreator.setViewWithSubtitle(getContext(), data, view);
+                    }
+                    if (TextUtils.isEmpty(((TextView) view).getText().toString())) {
+                        view.setVisibility(INVISIBLE);
+                    } else {
+                        view.setVisibility(VISIBLE);
+                    }
+                    if (BaseView.isTablet(view.getContext()) && BaseView.isLandscape(context)) {
+                        if (appCMSPresenter.getAppCMSMain() != null &&
+                                appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                ) {
+                            ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                         } else {
-                            ((TextView) view).setText(data.getGist().getTitle());
+                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                         }
-                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                    } else {
+                        ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                    }
+
+                } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
+                    if (childComponent.getNumberOfLines() != 0) {
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                    if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_FEED_BOTTOM_TEXT_KEY) {
+                        ((TextView) view).setGravity(Gravity.RIGHT);
+                        StringBuffer publishDate = new StringBuffer();
+                        if (data.getContentDetails().getAuthor().getPublishDate() != null) {
+                            publishDate.append("|");
+                            publishDate.append(data.getContentDetails().getAuthor().getPublishDate().toString());
+                        }
+                        ((TextView) view).setText(data.getContentDetails().getAuthor().getName() + publishDate.toString());
+                    } else {
+                        ((TextView) view).setText(data.getGist().getTitle());
+                    }
+                    ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                         /*if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             int textColor = Color.parseColor(getColor(getContext(),
                                     childComponent.getTextColor()));
@@ -965,15 +1009,120 @@ public class CollectionGridItemView extends BaseView {
 
                         StringBuilder thumbInfo = new StringBuilder();
                         thumbInfo.append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "EEEE"))
-                                 .append(" | ")
-                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "MMM dd"))
-                                 .append(", ")
-                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "yyyy"));
+                                .append(" | ")
+                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "MMM dd"))
+                                .append(", ")
+                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "yyyy"));
 
                         thumbInfo.append(" | Doors open at ")
-                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
+                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
 
                         ((TextView) view).setText(thumbInfo);
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }else{
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_SCHEDULE_TITLE_KEY) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        ((TextView) view).setText(data.getGist().getTitle() );
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }else{
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_TEAM_TITLE_TXT_KEY) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getFirstName() != null
+                            ) {
+                        StringBuilder strPlayerName=new StringBuilder();
+                        strPlayerName.append(data.getPlayersData().getFirstName());
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        if(data.getPlayersData().getLastName()!=null){
+                            strPlayerName.append("\n"+data.getPlayersData().getLastName());
+                        }
+                        ((TextView) view).setText(strPlayerName);
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                    }
+                }else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(0) != null
+                            && data.getPlayersData().getData().getMetadata().get(0).getValue() != null
+                            )  {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        ((TextView) view).setText(data.getPlayersData().getData().getMetadata().get(0).getValue());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getHeight() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getPlayersData().getHeight());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WEIGHT_VALUE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getWeight() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getPlayersData().getWeight());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(1) != null
+                            && data.getPlayersData().getData().getMetadata().get(1).getValue() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getPlayersData().getData().getMetadata().get(1).getValue());
                         ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
 
                     }
@@ -1019,7 +1168,7 @@ public class CollectionGridItemView extends BaseView {
                     }
                     ((TextView) view).setBackgroundColor(Color.parseColor("#7D000000"));
                     ((TextView) view).setTextColor(Color.parseColor("#ffffff"));
-                    inVisibleIfSeries(data,view);  //View is invisible if ContentType is Seriese
+                    inVisibleIfSeries(data, view);  //View is invisible if ContentType is Seriese
                 } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
                     ((TextView) view).setSingleLine(false);
                     ((TextView) view).setMaxLines(3);
@@ -1187,10 +1336,11 @@ public class CollectionGridItemView extends BaseView {
                             }
                             ((TextView) view).setText(teamName);
                         }
-                    }else */if(appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY){
-                            ((TextView) view).setText(data.getTeam().getGb());
-                            ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
-                    }else{
+                    }else */
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY) {
+                        ((TextView) view).setText(data.getTeam().getGb());
+                        ((TextView) view).setTextColor(getResources().getColor(R.color.color_white));
+                    } else {
                         if (data.getGist() != null && data.getGist().getTitle() != null) {
                             ((TextView) view).setText(data.getGist().getTitle());
                         }
@@ -1370,16 +1520,15 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
-                } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY ) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY) {
 
-                    if(data.getFights().getFighter1_FirstName()!=null && data.getFights().getFighter2_FirstName()!=null ){
-                        ((TextView) view).setText(data.getFights().getFightSerialNo()+" "+data.getFights().getFighter1_FirstName()+"/"+data.getFights().getFighter2_FirstName());
+                    if (data.getFights().getFighter1_FirstName() != null && data.getFights().getFighter2_FirstName() != null) {
+                        ((TextView) view).setText(data.getFights().getFightSerialNo() + " " + data.getFights().getFighter1_FirstName() + "/" + data.getFights().getFighter2_FirstName());
                     }
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
                     ((TextView) view).setGravity(Gravity.CENTER_VERTICAL);
-                }
-                else if(childComponent.getText()!=null && !TextUtils.isEmpty(childComponent.getText())){
+                } else if (childComponent.getText() != null && !TextUtils.isEmpty(childComponent.getText())) {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
@@ -1620,13 +1769,13 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
-    public void inVisibleIfSeries(final ContentDatum data, final View view){
+    public void inVisibleIfSeries(final ContentDatum data, final View view) {
         if (data != null &&
                 data.getGist() != null &&
                 data.getGist().getContentType() != null &&
-                data.getGist().getContentType().equalsIgnoreCase("SERIES") ){
+                data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
             view.setVisibility(GONE);
-        }else{
+        } else {
             view.setVisibility(VISIBLE);
         }
     }

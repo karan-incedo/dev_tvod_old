@@ -5,9 +5,31 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.List;
 
 @UseStag
 public class Team implements Serializable {
+
+    @SerializedName("name")
+    @Expose
+    private String name;
+
+
+
+
+    @SerializedName("players")
+    @Expose
+    List<Players> players;
+
+    public List<ContentDatum> getContentDataPlayers() {
+        return contentDataPlayers;
+    }
+
+    public void setContentDataPlayers(List<ContentDatum> contentDataPlayers) {
+        this.contentDataPlayers = contentDataPlayers;
+    }
+
+    List<ContentDatum> contentDataPlayers;
 
     @SerializedName("teamshortname")
     @Expose
@@ -97,143 +119,128 @@ public class Team implements Serializable {
     @Expose
     private String wins;
 
-    public String getTeamshortname ()
-    {
+    public String getTeamshortname() {
         return teamshortname;
     }
 
-    public void setTeamshortname (String teamshortname)
-    {
+    public void setTeamshortname(String teamshortname) {
         this.teamshortname = teamshortname;
     }
 
-    public String getMascot ()
-    {
+    public String getMascot() {
         return mascot;
     }
 
-    public void setMascot (String mascot)
-    {
+    public void setMascot(String mascot) {
         this.mascot = mascot;
     }
 
-    public String getTeamid ()
-    {
+    public String getTeamid() {
         return teamid;
     }
 
-    public void setTeamid (String teamid)
-    {
+    public void setTeamid(String teamid) {
         this.teamid = teamid;
     }
 
-    public String getLastten ()
-    {
+    public String getLastten() {
         return lastten;
     }
 
-    public void setLastten (String lastten)
-    {
+    public void setLastten(String lastten) {
         this.lastten = lastten;
     }
 
-    public String getRoadrecord ()
-    {
+    public String getRoadrecord() {
         return roadrecord;
     }
 
-    public void setRoadrecord (String roadrecord)
-    {
+    public void setRoadrecord(String roadrecord) {
         this.roadrecord = roadrecord;
     }
 
-    public String getPenaltyminutes ()
-    {
+    public String getPenaltyminutes() {
         return penaltyminutes;
     }
 
-    public void setPenaltyminutes (String penaltyminutes)
-    {
+    public void setPenaltyminutes(String penaltyminutes) {
         this.penaltyminutes = penaltyminutes;
     }
 
-    public String getWinningpercentage ()
-    {
+    public String getWinningpercentage() {
         return winningpercentage;
     }
 
-    public void setWinningpercentage (String winningpercentage)
-    {
+    public void setWinningpercentage(String winningpercentage) {
         this.winningpercentage = winningpercentage;
     }
+    public List<Players> getPlayers() {
+        return players;
+    }
 
-    public String getTwopointgoalsfor ()
-    {
+    public void setPlayers(List<Players> players) {
+        this.players = players;
+    }
+    public String getTwopointgoalsfor() {
         return twopointgoalsfor;
     }
 
-    public void setTwopointgoalsfor (String twopointgoalsfor)
-    {
+    public void setTwopointgoalsfor(String twopointgoalsfor) {
         this.twopointgoalsfor = twopointgoalsfor;
     }
+    public String getName() {
+        return name;
+    }
 
-    public String getHomerecord ()
-    {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getHomerecord() {
         return homerecord;
     }
 
-    public void setHomerecord (String homerecord)
-    {
+    public void setHomerecord(String homerecord) {
         this.homerecord = homerecord;
     }
 
-    public String getGoalsagainst ()
-    {
+    public String getGoalsagainst() {
         return goalsagainst;
     }
 
-    public void setGoalsagainst (String goalsagainst)
-    {
+    public void setGoalsagainst(String goalsagainst) {
         this.goalsagainst = goalsagainst;
     }
 
-    public String getGb ()
-    {
+    public String getGb() {
         return gb;
     }
 
-    public void setGb (String gb)
-    {
+    public void setGb(String gb) {
         this.gb = gb;
     }
 
-    public String getGoalsfor ()
-    {
+    public String getGoalsfor() {
         return goalsfor;
     }
 
-    public void setGoalsfor (String goalsfor)
-    {
+    public void setGoalsfor(String goalsfor) {
         this.goalsfor = goalsfor;
     }
 
-    public String getSteamid ()
-    {
+    public String getSteamid() {
         return steamid;
     }
 
-    public void setSteamid (String steamid)
-    {
+    public void setSteamid(String steamid) {
         this.steamid = steamid;
     }
 
-    public String getRank ()
-    {
+    public String getRank() {
         return rank;
     }
 
-    public void setRank (String rank)
-    {
+    public void setRank(String rank) {
         this.rank = rank;
     }
 
@@ -247,73 +254,59 @@ public class Team implements Serializable {
 //        this.division = division;
 //    }
 
-    public String getTwopointgoalsagainst ()
-    {
+    public String getTwopointgoalsagainst() {
         return twopointgoalsagainst;
     }
 
-    public void setTwopointgoalsagainst (String twopointgoalsagainst)
-    {
+    public void setTwopointgoalsagainst(String twopointgoalsagainst) {
         this.twopointgoalsagainst = twopointgoalsagainst;
     }
 
-    public String getTeamname ()
-    {
+    public String getTeamname() {
         return teamname;
     }
 
-    public void setTeamname (String teamname)
-    {
+    public void setTeamname(String teamname) {
         this.teamname = teamname;
     }
 
-    public String getTeamstreak ()
-    {
+    public String getTeamstreak() {
         return teamstreak;
     }
 
-    public void setTeamstreak (String teamstreak)
-    {
+    public void setTeamstreak(String teamstreak) {
         this.teamstreak = teamstreak;
     }
 
-    public String getLosses ()
-    {
+    public String getLosses() {
         return losses;
     }
 
-    public void setLosses (String losses)
-    {
+    public void setLosses(String losses) {
         this.losses = losses;
     }
 
-    public String getPoints ()
-    {
+    public String getPoints() {
         return points;
     }
 
-    public void setPoints (String points)
-    {
+    public void setPoints(String points) {
         this.points = points;
     }
 
-    public String getGp ()
-    {
+    public String getGp() {
         return gp;
     }
 
-    public void setGp (String gp)
-    {
+    public void setGp(String gp) {
         this.gp = gp;
     }
 
-    public String getWins ()
-    {
+    public String getWins() {
         return wins;
     }
 
-    public void setWins (String wins)
-    {
+    public void setWins(String wins) {
         this.wins = wins;
     }
 

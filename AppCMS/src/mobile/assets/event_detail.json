@@ -67,7 +67,7 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "width": 375,
-                  "height": 106
+                  "height": 120
                 },
                 "tabletLandscape": {
                   "yAxis": 0,
@@ -95,13 +95,13 @@
                   "fontSize": 14
                 },
                 "tabletLandscape": {
-                  "yAxis": 145,
+                  "yAxis": 100,
                   "width": 0,
                   "fontSize": 26,
                   "height": 45
                 },
                 "tabletPortrait": {
-                  "yAxis": 114,
+                  "yAxis": 76,
                   "fontSize": 26,
                   "width": 0,
                   "height": 45
@@ -110,16 +110,16 @@
               "numberOfLines": 1,
               "fontWeight": "ExtraBold",
               "fontFamily": "Lato",
-              "textAlignment":"center",
-              "text":"TIME UNTIL FACEOFF",
+              "textAlignment": "center",
+              "text": "TIME UNTIL FACEOFF",
               "type": "label",
               "key": "timerTitle"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 50,
-                  "height": 30,
+                  "yAxis": 60,
+                  "height": 40,
                   "fontSize": 24
                 },
                 "tabletLandscape": {
@@ -138,15 +138,15 @@
               "numberOfLines": 1,
               "fontWeight": "ExtraBold",
               "fontFamily": "Lato",
-              "textAlignment":"center",
+              "textAlignment": "center",
               "type": "timer",
               "key": "timer",
-              "background":"#000000"
+              "background": "#000000"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 106,
+                  "yAxis": 120,
                   "height": 115
                 },
                 "tabletLandscape": {
@@ -165,7 +165,7 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 121,
+                  "yAxis": 135,
                   "leftMargin": 10,
                   "width": 120,
                   "height": 40,
@@ -195,20 +195,20 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 180,
+                  "yAxis": 185,
                   "leftMargin": 10,
-                  "width": 150,
-                  "height": 28
+                  "width": 165,
+                  "height": 26
                 },
                 "tabletLandscape": {
                   "yAxis": 305,
-                  "leftMargin": 180,
-                  "width": 150,
+                  "leftMargin": 200,
+                  "width": 170,
                   "height": 28
                 },
                 "tabletPortrait": {
                   "yAxis": 235,
-                  "leftMargin": 180,
+                  "leftMargin": 200,
                   "width": 150,
                   "height": 28
                 }
@@ -216,27 +216,27 @@
               "action": "watchLiveButton",
               "type": "button",
               "key": "watchLiveButton",
-              "text": "Watch Live"
+              "text": ""
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 121,
-                  "rightMargin": 10,
+                  "xAxis": 215,
+                  "yAxis": 135,
                   "width": 150,
                   "height": 18,
                   "fontSize": 13
                 },
                 "tabletLandscape": {
+                  "xAxis": 800,
                   "yAxis": 303,
-                  "rightMargin": 10,
                   "width": 150,
                   "height": 21,
                   "fontSize": 16
                 },
                 "tabletPortrait": {
+                  "xAxis": 600,
                   "yAxis": 230,
-                  "rightMargin": 10,
                   "width": 150,
                   "height": 21,
                   "fontSize": 16
@@ -244,29 +244,29 @@
               },
               "numberOfLines": 1,
               "fontFamily": "Lato",
-              "textAlignment": "right",
+              "textAlignment": "left",
               "type": "label",
               "key": "gameDate"
             },
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 140,
-                  "rightMargin": 10,
+                  "xAxis": 215,
+                  "yAxis": 154,
                   "width": 150,
                   "height": 19,
                   "fontSize": 13
                 },
                 "tabletLandscape": {
+                  "xAxis": 800,
                   "yAxis": 324,
-                  "leftMargin": 10,
                   "width": 150,
                   "height": 21,
                   "fontSize": 16
                 },
                 "tabletPortrait": {
+                  "xAxis": 600,
                   "yAxis": 251,
-                  "rightMargin": 10,
                   "width": 150,
                   "height": 21,
                   "fontSize": 16
@@ -274,7 +274,7 @@
               },
               "numberOfLines": 1,
               "fontFamily": "Lato",
-              "textAlignment": "right",
+              "textAlignment": "left",
               "type": "label",
               "key": "venueLabel"
             }
@@ -400,8 +400,8 @@
                   "yAxis": 70,
                   "leftMargin": 10,
                   "rightMargin": 10,
-                  "fontSize": 20,
-                  "height": 50
+                  "fontSize": 16,
+                  "height": 40
                 },
                 "tabletLandscape": {
                   "yAxis": 70,
@@ -414,7 +414,7 @@
                   "yAxis": 70,
                   "leftMargin": 10,
                   "rightMargin": 10,
-                  "fontSize": 24,
+                  "fontSize": 18,
                   "height": 50
                 }
               },
@@ -495,14 +495,14 @@
                 "tabletLandscape": {
                   "gridHeight": 60,
                   "yAxis": 110,
-                  "xAxis": 10,
-                  "width": 210
+                  "xAxis": 0,
+                  "width": 230
                 },
                 "tabletPortrait": {
-                  "gridHeight": 100,
+                  "gridHeight": 40,
                   "yAxis": 110,
-                  "xAxis": 10,
-                  "width": 210
+                  "xAxis": 8,
+                  "width": 215
                 }
               },
               "components": [
