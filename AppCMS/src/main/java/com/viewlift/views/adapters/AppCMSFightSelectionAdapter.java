@@ -177,20 +177,19 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        bindView(holder.componentView, adapterData.get(position), position);
 
 //        holder.componentView.
         if (position == appCMSPresenter.getSelectedFightId()) {
-//            holder.componentView.setBackgroundColor(Color.parseColor("#d6202d"));
-            holder.componentView.setBackgroundResource(R.drawable.fight_selector);
             Fights fights = moduleAPI.getContentData().get(position).getFights();
+            moduleAPI.getContentData().get(position).setSelected(true);
             viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
 
         } else {
-            holder.componentView.setBackgroundResource(0);
+            moduleAPI.getContentData().get(position).setSelected(false);
 
-//            holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
         }
+        bindView(holder.componentView, adapterData.get(position), position);
+
     }
 
 
@@ -233,7 +232,6 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
                                   Component childComponent,
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
-
                         appCMSPresenter.setSelectedFightId(clickPosition);
 //                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 

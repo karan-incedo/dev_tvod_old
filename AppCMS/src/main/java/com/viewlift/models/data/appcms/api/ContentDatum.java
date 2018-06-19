@@ -151,6 +151,16 @@ public class ContentDatum implements Serializable {
 
     Players players;
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    boolean isSelected = false;
+
     public void setPlayersData(Players players) {
         this.players = players;
     }
