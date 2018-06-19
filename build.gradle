@@ -3,13 +3,12 @@
 buildscript {
     ext {
         realmVersion = "5.1.0"
-        gradleBuildVersion = "3.1.2"
+        gradleBuildVersion = "3.0.1"
         playServicesVersion = "4.0.1"
     }
     repositories {
-        jcenter()
-        maven { url 'https://maven.google.com' }
         google()
+        jcenter()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
@@ -23,9 +22,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
-        maven { url 'https://maven.google.com' }
         google()
+        jcenter()
     }
 
     project.ext {

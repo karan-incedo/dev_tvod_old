@@ -582,8 +582,8 @@ public class AppCmsNavigationFragment extends Fragment {
                     }
 
                     /*Profile/ My snag, my hoichoi etc*/
-                    else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
-                            getString(R.string.profile_label)))) {
+                    else if (getString(R.string.app_cms_my_profile_label,
+                            getString(R.string.profile_label)).equalsIgnoreCase(primary.getPageId())) {
 
                         NavigationUser navigationUser = getNavigationUser();
                         //Log.d("","Selected Title = "+navigationUser.getTitle());
