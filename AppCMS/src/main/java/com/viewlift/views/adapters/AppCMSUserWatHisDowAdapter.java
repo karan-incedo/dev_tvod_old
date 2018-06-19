@@ -474,10 +474,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         } catch (Exception e) {
                                                             //Log.e(TAG, e.getMessage());
                                                         }
-
-//                                                        notifyDataSetChanged();
-                                                        notifyItemChanged(position);
-
                                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
                                                         finalDeleteDownloadButton.setImageBitmap(null);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
@@ -494,6 +490,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                     }
                                                     finalDeleteDownloadButton.postInvalidate();
                                                     contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
+                                                    notifyItemChanged(position);
                                                 }
                                             },
                                             userId, true, radiusDifference, appCMSPresenter.getDownloadPageId());
