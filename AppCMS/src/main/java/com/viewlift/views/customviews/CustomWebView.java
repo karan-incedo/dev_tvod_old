@@ -105,6 +105,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
         this.getSettings().setLoadWithOverviewMode(true);
+        appCMSPresenter.showLoadingDialog(true);
 
         this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
         this.getSettings().setBuiltInZoomControls(true);
@@ -119,6 +120,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         this.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                appCMSPresenter.showLoadingDialog(true);
 
                 if(!loadingURL.equalsIgnoreCase(url.replace("https","http"))) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
@@ -136,6 +138,8 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                appCMSPresenter.showLoadingDialog(false);
+
                 view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
                 view.requestLayout();
                 context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));

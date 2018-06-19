@@ -647,6 +647,12 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_autoplay_text_key),
                 AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_height_label_key),
+                AppCMSUIKeyType.PAGE_HEIGHT_LABEL_TEXT);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weight_label_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_LABEL_TEXT);
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
@@ -710,6 +716,13 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_name_label_key),
                 AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_selector_view_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_VIEW_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_selector_arrow_view_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_ARROW_VIEW_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);

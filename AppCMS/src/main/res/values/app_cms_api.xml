@@ -388,6 +388,8 @@
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
     <string name="app_cms_page_fighter_name_label_key">fightNameLabel</string>
+    <string name="app_cms_page_fighter_selector_view_key">item_selector_view</string>
+    <string name="app_cms_page_fighter_selector_arrow_view_key">item_selector_arrow_view</string>
 
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>

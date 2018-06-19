@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -378,9 +379,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             customPlayBack.setVisibility(View.VISIBLE);
         String url = null;
         String closedCaptionUrl = null;
+        boolean useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
+
         permaLink = contentDatum.getGist().getPermalink();
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
-            if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
+            if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls() && useHls) {
                 url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
             } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
                     && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
@@ -1238,7 +1241,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
         isAdError = true;
         isTimerRun = true;
-        if (appCMSPresenter != null &&
+        if (appCMSPresenter != null && appCMSPresenter.getCurrentPageName()!=null &&
                 appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
             playVideos(0,onUpdatedContentDatum);
         }

@@ -6375,9 +6375,9 @@ public class ViewCreator {
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
-//        LinearLayout tableParentLayout = new LinearLayout(context);
-//        tableParentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-//        tableParentLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout tableParentLayout = new LinearLayout(context);
+        tableParentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        tableParentLayout.setOrientation(LinearLayout.VERTICAL);
         NestedScrollView nestedSCrollView = new NestedScrollView(context);
         nestedSCrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
 
@@ -6517,6 +6517,7 @@ public class ViewCreator {
 //                } else
                 {
                     table.addView(row, params);
+                    table.setGravity(Gravity.CENTER);
                     View seperatorView = new View(context);
                     seperatorView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
                     seperatorView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.darker_gray));
@@ -6531,7 +6532,10 @@ public class ViewCreator {
             cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
             cell.setGravity(Gravity.CENTER);
             cell.setText(context.getResources().getString(R.string.no_fight_records));
-            table.addView(cell);
+            tableParentLayout.addView(cell);
+            tableParentLayout.setGravity(Gravity.CENTER);
+            return tableParentLayout;
+
         }
         table.setStretchAllColumns(true);
         nestedSCrollView.addView(table);
