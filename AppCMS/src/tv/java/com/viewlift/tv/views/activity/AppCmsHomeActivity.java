@@ -29,7 +29,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
@@ -333,7 +332,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 //                    Toast.makeText(AppCmsHomeActivity.this, intent.getStringExtra(getString(R.string.json_data_msg_key)), Toast.LENGTH_SHORT).show();
                     if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_play))) {
                         String contentId = intent.getStringExtra(getString(R.string.json_content_id_key));
-                        if (intent.getStringExtra(getString(R.string.json_data_type_key)).equalsIgnoreCase("SERIES")){
+                        /*if (intent.getStringExtra(getString(R.string.json_data_type_key)).equalsIgnoreCase("SERIES")){
                             Toast.makeText(context, "SHOWS", Toast.LENGTH_SHORT).show();
 
                             appCMSPresenter.getShowDetails(contentId, new Action1<AppCMSShowDetail>() {
@@ -357,13 +356,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                             false,
                                             -1,
                                             null,
-                                            null);*/
+                                            null);*//*
 
                                     playEpisode(contentDatum);
                                 }
                             });
 
-                        } else {
+                        } else*/ {
                             if (contentId != null) {
                                 ContentDatum contentDatum = new ContentDatum();
                                 Gist gist = new Gist();
