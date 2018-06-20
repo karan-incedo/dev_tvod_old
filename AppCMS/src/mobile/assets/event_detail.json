@@ -109,7 +109,7 @@
               },
               "numberOfLines": 1,
               "fontWeight": "ExtraBold",
-              "fontFamily": "Lato",
+              "fontFamily": "opensans",
               "textAlignment": "center",
               "text": "TIME UNTIL FACEOFF",
               "type": "label",

@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -3299,41 +3301,65 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0") &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
-                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null) {
 
                     componentViewResult.componentView = new LinearLayout(context);
-                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-                ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
+                    ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                    ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                    ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
 
-                for (int count = 0; count < 4; count++) {
-                    LinearLayout linearLayout = new LinearLayout(context);
+                    for (int count = 0; count < 4; count++) {
+                        LinearLayout linearLayout = new LinearLayout(context);
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    params.setMargins(3, 0, 3, 0);
-                    linearLayout.setLayoutParams(params);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        params.setMargins(3, 0, 3, 0);
+                        linearLayout.setLayoutParams(params);
 
-                    linearLayout.setGravity(Gravity.CENTER);
-                    linearLayout.setBackgroundColor(Color.parseColor("#000000"));
-                    linearLayout.setAlpha(0.6f);
-                    for (int textView = 0; textView < 2; textView++) {
-                        TextView text = new TextView(context);
-                        text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                        text.setGravity(Gravity.CENTER);
-                        text.setPadding(3, 0, 3, 0);
-                        text.setTextSize(26);
-                        text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        linearLayout.addView(text);
+                        linearLayout.setGravity(Gravity.CENTER);
+                        linearLayout.setBackgroundColor(Color.parseColor("#000000"));
+                        linearLayout.setAlpha(0.9f);
+                        for (int textView = 0; textView < 2; textView++) {
+                            TextView text = new TextView(context);
+                            text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            text.setGravity(Gravity.CENTER);
+                            text.setPadding(3, 0, 3, 0);
+                            text.setTextSize(26);
+                            text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            linearLayout.addView(text);
+                        }
+                        ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
                     }
-                    ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
-                }
-                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                long currentTimeMillis = System.currentTimeMillis();
-                long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
+                    long currentTimeMillis = System.currentTimeMillis();
+                    long remainingTime = (eventDate * 1000L) - currentTimeMillis;
 
-                if (remainingTime > 0) {
-                    startTimer(context, appCMSPresenter, eventDate);
+                    if (remainingTime > 0) {
+                        startTimer(context, appCMSPresenter, eventDate);
+                    } else {
+                        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                                TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                                timerTile.setVisibility(View.GONE);
+                            }
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                                LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                                linearLayout.setVisibility(View.GONE);
+                            }
+                            ((LinearLayout) componentViewResult.componentView).setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                            TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                            timerTile.setVisibility(View.GONE);
+                        }
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                            LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                            linearLayout.setVisibility(View.GONE);
+                        }
+                    }
                 }
                 break;
 
@@ -3549,7 +3575,23 @@ public class ViewCreator {
                             } else {
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
+
                         }
+                        (componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                String url = "";
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getExternalUrl() != null) {
+                                    url = moduleAPI.getContentData().get(0).getGist().getExternalUrl();
+                                }
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
+                            }
+                        });
+
                         break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
@@ -5337,7 +5379,10 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                     ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
                                     ((TextView) componentViewResult.componentView).setId(R.id.timer_until_face_off);
+                                    ((TextView) componentViewResult.componentView).setShadowLayer(2, 1, 1, android.R.color.black);
                                 }
+                                ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
+
                                 break;
 
 
@@ -6927,7 +6972,7 @@ public class ViewCreator {
                             (TextView) result);
                 }
 
-                result.setPadding(8, 0, 8, 0);
+                result.setPadding(8, 8, 8, 8);
             }
 
             ((TextView) result).setText(getItem(position));
@@ -6981,7 +7026,7 @@ public class ViewCreator {
                             (TextView) result);
                 }
 
-                result.setPadding(8, 8, 8, 8);
+                result.setPadding(8, 30, 8, 30);
             }
 
             if (result != null) {
@@ -7623,7 +7668,10 @@ public class ViewCreator {
 
                 String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
                 String[] timerText = context.getResources().getStringArray(R.array.timer_text);
-
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                    TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                    timerTile.setVisibility(View.VISIBLE);
+                }
                 if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                         appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
                     LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);

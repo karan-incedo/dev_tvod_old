@@ -364,7 +364,6 @@
                   "fontFamily": "OpenSans",
                   "numberOfLines": 1,
                   "textAlignment": "left",
-                  "": "",
                   "type": "label",
                   "textColor": "#383737",
                   "fontWeight": "Bold",

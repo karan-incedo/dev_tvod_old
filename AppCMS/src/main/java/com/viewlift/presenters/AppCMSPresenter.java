@@ -2703,6 +2703,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
     public void navigateToEventDetailPage(String permaLink) {
         String pagePath = permaLink;
 
@@ -2728,7 +2729,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             false);
                 }
-            }else{
+            } else {
 
                 String baseUrl = appCMSMain.getApiBaseUrl();
                 String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
@@ -2830,7 +2831,7 @@ public class AppCMSPresenter {
                                                 }
                                             });
 
-                                }else{
+                                } else {
                                     stopLoader();
                                 }
                                 loadingPage = false;
@@ -2847,6 +2848,7 @@ public class AppCMSPresenter {
 //            loadingPage = false;
 //        }
     }
+
     /**
      * This will create a Binder object containing a default set of flags used for launching the Video Player.
      *
@@ -3790,7 +3792,7 @@ public class AppCMSPresenter {
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingIntent);
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "email", "user_friends"));
+                    Arrays.asList("public_profile", "email"));
         }
     }
 
@@ -6676,7 +6678,6 @@ public class AppCMSPresenter {
             MetaPage metaPage = pageIdToMetaPageMap.get(schedulePage.getPageId());
 
 
-
             getSchedulePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
                     metaPage.getPageId(), new AppCMSScheduleAPIAction(true,
@@ -8082,7 +8083,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             try {
                 appCMSEventArchieveCall.call(
-                        currentActivity.getString(R.string.app_cms_event_archieve_api_url,currentActivity.getString(R.string.app_cms_team_pointstreak_apikey),eventId),
+                        currentActivity.getString(R.string.app_cms_event_archieve_api_url, currentActivity.getString(R.string.app_cms_team_pointstreak_apikey), eventId),
                         currentActivity.getString(R.string.app_cms_team_pointstreak_apikey),
                         eventApiAction);
             } catch (IOException e) {
@@ -15368,6 +15369,7 @@ public class AppCMSPresenter {
     public boolean isPlaylistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && playlistPage != null && pageId.equals(playlistPage.getPageId());
     }
+
     public boolean isSchedulePage(String pageId) {
         return !TextUtils.isEmpty(pageId) && schedulePage != null && pageId.equals(schedulePage.getPageId());
     }

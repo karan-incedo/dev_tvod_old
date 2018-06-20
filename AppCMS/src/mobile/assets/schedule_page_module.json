@@ -94,7 +94,6 @@
               "backgroundColor": "#000000",
               "type": "separatorView"
             },
-
             {
               "layout": {
                 "mobile": {
@@ -102,7 +101,7 @@
                   "rightMargin": 0,
                   "topMargin": 2,
                   "width": 0,
-                  "fontSize": 16,
+                  "fontSize": 18,
                   "height": 22
                 },
                 "tabletLandscape": {

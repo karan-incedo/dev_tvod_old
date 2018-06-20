@@ -796,6 +796,9 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                     viewsToUpdateOnClickEvent.add(view);
+                    view.setOnClickListener(view1 -> {
+                        System.out.println("click");
+                    });
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
