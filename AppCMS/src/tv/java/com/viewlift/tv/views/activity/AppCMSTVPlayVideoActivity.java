@@ -1,8 +1,7 @@
 package com.viewlift.tv.views.activity;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +9,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -51,7 +53,7 @@ import rx.functions.Action1;
  * Created by viewlift on 6/14/17.
  */
 
-public class AppCMSTVPlayVideoActivity extends Activity implements
+public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent, AppCmsTvErrorFragment.ErrorFragmentListener,
         VideoPlayerView.StreamingQualitySelector {
     private static final String TAG = "TVPlayVideoActivity";
@@ -379,7 +381,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             freeContent = binder.getContentData().getGist().getFree();
         }
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //        hlsUrl = "https://vhoichoi.viewlift.com/encodes/trailers/byomkesh_s2_trailer_high.mp4?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmhvaWNob2kudmlld2xpZnQuY29tL2VuY29kZXMvdHJhaWxlcnMvYnlvbWtlc2hfczJfdHJhaWxlcl9oaWdoLm1wNCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTUxNTU4NTYwOX0sIklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIwLjAuMC4wLzAifX19XX0_&Signature=e-Vle9RV0LOcr7JkuK1fqlhAld0Ef5W3kRH798f8YOaKT~JUCXtLdx9UcO2McXuqi4jyNWiis9OEcJqNFMPUIIZYBxa78lRH9rvzstPOPPSpk6wErymPiwey2ZWUq1E1vog6a7MwjzeWTEuyCLw6ZEXt~hyd2DGO3z3PM5E0U8HuhrcW9VcO2lgya9A5BFZidwmVnAu4VKLyUQKY1~LQImS7vqo8Va0zGl7LkglpZCEIbWZCgcVsOtI4SJBaWY8oNaA34XebfOnhhons8-LWM1hOY0dCmcr1NgIFaJveiFCqctA3qY~5IjAmXV7s6Ddahp69yHcNDwg2SuTmDE~reA__&Key-Pair-Id=APKAISSG7ZCPKHJZAD4Q";
         appCMSPlayVideoFragment =
@@ -452,7 +454,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 loginDialog = AppCmsLoginDialogFragment.newInstance(
                         appCMSBinder);
                 loginDialog.show(ft, "DIALOG_FRAGMENT_TAG");
@@ -474,7 +476,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 signUpDialog = AppCmsSignUpDialogFragment.newInstance(
                         appCMSBinder);
                 signUpDialog.show(ft, "DIALOG_FRAGMENT_TAG");
@@ -524,7 +526,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
                         appCMSBinder);
                 appCmsResetPasswordFragment.show(ft, "DIALOG_FRAGMENT_TAG");
@@ -541,7 +543,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         bundle.putString(getString(R.string.tv_dialog_msg_key), bundle.getString(getString(R.string.tv_dialog_msg_key)));
         bundle.putString(getString(R.string.tv_dialog_header_key), bundle.getString(getString(R.string.tv_dialog_header_key)));
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
         newFragment.setErrorListener(this);
@@ -556,7 +558,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
                         appCMSBinder);
                 newFragment.show(ft, "DIALOG_FRAGMENT_TAG");
@@ -608,7 +610,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     public void onBackPressed() {
         super.onBackPressed();
         Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
+        setResult(AppCompatActivity.RESULT_OK, returnIntent);
         finish();
     }
 

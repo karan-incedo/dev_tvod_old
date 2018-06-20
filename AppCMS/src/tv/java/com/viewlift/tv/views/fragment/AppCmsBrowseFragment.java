@@ -184,8 +184,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             customVideoVideoPlayerView.performLoginButtonClick();
                         }
                         else{
-                         customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
-                         customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                            customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                            customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                         }
                         return;
                     }
@@ -270,17 +270,17 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
                 if (rowData != null) {
-                        if(getActivity() instanceof AppCmsHomeActivity){
-                            ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
-                        }
+                    if(getActivity() instanceof AppCmsHomeActivity){
+                        ((AppCmsHomeActivity) getActivity()).shouldShowLeftNavigation(rowData.itemPosition == 0);
+                    }
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view
                                 && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomTVVideoPlayerView){
                             customVideoVideoPlayerView  =  (CustomTVVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
                             if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
-                               customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
-                               customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                                customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                                customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                             }
                         }
                         Utils.setBrowseFragmentViewParameters(view,
@@ -289,9 +289,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         isPlayerComponentSelected = true;
                         showMoreContentIcon();
                     } else if(rowData.isSearchPage){
-                       new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
-                               (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
-                               (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
+                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     } else if (null != rowData.blockName && rowData.blockName.equalsIgnoreCase("showDetail01")){
                         new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_show_season_margin_left),

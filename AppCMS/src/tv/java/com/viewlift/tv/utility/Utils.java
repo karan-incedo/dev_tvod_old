@@ -739,8 +739,8 @@ public class Utils {
      */
     public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder,
                                                AppCMSPresenter appCMSPresenter) {
-        android.app.FragmentTransaction ft =
-                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+        android.support.v4.app.FragmentTransaction ft =
+                appCMSPresenter.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
                 SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
         switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
@@ -771,9 +771,8 @@ public class Utils {
                 negativeButtonText);
         Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
         args.putExtra(context.getString(R.string.dialog_item_key), bundle);
-        android.app.FragmentTransaction ft = appCMSPresenter
-                .getCurrentActivity().getFragmentManager()
-                .beginTransaction();
+        android.support.v4.app.FragmentTransaction ft =
+                appCMSPresenter.getCurrentActivity().getSupportFragmentManager().beginTransaction();
         ClearDialogFragment newFragment =
                 ClearDialogFragment.newInstance(bundle);
         newFragment.show(ft, DIALOG_FRAGMENT_TAG);

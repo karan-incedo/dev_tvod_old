@@ -1,8 +1,5 @@
 package com.viewlift.tv.views.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -276,11 +276,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     /*if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                                         showSubNavigation(false, false); //close subnavigation if any.
                                     }*/
-                                }
+                            }
                             } else {
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
-                                //  showSubNavigation(false, false); //close subnavigation if any.
                                 showNavigation(false); //close navigation if any.
                             }
                         }
@@ -301,7 +300,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DIALOG_ACTION)) {
                     Bundle bundle = intent.getBundleExtra(getString(R.string.dialog_item_key));
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     TextOverlayDialogFragment newFragment = TextOverlayDialogFragment.newInstance(
                             context,
                             bundle);
@@ -328,7 +327,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     updateSubscriptionStrip();
                 } else if (intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
                     AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
-                    AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getFragmentManager().findFragmentById(R.id.home_placeholder);
+                    AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
                     parentFragment.updateSeasonData(appCMSSwitchSeasonBinder);
                 } else if (intent.getAction().equals(getString(R.string.intent_msg_action))) {
 //                    Toast.makeText(AppCmsHomeActivity.this, intent.getStringExtra(getString(R.string.json_data_msg_key)), Toast.LENGTH_SHORT).show();
@@ -415,6 +414,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+
     private void showMenuIcon(int visibility) {
         if (null != findViewById(R.id.info_icon))
             findViewById(R.id.info_icon).setVisibility(
@@ -494,18 +494,18 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
         String tag = getTag(updatedAppCMSBinder);
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
-        if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
-            getFragmentManager().popBackStackImmediate();
+        Fragment previousFragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
+        if (null != previousFragment && previousFragment instanceof AppCmsMyProfileFragment) {
+            getSupportFragmentManager().popBackStack();
             appCMSBinderStack.pop();
         }
 
         appCMSPresenter.sendGaScreen(updatedAppCMSBinder.getScreenName());
         AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this, updatedAppCMSBinder);
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         fragmentTransaction.replace(R.id.home_placeholder, appCmsMyProfileFragment, tag).addToBackStack(tag).commitAllowingStateLoss();
+
     }
 
     @Override
@@ -513,7 +513,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AppCMSPresenter.PLAYER_REQUEST_CODE) {
             updateSubscriptionStrip();
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
             if (null != fragment && fragment instanceof AppCmsTVPageFragment) {
                 ((AppCmsTVPageFragment) fragment).refreshBrowseFragment();
                 ((AppCmsTVPageFragment) fragment).refreshPage();
@@ -610,7 +610,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         bundle.putString(getString(R.string.tv_dialog_msg_key), bundle.getString(getString(R.string.tv_dialog_msg_key)));
         bundle.putString(getString(R.string.tv_dialog_header_key), bundle.getString(getString(R.string.tv_dialog_header_key)));
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
         newFragment.setErrorListener(this);
@@ -622,7 +622,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
                         appCMSBinder);
                 appCmsResetPasswordFragment.show(ft, DIALOG_FRAGMENT_TAG);
@@ -637,7 +637,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 loginDialog = AppCmsLoginDialogFragment.newInstance(
                         appCMSBinder);
                 loginDialog.show(ft, DIALOG_FRAGMENT_TAG);
@@ -652,7 +652,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 signUpDialog = AppCmsSignUpDialogFragment.newInstance(
                         appCMSBinder);
                 signUpDialog.show(ft, DIALOG_FRAGMENT_TAG);
@@ -667,7 +667,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 bundle.putBoolean("isLoginPage", isLoginPage);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
                         appCMSBinder);
                 newFragment.show(ft, DIALOG_FRAGMENT_TAG);
@@ -732,7 +732,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
                 case SEARCH_RETRY_ACTION:
                     String tag = getString(R.string.app_cms_search_label);
-                    Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
                     if (fragment instanceof AppCmsSearchFragment) {
                         ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
                     }
@@ -842,7 +842,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         showInfoIcon(appCMSBinder.getPageId());
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
-        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId(), 1);
+        boolean isPoped = getSupportFragmentManager().popBackStackImmediate(appCMSBinder.getPageId(), 1);
 
         if (isPoped) {
             if (appCMSBinderStack.contains(getTag(appCMSBinder)))
@@ -855,7 +855,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private Fragment getTopFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         String fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
         Fragment currentFragment = fragmentManager.findFragmentByTag(fragmentTag);
         return currentFragment;
@@ -919,7 +919,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         super.onBackPressed();
 
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             finish();
         }
     }
@@ -938,10 +938,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }*/
 
     private void setPageFragment(AppCMSBinder appCMSBinder) {
-        Fragment attached = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        Fragment attached = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
         if (attached == null || (attached != null && !attached.getTag().equalsIgnoreCase(getTag(appCMSBinder)))) {
             AppCmsTVPageFragment appCMSPageFragment = AppCmsTVPageFragment.newInstance(this, appCMSBinder);
-            FragmentManager fragmentManager = getFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             String tag = getTag(appCMSBinder);
             fragmentTransaction.replace(R.id.home_placeholder, appCMSPageFragment, tag).addToBackStack(tag).commitAllowingStateLoss();
@@ -1090,7 +1090,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void handleNavigationVisibility() {
         if (!appCMSBinderStack.isEmpty() && appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())) {
 
-            Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+            Fragment parentFragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
             AppCmsBrowseFragment browseFragment = null;
             if (null != parentFragment) {
                 if (parentFragment instanceof AppCmsTVPageFragment) {
@@ -1115,14 +1115,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     public void keyPressed(View v) {
         String tag = appCMSBinderStack.peek();//getString(R.string.app_cms_search_label);
-        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment instanceof AppCmsSearchFragment) {
             ((AppCmsSearchFragment) fragment).keyPressed(v);
         }
     }
 
     private void handlePlayRemoteKey() {
-        Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        Fragment parentFragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != parentFragment) {
             AppCmsBrowseFragment browseFragment = null;
             if (parentFragment instanceof AppCmsTVPageFragment) {
@@ -1181,12 +1181,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderStack.push(tag);
         appCMSPresenter.sendGaScreen(appCmsBinder.getScreenName());
 
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != fragment && fragment instanceof AppCmsSearchFragment) {
-            getFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStack();
         }
         AppCmsSearchFragment searchFragment = AppCmsSearchFragment.newInstance(appCmsBinder.getSearchQuery().toString());
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder, searchFragment,
+        getSupportFragmentManager().beginTransaction().replace(R.id.home_placeholder, searchFragment,
                 tag).addToBackStack(tag).commit();
         selectNavItem(tag);
     }
@@ -1303,11 +1303,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         }
 
                                         appCMSBinderMap.put(getTag(appCMSBinder), appCMSBinder);
-                                        int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
+                                        int totalNoOfFragment = getSupportFragmentManager().getBackStackEntryCount();
                                         for (int i = 0; i < totalNoOfFragment; i++) {
-                                            FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
+                                            FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(i);
                                             String tag = backStackEntry.getName();
-                                            Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                                            Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
                                             AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
                                             if (fragment instanceof AppCmsTVPageFragment) {
                                                 ((AppCmsTVPageFragment) fragment).updateBinder(appCmsBinder);
@@ -1347,11 +1347,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         pageAPI = appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
                                         appCMSBinder.updateAppCMSPageAPI(pageAPI);
                                     }
-                                    int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
+                                    int totalNoOfFragment = getSupportFragmentManager().getBackStackEntryCount();
                                     for (int i = 0; i < totalNoOfFragment; i++) {
-                                        FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
+                                        FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(i);
                                         String tag = backStackEntry.getName();
-                                        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                                        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
                                         AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
                                         if (appCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
                                             if (fragment instanceof AppCmsTVPageFragment) {
@@ -1383,7 +1383,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     signUpDialog = null;
                 }
             }
-        }, 50);
+        }, 100);
 
     }
 
@@ -1396,7 +1396,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     loginDialog = null;
                 }
             }
-        }, 50);
+        }, 100);
 
     }
 
@@ -1412,7 +1412,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
             if (null != bundle) {
                 AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 appCmsLinkYourAccountFragment = AppCmsLinkYourAccountFragment.newInstance(
                         appCMSBinder);
                 appCmsLinkYourAccountFragment.show(ft, DIALOG_FRAGMENT_TAG);
