@@ -485,6 +485,8 @@
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
+    <!-- AppCMS Show Detail API -->
+    <string name="app_cms_show_detail_api_url">%1$s/content/series?ids=%2$s&amp;site=%3$s</string>
 
 
     <!--  AppCMS entitlement Detail API -->

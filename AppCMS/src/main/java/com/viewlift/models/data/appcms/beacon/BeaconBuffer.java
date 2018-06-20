@@ -48,7 +48,6 @@ public class BeaconBuffer extends Thread {
             long currentPosition = 0l;
             try {
                 Thread.sleep(beaconBufferTimeoutMsec);
-                liveSeekCounter += MILLISECONDS_PER_SECOND;
                 if (sendBeaconBuffering) {
 
                     if (appCMSPresenter != null && videoPlayerView != null &&
@@ -112,6 +111,8 @@ public class BeaconBuffer extends Thread {
                             bufferCount = 0;
                         }
                     }
+                } else {
+                    liveSeekCounter += MILLISECONDS_PER_SECOND;
                 }
             } catch (InterruptedException e) {
                 //Log.e(TAG, "beaconBufferingThread sleep interrupted");

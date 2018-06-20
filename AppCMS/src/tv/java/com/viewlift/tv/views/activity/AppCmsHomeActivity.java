@@ -332,19 +332,51 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 //                    Toast.makeText(AppCmsHomeActivity.this, intent.getStringExtra(getString(R.string.json_data_msg_key)), Toast.LENGTH_SHORT).show();
                     if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_play))) {
                         String contentId = intent.getStringExtra(getString(R.string.json_content_id_key));
-                        if (contentId != null) {
-                            ContentDatum contentDatum = new ContentDatum();
-                            Gist gist = new Gist();
-                            gist.setId(contentId);
-                            contentDatum.setGist(gist);
-                            appCMSPresenter.launchTVVideoPlayer(
-                                    contentDatum,
-                                    0,
-                                    null,
-                                    0,
-                                    null);
-                        } else {
-                            Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show();
+                        /*if (intent.getStringExtra(getString(R.string.json_data_type_key)).equalsIgnoreCase("SERIES")){
+                            Toast.makeText(context, "SHOWS", Toast.LENGTH_SHORT).show();
+
+                            appCMSPresenter.getShowDetails(contentId, new Action1<AppCMSShowDetail>() {
+                                @Override
+                                public void call(AppCMSShowDetail appCMSShowDetail) {
+                                    System.out.println("SHOWDETAIL: " + appCMSShowDetail.getGist().getTitle());
+
+                                    ContentDatum contentDatum = new ContentDatum();
+                                    appCMSShowDetail.getGist().setContentType("series");
+                                    contentDatum.setGist(appCMSShowDetail.getGist());
+                                    contentDatum.setSeason(appCMSShowDetail.getSeasons());
+                                    contentDatum.setPermalink(appCMSShowDetail.getPermalink());
+                                    contentDatum.setId(appCMSShowDetail.getId());
+
+                                    /*appCMSPresenter.launchTVButtonSelectedAction(
+                                            appCMSShowDetail.getPermalink(),
+                                            "showDetailPage",
+                                            "",
+                                            null,
+                                            contentDatum,
+                                            false,
+                                            -1,
+                                            null,
+                                            null);*//*
+
+                                    playEpisode(contentDatum);
+                                }
+                            });
+
+                        } else*/ {
+                            if (contentId != null) {
+                                ContentDatum contentDatum = new ContentDatum();
+                                Gist gist = new Gist();
+                                gist.setId(contentId);
+                                contentDatum.setGist(gist);
+                                appCMSPresenter.launchTVVideoPlayer(
+                                        contentDatum,
+                                        0,
+                                        null,
+                                        0,
+                                        null);
+                            } else {
+                                Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_search_and_display_results))) {
                         String searchString = intent.getStringExtra(getString(R.string.json_seek_search_string_key));
@@ -1394,6 +1426,35 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     public void shouldShowSubLeftNavigation(boolean shouldShowSubLeftnav) {
         this.shouldShowSubLeftNav = shouldShowSubLeftnav;
+    }
+
+    public void playEpisode(ContentDatum contentDatum) {
+
+        appCMSPresenter.showLoadingDialog(true);
+        if (contentDatum != null &&
+                contentDatum.getSeason() != null &&
+                contentDatum.getSeason().get(0) != null &&
+                contentDatum.getSeason().get(0).getEpisodes() != null &&
+                contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
+
+            List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
+                    contentDatum.getSeason(),
+                    0,
+                    -1);
+
+            ContentDatum updatedData = new ContentDatum();
+            Gist gist = new Gist();
+            updatedData.setGist(gist);
+            gist.setId(contentDatum.getSeason().get(0).getEpisodes().get(1).getId());
+
+            appCMSPresenter.launchTVVideoPlayer(
+                    updatedData,
+                    0,
+                    relatedVideosIds,
+                    0,
+                    null);
+
+        }
     }
 
 }
