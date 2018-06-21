@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -45,6 +46,7 @@ import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -96,6 +98,7 @@ import java.util.TreeSet;
 
 import rx.Observable;
 import rx.functions.Action1;
+
 
 /**
  * Created by viewlift on 5/31/17.
@@ -164,6 +167,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private int mVideoRendererIndex;
     private boolean streamingQualitySelectorCreated;
     private boolean useHls;
+    private ImaAdsLoader adsLoader;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -205,6 +209,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void setUriOnConnection(Uri uri, Uri closedCaptionUri) {
         this.uri = uri;
         try {
+            //adsLoader = new ImaAdsLoader(getContext(), Uri.parse(adsUrl));
             player.prepare(buildMediaSource(uri, closedCaptionUri));
             player.seekTo(mCurrentPlayerPosition);
         } catch (IllegalStateException e) {
@@ -212,9 +217,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+    String adsUrl;
+    public void setAdsUrl(String adsUrl){
+        this.adsUrl = adsUrl;
+    }
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
         this.closedCaptionUri = closedCaptionUri;
+       // adsLoader = new ImaAdsLoader(getContext(), Uri.parse(adsUrl));
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
@@ -446,23 +456,23 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        /*if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                 && !useHls
                 && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
             showStreamingQualitySelector();
-        }*//* else {
-            currentStreamingQualitySelector.setVisibility(View.GONE);
-        }*/
-
-
-        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
-                && (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)) {
-            createStreamingQualitySelector();
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
+
+
+        /*currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+                *//*&& (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)*//*) {
+            createStreamingQualitySelector();
+        } else {
+            currentStreamingQualitySelector.setVisibility(View.GONE);
+        }*/
 
        /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
 
@@ -569,7 +579,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 listView.setAdapter(listViewAdapter);
-                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                listView.setBackgroundColor(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/);
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
@@ -583,8 +593,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
-                }
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/));
+                    dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     dialog.show();
                     listViewAdapter.notifyDataSetChanged();
@@ -760,6 +771,42 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new MergingMediaSource(videoSource, subtitleSource);
     }
 
+    /*private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
+        if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
+        }
+
+        Format textFormat = Format.createTextSampleFormat(null,
+                MimeTypes.APPLICATION_SUBRIP,
+                C.SELECTION_FLAG_DEFAULT,
+                "en");
+        MediaSource videoSource = buildMediaSource(uri, "");
+        MediaSource mediaSourceWithAds =
+                new AdsMediaSource(videoSource,
+                        mediaDataSourceFactory,
+                        adsLoader,
+                        getPlayerView().getOverlayFrameLayout(),
+            *//* eventHandler= *//* null,
+            *//* eventListener= *//* null);
+
+        MergingMediaSource mergingMediaSource = null;
+
+        if (ccFileUrl == null) {
+            // mergingMediaSource = new MergingMediaSource(videoSource,mediaSourceWithAds);
+            return mediaSourceWithAds;
+        }
+        MediaSource subtitleSource = new SingleSampleMediaSource(
+                ccFileUrl,
+                mediaDataSourceFactory,
+                textFormat,
+                C.TIME_UNSET);
+        mergingMediaSource = new MergingMediaSource(videoSource,subtitleSource,mediaSourceWithAds);
+        // Plays the video with the side-loaded subtitle.
+        return mergingMediaSource;
+    }*/
+
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
         int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri) :
                 Util.inferContentType("." + overrideExtension);
@@ -860,7 +907,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
                 && null != appCMSPresenter
-                && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+                /*&& appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID*/)
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
