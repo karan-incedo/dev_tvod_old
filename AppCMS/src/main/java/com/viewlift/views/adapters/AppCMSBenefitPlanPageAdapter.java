@@ -8,6 +8,7 @@ import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -114,6 +115,7 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
             return new ViewHolder(view);
         } else {
             TextView termsView = new TextView(mContext);
+            termsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             termsView.setTextColor(appCMSPresenter.getGeneralTextColor());
             termsView.setTextSize(16f);
             termsView.setPadding(5, 15, 5, 15);

@@ -1889,7 +1889,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("selectPlan03")) {
+                } else if (moduleInfo.getBlockName().contains("selectPlan02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
@@ -2713,7 +2713,7 @@ public class ViewCreator {
                                     .id(moduleId + component.getKey())
                                     .build());
                         }
-                    } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                    } /*else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
 
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
@@ -2752,7 +2752,7 @@ public class ViewCreator {
                                     .id(moduleId + component.getKey())
                                     .build());
                         }
-                    } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                    }*/ else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
                                         LinearLayoutManager.VERTICAL,
@@ -2785,7 +2785,7 @@ public class ViewCreator {
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY) {
                         GridLayoutManager gridLayoutManager;
-                        if (BaseView.isTablet(context)) {
+                        if (BaseView.isLandscape(context)) {
                             gridLayoutManager = new GridLayoutManager(context, 3,
                                     GridLayoutManager.VERTICAL, false);
                             ((RecyclerView) componentViewResult.componentView)
@@ -2822,7 +2822,10 @@ public class ViewCreator {
                             public int getSpanSize(int position) {
                                 switch (appCMSBenefitPlanPageAdapter.getItemViewType(position)) {
                                     case AppCMSBenefitPlanPageAdapter.TYPE_FOOTER:
-                                        return 2;
+                                        if (BaseView.isLandscape(context))
+                                            return 3;
+                                        else
+                                            return 2;
                                     case AppCMSBenefitPlanPageAdapter.TYPE_ITEM:
                                         return 1;
                                     default:
@@ -4544,521 +4547,537 @@ public class ViewCreator {
                         || componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                     textColor = appCMSPresenter.getGeneralTextColor();
                     ((TextView) componentViewResult.componentView).setTextColor(textColor);
-                } else if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY ) {
+                } else if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
                     ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 } else {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context,
-                                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
+                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context,
+                            appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
                 }
 
                 if ((BaseView.getFontSize(context, component.getLayout()) > 0) &&
-                        (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
-                ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
-            }
-
-            if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
-                if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
-                    StringBuilder authDateAndPhotoCount = new StringBuilder();
-                    if (moduleAPI.getContentData().get(0).getContentDetails().getAuthor() != null && moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName() != null) {
-                        authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
-                    }
-                    if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
-                        authDateAndPhotoCount.append(" | ")
-                                .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
-                    }
-                    if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
-                        authDateAndPhotoCount.append(" | ")
-                                .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
-                    }
-
-                    ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
-//                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#80000000"));
+                        (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
+                    ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                 }
-            }
 
-            if (!gridElement) {
-                switch (componentKey) {
-                    case PAGE_API_TITLE:
-                        if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getTitle())) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
-                            if (component.getNumberOfLines() != 0) {
-                                ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
-                            }
-                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                        } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
-                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                        } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
-                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                        } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 1) {
+                        ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
+                    }
+                }
+                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY) {
+                    ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 1) {
+                        ((TextView) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                    }
+                }
+                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 1) {
+                        ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
+                    }
+                }
+                if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY) {
+                    if (moduleAPI.getContentData().get(0).getContentDetails() != null) {
+                        StringBuilder authDateAndPhotoCount = new StringBuilder();
+                        if (moduleAPI.getContentData().get(0).getContentDetails().getAuthor() != null && moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName() != null) {
+                            authDateAndPhotoCount.append(moduleAPI.getContentData().get(0).getContentDetails().getAuthor().getName());
+                        }
+                        if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                            authDateAndPhotoCount.append(" | ")
+                                    .append(AppCMSPresenter.getDateFormat(Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()), "MMM dd"));
+                        }
+                        if (moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets() != null) {
+                            authDateAndPhotoCount.append(" | ")
+                                    .append(moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size() + " Photos");
+                        }
+
+                        ((TextView) componentViewResult.componentView).setText("By " + authDateAndPhotoCount.toString());
+//                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#80000000"));
+                    }
+                }
+
+                if (!gridElement) {
+                    switch (componentKey) {
+                        case PAGE_API_TITLE:
+                            if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                                if (component.getNumberOfLines() != 0) {
+                                    ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
+                                }
+                                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                                 }*/ else if (moduleAPI != null &&
-                                moduleAPI.getContentData() != null &&
-                                moduleAPI.getContentData().size() > 0 &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) componentViewResult.componentView).setMaxLines(1);
-                        }
-                        break;
+                                    moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                                ((TextView) componentViewResult.componentView).setMaxLines(1);
+                            }
+                            break;
 
-                    case PAGE_API_DESCRIPTION:
-                        if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getRawText())) {
-                            Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
-                            ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
-                            ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
-                        }
-                        break;
-                    case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
+                        case PAGE_API_DESCRIPTION:
+                            if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getRawText())) {
+                                Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
+                                ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
+                                ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
+                            }
+                            break;
+                        case PAGE_PHOTO_GALLERY_IMAGE_COUNT_TXT_KEY:
 
-                        if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
-                            ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#FFFFFF"));
-                            int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
-                            String position = photoGallerySize == 0 ? "0/0" : 1 + "/" + photoGallerySize;
-                            ((TextView) componentViewResult.componentView).setText(position);
-                            ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                        }
-                        break;
+                            if (moduleAPI.getContentData().get(0).getStreamingInfo() != null) {
+                                ((TextView) componentViewResult.componentView).setId(R.id.photo_gallery_image_count);
+                                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#FFFFFF"));
+                                int photoGallerySize = moduleAPI.getContentData().get(0).getStreamingInfo().getPhotogalleryAssets().size();
+                                String position = photoGallerySize == 0 ? "0/0" : 1 + "/" + photoGallerySize;
+                                ((TextView) componentViewResult.componentView).setText(position);
+                                ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                            }
+                            break;
 
-                    case PAGE_TRAY_TITLE_KEY:
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
-                        } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
-                                !TextUtils.isEmpty(moduleAPI.getTitle())) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
-                        } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
-                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                        } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                        case PAGE_TRAY_TITLE_KEY:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
+                            } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
+                                    !TextUtils.isEmpty(moduleAPI.getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                                 } */ else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
-                                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
-                            ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                        } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
 
+                                if (moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getSeason() != null &&
+                                        !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                        moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
+                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle())) {
+                                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
+                                } else {
+                                    StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
+                                    seasonTitleSb.append(context.getString(R.string.blank_separator));
+                                    seasonTitleSb.append(1);
+                                    ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
+                                }
+                            }
+                            break;
+
+                        case PAGE_TRAY_TITLE_UNDERLINE_KEY:
+                            if (moduleAPI != null && moduleAPI.getTitle() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                                ((TextView) componentViewResult.componentView).setPaintFlags(((TextView) componentViewResult.componentView).getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                                ((TextView) componentViewResult.componentView).setTypeface(((TextView) componentViewResult.componentView).getTypeface(), Typeface.ITALIC);
+                            }
+                            break;
+                        case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
+                            String autoplayVideoDescription = null;
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
+                                autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            }
+                            if (autoplayVideoDescription != null) {
+                                autoplayVideoDescription = autoplayVideoDescription.trim();
+                            }
+                            if (!TextUtils.isEmpty(autoplayVideoDescription)) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
+                            } else if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
+                            }
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                                moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                autoplayVideoDescription,
+                                                appCMSPresenter,
+                                                true,
+                                                appCMSPresenter.getBrandPrimaryCtaColor(),
+                                                false);
+                                viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
+                            }
+                            break;
+
+                        case PAGE_VIDEO_DESCRIPTION_KEY:
+                            String videoDescription = null;
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
+                                videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            }
+                            if (videoDescription != null) {
+                                videoDescription = videoDescription.trim();
+                            }
+                            if (!TextUtils.isEmpty(videoDescription)) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
+                            } else if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
+                            }
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                                moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                videoDescription,
+                                                appCMSPresenter,
+                                                false,
+                                                appCMSPresenter.getBrandPrimaryCtaColor(),
+                                                false);
+                                textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
+                            }
+                            break;
+
+                        case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                            }
+                            ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
+                            ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            ((TextView) componentViewResult.componentView).setSingleLine(true);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                            componentViewResult.componentView.setSelected(true);
+                            break;
+
+                        case PAGE_VIDEO_TITLE_KEY:
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                            }
+                            titleTextVto = componentViewResult.componentView.getViewTreeObserver();
+                            viewCreatorTitleLayoutListener =
+                                    new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+
+                            if (component.getKey() != null &&
+                                    !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
+                                    !BaseView.isTablet(context)) {
+                                viewCreatorTitleLayoutListener.setSpecifiedMaxWidthRatio(0.7f);
+                            }
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            ((TextView) componentViewResult.componentView).setSingleLine(true);
+
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            break;
+                        case PAGE_VIDEO_SUBTITLE_KEY:
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null) {
+                                if (moduleAPI.getContentData().get(0).getGist() != null &&
+                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) &&
+                                        moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.app_cms_video_content_type)) &&
+                                        appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT) {
+                                    setViewWithSubtitle(context, moduleAPI.getContentData().get(0),
+                                            componentViewResult.componentView);
+                                } else if (moduleAPI.getContentData().get(0).getSeason() != null) {
+                                    setViewWithShowSubtitle(context, moduleAPI.getContentData().get(0),
+                                            componentViewResult.componentView, false);
+                                }
+                            }
+                            break;
+
+                        case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null) {
+                                setViewWithSubtitle(context,
+                                        moduleAPI.getContentData().get(0),
+                                        componentViewResult.componentView);
+                            }
+                            break;
+
+                        case PAGE_VIDEO_PUBLISHDATE_KEY:
                             if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getSeason() != null &&
-                                    !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
-                                    moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
-                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle())) {
-                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
-                            } else {
-                                StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                                seasonTitleSb.append(context.getString(R.string.blank_separator));
-                                seasonTitleSb.append(1);
-                                ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
-                            }
-                        }
-                        break;
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
 
-                    case PAGE_TRAY_TITLE_UNDERLINE_KEY:
-                        if (moduleAPI != null && moduleAPI.getTitle() != null) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
-                            ((TextView) componentViewResult.componentView).setPaintFlags(((TextView) componentViewResult.componentView).getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                            ((TextView) componentViewResult.componentView).setTypeface(((TextView) componentViewResult.componentView).getTypeface(), Typeface.ITALIC);
-                        }
-                        break;
-                    case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
-                        String autoplayVideoDescription = null;
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
-                            autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
-                        }
-                        if (autoplayVideoDescription != null) {
-                            autoplayVideoDescription = autoplayVideoDescription.trim();
-                        }
-                        if (!TextUtils.isEmpty(autoplayVideoDescription)) {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription));
-                            } else {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription, Html.FROM_HTML_MODE_COMPACT));
-                            }
-                        } else if (!BaseView.isLandscape(context)) {
-                            componentViewResult.shouldHideComponent = true;
-                        }
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
-                            ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            autoplayVideoDescription,
-                                            appCMSPresenter,
-                                            true,
-                                            appCMSPresenter.getBrandPrimaryCtaColor(),
-                                            false);
-                            viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
-                        }
-                        break;
+                                long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
 
-                    case PAGE_VIDEO_DESCRIPTION_KEY:
-                        String videoDescription = null;
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
-                            videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
-                        }
-                        if (videoDescription != null) {
-                            videoDescription = videoDescription.trim();
-                        }
-                        if (!TextUtils.isEmpty(videoDescription)) {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription));
-                            } else {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription, Html.FROM_HTML_MODE_COMPACT));
-                            }
-                        } else if (!BaseView.isLandscape(context)) {
-                            componentViewResult.shouldHideComponent = true;
-                        }
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
-                            ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            videoDescription,
-                                            appCMSPresenter,
-                                            false,
-                                            appCMSPresenter.getBrandPrimaryCtaColor(),
-                                            false);
-                            textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
-                        }
-                        break;
+                                StringBuilder builder = new StringBuilder(secondsToTime);
 
-                    case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                        }
-                        ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
-                        ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
-                                new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
-                        titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                        ((TextView) componentViewResult.componentView).setSingleLine(true);
-                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                        componentViewResult.componentView.setSelected(true);
-                        break;
+                                if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                    publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
+                                    String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
+                                    builder.append(" | ");
+                                    builder.append(publishDate);
+                                }
 
-                    case PAGE_VIDEO_TITLE_KEY:
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
-                            ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                        }
-                        titleTextVto = componentViewResult.componentView.getViewTreeObserver();
-                        viewCreatorTitleLayoutListener =
-                                new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+                                ((TextView) componentViewResult.componentView).setText(builder);
 
-                        if (component.getKey() != null &&
-                                !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
-                                !BaseView.isTablet(context)) {
-                            viewCreatorTitleLayoutListener.setSpecifiedMaxWidthRatio(0.7f);
-                        }
-                        titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                        ((TextView) componentViewResult.componentView).setSingleLine(true);
-
-                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                        break;
-                    case PAGE_VIDEO_SUBTITLE_KEY:
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null) {
-                            if (moduleAPI.getContentData().get(0).getGist() != null &&
-                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) &&
-                                    moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase(context.getString(R.string.app_cms_video_content_type)) &&
-                                    appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT) {
-                                setViewWithSubtitle(context, moduleAPI.getContentData().get(0),
-                                        componentViewResult.componentView);
-                            } else if (moduleAPI.getContentData().get(0).getSeason() != null) {
-                                setViewWithShowSubtitle(context, moduleAPI.getContentData().get(0),
-                                        componentViewResult.componentView, false);
-                            }
-                        }
-                        break;
-
-                    case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null) {
-                            setViewWithSubtitle(context,
-                                    moduleAPI.getContentData().get(0),
-                                    componentViewResult.componentView);
-                        }
-                        break;
-
-                    case PAGE_VIDEO_PUBLISHDATE_KEY:
-                        if (moduleAPI != null &&
-                                moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
-                            long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
-                            long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
-
-                            long runtime = moduleAPI.getContentData().get(0).getGist().getRuntime();
-                            String secondsToTime = AppCMSPresenter.convertSecondsToTime(runtime);
-
-                            StringBuilder builder = new StringBuilder(secondsToTime);
-
-                            if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
-                                publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
-                                String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
-                                builder.append(" | ");
-                                builder.append(publishDate);
                             }
 
-                            ((TextView) componentViewResult.componentView).setText(builder);
+                            break;
 
-                        }
+                        case PAGE_VIDEO_AGE_LABEL_KEY:
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
+                                String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
+                                ((TextView) componentViewResult.componentView).setText(parentalRating);
+                                ((TextView) componentViewResult.componentView).setSingleLine(true);
+                                componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                                ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
 
-                        break;
+                                if (parentalRating.length() > 2) {
+                                    resizeText = true;
+                                }
 
-                    case PAGE_VIDEO_AGE_LABEL_KEY:
-                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
-                            String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
-                            ((TextView) componentViewResult.componentView).setText(parentalRating);
-                            ((TextView) componentViewResult.componentView).setSingleLine(true);
-                            componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                            ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
-
-                            if (parentalRating.length() > 2) {
-                                resizeText = true;
+                                applyBorderToComponent(context,
+                                        componentViewResult.componentView,
+                                        component,
+                                        -1);
                             }
+                            break;
 
-                            applyBorderToComponent(context,
-                                    componentViewResult.componentView,
-                                    component,
-                                    -1);
-                        }
-                        break;
-
-                    case PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY:
-                        componentViewResult.componentView.setId(R.id.countdown_id);
-                        ((TextView) componentViewResult.componentView)
-                                .setShadowLayer(
-                                        20,
-                                        0,
-                                        0,
-                                        Color.parseColor(getColor(
-                                                context,
-                                                component.getTextColor())));
-                        break;
-
-                    case PAGE_ACTIONLABEL_KEY:
-                    case PAGE_SETTINGS_NAME_VALUE_KEY:
-                        ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName());
-                        break;
-
-                    case PAGE_SETTINGS_EMAIL_VALUE_KEY:
-                        ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail());
-                        break;
-
-                    case PAGE_SETTINGS_EMAIL_TITLE_KEY:
-                        if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                            componentViewResult.shouldHideComponent = true;
-                        }
-                        break;
-
-                    case PAGE_SETTINGS_PLAN_VALUE_KEY:
-                        if (appCMSPresenter.isUserSubscribed() &&
-                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
-                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                        } else if (!appCMSPresenter.isUserSubscribed()) {
-                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
-                        }
-                        ((TextView) componentViewResult.componentView).setSingleLine();
-                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                        break;
-
-                    case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
-                        if (appCMSPresenter.isUserSubscribed() &&
-                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                            componentViewResult.shouldHideComponent = true;
-                        }
-
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-
-                        break;
-
-                    case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                        if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
-                            if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
-                                    paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
-                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
-                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
-                                    paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
-                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
-                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
-                            }
-                        } else {
-                            ((TextView) componentViewResult.componentView).setText("");
-                        }
-                        break;
-
-                    case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
-                        if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
-                                appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                        case PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY:
+                            componentViewResult.componentView.setId(R.id.countdown_id);
                             ((TextView) componentViewResult.componentView)
-                                    .setText(appCMSPresenter.getUserDownloadQualityPref());
-                        }
-                        break;
+                                    .setShadowLayer(
+                                            20,
+                                            0,
+                                            0,
+                                            Color.parseColor(getColor(
+                                                    context,
+                                                    component.getTextColor())));
+                            break;
 
-                    case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
-                        ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_app_version));
-                        break;
+                        case PAGE_ACTIONLABEL_KEY:
+                        case PAGE_SETTINGS_NAME_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName());
+                            break;
 
-                    case PAGE_SETTINGS_TITLE_KEY:
-                        ((TextView) componentViewResult.componentView)
-                                .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                                        .getBrand()
-                                        .getGeneral()
-                                        .getBlockTitleColor()));
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-                        break;
+                        case PAGE_SETTINGS_EMAIL_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail());
+                            break;
 
-                    case PAGE_PHOTOGALLERY_PREV_GALLERY_LABEL_KEY:
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-                        componentViewResult.componentView.setId(R.id.photo_gallery_prev_label);
-
-                        if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
-                            ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_disable, 0, 0, 0);
-                        } else {
-                            ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                            ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow, 0, 0, 0);
-                        }
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
-                            if (currentIndex == 0) {
-                                return;
+                        case PAGE_SETTINGS_EMAIL_TITLE_KEY:
+                            if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                                componentViewResult.shouldHideComponent = true;
                             }
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_VALUE_KEY:
+                            if (appCMSPresenter.isUserSubscribed() &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                            } else if (!appCMSPresenter.isUserSubscribed()) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
+                            }
+                            ((TextView) componentViewResult.componentView).setSingleLine();
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
+                            if (appCMSPresenter.isUserSubscribed() &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            } else {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                                componentViewResult.shouldHideComponent = true;
+                            }
+
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
+                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
+                                if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
+                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
+                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_sslcommerz_payment_processor))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_sslcommerz_payment_processor_friendly));
+                                }
+                            } else {
+                                ((TextView) componentViewResult.componentView).setText("");
+                            }
+                            break;
+
+                        case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
+                            if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                                    appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                                ((TextView) componentViewResult.componentView)
+                                        .setText(appCMSPresenter.getUserDownloadQualityPref());
+                            }
+                            break;
+
+                        case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_app_version));
+                            break;
+
+                        case PAGE_SETTINGS_TITLE_KEY:
+                            ((TextView) componentViewResult.componentView)
+                                    .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                                            .getBrand()
+                                            .getGeneral()
+                                            .getBlockTitleColor()));
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            break;
+
+                        case PAGE_PHOTOGALLERY_PREV_GALLERY_LABEL_KEY:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            componentViewResult.componentView.setId(R.id.photo_gallery_prev_label);
+
+                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
+                                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_disable, 0, 0, 0);
+                            } else {
+                                ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow, 0, 0, 0);
+                            }
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
+                                if (currentIndex == 0) {
+                                    return;
+                                }
+                                if (appCMSPresenter.getRelatedPhotoGalleryIds() != null) {
+                                    currentIndex--;
+                                    appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
+                                    appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
+                                            null, null, false);
+
+                                }
+                            });
+                            break;
+
+                        case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
+                            ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
+
                             if (appCMSPresenter.getRelatedPhotoGalleryIds() != null) {
-                                currentIndex--;
-                                appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
-                                appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
-                                        null, null, false);
+                                if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
+                                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
+                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
+                                    ((TextView) componentViewResult.componentView).setEnabled(false);
+                                }
+                                componentViewResult.componentView.setOnClickListener(v -> {
+                                    int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
+                                    if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
+                                            currentIndex < appCMSPresenter.getRelatedPhotoGalleryIds().size()) {
+                                        currentIndex = currentIndex + 1;
+                                        appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
+                                        appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
+                                                null, null, false);
+                                    }
 
-                            }
-                        });
-                        break;
-
-                    case PAGE_PHOTOGALLERY_NEXT_GALLERY_LABEL_KEY:
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-                        componentViewResult.componentView.setId(R.id.photo_gallery_next_label);
-                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
-
-                        if (appCMSPresenter.getRelatedPhotoGalleryIds() != null) {
-                            if (appCMSPresenter.getCurrentPhotoGalleryIndex() == appCMSPresenter.getRelatedPhotoGalleryIds().size() - 1) {
+                                });
+                            } else {
                                 ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                 ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
                                 ((TextView) componentViewResult.componentView).setEnabled(false);
                             }
-                            componentViewResult.componentView.setOnClickListener(v -> {
-                                int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
-                                if (appCMSPresenter.getRelatedPhotoGalleryIds() != null &&
-                                        currentIndex < appCMSPresenter.getRelatedPhotoGalleryIds().size()) {
-                                    currentIndex = currentIndex + 1;
-                                    appCMSPresenter.setCurrentPhotoGalleryIndex(currentIndex);
-                                    appCMSPresenter.navigateToPhotoGalleryPage(appCMSPresenter.getRelatedPhotoGalleryIds().get(currentIndex),
-                                            null, null, false);
-                                }
+                            break;
 
-                            });
-                        } else {
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
-                            ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                            ((TextView) componentViewResult.componentView).setEnabled(false);
-                        }
-                        break;
-
-                    default:
-                        if (!TextUtils.isEmpty(component.getText())) {
-                            ((TextView) componentViewResult.componentView).setText(component.getText());
-                        }
-                        break;
+                        default:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            break;
+                    }
+                } else {
+                    if (moduleType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                            moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY) {
+                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    }
                 }
-            } else {
-                if (moduleType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                        moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY) {
-                    ((TextView) componentViewResult.componentView).setSingleLine(true);
-                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+
+                if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                    componentViewResult.componentView.setBackgroundColor(
+                            Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
-            }
 
-            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                componentViewResult.componentView.setBackgroundColor(
-                        Color.parseColor(getColor(context, component.getBackgroundColor())));
-            }
-
-            if (!TextUtils.isEmpty(component.getFontFamily())) {
-                setTypeFace(context,
-                        appCMSPresenter,
-                        jsonValueKeyMap,
-                        component,
-                        (TextView) componentViewResult.componentView);
-            }
-
-            if (component.getFontSize() > 0) {
-                int fontSize = component.getFontSize();
-                if (resizeText) {
-                    fontSize = (int) (0.66 * fontSize);
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                    setTypeFace(context,
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) componentViewResult.componentView);
                 }
-                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
-            } else if ((BaseView.getFontSize(context, component.getLayout()) > 0) && (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
-                int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
-                if (resizeText) {
-                    fontSize = (int) (0.66 * fontSize);
+
+                if (component.getFontSize() > 0) {
+                    int fontSize = component.getFontSize();
+                    if (resizeText) {
+                        fontSize = (int) (0.66 * fontSize);
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                } else if ((BaseView.getFontSize(context, component.getLayout()) > 0) && (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
+                    int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
+                    if (resizeText) {
+                        fontSize = (int) (0.66 * fontSize);
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+
                 }
-                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
 
-            }
-
-            break;
+                break;
 
             case PAGE_IMAGE_KEY:
                 componentViewResult.componentView = ImageUtils.createImageView(context);
@@ -5598,7 +5617,7 @@ public class ViewCreator {
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
                 if (moduleAPI != null) {
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                    /*if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         componentViewResult.componentView = new ViewPlansMetaDataView(context,
                                 component,
                                 component.getLayout(),
@@ -5607,7 +5626,7 @@ public class ViewCreator {
                                 jsonValueKeyMap,
                                 appCMSPresenter,
                                 settings);
-                    }
+                    }*/
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                         componentViewResult.componentView = new SubscriptionMetaDataView(context,
                                 component,

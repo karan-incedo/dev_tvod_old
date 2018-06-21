@@ -75,22 +75,18 @@
               "bottomMargin": 0
             },
             "tabletLandscape": {
-              "gridHeight": 87,
-              "trayPadding": 11,
-              "leftMargin": 14.35,
+              "trayPadding": 30,
+              "leftMargin": 3.2,
               "topMargin": 0,
-              "rightMargin": 14.35,
-              "bottomMargin": 0,
-              "gridWidth": 345
+              "rightMargin": 3.2,
+              "bottomMargin": 0
             },
             "tabletPortrait": {
-              "gridHeight": 87,
-              "trayPadding": 11,
-              "leftMargin": 2.47,
+              "trayPadding": 30,
+              "leftMargin": 3.2,
               "topMargin": 0,
-              "rightMargin": 2.47,
-              "bottomMargin": 0,
-              "gridWidth": 345
+              "rightMargin": 3.2,
+              "bottomMargin": 0
             }
           },
           "components": [
@@ -102,18 +98,14 @@
                   "fontSize": 14
                 },
                 "tabletLandscape": {
-                  "yAxis": 0,
-                  "xAxis": 64,
-                  "width": 270,
-                  "fontSize": 16,
-                  "height": 22
+                  "yAxis": 100,
+                  "xAxis": 5,
+                  "fontSize": 16
                 },
                 "tabletPortrait": {
-                  "yAxis": 0,
-                  "xAxis": 64,
-                  "width": 270,
-                  "fontSize": 16,
-                  "height": 22
+                  "yAxis": 120,
+                  "xAxis": 5,
+                  "fontSize": 16
                 }
               },
               "fontFamily": "OpenSans",
@@ -131,16 +123,16 @@
                   "height": 60
                 },
                 "tabletLandscape": {
-                  "yAxis": 0,
+                  "yAxis": 10,
                   "xAxis": 0,
-                  "width": 49,
-                  "height": 49
+                  "width": 70,
+                  "height": 70
                 },
                 "tabletPortrait": {
-                  "yAxis": 0,
+                  "yAxis": 40,
                   "xAxis": 0,
-                  "width": 49,
-                  "height": 49
+                  "width": 70,
+                  "height": 70
                 }
               },
               "type": "image",
@@ -162,9 +154,9 @@
           "ccavenue"
         ]
       },
-      "view": "AC SelectPlan 03",
-      "type": "AC SelectPlan 03",
-      "blockName": "selectPlan03",
+      "view": "AC SelectPlan 02",
+      "type": "AC SelectPlan 02",
+      "blockName": "selectPlan02",
       "layout": {
         "mobile": {
           "leftMargin": 0,
@@ -189,39 +181,6 @@
         {
           "layout": {
             "mobile": {
-              "leftMargin": 0,
-              "topMargin": 0.45,
-              "rightMargin": 0,
-              "fontSize": 16,
-              "height": 22
-            },
-            "tabletLandscape": {
-              "leftMargin": 0,
-              "topMargin": 0.39,
-              "rightMargin": 0,
-              "fontSize": 16,
-              "height": 22
-            },
-            "tabletPortrait": {
-              "leftMargin": 0,
-              "topMargin": 0.29,
-              "rightMargin": 0,
-              "fontSize": 16,
-              "height": 22
-            }
-          },
-          "fontFamily": "OpenSans",
-          "numberOfLines": 1,
-          "textAlignment": "center",
-
-          "type": "label",
-          "textColor": "#ffffff",
-
-          "key": "singlePlanTitle"
-        },
-        {
-          "layout": {
-            "mobile": {
               "gridHeight": 70,
               "trayPadding": 20,
               "leftMargin": 18.4,
@@ -231,22 +190,20 @@
               "gridWidth": 308
             },
             "tabletLandscape": {
-              "gridHeight": 150,
-              "trayPadding": 10,
+              "gridHeight": 100,
+              "trayPadding": 20,
               "leftMargin": 14.35,
               "topMargin": 5.86,
               "rightMargin": 14.35,
-              "bottomMargin": 0,
-              "gridWidth": 318
+              "bottomMargin": 0
             },
             "tabletPortrait": {
-              "gridHeight": 140,
-              "trayPadding": 10,
+              "gridHeight": 100,
+              "trayPadding": 20,
               "leftMargin": 2.47,
               "topMargin": 4.39,
               "rightMargin": 2.47,
-              "bottomMargin": 0,
-              "gridWidth": 318
+              "bottomMargin": 0
             }
           },
           "components": [
@@ -259,16 +216,14 @@
                   "height": 23
                 },
                 "tabletLandscape": {
-                  "yAxis": 9,
                   "leftMargin": 0,
-                  "rightMargin": 0,
+                  "rightMargin": 5,
                   "fontSize": 17,
                   "height": 23
                 },
                 "tabletPortrait": {
-                  "yAxis": 9,
                   "leftMargin": 0,
-                  "rightMargin": 0,
+                  "rightMargin": 5,
                   "fontSize": 17,
                   "height": 23
                 }
@@ -281,7 +236,6 @@
               "fontWeight": "Bold",
               "key": "featureText"
             },
-
             {
               "layout": {
                 "mobile": {
@@ -291,18 +245,15 @@
                   "height": 25
                 },
                 "tabletLandscape": {
-                  "yAxis": 9,
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "fontSize": 17,
-                  "height": 21
+                  "fontSize": 17
                 },
                 "tabletPortrait": {
-                  "yAxis": 9,
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "fontSize": 17,
-                  "height": 21
+                  "fontSize": 17
+
                 }
               },
               "fontFamily": "OpenSans",
@@ -312,6 +263,35 @@
               "textColor": "#ffffff",
               "fontWeight": "Italic",
               "key": "planPriceInfo"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 20,
+                  "height": 25
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 20,
+                  "height": 25
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 20,
+                  "height": 25
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "text": "SUBSCRIBE NOW",
+              "textColor": "#ffffff",
+              "key": "singlePlanSubscribe"
             }
           ],
           "action": "purchasePlan",
@@ -320,8 +300,6 @@
         }
       ]
     }
-
-
   ],
   "caching": {
     "isEnabled": false

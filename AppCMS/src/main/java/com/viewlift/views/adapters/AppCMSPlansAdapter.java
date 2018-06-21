@@ -4,11 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +45,7 @@ import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +75,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     private AppCMSUIKeyType viewTypeKey;
     private int selectedColor;
     private boolean isClickable;
+    boolean singlePlanViewShown = false;
 
     public AppCMSPlansAdapter(Context context,
                               ViewCreator viewCreator,
@@ -112,6 +122,16 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        if (adapterData.size() == 1 && !singlePlanViewShown) {
+            TextView singlePlanView = new TextView(mContext);
+            singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+            singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
+            singlePlanView.setGravity(Gravity.CENTER);
+            singlePlanView = setSinglePlan(singlePlanView);
+            return new ViewHolder(singlePlanView);
+        }
+
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
                 parentLayout,
                 useParentSize,
@@ -129,16 +149,105 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
                 false,
                 useRoundedCorners(), this.viewTypeKey);
 
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
             applyBgColorToChildren(view, selectedColor);
-        }
 
 
         return new ViewHolder(view);
     }
 
+    TextView setSinglePlan(TextView textView) {
+        double recurringPaymentAmount = adapterData.get(0).getPlanDetails()
+                .get(0).getRecurringPaymentAmount();
+        String formattedRecurringPaymentAmount = mContext.getString(R.string.cost_with_fraction,
+                recurringPaymentAmount);
+        if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+            formattedRecurringPaymentAmount = mContext.getString(R.string.cost_without_fraction,
+                    recurringPaymentAmount);
+        }
+        Currency currency = null;
+        if (adapterData.get(0).getPlanDetails() != null &&
+                !adapterData.get(0).getPlanDetails().isEmpty() &&
+                adapterData.get(0).getPlanDetails().get(0) != null &&
+                adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentCurrencyCode() != null) {
+            try {
+                currency = Currency.getInstance(adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentCurrencyCode());
+            } catch (Exception e) {
+                //Log.e(TAG, "Could not parse locale");
+            }
+        }
+        StringBuilder planAmt = new StringBuilder();
+        if (currency != null) {
+            planAmt.append(currency.getSymbol());
+        }
+        planAmt.append(formattedRecurringPaymentAmount);
+        StringBuilder planDuration = new StringBuilder();
+
+        if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.forward_slash));
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.plan_type_month));
+        }
+        if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.forward_slash));
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.plan_type_year));
+        }
+        if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.forward_slash));
+            planDuration.append(" ");
+            planDuration.append(mContext.getString(R.string.plan_type_day));
+        }
+
+        StringBuilder plan = new StringBuilder();
+        plan.append(planAmt.toString());
+        plan.append(planDuration.toString());
+        Spannable text = new SpannableString(plan.toString());
+        text.setSpan(new AbsoluteSizeSpan(120), 0, planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length() + 1,
+//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.splashbackgroundColor)), 0, planAmt.toString().length() + 1,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        text.setSpan(new AbsoluteSizeSpan(85), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(text, TextView.BufferType.SPANNABLE);
+        return textView;
+    }
+
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        if (0 <= position && position <= adapterData.size()) {
+            if (adapterData.size() == 1) {
+                if (singlePlanViewShown)
+                    createView(holder, position - 1);
+                singlePlanViewShown = true;
+            }
+        }
+        if (0 <= position && position < adapterData.size()) {
+            if (adapterData.size() != 1) {
+                createView(holder, position);
+            }
+
+        }
+    }
+
+    void createView(ViewHolder holder, final int position) {
+        if (holder.componentView != null) {
+            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
+                if (holder.componentView.getChild(i) instanceof TextView) {
+                    ((TextView) holder.componentView.getChild(i)).setText("");
+                }
+            }
+            bindView(holder.componentView, adapterData.get(position), position);
+            holder.componentView.setSelectable(true);
+        }
+    }
+
     private boolean useRoundedCorners() {
-        return mContext.getString(R.string.app_cms_page_subscription_selectionplan_03_key).equals(componentViewType);
+        return mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType);
     }
 
     private void applyBgColorToChildren(ViewGroup viewGroup, int bgColor) {
@@ -159,22 +268,15 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        if (0 <= position && position < adapterData.size()) {
-            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
-                if (holder.componentView.getChild(i) instanceof TextView) {
-                    ((TextView) holder.componentView.getChild(i)).setText("");
-                }
-            }
-
-            bindView(holder.componentView, adapterData.get(position), position);
-        }
-        holder.componentView.setSelectable(true);
-    }
-
-    @Override
     public int getItemCount() {
-        return (adapterData != null ? adapterData.size() : 0);
+        if (adapterData != null && adapterData.size() != 0) {
+            if (adapterData.size() == 1) {
+                return 2;
+            } else {
+                return adapterData.size();
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -198,7 +300,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     void bindView(CollectionGridItemView itemView,
                   final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
-            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
@@ -206,10 +308,8 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
                                       ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
-
                         }
                     }
-
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
                         // NO-OP - Play is not implemented here
@@ -281,6 +381,12 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CollectionGridItemView componentView;
+        TextView singlePlanView;
+
+        public ViewHolder(TextView itemView) {
+            super(itemView);
+            this.singlePlanView = itemView;
+        }
 
         public ViewHolder(View itemView) {
             super(itemView);

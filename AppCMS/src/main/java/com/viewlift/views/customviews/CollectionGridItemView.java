@@ -467,8 +467,8 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
-                                        .fitCenter();
+                                        /*.override(childViewWidth, childViewHeight)*/.placeholder(placeholder)
+                                        /*.fitCenter()*/;
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -1225,12 +1225,14 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                     ((TextView) view).setText(data.getName());
-                    if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||
+                    if (/*componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||*/
                             componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)) {
                         ((TextView) view).setTextColor(themeColor);
                     } else {
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
                     }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY) {
+                    ((TextView) view).setText(childComponent.getText());
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
                     int planIndex = 0;
 
@@ -1314,7 +1316,7 @@ public class CollectionGridItemView extends BaseView {
                         planAmt.append(formattedRecurringPaymentAmount);
                         StringBuilder planDuration = new StringBuilder();
                         if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
-                                appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                                appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                             if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
                                 planDuration.append(" ");
                                 planDuration.append(context.getString(R.string.forward_slash));
@@ -1334,26 +1336,31 @@ public class CollectionGridItemView extends BaseView {
                                 planDuration.append(context.getString(R.string.plan_type_day));
                             }
                         }
-                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                             StringBuilder plan = new StringBuilder();
                             String pay = "PAY";
                             plan.append(pay);
                             plan.append(" ");
                             plan.append(planAmt.toString());
                             plan.append(planDuration.toString());
-                            Spannable   text = new SpannableString(plan.toString());
-                            text.setSpan(new AbsoluteSizeSpan(35), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new AbsoluteSizeSpan(50), pay.length(), pay.length() + planAmt.toString().length()+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length()+1,
+                            Spannable text = new SpannableString(plan.toString());
+                            int smallFont = 35;
+                            int bigFont = 50;
+                            if (BaseView.isTablet(context)) {
+                                smallFont = 20;
+                                bigFont = 30;
+                            }
+                            text.setSpan(new AbsoluteSizeSpan(smallFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new AbsoluteSizeSpan(bigFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new AbsoluteSizeSpan(35), pay.length() + planAmt.toString().length()+1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ((TextView) view).setText(text,  TextView.BufferType.SPANNABLE);
+                            text.setSpan(new AbsoluteSizeSpan(smallFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
                         } else {
                             StringBuilder plan = new StringBuilder();
                             plan.append(planAmt.toString());
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)
                                 plan.append(planDuration.toString());
-
                             ((TextView) view).setText(plan.toString());
                         }
                         ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
@@ -1375,7 +1382,7 @@ public class CollectionGridItemView extends BaseView {
                 if (view instanceof SubscriptionMetaDataView) {
                     ((SubscriptionMetaDataView) view).setData(data);
                 }
-            } else if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+            } else if (/*componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||*/
                     componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {

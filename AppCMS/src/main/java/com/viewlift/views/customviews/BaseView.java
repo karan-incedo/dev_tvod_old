@@ -1226,12 +1226,18 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_PLAN_PRICEINFO_KEY:
                     lm += convertDpToPixel(8, getContext());
-                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         gravity = Gravity.CENTER_VERTICAL;
                     }
                     break;
                 case PAGE_PLAN_FEATURE_TEXT_KEY:
-                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        gravity = Gravity.CENTER_VERTICAL;
+                    }
+                    break;
+
+                case PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY:
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         gravity = Gravity.CENTER_VERTICAL;
                     }
                     break;
@@ -1477,7 +1483,7 @@ public abstract class BaseView extends FrameLayout {
 
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+            if (/*jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||*/
                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
