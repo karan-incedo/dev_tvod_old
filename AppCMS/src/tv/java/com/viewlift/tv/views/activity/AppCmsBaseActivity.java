@@ -1,20 +1,19 @@
 package com.viewlift.tv.views.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
-import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
-import com.viewlift.views.binders.AppCMSBinder;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
  */
 
-public abstract class AppCmsBaseActivity extends Activity {
+public abstract class AppCmsBaseActivity extends AppCompatActivity {
 
+    private boolean isProfileFirstTime;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
@@ -33,5 +32,13 @@ public abstract class AppCmsBaseActivity extends Activity {
     }*/
 
     public abstract int getNavigationContainer();
-   // public abstract int getSubNavigationContainer();
+
+    public boolean isProfileFirstTime() {
+        return isProfileFirstTime;
+    }
+
+    public void setProfileFirstTime(boolean profileFirstTime) {
+        isProfileFirstTime = profileFirstTime;
+    }
+    // public abstract int getSubNavigationContainer();
 }

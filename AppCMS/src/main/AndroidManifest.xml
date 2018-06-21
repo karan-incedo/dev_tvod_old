@@ -140,19 +140,6 @@
         </activity>
 
 
-        <service
-            android:name="com.viewlift.Audio.MusicService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="com.viewlift.Audio.utils.TaskRemoveService"
-            android:stopWithTask="false" />
-
     </application>
 
 </manifest>

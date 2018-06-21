@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +89,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
 
 
         if (appCmsViewComponent != null) {
-             tvPageView = appCmsViewComponent.appCMSTVPageView();
+            tvPageView = appCmsViewComponent.appCMSTVPageView();
         } else {
             tvPageView = null;
         }
@@ -97,7 +98,6 @@ public class AppCmsTVPageFragment extends BaseFragment {
             if (tvPageView.getParent() != null) {
                 ((ViewGroup) tvPageView.getParent()).removeAllViews();
             }
-            //onPageCreation.onSuccess(appCMSBinder);
         }
         if (container != null) {
             container.removeAllViews();
@@ -110,8 +110,9 @@ public class AppCmsTVPageFragment extends BaseFragment {
                 browseFragment.setmRowsAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 browseFragment.setScreenName(mAppCMSBinder.getScreenName());
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
+                Log.d("TAG","TESTS .. ScreenName = "+mAppCMSBinder.getScreenName());
             } else {
-               refreshBrowseFragment();
+                refreshBrowseFragment();
             }
         }
         return tvPageView;
@@ -127,7 +128,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                     mAppCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     Arrays.asList(getResources().getStringArray(R.array.app_cms_modules_to_ignore_tv)
-            ));
+                    ));
         }
     }
 
@@ -216,7 +217,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                 }
             }
         }, 10);
-        }
+    }
 
 
     public void refreshBrowseFragment(){

@@ -41,15 +41,15 @@ public class TVPageView extends FrameLayout {
         init(context);
     }
 
-/*
-    @Override
-*/
+    /*
+        @Override
+    */
     public void init(Context context) {
         LayoutParams layoutParams =
                 new LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
-      //  createChildrenContainer();
+        //  createChildrenContainer();
         adapterList = new CopyOnWriteArrayList<>();
 
         /* Check if the current page being populated is a video page, then
@@ -65,6 +65,7 @@ public class TVPageView extends FrameLayout {
             scrollView.setLayoutParams(scrollLayoutParams);
             // to hide the scroll bar in the right
             scrollView.setVerticalScrollBarEnabled(false);
+            scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
             this.addView(scrollView);
         }
     }
@@ -114,9 +115,9 @@ public class TVPageView extends FrameLayout {
             }
         }*/
     }
-/*
-    @Override
-*/
+    /*
+        @Override
+    */
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new LinearLayout(getContext());
         LinearLayout.LayoutParams childContainerLayoutParams =

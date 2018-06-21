@@ -70,7 +70,7 @@ import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
+
 
 public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener {
@@ -111,6 +111,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private static int apod = 0;
 
     private long watchedPercentage = 0;
+    private long watchedPercentageVideoPage = 0;
     private final String FIREBASE_STREAM_START = "stream_start";
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
@@ -178,12 +179,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         createPreviewMessageView();
         touchToCastOverlay();
         createTopBarView();
-        try {
-            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
-        }
+        initiateStreamingId();
 
         videoPlayerContent = new ViewCreator.VideoPlayerContent();
 
@@ -487,7 +483,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                             if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
                                 //if mini player is showing than dismiss the mini player
-                                runOnUiThread(() -> appCMSPresenter.dismissPopupWindowPlayer(false));
+                                if(appCMSPresenter != null &&
+                                        appCMSPresenter.getCurrentActivity() != null) {
+                                    appCMSPresenter.getCurrentActivity().runOnUiThread(() -> appCMSPresenter.dismissPopupWindowPlayer(false));
+                                }
 
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -584,8 +583,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                         if (appCMSPresenter.getCurrentPageName() != null &&
                                 ! TextUtils.isEmpty(appCMSPresenter.getCurrentPageName()) &&
-                                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")){
-                        //if (getPageView().findChildViewById(R.id.video_player_id) != null) {
+                                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page") &&
+                                !AppCMSPresenter.isFullScreenVisible){
+
                             appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), contentDatum -> {
                                 appCMSPresenter.launchButtonSelectedAction(contentDatum.getGist().getPermalink(),
                                         mContext.getString(R.string.app_cms_action_detailvideopage_key),
@@ -1044,7 +1044,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         View layout = li.inflate(R.layout.custom_video_player_top_bar, null, false);
         mediaButton = layout.findViewById(R.id.media_route_button);
         app_cms_video_player_done_button = layout.findViewById(R.id.app_cms_video_player_done_button);
-        app_cms_video_player_title_view = layout.findViewById(R.id.app_cms_video_player_title_view);
+        app_cms_video_player_title_view = layout.findViewById(R.id.app_cms_mini_video_player_title_view);
         app_cms_video_player_done_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1145,6 +1145,25 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.videoPlayerView != null) {
                         appCMSPresenter.videoPlayerView = null;
                     }
+
+                    if (appCMSPresenter != null &&
+                        appCMSPresenter.getCurrentPageName() != null &&
+                            ! TextUtils.isEmpty(appCMSPresenter.getCurrentPageName()) &&
+                            appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page") &&
+                            appCMSPresenter.getAutoplayEnabledUserPref(mContext) ){
+                            watchedPercentageVideoPage = (getPlayer().getCurrentPosition()- 1000);
+
+                            appCMSPresenter.launchButtonSelectedAction(onUpdatedContentDatum.getGist().getPermalink(),
+                                    mContext.getString(R.string.app_cms_action_detailvideopage_key),
+                                    onUpdatedContentDatum.getGist().getTitle(),
+                                    null,
+                                    onUpdatedContentDatum,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoId
+                            );
+
+                    }
                 }
 
             }
@@ -1219,7 +1238,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
         isAdError = true;
         isTimerRun = true;
-        resumePlayer();
+        if (appCMSPresenter != null &&
+                appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
+            resumePlayer();
+        }
 
 
     }
@@ -1373,7 +1395,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private void setWatchedTime(ContentDatum contentDatum) {
         if (contentDatum != null) {
-            if (contentDatum.getGist().getWatchedPercentage() > 0) {
+            if (appCMSPresenter != null &&
+                    appCMSPresenter.getCurrentPageName() != null &&
+                    ! TextUtils.isEmpty(appCMSPresenter.getCurrentPageName()) &&
+                    appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page") &&
+                    watchedPercentageVideoPage != 0 ) {
+                watchedPercentage = watchedPercentageVideoPage;
+                watchedPercentageVideoPage = 0l;
+            }else if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 watchedPercentage = contentDatum.getGist().getWatchedPercentage();
             } else {
                 long watchedTime = contentDatum.getGist().getWatchedTime();
@@ -1505,6 +1534,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     apod,
                     isVideoDownloaded);
         }
+    }
+
+    public void initiateStreamingId(){
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
+        }
+
     }
 }
 
