@@ -1225,7 +1225,7 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                     ((TextView) view).setText(data.getName());
-                    if (/*componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||*/
+                    if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) ||
                             componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)) {
                         ((TextView) view).setTextColor(themeColor);
                     } else {
@@ -1382,7 +1382,7 @@ public class CollectionGridItemView extends BaseView {
                 if (view instanceof SubscriptionMetaDataView) {
                     ((SubscriptionMetaDataView) view).setData(data);
                 }
-            } else if (/*componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||*/
+            } else if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                     componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
