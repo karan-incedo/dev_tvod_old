@@ -108,7 +108,7 @@ public class AppCMSPageAPICall {
                     headersMap.put("x-api-key", tempApiKey);
                 }
                 if (!TextUtils.isEmpty(authToken)) {
-                    headersMap.put("Authorization", authToken);
+                        headersMap.put("Authorization", authToken);
                 }
                 Log.w(TAG, "API URL: " + urlWithContent);
                 Log.w(TAG, "API Headers: " + headersMap.toString());

@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -793,11 +795,31 @@ public class CollectionGridItemView extends BaseView {
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
+                    long eventDate = data.getGist().getEventSchedule().get(0).getEventTime();
+                    long currentTimeMillis = System.currentTimeMillis();
+
+                    long remainingTime=appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L,"EEE MMM dd HH:mm:ss");
+
+                    System.out.println("ticket event time-" + eventDate);
+
+                    System.out.println("ticket current Time-" + currentTimeMillis);
+                    System.out.println("ticket current differ-" + remainingTime);
+
+                    if (remainingTime < 0 ) {
+                        view.setVisibility(View.GONE);
+                    }
                     ((TextView) view).setText(childComponent.getText());
                     ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                     viewsToUpdateOnClickEvent.add(view);
                     view.setOnClickListener(view1 -> {
-                        System.out.println("click");
+
+                        String url = "";
+                        if (data != null && data.getGist() != null &&
+                                data.getGist().getTicketUrl() != null) {
+                            url = data.getGist().getTicketUrl();
+                        }
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
                     });
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
@@ -1038,8 +1060,8 @@ public class CollectionGridItemView extends BaseView {
                                 .append(", ")
                                 .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "yyyy"));
 
-                        thumbInfo.append(" | Doors open at ")
-                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
+//                        thumbInfo.append(" | Doors open at ")
+//                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
 
                         ((TextView) view).setText(thumbInfo);
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
@@ -1162,7 +1184,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         }
-                        ((TextView) view).setText("("+data.getPlayersData().getData().getMetadata().get(1).getValue()+")");
+                        ((TextView) view).setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + ")");
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             int textColor = Color.parseColor(getColor(getContext(),
                                     childComponent.getTextColor()));

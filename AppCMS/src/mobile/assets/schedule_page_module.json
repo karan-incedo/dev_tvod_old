@@ -102,7 +102,7 @@
                   "topMargin": 2,
                   "width": 0,
                   "fontSize": 18,
-                  "height": 22
+                  "height": 25
                 },
                 "tabletLandscape": {
                   "leftMargin": 135,
@@ -133,7 +133,7 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 18,
-                  "topMargin": 5.2,
+                  "topMargin": 8.2,
                   "rightMargin": 18,
                   "width": 0,
                   "fontSize": 13,

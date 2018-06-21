@@ -332,6 +332,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -1129,6 +1130,100 @@ public class AppCMSPresenter {
         return formatter.format(calendar.getTime());
     }
 
+    public static String geTimeFormat(long timeDifference) {
+
+        long difference=timeDifference;
+                long secondsInMilli = 1000;
+                long minutesInMilli = secondsInMilli * 60;
+                long hoursInMilli = minutesInMilli * 60;
+                long daysInMilli = hoursInMilli * 24;
+
+                long elapsedDays = difference / daysInMilli;
+        difference = difference % daysInMilli;
+
+                long elapsedHours = difference / hoursInMilli;
+        difference = difference % hoursInMilli;
+
+                long elapsedMinutes = difference / minutesInMilli;
+        difference = difference % minutesInMilli;
+
+                long elapsedSeconds = difference / secondsInMilli;
+
+                String differenceFormat=(elapsedDays+":"+elapsedHours+":"+elapsedMinutes+":"+elapsedSeconds);
+                return differenceFormat;
+    }
+    public static String getDateFormatByTimeZone(long timeMilliSeconds, String dateFormat,String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+
+        return formatter.format(calendar.getTime());
+    }
+
+    public static long getTimeIntervalForEvent(long timeMilliSecondsEvent,String dateFormat) {
+        long timeDifference=0;
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSecondsEvent);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String eventTime= formatter.format(calendar.getTime());
+
+        SimpleDateFormat formatterCurrentTime = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendarCurrent = Calendar.getInstance();
+        calendarCurrent.setTimeInMillis(System.currentTimeMillis()
+        );
+        formatterCurrentTime.setTimeZone(TimeZone.getDefault());
+
+        String currentTime= formatterCurrentTime.format(calendarCurrent.getTime());
+        long eventTimeInMs=getMillisecondFromDaeString(dateFormat,eventTime);
+        long currentTimeInMs=getMillisecondFromDaeString(dateFormat,currentTime);
+        timeDifference=eventTimeInMs-currentTimeInMs;
+        return timeDifference;
+    }
+
+    private static long getMillisecondFromDaeString(String dateFormat,String date){
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        try {
+            Date mDate = sdf.parse(date);
+            long timeInMilliseconds = mDate.getTime();
+            return timeInMilliseconds;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public static String getDateFormatByTimeZone1(long timeMilliSeconds, String dateFormat,String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getDefault());
+
+        return formatter.format(calendar.getTime());
+    }
+    public static Date getDateByTimeZone(long timeMilliSeconds, String dateFormat,String timeZone) {
+        DateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return calendar.getTime();
+    }
+    public static long currentTimeMillisLocal() {
+        return  Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();//System.currentTimeMillis();//
+    }
+    public static String getDateFormatByTimeZoneDiff(long timeMilliSeconds, String dateFormat,String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return formatter.format(calendar.getTime());
+    }
     /**
      * This converts an input time value in msec since the epoch into a Time value in the format
      * HH:MM:SS
@@ -7637,10 +7732,10 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             showLoader();
-            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(currentActivity, "roster.json"),
-                    AppCMSPageUI.class);
-//            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(currentActivity, "roster.json"),
+//                    AppCMSPageUI.class);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(pageId);

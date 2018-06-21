@@ -126,8 +126,11 @@ import net.nightwhistler.htmlspanner.style.Style;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import rx.functions.Action1;
 
@@ -2089,6 +2092,7 @@ public class ViewCreator {
                                                                    final Module moduleAPI,
                                                                    AppCMSAndroidModules appCMSAndroidModules,
                                                                    PageView pageView,
+
                                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                    AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = null;
@@ -3298,7 +3302,6 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                         moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
                         moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
-                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0") &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null) {
@@ -3330,11 +3333,16 @@ public class ViewCreator {
                         }
                         ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
                     }
-                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                    long currentTimeMillis = System.currentTimeMillis();
-                    long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+//                    long currentTimeMillis = System.currentTimeMillis();
+//                    long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+//                   String date1= AppCMSPresenter.getDateFormatByTimeZone(eventDate * 1000L, "EEE MMM dd HH:mm:ss z yyyy","UTC");
+//                    String date2= AppCMSPresenter.getDateFormatByTimeZone1(currentTimeMillis, "EEE MMM dd HH:mm:ss z yyyy","IST");
 
                     if (remainingTime > 0) {
+
                         startTimer(context, appCMSPresenter, eventDate);
                     } else {
                         if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
@@ -3569,12 +3577,29 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                                 moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null) {
                             ((Button) componentViewResult.componentView).setId(R.id.watch_live_button);
-                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+
+                            long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                            long currentTimeMillis = System.currentTimeMillis();
+//                            long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                            if(remainingTime > 0){
+                                (componentViewResult.componentView).setVisibility(View.GONE);
+                            }else if ((moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1"))||(remainingTime <= 0 && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1"))) {
                                 (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
                                 ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                            } else {
+                            }else{
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
+//                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+//                                (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+//                                ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+//                            } else if (remainingTime <= 0 && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+//                                (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+//                                ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+//                            } else {
+//                                (componentViewResult.componentView).setVisibility(View.GONE);
+//                            }
 
                         }
                         (componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
@@ -4544,6 +4569,8 @@ public class ViewCreator {
                         params.gravity = Gravity.CENTER;
                         adView.setLayoutParams(params);
                     }
+                } else {
+                    componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 //}
                 break;
@@ -5341,11 +5368,13 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null) {
-                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                                    String eventdate = AppCMSPresenter.getDateFormat(date * 1000L, "MM/yyyy");
+                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                                    String eventdate = AppCMSPresenter.getDateFormatByTimeZone(date * 1000L, "MM/dd", "UTC");
                                     StringBuilder builder = new StringBuilder(eventdate);
                                     builder.append(" - ");
-                                    builder.append(AppCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime(), "hh:mm aa"));
+                                    builder.append(AppCMSPresenter.getDateFormatByTimeZone(date * 1000L, "hh:mm aa", "UTC"));
+                                    builder.append(" ");
+                                    builder.append(moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTimeZone());
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
@@ -5373,8 +5402,7 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                                         moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
-                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0")) {
+                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null) {
 
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                     ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
@@ -7663,15 +7691,63 @@ public class ViewCreator {
 
         countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
-                long currentTimeMillis = System.currentTimeMillis();
-                long remainingTime = (eventTime * 1000L) - currentTimeMillis;
+//                Calendar calendar = Calendar.getInstance();
+//                calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+//                long currentTimeMillis =appCMSPresenter.currentTimeMillisLocal();
+//
+////                long different = (eventTime * 1000L) - currentTimeMillis;
+//
+//                // Create Calendar instance
+//                Calendar calendar1 = Calendar.getInstance();
+//                calendar1.setTimeInMillis(currentTimeMillis);
+//                calendar1.setTimeZone(TimeZone.getDefault());
+//
+//                Calendar calendar2 = Calendar.getInstance();
+//                calendar2.setTimeInMillis(eventTime * 1000L);
+//                calendar2.setTimeZone(TimeZone.getDefault());
+//                long different = (calendar2.getTimeInMillis()) - calendar1.getTimeInMillis();
+//
+//                long secondsInMilli = 1000;
+//                long minutesInMilli = secondsInMilli * 60;
+//                long hoursInMilli = minutesInMilli * 60;
+//                long daysInMilli = hoursInMilli * 24;
+//
+//                long elapsedDays = different / daysInMilli;
+//                different = different % daysInMilli;
+//
+//                long elapsedHours = different / hoursInMilli;
+//                different = different % hoursInMilli;
+//
+//                long elapsedMinutes = different / minutesInMilli;
+//                different = different % minutesInMilli;
+//
+//                long elapsedSeconds = different / secondsInMilli;
+//
+//                System.out.printf(
+//                        "%d days, %d hours, %d minutes, %d seconds%n",
+//                        elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
 
-                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
+//                long diffInSecond = remainingTime / 1000;
+//                long diffInMinute = remainingTime / (60 * 1000);
+//                long diffInHour = remainingTime / (60 * 60 * 1000);
+//                long diffInDays = remainingTime / (24 * 60 * 60 * 1000);
+//                System.out.println("Difference in Seconds : " + diffInSecond);
+//                System.out.println("Difference in Minute : " + diffInMinute);
+//                System.out.println("Difference in Hours : " + diffInHour);
+//                System.out.println("Difference in Days : " + diffInDays);
+                long different = appCMSPresenter.getTimeIntervalForEvent(eventTime * 1000L, "EEE MMM dd HH:mm:ss");
+
+
+                String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
                 String[] timerText = context.getResources().getStringArray(R.array.timer_text);
                 if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
                     TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
                     timerTile.setVisibility(View.VISIBLE);
                 }
+
+//                if(appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id)!=null){
+//                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.GONE);
+//                }
                 if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                         appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
                     LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
@@ -7698,7 +7774,9 @@ public class ViewCreator {
                     Button watchLive = appCMSPresenter.getCurrentActivity().findViewById(R.id.watch_live_button);
                     watchLive.setVisibility(View.VISIBLE);
                 }
-
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id) != null) {
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.VISIBLE);
+                }
                 if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                         appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
                     TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
