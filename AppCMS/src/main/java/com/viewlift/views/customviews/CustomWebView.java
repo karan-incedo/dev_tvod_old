@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
@@ -25,8 +26,17 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.viewlift.presenters.AppCMSPresenter;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by karan.kaushik on 11/22/2017.
@@ -36,10 +46,13 @@ public class CustomWebView extends AppCMSAdvancedWebView {
 
     private Activity context;
     private WebView webView;
-    public CustomWebView(Context context) {
+    AppCMSPresenter appcmsPresenter;
+
+    public CustomWebView(Context context, AppCMSPresenter appcmsPresenter) {
         super(context);
         this.context = (Activity) context;
         webView = this;
+        this.appcmsPresenter = appcmsPresenter;
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setBuiltInZoomControls(false);
         this.getSettings().setDisplayZoomControls(false);
@@ -101,7 +114,84 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         this.loadData(loadingURL, "text/html", "UTF-8");
     }
 
+    public class checkURLAysyncTask extends AsyncTask<String, String, Integer> {
+
+        private String loadwebUrl = "";
+        private AppCMSPresenter appCMSPresenter;
+
+        public checkURLAysyncTask(String loadingUrl, AppCMSPresenter appCMSPresenter) {
+            this.loadwebUrl = loadingUrl;
+            this.appCMSPresenter = appCMSPresenter;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            appcmsPresenter.showLoadingDialog(true);
+
+        }
+
+        @Override
+        protected Integer doInBackground(String... arg0) {
+            // TODO Auto-generated method stub
+            int iHTTPStatus = 0;
+
+            // Making HTTP request
+            try {
+                // defaultHttpClient
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpRequest = new HttpGet(arg0[0]);
+
+                HttpResponse httpResponse = httpClient.execute(httpRequest);
+                iHTTPStatus = httpResponse.getStatusLine().getStatusCode();
+//                if (iHTTPStatus != 200) {
+//                    // Serve a local page instead...
+//                    CustomWebView.this.loadUrl(arg0[0]);
+//                } else {
+//                    Toast.makeText(context, "Status code " + iHTTPStatus, Toast.LENGTH_LONG).show();
+//                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+
+            return iHTTPStatus;
+        }
+
+        @Override
+        protected void onPostExecute(Integer httpStatusCode) {
+            super.onPostExecute(httpStatusCode);
+            if (httpStatusCode == 200) {
+                loadUrlWithWebViewClient(appcmsPresenter, loadwebUrl);
+            } else {
+                Toast.makeText(context, "Error while loading page..", Toast.LENGTH_LONG).show();
+                CustomWebView.this.loadUrl(loadwebUrl);
+                appCMSPresenter.showLoadingDialog(false);
+                context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+
+            }
+        }
+    }
+
+    ;
+
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
+
+
+        loadingURL = loadingURL.replace("http", "https");
+//        this.loadUrl(loadingURL);
+        new checkURLAysyncTask(loadingURL, appCMSPresenter).execute(loadingURL);
+    }
+
+    private void loadUrlWithWebViewClient(AppCMSPresenter appCMSPresenter, String loadingURL) {
         context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
         this.getSettings().setLoadWithOverviewMode(true);
@@ -110,28 +200,36 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
         this.getSettings().setBuiltInZoomControls(true);
         setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
             // Hide the zoom controls for HONEYCOMB+
             this.getSettings().setDisplayZoomControls(false);
         }
 
-       // this.getSettings().setDefaultFontSize(30);
+        // this.getSettings().setDefaultFontSize(30);
         this.addJavascriptInterface(this, "MyApp");
         this.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                appCMSPresenter.clearWebViewCache();
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 appCMSPresenter.showLoadingDialog(true);
 
-                if(!loadingURL.equalsIgnoreCase(url.replace("https","http"))) {
+                if (!loadingURL.equalsIgnoreCase(url.replace("https", "http"))) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
-                    () -> {
-                       Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                       context.startActivity(browserIntent);
-                    });
-                }else {
-                    Log.e("CustomWebView","Redirected URL :"+url);
+                            () -> {
+                                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                                context.startActivity(browserIntent);
+                            });
+                } else {
+                    Log.e("CustomWebView", "Redirected URL :" + url);
                     view.loadUrl(url);
                 }
+
                 return true;
             }
 
@@ -146,21 +244,18 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             }
 
         });
-
-        //loadingURL = loadingURL.replace("http","https");
         this.loadUrl(loadingURL);
-        Log.e("CustomWebView","URL :"+loadingURL);
     }
 
     public void showAlert(Context context, String url) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
         // set title
-        alertDialogBuilder.setTitle( "Open Link");
+        alertDialogBuilder.setTitle("Open Link");
 
         // set dialog message
-        AlertDialog dialog =alertDialogBuilder
-                .setMessage( "Open Link outside?" )
+        AlertDialog dialog = alertDialogBuilder
+                .setMessage("Open Link outside?")
                 .setCancelable(false)
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
@@ -168,8 +263,8 @@ public class CustomWebView extends AppCMSAdvancedWebView {
                         dialog.dismiss();
                     }
                 })
-                .setPositiveButton("YES",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         // if this button is clicked, close
                         // current activity
                         Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));

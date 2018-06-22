@@ -575,7 +575,7 @@ public class ViewCreator {
     String[] country = {"India", "USA", "China", "Japan", "Other",};
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
-        CustomWebView webView = new CustomWebView(context);
+        CustomWebView webView = new CustomWebView(context,appCMSPresenter);
         String webViewUrl, html;
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
@@ -4706,7 +4706,6 @@ public class ViewCreator {
                     System.out.println("after set fight selection adapter");
 
                     spinnerFight.setOnItemSelectedListener(onItemSelectListener);
-                    spinnerFight.setSelection(0);
 //                    try {
 //                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
 //                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
@@ -4723,6 +4722,7 @@ public class ViewCreator {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    spinnerFight.setSelection(0);
 
                     ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
                 } else {

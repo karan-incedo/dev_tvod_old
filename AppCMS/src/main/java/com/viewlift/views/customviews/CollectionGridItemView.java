@@ -795,32 +795,27 @@ public class CollectionGridItemView extends BaseView {
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
-                    long eventDate = data.getGist().getEventSchedule().get(0).getEventTime();
-                    long currentTimeMillis = System.currentTimeMillis();
 
-                    long remainingTime=appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L,"EEE MMM dd HH:mm:ss");
+                    if (data!=null &&  data.getGist()!=null && data.getGist().getTicketUrl()!=null &&
+                            !TextUtils.isEmpty(data.getGist().getTicketUrl())) {
+                        ((TextView) view).setText(childComponent.getText());
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        viewsToUpdateOnClickEvent.add(view);
+                        view.setOnClickListener(view1 -> {
 
-                    System.out.println("ticket event time-" + eventDate);
-
-                    System.out.println("ticket current Time-" + currentTimeMillis);
-                    System.out.println("ticket current differ-" + remainingTime);
-
-                    if (remainingTime < 0 ) {
+                            String url = "";
+                            if (data != null && data.getGist() != null &&
+                                    data.getGist().getTicketUrl() != null) {
+                                url = data.getGist().getTicketUrl();
+                            }
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
+                        });
+                    }else{
                         view.setVisibility(View.GONE);
-                    }
-                    ((TextView) view).setText(childComponent.getText());
-                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                    viewsToUpdateOnClickEvent.add(view);
-                    view.setOnClickListener(view1 -> {
 
-                        String url = "";
-                        if (data != null && data.getGist() != null &&
-                                data.getGist().getTicketUrl() != null) {
-                            url = data.getGist().getTicketUrl();
-                        }
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
-                    });
+                    }
+
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
