@@ -7,16 +7,23 @@ import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.network.rest.AppCMSContentDetailCall;
 import com.viewlift.models.network.rest.AppCMSContentDetailRest;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeRest;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
+import com.viewlift.models.network.rest.AppCMSShowDetailRest;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoRest;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeRest;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSVideoDetailRest;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.models.network.rest.UANamedUserEventRest;
 import com.viewlift.presenters.UrbanAirshipEventPresenter;
+import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -28,13 +35,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
-import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeRest;
-import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
-import com.viewlift.models.network.rest.AppCMSDeviceCodeRest;
-import com.viewlift.models.network.rest.AppCMSContentDetailCall;
-import com.viewlift.models.network.rest.AppCMSContentDetailRest;
-import com.viewlift.stag.generated.Stag;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -132,6 +132,12 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public AppCMSShowDetailRest providesAppCMSShowDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSShowDetailRest.class);
+    }
+
+    @Provides
+    @Singleton
     public UANamedUserEventRest providesUANamedUserEventRest(Retrofit retrofit) {
         return retrofit.create(UANamedUserEventRest.class);
     }
@@ -162,6 +168,11 @@ public class AppCMSAPIModule {
         return new AppCMSContentDetailCall(appCMSContentDetailRest);
     }
 
+    @Provides
+    @Singleton
+    public AppCMSShowDetailCall providesAppCMSShowDetailCall(AppCMSShowDetailRest appCMSShowDetailRest){
+        return new AppCMSShowDetailCall(appCMSShowDetailRest);
+    }
 
     @Provides
     @Singleton

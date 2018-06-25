@@ -46,7 +46,7 @@ repositories {
         }
     }
     mavenCentral()
-    flatDir{
+    flatDir {
         dirs 'libs'
     }
 }
@@ -65,7 +65,14 @@ android {
     def appVersionName
     //def minsdkversion
     //def targetsdkversion
-
+    signingConfigs {
+        debug {
+            storeFile file("keystore/snagfilms.jks")
+            storePassword 'snagfilms'
+            keyAlias 'snagfilms'
+            keyPassword 'snagfilms'
+        }
+    }
     def versionPropsFile = file('src/main/assets/version.properties')
 
     if (versionPropsFile.canRead()) {
@@ -109,6 +116,7 @@ android {
         renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
+        project.ext.set("archivesBaseName", customApplicationId+"-" + appVersionName)
     }
     flavorDimensions "green", "blue"
     productFlavors {
@@ -176,7 +184,8 @@ android {
 
         ndk {
             //abiFilters "armeabi-v7a", "x86", "armeabi", "mips"  // This was used because we were facing crash with Kiswe SDK on some of the devices
-            abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a' // Used after changes of Android SDK version 9th May 2018 due to [armeabi, mips are no more supported] after NDK 17 upgrade.
+            abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a'
+            // Used after changes of Android SDK version 9th May 2018 due to [armeabi, mips are no more supported] after NDK 17 upgrade.
         }
     }
     sourceSets {
@@ -230,6 +239,7 @@ android {
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
+            signingConfig signingConfigs.debug
         }
         release {
             multiDexEnabled true
@@ -441,7 +451,9 @@ dependencies {
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->
-    dependencies.add("implementation", [name: file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, ext: 'aar'])
+    dependencies.add("implementation", [name: file.name.lastIndexOf('.').with {
+        it != -1 ? file.name[0..<it] : file.name
+    }, ext                                  : 'aar'])
 }
 
 apply plugin: 'com.google.gms.google-services'

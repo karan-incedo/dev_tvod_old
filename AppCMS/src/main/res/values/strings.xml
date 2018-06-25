@@ -670,6 +670,7 @@
     <string name="json_content_id_key">contentID</string>
     <string name="json_seek_delta_key">seekDelta</string>
     <string name="json_seek_search_string_key">searchString</string>
+    <string name="json_data_type_key">dataType</string>
     <string name="json_data_consolidation_key">collapse_key</string>
     <string name="intent_msg_action">com.amazon.sample.admmessenger.ON_MESSAGE</string>
     <string name="intent_msg_category">com.amazon.sample.admmessenger.MSG_CATEGORY</string>
