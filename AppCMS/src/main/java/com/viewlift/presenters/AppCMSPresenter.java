@@ -121,7 +121,9 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
+import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -187,10 +189,12 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSShowDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
@@ -233,6 +237,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -600,7 +605,8 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private AppCMSContentDetailCall appCMSContentDetailCall;
-    private Activity currentActivity;
+    private AppCMSShowDetailCall appCMSShowDetailCall;
+    private AppCompatActivity currentActivity;
     private boolean isAppHomeActivityCreated = false;
     private Context currentContext;
     private Navigation navigation;
@@ -1504,7 +1510,7 @@ public class AppCMSPresenter {
                                             : message,
                                     false,
                                     () -> {
-                                        readyAction.call(null);
+                                        getCurrentActivity().finish();
                                     },
                                     null);
 
@@ -1749,7 +1755,7 @@ public class AppCMSPresenter {
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
-                    appCMSMain.getApiBaseUrl());
+                    appCMSMain.getApiBaseUrl()) + getDeviceId();
 
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
@@ -2512,9 +2518,8 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
-                                //Todo need to manage it depend on Template
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar) ||
-                                        getTemplateType() == TemplateType.SPORTS) {
+                                //If  Template is Sports AppBar and NevBar will present at video details page
+                                if (getTemplateType() == TemplateType.SPORTS) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
@@ -5052,6 +5057,7 @@ public class AppCMSPresenter {
                                 resultAction1, getLoggedInUser());
 
                     } else {
+                        downloadAutoPlayPage(contentDatum);
                         startDownload(contentDatum,
                                 resultAction1, false);
                     }
@@ -6740,6 +6746,35 @@ public class AppCMSPresenter {
                             }
                         });
             }
+        }
+    }
+
+    private void downloadAutoPlayPage(ContentDatum contentDatum){
+        try {
+            String mediaType = contentDatum.getMediaType() == null ? contentDatum.getGist().getContentType() : contentDatum.getMediaType();
+            String pageId = getAutoplayPageId(mediaType);
+            final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            if (appCMSPageUI == null) {
+            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+            if (metaPage != null) {
+                getAppCMSPage(metaPage.getPageUI(),
+                        appCMSPageUIResult -> {
+                            stopLoader();
+                            if (appCMSPageUIResult != null) {
+                                navigationPages.put(pageId, appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUIResult);
+                                }
+
+                            }
+                        },
+                        loadFromFile,
+                        false);
+            }
+        }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -8848,6 +8883,7 @@ public class AppCMSPresenter {
             appCMSGetSyncCodeApiCall = appCMSAPIComponent.appCmsGetSyncCodeAPICall();
             appCmsSyncDeviceCodeAPICall = appCMSAPIComponent.appCmsSyncDeviceCodeAPICall();
             appCMSContentDetailCall = appCMSAPIComponent.appCMSContentDetailCall();
+            appCMSShowDetailCall = appCMSAPIComponent.appCMSShowDetailCall();
 
 
         }
@@ -11384,7 +11420,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
+            if ( (!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -11576,6 +11612,7 @@ public class AppCMSPresenter {
                                     onDismissAction.call();
                                 }
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 //Log.e(TAG, "Error closing cancellation dialog: " + e.getMessage());
                             }
                         });
@@ -13398,12 +13435,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public Activity getCurrentActivity() {
+    public AppCompatActivity getCurrentActivity() {
         return currentActivity;
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = activity;
+        this.currentActivity = (AppCompatActivity) activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);
@@ -18797,5 +18834,17 @@ public class AppCMSPresenter {
         return false;
     }
 
-
+    public void getShowDetails(String showId, final Action1<AppCMSShowDetail> action1) {
+        String url = currentContext.getString(R.string.app_cms_show_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                showId,
+                appCMSSite.getGist().getSiteInternalName());
+        GetAppCMSShowDetailAsyncTask.Params params =
+                new GetAppCMSShowDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+        new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
+                action1).execute(params);
+    }
 }

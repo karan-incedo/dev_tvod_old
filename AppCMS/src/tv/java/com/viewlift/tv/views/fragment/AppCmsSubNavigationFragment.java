@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -10,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +32,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsBaseActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
@@ -501,6 +502,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
+                    if(null != getActivity() && getActivity() instanceof AppCmsBaseActivity){
+                        ((AppCmsBaseActivity) getActivity()).setProfileFirstTime(false);
+                    }
+
                     if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
                             .get(navigationSubItem.title))
                             || ANDROID_WATCHLIST_SCREEN_KEY.equals(mAppCMSBinder
