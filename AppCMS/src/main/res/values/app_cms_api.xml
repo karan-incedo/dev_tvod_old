@@ -56,7 +56,7 @@
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
 
     <!-- AppCMS Update Video Watch History API -->
-    <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history</string>
+    <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history?deviceId=</string>
 
     <!-- AppCMS User Video Status API -->
     <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>
@@ -97,7 +97,7 @@
         <item>AC Footer 01</item>
         <item>AC Footer 02</item>
         <item>AC RawHtml 01</item>
-        <item>AC ImageTextRow 02</item>
+        <!--<item>AC ImageTextRow 02</item>-->
     </string-array>
 
 
@@ -412,7 +412,6 @@
     <string name="app_cms_pagename_musicHub_screen_key">Music Hub</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
-    <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
@@ -687,7 +686,7 @@
     <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
     <string name="plan_type_year">Year</string>
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
-    <string name="plan_type_day">Month</string>
+    <string name="plan_type_day">Day</string>
 
     <string name="app_cms_page_download_size_key">videoSize</string>
     <string name="app_cms_page_download_duration_key">duration</string>
@@ -744,5 +743,9 @@
     <!--season tabs-->
     <string name="app_cms_page_tabs_season_key">seasonTabs</string>
     <string name="app_cms_page_tabs_type">tabLayout</string>
-    <string name="app_cms_page_viewpager_season_key">seasonsViewPager</string>
+<!--Benefit plan page-->
+    <string name="app_cms_plan_feature_text_key">featureText</string>
+    <string name="app_cms_plan_single_plan_subscribe_text_key">singlePlanSubscribe</string>
+    <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
+
 </resources>
