@@ -7,6 +7,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -92,6 +96,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -456,6 +461,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+
+        try {
+            if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+                StateListDrawable drawable = (StateListDrawable) currentStreamingQualitySelector.getBackground();
+                DrawableContainer.DrawableContainerState dcs = (DrawableContainer.DrawableContainerState) drawable.getConstantState();
+                Drawable[] drawableItems = dcs.getChildren();
+                GradientDrawable gradientDrawableChecked = (GradientDrawable) drawableItems[0]; // item 1
+                gradientDrawableChecked.setStroke(1,appCMSPresenter.getBrandPrimaryCtaColor());
+            }
+        } catch (Exception e) {
+        }
+
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                 && !useHls
                 && !streamingQualitySelectorCreated) {
@@ -663,8 +680,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 TrackGroup group = trackGroups.get(groupIndex);
                 for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
                     Format format = group.getFormat(trackIndex);
-                    availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
-                            format.height == Format.NO_VALUE ? "" : format.height + "p"));
+                    if(format.height != Format.NO_VALUE) {
+                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
+                                format.height == Format.NO_VALUE ? "" : format.height + "p"));
+                    }else{
+                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex ,
+                                buildBitrateString(format)) );
+                    }
                 }
             }
 
@@ -676,6 +698,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
                 return 1;
             });
+
             set.addAll(availableStreamingQualities);
             availableStreamingQualities.clear();
             availableStreamingQualities.addAll(set);
@@ -687,21 +710,30 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 listView.setAdapter(hlsListViewAdapter);
-                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                    listView.setBackgroundColor(Color.TRANSPARENT);
+                }else {
+                    listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                }
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
 
                 setSelectedStreamingQualityIndex();
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
                 if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
                     ((ViewGroup) listView.getParent()).removeView(listView);
                 }
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                    if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
+                        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                    }else {
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                    }
                 }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     /*Click Handler*/
@@ -737,6 +769,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             currentStreamingQualitySelector.setVisibility(GONE);
         }
         streamingQualitySelectorCreated = true;
+    }
+
+    private String buildBitrateString(Format format) {
+        return format.bitrate == Format.NO_VALUE ? ""
+                : String.format(Locale.US, "%.2fMbit", format.bitrate / 1000000f);
     }
 
     private DrmSessionManager<FrameworkMediaCrypto> buildOnlineDrmSessionManager(String licenseUrl) throws UnsupportedDrmException {
@@ -906,8 +943,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter
-                /*&& appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID*/)
+                && null != appCMSPresenter)
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
