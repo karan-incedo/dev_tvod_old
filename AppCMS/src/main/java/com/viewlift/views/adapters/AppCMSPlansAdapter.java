@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -149,9 +150,10 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
                 false,
                 useRoundedCorners(), this.viewTypeKey);
 
-            applyBgColorToChildren(view, selectedColor);
-
-
+        applyBgColorToChildren(view, selectedColor);
+        FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
+        layPar.setMargins(0, 20, 0, 0);
+        view.setLayoutParams(layPar);
         return new ViewHolder(view);
     }
 
@@ -205,13 +207,19 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         plan.append(planAmt.toString());
         plan.append(planDuration.toString());
         Spannable text = new SpannableString(plan.toString());
-        text.setSpan(new AbsoluteSizeSpan(120), 0, planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        float smallFont = 2.3f;
+        float bigFont = 3.0f;
+        if (BaseView.isTablet(mContext)) {
+            smallFont = 3.3f;
+            bigFont = 4.0f;
+        }
+        text.setSpan(new RelativeSizeSpan(bigFont), 0, planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 //        text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length() + 1,
 //                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.splashbackgroundColor)), 0, planAmt.toString().length() + 1,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        text.setSpan(new AbsoluteSizeSpan(85), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new RelativeSizeSpan(smallFont), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.setText(text, TextView.BufferType.SPANNABLE);
         return textView;
     }
@@ -310,6 +318,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
                             subcriptionPlanClick(collectionGridItemView, data);
                         }
                     }
+
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
                         // NO-OP - Play is not implemented here

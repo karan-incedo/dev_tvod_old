@@ -20,6 +20,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -459,20 +460,21 @@ public class CollectionGridItemView extends BaseView {
                                     !TextUtils.isEmpty(settings.getItems().get(position).getImageUrl()) &&
                                     (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY)) {
                         bringToFront = false;
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+//                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 settings.getItems().get(position).getImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
+//                        imageUrl=settings.getItems().get(position).getImageUrl();
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        /*.override(childViewWidth, childViewHeight)*/.placeholder(placeholder)
-                                        /*.fitCenter()*/;
+                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                        .fitCenter();
 //                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
                                 Glide.with(context)
                                         .load(imageUrl)
-                                        .apply(requestOptions)
+//                                        .apply(requestOptions)
                                         .into((ImageView) view);
                             } else {
                                 ((ImageView) view).setBackgroundResource(placeholder);
@@ -480,6 +482,7 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                             //
                         }
+
                     } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 && data != null &&
@@ -1344,17 +1347,17 @@ public class CollectionGridItemView extends BaseView {
                             plan.append(planAmt.toString());
                             plan.append(planDuration.toString());
                             Spannable text = new SpannableString(plan.toString());
-                            int smallFont = 35;
-                            int bigFont = 50;
+                            float smallFont = 1.0f;
+                            float bigFont = 1.5f;
                             if (BaseView.isTablet(context)) {
-                                smallFont = 20;
-                                bigFont = 30;
+                                smallFont = 1.3f;
+                                bigFont = 2.0f;
                             }
-                            text.setSpan(new AbsoluteSizeSpan(smallFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new AbsoluteSizeSpan(bigFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(smallFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(bigFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new AbsoluteSizeSpan(smallFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(smallFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
                         } else {
                             StringBuilder plan = new StringBuilder();

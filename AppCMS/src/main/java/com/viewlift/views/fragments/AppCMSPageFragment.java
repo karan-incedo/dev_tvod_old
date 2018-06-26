@@ -51,7 +51,7 @@ public class AppCMSPageFragment extends Fragment {
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
     private AppCMSViewComponent appCMSViewComponent;
     private OnPageCreation onPageCreation;
-    private AppCMSPresenter appCMSPresenter;
+    private static AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
     private String videoPageName = "Video Page";
@@ -705,11 +705,12 @@ public class AppCMSPageFragment extends Fragment {
                         appCMSBinder.setyScroll(0);
                         pageView.scrollToPosition(appCMSBinder.getCurrentScrollPosition());
                     } else {
-
-                        int x = appCMSBinder.getxScroll();
-                        int y = appCMSBinder.getyScroll();
-                        pageView.scrollToPosition(-x, -y);
-                        pageView.scrollToPosition(x, y);
+                        if (!appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId())) {
+                            int x = appCMSBinder.getxScroll();
+                            int y = appCMSBinder.getyScroll();
+                            pageView.scrollToPosition(-x, -y);
+                            pageView.scrollToPosition(x, y);
+                        }
                     }
                     appCMSBinder.setScrollOnLandscape(BaseView.isLandscape(pageView.getContext()));
                 }

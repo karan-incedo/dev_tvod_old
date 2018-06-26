@@ -118,10 +118,10 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
             termsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             termsView.setTextColor(appCMSPresenter.getGeneralTextColor());
             termsView.setTextSize(16f);
-            termsView.setPadding(5, 15, 5, 15);
+            termsView.setPadding(5, 35, 5, 15);
             termsView.setGravity(Gravity.CENTER);
             termsView.setText("See terms of use and privacy policy for more details");
-            termsView.setLinkTextColor(ContextCompat.getColor(mContext, R.color.splashbackgroundColor));
+            termsView.setLinkTextColor(ContextCompat.getColor(mContext, android.R.color.white));
             ClickableSpan tosClick = new ClickableSpan() {
                 @Override
                 public void onClick(View view) {

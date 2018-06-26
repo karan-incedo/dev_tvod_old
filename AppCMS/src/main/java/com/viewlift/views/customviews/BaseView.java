@@ -1488,6 +1488,39 @@ public abstract class BaseView extends FrameLayout {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
+            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                if (isTablet(getContext())) {
+                    if (!isLandscape(getContext())) {
+                        TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                        if (tabletPortrait.getLeftMargin() != 0f) {
+                            lm = Math.round(DEVICE_WIDTH * (tabletPortrait.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
+                        }
+                        if (tabletPortrait.getRightMargin() != 0f) {
+                            rm = Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
+                        }
+                    }
+                    if (isLandscape(getContext())) {
+                        TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                        if (tabletLandscape.getLeftMargin() != 0f) {
+                            lm = Math.round(DEVICE_WIDTH * (tabletLandscape.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
+                        }
+                        if (tabletLandscape.getRightMargin() != 0f) {
+                            rm = Math.round(DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
+                        }
+                    }
+                    layoutParams.setMargins(lm, tm, rm, bm);
+                }else{
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    Mobile mobile = layout.getMobile();
+                    if (mobile.getLeftMargin() != 0f) {
+                        lm = Math.round(DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX));
+                    }
+                    if (mobile.getRightMargin() != 0f) {
+                        rm = Math.round(DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
+                    }
+                    layoutParams.setMargins(lm, tm, rm, bm);
+                }
             }/*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                 layoutParams.height=BaseView.getDeviceHeight();
 

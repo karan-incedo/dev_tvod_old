@@ -93,19 +93,25 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 80,
+                  "yAxis": 90,
                   "xAxis": 5,
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "rightMargin": 30,
+                  "leftMargin": 30
                 },
                 "tabletLandscape": {
-                  "yAxis": 100,
-                  "xAxis": 5,
-                  "fontSize": 16
-                },
-                "tabletPortrait": {
                   "yAxis": 120,
                   "xAxis": 5,
-                  "fontSize": 16
+                  "fontSize": 18,
+                  "rightMargin": 50,
+                  "leftMargin": 50
+                },
+                "tabletPortrait": {
+                  "yAxis": 140,
+                  "xAxis": 5,
+                  "fontSize": 18,
+                  "rightMargin": 70,
+                  "leftMargin": 70
                 }
               },
               "fontFamily": "OpenSans",
@@ -117,21 +123,21 @@
             {
               "layout": {
                 "mobile": {
-                  "yAxis": 10,
-                  "xAxis": 0,
-                  "width": 60,
-                  "height": 60
-                },
-                "tabletLandscape": {
-                  "yAxis": 10,
+                  "yAxis": 15,
                   "xAxis": 0,
                   "width": 70,
+                  "height": 55
+                },
+                "tabletLandscape": {
+                  "yAxis": 40,
+                  "xAxis": 0,
+                  "width": 80,
                   "height": 70
                 },
                 "tabletPortrait": {
                   "yAxis": 40,
                   "xAxis": 0,
-                  "width": 70,
+                  "width": 80,
                   "height": 70
                 }
               },
@@ -183,26 +189,22 @@
             "mobile": {
               "gridHeight": 70,
               "trayPadding": 20,
-              "leftMargin": 18.4,
-              "topMargin": 4,
-              "rightMargin": 18.4,
-              "bottomMargin": 0,
-              "gridWidth": 308
+              "leftMargin": 15,
+              "rightMargin": 15,
+              "bottomMargin": 0
             },
             "tabletLandscape": {
-              "gridHeight": 100,
+              "gridHeight": 85,
               "trayPadding": 20,
-              "leftMargin": 14.35,
-              "topMargin": 5.86,
-              "rightMargin": 14.35,
+              "leftMargin": 150,
+              "rightMargin": 150,
               "bottomMargin": 0
             },
             "tabletPortrait": {
-              "gridHeight": 100,
+              "gridHeight": 85,
               "trayPadding": 20,
-              "leftMargin": 2.47,
-              "topMargin": 4.39,
-              "rightMargin": 2.47,
+              "rightMargin": 150,
+              "leftMargin": 150,
               "bottomMargin": 0
             }
           },
@@ -211,7 +213,7 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 0,
-                  "rightMargin": 5,
+                  "rightMargin": 35,
                   "fontSize": 13,
                   "height": 23
                 },
@@ -253,7 +255,6 @@
                   "leftMargin": 0,
                   "rightMargin": 0,
                   "fontSize": 17
-
                 }
               },
               "fontFamily": "OpenSans",
