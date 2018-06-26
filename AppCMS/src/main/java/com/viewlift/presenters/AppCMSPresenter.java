@@ -344,7 +344,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -2175,10 +2174,8 @@ public class AppCMSPresenter {
 
                     isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
-                    boolean svodServiceType =
-                            appCMSMain.getServiceType()
-                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-                    if (svodServiceType &&
+
+                    if (isAppSVOD() &&
                             !isTrailer &&
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
@@ -2515,9 +2512,8 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
-                                //Todo need to manage it depend on Template
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar) ||
-                                        getTemplateType() == TemplateType.SPORTS) {
+                                //If  Template is Sports AppBar and NevBar will present at video details page
+                                if (getTemplateType() == TemplateType.SPORTS) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
@@ -4513,6 +4509,14 @@ public class AppCMSPresenter {
                                     }
                                 }
                                 populateFilmsInUserWatchlist();
+                            } else {
+
+                                    if (add) {
+                                        displayCustomToast("Failed to Add to Watchlist");
+                                    } else {
+                                        displayCustomToast("Failed to Remove from Watchlist");
+                                    }
+
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
@@ -5047,6 +5051,7 @@ public class AppCMSPresenter {
                                 resultAction1, getLoggedInUser());
 
                     } else {
+                        downloadAutoPlayPage(contentDatum);
                         startDownload(contentDatum,
                                 resultAction1, false);
                     }
@@ -6735,6 +6740,35 @@ public class AppCMSPresenter {
                             }
                         });
             }
+        }
+    }
+
+    private void downloadAutoPlayPage(ContentDatum contentDatum){
+        try {
+            String mediaType = contentDatum.getMediaType() == null ? contentDatum.getGist().getContentType() : contentDatum.getMediaType();
+            String pageId = getAutoplayPageId(mediaType);
+            final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            if (appCMSPageUI == null) {
+            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+            if (metaPage != null) {
+                getAppCMSPage(metaPage.getPageUI(),
+                        appCMSPageUIResult -> {
+                            stopLoader();
+                            if (appCMSPageUIResult != null) {
+                                navigationPages.put(pageId, appCMSPageUIResult);
+                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                if (action != null && actionToPageMap.containsKey(action)) {
+                                    actionToPageMap.put(action, appCMSPageUIResult);
+                                }
+
+                            }
+                        },
+                        loadFromFile,
+                        false);
+            }
+        }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -11379,7 +11413,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
+            if ( (!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -11571,6 +11605,7 @@ public class AppCMSPresenter {
                                     onDismissAction.call();
                                 }
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 //Log.e(TAG, "Error closing cancellation dialog: " + e.getMessage());
                             }
                         });
@@ -12197,13 +12232,15 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cancelInternalEvents();
-                    restartInternalEvents();
-                }
-            });
+            if (currentActivity != null ) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        cancelInternalEvents();
+                        restartInternalEvents();
+                    }
+                });
+            }
 
 
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
@@ -13026,9 +13063,7 @@ public class AppCMSPresenter {
             cacheNavItems();
 
             //Log.d(TAG, "Logging in");
-            if (appCMSMain.getServiceType()
-                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                    refreshSubscriptionData) {
+            if (isAppSVOD() && refreshSubscriptionData) {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
                     updatePlaybackControl();
@@ -14500,8 +14535,7 @@ public class AppCMSPresenter {
                 }
 
                 int pageToQueueIndex = -1;
-                if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
-                        && !isUserLoggedIn()) {
+                if (isAppSVOD() && !isUserLoggedIn()) {
                     launchType = LaunchType.LOGIN_AND_SIGNUP;
                 }
 
@@ -18783,7 +18817,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if (null != appCMSMain &&
+        if(!Utils.isFireTVDevice(currentContext)){
+            return true;
+        }else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");

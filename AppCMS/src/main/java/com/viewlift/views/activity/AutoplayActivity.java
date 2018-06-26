@@ -50,6 +50,9 @@ public class AutoplayActivity
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_AUTOPLAY_SCREEN));
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        if(appCMSPresenter != null) {
+            appCMSPresenter.setCancelAllLoads(false);
+        }
 
         try {
             Intent intent = getIntent();
