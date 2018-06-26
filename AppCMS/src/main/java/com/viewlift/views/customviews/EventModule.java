@@ -118,12 +118,16 @@ public class EventModule extends ModuleView {
              */
             List<ContentDatum> tableViewData = new ArrayList<>();
 
+            //initially set live status to 0
+            if(moduleAPI!=null && moduleAPI.getContentData()!=null &&moduleAPI.getContentData().get(0)!=null &&
+                    moduleAPI.getContentData().get(0).getGist().getEventSchedule()!=null &&
+                    moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0)!=null) {
+                moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).setIsLiveEvent("0");
+            }
             if (moduleAPI != null && moduleAPI.getContentData() != null &&
                     moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                     moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null) {
 
-                //initially set live status to 0
-                moduleAPI.getContentData().get(0).getLiveEvents().get(0).setIsLiveEvent("0");
                 for (int k = 0; k < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size(); k++) {
                     ContentDatum contentData = new ContentDatum();
                     moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k + 1 + "");
@@ -132,7 +136,7 @@ public class EventModule extends ModuleView {
 
                     //if any fight status is not 2 than set live status 0
                     if (!moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).getFightStatus().equalsIgnoreCase("2")) {
-                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).setIsLiveEvent("1");
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).setIsLiveEvent("1");
                     }
                 }
             }
