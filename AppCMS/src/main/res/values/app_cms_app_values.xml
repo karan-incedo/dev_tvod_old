@@ -15,7 +15,7 @@
     SiteId=00000151-11b4-d29b-a17d-55fdb2b80000
     TODO TampaBAy id for temp dev
     SiteId=6fef71e8-3185-432f-8431-106c2be042c8
-    TOD AFL
+    TODO AFL
     SiteId=0000015a-a977-d135-adda-fb7fb65f0000
     TODO Fail Army
     SiteId=6ea6f2a0-451c-4d87-8060-051f8c07db23
@@ -52,6 +52,7 @@
 
     <string name="search_hint_text">SEARCH</string>
 
+
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
     <string name="app_cms_episodic_season_prefix">SEASON</string>
@@ -69,8 +70,6 @@
     <bool name="menu_icon_dismisses_menu_page">false</bool>
     <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
-
-    <bool name="show_navbar">false</bool>
 
     <bool name="enable_stream_quality_selection">true</bool>
 

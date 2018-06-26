@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,7 +132,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             }
 
             if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
-                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase("SVOD")) {
+                    .equals(AppCMSPresenter.TemplateType.SPORTS) && appCMSPresenter.isAppSVOD()) {
                 updateSubscriptionStrip();
             } else {
                 subscriptionTitle.setVisibility(View.GONE);
