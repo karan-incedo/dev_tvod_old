@@ -635,7 +635,7 @@ public class AppCMSPresenter {
     private boolean loadFromFile;
     private boolean loadingPage;
     private int fightSelectId;
-    private int selectedSchedulePosition=0;
+    private int selectedSchedulePosition = 0;
 
     private AppCMSMain appCMSMain;
     private AppCMSSite appCMSSite;
@@ -2908,35 +2908,39 @@ public class AppCMSPresenter {
                                                         if (appCMSTeamRoasterResult != null) {
                                                             pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
                                                         }
-                                                        //by default select first item of fight
-                                                        setSelectedFightId(0);
-                                                        Bundle args = getPageActivityBundle(currentActivity,
-                                                                appCMSPageUI,
-                                                                pageApi,
-                                                                this.pageId,
-                                                                pageApi.getTitle(),
-                                                                this.pagePath,
-                                                                "",
-                                                                loadFromFile,
-                                                                this.appbarPresent,
-                                                                this.fullscreenEnabled,
-                                                                this.navbarPresent,
-                                                                false,
-                                                                this.searchQuery,
-                                                                ExtraScreenType.NONE);
-                                                        if (args != null) {
-                                                            Intent updatePageIntent =
-                                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                            updatePageIntent.putExtra(
-                                                                    currentActivity.getString(R.string.app_cms_bundle_key),
-                                                                    args);
-                                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                                                            currentActivity.sendBroadcast(updatePageIntent);
 
-                                                            stopLoader();
-                                                        }
-                                                        launched = true;
+                                                    } else {
+                                                        pageApi = appCMSPageAPI;
+
                                                     }
+                                                    //by default select first item of fight
+                                                    setSelectedFightId(0);
+                                                    Bundle args = getPageActivityBundle(currentActivity,
+                                                            appCMSPageUI,
+                                                            pageApi,
+                                                            this.pageId,
+                                                            pageApi.getTitle(),
+                                                            this.pagePath,
+                                                            "",
+                                                            loadFromFile,
+                                                            this.appbarPresent,
+                                                            this.fullscreenEnabled,
+                                                            this.navbarPresent,
+                                                            false,
+                                                            this.searchQuery,
+                                                            ExtraScreenType.NONE);
+                                                    if (args != null) {
+                                                        Intent updatePageIntent =
+                                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                        updatePageIntent.putExtra(
+                                                                currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                args);
+                                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                                        currentActivity.sendBroadcast(updatePageIntent);
+
+                                                        stopLoader();
+                                                    }
+                                                    launched = true;
                                                 }
                                             });
 
@@ -4657,7 +4661,7 @@ public class AppCMSPresenter {
 
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null ) {
+        if (currentContext != null) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,

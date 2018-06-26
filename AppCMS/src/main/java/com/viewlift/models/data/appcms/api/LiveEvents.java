@@ -58,9 +58,9 @@ public class LiveEvents implements Serializable {
         EventId = eventId;
     }
 
-    public String getIsLiveEvent() {
-        return IsLiveEvent;
-    }
+//    public String getIsLiveEvent() {
+//        return IsLiveEvent;
+//    }
 
     public void setIsLiveEvent(String isLiveEvent) {
         IsLiveEvent = isLiveEvent;

@@ -53,6 +53,17 @@ public class GameSchedule implements Serializable {
     @Expose
     long gameDate;
 
+    public String getIsLiveEvent() {
+        return IsLiveEvent;
+    }
+
+    public void setIsLiveEvent(String isLiveEvent) {
+        IsLiveEvent = isLiveEvent;
+    }
+
+    public String IsLiveEvent;
+
+
     public String getId() {
         return id;
     }
