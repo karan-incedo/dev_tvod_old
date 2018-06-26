@@ -329,9 +329,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -633,6 +635,7 @@ public class AppCMSPresenter {
     private boolean loadFromFile;
     private boolean loadingPage;
     private int fightSelectId;
+    private int selectedSchedulePosition=0;
 
     private AppCMSMain appCMSMain;
     private AppCMSSite appCMSSite;
@@ -1126,6 +1129,106 @@ public class AppCMSPresenter {
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
+    public static String geTimeFormat(long timeDifference) {
+
+        long difference = timeDifference;
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = difference / daysInMilli;
+        difference = difference % daysInMilli;
+
+        long elapsedHours = difference / hoursInMilli;
+        difference = difference % hoursInMilli;
+
+        long elapsedMinutes = difference / minutesInMilli;
+        difference = difference % minutesInMilli;
+
+        long elapsedSeconds = difference / secondsInMilli;
+
+        String differenceFormat = (String.format("%02d", elapsedDays) + ":" + String.format("%02d", elapsedHours) + ":" + String.format("%02d", elapsedMinutes) + ":" + String.format("%02d", elapsedSeconds));
+        return differenceFormat;
+    }
+
+    public static String getDateFormatByTimeZone(long timeMilliSeconds, String dateFormat, String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.US);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+
+        return formatter.format(calendar.getTime());
+    }
+
+    public static long getTimeIntervalForEvent(long timeMilliSecondsEvent, String dateFormat) {
+        long timeDifference = 0;
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSecondsEvent);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String eventTime = formatter.format(calendar.getTime());
+
+        SimpleDateFormat formatterCurrentTime = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendarCurrent = Calendar.getInstance();
+        calendarCurrent.setTimeInMillis(System.currentTimeMillis()
+        );
+        formatterCurrentTime.setTimeZone(TimeZone.getDefault());
+
+        String currentTime = formatterCurrentTime.format(calendarCurrent.getTime());
+        long eventTimeInMs = getMillisecondFromDaeString(dateFormat, eventTime);
+        long currentTimeInMs = getMillisecondFromDaeString(dateFormat, currentTime);
+        timeDifference = eventTimeInMs - currentTimeInMs;
+        return timeDifference;
+    }
+
+    private static long getMillisecondFromDaeString(String dateFormat, String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        try {
+            Date mDate = sdf.parse(date);
+            long timeInMilliseconds = mDate.getTime();
+            return timeInMilliseconds;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static String getDateFormatByTimeZone1(long timeMilliSeconds, String dateFormat, String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getDefault());
+
+        return formatter.format(calendar.getTime());
+    }
+
+    public static Date getDateByTimeZone(long timeMilliSeconds, String dateFormat, String timeZone) {
+        DateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return calendar.getTime();
+    }
+
+    public static long currentTimeMillisLocal() {
+        return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();//System.currentTimeMillis();//
+    }
+
+    public static String getDateFormatByTimeZoneDiff(long timeMilliSeconds, String dateFormat, String timeZone) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
         return formatter.format(calendar.getTime());
     }
 
@@ -2703,6 +2806,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
     public void navigateToEventDetailPage(String permaLink) {
         String pagePath = permaLink;
 
@@ -2728,7 +2832,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             false);
                 }
-            }else{
+            } else {
 
                 String baseUrl = appCMSMain.getApiBaseUrl();
                 String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
@@ -2770,13 +2874,19 @@ public class AppCMSPresenter {
                                 if (appCMSPageAPI != null) {
                                     navigationPageData.put(this.pageId, appCMSPageAPI);
 
+                                    String dataId = "";
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.action
                                             + BaseView.isLandscape(currentActivity));
-
+                                    for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
+                                        if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("EventDetailModule")) {
+                                            dataId = appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getDataId();
+                                            break;
+                                        }
+                                    }
 
                                     getEventsArchieve(appCMSMain.getApiBaseUrl(),
-                                            appCMSPageAPI.getModules().get(0).getContentData().get(0).getGist().getDataId(),
+                                            dataId,
                                             pageId, new AppCMSEventArchieveAPIAction(true,
                                                     false,
                                                     true,
@@ -2830,7 +2940,7 @@ public class AppCMSPresenter {
                                                 }
                                             });
 
-                                }else{
+                                } else {
                                     stopLoader();
                                 }
                                 loadingPage = false;
@@ -2847,6 +2957,7 @@ public class AppCMSPresenter {
 //            loadingPage = false;
 //        }
     }
+
     /**
      * This will create a Binder object containing a default set of flags used for launching the Video Player.
      *
@@ -3790,7 +3901,7 @@ public class AppCMSPresenter {
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingIntent);
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "email", "user_friends"));
+                    Arrays.asList("public_profile", "email"));
         }
     }
 
@@ -4546,7 +4657,7 @@ public class AppCMSPresenter {
 
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null && !isFromEntitlementAPI) {
+        if (currentContext != null ) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
@@ -6676,7 +6787,6 @@ public class AppCMSPresenter {
             MetaPage metaPage = pageIdToMetaPageMap.get(schedulePage.getPageId());
 
 
-
             getSchedulePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
                     metaPage.getPageId(), new AppCMSScheduleAPIAction(true,
@@ -7636,10 +7746,10 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             showLoader();
-            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(currentActivity, "roster.json"),
-                    AppCMSPageUI.class);
-//            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(currentActivity, "roster.json"),
+//                    AppCMSPageUI.class);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
@@ -8082,7 +8192,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             try {
                 appCMSEventArchieveCall.call(
-                        currentActivity.getString(R.string.app_cms_event_archieve_api_url,currentActivity.getString(R.string.app_cms_team_pointstreak_apikey),eventId),
+                        currentActivity.getString(R.string.app_cms_event_archieve_api_url, currentActivity.getString(R.string.app_cms_team_pointstreak_apikey), eventId),
                         currentActivity.getString(R.string.app_cms_team_pointstreak_apikey),
                         eventApiAction);
             } catch (IOException e) {
@@ -8099,6 +8209,13 @@ public class AppCMSPresenter {
         return fightSelectId;
     }
 
+    public void setSelectedSchedulePosition(int position) {
+        this.selectedSchedulePosition = position;
+    }
+
+    public int getSelectedSchedulePosition() {
+        return selectedSchedulePosition;
+    }
 
     private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,
@@ -15368,6 +15485,7 @@ public class AppCMSPresenter {
     public boolean isPlaylistPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && playlistPage != null && pageId.equals(playlistPage.getPageId());
     }
+
     public boolean isSchedulePage(String pageId) {
         return !TextUtils.isEmpty(pageId) && schedulePage != null && pageId.equals(schedulePage.getPageId());
     }
@@ -19329,7 +19447,7 @@ public class AppCMSPresenter {
             AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
                     loadJsonFromAssets(currentActivity, "schedule_page_module.json"),
                     AppCMSPageUI.class);
-//            AppCMSPageUI appCMSPageUI = navigationPages.get(id);
+//            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
 
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(id);

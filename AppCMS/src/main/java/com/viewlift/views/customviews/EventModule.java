@@ -112,30 +112,52 @@ public class EventModule extends ModuleView {
                 module.setBlockName(moduleInfo.getBlockName());
             }
 
+            /**
+             * check FightStatus in array of fights .if any fight has status other than 2 ,than it is a live event
+             * as well add data for table view in tablet device
+             */
+            List<ContentDatum> tableViewData = new ArrayList<>();
+
+            if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                    moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                    moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null) {
+
+                //initially set live status to 0
+                moduleAPI.getContentData().get(0).getLiveEvents().get(0).setIsLiveEvent("0");
+                for (int k = 0; k < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size(); k++) {
+                    ContentDatum contentData = new ContentDatum();
+                    moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k + 1 + "");
+                    contentData.setFights(moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k));
+                    tableViewData.add(contentData);
+
+                    //if any fight status is not 2 than set live status 0
+                    if (!moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).getFightStatus().equalsIgnoreCase("2")) {
+                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).setIsLiveEvent("1");
+                    }
+                }
+            }
             if (module != null && module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
                     ModuleWithComponents module1 = component;
 
+
                     ModuleView moduleView1 = new ModuleView<>(context, module1, true);
+                    if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_SUMMARY_MODULE_KEY) {
+                        moduleView1.setId(R.id.fight_summary_module_id);
+                        long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                        long currentTimeMillis = System.currentTimeMillis();
+                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+                        if (remainingTime > 0) {
+                            moduleView1.setVisibility(View.GONE);
+                        }
+                    }
                     for (int j = 0; j < component.getComponents().size(); j++) {
                         Component component1 = component.getComponents().get(j);
 
-//                        ModuleView moduleView2 = new ModuleView<>(context, module2, true);
                         if (jsonValueKeyMap.get(component1.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_TABLE_KEY) {
-                            List<ContentDatum> data = new ArrayList<>();
 
-                            for (int k = 0; k < moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().size(); k++) {
-
-
-                                ContentDatum contentData = new ContentDatum();
-                                moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k).setFightSerialNo(k + 1 + "");
-                                contentData.setFights(moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights().get(k));
-                                data.add(contentData);
-
-
-                            }
-                            subTrayModuleAPI.setContentData(data);
+                            subTrayModuleAPI.setContentData(tableViewData);
                             addChildComponents(moduleView1, component1, appCMSAndroidModules, j, subTrayModuleAPI);
 
                         } else {

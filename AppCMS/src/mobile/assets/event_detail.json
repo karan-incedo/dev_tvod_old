@@ -97,19 +97,19 @@
                 "tabletLandscape": {
                   "yAxis": 100,
                   "width": 0,
-                  "fontSize": 26,
+                  "fontSize": 19,
                   "height": 45
                 },
                 "tabletPortrait": {
                   "yAxis": 76,
-                  "fontSize": 26,
+                  "fontSize": 19,
                   "width": 0,
                   "height": 45
                 }
               },
               "numberOfLines": 1,
               "fontWeight": "ExtraBold",
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "textAlignment": "center",
               "text": "TIME UNTIL FACEOFF",
               "type": "label",
@@ -126,18 +126,18 @@
                   "yAxis": 145,
                   "width": 0,
                   "fontSize": 26,
-                  "height": 45
+                  "height": 55
                 },
                 "tabletPortrait": {
                   "yAxis": 114,
                   "fontSize": 26,
                   "width": 0,
-                  "height": 45
+                  "height": 55
                 }
               },
               "numberOfLines": 1,
               "fontWeight": "ExtraBold",
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "textAlignment": "center",
               "type": "timer",
               "key": "timer",
@@ -167,28 +167,28 @@
                 "mobile": {
                   "yAxis": 135,
                   "leftMargin": 10,
-                  "width": 120,
+                  "width": 350,
                   "height": 40,
-                  "fontSize": 18
+                  "fontSize": 16
                 },
                 "tabletLandscape": {
-                  "yAxis": 297,
+                  "yAxis": 305,
                   "leftMargin": 10,
-                  "width": 150,
-                  "fontSize": 26,
+                  "width": 185,
+                  "fontSize": 20,
                   "height": 60
                 },
                 "tabletPortrait": {
-                  "yAxis": 230,
+                  "yAxis": 235,
                   "leftMargin": 10,
-                  "fontSize": 26,
-                  "width": 150,
+                  "fontSize": 20,
+                  "width": 185,
                   "height": 60
                 }
               },
               "numberOfLines": 2,
               "fontWeight": "BlackItalic",
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "type": "label",
               "key": "title"
             },
@@ -203,14 +203,14 @@
                 "tabletLandscape": {
                   "yAxis": 305,
                   "leftMargin": 200,
-                  "width": 170,
-                  "height": 28
+                  "width": 180,
+                  "height": 30
                 },
                 "tabletPortrait": {
                   "yAxis": 235,
                   "leftMargin": 200,
-                  "width": 150,
-                  "height": 28
+                  "width": 180,
+                  "height": 30
                 }
               },
               "action": "watchLiveButton",
@@ -230,7 +230,7 @@
                 "tabletLandscape": {
                   "xAxis": 800,
                   "yAxis": 303,
-                  "width": 150,
+                  "width": 230,
                   "height": 21,
                   "fontSize": 16
                 },
@@ -243,7 +243,7 @@
                 }
               },
               "numberOfLines": 1,
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
               "key": "gameDate"
@@ -273,7 +273,7 @@
                 }
               },
               "numberOfLines": 1,
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
               "key": "venueLabel"
@@ -334,7 +334,7 @@
                   "height": 40
                 }
               },
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "numberOfLines": 1,
               "textAlignment": "left",
               "textStyle": "default",
@@ -452,14 +452,14 @@
                   "height": 35
                 }
               },
-              "fontFamily": "Lato",
+              "fontFamily": "OpenSans",
               "numberOfLines": 1,
               "textAlignment": "left",
               "textStyle": "default",
               "type": "label",
               "text": "FIGHTS",
               "textColor": "#d6202d",
-              "fontWeight": "Bold",
+              "fontWeight": "BlackItalic",
               "key": "tableHeaderLabel",
               "isVisibleForPhone": false,
               "isVisibleForTablet": true
@@ -483,6 +483,8 @@
                 }
               },
               "type": "fightStatsView",
+              "fontWeight": "Semibold",
+              "fontFamily": "OpenSans",
               "key": "fightStatsView"
             },
             {
@@ -495,15 +497,15 @@
                 "tabletLandscape": {
                   "gridHeight": 40,
                   "yAxis": 110,
-                  "xAxis": 5,
-                  "width": 230
+                  "xAxis": 10,
+                  "width": 220
                 },
                 "tabletPortrait": {
                   "gridWidth": 230,
                   "gridHeight": 30,
                   "yAxis": 110,
                   "xAxis": 10,
-                  "width": 230
+                  "width": 220
                 }
               },
               "components": [
@@ -543,13 +545,13 @@
                       "height": 19
                     },
                     "tabletLandscape": {
-                      "leftMargin": 198,
+                      "leftMargin": 200,
                       "rightMargin": 0,
                       "width": 10,
                       "height": 40
                     },
                     "tabletPortrait": {
-                      "leftMargin": 198,
+                      "leftMargin": 200,
                       "rightMargin": 0,
                       "width": 10,
                       "height": 40
@@ -662,7 +664,7 @@
               "height": 24
             }
           },
-          "fontFamily": "Lato",
+          "fontFamily": "OpenSans",
           "numberOfLines": 1,
           "textAlignment": "center",
           "isSelectable": true,

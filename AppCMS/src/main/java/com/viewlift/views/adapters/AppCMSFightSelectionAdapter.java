@@ -170,7 +170,7 @@ public class AppCMSFightSelectionAdapter extends RecyclerView.Adapter<AppCMSFigh
                 false, viewTypeKey);
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(5, 5, 5, 5);
+        lp.setMargins(0, 0, 0, 0);
         view.setLayoutParams(lp);
         return new ViewHolder(view);
     }

@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -71,6 +73,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
+import com.urbanairship.json.JsonValue;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -124,8 +127,11 @@ import net.nightwhistler.htmlspanner.style.Style;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import rx.functions.Action1;
 
@@ -461,11 +467,11 @@ public class ViewCreator {
         }
     }
 
-    private static void setTypeFace(Context context,
-                                    AppCMSPresenter appCMSPresenter,
-                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                    Component component,
-                                    TextView textView) {
+    public static void setTypeFace(Context context,
+                                   AppCMSPresenter appCMSPresenter,
+                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                   Component component,
+                                   TextView textView) {
         if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
@@ -501,10 +507,7 @@ public class ViewCreator {
                     break;
 
                 case PAGE_TEXT_BLACK_ITALIC_KEY:
-                    face = appCMSPresenter.getExtraBoldTypeFace();
-                    if (face == null) {
-                        face = Typeface.defaultFromStyle(Typeface.ITALIC);
-                    }
+                    face = Typeface.defaultFromStyle(Typeface.ITALIC);
                     break;
 
                 default:
@@ -567,10 +570,9 @@ public class ViewCreator {
          }
      }
  */
-    String[] country = {"India", "USA", "China", "Japan", "Other",};
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
-        CustomWebView webView = new CustomWebView(context);
+        CustomWebView webView = new CustomWebView(context, appCMSPresenter);
         String webViewUrl, html;
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
@@ -2087,6 +2089,7 @@ public class ViewCreator {
                                                                    final Module moduleAPI,
                                                                    AppCMSAndroidModules appCMSAndroidModules,
                                                                    PageView pageView,
+
                                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                    AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = null;
@@ -2589,6 +2592,10 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
+                    RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(0, 0, 0, 0);
+                    ((RecyclerView) componentViewResult.componentView).setLayoutParams(params);
+                    ((RecyclerView) componentViewResult.componentView).setPadding(0, 0, 0, 0);
                     appcmsFightSelectionAdapter = new AppCMSFightSelectionAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2704,6 +2711,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
+
                     appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2719,6 +2727,21 @@ public class ViewCreator {
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
 
+                    //for team schedule module .scroll list to first position item in which event time is greater than currrent time
+                    if (moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                        for (int i = 0; i < moduleAPI.getContentData().size(); i++) {
+                            long eventDate = moduleAPI.getContentData().get(i).getGist().getEventSchedule().get(0).getEventTime();
+
+                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+                            if (remainingTime > 0) {
+                                int selectedPostion = i;
+                                appCMSPresenter.setSelectedSchedulePosition(i);
+                                break;
+                            }
+                        }
+                        ((RecyclerView) componentViewResult.componentView).scrollToPosition(appCMSPresenter.getSelectedSchedulePosition());
+
+                    }
                   /*      appCMSPresenter.setDownlistScreenCache(((RecyclerView) componentViewResult.componentView));
                     } else {
                         (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
@@ -3296,44 +3319,72 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                         moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
                         moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
-                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0") &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
-                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null)
+                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null) {
 
                     componentViewResult.componentView = new LinearLayout(context);
-                ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-                ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
+                    ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                    ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.CENTER);
+                    ((LinearLayout) componentViewResult.componentView).setId(R.id.timer_id);
 
-                for (int count = 0; count < 4; count++) {
-                    LinearLayout linearLayout = new LinearLayout(context);
+                    for (int count = 0; count < 4; count++) {
+                        LinearLayout linearLayout = new LinearLayout(context);
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    params.setMargins(3, 0, 3, 0);
-                    linearLayout.setLayoutParams(params);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        params.setMargins(3, 0, 3, 0);
+                        linearLayout.setLayoutParams(params);
 
-                    linearLayout.setGravity(Gravity.CENTER);
-                    linearLayout.setBackgroundColor(Color.parseColor("#000000"));
-                    linearLayout.setAlpha(0.6f);
-                    for (int textView = 0; textView < 2; textView++) {
-                        TextView text = new TextView(context);
-                        text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                        text.setGravity(Gravity.CENTER);
-                        text.setPadding(3, 0, 3, 0);
-                        text.setTextSize(26);
-                        text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                        linearLayout.addView(text);
+                        linearLayout.setGravity(Gravity.CENTER);
+                        linearLayout.setBackgroundColor(Color.parseColor("#000000"));
+                        linearLayout.setAlpha(0.9f);
+                        for (int textView = 0; textView < 2; textView++) {
+                            TextView text = new TextView(context);
+                            text.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            text.setGravity(Gravity.CENTER);
+                            text.setPadding(3, 0, 3, 0);
+                            text.setTextSize(26);
+                            text.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            linearLayout.addView(text);
+                        }
+                        ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
                     }
-                    ((LinearLayout) componentViewResult.componentView).addView(linearLayout);
-                }
-                long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                long currentTimeMillis = System.currentTimeMillis();
-                long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+//                    long currentTimeMillis = System.currentTimeMillis();
+//                    long remainingTime = (eventDate * 1000L) - currentTimeMillis;
 
-                if (remainingTime > 0) {
-                    startTimer(context, appCMSPresenter, eventDate);
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+//                   String date1= AppCMSPresenter.getDateFormatByTimeZone(eventDate * 1000L, "EEE MMM dd HH:mm:ss z yyyy","UTC");
+//                    String date2= AppCMSPresenter.getDateFormatByTimeZone1(currentTimeMillis, "EEE MMM dd HH:mm:ss z yyyy","IST");
+
+                    if (remainingTime > 0) {
+
+                        startTimer(context, appCMSPresenter, eventDate);
+                    } else {
+                        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                                TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                                timerTile.setVisibility(View.GONE);
+                            }
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                                LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                                linearLayout.setVisibility(View.GONE);
+                            }
+                            ((LinearLayout) componentViewResult.componentView).setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                            TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                            timerTile.setVisibility(View.GONE);
+                        }
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                            LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                            linearLayout.setVisibility(View.GONE);
+                        }
+                    }
                 }
                 break;
 
@@ -3543,13 +3594,46 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                                 moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null) {
                             ((Button) componentViewResult.componentView).setId(R.id.watch_live_button);
-                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+
+                            long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                            long currentTimeMillis = System.currentTimeMillis();
+//                            long remainingTime = (eventDate * 1000L) - currentTimeMillis;
+                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                            if (remainingTime > 0) {
+                                (componentViewResult.componentView).setVisibility(View.GONE);
+                            } else if ((moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) || (remainingTime <= 0 && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1"))) {
                                 (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
                                 ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
                             } else {
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
+//                            if (moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+//                                (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+//                                ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+//                            } else if (remainingTime <= 0 && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("1")) {
+//                                (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+//                                ((Button) componentViewResult.componentView).setGravity(Gravity.CENTER);
+//                            } else {
+//                                (componentViewResult.componentView).setVisibility(View.GONE);
+//                            }
+
                         }
+                        (componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                String url = "";
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getExternalUrl() != null) {
+                                    url = moduleAPI.getContentData().get(0).getGist().getExternalUrl();
+                                }
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
+                            }
+                        });
+
                         break;
                     case PAGE_PHOTOGALLERY_PRE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.photo_gallery_prev_button);
@@ -4502,6 +4586,8 @@ public class ViewCreator {
                         params.gravity = Gravity.CENTER;
                         adView.setLayoutParams(params);
                     }
+                } else {
+                    componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 //}
                 break;
@@ -4625,7 +4711,6 @@ public class ViewCreator {
                     }
 
                     System.out.println("set fight selection adapter");
-//                    componentViewResult.onInternalEvent
                     OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
                     try {
                         componentViewResult.onInternalEvent.setModuleId(moduleId);
@@ -4634,27 +4719,22 @@ public class ViewCreator {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    System.out.println("after set fight selection adapter");
 
                     spinnerFight.setOnItemSelectedListener(onItemSelectListener);
-                    spinnerFight.setSelection(0);
-//                    try {
-//                        ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
-//                                getColor(context, appCMSPresenter.getAppBackgroundColor()))));
-//                    } catch (Exception e) {
-//                        //
-//                    }
 
-//                    ArrayAdapter aa = new ArrayAdapter(context, android.R.layout.simple_spinner_item, country);
-//                    aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     try {
-//                        FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                         spinnerFight.setAdapter(FightTrayAdapter);
+                        spinnerFight.setSelection(0);
+                        FightTrayAdapter.notifyDataSetChanged();
+                        System.out.println("after set fight selection adapter");
+
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
+                        Log.e("after set fight selection adapter exception",e.toString());
 
+                    }
                     ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
                 } else {
                     componentViewResult.componentView = new TextView(context);
@@ -5299,13 +5379,17 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null) {
-                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventDate();
-                                    String eventdate = AppCMSPresenter.getDateFormat(date * 1000L, "MM/yyyy");
+                                    long date = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                                    String eventdate = AppCMSPresenter.getDateFormatByTimeZone(date * 1000L, "MM/dd", "UTC");
                                     StringBuilder builder = new StringBuilder(eventdate);
                                     builder.append(" - ");
-                                    builder.append(AppCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime(), "hh:mm aa"));
-
+                                    builder.append(AppCMSPresenter.getDateFormatByTimeZone(date * 1000L, "hh:mm aa", "UTC"));
+                                    builder.append(" ");
+                                    builder.append(moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTimeZone());
+                                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                                     ((TextView) componentViewResult.componentView).setText(builder);
+                                    ((TextView) componentViewResult.componentView).setSingleLine(true);
+
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 }
 
@@ -5331,13 +5415,15 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getLiveEvents() != null &&
                                         moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null &&
-                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent().equalsIgnoreCase("0")) {
+                                        moduleAPI.getContentData().get(0).getLiveEvents().get(0).getIsLiveEvent() != null) {
 
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                     ((TextView) componentViewResult.componentView).setText(context.getResources().getString(R.string.timer_until_face_off));
                                     ((TextView) componentViewResult.componentView).setId(R.id.timer_until_face_off);
+                                    ((TextView) componentViewResult.componentView).setShadowLayer(2, 1, 1, android.R.color.black);
                                 }
+                                ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
+
                                 break;
 
 
@@ -6499,7 +6585,7 @@ public class ViewCreator {
                             cellValue = String.valueOf("Unknown");
                         }*/
                     }
-                    addTableRowCell(context, cellValue, row, isHeader);
+                    addTableRowCell(context, cellValue, row, isHeader,component,appCMSPresenter,jsonValueKeyMap);
                 }
                 row.setLayoutParams(params);
 
@@ -6927,7 +7013,7 @@ public class ViewCreator {
                             (TextView) result);
                 }
 
-                result.setPadding(8, 0, 8, 0);
+                result.setPadding(8, 8, 8, 8);
             }
 
             ((TextView) result).setText(getItem(position));
@@ -6981,7 +7067,7 @@ public class ViewCreator {
                             (TextView) result);
                 }
 
-                result.setPadding(8, 8, 8, 8);
+                result.setPadding(8, 30, 8, 30);
             }
 
             if (result != null) {
@@ -7592,20 +7678,27 @@ public class ViewCreator {
         }
     }
 
-    private void addTableRowCell(Context context, String colValue, TableRow row, boolean isHeader) {
+    private void addTableRowCell(Context context, String colValue, TableRow row, boolean isHeader, Component component, AppCMSPresenter appCMSPresenter, Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         TableRow.LayoutParams textViewParams = new TableRow.LayoutParams();
         TextView cell = new TextView(context);
 
         if (isHeader) {
-            cell.setPadding(6, 4, 6, 4);
+            cell.setPadding(30, 4, 30, 4);
             cell.setTypeface(cell.getTypeface(), Typeface.ITALIC);
-            cell.setTextSize(15);
+            cell.setTextSize(17);
             cell.setText(colValue + "  ");
 
         } else {
-            cell.setPadding(6, 20, 6, 20);
+            cell.setPadding(30, 30, 30, 30);
             cell.setTextSize(15);
             cell.setText(colValue + "  ");
+            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                setTypeFace(context,
+                        appCMSPresenter,
+                        jsonValueKeyMap,
+                        component,
+                        (TextView)cell);
+            }
 
         }
         cell.setTextColor(ContextCompat.getColor(context, R.color.color_grey));
@@ -7618,12 +7711,63 @@ public class ViewCreator {
 
         countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
-                long currentTimeMillis = System.currentTimeMillis();
-                long remainingTime = (eventTime * 1000L) - currentTimeMillis;
+//                Calendar calendar = Calendar.getInstance();
+//                calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+//                long currentTimeMillis =appCMSPresenter.currentTimeMillisLocal();
+//
+////                long different = (eventTime * 1000L) - currentTimeMillis;
+//
+//                // Create Calendar instance
+//                Calendar calendar1 = Calendar.getInstance();
+//                calendar1.setTimeInMillis(currentTimeMillis);
+//                calendar1.setTimeZone(TimeZone.getDefault());
+//
+//                Calendar calendar2 = Calendar.getInstance();
+//                calendar2.setTimeInMillis(eventTime * 1000L);
+//                calendar2.setTimeZone(TimeZone.getDefault());
+//                long different = (calendar2.getTimeInMillis()) - calendar1.getTimeInMillis();
+//
+//                long secondsInMilli = 1000;
+//                long minutesInMilli = secondsInMilli * 60;
+//                long hoursInMilli = minutesInMilli * 60;
+//                long daysInMilli = hoursInMilli * 24;
+//
+//                long elapsedDays = different / daysInMilli;
+//                different = different % daysInMilli;
+//
+//                long elapsedHours = different / hoursInMilli;
+//                different = different % hoursInMilli;
+//
+//                long elapsedMinutes = different / minutesInMilli;
+//                different = different % minutesInMilli;
+//
+//                long elapsedSeconds = different / secondsInMilli;
+//
+//                System.out.printf(
+//                        "%d days, %d hours, %d minutes, %d seconds%n",
+//                        elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
 
-                String[] scheduleTime = AppCMSPresenter.getDateFormat(remainingTime, "dd:hh:mm:ss").split(":");
+//                long diffInSecond = remainingTime / 1000;
+//                long diffInMinute = remainingTime / (60 * 1000);
+//                long diffInHour = remainingTime / (60 * 60 * 1000);
+//                long diffInDays = remainingTime / (24 * 60 * 60 * 1000);
+//                System.out.println("Difference in Seconds : " + diffInSecond);
+//                System.out.println("Difference in Minute : " + diffInMinute);
+//                System.out.println("Difference in Hours : " + diffInHour);
+//                System.out.println("Difference in Days : " + diffInDays);
+                long different = appCMSPresenter.getTimeIntervalForEvent(eventTime * 1000L, "EEE MMM dd HH:mm:ss");
+
+
+                String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
                 String[] timerText = context.getResources().getStringArray(R.array.timer_text);
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                    TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                    timerTile.setVisibility(View.VISIBLE);
+                }
 
+//                if(appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id)!=null){
+//                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.GONE);
+//                }
                 if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                         appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
                     LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
@@ -7650,7 +7794,9 @@ public class ViewCreator {
                     Button watchLive = appCMSPresenter.getCurrentActivity().findViewById(R.id.watch_live_button);
                     watchLive.setVisibility(View.VISIBLE);
                 }
-
+                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id) != null) {
+                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.VISIBLE);
+                }
                 if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                         appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
                     TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);

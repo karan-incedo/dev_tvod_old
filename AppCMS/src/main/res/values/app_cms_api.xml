@@ -245,6 +245,8 @@
     <string name="app_cms_page_event_details_key">eventDetails</string>
 
     <string name="app_cms_page_login_component_key">AC Login Component</string>
+    <string name="app_cms_page_create_login_component_key">AC Create Login Component</string>
+
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
     <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
     <string name="app_cms_page_download_audio_playlist_key">DownloadedAudioPlayList</string>

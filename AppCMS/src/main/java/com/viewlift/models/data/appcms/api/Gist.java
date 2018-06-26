@@ -230,6 +230,18 @@ public class Gist implements Serializable {
     @Expose
     String rsvpUrl;
 
+    public String getExternalUrl() {
+        return externalUrl;
+    }
+
+    public void setExternalUrl(String externalUrl) {
+        this.externalUrl = externalUrl;
+    }
+
+    @SerializedName("externalUrl")
+    @Expose
+    String externalUrl;
+
     @SerializedName("livestreamUrl")
     @Expose
     String livestreamUrl;

@@ -436,6 +436,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
 }
 
