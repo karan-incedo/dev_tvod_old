@@ -329,6 +329,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
@@ -634,6 +635,7 @@ public class AppCMSPresenter {
     private boolean loadFromFile;
     private boolean loadingPage;
     private int fightSelectId;
+    private int selectedSchedulePosition=0;
 
     private AppCMSMain appCMSMain;
     private AppCMSSite appCMSSite;
@@ -1154,7 +1156,7 @@ public class AppCMSPresenter {
     }
 
     public static String getDateFormatByTimeZone(long timeMilliSeconds, String dateFormat, String timeZone) {
-        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.US);
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSeconds);
@@ -2878,7 +2880,7 @@ public class AppCMSPresenter {
                                             + BaseView.isLandscape(currentActivity));
                                     for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
                                         if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("EventDetailModule")) {
-                                            dataId = appCMSPageAPI.getModules().get(0).getContentData().get(0).getGist().getDataId();
+                                            dataId = appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getDataId();
                                             break;
                                         }
                                     }
@@ -4655,7 +4657,7 @@ public class AppCMSPresenter {
 
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null && !isFromEntitlementAPI) {
+        if (currentContext != null ) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
@@ -8207,6 +8209,13 @@ public class AppCMSPresenter {
         return fightSelectId;
     }
 
+    public void setSelectedSchedulePosition(int position) {
+        this.selectedSchedulePosition = position;
+    }
+
+    public int getSelectedSchedulePosition() {
+        return selectedSchedulePosition;
+    }
 
     private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,

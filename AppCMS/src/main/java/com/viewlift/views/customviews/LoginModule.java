@@ -154,7 +154,8 @@ public class LoginModule extends ModuleView {
                 module = appCMSPageUI1.getModuleList().get(12);
 
             } else {
-                module = appCMSAndroidModules.getModuleListMap().get("authentication01");
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//                module = appCMSAndroidModules.getModuleListMap().get("authentication01");
             }
 
             if (module == null) {

@@ -54,6 +54,7 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
@@ -66,6 +67,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rx.functions.Action1;
 
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
@@ -245,62 +248,89 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             {
                 if(contentDatum != null ) {
 
-                    onUpdatedContentDatum = contentDatum;
-                    if (beaconBufferingThread != null) {
-                        beaconBufferingThread.setContentDatum(onUpdatedContentDatum);
-                    }
-                    if (beaconMessageThread != null) {
-                        beaconMessageThread.setContentDatum(onUpdatedContentDatum);
-                    }
-                    getPermalink(contentDatum);
-                    setWatchedTime(contentDatum);
-                    if (contentDatum != null &&
-                            contentDatum.isDRMEnabled()) {
-                        setDRMEnabled(contentDatum.isDRMEnabled());
-                        setLicenseUrl(contentDatum.getStreamingInfo().getVideoAssets().getWideVine().getLicenseUrl());
-                        releasePlayer();
-                        init(mContext);
-                    }
-                    if (!contentDatum.getGist().getFree()) {
-                        //check login and subscription first.
-                        if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
-                            getVideoPreview();
+                    try {
+                        appCMSPresenter.getAppCMSSignedURL(contentDatum.getGist().getId(), new Action1<AppCMSSignedURLResult>() {
+                            @Override
+                            public void call(AppCMSSignedURLResult appCMSSignedURLResult) {
 
-                            if (entitlementCheckMultiplier > 0) {
-                                if (shouldRequestAds) {
-                                    requestAds(adsUrl);
-                                } else {
-                                    playVideos(0, contentDatum);
+                                if (appCMSSignedURLResult != null) {
+                                    updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                                            appCMSSignedURLResult.getSignature(),
+                                            appCMSSignedURLResult.getKeyPairId());
+                                    setPolicyCookie(appCMSSignedURLResult.getPolicy());
+                                    setSignatureCookie(appCMSSignedURLResult.getSignature());
+                                    setKeyPairIdCookie(appCMSSignedURLResult.getKeyPairId());
                                 }
-                            }
-                            appCMSPresenter.setPreviewStatus(false);
-                            if (!appCMSPresenter.isAppSVOD()) {
-                                playVideos(0, contentDatum);
-                            }
-                        } else {
-                            if (appCMSPresenter.isUserSubscribed()) {
-                                playVideos(0, contentDatum);
-                                appCMSPresenter.setPreviewStatus(false);
-                            } else {
-                                getVideoPreview();
-                                if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) {
-                                    playVideos(0, contentDatum);
-                                    requestAds(adsUrl);
+
+
+                                onUpdatedContentDatum = contentDatum;
+                                if (beaconBufferingThread != null) {
+                                    beaconBufferingThread.setContentDatum(onUpdatedContentDatum);
+                                }
+                                if (beaconMessageThread != null) {
+                                    beaconMessageThread.setContentDatum(onUpdatedContentDatum);
+                                }
+                                getPermalink(contentDatum);
+                                setWatchedTime(contentDatum);
+                                if (contentDatum != null &&
+                                        contentDatum.isDRMEnabled()) {
+                                    setDRMEnabled(contentDatum.isDRMEnabled());
+                                    setLicenseUrl(contentDatum.getStreamingInfo().getVideoAssets().getWideVine().getLicenseUrl());
+                                    releasePlayer();
+                                    init(mContext);
+                                }
+                                if (!contentDatum.getGist().getFree()) {
+                                    //check login and subscription first.
+                                    if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
+                                        getVideoPreview();
+
+                                        if (entitlementCheckMultiplier > 0) {
+                                            if (shouldRequestAds) {
+                                                requestAds(adsUrl);
+                                            } else {
+                                                playVideos(0, contentDatum);
+                                            }
+                                        }
+                                        appCMSPresenter.setPreviewStatus(false);
+                                        if (!appCMSPresenter.isAppSVOD()) {
+                                            playVideos(0, contentDatum);
+                                        }
+                                    } else {
+                                        if (appCMSPresenter.isUserSubscribed()) {
+                                            playVideos(0, contentDatum);
+                                            appCMSPresenter.setPreviewStatus(false);
+                                        } else {
+                                            getVideoPreview();
+                                            if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) {
+                                                playVideos(0, contentDatum);
+                                                requestAds(adsUrl);
+                                            } else {
+                                                if (entitlementCheckMultiplier > 0) {
+                                                    playVideos(0, contentDatum);
+                                                }
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    if (entitlementCheckMultiplier > 0) {
+                                    if (shouldRequestAds) {
+                                        requestAds(adsUrl);
+                                    } else {
                                         playVideos(0, contentDatum);
                                     }
                                 }
+                                setTopBarStatus();
                             }
-                        }
-                    } else {
-                        if (shouldRequestAds) {
-                            requestAds(adsUrl);
-                        } else {
-                            playVideos(0, contentDatum);
-                        }
+                        });
+                    } catch (Exception e) {
+                        //
+//                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
+//                                getString(R.string.app_cms_video_not_available_error_message),
+//                                false,
+//                                this::finish,
+//                                null);
                     }
-                    setTopBarStatus();
+
+
                 }
             }
         });
@@ -1422,7 +1452,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         String errorString = null;
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
-            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+            updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
         }
         if (e.type == ExoPlaybackException.TYPE_RENDERER) {
             Exception cause = e.getRendererException();
@@ -1464,7 +1494,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     } else {
                         if (isBehindLiveWindow(e)) {
                             init(mContext);
-                            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+                            updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
                         }
                     }
                 }
@@ -1476,13 +1506,31 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
             if (isBehindLiveWindow(e)) {
                 init(mContext);
-                setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+                updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
             }
         }
         Log.e("Playback exception", errorString);
 
     }
 
+
+    private void updateToken(Uri videoUri, Uri closedCaptionUri){
+        appCMSPresenter.getAppCMSSignedURL(onUpdatedContentDatum.getGist().getId(), new Action1<AppCMSSignedURLResult>() {
+            @Override
+            public void call(AppCMSSignedURLResult appCMSSignedURLResult) {
+
+                if (appCMSSignedURLResult != null) {
+                    updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                            appCMSSignedURLResult.getSignature(),
+                            appCMSSignedURLResult.getKeyPairId());
+                    setPolicyCookie(appCMSSignedURLResult.getPolicy());
+                    setSignatureCookie(appCMSSignedURLResult.getSignature());
+                    setKeyPairIdCookie(appCMSSignedURLResult.getKeyPairId());
+                }
+                setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
+            }
+        });
+    }
     private static boolean isBehindLiveWindow(ExoPlaybackException e) {
         if (e.type != ExoPlaybackException.TYPE_SOURCE) {
             return false;

@@ -166,6 +166,30 @@
                   "layout": {
                     "mobile": {
                       "yAxis": 5,
+                      "leftMargin": 1.73,
+                      "rightMargin": 1.73,
+                      "height": 80
+                    },
+                    "tabletLandscape": {
+                      "yAxis": 5,
+                      "leftMargin": 1.73,
+                      "rightMargin": 1.73,
+                      "height": 100
+                    },
+                    "tabletPortrait": {
+                      "yAxis": 5,
+                      "leftMargin": 1.73,
+                      "rightMargin": 1.73,
+                      "height": 100
+                    }
+                  },
+                  "backgroundColor": "#00000000",
+                  "type": "separatorView"
+                },
+                {
+                  "layout": {
+                    "mobile": {
+                      "yAxis": 5,
                       "xAxis": 6,
                       "width": 70,
                       "height": 70
