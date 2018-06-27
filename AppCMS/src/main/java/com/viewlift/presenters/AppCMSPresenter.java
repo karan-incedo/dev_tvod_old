@@ -2810,7 +2810,7 @@ public class AppCMSPresenter {
     public void navigateToEventDetailPage(String permaLink) {
         String pagePath = permaLink;
 
-        if (currentActivity != null && !TextUtils.isEmpty(permaLink) && articlePage != null) {
+        if (currentActivity != null && !TextUtils.isEmpty(permaLink) && eventPage != null) {
             showLoader();
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(eventPage.getPageId());
@@ -12675,6 +12675,9 @@ public class AppCMSPresenter {
             return;
         } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             navigateToPhotoGalleryPage(gistId, title, null, false);
+            return;
+        }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.content_type_event).toLowerCase())) {
+            navigateToEventDetailPage(permalink);
             return;
         }
 
