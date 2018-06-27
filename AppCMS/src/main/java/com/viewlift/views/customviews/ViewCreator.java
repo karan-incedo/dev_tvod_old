@@ -3394,13 +3394,13 @@ public class ViewCreator {
                 CustomWebView webView = null;
                 componentViewResult.componentView = new FrameLayout(context);
 
-
-                if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
-                    FrameLayout.LayoutParams webParams =
-                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT);
-                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
-                }
+                ((FrameLayout)componentViewResult.componentView).setId(R.id.web_view_id);
+//                if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
+//                    FrameLayout.LayoutParams webParams =
+//                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                                    ViewGroup.LayoutParams.MATCH_PARENT);
+//                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
+//                }
                 if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
                     webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }

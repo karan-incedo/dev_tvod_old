@@ -8,6 +8,7 @@
     <item name="fight_stats_id" type="id">fight_stats_id</item>
     <item name="fight_scroll_id" type="id">fight_scroll_id</item>
     <item name="fight_summary_module_id" type="id">fight_summary_module_id</item>
+    <item name="web_view_id" type="id">web_view_id</item>
 
     <item name="subscribe_edit_text_id" type="id">subscribe_edit_text_id</item>
     <item name="download_quality_selection_list" type="id">download_quality_selection_list</item>
