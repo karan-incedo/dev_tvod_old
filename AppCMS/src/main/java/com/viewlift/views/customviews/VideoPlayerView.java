@@ -214,8 +214,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
-        String strUri = videoUri.toString().split("\\?")[0];
-        this.uri = Uri.parse(strUri);
         this.closedCaptionUri = closedCaptionUri;
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));

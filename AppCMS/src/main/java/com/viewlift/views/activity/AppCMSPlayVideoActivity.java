@@ -174,7 +174,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                             appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
                                                 launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
                                                         finalFontColor1, defaultVideoResolution, intent,
-                                                        appCMSPlayVideoPageContainer, appCMSSignedURLResult);
+                                                        appCMSPlayVideoPageContainer, binder.getContentData().getAppCMSSignedURLResult());
                                             });
                                         } catch (Exception e) {
                                             //

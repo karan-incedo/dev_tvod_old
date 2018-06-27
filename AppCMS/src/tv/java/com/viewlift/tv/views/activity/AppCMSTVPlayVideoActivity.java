@@ -118,16 +118,12 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                                         } catch (Exception e) {
                                             //
                                         }
-                                        appCMSPresenter.getAppCMSSignedURL(updatedContentDatum.getGist().getId(), appCMSSignedURLResult -> {
-                                            launchVideoPlayer(updatedContentDatum.getGist(), appCMSSignedURLResult);
-                                        });
+                                            launchVideoPlayer(updatedContentDatum.getGist() , null);
                                     }
                                 });
                     }
                 } else {
-                    appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
-                        launchVideoPlayer(binder.getContentData().getGist(), appCMSSignedURLResult);
-                    });
+                    launchVideoPlayer(binder.getContentData().getGist(), binder.getContentData().getAppCMSSignedURLResult());
                 }
             }
         } catch (ClassCastException e) {

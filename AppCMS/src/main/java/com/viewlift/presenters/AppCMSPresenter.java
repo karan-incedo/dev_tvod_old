@@ -1490,6 +1490,9 @@ public class AppCMSPresenter {
                             appCMSEntitlementResponse.isPlayable() &&
                             appCMSEntitlementResponse.getVideoContentDatum() != null) {
                         ContentDatum currentContentDatum = appCMSEntitlementResponse.getVideoContentDatum();
+                        if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null){
+                            currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
+                        }
                         ContentDatum userHistoryContentDatum = AppCMSPresenter.this.getUserHistoryContentDatum(currentContentDatum.getGist().getId());
                         if (userHistoryContentDatum != null) {
                             currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
@@ -4360,7 +4363,7 @@ public class AppCMSPresenter {
 
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null /*&& !isFromEntitlementAPI*/) {
+        if (currentContext != null && !isFromEntitlementAPI) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
