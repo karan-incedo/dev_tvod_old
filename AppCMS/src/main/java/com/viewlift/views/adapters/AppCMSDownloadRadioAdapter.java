@@ -12,11 +12,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.Utils;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.viewlift.presenters.AppCMSPresenter.PlatformType.TV;
 
 /**
  * Created by sandeep.singh on 7/28/2017.
@@ -30,10 +34,12 @@ public abstract class AppCMSDownloadRadioAdapter<T>
     List<T> mItems;
     protected ItemClickListener itemClickListener;
     private Context mContext;
+    private AppCMSPresenter appCMSPresenter;
 
-    public AppCMSDownloadRadioAdapter(Context context, List<T> items) {
+    public AppCMSDownloadRadioAdapter(Context context, List<T> items , AppCMSPresenter appCMSPresenter) {
         this.mContext = context;
         this.mItems = items;
+        this.appCMSPresenter = appCMSPresenter;
     }
 
     @Override
@@ -84,6 +90,20 @@ public abstract class AppCMSDownloadRadioAdapter<T>
             itemView.setOnClickListener(clickListener);
             mRadio.setOnClickListener(clickListener);
 
+            if (appCMSPresenter.getPlatformType() == TV && !Utils.isFireTVDevice(inflate.getContext())) {
+                itemView.setOnFocusChangeListener(
+                        new View.OnFocusChangeListener() {
+                            @Override
+                            public void onFocusChange(View view, boolean b) {
+                                if(b){
+                                    mRadio.setBackground(view.getContext().getDrawable(R.drawable.circle_shape));
+                                }else{
+                                    mRadio.setBackground(null);
+                                }
+                            }
+                        }
+                );
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (mRadio.getButtonDrawable() != null) {
                     mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);

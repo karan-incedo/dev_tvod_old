@@ -720,15 +720,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         false));
 
                 setSelectedStreamingQualityIndex();
+                AlertDialog.Builder builder = null;
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+                if( (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV)&& Utils.isFireTVDevice(getContext()) ){
+                         builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+                }else{
+                    builder = new AlertDialog.Builder(getContext());
+                }
+
                 if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
                     ((ViewGroup) listView.getParent()).removeView(listView);
                 }
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                    if((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())){
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
                         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                     }else {
@@ -1614,7 +1620,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {
-            super(context, items);
+            super(context, items,appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
@@ -1688,7 +1694,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         HLSStreamingQualitySelectorAdapter(Context context,
                                            AppCMSPresenter appCMSPresenter,
                                            List<HLSStreamingQuality> items) {
-            super(context, items);
+            super(context, items,appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
