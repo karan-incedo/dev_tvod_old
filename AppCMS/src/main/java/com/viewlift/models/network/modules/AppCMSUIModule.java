@@ -371,6 +371,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_roster_key),
                 AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SCREEN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_title_key),
                 AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_title_key),
@@ -685,6 +689,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ac_web_frame_01),
+                AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_download_settings_key),

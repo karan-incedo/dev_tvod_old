@@ -31,14 +31,11 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.text.style.AlignmentSpan;
 import android.text.style.MetricAffectingSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -73,7 +70,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
-import com.urbanairship.json.JsonValue;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -94,7 +90,6 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.photogallery.PhotoGalleryGridInsetDecoration;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
-import com.viewlift.models.data.appcms.ui.android.Platforms;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -125,13 +120,9 @@ import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import rx.functions.Action1;
 
@@ -571,10 +562,14 @@ public class ViewCreator {
      }
  */
 
-    public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
+    public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter, AppCMSUIKeyType moduleType) {
         CustomWebView webView = new CustomWebView(context, appCMSPresenter);
         String webViewUrl, html;
-        if (moduleAPI != null && moduleAPI.getRawText() != null) {
+        if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY){
+            webViewUrl = moduleAPI.getRawText();
+            webView.loadURLLink(appCMSPresenter,webViewUrl);
+        }
+        else if (moduleAPI != null && moduleAPI.getRawText() != null) {
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webViewUrl = moduleAPI.getRawText();
             html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
@@ -1924,12 +1919,24 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } else if (moduleInfo.getBlockName().contains("authentication01_activate_device")) {
+                }  else if (moduleInfo.getBlockName().contains("tray02")) {
+                AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                        loadJsonFromAssets(context, "photo_galery.json"),
+                        AppCMSPageUI.class);
+                module = appCMSPageUI1.getModuleList().get(1);
+            }
+                else if (moduleInfo.getBlockName().contains("authentication01_activate_device")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(12);
+                } else if (moduleInfo.getBlockName().contains("webFrame03")) {
+
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "live_fb.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if ((moduleInfo.getBlockName().contains("videoPlayerInfo01__TEMP__NO_DOWNLOADS") ||
                         moduleInfo.getBlockName().contains("videoPlayerInfo01")) &&
                         (appCMSPresenter.getAppCMSMain().getInternalName().equalsIgnoreCase("failarmy") ||
@@ -1966,7 +1973,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("teamSchedule01")) {
+                } else if (moduleInfo.getBlockName().contains("eventCalendar01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
@@ -3386,6 +3393,14 @@ public class ViewCreator {
             case PAGE_WEB_VIEW_KEY:
                 CustomWebView webView = null;
                 componentViewResult.componentView = new FrameLayout(context);
+
+
+                if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
+                    FrameLayout.LayoutParams webParams =
+                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT);
+                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
+                }
                 if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
                     webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }
@@ -3394,7 +3409,7 @@ public class ViewCreator {
                         ((ViewGroup) webView.getParent()).removeView(webView);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 } else {
-                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter);
+                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter,moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 }
                 break;
@@ -3409,7 +3424,7 @@ public class ViewCreator {
                         ((ViewGroup) articleWebView.getParent()).removeView(articleWebView);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                 } else {
-                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter);
+                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter, moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                     articleWebView.setId(R.id.article_web_view);
                 }
@@ -6448,7 +6463,7 @@ public class ViewCreator {
 
 
         boolean isHeader = false;
-
+//        LinearLayout ll = new LinearLayout(context);
 
         HorizontalScrollView scrollView = new HorizontalScrollView(context);
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT));
@@ -6930,16 +6945,21 @@ public class ViewCreator {
     public void createFightStateRecorsView(Context context, AppCMSPresenter appCMSPresenter, Module moduleAPI, Component component, Map<String, AppCMSUIKeyType> jsonValueKeyMap, Fights fights) {
 
         LinearLayout fightStatsView = (LinearLayout) appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_stats_id);
-
+        fightStatsView.setOrientation(LinearLayout.VERTICAL);
         if (fights != null) {
-            (fightStatsView).removeAllViews();
+            ((LinearLayout) fightStatsView).removeAllViews();
 
             View tableView = setFightSummaryModule(context, moduleAPI, component, jsonValueKeyMap, fights, appCMSPresenter);
 
             if (tableView.getParent() != null)
-                ((ViewGroup) tableView.getParent()).removeView(tableView);
-
-            (fightStatsView).addView(tableView);
+                ((ViewGroup) tableView.getParent()).removeAllViews();
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            ((LinearLayout) fightStatsView).addView(tableView,p);
+            ((LinearLayout) fightStatsView).postInvalidate();
+            ((LinearLayout) fightStatsView).bringToFront();
+            fightStatsView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -7674,13 +7694,13 @@ public class ViewCreator {
         TextView cell = new TextView(context);
 
         if (isHeader) {
-            cell.setPadding(30, 4, 30, 4);
+            cell.setPadding(20, 4, 20, 4);
             cell.setTypeface(cell.getTypeface(), Typeface.ITALIC);
             cell.setTextSize(17);
             cell.setText(colValue + "  ");
 
         } else {
-            cell.setPadding(30, 30, 30, 30);
+            cell.setPadding(20, 20, 20, 20);
             cell.setTextSize(15);
             cell.setText(colValue + "  ");
             if (!TextUtils.isEmpty(component.getFontFamily())) {

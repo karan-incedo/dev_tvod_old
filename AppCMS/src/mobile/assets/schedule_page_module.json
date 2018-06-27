@@ -20,9 +20,9 @@
           "ott": 6
         }
       },
-      "view": "AC TeamSchedule 01",
-      "type": "AC TeamSchedule 01",
-      "blockName": "teamSchedule01",
+      "view": "AC EventCalendar 01",
+      "type": "AC EventCalendar 01",
+      "blockName": "eventCalendar01",
       "layout": {
         "mobile": {
           "leftMargin": 0,

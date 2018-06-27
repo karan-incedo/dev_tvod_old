@@ -175,6 +175,8 @@
     <string name="app_cms_page_schedule_page_title_key">schedulePageTitle</string>
     <string name="app_cms_page_schedule_key">Schedule</string>
     <string name="app_cms_page_roster_key">Roster</string>
+    <string name="app_cms_page_fighter_key">Fighters</string>
+
     <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
     <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
@@ -270,7 +272,7 @@
     <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
     <string name="app_cms_page_tray_06_module_key">AC Tray 06</string>
 
-    <string name="app_cms_page_schedule_module_key">AC TeamSchedule 01</string>
+    <string name="app_cms_page_schedule_module_key">AC EventCalendar 01</string>
     <string name="app_cms_roster_page_module_key">AC FighterRoster 01</string>
     <string name="app_cms_page_parent_bg_key">parentview</string>
 
@@ -327,6 +329,7 @@
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
     <string name="app_cms_fight_list_module_key">fightListParentView</string>
+    <string name="app_cms_page_ac_web_frame_01">AC WebFrame 03</string>
 
     <!--PHOTO_GALLERY-TAG-->
     <string name="app_cms_page_photogallery_title">photoTitle</string>

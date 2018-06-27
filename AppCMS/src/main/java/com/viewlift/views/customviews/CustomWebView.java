@@ -143,12 +143,6 @@ public class CustomWebView extends AppCMSAdvancedWebView {
 
                 HttpResponse httpResponse = httpClient.execute(httpRequest);
                 iHTTPStatus = httpResponse.getStatusLine().getStatusCode();
-//                if (iHTTPStatus != 200) {
-//                    // Serve a local page instead...
-//                    CustomWebView.this.loadUrl(arg0[0]);
-//                } else {
-//                    Toast.makeText(context, "Status code " + iHTTPStatus, Toast.LENGTH_LONG).show();
-//                }
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -182,6 +176,50 @@ public class CustomWebView extends AppCMSAdvancedWebView {
     }
 
     ;
+    public void loadURLLink(AppCMSPresenter appCMSPresenter,String loadingUrl) {
+        context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        this.getSettings().setUseWideViewPort(true);
+        this.getSettings().setLoadWithOverviewMode(true);
+        appCMSPresenter.showLoadingDialog(true);
+
+        this.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        this.getSettings().setBuiltInZoomControls(true);
+        setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            // Hide the zoom controls for HONEYCOMB+
+            this.getSettings().setDisplayZoomControls(false);
+        }
+
+        // this.getSettings().setDefaultFontSize(30);
+        this.addJavascriptInterface(this, "MyApp");
+        this.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                appCMSPresenter.clearWebViewCache();
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                appCMSPresenter.showLoadingDialog(true);
+                view.loadUrl(url);
+
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                appCMSPresenter.showLoadingDialog(false);
+
+                view.requestLayout();
+                context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            }
+
+        });
+        this.loadUrl(loadingUrl);
+    }
 
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
 
@@ -191,7 +229,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         new checkURLAysyncTask(loadingURL, appCMSPresenter).execute(loadingURL);
     }
 
-    private void loadUrlWithWebViewClient(AppCMSPresenter appCMSPresenter, String loadingURL) {
+    public void loadUrlWithWebViewClient(AppCMSPresenter appCMSPresenter, String loadingURL) {
         context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
         this.getSettings().setLoadWithOverviewMode(true);
