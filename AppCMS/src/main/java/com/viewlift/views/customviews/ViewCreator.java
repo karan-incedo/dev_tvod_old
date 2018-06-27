@@ -3401,15 +3401,23 @@ public class ViewCreator {
 //                                    ViewGroup.LayoutParams.MATCH_PARENT);
 //                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
 //                }
-                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
-                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
+                String url="";
+                if(moduleAPI.getRawText()!=null){
+                    url=moduleAPI.getRawText();
+                }else if (moduleAPI != null && moduleAPI.getContentData() != null
+                        && moduleAPI.getContentData().get(0).getGist() != null
+                        && moduleAPI.getContentData().get(0).getGist().getPermalink() != null){
+                    url=moduleAPI.getContentData().get(0).getGist().getPermalink();
+                }
+                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()+url) != null) {
+                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey()+url);
                 }
                 if (webView != null) {
                     if (webView.getParent() != null)
                         ((ViewGroup) webView.getParent()).removeView(webView);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 } else {
-                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter,moduleType);
+                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey()+url, appCMSPresenter,moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 }
                 break;
@@ -3419,6 +3427,7 @@ public class ViewCreator {
                 /*if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
                     articleWebView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }*/
+
                 if (articleWebView != null) {
                     if (articleWebView.getParent() != null)
                         ((ViewGroup) articleWebView.getParent()).removeView(articleWebView);

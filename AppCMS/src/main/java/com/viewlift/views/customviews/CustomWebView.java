@@ -220,11 +220,12 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         });
         this.loadUrl(loadingUrl);
     }
-
+String cachedKey="";
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
 
 
         loadingURL = loadingURL.replace("http", "https");
+        cachedKey=cacheKey;
 //        this.loadUrl(loadingURL);
         new checkURLAysyncTask(loadingURL, appCMSPresenter).execute(loadingURL);
     }
@@ -275,7 +276,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 appCMSPresenter.showLoadingDialog(false);
-
+                appCMSPresenter.setWebViewCache(cachedKey, (CustomWebView) view);
                 view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
                 view.requestLayout();
                 context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
