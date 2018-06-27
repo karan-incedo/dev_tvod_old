@@ -123,7 +123,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                                 });
                     }
                 } else {
-                        launchVideoPlayer(binder.getContentData().getGist(), null);
+                    launchVideoPlayer(binder.getContentData().getGist(), binder.getContentData().getAppCMSSignedURLResult());
                 }
             }
         } catch (ClassCastException e) {

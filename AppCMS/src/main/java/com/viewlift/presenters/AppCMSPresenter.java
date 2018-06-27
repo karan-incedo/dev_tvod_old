@@ -121,7 +121,6 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
@@ -189,7 +188,6 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -1494,6 +1492,9 @@ public class AppCMSPresenter {
                             appCMSEntitlementResponse.isPlayable() &&
                             appCMSEntitlementResponse.getVideoContentDatum() != null) {
                         ContentDatum currentContentDatum = appCMSEntitlementResponse.getVideoContentDatum();
+                        if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null){
+                            currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
+                        }
                         ContentDatum userHistoryContentDatum = AppCMSPresenter.this.getUserHistoryContentDatum(currentContentDatum.getGist().getId());
                         if (userHistoryContentDatum != null) {
                             currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
