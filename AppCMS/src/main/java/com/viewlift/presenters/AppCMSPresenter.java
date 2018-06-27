@@ -121,7 +121,6 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
@@ -189,7 +188,6 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
@@ -4362,7 +4360,7 @@ public class AppCMSPresenter {
 
     public void getAppCMSSignedURL(String filmId,
                                    Action1<AppCMSSignedURLResult> readyAction) {
-        if (currentContext != null && !isFromEntitlementAPI) {
+        if (currentContext != null /*&& !isFromEntitlementAPI*/) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(), () -> {
                     String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
