@@ -2913,6 +2913,11 @@ public class AppCMSPresenter {
                                                         pageApi = appCMSPageAPI;
 
                                                     }
+
+                                                    final StringBuffer screenName = new StringBuffer();
+                                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(eventPage.getPageId()))) {
+                                                        screenName.append(eventPage.getPageName());
+                                                    }
                                                     //by default select first item of fight
                                                     setSelectedFightId(0);
                                                     Bundle args = getPageActivityBundle(currentActivity,
@@ -2921,7 +2926,7 @@ public class AppCMSPresenter {
                                                             this.pageId,
                                                             pageApi.getTitle(),
                                                             this.pagePath,
-                                                            "",
+                                                            screenName.toString(),
                                                             loadFromFile,
                                                             this.appbarPresent,
                                                             this.fullscreenEnabled,
@@ -7804,8 +7809,6 @@ public class AppCMSPresenter {
                                     if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
                                         screenName.append(this.pageTitle);
                                     }
-                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-                                    screenName.append(pageTitle);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
@@ -12788,7 +12791,7 @@ public class AppCMSPresenter {
 
     public void sendGaScreen(String screenName) {
         if (tracker != null) {
-            //Log.d(TAG, "Sending GA screen tracking event: " + screenName);
+            Log.d(TAG, "Sending GA screen tracking event: " + screenName);
             tracker.setScreenName(screenName);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
@@ -19405,10 +19408,8 @@ public class AppCMSPresenter {
 
                 final StringBuffer screenName = new StringBuffer();
                 if (!TextUtils.isEmpty(pageIdToPageNameMap.get(articlePage.getPageId()))) {
-                    screenName.append(articlePage.getPageName());
+                    screenName.append(personPage.getPageName());
                 }
-                screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-                screenName.append(pageTitle);
 
                 Bundle args = getPageActivityBundle(currentActivity,
                         appCMSPageUI,
@@ -19448,10 +19449,10 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(id)) {
             showLoader();
-            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(currentActivity, "schedule_page_module.json"),
-                    AppCMSPageUI.class);
-//            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
+//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(currentActivity, "schedule_page_module.json"),
+//                    AppCMSPageUI.class);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
 
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(id);
@@ -19499,10 +19500,10 @@ public class AppCMSPresenter {
 
                                     final StringBuffer screenName = new StringBuffer();
                                     if (!TextUtils.isEmpty(pageIdToPageNameMap.get(id))) {
-                                        screenName.append(this.pageTitle);
+                                        screenName.append(schedulePage.getPageName());
                                     }
-                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-                                    screenName.append(pageTitle);
+//                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+//                                    screenName.append(pageTitle);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
