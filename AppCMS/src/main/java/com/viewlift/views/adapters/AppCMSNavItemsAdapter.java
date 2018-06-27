@@ -166,7 +166,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.navigateToSchedulePage(navigationPrimary.getPageId(),
                                     navigationPrimary.getTitle(), navigationPrimary.getUrl(), false);
                         }
-                        else if (titleKey == AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY) {
+                        else if (titleKey == AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY || titleKey == AppCMSUIKeyType.PAGE_FIGHTER_SCREEN_TITLE_KEY) {
                             appCMSPresenter.navigateToRosterPage(navigationPrimary.getPageId(),
                                     navigationPrimary.getTitle(), false);
                         }
@@ -243,6 +243,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
                                 case PAGE_ROSTER_SCREEN_TITLE_KEY:
+                                case PAGE_FIGHTER_SCREEN_TITLE_KEY:
+
 //                                    appCMSPresenter.showLoadingDialog(true);
                                     appCMSPresenter.navigateToRosterPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), false);
