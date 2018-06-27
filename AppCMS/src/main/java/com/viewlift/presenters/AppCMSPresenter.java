@@ -9742,49 +9742,51 @@ public class AppCMSPresenter {
                                         boolean refreshSubscriptionData) {
         checkForExistingSubscription(false);
 
-        String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
+        if (googleAccessToken != null) {
+            String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
+                    appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
-                googleLoginResponse -> {
-                    try {
-                        if (googleLoginResponse != null) {
-                            if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
-                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                stopLoader();
-                            } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
-                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                stopLoader();
-                            } else {
-                                setAuthToken(googleLoginResponse.getAuthorizationToken());
-                                setRefreshToken(googleLoginResponse.getRefreshToken());
-                                setLoggedInUser(googleLoginResponse.getUserId());
-                                setLoggedInUserName(googleUsername);
-                                setLoggedInUserEmail(googleEmail);
+            appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
+                    googleLoginResponse -> {
+                        try {
+                            if (googleLoginResponse != null) {
+                                if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
+                                    showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
+                                    stopLoader();
+                                } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
+                                    showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
+                                    stopLoader();
+                                } else {
+                                    setAuthToken(googleLoginResponse.getAuthorizationToken());
+                                    setRefreshToken(googleLoginResponse.getRefreshToken());
+                                    setLoggedInUser(googleLoginResponse.getUserId());
+                                    setLoggedInUserName(googleUsername);
+                                    setLoggedInUserEmail(googleEmail);
 
-                                //Log.d(TAG, "checkForExistingSubscription()");
+                                    //Log.d(TAG, "checkForExistingSubscription()");
 
-                                if (launchType == LaunchType.SUBSCRIBE) {
-                                    this.googleAccessToken = googleAccessToken;
-                                    this.googleUserId = googleUserId;
-                                    this.googleUsername = googleUsername;
-                                    this.googleEmail = googleEmail;
+                                    if (launchType == LaunchType.SUBSCRIBE) {
+                                        this.googleAccessToken = googleAccessToken;
+                                        this.googleUserId = googleUserId;
+                                        this.googleUsername = googleUsername;
+                                        this.googleEmail = googleEmail;
+                                    }
+
+                                    waithingFor3rdPartyLogin = false;
+
+                                    finalizeLogin(forceSubscribed,
+                                            googleLoginResponse.isSubscribed(),
+                                            launchType == LaunchType.INIT_SIGNUP ||
+                                                    launchType == LaunchType.SUBSCRIBE ||
+                                                    !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
+                                            refreshSubscriptionData);
                                 }
-
-                                waithingFor3rdPartyLogin = false;
-
-                                finalizeLogin(forceSubscribed,
-                                        googleLoginResponse.isSubscribed(),
-                                        launchType == LaunchType.INIT_SIGNUP ||
-                                                launchType == LaunchType.SUBSCRIBE ||
-                                                !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
-                                        refreshSubscriptionData);
                             }
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
                         }
-                    } catch (Exception e) {
-                        //Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
-                    }
-                });
+                    });
+        }
 
         SharedPreferences sharedPreferences =
                 currentContext.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
