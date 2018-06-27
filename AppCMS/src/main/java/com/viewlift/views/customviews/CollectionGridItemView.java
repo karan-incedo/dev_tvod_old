@@ -1543,9 +1543,9 @@ public class CollectionGridItemView extends BaseView {
                 data.getGist().getContentType() != null &&
                 data.getGist().getContentType().equalsIgnoreCase("SERIES") ){
             view.setVisibility(GONE);
-        }else{
+        }/*else{
             view.setVisibility(VISIBLE);
-        }
+        }*/
     }
 
 }

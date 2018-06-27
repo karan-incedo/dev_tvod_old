@@ -66,7 +66,6 @@ public class BeaconPing extends Thread {
                             && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY &&
                             30 <= currentTime &&
                             currentTime % 30 == 0) {
-
                         if (contentDatum != null && contentDatum.getMediaType() == null) {
                             contentDatum.setMediaType("video");
                         }
@@ -87,12 +86,16 @@ public class BeaconPing extends Thread {
                                 0d,
                                 0,
                                 appCMSPresenter.isVideoDownloaded(filmId));
-
+                    }
+                    if (appCMSPresenter != null && videoPlayerView != null
+                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY &&
+                            currentTime % 30 == 0) {
                         if (!isTrailer && videoPlayerView != null) {
                             appCMSPresenter.updateWatchedTime(filmId,
                                     videoPlayerView.getCurrentPosition() / 1000);
                         }
                     }
+
                     if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && contentDatum != null &&
                             contentDatum.getGist() != null && contentDatum.getGist().getMediaType() != null &&
                             contentDatum.getGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
