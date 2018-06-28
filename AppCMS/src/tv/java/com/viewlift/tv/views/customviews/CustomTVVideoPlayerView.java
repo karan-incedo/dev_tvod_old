@@ -251,7 +251,7 @@ public class CustomTVVideoPlayerView
             setTitle();
             adsUrl = getAdsUrl(contentDatum);
             Log.d(TAG, "CVP Free1 : " + contentDatum.getGist().getFree() + " isLiveStream = "+isLiveStream);
-            if (!contentDatum.getGist().getFree()) {
+            if (!contentDatum.getGist().getFree() && appCMSPresenter.isAppSVOD()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
                     if (userFreePlayTimeExceeded()) {
@@ -348,9 +348,10 @@ public class CustomTVVideoPlayerView
         if(contentDatum == null){
             return;
         }
-        if(contentDatum != null
-                && contentDatum.getGist() != null
-                && contentDatum.getGist().getFree()){
+        if (!appCMSPresenter.isAppSVOD()) {
+            return;
+        }
+        if(contentDatum.getGist() != null && contentDatum.getGist().getFree()){
             /*The video is free*/
             Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
             return;
