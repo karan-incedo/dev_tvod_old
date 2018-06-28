@@ -1,60 +1,59 @@
 package com.viewlift.tv.views.customviews;
 
-        import android.content.Context;
-        import android.graphics.Color;
-        import android.graphics.PorterDuff;
-        import android.graphics.Typeface;
-        import android.net.Uri;
-        import android.support.annotation.NonNull;
-        import android.text.TextUtils;
-        import android.util.Log;
-        import android.view.Gravity;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.Button;
-        import android.widget.FrameLayout;
-        import android.widget.ImageView;
-        import android.widget.LinearLayout;
-        import android.widget.ProgressBar;
-        import android.widget.TextView;
-        import android.widget.Toast;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-        import com.bumptech.glide.Glide;
-        import com.bumptech.glide.load.engine.DiskCacheStrategy;
-        import com.bumptech.glide.request.RequestOptions;
-        import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
-        import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
-        import com.google.ads.interactivemedia.v3.api.AdEvent;
-        import com.google.ads.interactivemedia.v3.api.AdsLoader;
-        import com.google.ads.interactivemedia.v3.api.AdsManager;
-        import com.google.ads.interactivemedia.v3.api.AdsRequest;
-        import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-        import com.google.android.exoplayer2.ExoPlaybackException;
-        import com.google.android.exoplayer2.ExoPlayer;
-        import com.viewlift.AppCMSApplication;
-        import com.viewlift.R;
-        import com.viewlift.models.data.appcms.api.ContentDatum;
-        import com.viewlift.models.data.appcms.api.VideoAssets;
-        import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
-        import com.viewlift.models.data.appcms.beacon.BeaconPing;
-        import com.viewlift.models.data.appcms.ui.android.NavigationUser;
-        import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-        import com.viewlift.presenters.AppCMSPresenter;
-        import com.viewlift.tv.utility.Utils;
-        import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-        import com.viewlift.views.customviews.TVVideoPlayerView;
-        import com.viewlift.views.customviews.VideoPlayerView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
+import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
+import com.google.ads.interactivemedia.v3.api.AdEvent;
+import com.google.ads.interactivemedia.v3.api.AdsLoader;
+import com.google.ads.interactivemedia.v3.api.AdsManager;
+import com.google.ads.interactivemedia.v3.api.AdsRequest;
+import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
+import com.viewlift.models.data.appcms.beacon.BeaconPing;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.views.customviews.TVVideoPlayerView;
+import com.viewlift.views.customviews.VideoPlayerView;
 
-        import java.util.Date;
-        import java.util.List;
-        import java.util.Timer;
-        import java.util.TimerTask;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-        import rx.functions.Action1;
+import rx.functions.Action1;
 
-        import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
-        import static com.google.android.exoplayer2.Player.STATE_ENDED;
-        import static com.google.android.exoplayer2.Player.STATE_READY;
+import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
+import static com.google.android.exoplayer2.Player.STATE_ENDED;
+import static com.google.android.exoplayer2.Player.STATE_READY;
 
 /**
  * Created by nitin.tyagi on 1/8/2018.
@@ -188,6 +187,12 @@ public class CustomTVVideoPlayerView
         if (null != url) {
             lastUrl = url;
             setAppCMSPresenter(appCMSPresenter);
+            AppCMSSignedURLResult appCMSSignedURLResult = contentDatum.getAppCMSSignedURLResult();
+            if (appCMSSignedURLResult != null) {
+                setPolicyCookie(appCMSSignedURLResult.getPolicy());
+                setSignatureCookie(appCMSSignedURLResult.getSignature());
+                setKeyPairIdCookie(appCMSSignedURLResult.getKeyPairId());
+            }
             setUri(Uri.parse(url), null);
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
