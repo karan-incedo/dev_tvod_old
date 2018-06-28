@@ -763,14 +763,16 @@ public class AppCMSPresenter {
 
     public native String getStorePwd();
 
-    public String getCurrentPageName(){
+    public String getCurrentPageName() {
         return currentPageName;
     }
-    public void setCurrentPageName(String pageId){
+
+    public void setCurrentPageName(String pageId) {
         if (pageId != null && !TextUtils.isEmpty(pageId)) {
             this.currentPageName = pageIdToPageNameMap.get(pageId);
         }
     }
+
     public static class PlaylistDetails {
         public ImageButton getImgButton() {
             return imgButton;
@@ -1756,7 +1758,7 @@ public class AppCMSPresenter {
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
-                    appCMSMain.getApiBaseUrl());
+                    appCMSMain.getApiBaseUrl()) + getDeviceId();
 
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
@@ -4518,11 +4520,11 @@ public class AppCMSPresenter {
                                 populateFilmsInUserWatchlist();
                             } else {
 
-                                    if (add) {
-                                        displayCustomToast("Failed to Add to Watchlist");
-                                    } else {
-                                        displayCustomToast("Failed to Remove from Watchlist");
-                                    }
+                                if (add) {
+                                    displayCustomToast("Failed to Add to Watchlist");
+                                } else {
+                                    displayCustomToast("Failed to Remove from Watchlist");
+                                }
 
                             }
                         } catch (Exception e) {
@@ -6750,31 +6752,31 @@ public class AppCMSPresenter {
         }
     }
 
-    private void downloadAutoPlayPage(ContentDatum contentDatum){
+    private void downloadAutoPlayPage(ContentDatum contentDatum) {
         try {
             String mediaType = contentDatum.getMediaType() == null ? contentDatum.getGist().getContentType() : contentDatum.getMediaType();
             String pageId = getAutoplayPageId(mediaType);
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             if (appCMSPageUI == null) {
-            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-            if (metaPage != null) {
-                getAppCMSPage(metaPage.getPageUI(),
-                        appCMSPageUIResult -> {
-                            stopLoader();
-                            if (appCMSPageUIResult != null) {
-                                navigationPages.put(pageId, appCMSPageUIResult);
-                                String action = pageNameToActionMap.get(metaPage.getPageName());
-                                if (action != null && actionToPageMap.containsKey(action)) {
-                                    actionToPageMap.put(action, appCMSPageUIResult);
-                                }
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                stopLoader();
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(pageId, appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
 
-                            }
-                        },
-                        loadFromFile,
-                        false);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
             }
-        }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -8435,7 +8437,7 @@ public class AppCMSPresenter {
         //ViewCreator.clearPlayerView();
 
         boolean result = false;
-        if(currentActivity instanceof AppCMSPlayAudioActivity){
+        if (currentActivity instanceof AppCMSPlayAudioActivity) {
             setCancelAllLoads(false);
         }
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
@@ -11423,7 +11425,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if ( (!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
+            if ((!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -12242,7 +12244,7 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            if (currentActivity != null ) {
+            if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -14345,7 +14347,8 @@ public class AppCMSPresenter {
     }
 
     public void initializeAppCMSAnalytics() {
-        if (appCMSAndroid != null) {
+        if (appCMSAndroid != null && appCMSAndroid.getAnalytics() != null
+                && appCMSAndroid.getAnalytics().getGoogleAnalyticsId() != null) {
             initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
             initAppsFlyer(appCMSAndroid);
         }
@@ -18310,7 +18313,6 @@ public class AppCMSPresenter {
     }
 
 
-
     public int getCurrentArticleIndex() {
         return currentArticleIndex;
     }
@@ -18827,9 +18829,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if(!Utils.isFireTVDevice(currentContext)){
+        if (!Utils.isFireTVDevice(currentContext)) {
             return true;
-        }else if (null != appCMSMain &&
+        } else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");
