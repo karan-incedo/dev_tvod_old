@@ -151,6 +151,16 @@ public class ContentDatum implements Serializable {
 
     Players players;
 
+    private AppCMSSignedURLResult appCMSSignedURLResult;
+
+    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
+        return appCMSSignedURLResult;
+    }
+
+    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
+        this.appCMSSignedURLResult = appCMSSignedURLResult;
+    }
+
     public boolean isSelected() {
         return isSelected;
     }

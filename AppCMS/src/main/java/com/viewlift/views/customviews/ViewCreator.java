@@ -565,11 +565,10 @@ public class ViewCreator {
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter, AppCMSUIKeyType moduleType) {
         CustomWebView webView = new CustomWebView(context, appCMSPresenter);
         String webViewUrl, html;
-        if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY){
+        if (moduleType == AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
             webViewUrl = moduleAPI.getRawText();
-            webView.loadURLLink(appCMSPresenter,webViewUrl);
-        }
-        else if (moduleAPI != null && moduleAPI.getRawText() != null) {
+            webView.loadURLLink(appCMSPresenter, webViewUrl);
+        } else if (moduleAPI != null && moduleAPI.getRawText() != null) {
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webViewUrl = moduleAPI.getRawText();
             html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
@@ -1919,13 +1918,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                }  else if (moduleInfo.getBlockName().contains("tray02")) {
-                AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                        loadJsonFromAssets(context, "photo_galery.json"),
-                        AppCMSPageUI.class);
-                module = appCMSPageUI1.getModuleList().get(1);
-            }
-                else if (moduleInfo.getBlockName().contains("authentication01_activate_device")) {
+                } else if (moduleInfo.getBlockName().contains("tray02")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "photo_galery.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().contains("authentication01_activate_device")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "home.json"),
@@ -3326,7 +3324,7 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null &&
                         moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent() != null
-                  ) {
+                        ) {
 
                     componentViewResult.componentView = new LinearLayout(context);
                     ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -3394,30 +3392,30 @@ public class ViewCreator {
                 CustomWebView webView = null;
                 componentViewResult.componentView = new FrameLayout(context);
 
-                ((FrameLayout)componentViewResult.componentView).setId(R.id.web_view_id);
+                ((FrameLayout) componentViewResult.componentView).setId(R.id.web_view_id);
 //                if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
 //                    FrameLayout.LayoutParams webParams =
 //                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 //                                    ViewGroup.LayoutParams.MATCH_PARENT);
 //                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
 //                }
-                String url="";
-                if(moduleAPI.getRawText()!=null){
-                    url=moduleAPI.getRawText();
-                }else if (moduleAPI != null && moduleAPI.getContentData() != null
+                String url = "";
+                if (moduleAPI.getRawText() != null) {
+                    url = moduleAPI.getRawText();
+                } else if (moduleAPI != null && moduleAPI.getContentData() != null
                         && moduleAPI.getContentData().get(0).getGist() != null
-                        && moduleAPI.getContentData().get(0).getGist().getPermalink() != null){
-                    url=moduleAPI.getContentData().get(0).getGist().getPermalink();
+                        && moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                    url = moduleAPI.getContentData().get(0).getGist().getPermalink();
                 }
-                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()+url) != null) {
-                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey()+url);
+                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey() + url) != null) {
+                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey() + url);
                 }
                 if (webView != null) {
                     if (webView.getParent() != null)
                         ((ViewGroup) webView.getParent()).removeView(webView);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 } else {
-                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey()+url, appCMSPresenter,moduleType);
+                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey() + url, appCMSPresenter, moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 }
                 break;
@@ -3427,13 +3425,23 @@ public class ViewCreator {
                 /*if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
                     articleWebView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }*/
-
+                String urlWeb = "";
+                if (moduleAPI.getRawText() != null) {
+                    urlWeb = moduleAPI.getRawText();
+                } else if (moduleAPI != null && moduleAPI.getContentData() != null
+                        && moduleAPI.getContentData().get(0).getGist() != null
+                        && moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                    urlWeb = moduleAPI.getContentData().get(0).getGist().getPermalink();
+                }
+                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey() + urlWeb) != null) {
+                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey() + urlWeb);
+                }
                 if (articleWebView != null) {
                     if (articleWebView.getParent() != null)
                         ((ViewGroup) articleWebView.getParent()).removeView(articleWebView);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                 } else {
-                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter, moduleType);
+                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey()+urlWeb, appCMSPresenter, moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                     articleWebView.setId(R.id.article_web_view);
                 }
@@ -3610,8 +3618,8 @@ public class ViewCreator {
                 switch (componentKey) {
                     case PAGE_WATCH_LIVE_BUTTON_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&  moduleAPI.getContentData().get(0).getGist().getEventSchedule()!=null &&
-                                moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) !=null &&
+                                moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent() != null) {
                             ((Button) componentViewResult.componentView).setId(R.id.watch_live_button);
 
@@ -4681,76 +4689,76 @@ public class ViewCreator {
 
                     ((Spinner) componentViewResult.componentView).setAdapter(seasonTrayAdapter);
                 } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY) {
-                    if(moduleAPI!=null && moduleAPI.getContentData()!=null &&
-                            moduleAPI.getContentData().get(0)!=null && moduleAPI.getContentData().get(0).getLiveEvents()!=null &&
-                            moduleAPI.getContentData().get(0).getLiveEvents().get(0)!=null && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights()!=null){
-                    List<Fights> fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights();
-                    componentViewResult.componentView = new LinearLayout(context);
-                    LinearLayout.LayoutParams layoutParamsDetail =
-                            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.MATCH_PARENT);
-                    ((LinearLayout) componentViewResult.componentView).setLayoutParams(layoutParamsDetail);
-                    ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-                    ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.LEFT);
-                    ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
+                    if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                            moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights() != null) {
+                        List<Fights> fights = moduleAPI.getContentData().get(0).getLiveEvents().get(0).getFights();
+                        componentViewResult.componentView = new LinearLayout(context);
+                        LinearLayout.LayoutParams layoutParamsDetail =
+                                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.MATCH_PARENT);
+                        ((LinearLayout) componentViewResult.componentView).setLayoutParams(layoutParamsDetail);
+                        ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+                        ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.LEFT);
+                        ((LinearLayout) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(context, "#d6202d")));
 
-                    Spinner spinnerFight = new Spinner(context, Spinner.MODE_DROPDOWN);
-                    spinnerFight.setLayoutParams(layoutParamsDetail);
-                    try {
-                        spinnerFight.getBackground().setColorFilter(Color.parseColor(
-                                getColor(context,
-                                        "#ffffff")),
-                                PorterDuff.Mode.SRC_ATOP);
-                    } catch (Exception e) {
-                        //
-                    }
-                    try {
-                        spinnerFight.setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
-                                getColor(context, "#d6202d"))));
-                    } catch (Exception e) {
-                        //
-                    }
-                    ArrayAdapter<String> FightTrayAdapter = new FightSmmaryAdapterView(context,
-                            appCMSPresenter,
-                            component,
-                            jsonValueKeyMap);
-
-                    ArrayList<Fights> listFight = new ArrayList<Fights>();
-
-                    for (int i = 0; i < fights.size(); i++) {
-                        listFight.add(fights.get(0));
-                        if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
-                            FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_LastName() + "/" + fights.get(i).getFighter2_LastName());
+                        Spinner spinnerFight = new Spinner(context, Spinner.MODE_DROPDOWN);
+                        spinnerFight.setLayoutParams(layoutParamsDetail);
+                        try {
+                            spinnerFight.getBackground().setColorFilter(Color.parseColor(
+                                    getColor(context,
+                                            "#ffffff")),
+                                    PorterDuff.Mode.SRC_ATOP);
+                        } catch (Exception e) {
+                            //
                         }
+                        try {
+                            spinnerFight.setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
+                                    getColor(context, "#d6202d"))));
+                        } catch (Exception e) {
+                            //
+                        }
+                        ArrayAdapter<String> FightTrayAdapter = new FightSmmaryAdapterView(context,
+                                appCMSPresenter,
+                                component,
+                                jsonValueKeyMap);
+
+                        ArrayList<Fights> listFight = new ArrayList<Fights>();
+
+                        for (int i = 0; i < fights.size(); i++) {
+                            listFight.add(fights.get(0));
+                            if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
+                                FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_LastName() + "/" + fights.get(i).getFighter2_LastName());
+                            }
+                        }
+
+                        System.out.println("set fight selection adapter");
+                        OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
+                        try {
+                            componentViewResult.onInternalEvent.setModuleId(moduleId);
+
+                            spinnerFight.setEnabled(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        spinnerFight.setOnItemSelectedListener(onItemSelectListener);
+
+                        try {
+                            FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                            spinnerFight.setAdapter(FightTrayAdapter);
+                            spinnerFight.setSelection(0);
+                            FightTrayAdapter.notifyDataSetChanged();
+                            System.out.println("after set fight selection adapter");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(" exception", e.toString());
+
+                        }
+                        ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
                     }
-
-                    System.out.println("set fight selection adapter");
-                    OnFightSelectedListener onItemSelectListener = new OnFightSelectedListener(listFight, appCMSPresenter, context, moduleAPI, component, jsonValueKeyMap);
-                    try {
-                        componentViewResult.onInternalEvent.setModuleId(moduleId);
-
-                        spinnerFight.setEnabled(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    spinnerFight.setOnItemSelectedListener(onItemSelectListener);
-
-                    try {
-                        FightTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                        spinnerFight.setAdapter(FightTrayAdapter);
-                        spinnerFight.setSelection(0);
-                        FightTrayAdapter.notifyDataSetChanged();
-                        System.out.println("after set fight selection adapter");
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(" exception", e.toString());
-
-                    }
-                    ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
-                }
                 } else {
                     componentViewResult.componentView = new TextView(context);
 
@@ -6600,7 +6608,7 @@ public class ViewCreator {
                             cellValue = String.valueOf("Unknown");
                         }*/
                     }
-                    addTableRowCell(context, cellValue, row, isHeader,component,appCMSPresenter,jsonValueKeyMap);
+                    addTableRowCell(context, cellValue, row, isHeader, component, appCMSPresenter, jsonValueKeyMap);
                 }
                 row.setLayoutParams(params);
 
@@ -6965,7 +6973,7 @@ public class ViewCreator {
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            ((LinearLayout) fightStatsView).addView(tableView,p);
+            ((LinearLayout) fightStatsView).addView(tableView, p);
             ((LinearLayout) fightStatsView).postInvalidate();
             ((LinearLayout) fightStatsView).bringToFront();
             fightStatsView.setVisibility(View.VISIBLE);
@@ -7717,7 +7725,7 @@ public class ViewCreator {
                         appCMSPresenter,
                         jsonValueKeyMap,
                         component,
-                        (TextView)cell);
+                        (TextView) cell);
             }
 
         }

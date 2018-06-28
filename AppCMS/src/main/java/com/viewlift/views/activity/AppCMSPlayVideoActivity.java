@@ -172,15 +172,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     if (updatedContentDatum != null) {
                                         try {
                                             binder.setContentData(updatedContentDatum);
-                                            appCMSPresenter.getAppCMSSignedURL(updatedContentDatum.getGist().getId(), new Action1<AppCMSSignedURLResult>() {
-                                                @Override
-                                                public void call(AppCMSSignedURLResult appCMSSignedURLResult) {
-
-                                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
-                                                            finalFontColor1, defaultVideoResolution, intent,
-                                                            appCMSPlayVideoPageContainer, appCMSSignedURLResult);
-                                                }
-                                            });
+                                            launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
+                                                    finalFontColor1, defaultVideoResolution, intent,
+                                                    appCMSPlayVideoPageContainer, binder.getContentData().getAppCMSSignedURLResult());
                                         } catch (Exception e) {
                                             //
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
@@ -342,7 +336,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             }
 
-            if (!useHls && videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
+            if (useHls && videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
                 if (videoAssets.getMpeg().get(0).getUrl() != null &&
                         videoAssets.getMpeg().get(0).getUrl().indexOf("?") > 0) {
                     videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));

@@ -434,7 +434,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
 
-        useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
+        useHls = !Utils.isHLS() ? getResources().getBoolean(R.bool.use_hls) : Utils.isHLS();
 
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
@@ -1499,7 +1499,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             } else {
                 try {
                     result = dataSource.read(buffer, offset, readLength);
-                }catch (NullPointerException exception){
+                } catch (NullPointerException exception) {
                     exception.printStackTrace();
                 }
             }
