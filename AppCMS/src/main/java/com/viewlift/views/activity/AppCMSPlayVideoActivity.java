@@ -171,11 +171,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     if (updatedContentDatum != null) {
                                         try {
                                             binder.setContentData(updatedContentDatum);
-                                            appCMSPresenter.getAppCMSSignedURL(binder.getContentData().getGist().getId(), appCMSSignedURLResult -> {
-                                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
-                                                        finalFontColor1, defaultVideoResolution, intent,
-                                                        appCMSPlayVideoPageContainer, binder.getContentData().getAppCMSSignedURLResult());
-                                            });
+                                            launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
+                                                    finalFontColor1, defaultVideoResolution, intent,
+                                                    appCMSPlayVideoPageContainer, binder.getContentData().getAppCMSSignedURLResult());
                                         } catch (Exception e) {
                                             //
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
