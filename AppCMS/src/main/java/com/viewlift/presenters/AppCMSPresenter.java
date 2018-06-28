@@ -121,7 +121,9 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
+import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -187,10 +189,12 @@ import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSContentDetailTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSShowDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
@@ -233,6 +237,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -600,6 +605,7 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private AppCMSContentDetailCall appCMSContentDetailCall;
+    private AppCMSShowDetailCall appCMSShowDetailCall;
     private AppCompatActivity currentActivity;
     private boolean isAppHomeActivityCreated = false;
     private Context currentContext;
@@ -759,14 +765,16 @@ public class AppCMSPresenter {
 
     public native String getStorePwd();
 
-    public String getCurrentPageName(){
+    public String getCurrentPageName() {
         return currentPageName;
     }
-    public void setCurrentPageName(String pageId){
+
+    public void setCurrentPageName(String pageId) {
         if (pageId != null && !TextUtils.isEmpty(pageId)) {
             this.currentPageName = pageIdToPageNameMap.get(pageId);
         }
     }
+
     public static class PlaylistDetails {
         public ImageButton getImgButton() {
             return imgButton;
@@ -1749,7 +1757,7 @@ public class AppCMSPresenter {
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
-                    appCMSMain.getApiBaseUrl());
+                    appCMSMain.getApiBaseUrl()) + getDeviceId();
 
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
@@ -4511,11 +4519,11 @@ public class AppCMSPresenter {
                                 populateFilmsInUserWatchlist();
                             } else {
 
-                                    if (add) {
-                                        displayCustomToast("Failed to Add to Watchlist");
-                                    } else {
-                                        displayCustomToast("Failed to Remove from Watchlist");
-                                    }
+                                if (add) {
+                                    displayCustomToast("Failed to Add to Watchlist");
+                                } else {
+                                    displayCustomToast("Failed to Remove from Watchlist");
+                                }
 
                             }
                         } catch (Exception e) {
@@ -6743,31 +6751,31 @@ public class AppCMSPresenter {
         }
     }
 
-    private void downloadAutoPlayPage(ContentDatum contentDatum){
+    private void downloadAutoPlayPage(ContentDatum contentDatum) {
         try {
             String mediaType = contentDatum.getMediaType() == null ? contentDatum.getGist().getContentType() : contentDatum.getMediaType();
             String pageId = getAutoplayPageId(mediaType);
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             if (appCMSPageUI == null) {
-            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-            if (metaPage != null) {
-                getAppCMSPage(metaPage.getPageUI(),
-                        appCMSPageUIResult -> {
-                            stopLoader();
-                            if (appCMSPageUIResult != null) {
-                                navigationPages.put(pageId, appCMSPageUIResult);
-                                String action = pageNameToActionMap.get(metaPage.getPageName());
-                                if (action != null && actionToPageMap.containsKey(action)) {
-                                    actionToPageMap.put(action, appCMSPageUIResult);
-                                }
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                stopLoader();
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(pageId, appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
 
-                            }
-                        },
-                        loadFromFile,
-                        false);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
             }
-        }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -8428,7 +8436,7 @@ public class AppCMSPresenter {
         //ViewCreator.clearPlayerView();
 
         boolean result = false;
-        if(currentActivity instanceof AppCMSPlayAudioActivity){
+        if (currentActivity instanceof AppCMSPlayAudioActivity) {
             setCancelAllLoads(false);
         }
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
@@ -8877,6 +8885,7 @@ public class AppCMSPresenter {
             appCMSGetSyncCodeApiCall = appCMSAPIComponent.appCmsGetSyncCodeAPICall();
             appCmsSyncDeviceCodeAPICall = appCMSAPIComponent.appCmsSyncDeviceCodeAPICall();
             appCMSContentDetailCall = appCMSAPIComponent.appCMSContentDetailCall();
+            appCMSShowDetailCall = appCMSAPIComponent.appCMSShowDetailCall();
 
 
         }
@@ -11413,7 +11422,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if ( (!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
+            if ((!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -12232,7 +12241,7 @@ public class AppCMSPresenter {
 
         } else {
             sendCloseOthersAction(null, true, false);
-            if (currentActivity != null ) {
+            if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -14335,7 +14344,8 @@ public class AppCMSPresenter {
     }
 
     public void initializeAppCMSAnalytics() {
-        if (appCMSAndroid != null) {
+        if (appCMSAndroid != null && appCMSAndroid.getAnalytics() != null
+                && appCMSAndroid.getAnalytics().getGoogleAnalyticsId() != null) {
             initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
             initAppsFlyer(appCMSAndroid);
         }
@@ -18300,7 +18310,6 @@ public class AppCMSPresenter {
     }
 
 
-
     public int getCurrentArticleIndex() {
         return currentArticleIndex;
     }
@@ -18817,9 +18826,9 @@ public class AppCMSPresenter {
 
 
     public boolean isLeftNavigationEnabled() {
-        if(!Utils.isFireTVDevice(currentContext)){
+        if (!Utils.isFireTVDevice(currentContext)) {
             return true;
-        }else if (null != appCMSMain &&
+        } else if (null != appCMSMain &&
                 null != appCMSMain.getFeatures() &&
                 null != appCMSMain.getFeatures().getNavigationType()) {
             return appCMSMain.getFeatures().getNavigationType().equalsIgnoreCase("left");
@@ -18827,5 +18836,17 @@ public class AppCMSPresenter {
         return false;
     }
 
-
+    public void getShowDetails(String showId, final Action1<AppCMSShowDetail> action1) {
+        String url = currentContext.getString(R.string.app_cms_show_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                showId,
+                appCMSSite.getGist().getSiteInternalName());
+        GetAppCMSShowDetailAsyncTask.Params params =
+                new GetAppCMSShowDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+        new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
+                action1).execute(params);
+    }
 }

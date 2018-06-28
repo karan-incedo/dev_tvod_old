@@ -2,13 +2,14 @@ package com.viewlift.models.network.components;
 
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.rest.AppCMSContentDetailCall;
+import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.presenters.UrbanAirshipEventPresenter;
-import com.viewlift.models.network.rest.AppCMSSyncDeviceCodeApiCall;
-import com.viewlift.models.network.rest.AppCMSDeviceCodeApiCall;
 
 import javax.inject.Singleton;
 
@@ -29,4 +30,5 @@ public interface AppCMSAPIComponent {
     UrbanAirshipEventPresenter urbanAirshipEventPresenter();
     AppCMSDeviceCodeApiCall appCmsGetSyncCodeAPICall();
     AppCMSSyncDeviceCodeApiCall appCmsSyncDeviceCodeAPICall();
+    AppCMSShowDetailCall appCMSShowDetailCall();
 }
