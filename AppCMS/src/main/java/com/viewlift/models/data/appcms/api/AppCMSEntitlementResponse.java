@@ -127,4 +127,14 @@ public class AppCMSEntitlementResponse {
 
         return appCMSPageAPI;
     }
+
+    private AppCMSSignedURLResult appCMSSignedURLResult;
+
+    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
+        return appCMSSignedURLResult;
+    }
+
+    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
+        this.appCMSSignedURLResult = appCMSSignedURLResult;
+    }
 }

@@ -176,7 +176,8 @@ public class CustomWebView extends AppCMSAdvancedWebView {
     }
 
     ;
-    public void loadURLLink(AppCMSPresenter appCMSPresenter,String loadingUrl) {
+
+    public void loadURLLink(AppCMSPresenter appCMSPresenter, String loadingUrl) {
         context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         this.getSettings().setUseWideViewPort(true);
         this.getSettings().setLoadWithOverviewMode(true);
@@ -221,10 +222,13 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         this.loadUrl(loadingUrl);
     }
 
+    String cachedKey = "";
+
     public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
 
 
         loadingURL = loadingURL.replace("http", "https");
+        cachedKey = cacheKey;
 //        this.loadUrl(loadingURL);
         new checkURLAysyncTask(loadingURL, appCMSPresenter).execute(loadingURL);
     }
@@ -258,24 +262,28 @@ public class CustomWebView extends AppCMSAdvancedWebView {
                 appCMSPresenter.showLoadingDialog(true);
 
                 if (!loadingURL.equalsIgnoreCase(url.replace("https", "http"))) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
-                            () -> {
-                                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                                context.startActivity(browserIntent);
-                            });
+//                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.OPEN_URL_IN_BROWSER,
+//                            () -> {
+//                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                                view.getContext().startActivity(browserIntent);
+//                            });
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    view.getContext().startActivity(browserIntent);
+                    return true;
+
                 } else {
                     Log.e("CustomWebView", "Redirected URL :" + url);
                     view.loadUrl(url);
                 }
 
-                return true;
+                return false;
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 appCMSPresenter.showLoadingDialog(false);
-
+                appCMSPresenter.setWebViewCache(cachedKey, (CustomWebView) view);
                 view.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
                 view.requestLayout();
                 context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -330,4 +338,5 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             webView.setLayoutParams(params);
         });
     }
+
 }

@@ -684,16 +684,16 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                         ImageView imageView = (ImageView) view;
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                         RequestOptions requestOptions = new RequestOptions()
-                                .override(childViewWidth, childViewHeight)
-                                .placeholder(placeholder);
+//                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder).fitCenter();
 
                         Glide.with(context)
                                 .load(imageUrl)
                                 .apply(requestOptions)
                                 .into(imageView);
-                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+//                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
                         String imageUrl = "";
                         if (data.getPlayersData().getData() != null) {
