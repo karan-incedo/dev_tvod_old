@@ -7,6 +7,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -45,6 +50,7 @@ import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -90,12 +96,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import rx.Observable;
 import rx.functions.Action1;
+
 
 /**
  * Created by viewlift on 5/31/17.
@@ -164,6 +172,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private int mVideoRendererIndex;
     private boolean streamingQualitySelectorCreated;
     private boolean useHls;
+    private ImaAdsLoader adsLoader;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -205,6 +214,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void setUriOnConnection(Uri uri, Uri closedCaptionUri) {
         this.uri = uri;
         try {
+            //adsLoader = new ImaAdsLoader(getContext(), Uri.parse(adsUrl));
             player.prepare(buildMediaSource(uri, closedCaptionUri));
             player.seekTo(mCurrentPlayerPosition);
         } catch (IllegalStateException e) {
@@ -212,9 +222,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+    String adsUrl;
+    public void setAdsUrl(String adsUrl){
+        this.adsUrl = adsUrl;
+    }
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
         this.closedCaptionUri = closedCaptionUri;
+       // adsLoader = new ImaAdsLoader(getContext(), Uri.parse(adsUrl));
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
@@ -446,23 +461,35 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        /*if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+
+        try {
+            if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+                StateListDrawable drawable = (StateListDrawable) currentStreamingQualitySelector.getBackground();
+                DrawableContainer.DrawableContainerState dcs = (DrawableContainer.DrawableContainerState) drawable.getConstantState();
+                Drawable[] drawableItems = dcs.getChildren();
+                GradientDrawable gradientDrawableChecked = (GradientDrawable) drawableItems[0]; // item 1
+                gradientDrawableChecked.setStroke(1,appCMSPresenter.getBrandPrimaryCtaColor());
+            }
+        } catch (Exception e) {
+        }
+
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                 && !useHls
                 && !streamingQualitySelectorCreated) {
             createStreamingQualitySelector();
             showStreamingQualitySelector();
-        }*//* else {
-            currentStreamingQualitySelector.setVisibility(View.GONE);
-        }*/
-
-
-        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
-                && (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)) {
-            createStreamingQualitySelector();
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
+
+
+        /*currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
+                *//*&& (null != appCMSPresenter && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)*//*) {
+            createStreamingQualitySelector();
+        } else {
+            currentStreamingQualitySelector.setVisibility(View.GONE);
+        }*/
 
        /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
 
@@ -569,7 +596,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 listView.setAdapter(listViewAdapter);
-                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                listView.setBackgroundColor(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/);
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
@@ -583,8 +610,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
-                }
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/));
+                    dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     dialog.show();
                     listViewAdapter.notifyDataSetChanged();
@@ -652,8 +680,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 TrackGroup group = trackGroups.get(groupIndex);
                 for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
                     Format format = group.getFormat(trackIndex);
-                    availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
-                            format.height == Format.NO_VALUE ? "" : format.height + "p"));
+                    if(format.height != Format.NO_VALUE) {
+                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
+                                format.height == Format.NO_VALUE ? "" : format.height + "p"));
+                    }else{
+                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex ,
+                                buildBitrateString(format)) );
+                    }
                 }
             }
 
@@ -665,6 +698,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
                 return 1;
             });
+
             set.addAll(availableStreamingQualities);
             availableStreamingQualities.clear();
             availableStreamingQualities.addAll(set);
@@ -676,21 +710,36 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 listView.setAdapter(hlsListViewAdapter);
-                listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                    listView.setBackgroundColor(Color.TRANSPARENT);
+                }else {
+                    listView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
+                }
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
 
                 setSelectedStreamingQualityIndex();
+                AlertDialog.Builder builder = null;
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if( (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV)&& Utils.isFireTVDevice(getContext()) ){
+                         builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+                }else{
+                    builder = new AlertDialog.Builder(getContext());
+                }
+
                 if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
                     ((ViewGroup) listView.getParent()).removeView(listView);
                 }
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                    if((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())){
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
+                        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                    }else {
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                    }
                 }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     /*Click Handler*/
@@ -728,6 +777,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         streamingQualitySelectorCreated = true;
     }
 
+    private String buildBitrateString(Format format) {
+        return format.bitrate == Format.NO_VALUE ? ""
+                : String.format(Locale.US, "%.2fMbit", format.bitrate / 1000000f);
+    }
+
     private DrmSessionManager<FrameworkMediaCrypto> buildOnlineDrmSessionManager(String licenseUrl) throws UnsupportedDrmException {
         HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(getContext(), "ExoOnline"));
         MediaDrmCallback drmCallback = new HttpMediaDrmCallback(licenseUrl, httpDataSourceFactory);
@@ -759,6 +813,42 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         // Plays the video with the side-loaded subtitle.
         return new MergingMediaSource(videoSource, subtitleSource);
     }
+
+    /*private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
+        if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
+        }
+
+        Format textFormat = Format.createTextSampleFormat(null,
+                MimeTypes.APPLICATION_SUBRIP,
+                C.SELECTION_FLAG_DEFAULT,
+                "en");
+        MediaSource videoSource = buildMediaSource(uri, "");
+        MediaSource mediaSourceWithAds =
+                new AdsMediaSource(videoSource,
+                        mediaDataSourceFactory,
+                        adsLoader,
+                        getPlayerView().getOverlayFrameLayout(),
+            *//* eventHandler= *//* null,
+            *//* eventListener= *//* null);
+
+        MergingMediaSource mergingMediaSource = null;
+
+        if (ccFileUrl == null) {
+            // mergingMediaSource = new MergingMediaSource(videoSource,mediaSourceWithAds);
+            return mediaSourceWithAds;
+        }
+        MediaSource subtitleSource = new SingleSampleMediaSource(
+                ccFileUrl,
+                mediaDataSourceFactory,
+                textFormat,
+                C.TIME_UNSET);
+        mergingMediaSource = new MergingMediaSource(videoSource,subtitleSource,mediaSourceWithAds);
+        // Plays the video with the side-loaded subtitle.
+        return mergingMediaSource;
+    }*/
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
         int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri) :
@@ -859,8 +949,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter
-                && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+                && null != appCMSPresenter)
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
@@ -1531,7 +1620,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {
-            super(context, items);
+            super(context, items,appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
@@ -1605,7 +1694,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         HLSStreamingQualitySelectorAdapter(Context context,
                                            AppCMSPresenter appCMSPresenter,
                                            List<HLSStreamingQuality> items) {
-            super(context, items);
+            super(context, items,appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
