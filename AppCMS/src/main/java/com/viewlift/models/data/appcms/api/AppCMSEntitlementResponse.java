@@ -41,6 +41,7 @@ public class AppCMSEntitlementResponse {
 
     private String message;
 
+    private AppCMSSignedURLResult appCMSSignedURLResult;
     public boolean isSuccess() {
         return success;
     }
@@ -126,5 +127,13 @@ public class AppCMSEntitlementResponse {
         appCMSPageAPI.setModules(moduleList);
 
         return appCMSPageAPI;
+    }
+
+    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
+        return appCMSSignedURLResult;
+    }
+
+    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
+        this.appCMSSignedURLResult = appCMSSignedURLResult;
     }
 }

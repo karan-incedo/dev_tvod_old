@@ -860,7 +860,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
                         null,
                         null);
-
             case C.TYPE_DASH:
                 return new DashMediaSource(uri,
                         buildDataSourceFactory(false),

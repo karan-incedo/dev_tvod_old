@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -174,7 +173,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                             binder.setContentData(updatedContentDatum);
                                             launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
                                                     finalFontColor1, defaultVideoResolution, intent,
-                                                    appCMSPlayVideoPageContainer, null);
+                                                    appCMSPlayVideoPageContainer, binder.getContentData().getAppCMSSignedURLResult());
                                         } catch (Exception e) {
                                             //
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
