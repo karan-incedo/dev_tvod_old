@@ -10287,7 +10287,7 @@ public class AppCMSPresenter {
             setExistingGooglePlaySubscriptionId(null);
             setActiveSubscriptionProcessor(null);
             setFacebookAccessToken(null, null, null, null, false, false);
-            setGoogleAccessToken(null, null, null, null, false, false);
+            //setGoogleAccessToken(null, null, null, null, false, false);
 
             sendUpdateHistoryAction();
 
