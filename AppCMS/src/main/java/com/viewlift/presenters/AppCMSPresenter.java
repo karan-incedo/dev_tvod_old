@@ -13447,7 +13447,9 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = (AppCompatActivity) activity;
+        if(activity instanceof  AppCompatActivity) {
+            this.currentActivity = (AppCompatActivity) activity;
+        }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);
