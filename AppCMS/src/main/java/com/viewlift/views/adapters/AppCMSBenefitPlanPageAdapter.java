@@ -22,6 +22,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
@@ -112,12 +113,21 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
                     this.componentViewType,
                     false,
                     false, this.viewTypeKey);
+            if (BaseView.isLandscape(mContext)) {
+                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
+                layPar.setMargins(0, 25, 0, 0);
+                view.setLayoutParams(layPar);
+            } else if (BaseView.isTablet(mContext) && !BaseView.isLandscape(mContext)) {
+                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
+                layPar.setMargins(0, 20, 0, 0);
+                view.setLayoutParams(layPar);
+            }
             return new ViewHolder(view);
         } else {
             TextView termsView = new TextView(mContext);
             termsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             termsView.setTextColor(appCMSPresenter.getGeneralTextColor());
-            termsView.setTextSize(16f);
+            termsView.setTextSize(14f);
             termsView.setPadding(5, 35, 5, 15);
             termsView.setGravity(Gravity.CENTER);
             termsView.setText("See terms of use and privacy policy for more details");

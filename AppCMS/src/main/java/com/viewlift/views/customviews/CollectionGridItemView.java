@@ -460,18 +460,20 @@ public class CollectionGridItemView extends BaseView {
                                     !TextUtils.isEmpty(settings.getItems().get(position).getImageUrl()) &&
                                     (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY)) {
                         bringToFront = false;
-//                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 settings.getItems().get(position).getImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
-//                        imageUrl=settings.getItems().get(position).getImageUrl();
+
+//                        String imageUrl = settings.getItems().get(position).getImageUrl();
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
-                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
-                                        .fitCenter();
-//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+//                                        .override(childViewWidth, childViewHeight)
+//                                         .placeholder(placeholder)
+                                        .centerInside();
+                                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                ((ImageView) view).setAdjustViewBounds(true);
                                 Glide.with(context)
                                         .load(imageUrl)
 //                                        .apply(requestOptions)
@@ -1224,7 +1226,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setText(data.getPlanDetails().get(0).getFeatureDetails().get(0).getTextToDisplay());
+                        ((TextView) view).setText(data.getPlanDetails().get(0).getFeatureDetails().get(0).getTextToDisplay().toUpperCase());
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                     ((TextView) view).setText(data.getName());
@@ -1314,7 +1316,10 @@ public class CollectionGridItemView extends BaseView {
 
                         StringBuilder planAmt = new StringBuilder();
                         if (currency != null) {
-                            planAmt.append(currency.getSymbol());
+                            String currencySymbol = currency.getSymbol();
+                            if (currencySymbol.contains("US$"))
+                                currencySymbol = "$";
+                            planAmt.append(currencySymbol);
                         }
                         planAmt.append(formattedRecurringPaymentAmount);
                         StringBuilder planDuration = new StringBuilder();
@@ -1347,17 +1352,20 @@ public class CollectionGridItemView extends BaseView {
                             plan.append(planAmt.toString());
                             plan.append(planDuration.toString());
                             Spannable text = new SpannableString(plan.toString());
-                            float smallFont = 1.0f;
-                            float bigFont = 1.5f;
+                            float payFont = 1.0f;
+                            float durationFont = 1.0f;
+                            float priceFont = 1.5f;
                             if (BaseView.isTablet(context)) {
-                                smallFont = 1.3f;
-                                bigFont = 2.0f;
+                                payFont = 1.1f;
+                                durationFont = 1.1f;
+                                priceFont = 2.0f;
                             }
-                            text.setSpan(new RelativeSizeSpan(smallFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new RelativeSizeSpan(bigFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
                                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new RelativeSizeSpan(smallFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
                         } else {
                             StringBuilder plan = new StringBuilder();

@@ -77,6 +77,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     private int selectedColor;
     private boolean isClickable;
     boolean singlePlanViewShown = false;
+    boolean subscribeViewShown = false;
 
     public AppCMSPlansAdapter(Context context,
                               ViewCreator viewCreator,
@@ -132,6 +133,15 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
             singlePlanView = setSinglePlan(singlePlanView);
             return new ViewHolder(singlePlanView);
         }
+        if (adapterData.size() == 1 && singlePlanViewShown && subscribeViewShown) {
+            TextView singlePlanView = new TextView(mContext);
+            singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+            singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
+            singlePlanView.setGravity(Gravity.RIGHT);
+            if (moduleAPI.getDescription() != null)
+                singlePlanView.setText(moduleAPI.getDescription());
+            return new ViewHolder(singlePlanView);
+        }
 
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
                 parentLayout,
@@ -185,41 +195,41 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         StringBuilder planDuration = new StringBuilder();
 
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.plan_type_month));
         }
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.plan_type_year));
         }
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-            planDuration.append(" ");
+//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.plan_type_day));
         }
-
+        planDuration.append("*");
         StringBuilder plan = new StringBuilder();
         plan.append(planAmt.toString());
         plan.append(planDuration.toString());
         Spannable text = new SpannableString(plan.toString());
-        float smallFont = 2.3f;
-        float bigFont = 3.0f;
+        float durationFont = 2.1f;
+        float priceFont = 3.0f;
         if (BaseView.isTablet(mContext)) {
-            smallFont = 3.3f;
-            bigFont = 4.0f;
+            durationFont = 3.0f;
+            priceFont = 4.0f;
         }
-        text.setSpan(new RelativeSizeSpan(bigFont), 0, planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length() /*+ 1*/, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 //        text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length() + 1,
 //                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.splashbackgroundColor)), 0, planAmt.toString().length() + 1,
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.splashbackgroundColor)), 0, planAmt.toString().length()/* + 1*/,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        text.setSpan(new RelativeSizeSpan(smallFont), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new RelativeSizeSpan(durationFont), planAmt.toString().length()/* + 1*/, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.setText(text, TextView.BufferType.SPANNABLE);
         return textView;
     }
@@ -229,8 +239,10 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     public void onBindViewHolder(ViewHolder holder, final int position) {
         if (0 <= position && position <= adapterData.size()) {
             if (adapterData.size() == 1) {
-                if (singlePlanViewShown)
+                if (singlePlanViewShown && position == 1) {
                     createView(holder, position - 1);
+                    subscribeViewShown = true;
+                }
                 singlePlanViewShown = true;
             }
         }
@@ -279,7 +291,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     public int getItemCount() {
         if (adapterData != null && adapterData.size() != 0) {
             if (adapterData.size() == 1) {
-                return 2;
+                return 3;
             } else {
                 return adapterData.size();
             }

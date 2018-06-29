@@ -554,8 +554,8 @@ public abstract class BaseView extends FrameLayout {
                         return layout.getTabletLandscape().getFontSize();
                     }
                 } else {
-                    if (layout.getTabletLandscape().getFontSize() != 0f) {
-                        return layout.getTabletLandscape().getFontSize();
+                    if (layout.getTabletPortrait().getFontSize() != 0f) {
+                        return layout.getTabletPortrait().getFontSize();
                     }
                 }
             } else {
@@ -1232,14 +1232,17 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_PLAN_FEATURE_TEXT_KEY:
                     if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                        gravity = Gravity.CENTER_VERTICAL;
+                        gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
                     }
                     break;
 
                 case PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY:
                     if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                        gravity = Gravity.CENTER_VERTICAL;
+                        gravity = Gravity.CENTER;
                     }
+                    break;
+                case PAGE_PLAN_FEATURE_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
                     break;
 
                 case PAGE_SETTINGS_PLAN_VALUE_KEY:
@@ -1490,7 +1493,10 @@ public abstract class BaseView extends FrameLayout {
                 layoutParams.setMargins(0, tm, 0, bm);
             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                 if (isTablet(getContext())) {
-                    if (!isLandscape(getContext())) {
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    layoutParams.setMargins(0, tm, 0, bm);
+                    /*if (!isLandscape(getContext())) {
                         TabletPortrait tabletPortrait = layout.getTabletPortrait();
                         if (tabletPortrait.getLeftMargin() != 0f) {
                             lm = Math.round(DEVICE_WIDTH * (tabletPortrait.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
@@ -1508,8 +1514,8 @@ public abstract class BaseView extends FrameLayout {
                             rm = Math.round(DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
                         }
                     }
-                    layoutParams.setMargins(lm, tm, rm, bm);
-                }else{
+                    layoutParams.setMargins(lm, tm, rm, bm);*/
+                } else {
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                     Mobile mobile = layout.getMobile();

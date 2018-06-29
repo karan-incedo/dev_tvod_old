@@ -684,11 +684,11 @@
 
     <string name="forward_slash">/</string>
     <string name="app_cms_plan_renewal_cycle_type_monthly">MONTH</string>
-    <string name="plan_type_month">Month</string>
+    <string name="plan_type_month">month</string>
     <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
-    <string name="plan_type_year">Year</string>
+    <string name="plan_type_year">year</string>
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
-    <string name="plan_type_day">Day</string>
+    <string name="plan_type_day">day</string>
 
     <string name="app_cms_page_download_size_key">videoSize</string>
     <string name="app_cms_page_download_duration_key">duration</string>

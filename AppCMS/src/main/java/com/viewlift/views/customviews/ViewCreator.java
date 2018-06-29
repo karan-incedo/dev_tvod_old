@@ -5068,7 +5068,7 @@ public class ViewCreator {
                         fontSize = (int) (0.66 * fontSize);
                     }
                     ((TextView) componentViewResult.componentView).setTextSize(fontSize);
-                } else if ((BaseView.getFontSize(context, component.getLayout()) > 0) && (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
+                } else if ((BaseView.getFontSize(context, component.getLayout()) > 0) || (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && componentKey != AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY)) {
                     int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                     if (resizeText) {
                         fontSize = (int) (0.66 * fontSize);

@@ -701,9 +701,11 @@ public class AppCMSPageFragment extends Fragment {
                 if (appCMSBinder != null && appCMSBinder.getPageId() != null) {
 
                     if (appCMSBinder.isScrollOnLandscape() != BaseView.isLandscape(pageView.getContext())) {
-                        appCMSBinder.setxScroll(0);
-                        appCMSBinder.setyScroll(0);
-                        pageView.scrollToPosition(appCMSBinder.getCurrentScrollPosition());
+                        if (!appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId())) {
+                            appCMSBinder.setxScroll(0);
+                            appCMSBinder.setyScroll(0);
+                            pageView.scrollToPosition(appCMSBinder.getCurrentScrollPosition());
+                        }
                     } else {
                         if (!appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId())) {
                             int x = appCMSBinder.getxScroll();
