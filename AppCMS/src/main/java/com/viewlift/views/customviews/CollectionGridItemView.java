@@ -1188,7 +1188,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         }
-                        ((TextView) view).setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + ")");
+                        ((TextView) view).setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + "pts)");
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             int textColor = Color.parseColor(getColor(getContext(),
                                     childComponent.getTextColor()));
@@ -1605,9 +1605,17 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
                 } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY) {
-
-                    if (data.getFights().getFighter1_LastName() != null && data.getFights().getFighter2_LastName() != null) {
-                        ((TextView) view).setText(data.getFights().getFightSerialNo() + " " + data.getFights().getFighter1_LastName() + "/" + data.getFights().getFighter2_LastName());
+                    String fighter1Name=data.getFights().getFighter1_LastName();
+                    String fighter2Name=data.getFights().getFighter2_LastName();
+                    if(data.getFights().getWinnerId()!=null && !TextUtils.isEmpty(data.getFights().getWinnerId())){
+                        if(data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter1_Id())){
+                            fighter1Name=fighter1Name+"(Won)";
+                        }else if(data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter2Id())){
+                            fighter2Name=fighter2Name+"(Won)";
+                        }
+                    }
+                    if (data.getFights().getFighter1_LastName () != null && data.getFights().getFighter2_LastName() != null) {
+                        ((TextView) view).setText(data.getFights().getFightSerialNo() + " " + fighter1Name + "/" + fighter2Name);
                     }
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));

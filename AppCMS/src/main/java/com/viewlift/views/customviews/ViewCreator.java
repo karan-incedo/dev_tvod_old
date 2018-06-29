@@ -4727,8 +4727,18 @@ public class ViewCreator {
 
                         for (int i = 0; i < fights.size(); i++) {
                             listFight.add(fights.get(0));
+
                             if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
-                                FightTrayAdapter.add(i + 1 + " " + fights.get(i).getFighter1_LastName() + "/" + fights.get(i).getFighter2_LastName());
+                                String fighter1Name=fights.get(i).getFighter1_LastName();
+                                String fighter2Name=fights.get(i).getFighter2_LastName();
+                                if(fights.get(i).getWinnerId()!=null && !TextUtils.isEmpty(fights.get(i).getWinnerId())){
+                                    if(fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter1_Id())){
+                                        fighter1Name=fighter1Name+"(Won)";
+                                    }else if(fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter2Id())){
+                                        fighter2Name=fighter2Name+"(Won)";
+                                    }
+                                }
+                                FightTrayAdapter.add(i + 1 + " " + fighter1Name + "/" + fighter2Name);
                             }
                         }
 

@@ -56,7 +56,7 @@
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
 
     <!-- AppCMS Update Video Watch History API -->
-    <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history</string>
+    <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history?deviceId=</string>
 
     <!-- AppCMS User Video Status API -->
     <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>

@@ -1902,7 +1902,7 @@ public class AppCMSPresenter {
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
-                    appCMSMain.getApiBaseUrl());
+                    appCMSMain.getApiBaseUrl())+ getDeviceId();
 
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
@@ -2838,7 +2838,7 @@ public class AppCMSPresenter {
             } else {
 
                 String baseUrl = appCMSMain.getApiBaseUrl();
-                String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
+                String endPoint = pageIdToPageAPIUrlMap.get(eventPage.getPageId());
                 String siteId = appCMSSite.getGist().getSiteInternalName();
                 String apiUrl = getApiUrl(false,
                         false,
@@ -2897,7 +2897,7 @@ public class AppCMSPresenter {
                                                     "",
                                                     pageId,
                                                     pageTitle,
-                                                    "",
+                                                    pagePath,
                                                     launchActivity, null) {
 
                                                 @Override
@@ -6790,6 +6790,163 @@ public class AppCMSPresenter {
                         }
                     });
         }
+    }
+
+    public void getEventsPageeRefreshData(final Action1<AppCMSPageAPI> appCmsPageApiAction, String dataId, String permaLink) {
+
+
+        if (currentActivity != null && !TextUtils.isEmpty(permaLink) && eventPage != null) {
+            showLoader();
+
+            AppCMSPageUI appCMSPageUI = navigationPages.get(eventPage.getPageId());
+
+
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String endPoint = pageIdToPageAPIUrlMap.get(eventPage.getPageId());
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+            String apiUrl = getApiUrl(false,
+                    false,
+                    false,
+                    baseUrl,
+                    endPoint,
+                    siteId,
+                    permaLink,
+                    appCMSPageUI != null &&
+                            appCMSPageUI.getCaching() != null &&
+                            !appCMSPageUI.getCaching().shouldOverrideCaching() &&
+                            appCMSPageUI.getCaching().isEnabled());
+            getPageIdContent(apiUrl,
+                    permaLink,
+                    null,
+                    appCMSPageUI != null &&
+                            appCMSPageUI.getCaching() != null &&
+                            !appCMSPageUI.getCaching().shouldOverrideCaching() &&
+                            appCMSPageUI.getCaching().isEnabled(),
+                    new AppCMSPageAPIAction(true,
+                            true,
+                            true,
+                            appCMSPageUI,
+                            "",
+                            getPageId(appCMSPageUI),
+                            "",
+                            permaLink,
+                            false,
+                            false,
+                            null) {
+
+                        final AppCMSPageAPIAction appCMSPageAPIAction = this;
+
+                        @Override
+                        public void call(final AppCMSPageAPI appCMSPageAPI) {
+                            if (appCMSPageAPI != null) {
+                                navigationPageData.put(this.pageId, appCMSPageAPI);
+
+                                String dataId = "";
+                                cancelInternalEvents();
+                                pushActionInternalEvents(this.action
+                                        + BaseView.isLandscape(currentActivity));
+                                for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
+                                    if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("EventDetailModule")) {
+                                        dataId = appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getDataId();
+                                        break;
+                                    }
+                                }
+                                getEventsArchieve(appCMSMain.getApiBaseUrl(),
+                                        dataId,
+                                        eventPage.getPageId(), new AppCMSEventArchieveAPIAction(true,
+                                                false,
+                                                true,
+                                                appCMSPageUI,
+                                                "",
+                                                eventPage.getPageId(),
+                                                eventPage.getPageName(),
+                                                "",
+                                                false, null) {
+
+                                            @Override
+                                            public void call(AppCMSEventArchieveResult appCMSEventResult) {
+                                                if (appCMSEventResult != null) {
+
+                                                    Module module = null;
+                                                    if (appCMSEventResult != null) {
+                                                        pageApi = appCMSEventResult.convertToAppCMSPageModule(appCMSPageAPI);
+                                                    }
+
+                                                } else {
+                                                    pageApi = appCMSPageAPI;
+
+                                                }
+
+                                                if (pageApi != null) {
+                                                    Observable.just(pageApi)
+                                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                                            .subscribe(appCmsPageApiAction);
+                                                } else {
+                                                    Observable.just((AppCMSPageAPI) null)
+                                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                                            .subscribe((Observer<? super AppCMSPageAPI>) pageApi);
+                                                }
+                                            }
+                                        });
+
+                            } else {
+                                stopLoader();
+                            }
+                            loadingPage = false;
+                        }
+                    });
+//            }
+
+        }
+
+//        if (currentActivity != null) {
+//            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
+//
+//            MetaPage metaPage = pageIdToMetaPageMap.get(schedulePage.getPageId());
+//
+//                getEventsArchieve(appCMSMain.getApiBaseUrl(),
+//                        dataId,
+//                        eventPage.getPageId(), new AppCMSEventArchieveAPIAction(true,
+//                                false,
+//                                true,
+//                                appCMSPageUI,
+//                                "",
+//                                eventPage.getPageId(),
+//                                eventPage.getPageName(),
+//                                "",
+//                                false, null) {
+//
+//                            @Override
+//                            public void call(AppCMSEventArchieveResult appCMSEventResult) {
+//                                if (appCMSEventResult != null) {
+//
+////                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
+////                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
+////                                                                AppCMSEventArchieveResult.class);
+//                                    Module module = null;
+//                                    if (appCMSEventResult != null) {
+//                                        pageApi = appCMSEventResult.convertToAppCMSPageModule(appCMSPageAPI);
+//                                    }
+//
+//                                } else {
+//                                    pageApi = appCMSPageAPI;
+//
+//                                }
+//
+//                                if (pageApi != null) {
+//                                    Observable.just(pageApi)
+//                                            .onErrorResumeNext(throwable -> Observable.empty())
+//                                            .subscribe(appCmsPageApiAction);
+//                                } else {
+//                                    Observable.just((AppCMSPageAPI) null)
+//                                            .onErrorResumeNext(throwable -> Observable.empty())
+//                                            .subscribe((Observer<? super AppCMSPageAPI>) pageApi);
+//                                }
+//                            }
+//                        });
+//
+//
+//        }
     }
 
     public void getScheduleRefreshData(final Action1<List<AppCMSScheduleResult>> appCMSScheduleResultAction, String playlistId) {
@@ -12682,7 +12839,7 @@ public class AppCMSPresenter {
         } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             navigateToPhotoGalleryPage(gistId, title, null, false);
             return;
-        }else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.content_type_event).toLowerCase())) {
+        } else if (mediaType.toLowerCase().contains(currentContext.getString(R.string.content_type_event).toLowerCase())) {
             navigateToEventDetailPage(permalink);
             return;
         }
@@ -15459,6 +15616,10 @@ public class AppCMSPresenter {
 
     public boolean isHistoryPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && historyPage != null && pageId.equals(historyPage.getPageId());
+    }
+
+    public boolean isEventPage(String pageId) {
+        return !TextUtils.isEmpty(pageId) && eventPage != null && pageId.equals(eventPage.getPageId());
     }
 
     private int getWatchlistPage(List<MetaPage> metaPageList) {
