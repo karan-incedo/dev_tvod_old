@@ -2331,7 +2331,7 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
-                        componentViewResult.componentView.setBackgroundResource(R.drawable.app_logo);
+                        ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.app_logo);
                         break;
 
                     case PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY:

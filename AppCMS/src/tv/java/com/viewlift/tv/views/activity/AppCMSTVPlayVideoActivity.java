@@ -118,7 +118,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                                         } catch (Exception e) {
                                             //
                                         }
-                                            launchVideoPlayer(updatedContentDatum.getGist() , null);
+                                            launchVideoPlayer(updatedContentDatum.getGist() , updatedContentDatum.getAppCMSSignedURLResult());
                                     }
                                 });
                     }
