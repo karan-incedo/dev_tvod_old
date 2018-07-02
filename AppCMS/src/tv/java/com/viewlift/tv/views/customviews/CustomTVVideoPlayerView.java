@@ -243,6 +243,17 @@ public class CustomTVVideoPlayerView
         sentBeaconPlay = false;
         sentBeaconFirstFrame = false;
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
+
+
+            if (contentDatum.getAppCMSSignedURLResult() != null) {
+                updateSignatureCookies(contentDatum.getAppCMSSignedURLResult().getPolicy(),
+                        contentDatum.getAppCMSSignedURLResult().getSignature(),
+                        contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+                setPolicyCookie(contentDatum.getAppCMSSignedURLResult().getPolicy());
+                setSignatureCookie(contentDatum.getAppCMSSignedURLResult().getSignature());
+                setKeyPairIdCookie(contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+            }
+
             this.contentDatum = contentDatum;
             initlizeBeaconsThread();
             if (contentDatum.getStreamingInfo() != null) {
@@ -1001,7 +1012,7 @@ public class CustomTVVideoPlayerView
         String errorString = null;
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
-            setUri(Uri.parse(lastUrl), null);
+            updateToken(Uri.parse(lastUrl), null);
         }
     }
 
@@ -1015,4 +1026,19 @@ public class CustomTVVideoPlayerView
         beaconMessageThread.setBeaconData(videoDataId, permaLink, mStreamId);
     }
 
+    private void updateToken(Uri videoUri, Uri closedCaptionUri) {
+
+        appCMSPresenter.refreshVideoData(videoDataId, contentDatum -> {
+            {
+                updateSignatureCookies(contentDatum.getAppCMSSignedURLResult().getPolicy(),
+                        contentDatum.getAppCMSSignedURLResult().getSignature(),
+                        contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+                setPolicyCookie(contentDatum.getAppCMSSignedURLResult().getPolicy());
+                setSignatureCookie(contentDatum.getAppCMSSignedURLResult().getSignature());
+                setKeyPairIdCookie(contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+
+                setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
+
+            }});
+    }
 }
