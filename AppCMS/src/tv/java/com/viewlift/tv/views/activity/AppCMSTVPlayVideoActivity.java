@@ -41,9 +41,10 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -286,7 +287,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     }
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingFormats == null) {
-            availableStreamingFormats = new HashMap<>();
+            availableStreamingFormats = new TreeMap<>();
         }
         if (videoAssets != null && videoAssets.getMpeg() != null) {
             List<Mpeg> availableMpegs = videoAssets.getMpeg();
@@ -294,7 +295,17 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
             for (int i = 0; i < numAvailableMpegs; i++) {
                 Mpeg availableMpeg = availableMpegs.get(i);
                 String mpegUrl = availableMpeg.getUrl();
-                if (!TextUtils.isEmpty(mpegUrl)) {
+                if(availableMpeg.getRenditionValue() != null){
+                    String renVal = availableMpeg.getRenditionValue().replace("_","");
+                    if (!TextUtils.isEmpty(renVal)) {
+                        availableStreamingFormats.put(renVal, availableMpeg.getUrl());
+                    }
+                }else if(availableMpeg.getBitrate() > 0){
+                    String bitrateVal = buildBitrateString(availableMpeg.getBitrate());
+                    if (!TextUtils.isEmpty(bitrateVal)) {
+                        availableStreamingFormats.put(bitrateVal, availableMpeg.getUrl());
+                    }
+                }else if (!TextUtils.isEmpty(mpegUrl)) {
                     String resolution = getMpegResolutionFromUrl(mpegUrl);
                     if (!TextUtils.isEmpty(resolution)) {
                         availableStreamingFormats.put(resolution, availableMpeg.getUrl());
@@ -303,6 +314,11 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
             }
         }
     }
+
+    private String buildBitrateString(int bitrate) {
+        return String.format(Locale.US, "%.2fMbit", bitrate / 1000f);
+    }
+
     private void launchVideoPlayer(Gist gist , AppCMSSignedURLResult appCMSSignedURLResult) {
         String videoUrl = "";
         String closedCaptionUrl = null;
@@ -747,7 +763,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onErrorScreenClose() {
-
+        finish();
     }
 
     @Override
