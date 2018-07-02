@@ -334,6 +334,8 @@
     <!--PHOTO_GALLERY-TAG-->
     <string name="app_cms_page_photogallery_title">photoTitle</string>
     <string name="app_cms_page_photogallery_authName">trayAuthName</string>
+    <string name="app_cms_page_record_type_key">player_record</string>
+
     <string name="app_cms_page_photogallery_subTitle">traySubTitle</string>
     <string name="app_cms_page_photogallery_imgCount">trayImgCount</string>
     <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
@@ -567,6 +569,8 @@
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
+    <!-- AppCMS Show Detail API -->
+    <string name="app_cms_show_detail_api_url">%1$s/content/series?ids=%2$s&amp;site=%3$s</string>
 
     <!--  AppCMS entitlement Detail API -->
     <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>

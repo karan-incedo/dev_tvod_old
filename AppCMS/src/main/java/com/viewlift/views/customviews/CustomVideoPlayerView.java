@@ -245,7 +245,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         init(mContext);
         //getPlayerView().hideController();
-        isVideoDownloaded = false;//appCMSPresenter.isVideoDownloaded(videoDataId);
+        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(videoDataId);
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             {
                 if (contentDatum != null) {

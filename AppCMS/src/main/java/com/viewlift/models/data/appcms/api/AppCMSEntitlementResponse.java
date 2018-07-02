@@ -41,6 +41,7 @@ public class AppCMSEntitlementResponse {
 
     private String message;
 
+    private AppCMSSignedURLResult appCMSSignedURLResult;
     public boolean isSuccess() {
         return success;
     }
@@ -127,8 +128,6 @@ public class AppCMSEntitlementResponse {
 
         return appCMSPageAPI;
     }
-
-    private AppCMSSignedURLResult appCMSSignedURLResult;
 
     public AppCMSSignedURLResult getAppCMSSignedURLResult() {
         return appCMSSignedURLResult;

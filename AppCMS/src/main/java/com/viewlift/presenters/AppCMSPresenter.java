@@ -123,9 +123,11 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
+import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
+import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSStandingResult;
 import com.viewlift.models.data.appcms.api.AppCMSTeamRoasterResult;
@@ -201,6 +203,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSShowDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
@@ -246,6 +249,7 @@ import com.viewlift.models.network.rest.AppCMSRosterCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSScheduleCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -627,7 +631,8 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private AppCMSContentDetailCall appCMSContentDetailCall;
-    private Activity currentActivity;
+    private AppCMSShowDetailCall appCMSShowDetailCall;
+    private AppCompatActivity currentActivity;
     private boolean isAppHomeActivityCreated = false;
     private Context currentContext;
     private Navigation navigation;
@@ -1657,7 +1662,7 @@ public class AppCMSPresenter {
                                             : message,
                                     false,
                                     () -> {
-                                        readyAction.call(null);
+                                        getCurrentActivity().finish();
                                     },
                                     null);
 
@@ -1902,7 +1907,7 @@ public class AppCMSPresenter {
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
-                    appCMSMain.getApiBaseUrl())+ getDeviceId();
+                    appCMSMain.getApiBaseUrl()) + getDeviceId();
 
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(), apikey,
                     updateHistoryRequest, s -> {
@@ -9717,6 +9722,7 @@ public class AppCMSPresenter {
             appCMSGetSyncCodeApiCall = appCMSAPIComponent.appCmsGetSyncCodeAPICall();
             appCmsSyncDeviceCodeAPICall = appCMSAPIComponent.appCmsSyncDeviceCodeAPICall();
             appCMSContentDetailCall = appCMSAPIComponent.appCMSContentDetailCall();
+            appCMSShowDetailCall = appCMSAPIComponent.appCMSShowDetailCall();
 
 
         }
@@ -10577,49 +10583,51 @@ public class AppCMSPresenter {
                                         boolean refreshSubscriptionData) {
         checkForExistingSubscription(false);
 
-        String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
+        if (googleAccessToken != null) {
+            String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
+                    appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
-                googleLoginResponse -> {
-                    try {
-                        if (googleLoginResponse != null) {
-                            if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
-                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                stopLoader();
-                            } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
-                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                stopLoader();
-                            } else {
-                                setAuthToken(googleLoginResponse.getAuthorizationToken());
-                                setRefreshToken(googleLoginResponse.getRefreshToken());
-                                setLoggedInUser(googleLoginResponse.getUserId());
-                                setLoggedInUserName(googleUsername);
-                                setLoggedInUserEmail(googleEmail);
+            appCMSGoogleLoginCall.call(url, googleAccessToken, apikey,
+                    googleLoginResponse -> {
+                        try {
+                            if (googleLoginResponse != null) {
+                                if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
+                                    showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
+                                    stopLoader();
+                                } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
+                                    showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
+                                    stopLoader();
+                                } else {
+                                    setAuthToken(googleLoginResponse.getAuthorizationToken());
+                                    setRefreshToken(googleLoginResponse.getRefreshToken());
+                                    setLoggedInUser(googleLoginResponse.getUserId());
+                                    setLoggedInUserName(googleUsername);
+                                    setLoggedInUserEmail(googleEmail);
 
-                                //Log.d(TAG, "checkForExistingSubscription()");
+                                    //Log.d(TAG, "checkForExistingSubscription()");
 
-                                if (launchType == LaunchType.SUBSCRIBE) {
-                                    this.googleAccessToken = googleAccessToken;
-                                    this.googleUserId = googleUserId;
-                                    this.googleUsername = googleUsername;
-                                    this.googleEmail = googleEmail;
+                                    if (launchType == LaunchType.SUBSCRIBE) {
+                                        this.googleAccessToken = googleAccessToken;
+                                        this.googleUserId = googleUserId;
+                                        this.googleUsername = googleUsername;
+                                        this.googleEmail = googleEmail;
+                                    }
+
+                                    waithingFor3rdPartyLogin = false;
+
+                                    finalizeLogin(forceSubscribed,
+                                            googleLoginResponse.isSubscribed(),
+                                            launchType == LaunchType.INIT_SIGNUP ||
+                                                    launchType == LaunchType.SUBSCRIBE ||
+                                                    !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
+                                            refreshSubscriptionData);
                                 }
-
-                                waithingFor3rdPartyLogin = false;
-
-                                finalizeLogin(forceSubscribed,
-                                        googleLoginResponse.isSubscribed(),
-                                        launchType == LaunchType.INIT_SIGNUP ||
-                                                launchType == LaunchType.SUBSCRIBE ||
-                                                !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
-                                        refreshSubscriptionData);
                             }
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
                         }
-                    } catch (Exception e) {
-                        //Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
-                    }
-                });
+                    });
+        }
 
         SharedPreferences sharedPreferences =
                 currentContext.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
@@ -11118,7 +11126,7 @@ public class AppCMSPresenter {
             setExistingGooglePlaySubscriptionId(null);
             setActiveSubscriptionProcessor(null);
             setFacebookAccessToken(null, null, null, null, false, false);
-            setGoogleAccessToken(null, null, null, null, false, false);
+            //setGoogleAccessToken(null, null, null, null, false, false);
 
             sendUpdateHistoryAction();
 
@@ -14273,12 +14281,14 @@ public class AppCMSPresenter {
         }
     }
 
-    public Activity getCurrentActivity() {
+    public AppCompatActivity getCurrentActivity() {
         return currentActivity;
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = activity;
+        if(activity instanceof  AppCompatActivity) {
+            this.currentActivity = (AppCompatActivity) activity;
+        }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);
@@ -15180,7 +15190,8 @@ public class AppCMSPresenter {
     }
 
     public void initializeAppCMSAnalytics() {
-        if (appCMSAndroid != null) {
+        if (appCMSAndroid != null && appCMSAndroid.getAnalytics() != null
+                && appCMSAndroid.getAnalytics().getGoogleAnalyticsId() != null) {
             initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
             initAppsFlyer(appCMSAndroid);
         }
@@ -20171,5 +20182,17 @@ public class AppCMSPresenter {
         return false;
     }
 
-
+    public void getShowDetails(String showId, final Action1<AppCMSShowDetail> action1) {
+        String url = currentContext.getString(R.string.app_cms_show_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                showId,
+                appCMSSite.getGist().getSiteInternalName());
+        GetAppCMSShowDetailAsyncTask.Params params =
+                new GetAppCMSShowDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken())
+                        .apiKey(apikey)
+                        .build();
+        new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
+                action1).execute(params);
+    }
 }

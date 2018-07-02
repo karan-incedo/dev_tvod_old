@@ -3441,7 +3441,7 @@ public class ViewCreator {
                         ((ViewGroup) articleWebView.getParent()).removeView(articleWebView);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                 } else {
-                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey()+urlWeb, appCMSPresenter, moduleType);
+                    articleWebView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey() + urlWeb, appCMSPresenter, moduleType);
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                     articleWebView.setId(R.id.article_web_view);
                 }
@@ -4729,13 +4729,13 @@ public class ViewCreator {
                             listFight.add(fights.get(0));
 
                             if (!TextUtils.isEmpty(fights.get(i).getFighter1_LastName())) {
-                                String fighter1Name=fights.get(i).getFighter1_LastName();
-                                String fighter2Name=fights.get(i).getFighter2_LastName();
-                                if(fights.get(i).getWinnerId()!=null && !TextUtils.isEmpty(fights.get(i).getWinnerId())){
-                                    if(fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter1_Id())){
-                                        fighter1Name=fighter1Name+"(Won)";
-                                    }else if(fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter2Id())){
-                                        fighter2Name=fighter2Name+"(Won)";
+                                String fighter1Name = fights.get(i).getFighter1_LastName();
+                                String fighter2Name = fights.get(i).getFighter2_LastName();
+                                if (fights.get(i).getWinnerId() != null && !TextUtils.isEmpty(fights.get(i).getWinnerId())) {
+                                    if (fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter1_Id())) {
+                                        fighter1Name = fighter1Name + "(Won)";
+                                    } else if (fights.get(i).getWinnerId().equalsIgnoreCase(fights.get(i).getFighter2Id())) {
+                                        fighter2Name = fighter2Name + "(Won)";
                                     }
                                 }
                                 FightTrayAdapter.add(i + 1 + " " + fighter1Name + "/" + fighter2Name);
@@ -4769,9 +4769,12 @@ public class ViewCreator {
                         }
                         ((LinearLayout) componentViewResult.componentView).addView(spinnerFight);
                     }
+                } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY) {
+                    componentViewResult.componentView = new LinearLayout(context);
+                    ((LinearLayout) componentViewResult.componentView).setGravity(Gravity.BOTTOM);
+                    ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
                 } else {
                     componentViewResult.componentView = new TextView(context);
-
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TITLE_TXT_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#000000"));
@@ -5620,6 +5623,9 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                         ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
                                         ((TextView) componentViewResult.componentView).setEnabled(false);
+                                    } else {
+                                        ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+                                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
                                     }
                                     componentViewResult.componentView.setOnClickListener(v -> {
                                         int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -5632,10 +5638,6 @@ public class ViewCreator {
                                         }
 
                                     });
-                                } else {
-                                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
-                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
-                                    ((TextView) componentViewResult.componentView).setEnabled(false);
                                 }
                                 break;
 
@@ -6072,121 +6074,123 @@ public class ViewCreator {
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
-                String fontFamilyKey = null;
-                String fontFamilyKeyTypeParsed = null;
-                if (!TextUtils.isEmpty(component.getFontFamilyKey())) {
-                    String[] fontFamilyKeyArr = component.getFontFamilyKey().split("-");
-                    if (fontFamilyKeyArr.length == 2) {
-                        fontFamilyKey = fontFamilyKeyArr[0];
-                        fontFamilyKeyTypeParsed = fontFamilyKeyArr[1];
+                if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT) {
+                    String fontFamilyKey = null;
+                    String fontFamilyKeyTypeParsed = null;
+                    if (!TextUtils.isEmpty(component.getFontFamilyKey())) {
+                        String[] fontFamilyKeyArr = component.getFontFamilyKey().split("-");
+                        if (fontFamilyKeyArr.length == 2) {
+                            fontFamilyKey = fontFamilyKeyArr[0];
+                            fontFamilyKeyTypeParsed = fontFamilyKeyArr[1];
+                        }
                     }
-                }
 
-                int fontFamilyKeyType = Typeface.NORMAL;
-                AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(fontFamilyKeyTypeParsed);
-                if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
-                    fontFamilyKeyType = Typeface.BOLD;
-                }
-
-                String fontFamilyValue = null;
-                String fontFamilyValueTypeParsed = null;
-                if (!TextUtils.isEmpty(component.getFontFamilyValue())) {
-                    String[] fontFamilyValueArr = component.getFontFamilyValue().split("-");
-                    if (fontFamilyValueArr.length == 2) {
-                        fontFamilyValue = fontFamilyValueArr[0];
-                        fontFamilyValueTypeParsed = fontFamilyValueArr[1];
+                    int fontFamilyKeyType = Typeface.NORMAL;
+                    AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(fontFamilyKeyTypeParsed);
+                    if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
+                        fontFamilyKeyType = Typeface.BOLD;
                     }
-                }
 
-                int fontFamilyValueType = Typeface.NORMAL;
-                fontWeight = jsonValueKeyMap.get(fontFamilyValueTypeParsed);
+                    String fontFamilyValue = null;
+                    String fontFamilyValueTypeParsed = null;
+                    if (!TextUtils.isEmpty(component.getFontFamilyValue())) {
+                        String[] fontFamilyValueArr = component.getFontFamilyValue().split("-");
+                        if (fontFamilyValueArr.length == 2) {
+                            fontFamilyValue = fontFamilyValueArr[0];
+                            fontFamilyValueTypeParsed = fontFamilyValueArr[1];
+                        }
+                    }
 
-                if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
-                    fontFamilyValueType = Typeface.BOLD;
-                }
+                    int fontFamilyValueType = Typeface.NORMAL;
+                    fontWeight = jsonValueKeyMap.get(fontFamilyValueTypeParsed);
 
-                textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
-                        .getBrand().getGeneral().getTextColor()));
+                    if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
+                        fontFamilyValueType = Typeface.BOLD;
+                    }
 
-                String directorTitle = null;
-                StringBuilder directorListSb = new StringBuilder();
-                String starringTitle = null;
-                StringBuilder starringListSb = new StringBuilder();
+                    textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
+                            .getBrand().getGeneral().getTextColor()));
 
-                if (moduleAPI != null && moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
-                    for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
-                        AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
-                        if (creditBlockType != null &&
-                                (creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY ||
-                                        creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
-                                        creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
-                            if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                                directorTitle = creditBlock.getTitle().toUpperCase();
-                            }
-                            if (creditBlock != null && creditBlock.getCredits() != null) {
-                                for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                                    directorListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                    if (i < creditBlock.getCredits().size() - 1) {
-                                        directorListSb.append(", ");
+                    String directorTitle = null;
+                    StringBuilder directorListSb = new StringBuilder();
+                    String starringTitle = null;
+                    StringBuilder starringListSb = new StringBuilder();
+
+                    if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                            !moduleAPI.getContentData().isEmpty() &&
+                            moduleAPI.getContentData().get(0) != null &&
+                            moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
+                        for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
+                            AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
+                            if (creditBlockType != null &&
+                                    (creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY ||
+                                            creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
+                                            creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
+                                if (!TextUtils.isEmpty(creditBlock.getTitle())) {
+                                    directorTitle = creditBlock.getTitle().toUpperCase();
+                                }
+                                if (creditBlock != null && creditBlock.getCredits() != null) {
+                                    for (int i = 0; i < creditBlock.getCredits().size(); i++) {
+                                        directorListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                        if (i < creditBlock.getCredits().size() - 1) {
+                                            directorListSb.append(", ");
+                                        }
                                     }
                                 }
-                            }
-                        } else if (creditBlockType != null &&
-                                creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY) {
-                            if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                                starringTitle = creditBlock.getTitle().toUpperCase();
-                            }
-                            if (creditBlock != null && creditBlock.getCredits() != null) {
-                                for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                                    if (!TextUtils.isEmpty(creditBlock.getCredits().get(i).getTitle())) {
-                                        starringListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                        if (i < creditBlock.getCredits().size() - 1) {
-                                            starringListSb.append(", ");
+                            } else if (creditBlockType != null &&
+                                    creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY) {
+                                if (!TextUtils.isEmpty(creditBlock.getTitle())) {
+                                    starringTitle = creditBlock.getTitle().toUpperCase();
+                                }
+                                if (creditBlock != null && creditBlock.getCredits() != null) {
+                                    for (int i = 0; i < creditBlock.getCredits().size(); i++) {
+                                        if (!TextUtils.isEmpty(creditBlock.getCredits().get(i).getTitle())) {
+                                            starringListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                            if (i < creditBlock.getCredits().size() - 1) {
+                                                starringListSb.append(", ");
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                if (directorListSb.length() == 0 && starringListSb.length() == 0) {
-                    if (!BaseView.isLandscape(context)) {
-                        componentViewResult.shouldHideComponent = true;
+                    if (directorListSb.length() == 0 && starringListSb.length() == 0) {
+                        if (!BaseView.isLandscape(context)) {
+                            componentViewResult.shouldHideComponent = true;
+                        }
                     }
-                }
 
-                componentViewResult.componentView = new CreditBlocksView(context,
-                        fontFamilyKey,
-                        fontFamilyKeyType,
-                        fontFamilyValue,
-                        fontFamilyValueType,
-                        directorTitle,
-                        directorListSb.toString(),
-                        starringTitle,
-                        starringListSb.toString(),
-                        textColor,
-                        appCMSPresenter.getBrandPrimaryCtaColor(),
-                        BaseView.getFontSizeKey(context, component.getLayout()),
-                        BaseView.getFontSizeValue(context, component.getLayout()));
+                    componentViewResult.componentView = new CreditBlocksView(context,
+                            fontFamilyKey,
+                            fontFamilyKeyType,
+                            fontFamilyValue,
+                            fontFamilyValueType,
+                            directorTitle,
+                            directorListSb.toString(),
+                            starringTitle,
+                            starringListSb.toString(),
+                            textColor,
+                            appCMSPresenter.getBrandPrimaryCtaColor(),
+                            BaseView.getFontSizeKey(context, component.getLayout()),
+                            BaseView.getFontSizeValue(context, component.getLayout()));
 
-                if (moduleAPI != null && !BaseView.isTablet(context)
-                        && moduleAPI.getModuleType() != null
-                        && (jsonValueKeyMap.get(moduleAPI.getModuleType())
-                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
-                        jsonValueKeyMap.get(moduleAPI.getModuleType())
-                                == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
-                        jsonValueKeyMap.get(moduleAPI.getModuleType())
-                                == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
-                )) {
-                    componentViewResult.componentView.setVisibility(View.GONE);
+                    if (moduleAPI != null && !BaseView.isTablet(context)
+                            && moduleAPI.getModuleType() != null
+                            && (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                            == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
+                            jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
+                            jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
+                    )) {
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
                 }
                 break;
 

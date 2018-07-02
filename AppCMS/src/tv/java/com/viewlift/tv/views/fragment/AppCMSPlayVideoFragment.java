@@ -1,8 +1,7 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,8 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.percent.PercentRelativeLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -206,7 +207,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         return appCMSPlayVideoFragment;
     }
 
-    @Override
+    /*@Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
@@ -216,7 +217,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (activity instanceof VideoPlayerView.StreamingQualitySelector) {
             streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) activity;
         }
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {

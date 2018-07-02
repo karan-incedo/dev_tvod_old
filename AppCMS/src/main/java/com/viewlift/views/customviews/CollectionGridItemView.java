@@ -59,6 +59,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import static com.viewlift.views.customviews.ViewCreator.setTypeFace;
+
 /*
  * Created by viewlift on 5/5/17.
  */
@@ -798,17 +800,17 @@ public class CollectionGridItemView extends BaseView {
                     long eventDate = data.getGist().getEventSchedule().get(0).getEventTime();
                     long currentTimeMillis = System.currentTimeMillis();
 
-                    long remainingTime=appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L,"EEE MMM dd HH:mm:ss");
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
 
                     System.out.println("ticket event time-" + eventDate);
 
                     System.out.println("ticket current Time-" + currentTimeMillis);
                     System.out.println("ticket current differ-" + remainingTime);
 
-                    if (data!=null &&  data.getGist()!=null && data.getGist().getTicketUrl()!=null &&
+                    if (data != null && data.getGist() != null && data.getGist().getTicketUrl() != null &&
                             !TextUtils.isEmpty(data.getGist().getTicketUrl())) {
                         view.setVisibility(View.VISIBLE);
-                    }else{
+                    } else {
                         view.setVisibility(View.GONE);
 
                     }
@@ -1196,6 +1198,7 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                         }
+
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_HEIGHT_LABEL_TEXT || componentKey == AppCMSUIKeyType.PAGE_WEIGHT_LABEL_TEXT) {
 
@@ -1605,16 +1608,16 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setTextColor(Color.parseColor(
                             childComponent.getTextColor()));
                 } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY) {
-                    String fighter1Name=data.getFights().getFighter1_LastName();
-                    String fighter2Name=data.getFights().getFighter2_LastName();
-                    if(data.getFights().getWinnerId()!=null && !TextUtils.isEmpty(data.getFights().getWinnerId())){
-                        if(data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter1_Id())){
-                            fighter1Name=fighter1Name+"(Won)";
-                        }else if(data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter2Id())){
-                            fighter2Name=fighter2Name+"(Won)";
+                    String fighter1Name = data.getFights().getFighter1_LastName();
+                    String fighter2Name = data.getFights().getFighter2_LastName();
+                    if (data.getFights().getWinnerId() != null && !TextUtils.isEmpty(data.getFights().getWinnerId())) {
+                        if (data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter1_Id())) {
+                            fighter1Name = fighter1Name + "(Won)";
+                        } else if (data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter2Id())) {
+                            fighter2Name = fighter2Name + "(Won)";
                         }
                     }
-                    if (data.getFights().getFighter1_LastName () != null && data.getFights().getFighter2_LastName() != null) {
+                    if (data.getFights().getFighter1_LastName() != null && data.getFights().getFighter2_LastName() != null) {
                         ((TextView) view).setText(data.getFights().getFightSerialNo() + " " + fighter1Name + "/" + fighter2Name);
                     }
                     ((TextView) view).setTextColor(Color.parseColor(
@@ -1627,13 +1630,61 @@ public class CollectionGridItemView extends BaseView {
                 }
 
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    ViewCreator.setTypeFace(context,
+                    setTypeFace(context,
                             appCMSPresenter,
                             jsonValueKeyMap,
                             component,
                             (TextView) view);
                 }
 //                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY) {
+                    for (int i = 0; i < childComponent.getComponents().size(); i++) {
+                        TextView textView = new TextView(context);
+                        if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+
+                            if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                                    && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(1) != null
+                                    && data.getPlayersData().getData().getMetadata().get(1).getValue() != null
+                                    ) {
+                                textView.setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + "pts)");
+                            }
+                        } else if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
+                            if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                                    && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(0) != null
+                                    && data.getPlayersData().getData().getMetadata().get(0).getValue() != null
+                                    ) {
+                                textView.setText(data.getPlayersData().getData().getMetadata().get(0).getValue());
+                            }
+                        }
+
+                        if (childComponent.getComponents().get(i).getNumberOfLines() != 0) {
+                            textView.setSingleLine(false);
+                            textView.setMaxLines(childComponent.getComponents().get(i).getNumberOfLines());
+                            textView.setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        textView.setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getComponents().get(i).getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getComponents().get(i).getTextColor()));
+                            textView.setTextColor(textColor);
+                        }
+                        if (!TextUtils.isEmpty(component.getFontFamily())) {
+                            setTypeFace(context,
+                                    appCMSPresenter,
+                                    jsonValueKeyMap,
+                                    component,
+                                    textView);
+                        }
+                        if(getFontSize(context,childComponent.getComponents().get(i).getLayout())>0){
+                            textView.setTextSize(getFontSize(context,childComponent.getComponents().get(i).getLayout()));
+                        }
+                        ((LinearLayout) view).addView(textView);
+
+                    }
+                }
+
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);
