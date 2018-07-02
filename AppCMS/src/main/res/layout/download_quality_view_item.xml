@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/transparentColor"
     android:padding="6dp">
 
     <android.support.constraint.Guideline
@@ -9,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".5" />
+        app:layout_constraintGuide_percent="@dimen/constraint_guide_percent" />
 
     <android.support.v7.widget.AppCompatRadioButton
         android:id="@+id/download_quality_radio_selection"
