@@ -763,7 +763,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onErrorScreenClose() {
-
+        finish();
     }
 
     @Override
