@@ -31,8 +31,8 @@
     <dimen name="tray_grid_item_spacing">15dp</dimen>
 
     <dimen name = "grid_image_padding">3dp</dimen>
-    <dimen name="tray_list_row_padding_top">-10dp</dimen>
-    <dimen name="tray_list_row_padding_left">-13dp</dimen>
+    <dimen name="tray_list_row_padding_top">-5dp</dimen>
+    <dimen name="tray_list_row_padding_left">50dp</dimen>
 
     <dimen name="footer_logo_height">18dp</dimen>
     <dimen name="footer_logo_width">110dp</dimen>
@@ -56,5 +56,7 @@
 
     <dimen name="link_account_overlay_dialog_width">815dp</dimen>
     <dimen name="link_account_overlay_dialog_height">278dp</dimen>
+
+    <dimen name="constraint_guide_percent">.5</dimen>
 
 </resources>

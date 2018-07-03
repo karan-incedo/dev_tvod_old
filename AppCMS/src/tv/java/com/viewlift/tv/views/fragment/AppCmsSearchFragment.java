@@ -608,6 +608,7 @@ public class AppCmsSearchFragment extends BaseFragment {
         if(null != mRowsAdapter && mRowsAdapter.size() > 0){
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
+                browseFragment.setScreenName("Search");
                 browseFragment.setmRowsAdapter(mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }

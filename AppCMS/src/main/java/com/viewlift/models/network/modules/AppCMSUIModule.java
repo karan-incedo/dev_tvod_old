@@ -569,6 +569,10 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_title),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TITLE_TXT_KEY);
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_record_type_key),
+                AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_authName),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY);
 

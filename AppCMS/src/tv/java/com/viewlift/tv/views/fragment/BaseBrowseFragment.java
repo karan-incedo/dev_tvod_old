@@ -2,21 +2,20 @@ package com.viewlift.tv.views.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.BrowseFragment;
+import android.support.v17.leanback.app.BrowseSupportFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.viewlift.tv.utility.Utils;
-
 import com.viewlift.R;
+import com.viewlift.tv.utility.Utils;
 
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
  */
 
-public class BaseBrowseFragment extends BrowseFragment {
+public class BaseBrowseFragment extends BrowseSupportFragment {
 
     private View browseFragmentView = null;
     @Override

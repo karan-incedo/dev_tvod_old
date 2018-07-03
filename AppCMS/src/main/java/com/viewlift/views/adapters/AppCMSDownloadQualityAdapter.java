@@ -28,7 +28,7 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
     public AppCMSDownloadQualityAdapter(Context context, List<Mpeg> items, List<Component> components,
                                         AppCMSPresenter appCMSPresenter,
                                         Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
-        super(context, items);
+        super(context, items,appCMSPresenter);
         this.appCMSPresenter = appCMSPresenter;
         this.components = components;
         this.jsonValueKeyMap = jsonValueKeyMap;

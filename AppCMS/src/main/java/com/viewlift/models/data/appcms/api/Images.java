@@ -33,4 +33,8 @@ public class Images implements Serializable {
     @Expose
     _3x4 _3x4;
 
+    @SerializedName("_16x9")
+    @Expose
+    _16x9 _16x9;
+
 }

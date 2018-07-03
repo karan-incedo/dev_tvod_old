@@ -75,7 +75,7 @@ public class Tag implements Serializable {
 
     @SerializedName("images")
     @Expose
-    Object images;
+    _16x9 images;
 
     @SerializedName("badgeImages")
     @Expose
@@ -213,11 +213,11 @@ public class Tag implements Serializable {
         this.requireLogin = requireLogin;
     }
 
-    public Object getImages() {
+    public _16x9 getImages() {
         return images;
     }
 
-    public void setImages(Object images) {
+    public void setImages(_16x9 images) {
         this.images = images;
     }
 

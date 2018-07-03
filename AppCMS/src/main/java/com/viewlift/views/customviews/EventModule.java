@@ -149,12 +149,24 @@ public class EventModule extends ModuleView {
                     ModuleView moduleView1 = new ModuleView<>(context, module1, true);
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_FIGHT_SUMMARY_MODULE_KEY) {
                         moduleView1.setId(R.id.fight_summary_module_id);
+
                         long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
                         long currentTimeMillis = System.currentTimeMillis();
                         long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getLiveEvents() != null &&
+                                moduleAPI.getContentData().get(0).getLiveEvents().get(0) != null && remainingTime < 0){
+                            moduleView1.setVisibility(View.VISIBLE);
+
+                        }else{
+                            moduleView1.setVisibility(View.GONE);
+                        }
+                       //if remaining time time greater than 0 .means it has upcoming event so dont show figt records
                         if (remainingTime > 0) {
                             moduleView1.setVisibility(View.GONE);
                         }
+
                     }
                     for (int j = 0; j < component.getComponents().size(); j++) {
                         Component component1 = component.getComponents().get(j);
