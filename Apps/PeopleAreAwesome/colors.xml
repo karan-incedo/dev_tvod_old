@@ -1,4 +1,10 @@
 <resources>
+    <color name="blackTransparentColor">#8F000000</color>
+    <color name="splashbackgroundColor">#000000</color>
+    <color name="audioSeekBg">#414344</color>
+    <color name="volumeProgress">#B5B5B5</color>
+    <color name="color_white">#ffffff</color>
+    <color name="splash_progress_color">@color/colorAccent</color>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#6121a8</color>
@@ -9,5 +15,4 @@
     <color name="disabledButtonColor">#9D9FA2</color>
     <color name="semiTransparentColor">#47000000</color>
     <color name="transparentColor">#00000000</color>
-
 </resources>
