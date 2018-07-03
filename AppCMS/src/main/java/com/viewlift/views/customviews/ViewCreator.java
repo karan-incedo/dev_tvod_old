@@ -3637,7 +3637,7 @@ public class ViewCreator {
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
 //
-                        }else{
+                        } else {
                             (componentViewResult.componentView).setVisibility(View.GONE);
 
                         }

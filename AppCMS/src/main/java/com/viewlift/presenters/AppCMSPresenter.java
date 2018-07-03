@@ -12046,6 +12046,7 @@ public class AppCMSPresenter {
                                         if (onCloseAction != null) {
                                             onCloseAction.call();
                                         }
+                                        setLaunchType(LaunchType.LOGIN_AND_SIGNUP);
                                         navigateToLoginPage(false);
                                     } catch (Exception e) {
                                         //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());

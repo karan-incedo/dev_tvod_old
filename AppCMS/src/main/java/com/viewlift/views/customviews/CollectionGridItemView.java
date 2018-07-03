@@ -943,12 +943,12 @@ public class CollectionGridItemView extends BaseView {
                                     appCMSPresenter.getAppCMSMain().getBrand() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null
                                     ) {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                             } else {
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) view).setTextColor(Color.parseColor(
+                                        childComponent.getTextColor()));
                             }
                         } else {
                             ((TextView) view).setTextColor(Color.parseColor(
@@ -983,12 +983,12 @@ public class CollectionGridItemView extends BaseView {
                                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null
                                 ) {
                             ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                         } else {
-                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            ((TextView) view).setTextColor(Color.parseColor(
+                                    childComponent.getTextColor()));
                         }
                     } else {
                         ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
