@@ -15023,7 +15023,8 @@ public class AppCMSPresenter {
     }
 
     public void initializeAppCMSAnalytics() {
-        if (appCMSAndroid != null) {
+        if (appCMSAndroid != null && appCMSAndroid.getAnalytics() != null
+                && appCMSAndroid.getAnalytics().getGoogleAnalyticsId() != null) {
             initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
             initAppsFlyer(appCMSAndroid);
         }
