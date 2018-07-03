@@ -48,6 +48,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -1639,23 +1641,31 @@ public class CollectionGridItemView extends BaseView {
 //                }
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY) {
+                    String record = "";
+                    String score = "";
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null) {
+                        for (int j = 0; j < data.getPlayersData().getData().getMetadata().size(); j++) {
+                            if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("record")) {
+                                record = data.getPlayersData().getData().getMetadata().get(j).getValue();
+                            } else if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("score")) {
+                                score = data.getPlayersData().getData().getMetadata().get(j).getValue();
+                            }
+                        }
+                    }
+
                     for (int i = 0; i < childComponent.getComponents().size(); i++) {
                         TextView textView = new TextView(context);
-                        if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
 
-                            if (data.getPlayersData() != null && data.getPlayersData().getData() != null
-                                    && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(1) != null
-                                    && data.getPlayersData().getData().getMetadata().get(1).getValue() != null
-                                    ) {
-                                textView.setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + "pts)");
+
+                        if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+                            if (TextUtils.isEmpty(score)) {
+                                score = "Undefined ";
                             }
+                            textView.setText("(" + score + "pts)");
                         } else if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
-                            if (data.getPlayersData() != null && data.getPlayersData().getData() != null
-                                    && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(0) != null
-                                    && data.getPlayersData().getData().getMetadata().get(0).getValue() != null
-                                    ) {
-                                textView.setText(data.getPlayersData().getData().getMetadata().get(0).getValue());
-                            }
+                            textView.setText(record);
+
                         }
 
                         if (childComponent.getComponents().get(i).getNumberOfLines() != 0) {
@@ -1677,8 +1687,8 @@ public class CollectionGridItemView extends BaseView {
                                     component,
                                     textView);
                         }
-                        if(getFontSize(context,childComponent.getComponents().get(i).getLayout())>0){
-                            textView.setTextSize(getFontSize(context,childComponent.getComponents().get(i).getLayout()));
+                        if (getFontSize(context, childComponent.getComponents().get(i).getLayout()) > 0) {
+                            textView.setTextSize(getFontSize(context, childComponent.getComponents().get(i).getLayout()));
                         }
                         ((LinearLayout) view).addView(textView);
 

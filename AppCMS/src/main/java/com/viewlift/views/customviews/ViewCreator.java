@@ -3637,6 +3637,9 @@ public class ViewCreator {
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
 //
+                        }else{
+                            (componentViewResult.componentView).setVisibility(View.GONE);
+
                         }
                         (componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -7755,34 +7758,37 @@ public class ViewCreator {
             public void onTick(long millisUntilFinished) {
                 long different = appCMSPresenter.getTimeIntervalForEvent(eventTime * 1000L, "EEE MMM dd HH:mm:ss");
 
-
-                String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
-                String[] timerText = context.getResources().getStringArray(R.array.timer_text);
-                if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
-                    TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
-                    timerTile.setVisibility(View.VISIBLE);
-                }
+                if (different < 0) {
+                    onFinish();
+                } else {
+                    String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
+                    String[] timerText = context.getResources().getStringArray(R.array.timer_text);
+                    if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                        TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                        timerTile.setVisibility(View.VISIBLE);
+                    }
 
 //                if(appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id)!=null){
 //                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.GONE);
 //                }
-                if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
-                        appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
-                    LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
-                    for (int i = 0; i < linearLayout.getChildCount(); i++) {
-                        LinearLayout childLinearLayout = (LinearLayout) linearLayout.getChildAt(i);
-                        TextView time = ((TextView) childLinearLayout.getChildAt(0));
-                        TextView timeFormat = ((TextView) childLinearLayout.getChildAt(1));
+                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
+                            appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                        LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                        for (int i = 0; i < linearLayout.getChildCount(); i++) {
+                            LinearLayout childLinearLayout = (LinearLayout) linearLayout.getChildAt(i);
+                            TextView time = ((TextView) childLinearLayout.getChildAt(0));
+                            TextView timeFormat = ((TextView) childLinearLayout.getChildAt(1));
 
-                        time.setText(scheduleTime[i]);
-                        time.setTypeface(time.getTypeface(), Typeface.BOLD);
+                            time.setText(scheduleTime[i]);
+                            time.setTypeface(time.getTypeface(), Typeface.BOLD);
 
-                        timeFormat.setText(timerText[i]);
-                        timeFormat.setTextSize(14);
+                            timeFormat.setText(timerText[i]);
+                            timeFormat.setTextSize(14);
+                        }
+                    } else {
+                        if (countDownTimer != null)
+                            countDownTimer.onFinish();
                     }
-                } else {
-                    if (countDownTimer != null)
-                        countDownTimer.onFinish();
                 }
             }
 
@@ -7802,7 +7808,7 @@ public class ViewCreator {
                     timerTile.setVisibility(View.GONE);
                     linearLayout.setVisibility(View.GONE);
                 }
-
+//                appCMSPresenter.sendRefreshPageAction();
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                     countDownTimer = null;

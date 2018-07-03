@@ -7920,9 +7920,7 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             showLoader();
-//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-//                    loadJsonFromAssets(currentActivity, "roster.json"),
-//                    AppCMSPageUI.class);
+
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (appCMSPageUI == null) {
