@@ -3360,7 +3360,7 @@ public class ViewCreator {
 
                     //if event date is greater than current date then start the timer
                     if (remainingTime > 0) {
-                        startTimer(context, appCMSPresenter, eventDate);
+                        startTimer(context, appCMSPresenter, eventDate, remainingTime);
                     } else {
                         if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                             if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
@@ -3637,7 +3637,7 @@ public class ViewCreator {
                                 (componentViewResult.componentView).setVisibility(View.GONE);
                             }
 //
-                        }else{
+                        } else {
                             (componentViewResult.componentView).setVisibility(View.GONE);
 
                         }
@@ -5591,13 +5591,14 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setText(component.getText());
                                 }
                                 componentViewResult.componentView.setId(R.id.photo_gallery_prev_label);
+                                ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_black, 0, 0, 0);
 
                                 if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                     ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_disable, 0, 0, 0);
                                 } else {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow, 0, 0, 0);
+                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_black, 0, 0, 0);
                                 }
                                 componentViewResult.componentView.setOnClickListener(v -> {
                                     int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -5628,7 +5629,7 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setEnabled(false);
                                     } else {
                                         ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
+                                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
                                     }
                                     componentViewResult.componentView.setOnClickListener(v -> {
                                         int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -7752,13 +7753,14 @@ public class ViewCreator {
         row.addView(cell);
     }
 
-    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventTime) {
+    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventDate, long remainingTime) {
 
-        countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
+        countDownTimer = new CountDownTimer(remainingTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
-                long different = appCMSPresenter.getTimeIntervalForEvent(eventTime * 1000L, "EEE MMM dd HH:mm:ss");
+                long different = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
 
                 if (different < 0) {
+
                     onFinish();
                 } else {
                     String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
@@ -7768,9 +7770,6 @@ public class ViewCreator {
                         timerTile.setVisibility(View.VISIBLE);
                     }
 
-//                if(appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id)!=null){
-//                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.GONE);
-//                }
                     if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                             appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
                         LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
@@ -7808,11 +7807,12 @@ public class ViewCreator {
                     timerTile.setVisibility(View.GONE);
                     linearLayout.setVisibility(View.GONE);
                 }
-//                appCMSPresenter.sendRefreshPageAction();
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                     countDownTimer = null;
                 }
+                appCMSPresenter.sendRefreshPageAction();
+
             }
         }.start();
     }

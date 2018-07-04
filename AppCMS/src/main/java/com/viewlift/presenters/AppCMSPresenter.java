@@ -1165,7 +1165,8 @@ public class AppCMSPresenter {
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSeconds);
-        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+//        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+        formatter.setTimeZone(TimeZone.getDefault());
 
         return formatter.format(calendar.getTime());
     }
@@ -1176,7 +1177,10 @@ public class AppCMSPresenter {
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSecondsEvent);
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        formatter.setTimeZone(TimeZone.getDefault());
+
         String eventTime = formatter.format(calendar.getTime());
 
         SimpleDateFormat formatterCurrentTime = new SimpleDateFormat(dateFormat);
@@ -1205,37 +1209,7 @@ public class AppCMSPresenter {
         return 0;
     }
 
-    public static String getDateFormatByTimeZone1(long timeMilliSeconds, String dateFormat, String timeZone) {
-        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeMilliSeconds);
-        formatter.setTimeZone(TimeZone.getDefault());
 
-        return formatter.format(calendar.getTime());
-    }
-
-    public static Date getDateByTimeZone(long timeMilliSeconds, String dateFormat, String timeZone) {
-        DateFormat formatter = new SimpleDateFormat(dateFormat);
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeMilliSeconds);
-        calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
-        return calendar.getTime();
-    }
-
-    public static long currentTimeMillisLocal() {
-        return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();//System.currentTimeMillis();//
-    }
-
-    public static String getDateFormatByTimeZoneDiff(long timeMilliSeconds, String dateFormat, String timeZone) {
-        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeMilliSeconds);
-        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
-        return formatter.format(calendar.getTime());
-    }
 
     /**
      * This converts an input time value in msec since the epoch into a Time value in the format
@@ -2909,10 +2883,6 @@ public class AppCMSPresenter {
                                                 public void call(AppCMSEventArchieveResult appCMSTeamRoasterResult) {
                                                     if (appCMSTeamRoasterResult != null) {
 
-//                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
-//                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
-//                                                                AppCMSEventArchieveResult.class);
-                                                        Module module = null;
                                                         if (appCMSTeamRoasterResult != null) {
                                                             pageApi = appCMSTeamRoasterResult.convertToAppCMSPageModule(appCMSPageAPI);
                                                         }
@@ -12046,6 +12016,7 @@ public class AppCMSPresenter {
                                         if (onCloseAction != null) {
                                             onCloseAction.call();
                                         }
+                                        setLaunchType(LaunchType.LOGIN_AND_SIGNUP);
                                         navigateToLoginPage(false);
                                     } catch (Exception e) {
                                         //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());

@@ -7,7 +7,7 @@ import com.vimeo.stag.UseStag;
 import java.io.Serializable;
 
 @UseStag
-public class _3x4 implements Serializable {
+public class Image_1x1 implements Serializable {
 
     public String getUrl() {
         return url;
