@@ -19,6 +19,7 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
@@ -92,6 +93,7 @@ import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
+import org.xml.sax.XMLReader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -705,6 +707,30 @@ public class TVViewCreator {
         customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
     }
 
+    class ListTagHandler implements Html.TagHandler {
+        boolean first = true;
+
+        @Override
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            try {
+                if (tag.equals("li")) {
+                    char lastChar = 0;
+                    if (output.length() > 0)
+                        lastChar = output.charAt(output.length() - 1);
+                    if (first) {
+                        if (lastChar == '\n')
+                            output.append("•  ");
+                        else
+                            output.append("\n•  ");
+                        first = false;
+                    } else {
+                        first = true;
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
 
     public void createComponentView(final Context context,
                                     final Component component,
@@ -1576,7 +1602,7 @@ public class TVViewCreator {
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
                                 TextView textView = new TextView(context);
                                 String htmlStyleRegex = "<style([\\s\\S]+?)</style>";
-                                textView.setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex, "")), TextView.BufferType.SPANNABLE);
+                                textView.setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex, ""),null,new ListTagHandler()), TextView.BufferType.SPANNABLE);
 
                                 textView.setFocusable(true);
                                 //  componentViewResult.componentView.setTag("API_DSECRIPTION");
