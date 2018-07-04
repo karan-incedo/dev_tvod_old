@@ -77,7 +77,7 @@
 
     <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
 
-    <string name="app_cms_schedule_api_url">%1$s/content/event/schedule?site=%2$s&amp;from=%3$s&amp;to=%4$s</string>
+    <string name="app_cms_schedule_api_url">%1$s/content/event/schedule?site=%2$s</string>
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
     <string name="app_cms_roster_data_page_api_url">%1$s/search/v2/list?site=%2$s&amp;type=%3$s</string>

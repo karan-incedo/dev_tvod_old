@@ -683,7 +683,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
                         String imageUrl = "";
                         if (data.getPlayersData().getData() != null) {
-                            if (data.getPlayersData().getData().getImages().get_3x4() != null) {
+                            if (data.getPlayersData().getData().getImages() != null && data.getPlayersData().getData().getImages().get_3x4() != null) {
                                 imageUrl = data.getPlayersData().getData().getImages().get_3x4().getUrl();
                             }
                         }
@@ -701,7 +701,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
                         String imageUrl = "";
                         if (data.getPlayersData().getData() != null) {
-                            if (data.getPlayersData().getData().getImages().get_1x1() != null) {
+                            if (data.getPlayersData().getData().getImages() != null && data.getPlayersData().getData().getImages().get_1x1() != null) {
                                 imageUrl = data.getPlayersData().getData().getImages().get_1x1().getUrl();
                             }
                         }

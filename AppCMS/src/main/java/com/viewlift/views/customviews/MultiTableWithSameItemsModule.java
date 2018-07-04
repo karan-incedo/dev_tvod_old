@@ -34,14 +34,12 @@ import static com.viewlift.Utils.loadJsonFromAssets;
 
 @SuppressLint("ViewConstructor")
 public class MultiTableWithSameItemsModule extends ModuleView {
+
     private static final String TAG = MultiTableWithSameItemsModule.class.getSimpleName();
-
     private static final int NUM_CHILD_VIEWS = 2;
-
     private final ModuleWithComponents moduleInfo;
     private final Module moduleAPI;
     private Module subTrayModuleAPI;
-
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
     private final ViewCreator viewCreator;
@@ -54,8 +52,6 @@ public class MultiTableWithSameItemsModule extends ModuleView {
     private int loginBorderPadding;
     private AppCMSAndroidModules appCMSAndroidModules;
     PageView pageView;
-
-    View downloadSeparator;
 
     @SuppressWarnings("unchecked")
     public MultiTableWithSameItemsModule(Context context,
@@ -94,15 +90,12 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
             bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
 
-            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-            NestedScrollView scrollView = new NestedScrollView(getContext());
 
             LinearLayout topLayoutContainer = new LinearLayout(getContext());
             MarginLayoutParams topLayoutContainerLayoutParams =
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//            topLayoutContainerLayoutParams.setMargins(0, 250, 0, 0);
             topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
@@ -112,12 +105,11 @@ public class MultiTableWithSameItemsModule extends ModuleView {
                     AppCMSPageUI.class);
             ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
 
-            if (module != null && module.getComponents() != null) {
+            if (module != null && module.getComponents() != null && moduleAPI.getContentData() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
 
                     for (int k = 0; k < moduleAPI.getContentData().size(); k++) {
-
                         for (int j = 0; j < component.getComponents().size(); j++) {
                             Component subComp = component.getComponents().get(j);
                             ModuleWithComponents module1 = subComp;
@@ -136,11 +128,7 @@ public class MultiTableWithSameItemsModule extends ModuleView {
                     }
                 }
             }
-
-
-//            scrollView.addView(topLayoutContainer);
             addView(topLayoutContainer);
-//            findViewById(R.id.fight_scroll_id).bringToFront();
         }
     }
 
@@ -152,7 +140,6 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
         }
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
-        float parentYAxis = 2 * getYAxis(getContext(), subComponent.getLayout(), 0.0f);
         if (componentViewResult != null && subComponentChildContainer != null) {
             viewCreator.createComponentView(getContext(),
                     subComponent,
@@ -185,6 +172,5 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             }
         }
     }
-
 
 }
