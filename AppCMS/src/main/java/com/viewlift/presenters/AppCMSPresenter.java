@@ -119,6 +119,7 @@ import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
+import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -6753,31 +6754,31 @@ public class AppCMSPresenter {
         }
     }
 
-    private void downloadAutoPlayPage(ContentDatum contentDatum){
+    private void downloadAutoPlayPage(ContentDatum contentDatum) {
         try {
             String mediaType = contentDatum.getMediaType() == null ? contentDatum.getGist().getContentType() : contentDatum.getMediaType();
             String pageId = getAutoplayPageId(mediaType);
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             if (appCMSPageUI == null) {
-            MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
-            if (metaPage != null) {
-                getAppCMSPage(metaPage.getPageUI(),
-                        appCMSPageUIResult -> {
-                            stopLoader();
-                            if (appCMSPageUIResult != null) {
-                                navigationPages.put(pageId, appCMSPageUIResult);
-                                String action = pageNameToActionMap.get(metaPage.getPageName());
-                                if (action != null && actionToPageMap.containsKey(action)) {
-                                    actionToPageMap.put(action, appCMSPageUIResult);
-                                }
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                stopLoader();
+                                if (appCMSPageUIResult != null) {
+                                    navigationPages.put(pageId, appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
 
-                            }
-                        },
-                        loadFromFile,
-                        false);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
             }
-        }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -11417,7 +11418,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if ( (!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
+            if ((!isUserSubscribed() && isAppSVOD()) || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {

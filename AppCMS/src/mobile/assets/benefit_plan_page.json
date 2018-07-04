@@ -191,14 +191,14 @@
               "bottomMargin": 0
             },
             "tabletLandscape": {
-              "gridHeight": 85,
+              "gridHeight": 75,
               "gridWidth": 425,
               "trayPadding": 20,
               "bottomMargin": 0,
               "topMargin": 1.7
             },
             "tabletPortrait": {
-              "gridHeight": 85,
+              "gridHeight": 75,
               "gridWidth": 425,
               "trayPadding": 20,
               "bottomMargin": 0

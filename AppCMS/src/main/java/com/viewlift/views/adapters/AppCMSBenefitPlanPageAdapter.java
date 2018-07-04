@@ -113,15 +113,24 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
                     this.componentViewType,
                     false,
                     false, this.viewTypeKey);
+            /*tablet landscape*/
             if (BaseView.isLandscape(mContext)) {
                 FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
                 layPar.setMargins(0, 25, 0, 0);
                 view.setLayoutParams(layPar);
-            } else if (BaseView.isTablet(mContext) && !BaseView.isLandscape(mContext)) {
-                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
-                layPar.setMargins(0, 20, 0, 0);
-                view.setLayoutParams(layPar);
-            }
+            } else
+                /*tablet portrait*/
+                if (BaseView.isTablet(mContext) && !BaseView.isLandscape(mContext)) {
+                    FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
+                    layPar.setMargins(0, 20, 0, 0);
+                    view.setLayoutParams(layPar);
+                } else
+                    /*mobile*/
+                    if (!BaseView.isTablet(mContext)) {
+                        FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) view.getLayoutParams();
+                        layPar.setMargins(0, 45, 0, 0);
+                        view.setLayoutParams(layPar);
+                    }
             return new ViewHolder(view);
         } else {
             TextView termsView = new TextView(mContext);
@@ -146,6 +155,9 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
             };
             appCMSPresenter.makeTextViewLinks(termsView, new String[]{
                     "terms of use", "privacy policy"}, new ClickableSpan[]{tosClick, privacyClick});
+            FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) termsView.getLayoutParams();
+            layPar.setMargins(0, 0, 0, 8);
+            termsView.setLayoutParams(layPar);
             return new ViewHolder(termsView);
         }
     }

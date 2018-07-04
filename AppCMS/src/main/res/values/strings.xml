@@ -710,7 +710,7 @@
     <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
 
     <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
-
+    <string name="rupee_symbol">\u20B9</string>
 </resources>
 
 

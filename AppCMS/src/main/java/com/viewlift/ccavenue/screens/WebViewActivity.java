@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -48,7 +49,7 @@ import java.net.URLEncoder;
 
 import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
 
-public class WebViewActivity extends Activity {
+public class WebViewActivity extends AppCompatActivity {
     private static final String TAG = "CCAvenueWebView";
 
     Intent mainIntent;

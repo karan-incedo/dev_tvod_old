@@ -2,37 +2,23 @@ package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.photogallery.IPhotoGallerySelectListener;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -41,11 +27,9 @@ import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.PhotoGalleryNextPreviousListener;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -189,7 +173,10 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         }
         StringBuilder planAmt = new StringBuilder();
         if (currency != null) {
-            planAmt.append(currency.getSymbol());
+            if (adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentCurrencyCode().contains("INR"))
+                planAmt.append(mContext.getResources().getString(R.string.rupee_symbol));
+            else
+                planAmt.append(currency.getSymbol());
         }
         planAmt.append(formattedRecurringPaymentAmount);
         StringBuilder planDuration = new StringBuilder();
