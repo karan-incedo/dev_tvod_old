@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 
 @UseStag
-public class _16x9 implements Serializable {
+public class Image_16x9 implements Serializable {
 
     @SerializedName("id")
     @Expose

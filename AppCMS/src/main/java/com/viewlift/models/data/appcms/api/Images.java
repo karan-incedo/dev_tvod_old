@@ -11,30 +11,30 @@ public class Images implements Serializable {
 
     @SerializedName("_1x1")
     @Expose
-    _1x1 _1x1;
+    Image_1x1 _1x1;
 
-    public com.viewlift.models.data.appcms.api._1x1 get_1x1() {
+    public Image_1x1 get_1x1() {
         return _1x1;
     }
 
-    public void set_1x1(com.viewlift.models.data.appcms.api._1x1 _1x1) {
+    public void set_1x1(Image_1x1 _1x1) {
         this._1x1 = _1x1;
     }
 
-    public com.viewlift.models.data.appcms.api._3x4 get_3x4() {
+    public Image_3x4 get_3x4() {
         return _3x4;
     }
 
-    public void set_3x4(com.viewlift.models.data.appcms.api._3x4 _3x4) {
+    public void set_3x4(Image_3x4 _3x4) {
         this._3x4 = _3x4;
     }
 
     @SerializedName("_3x4")
     @Expose
-    _3x4 _3x4;
+    Image_3x4 _3x4;
 
     @SerializedName("_16x9")
     @Expose
-    _16x9 _16x9;
+    Image_16x9 _16x9;
 
 }

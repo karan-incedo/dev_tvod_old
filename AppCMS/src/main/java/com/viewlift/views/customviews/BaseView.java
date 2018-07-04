@@ -555,8 +555,8 @@ public abstract class BaseView extends FrameLayout {
                         return layout.getTabletLandscape().getFontSize();
                     }
                 } else {
-                    if (layout.getTabletLandscape().getFontSize() != 0f) {
-                        return layout.getTabletLandscape().getFontSize();
+                    if (layout.getTabletPortrait().getFontSize() != 0f) {
+                        return layout.getTabletPortrait().getFontSize();
                     }
                 }
             } else {
@@ -1404,7 +1404,7 @@ public abstract class BaseView extends FrameLayout {
                 };
                 ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
             }
-            if ((((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) ) {
+            if ((((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter)) {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
