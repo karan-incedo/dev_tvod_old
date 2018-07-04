@@ -801,15 +801,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     public void onResume() {
         videoPlayerView.setListener(this);
         appCMSPresenter.setCancelAllLoads(false);
+        boolean shouldAdDisplay = shouldRequestAds && !isADPlay;
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
-        }  else {
+        }  else if(!shouldAdDisplay){
             resumeVideo();
             Log.d(TAG, "Resuming playback");
         }
 
 
-        if (shouldRequestAds && !isADPlay) {
+        if (shouldAdDisplay) {
             requestAds(adsUrl);
             isADPlay = true;
         }
@@ -1222,6 +1223,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 });
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
