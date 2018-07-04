@@ -2,10 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.app.DialogFragment;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -16,6 +13,7 @@ import android.widget.Button;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 
 /*
@@ -26,7 +24,7 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
 
     private AppCMSPresenter appCMSPresenter;
     private ContentDatum contentDatum;
-    private boolean isAdded, isDownloaded;
+    private boolean isAdded, isDownloaded,isPending;
     private TrayMenuClickListener trayMenuClickListener;
 
     public static AppCMSTrayMenuDialogFragment newInstance(boolean isAdded, ContentDatum contentDatum) {
@@ -72,9 +70,28 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
                 .getCta().getPrimary().getBackgroundColor()));
         addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getTextColor()));
-        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId());
+        //isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId());
         //downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
-        if (!isDownloaded && !appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())) {
+
+        appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
+                videoDownloadStatus -> {
+                    if (videoDownloadStatus != null) {
+                        if (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
+                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL){
+                            isDownloaded = true;
+                        }
+                        if (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING ||
+                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
+                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+
+                            isPending = true;
+                        }
+
+                    }
+                },
+                appCMSPresenter.getLoggedInUser());
+
+        if (!isDownloaded && !isPending) {
             downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                     .getCta().getPrimary().getBackgroundColor()));
             downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -86,9 +103,9 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
             downloadBtn.setActivated(false);
             downloadBtn.setOnClickListener(null);
         }
-        downloadBtn.setVisibility(isDownloaded ? View.GONE : View.VISIBLE);
-        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
-        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
+        //downloadBtn.setVisibility(isDownloaded ? View.GONE : View.VISIBLE);
+        //downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        //downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
         closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
         if (!appCMSPresenter.isDownloadable()){

@@ -137,6 +137,8 @@ public class ContentDatum implements Serializable {
     private String playListName;
     private String seriesName;
 
+    private AppCMSSignedURLResult appCMSSignedURLResult;
+
     public String getSeriesName() {
         return seriesName;
     }
@@ -447,5 +449,13 @@ public class ContentDatum implements Serializable {
 
     public void setDRMEnabled(boolean DRMEnabled) {
         isDRMEnabled = DRMEnabled;
+    }
+
+    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
+        return appCMSSignedURLResult;
+    }
+
+    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
+        this.appCMSSignedURLResult = appCMSSignedURLResult;
     }
 }
