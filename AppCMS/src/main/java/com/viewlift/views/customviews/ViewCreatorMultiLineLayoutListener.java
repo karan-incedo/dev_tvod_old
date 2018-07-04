@@ -104,11 +104,13 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
 
                     textView.setText(spannableTextWithMore);
                     textView.setMovementMethod(LinkMovementMethod.getInstance());
+                    textView.setFocusable(true);
                 }
             }
         } else if (forceMaxLines) {
             textView.setMaxLines(linesCompletelyVisible);
             textView.setEllipsize(TextUtils.TruncateAt.END);
+            textView.setFocusable(false);
         }
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }

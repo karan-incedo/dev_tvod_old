@@ -121,7 +121,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 listRowParam.width = listRowWidth;//Utils.getViewXAxisAsPerScreen(mContext , 1590);
                 listRowView.setLayoutParams(listRowParam);
 
-                horizontalGrLayoutParams.setMargins(/*Utils.getViewXAxisAsPerScreen(mContext , 370)*/100, 0 , 0,0);
+                horizontalGrLayoutParams.setMargins(/*Utils.getViewXAxisAsPerScreen(mContext , 370)*/200, 0 , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 return;
@@ -156,7 +156,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 int paddingLeft = (int) mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
                 int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
 
-                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 0, 0);
+                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 10, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
                 if (customHeaderItem.getItemSpacing() != null) {
                     try {

@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -300,7 +301,7 @@ public abstract class TVBaseView extends FrameLayout {
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
                    // if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+//                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
                    //   }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
@@ -346,6 +347,11 @@ public abstract class TVBaseView extends FrameLayout {
                     default:
                         gravity = Gravity.NO_GRAVITY;
                 }
+            }
+        } else if (componentType.equals(AppCMSUIKeyType.PAGE_IMAGE_KEY)) {
+            if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY)) {
+                viewWidth = LayoutParams.WRAP_CONTENT;
+                ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_START);
             }
         }
 

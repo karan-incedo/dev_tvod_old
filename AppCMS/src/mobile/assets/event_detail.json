@@ -237,7 +237,7 @@
                 "tabletPortrait": {
                   "xAxis": 600,
                   "yAxis": 230,
-                  "width": 150,
+                  "width": 160,
                   "height": 21,
                   "fontSize": 16
                 }
@@ -260,14 +260,14 @@
                 "tabletLandscape": {
                   "xAxis": 800,
                   "yAxis": 324,
-                  "width": 150,
+                  "width": 160,
                   "height": 21,
                   "fontSize": 16
                 },
                 "tabletPortrait": {
                   "xAxis": 600,
                   "yAxis": 251,
-                  "width": 150,
+                  "width": 160,
                   "height": 21,
                   "fontSize": 16
                 }

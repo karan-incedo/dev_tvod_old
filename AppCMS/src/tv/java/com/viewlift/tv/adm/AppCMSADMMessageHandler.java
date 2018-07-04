@@ -60,6 +60,8 @@ public class AppCMSADMMessageHandler extends ADMMessageHandlerBase {
 
         final String searchStringKey = getString(R.string.json_seek_search_string_key);
 
+        final String dataTypeKey = getString(R.string.json_data_type_key);
+
         /* Intent action that will be triggered in onMessage() callback. */
         final String intentAction = getString(R.string.intent_msg_action);
 
@@ -74,6 +76,8 @@ public class AppCMSADMMessageHandler extends ADMMessageHandlerBase {
         final String contentId = extras.getString("myContentId");
         final String searchString = extras.getString("searchString");
         final long seekDelta = Long.parseLong(extras.getString("seekDelta") != null ? extras.getString("seekDelta") : "0");
+        String dataType = extras.getString("dataType");
+        dataType = "SERIES";
 
         if (msg == null || time == null) {
             Log.w(TAG, "SampleADMMessageHandler:onMessage Unable to extract message data." +
@@ -99,6 +103,7 @@ public class AppCMSADMMessageHandler extends ADMMessageHandlerBase {
         broadcastIntent.putExtra(contentIdKey, contentId);
         broadcastIntent.putExtra(seekDeltaKey, seekDelta);
         broadcastIntent.putExtra(searchStringKey, searchString);
+        broadcastIntent.putExtra(dataTypeKey, dataType);
         sendBroadcast(broadcastIntent);
 
         /*final Intent notificationIntent = new Intent(this, AppCmsTVSplashActivity.class);
