@@ -2316,7 +2316,7 @@ public class AppCMSPresenter {
                             requestAds = false;
                         }
 
-                        if (!TextUtils.isEmpty(adsUrl)) {
+                        if (TextUtils.isEmpty(adsUrl)) {
                             requestAds = false;
                         }
 
