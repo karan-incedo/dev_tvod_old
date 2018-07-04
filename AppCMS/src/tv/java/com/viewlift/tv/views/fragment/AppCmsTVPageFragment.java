@@ -322,7 +322,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                     List<String> relatedVids = Utils.getRelatedVideosInShow(
                             appCMSSwitchSeasonBinder.getSeasonList(),
                             appCMSSwitchSeasonBinder.getSelectedSeasonIndex(),
-                            i);
+                            i - 1);
                     ContentDatum contentDatum = episodes.get(i);
                     contentDatum.setSeason(appCMSSwitchSeasonBinder.getSeasonList());
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
