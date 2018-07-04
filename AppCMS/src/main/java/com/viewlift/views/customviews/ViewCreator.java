@@ -5591,13 +5591,14 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setText(component.getText());
                                 }
                                 componentViewResult.componentView.setId(R.id.photo_gallery_prev_label);
+                                ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_black, 0, 0, 0);
 
                                 if (appCMSPresenter.getCurrentPhotoGalleryIndex() == 0) {
                                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor("#c8c8c8"));
                                     ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_disable, 0, 0, 0);
                                 } else {
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow, 0, 0, 0);
+                                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(R.drawable.left_arrow_black, 0, 0, 0);
                                 }
                                 componentViewResult.componentView.setOnClickListener(v -> {
                                     int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();
@@ -5628,7 +5629,7 @@ public class ViewCreator {
                                         ((TextView) componentViewResult.componentView).setEnabled(false);
                                     } else {
                                         ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
-                                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow_disable, 0);
+                                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.right_arrow, 0);
                                     }
                                     componentViewResult.componentView.setOnClickListener(v -> {
                                         int currentIndex = appCMSPresenter.getCurrentPhotoGalleryIndex();

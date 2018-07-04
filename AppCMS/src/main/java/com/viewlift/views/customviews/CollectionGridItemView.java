@@ -682,8 +682,8 @@ public class CollectionGridItemView extends BaseView {
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
                         String imageUrl = "";
-                        if (data.getPlayersData().getData() != null) {
-                            if (data.getPlayersData().getData().getImages().get_3x4() != null) {
+                        if (data !=null && data.getPlayersData()!=null && data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages()!=null && data.getPlayersData().getData().getImages().get_3x4() != null) {
                                 imageUrl = data.getPlayersData().getData().getImages().get_3x4().getUrl();
                             }
                         }
@@ -700,8 +700,8 @@ public class CollectionGridItemView extends BaseView {
 //                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
                         String imageUrl = "";
-                        if (data.getPlayersData().getData() != null) {
-                            if (data.getPlayersData().getData().getImages().get_1x1() != null) {
+                        if (data !=null && data.getPlayersData()!=null && data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages()!=null && data.getPlayersData().getData().getImages().get_1x1() != null) {
                                 imageUrl = data.getPlayersData().getData().getImages().get_1x1().getUrl();
                             }
                         }
@@ -716,6 +716,29 @@ public class CollectionGridItemView extends BaseView {
                                 .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    }else if (data.getGist().getLandscapeImageUrl() != null ) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getLandscapeImageUrl(),
+                                childViewWidth,
+                                childViewHeight);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(childViewWidth, childViewHeight)
+                                    .placeholder(R.drawable.vid_image_placeholder_16x9)
+                                    .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .apply(requestOptions)
+                                    .into((ImageView) view);
+                        }
                     }
 
                     if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
