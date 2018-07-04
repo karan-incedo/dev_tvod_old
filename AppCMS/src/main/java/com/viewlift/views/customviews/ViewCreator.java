@@ -3360,7 +3360,7 @@ public class ViewCreator {
 
                     //if event date is greater than current date then start the timer
                     if (remainingTime > 0) {
-                        startTimer(context, appCMSPresenter, eventDate);
+                        startTimer(context, appCMSPresenter, eventDate, remainingTime);
                     } else {
                         if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
                             if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
@@ -7753,13 +7753,14 @@ public class ViewCreator {
         row.addView(cell);
     }
 
-    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventTime) {
+    private void startTimer(Context context, AppCMSPresenter appCMSPresenter, long eventDate, long remainingTime) {
 
-        countDownTimer = new CountDownTimer(eventTime, countDownIntervalInMillis) {
+        countDownTimer = new CountDownTimer(remainingTime, countDownIntervalInMillis) {
             public void onTick(long millisUntilFinished) {
-                long different = appCMSPresenter.getTimeIntervalForEvent(eventTime * 1000L, "EEE MMM dd HH:mm:ss");
+                long different = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
 
                 if (different < 0) {
+
                     onFinish();
                 } else {
                     String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
@@ -7769,9 +7770,6 @@ public class ViewCreator {
                         timerTile.setVisibility(View.VISIBLE);
                     }
 
-//                if(appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id)!=null){
-//                    appCMSPresenter.getCurrentActivity().findViewById(R.id.fight_summary_module_id).setVisibility(View.GONE);
-//                }
                     if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null &&
                             appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
                         LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
@@ -7809,11 +7807,12 @@ public class ViewCreator {
                     timerTile.setVisibility(View.GONE);
                     linearLayout.setVisibility(View.GONE);
                 }
-//                appCMSPresenter.sendRefreshPageAction();
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
                     countDownTimer = null;
                 }
+                appCMSPresenter.sendRefreshPageAction();
+
             }
         }.start();
     }
