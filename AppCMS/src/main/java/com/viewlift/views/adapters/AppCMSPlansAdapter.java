@@ -109,7 +109,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        if (adapterData.size() == 1 && !singlePlanViewShown) {
+        if (adapterData.size() == 1 && !singlePlanViewShown && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
             TextView singlePlanView = new TextView(mContext);
             singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
@@ -117,7 +117,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
             singlePlanView = setSinglePlan(singlePlanView);
             return new ViewHolder(singlePlanView);
         }
-        if (adapterData.size() == 1 && singlePlanViewShown && subscribeViewShown) {
+        if (adapterData.size() == 1 && singlePlanViewShown && subscribeViewShown && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
             TextView singlePlanView = new TextView(mContext);
             singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
             singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
@@ -276,7 +276,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
     @Override
     public int getItemCount() {
-        if (adapterData != null && adapterData.size() != 0) {
+        if (adapterData != null && adapterData.size() != 0 && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
             if (adapterData.size() == 1) {
                 return 3;
             } else {

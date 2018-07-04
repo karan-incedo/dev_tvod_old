@@ -845,60 +845,60 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
 //                if (TextUtils.isEmpty(((TextView) view).getText())) {
-                    if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
-                            !TextUtils.isEmpty(data.getGist().getTitle())) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                        if (childComponent.getNumberOfLines() != 0) {
-                            ((TextView) view).setSingleLine(false);
-                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        }
-                        //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        if (component != null &&
-                                component.getView() != null &&
-                                component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                            if (BaseView.isTablet(view.getContext())) {
-                                if (isLandscape(getContext()) == true) {
-                                    ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                } else {
-                                    setBorder(((TextView) view));
-                                    ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
-                                }
-                            } else {
+                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
+                        !TextUtils.isEmpty(data.getGist().getTitle())) {
+                    ((TextView) view).setText(data.getGist().getTitle());
+                    if (childComponent.getNumberOfLines() != 0) {
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                    //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    if (component != null &&
+                            component.getView() != null &&
+                            component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                        if (BaseView.isTablet(view.getContext())) {
+                            if (isLandscape(getContext()) == true) {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                                ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            } else {
+                                setBorder(((TextView) view));
+                                ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
                             }
                         } else {
-                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
-                                if (appCMSPresenter.getAppCMSMain() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
-                                        ) {
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
-                                }else{
-                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                                }
-                            } else {
-                                ((TextView) view).setTextColor(Color.parseColor(
-                                        childComponent.getTextColor()));
-                            }
+                            ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                         }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
-                            if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-                                String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
-                                ((TextView) view).setMaxLines(1);
-                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                                ((TextView) view).setText(artist);
-                                view.setPadding(10,
-                                        0,
-                                        10,
-                                        0);
+                    } else {
+                        if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
+                            if (appCMSPresenter.getAppCMSMain() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                    ) {
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                            } else {
+                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                             }
+                        } else {
+                            ((TextView) view).setTextColor(Color.parseColor(
+                                    childComponent.getTextColor()));
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
+                    if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
+                        if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
+                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+                            ((TextView) view).setMaxLines(1);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(artist);
+                            view.setPadding(10,
+                                    0,
+                                    10,
+                                    0);
+                        }
 
                     } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                         ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
@@ -1217,7 +1217,7 @@ public class CollectionGridItemView extends BaseView {
                     }
                     ((TextView) view).setVisibility(View.VISIBLE);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
-                    if (data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
+                    if (data != null && data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
                             data.getPlanDetails().get(0).getFeatureDetails() != null &&
                             data.getPlanDetails().get(0).getFeatureDetails().size() != 0 &&
                             data.getPlanDetails().get(0).getFeatureDetails().get(0) != null &&
@@ -1238,152 +1238,157 @@ public class CollectionGridItemView extends BaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-                    int planIndex = 0;
-
-                    for (int i = 0; i < data.getPlanDetails().size(); i++) {
-                        if (data.getPlanDetails().get(i) != null &&
-                                data.getPlanDetails().get(i).getIsDefault()) {
-                            planIndex = i;
+                    if (data != null) {
+                        int planIndex = 0;
+                        for (int i = 0; i < data.getPlanDetails().size(); i++) {
+                            if (data.getPlanDetails().get(i) != null &&
+                                    data.getPlanDetails().get(i).getIsDefault()) {
+                                planIndex = i;
+                            }
                         }
-                    }
-
-                    Currency currency = null;
-                    if (data.getPlanDetails() != null &&
-                            !data.getPlanDetails().isEmpty() &&
-                            data.getPlanDetails().get(planIndex) != null &&
-                            data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode() != null) {
-                        try {
-                            currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Could not parse locale");
+                        Currency currency = null;
+                        if (data.getPlanDetails() != null &&
+                                !data.getPlanDetails().isEmpty() &&
+                                data.getPlanDetails().get(planIndex) != null &&
+                                data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode() != null) {
+                            try {
+                                currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Could not parse locale");
+                            }
                         }
-                    }
 
-                    if (data.getPlanDetails() != null &&
-                            !data.getPlanDetails().isEmpty() &&
-                            data.getPlanDetails().get(planIndex) != null &&
-                            data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
+                        if (data.getPlanDetails() != null &&
+                                !data.getPlanDetails().isEmpty() &&
+                                data.getPlanDetails().get(planIndex) != null &&
+                                data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
 
-                        double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
-                        String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                recurringPaymentAmount);
-                        if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
-                            formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                            double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
                                     recurringPaymentAmount);
-                        }
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
+                            }
 
-                        double strikeThroughPaymentAmount = data.getPlanDetails()
-                                .get(planIndex).getStrikeThroughPrice();
-                        String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                strikeThroughPaymentAmount);
-                        if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
-                            formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
                                     strikeThroughPaymentAmount);
-                        }
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
 
-                        StringBuilder stringBuilder = new StringBuilder();
-                        if (currency != null) {
-                            stringBuilder.append(currency.getSymbol());
-                        }
-                        stringBuilder.append(formattedStrikeThroughPaymentAmount);
-
-                        if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
-                            int strikeThroughLength = stringBuilder.length();
-                            stringBuilder.append("     ");
+                            StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
 
-                            SpannableString spannableString =
-                                    new SpannableString(stringBuilder.toString());
-                            spannableString.setSpan(new StrikethroughSpan(), 0,
-                                    strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ((TextView) view).setText(spannableString);
+                            if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
+                                int strikeThroughLength = stringBuilder.length();
+                                stringBuilder.append("     ");
+                                if (currency != null) {
+                                    stringBuilder.append(currency.getSymbol());
+                                }
+                                stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
+
+                                SpannableString spannableString =
+                                        new SpannableString(stringBuilder.toString());
+                                spannableString.setSpan(new StrikethroughSpan(), 0,
+                                        strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                ((TextView) view).setText(spannableString);
+                            } else {
+                                ((TextView) view).setText(stringBuilder.toString());
+                            }
+                            if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
+                                layPar.gravity = Gravity.TOP;
+                                view.setLayoutParams(layPar);
+                            }
                         } else {
-                            ((TextView) view).setText(stringBuilder.toString());
-                        }
-                    } else {
-                        double recurringPaymentAmount = data.getPlanDetails()
-                                .get(planIndex).getRecurringPaymentAmount();
-                        String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                recurringPaymentAmount);
-                        if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
-                            formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                            double recurringPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
                                     recurringPaymentAmount);
-                        }
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
+                            }
 
-                        StringBuilder planAmt = new StringBuilder();
-                        if (currency != null) {
-                            String currencySymbol = currency.getSymbol();
-                            if (currencySymbol.contains("US$"))
-                                currencySymbol = "$";
-                            planAmt.append(currencySymbol);
-                        }
-                        planAmt.append(formattedRecurringPaymentAmount);
-                        StringBuilder planDuration = new StringBuilder();
-                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
-                                appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                            if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.forward_slash));
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.plan_type_month));
+                            StringBuilder planAmt = new StringBuilder();
+                            if (currency != null) {
+                                String currencySymbol = currency.getSymbol();
+                                if (currencySymbol.contains("US$"))
+                                    currencySymbol = "$";
+                                planAmt.append(currencySymbol);
                             }
-                            if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.forward_slash));
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.plan_type_year));
+                            planAmt.append(formattedRecurringPaymentAmount);
+                            StringBuilder planDuration = new StringBuilder();
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
+                                    appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.forward_slash));
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.plan_type_month));
+                                }
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.forward_slash));
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.plan_type_year));
+                                }
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.forward_slash));
+                                    planDuration.append(" ");
+                                    planDuration.append(context.getString(R.string.plan_type_day));
+                                }
                             }
-                            if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.forward_slash));
-                                planDuration.append(" ");
-                                planDuration.append(context.getString(R.string.plan_type_day));
-                            }
-                        }
-                        if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                            StringBuilder plan = new StringBuilder();
-                            String pay = "PAY";
-                            plan.append(pay);
-                            plan.append(" ");
-                            plan.append(planAmt.toString());
-                            plan.append(planDuration.toString());
-                            Spannable text = new SpannableString(plan.toString());
-                            float payFont = 1.0f;
-                            float durationFont = 1.0f;
-                            float priceFont = 1.5f;
-                            if (BaseView.isTablet(context)) {
-                                payFont = 1.1f;
-                                durationFont = 1.1f;
-                                priceFont = 2.0f;
-                            }
-                            text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
-                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
-                        } else {
-                            StringBuilder plan = new StringBuilder();
-                            plan.append(planAmt.toString());
-                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                                StringBuilder plan = new StringBuilder();
+                                String pay = "PAY";
+                                plan.append(pay);
+                                plan.append(" ");
+                                plan.append(planAmt.toString());
                                 plan.append(planDuration.toString());
-                            ((TextView) view).setText(plan.toString());
+                                Spannable text = new SpannableString(plan.toString());
+                                float payFont = 1.0f;
+                                float durationFont = 1.0f;
+                                float priceFont = 1.5f;
+                                if (BaseView.isTablet(context)) {
+                                    payFont = 1.1f;
+                                    durationFont = 1.1f;
+                                    priceFont = 2.0f;
+                                }
+                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
+                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
+                            } else {
+                                StringBuilder plan = new StringBuilder();
+                                plan.append(planAmt.toString());
+                                if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)
+                                    plan.append(planDuration.toString());
+                                ((TextView) view).setText(plan.toString());
+                            }
+                            ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
-                        ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
+                        ((TextView) view).setText(childComponent.getText());
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
+                    } else {
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
-                    ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
-                    ((TextView) view).setText(childComponent.getText());
-                    ((TextView) view).setTextColor(Color.parseColor(
-                            childComponent.getTextColor()));
-                } else {
-                    ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                }
 //                }
+                }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);

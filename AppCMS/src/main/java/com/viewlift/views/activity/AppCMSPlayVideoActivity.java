@@ -189,7 +189,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                 this::finish,
                                                 null);
                                     }
-                                });
+                                },null);
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_error_message),

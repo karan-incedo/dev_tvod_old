@@ -833,7 +833,7 @@ public class AppCMSPresenter {
                         if (isDownloadQualityScreenShowBefore()) {
                             editDownload(contentDatum, userVideoDownloadStatus -> {
 
-                            }, true);
+                            }, true,null);
                         } else {
                             showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
 
@@ -1477,7 +1477,7 @@ public class AppCMSPresenter {
      * @param id          The film ID of the video to refresh
      * @param readyAction The callback to handle the result when the URL with the updated CDN is ready
      */
-    public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
+    public void refreshVideoData(final String id, Action1<ContentDatum> readyAction, Action1<Boolean> downloadNotProcessedAction) {
         if (currentActivity != null) {
 
             //ToDo Use this for entilementnt API implementation
@@ -1500,7 +1500,7 @@ public class AppCMSPresenter {
                             appCMSEntitlementResponse.isPlayable() &&
                             appCMSEntitlementResponse.getVideoContentDatum() != null) {
                         ContentDatum currentContentDatum = appCMSEntitlementResponse.getVideoContentDatum();
-                        if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null){
+                        if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null) {
                             currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
                         }
                         ContentDatum userHistoryContentDatum = AppCMSPresenter.this.getUserHistoryContentDatum(currentContentDatum.getGist().getId());
@@ -1521,7 +1521,9 @@ public class AppCMSPresenter {
                                             : message,
                                     false,
                                     () -> {
-                                        getCurrentActivity().finish();
+                                        if (getCurrentActivity() instanceof AppCMSPlayVideoActivity)
+                                            getCurrentActivity().finish();
+                                        downloadNotProcessedAction.call(false);
                                     },
                                     null);
 
@@ -4622,7 +4624,7 @@ public class AppCMSPresenter {
                         }
                     });
                 }
-            });
+            },null);
 
 
         } catch (Exception e) {
@@ -4968,7 +4970,7 @@ public class AppCMSPresenter {
 
                             } else {
                                 startDownload(contentDatum,
-                                        resultAction1, isFromPlaylistDownload);
+                                        resultAction1, isFromPlaylistDownload,null);
                             }
 
 //                        startNextDownload = false;
@@ -4986,7 +4988,8 @@ public class AppCMSPresenter {
     }
 
     public synchronized void editDownload(final ContentDatum contentDatum,
-                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+                                          final Action1<UserVideoDownloadStatus> resultAction1, boolean add,
+                                          Action1<Boolean> downloadNotProcessedAction) {
         if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
             showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
                     currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
@@ -5066,7 +5069,7 @@ public class AppCMSPresenter {
                     } else {
                         downloadAutoPlayPage(contentDatum);
                         startDownload(contentDatum,
-                                resultAction1, false);
+                                resultAction1, false,downloadNotProcessedAction);
                     }
 
 //                        startNextDownload = false;
@@ -5614,7 +5617,8 @@ public class AppCMSPresenter {
     }
 
     private synchronized void startDownload(ContentDatum contentDatum,
-                                            Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
+                                            Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload,
+                                            Action1<Boolean> downloadNotProcessedAction) {
 
         refreshVideoData(contentDatum.getGist().getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
@@ -5631,7 +5635,7 @@ public class AppCMSPresenter {
                 }));
                 //*/
             }
-        });
+        },downloadNotProcessedAction);
     }
 
     private void downloadURLParsing(ContentDatum updateContentDatum, Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
@@ -13414,7 +13418,7 @@ public class AppCMSPresenter {
             try {
                 editDownload(downloadContentDatumAfterPermissionGranted,
                         downloadResultActionAfterPermissionGranted,
-                        true);
+                        true,null);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -13443,7 +13447,7 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        if(activity instanceof  AppCompatActivity) {
+        if (activity instanceof AppCompatActivity) {
             this.currentActivity = (AppCompatActivity) activity;
         }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -16207,7 +16211,7 @@ public class AppCMSPresenter {
                         currentlyPlayingIndex,
                         relatedVideoIds,
                         action0);
-            });
+            },null);
         }
 
     }
@@ -16962,7 +16966,7 @@ public class AppCMSPresenter {
 
                 }
             }
-        });
+        },null);
     }
 
     public void setMoreIconAvailable() {
@@ -18876,4 +18880,14 @@ public class AppCMSPresenter {
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setText(spannableString, TextView.BufferType.SPANNABLE);
     }
+
+    public Boolean isSinglePlanFeatureAvailable() {
+        return singlePlanFeatureAvailable;
+    }
+
+    public void setSinglePlanFeatureAvailable(Boolean singlePlanFeatureAvailable) {
+        this.singlePlanFeatureAvailable = singlePlanFeatureAvailable;
+    }
+
+    Boolean singlePlanFeatureAvailable = false;
 }

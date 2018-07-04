@@ -1894,7 +1894,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("showDetail01")) {
+                }  else if (moduleInfo.getBlockName().contains("showDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
@@ -2002,6 +2002,7 @@ public class ViewCreator {
                 if (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY) {
                     moduleAPI = new Module();
                     moduleAPI.setId(module.getId());
+                    appCMSPresenter.setSinglePlanFeatureAvailable(true);
                 }
                 if (moduleAPI != null) {
                     AppCMSUIKeyType viewType = jsonValueKeyMap.get(module.getView());
@@ -5619,15 +5620,18 @@ public class ViewCreator {
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
                 if (moduleAPI != null) {
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
-                        componentViewResult.componentView = new ViewPlansMetaDataView(context,
-                                component,
-                                component.getLayout(),
-                                this,
-                                moduleAPI,
-                                jsonValueKeyMap,
-                                appCMSPresenter,
-                                settings);
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
+                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                            componentViewResult.componentView = new ViewPlansMetaDataView(context,
+                                    component,
+                                    component.getLayout(),
+                                    this,
+                                    moduleAPI,
+                                    jsonValueKeyMap,
+                                    appCMSPresenter,
+                                    settings);
+                        }
                     }
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                         componentViewResult.componentView = new SubscriptionMetaDataView(context,
@@ -6350,16 +6354,28 @@ public class ViewCreator {
                                             AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId());
                                             if (audioApiDetail.getModules().get(0).getContentData().get(0) != null) {
 
-                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true);
+                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true,null);
                                             }
                                         }
                                     });
                         } else {
-                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true, new Action1<Boolean>() {
+                                @Override
+                                public void call(Boolean aBoolean) {
+                                    if(!aBoolean)
+                                        imageButton.setOnClickListener(addClickListener);
+                                }
+                            });
                         }
                     } else {
                         if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
-                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                            appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true, new Action1<Boolean>() {
+                                @Override
+                                public void call(Boolean aBoolean) {
+                                    if(!aBoolean)
+                                        imageButton.setOnClickListener(addClickListener);
+                                }
+                            });
                         } else {
                             appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                         }
