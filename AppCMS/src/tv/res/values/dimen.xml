@@ -57,4 +57,6 @@
     <dimen name="link_account_overlay_dialog_width">815dp</dimen>
     <dimen name="link_account_overlay_dialog_height">278dp</dimen>
 
+    <dimen name="constraint_guide_percent">.5</dimen>
+
 </resources>

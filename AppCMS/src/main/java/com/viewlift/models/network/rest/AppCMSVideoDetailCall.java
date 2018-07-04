@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import okhttp3.Headers;
 import retrofit2.Response;
 
 /**
@@ -58,10 +60,26 @@ public class AppCMSVideoDetailCall {
             authHeaders.put("Authorization", authToken);
         //    authHeaders.put("x-api-key", xApi);
             Response<AppCMSEntitlementResponse> response= appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
-
+            Headers headers = response.headers();
 
             if (response.isSuccessful()) {
-                return response.body();
+                AppCMSEntitlementResponse appCMSEntitlementResponse = response.body();
+
+                if (headers != null) {
+                    AppCMSSignedURLResult appCMSSignedURLResult = new AppCMSSignedURLResult();
+                    for (String cookie : headers.values("Set-Cookie")) {
+                        if (cookie.contains("CloudFront-Key-Pair-Id=")) {
+                            appCMSSignedURLResult.setKeyPairId(cookie.substring("CloudFront-Key-Pair-Id=".length()));
+                        } else if (cookie.contains("CloudFront-Signature=")) {
+                            appCMSSignedURLResult.setSignature(cookie.substring("CloudFront-Signature=".length()));
+                        } else if (cookie.contains("CloudFront-Policy=")) {
+                            appCMSSignedURLResult.setPolicy(cookie.substring("CloudFront-Policy=".length()));
+                        }
+                    }
+                    appCMSEntitlementResponse.setAppCMSSignedURLResult(appCMSSignedURLResult);
+                }
+
+                return appCMSEntitlementResponse;
             } else if (response.code() != 200){
                 try {
                     AppCMSEntitlementResponse appCMSEntitlementResponse =

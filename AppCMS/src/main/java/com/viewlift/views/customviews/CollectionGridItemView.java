@@ -845,61 +845,60 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
 //                if (TextUtils.isEmpty(((TextView) view).getText())) {
-                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
-                        !TextUtils.isEmpty(data.getGist().getTitle())) {
-                    ((TextView) view).setText(data.getGist().getTitle());
-
-                    //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                    if (component != null &&
-                            component.getView() != null &&
-                            component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                    if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
+                            !TextUtils.isEmpty(data.getGist().getTitle())) {
+                        ((TextView) view).setText(data.getGist().getTitle());
                         if (childComponent.getNumberOfLines() != 0) {
                             ((TextView) view).setSingleLine(false);
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         }
-                        if (BaseView.isTablet(view.getContext())) {
-                            if (isLandscape(getContext()) == true) {
+                        //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        if (component != null &&
+                                component.getView() != null &&
+                                component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+                            if (BaseView.isTablet(view.getContext())) {
+                                if (isLandscape(getContext()) == true) {
+                                    ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                } else {
+                                    setBorder(((TextView) view));
+                                    ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                                }
+                            } else {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-                            } else {
-                                setBorder(((TextView) view));
-                                ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
+                                ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                             }
                         } else {
-                            ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
-                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                        }
-                    } else {
-                        if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
-                            if (appCMSPresenter.getAppCMSMain() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
-                                    ) {
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                            if (BaseView.isTablet(view.getContext()) && isLandscape(getContext())) {
+                                if (appCMSPresenter.getAppCMSMain() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
+                                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                        ) {
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                                }else{
+                                    ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                }
                             } else {
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) view).setTextColor(Color.parseColor(
+                                        childComponent.getTextColor()));
                             }
-                        } else {
-                            ((TextView) view).setTextColor(Color.parseColor(
-                                    childComponent.getTextColor()));
                         }
-                    }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                    if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
-                        if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
-                            String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
-                            ((TextView) view).setMaxLines(1);
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) view).setText(artist);
-                            view.setPadding(10,
-                                    0,
-                                    10,
-                                    0);
-                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
+                        if (data.getGist().getMediaType() != null && data.getGist().getMediaType().equalsIgnoreCase("AUDIO")) {
+                            if (data.getCreditBlocks() != null && data.getCreditBlocks().size() > 0 && data.getCreditBlocks().get(0).getCredits() != null && data.getCreditBlocks().get(0).getCredits().size() > 0 && data.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null) {
+                                String artist = appCMSPresenter.getArtistNameFromCreditBlocks(data.getCreditBlocks());
+                                ((TextView) view).setMaxLines(1);
+                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                                ((TextView) view).setText(artist);
+                                view.setPadding(10,
+                                        0,
+                                        10,
+                                        0);
+                            }
 
                     } else if (data.getSeason() != null && 0 < data.getSeason().size()) {
                         ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
@@ -1626,9 +1625,9 @@ public class CollectionGridItemView extends BaseView {
                 data.getGist().getContentType() != null &&
                 data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
             view.setVisibility(GONE);
-        } else {
+        }/*else{
             view.setVisibility(VISIBLE);
-        }
+        }*/
     }
 
 }
