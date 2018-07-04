@@ -564,7 +564,7 @@ public class TVViewCreator {
                                 List<String> relatedVids = Utils.getRelatedVideosInShow(
                                         moduleData.getContentData().get(0).getSeason(),
                                         seasonIndex,
-                                        i);
+                                        i - 1);
                                 ContentDatum contentDatum = episodes.get(i);
                                 contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
                                 BrowseFragmentRowData rowData = new BrowseFragmentRowData();
