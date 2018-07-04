@@ -188,7 +188,7 @@ public class AppCMSRosterAdapter extends RecyclerView.Adapter<AppCMSRosterAdapte
                                   Component childComponent,
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
-                        appCMSPresenter.navigateToPersonDetailsPage(data.getPlayersData().getData().getPermalink(), "", false, null, false);
+                        appCMSPresenter.navigateToPersonDetailsPage(data.getPlayersData().getData().getPermalink(), "", false);
 
 //                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 

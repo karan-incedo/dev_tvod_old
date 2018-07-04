@@ -2820,7 +2820,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 usePageIdQueryParam = false;
             }
 
-            appCMSPresenter.getEventsPageeRefreshData(appCmsPageApiAction -> {
+            appCMSPresenter.getEventsPageRefreshData(appCmsPageApiAction -> {
                 if (appCmsPageApiAction != null) {
                     Log.w(TAG, "Retrieved page content");
                     if (appCmsPageApiAction != null) {

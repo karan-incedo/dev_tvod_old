@@ -177,7 +177,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.launchTeamNavPage();
                         } else if (titleKey == AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY) {
                             appCMSPresenter.navigateToSchedulePage(navigationPrimary.getPageId(),
-                                    navigationPrimary.getTitle(), navigationPrimary.getUrl(), false);
+                                    navigationPrimary.getTitle(), false);
                         } else if (titleKey == AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY || titleKey == AppCMSUIKeyType.PAGE_FIGHTER_SCREEN_TITLE_KEY) {
                             appCMSPresenter.navigateToRosterPage(navigationPrimary.getPageId(),
                                     navigationPrimary.getTitle(), false);
@@ -246,17 +246,15 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+
                                 case ANDROID_SCHEDULE_SCREEN_KEY:
                                 case PAGE_SCHEDULE_SCREEN_TITLE_KEY:
-//                                    appCMSPresenter.showLoadingDialog(true);
-
                                     appCMSPresenter.navigateToSchedulePage(navigationUser.getPageId(),
-                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                            navigationUser.getTitle(), false);
                                     break;
+
                                 case PAGE_ROSTER_SCREEN_TITLE_KEY:
                                 case PAGE_FIGHTER_SCREEN_TITLE_KEY:
-
-//                                    appCMSPresenter.showLoadingDialog(true);
                                     appCMSPresenter.navigateToRosterPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), false);
                                     break;

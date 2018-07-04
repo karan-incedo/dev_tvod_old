@@ -6797,7 +6797,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getEventsPageeRefreshData(final Action1<AppCMSPageAPI> appCmsPageApiAction, String dataId, String permaLink) {
+    public void getEventsPageRefreshData(final Action1<AppCMSPageAPI> appCmsPageApiAction, String dataId, String permaLink) {
 
 
         if (currentActivity != null && !TextUtils.isEmpty(permaLink) && eventPage != null) {
@@ -6963,7 +6963,7 @@ public class AppCMSPresenter {
 
             getSchedulePageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    metaPage.getPageId(), new AppCMSScheduleAPIAction(true,
+                    metaPage.getPageId(), new AppCMSAPIAction<AppCMSScheduleResult>(true,
                             false,
                             true,
                             appCMSPageUI,
@@ -7943,7 +7943,7 @@ public class AppCMSPresenter {
             } else {
                 getRosterPage(appCMSMain.getApiBaseUrl(),
                         appCMSSite.getGist().getSiteInternalName(),
-                        pageId, new AppCMSRosterAPIAction(true,
+                        pageId, new AppCMSAPIAction<AppCMSRosterResult>(true,
                                 false,
                                 true,
                                 appCMSPageUI,
@@ -14285,7 +14285,7 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        if(activity instanceof  AppCompatActivity) {
+        if (activity instanceof AppCompatActivity) {
             this.currentActivity = (AppCompatActivity) activity;
         }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -19533,14 +19533,12 @@ public class AppCMSPresenter {
 
     public void navigateToPersonDetailsPage(String personPerma,
                                             String pageTitle,
-                                            boolean launchActivity,
-                                            Action0 callback, boolean isDeepLink) {
+                                            boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(personPerma) && personPage != null) {
             showLoader();
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(personPage.getPageId());
-
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(personPage.getPageId());
                 if (metaPage != null) {
@@ -19552,7 +19550,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToPersonDetailsPage(personPerma, pageTitle, launchActivity, null, false);
+                                    navigateToPersonDetailsPage(personPerma, pageTitle, launchActivity);
                                 }
                             },
                             loadFromFile,
@@ -19619,18 +19617,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToSchedulePage(String id,
-                                       String pageTitle, String url,
-                                       boolean launchActivity
-    ) {
-
+    public void navigateToSchedulePage(String id,String pageTitle,boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(id)) {
             showLoader();
-//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-//                    loadJsonFromAssets(currentActivity, "schedule_page_module.json"),
-//                    AppCMSPageUI.class);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
-
+            AppCMSPageUI appCMSPageUI = navigationPages.get(id);
+            //AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
             if (appCMSPageUI == null) {
                 MetaPage metaPage = pageIdToMetaPageMap.get(id);
                 if (metaPage != null) {
@@ -19642,7 +19633,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToSchedulePage(id, pageTitle, url, launchActivity);
+                                    navigateToSchedulePage(id, pageTitle,launchActivity);
                                 }
                             },
                             loadFromFile,
@@ -19651,7 +19642,7 @@ public class AppCMSPresenter {
             } else {
                 getSchedulePageContent(appCMSMain.getApiBaseUrl(),
                         appCMSSite.getGist().getSiteInternalName(),
-                        id, new AppCMSScheduleAPIAction(true,
+                        id, new AppCMSAPIAction<AppCMSScheduleResult>(true,
                                 false,
                                 true,
                                 appCMSPageUI,
@@ -19667,11 +19658,9 @@ public class AppCMSPresenter {
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
 
-
                                     AppCMSPageAPI pageAPI = null;
                                     if (appCMSScheduleResult != null) {
                                         pageAPI = convertToMonthlyData(appCMSScheduleResult);
-                                        //pageAPI = appCMSScheduleResult.get(0).convertToAppCMSPageAPI(schedulePage.getPageId());
                                     }
                                     navigationPageData.put(this.pageId, pageAPI);
 
@@ -19679,8 +19668,6 @@ public class AppCMSPresenter {
                                     if (!TextUtils.isEmpty(pageIdToPageNameMap.get(id))) {
                                         screenName.append(schedulePage.getPageName());
                                     }
-//                                    screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-//                                    screenName.append(pageTitle);
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
@@ -19709,7 +19696,6 @@ public class AppCMSPresenter {
                                     stopLoader();
                                 } else {
                                     stopLoader();
-                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 }
                             }
                         });
@@ -19739,24 +19725,11 @@ public class AppCMSPresenter {
                         contentDatum.setGist(appCMSScheduleResult.getGist());
                         contentDatum.setCategories(appCMSScheduleResult.getCategories());
                         contentDatumList.add(contentDatum);
-                        /*if (monthlyGameScheduleData.containsKey(month)) {
-                            List<ContentDatum> contentDataList = monthlyGameScheduleData.get(month);
-                            contentDataList.add(contentDatum);
-                            monthlyGameScheduleData.put(month, contentDataList);
-                        } else {
-                            List<ContentDatum> lisData = new ArrayList<>();
-                            lisData.add(contentDatum);
-                            monthlyGameScheduleData.put(month, lisData);
-                        }*/
-
                     }
                 }
-                //appCMSScheduleResultData[0] =appCMSScheduleResult;
-                //pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(monthlyGameScheduleData);
                 pageApi = appCMSScheduleResult.convertToAppCMSPageAPI(contentDatumList);
             }
         });
-        //AppCMSPageAPI pageAPi= appCMSScheduleResultData[0].convertToAppCMSPageAPI(monthlyGameScheduleData);
         return pageApi;
     }
 
@@ -19914,7 +19887,7 @@ public class AppCMSPresenter {
     private void getSchedulePageContent(final String apiBaseUrl,
                                         final String siteId,
                                         String pageId,
-                                        final AppCMSScheduleAPIAction scheduleAPIAction) {
+                                        final AppCMSAPIAction scheduleAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -19927,8 +19900,7 @@ public class AppCMSPresenter {
                         appCMSScheduleCall.call(
                                 currentActivity.getString(R.string.app_cms_schedule_api_url,
                                         apiBaseUrl,
-                                        siteId,
-                                        "1512000000", "1543536000"
+                                        siteId
                                 ), apikey,
                                 scheduleAPIAction);
 
@@ -19944,7 +19916,7 @@ public class AppCMSPresenter {
     private void getRosterPage(final String apiBaseUrl,
                                final String siteId,
                                String pageId,
-                               final AppCMSRosterAPIAction rosterAPIAction) {
+                               final AppCMSAPIAction rosterAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -19971,7 +19943,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private abstract static class AppCMSScheduleAPIAction implements Action1<List<AppCMSScheduleResult>> {
+    private abstract static class AppCMSAPIAction<T> implements Action1<List<T>> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
         final boolean navbarPresent;
@@ -19983,7 +19955,7 @@ public class AppCMSPresenter {
         final boolean launchActivity;
         final Uri searchQuery;
 
-        AppCMSScheduleAPIAction(boolean appbarPresent,
+        AppCMSAPIAction(boolean appbarPresent,
                                 boolean fullscreenEnabled,
                                 boolean navbarPresent,
                                 AppCMSPageUI appCMSPageUI,
@@ -20006,40 +19978,6 @@ public class AppCMSPresenter {
         }
     }
 
-    private abstract static class AppCMSRosterAPIAction implements Action1<List<AppCMSRosterResult>> {
-        final boolean appbarPresent;
-        final boolean fullscreenEnabled;
-        final boolean navbarPresent;
-        final AppCMSPageUI appCMSPageUI;
-        final String action;
-        final String pageId;
-        final String pageTitle;
-        final String pagePath;
-        final boolean launchActivity;
-        final Uri searchQuery;
-
-        AppCMSRosterAPIAction(boolean appbarPresent,
-                              boolean fullscreenEnabled,
-                              boolean navbarPresent,
-                              AppCMSPageUI appCMSPageUI,
-                              String action,
-                              String pageId,
-                              String pageTitle,
-                              String pagePath,
-                              boolean launchActivity,
-                              Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.pagePath = pagePath;
-            this.launchActivity = launchActivity;
-            this.searchQuery = searchQuery;
-        }
-    }
 
     private String getDeviceDetail() {
         StringBuffer stringBuffer = new StringBuffer();
