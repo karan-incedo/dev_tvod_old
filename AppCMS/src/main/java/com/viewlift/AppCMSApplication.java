@@ -234,6 +234,8 @@ public class AppCMSApplication extends MultiDexApplication {
 
     public void initAppsFlyer(String appsFlyerKey) {
         AppsFlyerLib.getInstance().init(appsFlyerKey, conversionDataListener);
+        AppsFlyerLib.getInstance().setCollectIMEI(false);
+        AppsFlyerLib.getInstance().setCollectAndroidID(false);
         sendAnalytics();
     }
 

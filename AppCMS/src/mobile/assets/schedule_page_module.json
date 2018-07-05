@@ -1,0 +1,244 @@
+{
+  "moduleList": [
+    {
+      "id": "46bfe1d6-4ddc-4d0b-aee3-94eff1630bcb",
+      "settings": {
+        "linkAlignment": "left",
+        "isMasthead": true
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01"
+    },
+    {
+      "id": "1fce25d4-b1bc-4130-b6cf-26d4544172bb",
+      "settings": {
+        "columns": {
+          "tablet": 4,
+          "desktop": 6,
+          "mobile": 3,
+          "ott": 6
+        }
+      },
+      "view": "AC EventCalendar 01",
+      "type": "AC EventCalendar 01",
+      "blockName": "eventCalendar01",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletLandscape": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 100,
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 10,
+              "bottomMargin": 0
+            },
+            "tabletLandscape": {
+              "gridHeight": 100,
+              "leftMargin": 0,
+              "topMargin": 1,
+              "rightMargin": 0,
+              "bottomMargin": 7.81
+            },
+            "tabletPortrait": {
+              "gridHeight": 100,
+              "leftMargin": 0,
+              "topMargin": 1,
+              "rightMargin": 0,
+              "bottomMargin": 5.86
+            }
+          },
+          "trayClickAction": "lectureDetailPage",
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 5,
+                  "leftMargin": 1.73,
+                  "rightMargin": 1.73,
+                  "height": 80
+                },
+                "tabletLandscape": {
+                  "yAxis": 5,
+                  "leftMargin": 1.73,
+                  "rightMargin": 1.73,
+                  "height": 100
+                },
+                "tabletPortrait": {
+                  "yAxis": 5,
+                  "leftMargin": 1.73,
+                  "rightMargin": 1.73,
+                  "height": 100
+                }
+              },
+              "backgroundColor": "#000000",
+              "type": "separatorView"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 18,
+                  "rightMargin": 0,
+                  "topMargin": 2,
+                  "width": 0,
+                  "fontSize": 18,
+                  "height": 25
+                },
+                "tabletLandscape": {
+                  "leftMargin": 135,
+                  "topMargin": 2.2,
+                  "rightMargin": 0,
+                  "width": 350,
+                  "fontSize": 18,
+                  "height": 25
+                },
+                "tabletPortrait": {
+                  "leftMargin": 135,
+                  "topMargin": 2.2,
+                  "rightMargin": 0,
+                  "width": 250,
+                  "fontSize": 18,
+                  "height": 25
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "numberOfLines": 1,
+              "fontWeight": "bold",
+              "key": "scheduleTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 18,
+                  "topMargin": 5.2,
+                  "rightMargin": 18,
+                  "width": 0,
+                  "fontSize": 13,
+                  "height": 40
+                },
+                "tabletLandscape": {
+                  "leftMargin": 135,
+                  "topMargin": 5,
+                  "rightMargin": 110,
+                  "width": 0,
+                  "fontSize": 15,
+                  "height": 30
+                },
+                "tabletPortrait": {
+                  "leftMargin": 135,
+                  "topMargin": 5,
+                  "rightMargin": 110,
+                  "width": 0,
+                  "fontSize": 15,
+                  "height": 30
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "numberOfLines": 1,
+              "type": "label",
+              "textColor": "#ffffff",
+              "key": "gameDate"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 2.67,
+                  "topMargin": 2,
+                  "width": 0,
+                  "height": 0
+                },
+                "tabletLandscape": {
+                  "leftMargin": 2.67,
+                  "topMargin": 2,
+                  "width": 125,
+                  "height": 90
+                },
+                "tabletPortrait": {
+                  "leftMargin": 2.67,
+                  "topMargin": 2,
+                  "width": 125,
+                  "height": 90
+                }
+              },
+              "type": "image",
+              "isVisibleForTablet": true,
+              "isVisibleForPhone": false,
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "isVerticallyCentered": false,
+                  "yAxis": 80,
+                  "rightMargin": 1.73,
+                  "leftMargin": 1.73,
+                  "fontSize": 12,
+                  "height": 40
+                },
+                "tabletLandscape": {
+                  "isVerticallyCentered": true,
+                  "rightMargin": 5.5,
+                  "topMargin": 3.5,
+                  "width": 100,
+                  "fontSize": 12,
+                  "height": 40
+                },
+                "tabletPortrait": {
+                  "isVerticallyCentered": true,
+                  "rightMargin": 3.5,
+                  "topMargin": 3.5,
+                  "width": 100,
+                  "fontSize": 12,
+                  "height": 40
+                }
+              },
+              "backgroundColor": "008EE0",
+              "textColor": "000000",
+              "action": "tickets",
+              "type": "button",
+              "text": "TICKETS",
+              "key": "tickets"
+            }
+          ],
+          "type": "tableView",
+          "key": "tableView"
+        }
+      ]
+    },
+    {
+      "id": "46d6af05-b494-4978-ab57-1e1d57444a8c",
+      "settings": {},
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01"
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.20"
+}

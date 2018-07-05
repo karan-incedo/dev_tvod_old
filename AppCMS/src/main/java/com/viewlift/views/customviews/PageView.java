@@ -195,6 +195,7 @@ public class PageView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
+
         childrenContainer = new RecyclerView(getContext());
         childrenContainer.setId(R.id.home_nested_scroll_view);
         childrenContainer.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
@@ -230,6 +231,7 @@ public class PageView extends BaseView {
             }
         });
         mainView = new SwipeRefreshLayout(getContext());
+        mainView.setId(R.id.fight_scroll_id);
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
@@ -358,7 +360,7 @@ public class PageView extends BaseView {
             if (position==0) {
                 childrenContainer.scrollBy(position, position);
             }else {
-                 ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
+                ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
             }
         }
     }
@@ -374,5 +376,9 @@ public class PageView extends BaseView {
             addView(headerView);
             headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }
+    }
+
+    public View getMainView(){
+        return mainView;
     }
 }

@@ -155,7 +155,7 @@
               "numberOfLines": 1,
               "textAlignment": "center",
               "type": "label",
-              "textColor": "#ffffff",
+              "textColor": "#000000",
               "fontWeight": "Bold",
               "key": "carouselTitle"
             },
@@ -187,7 +187,7 @@
               "numberOfLines": 1,
               "textAlignment": "center",
               "type": "label",
-              "textColor": "#ffffff",
+              "textColor": "#000000",
               "key": "carouselInfo"
             },
             {

@@ -31,6 +31,8 @@ import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
+import com.viewlift.models.network.rest.AppCMSEventArchieveCall;
+import com.viewlift.models.network.rest.AppCMSEventArchieveRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -53,8 +55,10 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
+import com.viewlift.models.network.rest.AppCMSRosterRest;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateRest;
+import com.viewlift.models.network.rest.AppCMSScheduleRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -64,6 +68,10 @@ import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterCall;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterRest;
+import com.viewlift.models.network.rest.AppCMSTeamStandingCall;
+import com.viewlift.models.network.rest.AppCMSTeamStandingRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
@@ -173,6 +181,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
                 AppCMSUIKeyType.ANDROID_PLAYLIST_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_teamdetail_key),
+                AppCMSUIKeyType.ANDROID_TEAM_DETAIL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_sign_up_key),
@@ -223,7 +233,12 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_photogalleryscreen_key),
                 AppCMSUIKeyType.ANDROID_PHOTOGALLERY_SCREEN_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_schedule_screen_key),
+                AppCMSUIKeyType.ANDROID_SCHEDULE_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_person_screen_key),
+                AppCMSUIKeyType.ANDROID_PERSON_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_eventscreen_key),
+                AppCMSUIKeyType.ANDROID_EVENT_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -238,6 +253,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_venue_label_key),
+                AppCMSUIKeyType.PAGE_VENUE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_timer_title_label_key),
+                AppCMSUIKeyType.PAGE_TIMER_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upcoming_timer_key),
+                AppCMSUIKeyType.PAGE_UPCOMING_TIMER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ads_key),
                 AppCMSUIKeyType.PAGE_ADS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),
@@ -250,6 +271,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_table_view_key),
                 AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multiple_table_view_key),
+                AppCMSUIKeyType.PAGE_MULTI_TABLE_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_progress_view_key),
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
@@ -260,10 +283,14 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_list_module_key),
                 AppCMSUIKeyType.PAGE_LIST_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watch_live_button_key),
+                AppCMSUIKeyType.PAGE_WATCH_LIVE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key_value),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY_VALUE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_key_value),
+                AppCMSUIKeyType.PAGE_SCHEDULE_PAGE_KEY_VALUE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_player_key),
                 AppCMSUIKeyType.PAGE_SHOW_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
@@ -291,6 +318,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_separator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multicolumn_table_key),
+                AppCMSUIKeyType.PAGE_MULTICOLUMN_TABLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_bottom_button_background_key),
                 AppCMSUIKeyType.PAGE_BOTTOM_BACKGROUND_ARTICLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
@@ -326,14 +356,40 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_title_key),
+                AppCMSUIKeyType.PAGE_TRAY_SCHEDULE_TITLE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_season_tray_title_key),
                 AppCMSUIKeyType.PAGE_TRAY_SEASON_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_underline_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_UNDERLINE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_page_title_key),
+                AppCMSUIKeyType.PAGE_SCHEDULE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_roster_key),
+                AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SCREEN_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_title_key),
+                AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_title_key),
+                AppCMSUIKeyType.PAGE_AWAY_TEAM_TITLE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_home_team_image_key),
+                AppCMSUIKeyType.PAGE_HOME_TEAM_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_away_team_image_key),
+                AppCMSUIKeyType.PAGE_AWAY_TEAM_IMAGE_KEY);
+
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_date_and_image_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_badge_image_key),
@@ -444,7 +500,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_event_details_key),
+                AppCMSUIKeyType.PAGE_EVENT_DETAILS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
@@ -512,6 +569,10 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_title),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TITLE_TXT_KEY);
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_record_type_key),
+                AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_authName),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_AUTH_TXT_KEY);
 
@@ -523,6 +584,58 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_selectedImg),
                 AppCMSUIKeyType.PAGE_PHOTO_GALLERY_SELECTED_IMAGE);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_Img),
+                AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_team_Img),
+                AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_record_label_key),
+                AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_team_title_label_key),
+                AppCMSUIKeyType.PAGE_PLAYER_TEAM_TITLE_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weightdivision_value_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_DIVISION_VALUE_TXT_KEY);
+
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tableHeaderLabel_label_key),
+                AppCMSUIKeyType.PAGE_TABEL_LABEL_HEADER_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_statsViewHeader_label_key),
+                AppCMSUIKeyType.PAGE_STATE_LABEL_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_roster_title_key),
+                AppCMSUIKeyType.PAGE_ROSTER_TITLE_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fight_selection_label_key),
+                AppCMSUIKeyType.PAGE_FIGHT_SELECTION_TXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_score_label_key),
+                AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weight_value_label_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_height_value_key),
+                AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_birthdate_value_label_key),
+                AppCMSUIKeyType.PAGE_BIRTHDATE_VALUE_TEXT);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_hometown_value_label_key),
+                AppCMSUIKeyType.PAGE_HOMETOWN_VALUE_TEXT);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_name_key),
+                AppCMSUIKeyType.PAGE_PLAYER_NAME_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photogallery_preButton),
                 AppCMSUIKeyType.PAGE_PHOTOGALLERY_PRE_BUTTON_KEY);
@@ -541,6 +654,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_autoplay_text_key),
                 AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_height_label_key),
+                AppCMSUIKeyType.PAGE_HEIGHT_LABEL_TEXT);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_player_weight_label_key),
+                AppCMSUIKeyType.PAGE_WEIGHT_LABEL_TEXT);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -566,10 +685,16 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_fight_list_module_key),
+                AppCMSUIKeyType.PAGE_FIGHT_LIST_PARENT_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key2),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ac_web_frame_01),
+                AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_download_settings_key),
@@ -598,6 +723,17 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_last_added_label),
                 AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_name_label_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_selector_view_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_VIEW_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fighter_selector_arrow_view_key),
+                AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_ARROW_VIEW_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
 
@@ -609,6 +745,13 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_detail_module_key),
                 AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_team_detail_module_key),
+                AppCMSUIKeyType.PAGE_API_TEAMDETAIL_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_multitabletray_key),
+                AppCMSUIKeyType.PAGE_API_MULTITABLE_TEAM_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_page_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_PAGE_KEY);
@@ -649,10 +792,44 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
 
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_detail_module),
+                AppCMSUIKeyType.PAGE_GAME_DETAIL_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_fightsummary_key_type),
+                AppCMSUIKeyType.PAGE_FIGHT_SUMMARY_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_player_detail_module),
+                AppCMSUIKeyType.PAGE_PLAYER_DETAIL_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_event_detail_module),
+                AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_02_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_05_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_fight_table_key),
+                AppCMSUIKeyType.PAGE_FIGHT_TABLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_05_module_key),
+                AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_module_key),
+                AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_parent_bg_key),
+                AppCMSUIKeyType.PAGE_AC_TEAM_PARENT_BG_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_roster_page_module_key),
+                AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_06_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_06_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_03_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_tray_module_key),
@@ -669,6 +846,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_feed_module_key),
                 AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_person_details_module_key),
+                AppCMSUIKeyType.PAGE_PERSON_DETAIL_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_module_key),
                 AppCMSUIKeyType.PAGE_GRID_MODULE_KEY);
 
@@ -679,6 +858,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_create_login_component_key),
+                AppCMSUIKeyType.PAGE_CREATE_LOGIN_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_video_tab_component_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_VIDEO_TAB_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_audio_tab_component_key),
@@ -687,6 +869,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_removeall_key),
                 AppCMSUIKeyType.PAGE_REMOVEALL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_tickets_key),
+                AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_image_video_key),
@@ -932,6 +1116,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_watched_time_key),
                 AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_time_key),
+                AppCMSUIKeyType.PAGE_GAME_TIME_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_game_date_key),
+                AppCMSUIKeyType.PAGE_GAME_DATE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_download_key),
                 AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_size_key),
@@ -994,6 +1182,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_history_screen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_schedule_key),
+                context.getString(R.string.app_cms_pagename_schedule_screen_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 context.getString(R.string.app_cms_action_watchlistpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
@@ -1264,6 +1454,24 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSTeamStandingRest providesAppCMSStandingRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSTeamStandingRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamRoasterRest providesAppCMSRoasterRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSTeamRoasterRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSEventArchieveRest providesAppCMSEventArchieveRestt(Retrofit retrofit) {
+        return retrofit.create(AppCMSEventArchieveRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSSSLCommerzInitiateRest providesAppCMSSSLCommerzConfigRest(Retrofit retrofit) {
         return retrofit.create(AppCMSSSLCommerzInitiateRest.class);
     }
@@ -1305,6 +1513,16 @@ public class AppCMSUIModule {
         return retrofit.create(AppCMSArticleRest.class);
     }
 
+    @Provides
+    @Singleton
+    public AppCMSScheduleRest providesAppCMSScheduleRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSScheduleRest.class);
+    }
+    @Provides
+    @Singleton
+    public AppCMSRosterRest providesAppCMSRostRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSRosterRest.class);
+    }
     @Provides
     @Singleton
     public AppCMSPhotoGalleryRest providesAppCMSPhotoGalleryRest(Retrofit retrofit) {
@@ -1485,6 +1703,24 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
         return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamStandingCall providesAppCMSStandingCall(AppCMSTeamStandingRest appCMSStandingRest, Gson gson) {
+        return new AppCMSTeamStandingCall(appCMSStandingRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSTeamRoasterCall providesAppCMSTeamRoasterCall(AppCMSTeamRoasterRest appCMSStandingRest, Gson gson) {
+        return new AppCMSTeamRoasterCall(appCMSStandingRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSEventArchieveCall providesAppCMSEventArchieveCall(AppCMSEventArchieveRest appCMSEventArchievRest, Gson gson) {
+        return new AppCMSEventArchieveCall(appCMSEventArchievRest, gson);
     }
 
     @Provides

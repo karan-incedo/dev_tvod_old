@@ -90,6 +90,8 @@
     <string name="age_rating_converted_eighteen">18+</string>
     <string name="age_rating_converted_default">NR</string>
     <string name="no_results">No Results</string>
+    <string name="no_fight_records">No fight records found</string>
+
     <string name="video_player_title_key">video_player_title</string>
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
@@ -645,7 +647,8 @@
     <string name="content_type_video">VIDEO</string>
     <string name="content_type_series">SERIES</string>
     <string name="content_type_show">SHOW</string>
-
+    <string name="content_type_game">GAME</string>
+    <string name="content_type_event">EVENT</string>
 
     <!-- Notificaiton Channel -->
     <string name="notification_channel">UAMP_Channel_ID</string>
@@ -710,6 +713,15 @@
     <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
 
     <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
+    <string name="timer_until_face_off">TIME UNTIL FACEOFF</string>
+
+    <!-- AppCMS JSON data input keys -->
+    <string-array name="timer_text">
+        <item>D</item>
+        <item>H</item>
+        <item>M</item>
+        <item>S</item>
+    </string-array>
 
 </resources>
 

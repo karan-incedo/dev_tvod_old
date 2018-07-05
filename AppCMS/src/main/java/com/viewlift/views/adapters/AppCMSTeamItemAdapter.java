@@ -74,7 +74,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (navigationTabBar != null) {
-            RecyclerView.LayoutParams parentParams=(RecyclerView.LayoutParams) holder.parentLayout.getLayoutParams();
+            RecyclerView.LayoutParams parentParams = (RecyclerView.LayoutParams) holder.parentLayout.getLayoutParams();
             parentParams.setMargins(0,
                     BaseView.dpToPx(R.dimen.app_cms_team_list_view_margin_top, holder.itemView.getContext()),
                     0, 0);
@@ -98,6 +98,8 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 appCMSPresenter.cancelInternalEvents();
+//                appCMSPresenter.navigateToTeamDetailPage("bd16d81c-4757-403b-9871-1a18b5963674", navigationItem.getTitle(), false);
+
                 if (!appCMSPresenter.navigateToPage(navigationItem.getPageId(),
                         navigationItem.getTitle(),
                         navigationItem.getUrl(),
