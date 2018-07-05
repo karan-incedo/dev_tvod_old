@@ -790,9 +790,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
+            if(null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
+                ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
+                ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
+                ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
+            }
         }
 
         Format textFormat = Format.createTextSampleFormat(null,
@@ -1531,8 +1533,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             boolean useHls = dataSpec.uri.toString().contains(".m3u8") ||
                     dataSpec.uri.toString().contains(".ts") ||
                     dataSpec.uri.toString().contains("hls");
-
-            if (useHls && updatedUri.toString().contains("?")) {
+            if (useHls
+                    && updatedUri.toString().contains("Policy=")
+                    && updatedUri.toString().contains("Key-Pair-Id=")
+                    && updatedUri.toString().contains("Signature=")
+                    && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
 
