@@ -101,6 +101,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.presenters.BitmapCachePresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.TabCreator;
@@ -319,7 +320,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
-        printKeyHash(this);
         initPageActivity();
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
@@ -1081,6 +1081,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        if (CustomWebView.mWebFbPlayerView != null && CustomWebView.mWebFbPlayerView.getVisibility() == View.VISIBLE && CustomWebView.mWebChromeClient != null && CustomWebView.isWebVideoFullView) {
+            CustomWebView.mWebChromeClient.onHideCustomView();
+            return;
+        }
         if (AppCMSPresenter.isFullScreenVisible) {
             appCMSPresenter.exitFullScreenPlayer();
             return;
@@ -3469,36 +3473,5 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         });
     }
 
-    public static String printKeyHash(Activity context) {
-        PackageInfo packageInfo;
-        String key = null;
-        try {
-            //getting application package name, as defined in manifest
-            String packageName = context.getApplicationContext().getPackageName();
-
-            //Retriving package info
-            packageInfo = context.getPackageManager().getPackageInfo(packageName,
-                    PackageManager.GET_SIGNATURES);
-
-            Log.e("Package Name=", context.getApplicationContext().getPackageName());
-
-            for (Signature signature : packageInfo.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                key = new String(Base64.encode(md.digest(), 0));
-
-                // String key = new String(Base64.encodeBytes(md.digest()));
-                Log.e("Key Hash=", key);
-            }
-        } catch (PackageManager.NameNotFoundException e1) {
-            Log.e("Name not found", e1.toString());
-        } catch (NoSuchAlgorithmException e) {
-            Log.e("No such an algorithm", e.toString());
-        } catch (Exception e) {
-            Log.e("Exception", e.toString());
-        }
-
-        return key;
-    }
 
 }

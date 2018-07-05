@@ -13,7 +13,7 @@ public class ImageGist implements Serializable {
     @Expose
     String _32x9;
 
-    @SerializedName("Image_16x9")
+    @SerializedName("_16x9")
     @Expose
     String _16x9;
 
@@ -21,11 +21,11 @@ public class ImageGist implements Serializable {
     @Expose
     String _4x3;
 
-    @SerializedName("Image_3x4")
+    @SerializedName("_3x4")
     @Expose
     String _3x4;
 
-    @SerializedName("Image_1x1")
+    @SerializedName("_1x1")
     @Expose
     String _1x1;
 

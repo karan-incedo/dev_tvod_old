@@ -128,6 +128,7 @@ import rx.functions.Action1;
 
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
 import static com.viewlift.Utils.loadJsonFromAssets;
+import static com.viewlift.views.customviews.CustomWebView.mFbLiveView;
 
 //import org.htmlcleaner.TagNode;
 
@@ -567,7 +568,7 @@ public class ViewCreator {
         String webViewUrl, html;
         if (moduleType == AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
             webViewUrl = moduleAPI.getRawText();
-            webView.loadURLLink(appCMSPresenter, webViewUrl);
+            webView.loadWebVideoUrl(appCMSPresenter, webViewUrl);
         } else if (moduleAPI != null && moduleAPI.getRawText() != null) {
             int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
             webViewUrl = moduleAPI.getRawText();
@@ -3393,12 +3394,7 @@ public class ViewCreator {
                 componentViewResult.componentView = new FrameLayout(context);
 
                 ((FrameLayout) componentViewResult.componentView).setId(R.id.web_view_id);
-//                if(moduleType==AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
-//                    FrameLayout.LayoutParams webParams =
-//                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                                    ViewGroup.LayoutParams.MATCH_PARENT);
-//                    ((FrameLayout) componentViewResult.componentView ).setLayoutParams(webParams);
-//                }
+
                 String url = "";
                 if (moduleAPI.getRawText() != null) {
                     url = moduleAPI.getRawText();
@@ -3410,7 +3406,12 @@ public class ViewCreator {
                 if (appCMSPresenter.getWebViewCache(moduleId + component.getKey() + url) != null) {
                     webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey() + url);
                 }
-                if (webView != null) {
+                if (mFbLiveView != null && ((FrameLayout) componentViewResult.componentView) != null && moduleType == AppCMSUIKeyType.PAGE_AC_WEB_FRAME_03_KEY) {
+                    if (mFbLiveView.getParent() != null)
+                        ((ViewGroup) mFbLiveView.getParent()).removeView(mFbLiveView);
+                    ((FrameLayout) componentViewResult.componentView).addView(mFbLiveView);
+
+                } else if (webView != null) {
                     if (webView.getParent() != null)
                         ((ViewGroup) webView.getParent()).removeView(webView);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
