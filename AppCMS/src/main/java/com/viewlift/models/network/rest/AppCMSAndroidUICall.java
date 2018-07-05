@@ -46,6 +46,7 @@ public class AppCMSAndroidUICall {
                                 boolean loadFromFile,
                                 boolean bustCache,
                                 int tryCount) throws IOException {
+        Log.w(TAG, "Failed to read android.json from file: " +url);
         String filename = getResourceFilename(url);
         AppCMSAndroidUI appCMSAndroidUI = null;
         if (loadFromFile) {

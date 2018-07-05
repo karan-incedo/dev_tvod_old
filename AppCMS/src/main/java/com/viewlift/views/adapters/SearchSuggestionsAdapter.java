@@ -63,22 +63,25 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         filmTitle.setText(cursor.getString(1));
         int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
 
-        if (runtimeAsInteger < 60 && runtimeAsInteger > 0) {
-            runtime.setText(new StringBuilder().append(cursor.getString(2))
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
-        } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
-            // FIXME: Display number of episodes.
-            runtime.setText(episodeCount+" "+new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
-        } else if (runtimeAsInteger / 60 < 2) {
-            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_minute_abbreviation)).toString());
-        } else {
-            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
-                    .append(" ")
-                    .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
-        }
+
+            if (runtimeAsInteger < 60 && runtimeAsInteger > 0) {
+                runtime.setText(new StringBuilder().append(cursor.getString(2))
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
+            } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
+                // FIXME: Display number of episodes.
+                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event)))
+                    runtime.setText(episodeCount + " " + new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
+            } else if (runtimeAsInteger / 60 < 2) {
+                runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_minute_abbreviation)).toString());
+            } else {
+                runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
+                        .append(" ")
+                        .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
+            }
+
         if (mediaType != null
                 && mediaType.toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())){
             runtime.setText(songCount+" "+context.getString(R.string.songs_abbreviation));

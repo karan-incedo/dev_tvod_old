@@ -8,6 +8,7 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @UseStag
@@ -56,6 +57,7 @@ public class ContentDatum implements Serializable {
     @SerializedName("userId")
     @Expose
     String userId;
+    public Fights Fights;
 
     @SerializedName("showQueue")
     @Expose
@@ -117,6 +119,19 @@ public class ContentDatum implements Serializable {
     @SerializedName("title")
     @Expose
     String title;
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
+
+    @SerializedName("dataId")
+    @Expose
+    String dataId;
+
     @SerializedName("contentType")
     @Expose
     String contentType;
@@ -128,16 +143,67 @@ public class ContentDatum implements Serializable {
     @Expose
     List<Seo> seo = null;
 
+    HashMap<String,List<ContentDatum>> monthlySchedule;
+
     @SerializedName("drmEnabled")
     @Expose
     boolean isDRMEnabled = false;
 
+    Players players;
+
+    private AppCMSSignedURLResult appCMSSignedURLResult;
+
+    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
+        return appCMSSignedURLResult;
+    }
+
+    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
+        this.appCMSSignedURLResult = appCMSSignedURLResult;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    boolean isSelected = false;
+
+    public void setPlayersData(Players players) {
+        this.players = players;
+    }
+    public Players getPlayersData() {
+        return players;
+    }
+
+
+
+    List<Players> playersList;
+
+
+    public List<Players> getPlayers() {
+        return playersList;
+    }
+
+    public void setPlayers(List<Players> players) {
+        this.playersList = players;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    Team team;
 
 
     private String playListName;
     private String seriesName;
-
-    private AppCMSSignedURLResult appCMSSignedURLResult;
 
     public String getSeriesName() {
         return seriesName;
@@ -254,6 +320,14 @@ public class ContentDatum implements Serializable {
 
     public void setContentDetails(ContentDetails contentDetails) {
         this.contentDetails = contentDetails;
+    }
+
+    public Fights getFights() {
+        return Fights;
+    }
+
+    public void setFights(Fights fights) {
+        Fights = fights;
     }
 
     public StreamingInfo getStreamingInfo() {
@@ -415,7 +489,20 @@ public class ContentDatum implements Serializable {
     }
 
 
+
+
+
     List<AudioList> audioList = null;
+
+    public List<Team> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(List<Team> teamList) {
+        this.teamList = teamList;
+    }
+
+    List<Team> teamList = null;
 
     public List<AudioList> getAudioList() {
         return audioList;
@@ -424,7 +511,6 @@ public class ContentDatum implements Serializable {
     public void setAudioList(List<AudioList> audioList) {
         this.audioList = audioList;
     }
-
     AudioAssets audioAssets = null;
 
     public AudioAssets getAudioAssets() {
@@ -450,12 +536,31 @@ public class ContentDatum implements Serializable {
     public void setDRMEnabled(boolean DRMEnabled) {
         isDRMEnabled = DRMEnabled;
     }
-
-    public AppCMSSignedURLResult getAppCMSSignedURLResult() {
-        return appCMSSignedURLResult;
+    public HashMap<String, List<ContentDatum>> getMonthlySchedule() {
+        return monthlySchedule;
     }
 
-    public void setAppCMSSignedURLResult(AppCMSSignedURLResult appCMSSignedURLResult) {
-        this.appCMSSignedURLResult = appCMSSignedURLResult;
+    public void setMonthlySchedule(HashMap<String, List<ContentDatum>> monthlySchedule) {
+        this.monthlySchedule = monthlySchedule;
+    }
+
+    List<ContentDatum> contentData = null;
+
+    public List<com.viewlift.models.data.appcms.api.LiveEvents> getLiveEvents() {
+        return LiveEvents;
+    }
+
+    public void setLiveEvents(List<com.viewlift.models.data.appcms.api.LiveEvents> liveEvents) {
+        LiveEvents = liveEvents;
+    }
+
+    List<LiveEvents> LiveEvents = null;
+
+    public void setContentData(List<ContentDatum> contentData) {
+        this.contentData = contentData;
+    }
+
+    public List<ContentDatum> getContentData() {
+        return contentData;
     }
 }

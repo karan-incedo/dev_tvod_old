@@ -12,7 +12,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -40,6 +42,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -98,6 +101,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.presenters.BitmapCachePresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.TabCreator;
@@ -115,6 +119,8 @@ import com.viewlift.views.fragments.AppCMSTeamListFragment;
 import org.json.JSONException;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
@@ -314,7 +320,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
-
         initPageActivity();
         if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
 
@@ -353,7 +358,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
                 }
             } catch (ClassCastException e) {
-                //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+                Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
             }
         }
 
@@ -1076,6 +1081,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        if (CustomWebView.mWebFbPlayerView != null && CustomWebView.mWebFbPlayerView.getVisibility() == View.VISIBLE && CustomWebView.mWebChromeClient != null && CustomWebView.isWebVideoFullView) {
+            CustomWebView.mWebChromeClient.onHideCustomView();
+            return;
+        }
         if (AppCMSPresenter.isFullScreenVisible) {
             appCMSPresenter.exitFullScreenPlayer();
             return;
@@ -1441,7 +1450,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         startActivity(new Intent(this, launchActivity));
                         finish();
                     } else {
-                        if (checkPlayServices()) {
+                        if (checkPlayServices() && Utils.isNetworkAvailable(this)) {
                             Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                             Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -2265,7 +2274,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    public void handleSearchButtonVisiblity(){
+    public void handleSearchButtonVisiblity() {
         if (updatedAppCMSBinder.getNavigation().getRight() != null) {
             if (appCMSPresenter.isPageSearch(updatedAppCMSBinder.getPageId())) {
                 mSearchTopButton.setVisibility(View.GONE);
@@ -2276,6 +2285,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             mSearchTopButton.setVisibility(View.GONE);
         }
     }
+
     @SuppressWarnings("ConstantConditions")
     private void handleLaunchPageAction(final AppCMSBinder appCMSBinder,
                                         boolean configurationChanged,
@@ -2322,7 +2332,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.restartInternalEvents();
                 appCMSPresenter.dismissOpenDialogs(null);
             } catch (EmptyStackException e) {
-                //Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
+                Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
             }
         } else {
             boolean createFragment = true;
@@ -2345,7 +2355,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     getSupportFragmentManager().popBackStackImmediate();
                     createFragment = false;
                 } catch (IllegalStateException e) {
-                    //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 if ((i < distanceFromStackTop - 1) ||
                         (!configurationChanged && !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()))) {
@@ -2363,6 +2373,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     createFragment = currentAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                 } catch (Exception e) {
                     //
+                    Log.e(TAG, "" + e.toString());
+
                 }
             }
 
@@ -2372,7 +2384,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
                             && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
                 } catch (Exception e) {
-                    //
+                    Log.e(TAG, "" + e.toString());
                 }
             }
 
@@ -2428,7 +2440,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     handleNavbar(appCMSBinder);
                                 }
                             } catch (IllegalStateException e) {
-                                //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                             }
                             break;
 
@@ -2445,6 +2457,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             break;
                     }
                 } catch (Exception e) {
+                    Log.e(TAG, "" + e.toString());
+
                 }
             }
 
@@ -2605,7 +2619,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {
                             appCMSPresenter.launchNavigationPage();
                         } else if (navigationTabTag.getPageId().equalsIgnoreCase("TEAMS") ||
-                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS")) {
+                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS") || navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAM")) {
                             appCMSPresenter.launchTeamNavPage();
                         } else if (navigationTabTag.getPageId().equals("Search Screen") ||
                                 navigationTabTag.getTabBar().getDisplayedPath().equals("Search Screen")) {
@@ -2801,6 +2815,46 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             }, appCMSBinder.getPagePath());
+        } else if (appCMSPresenter.isEventPage(appCMSBinder.getPageId())) {
+            String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+            boolean usePageIdQueryParam = true;
+            if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName()) ||
+                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())) {
+                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
+                usePageIdQueryParam = false;
+            }
+
+            appCMSPresenter.getEventsPageRefreshData(appCmsPageApiAction -> {
+                if (appCmsPageApiAction != null) {
+                    Log.w(TAG, "Retrieved page content");
+                    if (appCmsPageApiAction != null) {
+                        appCMSBinder.updateAppCMSPageAPI(appCmsPageApiAction);
+                    }
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            }, "", appCMSBinder.getPagePath());
+        } else if (appCMSPresenter.isSchedulePage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getScheduleRefreshData(appCMSPlaylistResultAction -> {
+                if (appCMSPlaylistResultAction != null) {
+                    AppCMSPageAPI pageAPI =
+                            appCMSPresenter.convertToMonthlyData(appCMSPlaylistResultAction);
+//                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+//                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(pageAPI);
+
+                    //Log.d(TAG, "Updated watched history for loaded displays");
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            }, appCMSBinder.getPagePath());
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
@@ -2977,6 +3031,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             reportFullyDrawn();
         } catch (Exception e) {
+            Log.e(TAG, "" + e.toString());
 
         }
     }
@@ -3006,7 +3061,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     CastServiceProvider.getInstance(this).showIntroOverLay();
                 }
             } catch (Exception e) {
-                //
+                Log.e(TAG, "" + e.toString());
+
             }
         }
         if (CastServiceProvider.getInstance(this).shouldCastMiniControllerVisible()) {
@@ -3036,7 +3092,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.setCurrentMediaRouteButtonParent((ViewGroup) mMediaRouteButton.getParent());
             }
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+            Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
     }
 
@@ -3060,7 +3116,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
             } catch (Exception e) {
-                //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
 
             try {
@@ -3122,8 +3178,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getPageName() != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
 
-        } else{
-            if (appCMSPresenter.videoPlayerView != null ) {
+        } else {
+            if (appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
             }
         }/*else {
@@ -3259,38 +3315,38 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void startFreeTrialTool() {
-        if(appCMSPresenter != null &&
-                appCMSPresenter.isAppSVOD()){
-        int buttonColor, textColor;
+        if (appCMSPresenter != null &&
+                appCMSPresenter.isAppSVOD()) {
+            int buttonColor, textColor;
 
-        buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
-        textColor = appCMSPresenter.getGeneralTextColor();
+            buttonColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            textColor = appCMSPresenter.getGeneralTextColor();
 
-        appCMSNavFreeTrialTool.setTextColor(textColor);
-        appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
-        if (appCMSPresenter.getNavigation() != null &&
-                appCMSPresenter.getNavigation().getSettings() != null &&
-                appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
-                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
-                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
-            if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
-                    appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
+            appCMSNavFreeTrialTool.setTextColor(textColor);
+            appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
+            if (appCMSPresenter.getNavigation() != null &&
+                    appCMSPresenter.getNavigation().getSettings() != null &&
+                    appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                    appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
+                    appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
+                if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
-                        content.length(), 0);
-                appCMSNavFreeTrialTool.setText(content);
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
+                            content.length(), 0);
+                    appCMSNavFreeTrialTool.setText(content);
+                }
             }
+            appCMSNavFreeTrialTool.setOnClickListener(v -> {
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                    appCMSPresenter.navigateToSubscriptionPlansPage(true);
+                }
+            });
+
         }
-        appCMSNavFreeTrialTool.setOnClickListener(v -> {
-            if (appCMSPresenter != null) {
-                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                appCMSPresenter.navigateToSubscriptionPlansPage(true);
-            }
-        });
-
-    }
 
     }
 
