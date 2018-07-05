@@ -37,6 +37,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.playback.AudioCastPlayback;
 import com.viewlift.Audio.playback.LocalPlayback;
 import com.viewlift.Audio.playback.Playback;
@@ -89,6 +91,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     Playback playback;
     ConnectivityManager connectivityManager;
     BroadcastReceiver networkConnectedReceiver;
+    private boolean mServiceInStartedState;
 
     @Override
     public void onCreate() {
@@ -102,29 +105,29 @@ public class MusicService extends MediaBrowserServiceCompat implements
         castPlayback = AudioCastPlayback.getInstance(MusicService.this, callBackPlaybackListener);
 
         //switch playback instance to local or casting playback based on casting device status
-
         try {
-            CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
-                    .getCurrentCastSession();
-            if (castSession != null && castSession.isConnected()) {
-                isCastConnected = true;
-                playback = castPlayback;
-            } else {
-                isCastConnected = false;
-                playback = localPlayback;
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+            if (resultCode == ConnectionResult.SUCCESS) {
+                CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                        .getCurrentCastSession();
+                if (castSession != null && castSession.isConnected()) {
+                    isCastConnected = true;
+                    playback = castPlayback;
+                } else {
+                    isCastConnected = false;
+                    playback = localPlayback;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             isCastConnected = false;
             playback = localPlayback;
-
         }
-
 
         // Start a new MediaSession
         mSession = new MediaSessionCompat(this, "MusicService");
-
         // create mPlaybackManager instance to manage audio between different services
         mPlaybackManager = new PlaybackManager(this,
                 playback, getApplicationContext(), callBackPlaybackListener, mSession);
@@ -136,7 +139,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                         MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
 
         mSessionExtras = new Bundle();
         CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
@@ -229,6 +231,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // nothing is playing.
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+        mServiceInStartedState = false;
         return START_STICKY;
     }
 
@@ -309,12 +312,18 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onPlaybackStart() {
-        mSession.setActive(true);
+
+        if (!mSession.isActive()) {
+            mSession.setActive(true);
+        }
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
         //The startService() method now throws an IllegalStateException if an app targeting Android 8.0
-        Utils.startService(getApplicationContext(),new Intent(getApplicationContext(), MusicService.class));
+        if(!mServiceInStartedState) {
+            mServiceInStartedState = true;
+            Utils.startService(getApplicationContext(), new Intent(getApplicationContext(), MusicService.class));
+        }
     }
 
     @Override
@@ -333,9 +342,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onPlaybackStop() {
-        System.out.println("TAsk Stopped stop on playbackstop");
-
-        mSession.setActive(false);
         // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
         // potentially stopping the service.
         mDelayedStopHandler.removeCallbacksAndMessages(null);
@@ -347,9 +353,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onPlaybackPause() {
         // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
         // potentially stopping the service.
+        if(mPlaybackManager != null && mPlaybackManager.getPlayback() != null)
+           mPlaybackManager.getPlayback().pause();
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-        stopForeground(true);
     }
 
     @Override
@@ -422,7 +429,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
                 stopNotification();
                 stopSelf();
-
             }
         }
     }
