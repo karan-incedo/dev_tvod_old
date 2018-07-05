@@ -185,6 +185,8 @@
                 }
               },
               "type": "image",
+              "isVisibleForTablet": true,
+              "isVisibleForPhone": false,
               "key": "thumbnailImage"
             },
             {
