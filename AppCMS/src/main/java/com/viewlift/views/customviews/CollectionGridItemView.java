@@ -938,16 +938,16 @@ public class CollectionGridItemView extends BaseView {
                 if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                         !TextUtils.isEmpty(data.getGist().getTitle())) {
                     ((TextView) view).setText(data.getGist().getTitle());
-
+                    if (childComponent.getNumberOfLines() != 0) {
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    }
                     //((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     if (component != null &&
                             component.getView() != null &&
                             component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
-                        if (childComponent.getNumberOfLines() != 0) {
-                            ((TextView) view).setSingleLine(false);
-                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        }
+
                         if (BaseView.isTablet(view.getContext())) {
                             if (isLandscape(getContext()) == true) {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
