@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -359,6 +360,9 @@ public class CustomWebView extends AppCMSAdvancedWebView {
         @Override
         public void onShowCustomView(View view, CustomViewCallback callback) {
 
+            new Handler().postDelayed(() -> {
+                appcmsPresenter.restrictLandscapeOnly();
+            }, 500);
             mContentView = (RelativeLayout) context.findViewById(R.id.app_cms_parent_view);
             if (mWebFbPlayerView == null) {
                 mWebFbPlayerView = new FrameLayout(context);
