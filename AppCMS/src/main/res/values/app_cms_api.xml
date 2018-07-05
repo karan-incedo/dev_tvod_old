@@ -751,6 +751,7 @@
     <string name="app_cms_delete_single_watchlist_action">deleteSingleItemWatchlist</string>
     <string name="app_cms_delete_single_history_action">deleteSingleItemHistory</string>
     <!--video content type-->
+    <string name="content_type_event">EVENT</string>
     <string name="app_cms_content_type_shows">SHOW</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_content_type_episode">EPISODE</string>
