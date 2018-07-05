@@ -1,39 +1,43 @@
 {
   "project_info": {
-    "project_number": "865343550766",
-    "firebase_url": "https://professional-fighters-league.firebaseio.com",
-    "project_id": "professional-fighters-league",
-    "storage_bucket": "professional-fighters-league.appspot.com"
+    "project_number": "525148171038",
+    "firebase_url": "https://hoichoi-1c6af.firebaseio.com",
+    "project_id": "hoichoi-1c6af",
+    "storage_bucket": "hoichoi-1c6af.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:865343550766:android:9665cd9029c03915",
+        "mobilesdk_app_id": "1:525148171038:android:1518edc0290a20d1",
         "android_client_info": {
-          "package_name": "com.viewlift.pfl"
+          "package_name": "com.viewlift.hoichoi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "865343550766-7b80mav9crb1l6h2f0veesj7u3a7ngme.apps.googleusercontent.com",
+          "client_id": "525148171038-rq5qn2l9hljt73bhemt3e7a5k9h4vr5f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.viewlift.pfl",
-            "certificate_hash": "e53eaccc550e22fe4a629683162c24853c29a4e1"
+            "package_name": "com.viewlift.hoichoi",
+            "certificate_hash": "95fa6a05b3135c752dbb511cde3537a750fbddce"
           }
         },
         {
-          "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "525148171038-1ctc69tbojleakk9l4tlq6vhapmh6qq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.viewlift.hoichoi",
+            "certificate_hash": "11af64440dd8648e5fed14370e7e638f44f3c5d2"
+          }
         },
         {
-          "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
+          "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCj1MLHK89KDQ9uXa2Hz0qCjycoz_Zj1lE"
+          "current_key": "AIzaSyAI3iLHa00xKudgoBr7B0xTmXxwyxYnvUc"
         }
       ],
       "services": {
@@ -44,7 +48,65 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
+              "client_id": "525148171038-da7vav95ripsg807mp1i985rv91hf2eu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.svf.mawja"
+              }
+            },
+            {
+              "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66550532779:android:47ef18d279334d99",
+        "android_client_info": {
+          "package_name": "com.mse.monumentalnetworks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525148171038-uctag4gitbjb5ba4puffs6j7271su1d7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "air.com.snagfilms",
+            "certificate_hash": "11af64440dd8648e5fed14370e7e638f44f3c5d2"
+          }
+        },
+        {
+          "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI3iLHa00xKudgoBr7B0xTmXxwyxYnvUc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525148171038-da7vav95ripsg807mp1i985rv91hf2eu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.svf.mawja"
+              }
+            },
+            {
+              "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
