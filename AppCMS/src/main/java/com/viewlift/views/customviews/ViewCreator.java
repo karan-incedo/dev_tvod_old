@@ -1884,7 +1884,7 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(14);
                 } else*/
-                if (moduleInfo.getBlockName().contains("imageTextRow02")) {
+                /*if (moduleInfo.getBlockName().contains("imageTextRow02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
@@ -1894,7 +1894,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }  else if (moduleInfo.getBlockName().contains("showDetail01")) {
+                }  else */if (moduleInfo.getBlockName().contains("showDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);

@@ -334,7 +334,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
                                             appCMSSignedURLResult.getKeyPairId());
                                 }
                             });
-                        },null);
+                        },null,false);
                     }
                 }
             };
@@ -1135,7 +1135,7 @@ public class AppCMSInnerPlayerFragment extends Fragment
                         }
                     }
                 });
-            },null);
+            },null,false);
         }
     }
 

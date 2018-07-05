@@ -311,7 +311,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     setTopBarStatus();
                 }
             }
-        },null);
+        },null,false);
         videoDataId = videoId;
         sentBeaconPlay = false;
         sentBeaconFirstFrame = false;
@@ -606,7 +606,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                         relatedVideoId
                                 );
 
-                            },null);
+                            },null,false);
                         }else {
                             setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
                         }
@@ -1558,7 +1558,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
                 setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
 
-            }},null);
+            }},null,false);
     }
 
     public void initiateStreamingId(){

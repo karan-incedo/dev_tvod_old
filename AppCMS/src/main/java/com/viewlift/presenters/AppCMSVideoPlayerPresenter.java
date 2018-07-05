@@ -323,7 +323,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                                             appCMSSignedURLResult.getKeyPairId());
                                 }
                             });
-                        },null);
+                        },null,false);
                     }
                 }
             };
@@ -831,7 +831,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                                 }
                             }
                         });
-                    },null);
+                    },null,false);
         }
     }
 
