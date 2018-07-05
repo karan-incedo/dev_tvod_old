@@ -220,7 +220,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        final String action = intent.getAction();
+         String action = intent.getAction();
+
+        /*if(mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED){
+            action=ACTION_PLAY;
+        }else if(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING){
+            action=ACTION_PAUSE;
+        }*/
         switch (action) {
             case ACTION_PAUSE:
                 mTransportControls.pause();
@@ -371,8 +377,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final String label;
         final int icon;
         final PendingIntent intent;
-        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING || mPlaybackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-            System.out.println("State media playing");
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.notification_pause;
             intent = mPauseIntent;

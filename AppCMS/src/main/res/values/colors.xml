@@ -16,4 +16,5 @@
     <color name="color_white">#ffffff</color>
     <color name="splash_progress_color">@color/colorAccent</color>
     <color name="color_grey">#7a7a7a</color>
+
 </resources>

@@ -162,7 +162,7 @@ public class TVPageView extends FrameLayout {
                 && appCMSPageUI.getModuleList() != null
                 && !appCMSPageUI.getModuleList().isEmpty()) {
             for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
-                if (moduleList.getType().toLowerCase().contains("VideoPlayerWithInfo".toLowerCase())) {
+                if (null != moduleList.getType() && moduleList.getType().toLowerCase().contains("VideoPlayerWithInfo".toLowerCase())) {
                     isVideoDetailPage = true;
                     break;
                 }
