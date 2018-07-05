@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "865343550766",
+    "firebase_url": "https://professional-fighters-league.firebaseio.com",
+    "project_id": "professional-fighters-league",
+    "storage_bucket": "professional-fighters-league.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865343550766:android:9665cd9029c03915",
+        "android_client_info": {
+          "package_name": "com.viewlift.pfl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865343550766-7b80mav9crb1l6h2f0veesj7u3a7ngme.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.viewlift.pfl",
+            "certificate_hash": "e53eaccc550e22fe4a629683162c24853c29a4e1"
+          }
+        },
+        {
+          "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj1MLHK89KDQ9uXa2Hz0qCjycoz_Zj1lE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865343550766-k09m48jo34jg4rv33u8glqk4qt8o0voc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

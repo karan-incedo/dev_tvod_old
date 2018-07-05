@@ -417,11 +417,13 @@ public class AppCMSPlayVideoFragment extends Fragment
                                         videoPlayerView.disableController();
                                     }
                                     videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                                    showEntitlementDialog = true;
                                     if (appCMSPresenter.isUserLoggedIn()) {
                                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
                                                 () -> {
                                                     if (onClosePlayerEvent != null) {
                                                         onClosePlayerEvent.closePlayer();
+                                                        showEntitlementDialog = false;
                                                     }
                                                 });
                                     } else {
@@ -429,6 +431,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                 () -> {
                                                     if (onClosePlayerEvent != null) {
                                                         onClosePlayerEvent.closePlayer();
+                                                        showEntitlementDialog = false;
                                                     }
                                                 });
                                     }
@@ -1356,7 +1359,11 @@ public class AppCMSPlayVideoFragment extends Fragment
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
             videoPlayerMainContainer.setVisibility(View.VISIBLE);
-            videoPlayerView.startPlayer(true);
+            if(!showEntitlementDialog) {
+                videoPlayerView.startPlayer(true);
+            }else{
+                videoPlayerView.pausePlayer();
+            }
         }
     }
 
