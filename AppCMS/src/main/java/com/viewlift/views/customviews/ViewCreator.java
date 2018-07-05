@@ -3592,7 +3592,8 @@ public class ViewCreator {
                 } else if (moduleAPI != null && (jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
-                        jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03||
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY)
                         && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
                     ((Button) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
@@ -4485,8 +4486,11 @@ public class ViewCreator {
                                 jsonValueKeyMap.get(moduleAPI.getModuleType())
                                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
                                 jsonValueKeyMap.get(moduleAPI.getModuleType())
-                                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
+                                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03||
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                        == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY
                         )) {
+                            componentViewResult.componentView.setId(R.id.autoplay_cancel_button);
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (!appCMSPresenter.sendCloseAutoplayAction(null,
                                         true,
@@ -5168,8 +5172,9 @@ public class ViewCreator {
 
                             case PAGE_API_DESCRIPTION:
                                 if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getRawText())) {
-                                    Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
-                                    ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
+                                    //Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
+                                    String htmlStyleRegex = "<style([\\s\\S]+?)</style>";
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex, "")));
                                     ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                                 }
                                 break;
@@ -6192,7 +6197,9 @@ public class ViewCreator {
                             jsonValueKeyMap.get(moduleAPI.getModuleType())
                                     == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
                             jsonValueKeyMap.get(moduleAPI.getModuleType())
-                                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
+                                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03 ||
+                            jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                    == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY
                     )) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
@@ -6457,6 +6464,7 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MODULE_KEY_01:
                     case PAGE_AUTOPLAY_MODULE_KEY_02:
                     case PAGE_AUTOPLAY_MODULE_KEY_03:
+                    case PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY:
                     case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
                     case PAGE_DOWNLOAD_01_MODULE_KEY:
                     case PAGE_DOWNLOAD_02_MODULE_KEY:
