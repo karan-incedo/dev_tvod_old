@@ -540,6 +540,8 @@ public class AppCmsNavigationFragment extends Fragment {
                     holder.navImageView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
                     holder.navImageView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
                 }
+            }else{
+                holder.navImageView.setImageResource(android.R.color.transparent);
             }
             if (null != mSelectedPageId) {
                 if (null != primary.getPageId() && primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
@@ -842,9 +844,14 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemView.setTextSize(getResources().getDimension(R.dimen.appcms_tv_leftnavigation_textSize));
 
             holder.navIconView.setImageResource(Utils.getIcon(primary.getIcon(),mContext));
-            if(null != holder.navIconView.getDrawable()) {
-                holder.navIconView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
-                holder.navIconView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+            if (primary.getIcon() != null) {
+                holder.navIconView.setImageResource(Utils.getIcon(primary.getIcon(),mContext));
+                if(null != holder.navIconView.getDrawable()) {
+                    holder.navIconView.getDrawable().setTint(Utils.getComplimentColor(appCmsPresenter.getGeneralBackgroundColor()));
+                    holder.navIconView.getDrawable().setTintMode(PorterDuff.Mode.MULTIPLY);
+                }
+            }else{
+                holder.navIconView.setImageResource(android.R.color.transparent);
             }
 
             if (null != mSelectedPageId) {
