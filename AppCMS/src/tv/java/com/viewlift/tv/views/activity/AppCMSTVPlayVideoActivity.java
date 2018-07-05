@@ -239,14 +239,14 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                     } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_fast_forward))) {
                         if (appCMSPlayVideoFragment != null) {
                             long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
-                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition + ffAndRewindDelta));
+                            Log.d(TAG, "ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition + ffAndRewindDelta));
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(currentPosition + ffAndRewindDelta);
                         }
                     } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_rewind))) {
                         if (appCMSPlayVideoFragment != null) {
                             long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
-                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition - ffAndRewindDelta));
+                            Log.d(TAG, "ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition - ffAndRewindDelta));
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition() - ffAndRewindDelta);
                         }
@@ -399,7 +399,6 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        hlsUrl = "https://vhoichoi.viewlift.com/encodes/trailers/byomkesh_s2_trailer_high.mp4?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmhvaWNob2kudmlld2xpZnQuY29tL2VuY29kZXMvdHJhaWxlcnMvYnlvbWtlc2hfczJfdHJhaWxlcl9oaWdoLm1wNCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTUxNTU4NTYwOX0sIklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIwLjAuMC4wLzAifX19XX0_&Signature=e-Vle9RV0LOcr7JkuK1fqlhAld0Ef5W3kRH798f8YOaKT~JUCXtLdx9UcO2McXuqi4jyNWiis9OEcJqNFMPUIIZYBxa78lRH9rvzstPOPPSpk6wErymPiwey2ZWUq1E1vog6a7MwjzeWTEuyCLw6ZEXt~hyd2DGO3z3PM5E0U8HuhrcW9VcO2lgya9A5BFZidwmVnAu4VKLyUQKY1~LQImS7vqo8Va0zGl7LkglpZCEIbWZCgcVsOtI4SJBaWY8oNaA34XebfOnhhons8-LWM1hOY0dCmcr1NgIFaJveiFCqctA3qY~5IjAmXV7s6Ddahp69yHcNDwg2SuTmDE~reA__&Key-Pair-Id=APKAISSG7ZCPKHJZAD4Q";
         appCMSPlayVideoFragment =
                 AppCMSPlayVideoFragment.newInstance(this,
                         null,
