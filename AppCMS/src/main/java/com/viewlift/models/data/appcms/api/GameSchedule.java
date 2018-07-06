@@ -15,7 +15,7 @@ public class GameSchedule implements Serializable {
 
     @SerializedName("venue")
     @Expose
-    String venue;
+    Object venue;
 
     @SerializedName("gameTimeZone")
     @Expose
@@ -72,11 +72,11 @@ public class GameSchedule implements Serializable {
         this.id = id;
     }
 
-    public String getVenue() {
+    public Object getVenue() {
         return venue;
     }
 
-    public void setVenue(String venue) {
+    public void setVenue(Object venue) {
         this.venue = venue;
     }
 
