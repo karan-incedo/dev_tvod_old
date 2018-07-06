@@ -91,6 +91,7 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
+        appCMSPresenter.setSinglePlanFeatureAvailable(true);
     }
 
 
@@ -187,6 +188,8 @@ public class AppCMSBenefitPlanPageAdapter extends RecyclerView.Adapter<AppCMSBen
 
     @Override
     public int getItemCount() {
+        if (settings.getItems() == null)
+            return 0;
         return settings.getItems().size() + 1;
     }
 

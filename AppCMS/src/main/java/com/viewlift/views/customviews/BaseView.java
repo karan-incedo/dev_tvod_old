@@ -22,6 +22,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
 
 import java.util.Map;
@@ -1496,25 +1497,6 @@ public abstract class BaseView extends FrameLayout {
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                     layoutParams.setMargins(0, tm, 0, bm);
-                    /*if (!isLandscape(getContext())) {
-                        TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                        if (tabletPortrait.getLeftMargin() != 0f) {
-                            lm = Math.round(DEVICE_WIDTH * (tabletPortrait.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
-                        }
-                        if (tabletPortrait.getRightMargin() != 0f) {
-                            rm = Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
-                        }
-                    }
-                    if (isLandscape(getContext())) {
-                        TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                        if (tabletLandscape.getLeftMargin() != 0f) {
-                            lm = Math.round(DEVICE_WIDTH * (tabletLandscape.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
-                        }
-                        if (tabletLandscape.getRightMargin() != 0f) {
-                            rm = Math.round(DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
-                        }
-                    }
-                    layoutParams.setMargins(lm, tm, rm, bm);*/
                 } else {
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -1526,6 +1508,11 @@ public abstract class BaseView extends FrameLayout {
                         rm = Math.round(DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
                     }
                     layoutParams.setMargins(lm, tm, rm, bm);
+                    if (appCMSPresenter != null && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        layoutParams.setMargins(0, tm, 0, bm);
+                    }
                 }
             }/*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                 layoutParams.height=BaseView.getDeviceHeight();
@@ -1669,5 +1656,11 @@ public abstract class BaseView extends FrameLayout {
             }
         }
         return -1.0f;
+    }
+
+    static AppCMSPresenter appCMSPresenter;
+
+    public static void setPreseneter(AppCMSPresenter presenter) {
+        appCMSPresenter = presenter;
     }
 }

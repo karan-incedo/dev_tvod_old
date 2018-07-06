@@ -109,22 +109,26 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        if (adapterData.size() == 1 && !singlePlanViewShown && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
-            TextView singlePlanView = new TextView(mContext);
-            singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-            singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
-            singlePlanView.setGravity(Gravity.CENTER);
-            singlePlanView = setSinglePlan(singlePlanView);
-            return new ViewHolder(singlePlanView);
+        if (adapterData.size() == 1 && !singlePlanViewShown) {
+            if (appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                TextView singlePlanView = new TextView(mContext);
+                singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
+                singlePlanView.setGravity(Gravity.CENTER);
+                singlePlanView = setSinglePlan(singlePlanView);
+                return new ViewHolder(singlePlanView);
+            }
         }
-        if (adapterData.size() == 1 && singlePlanViewShown && subscribeViewShown && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
-            TextView singlePlanView = new TextView(mContext);
-            singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-            singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
-            singlePlanView.setGravity(Gravity.RIGHT);
-            if (moduleAPI.getDescription() != null)
-                singlePlanView.setText(moduleAPI.getDescription());
-            return new ViewHolder(singlePlanView);
+        if (adapterData.size() == 1 && singlePlanViewShown && subscribeViewShown) {
+            if (appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                TextView singlePlanView = new TextView(mContext);
+                singlePlanView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                singlePlanView.setTextColor(appCMSPresenter.getGeneralTextColor());
+                singlePlanView.setGravity(Gravity.RIGHT);
+                if (moduleAPI.getDescription() != null)
+                    singlePlanView.setText(moduleAPI.getDescription());
+                return new ViewHolder(singlePlanView);
+            }
         }
 
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
@@ -276,12 +280,14 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
 
     @Override
     public int getItemCount() {
-        if (adapterData != null && adapterData.size() != 0 && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
-            if (adapterData.size() == 1) {
-                return 3;
-            } else {
+        if (adapterData != null && adapterData.size() != 0) {
+            if (appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                if (adapterData.size() == 1)
+                    return 3;
+                else
+                    return adapterData.size();
+            } else
                 return adapterData.size();
-            }
         }
         return 0;
     }

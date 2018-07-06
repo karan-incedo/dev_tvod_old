@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -1894,7 +1895,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }  else */if (moduleInfo.getBlockName().contains("showDetail01")) {
+                }  else*/ if (moduleInfo.getBlockName().contains("showDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
@@ -2002,7 +2003,7 @@ public class ViewCreator {
                 if (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_02_KEY) {
                     moduleAPI = new Module();
                     moduleAPI.setId(module.getId());
-                    appCMSPresenter.setSinglePlanFeatureAvailable(true);
+
                 }
                 if (moduleAPI != null) {
                     AppCMSUIKeyType viewType = jsonValueKeyMap.get(module.getView());
@@ -2623,6 +2624,13 @@ public class ViewCreator {
                     } else {
                         (componentViewResult.componentView) = appCMSPresenter.getDownlistScreenCache();
                     }*/
+                    DefaultItemAnimator animator = new DefaultItemAnimator() {
+                        @Override
+                        public boolean canReuseUpdatedViewHolder(RecyclerView.ViewHolder viewHolder) {
+                            return true;
+                        }
+                    };
+                    ((RecyclerView) componentViewResult.componentView).setItemAnimator(animator);
                     componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
                     if (pageView != null) {

@@ -265,6 +265,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         setSelectedStreamingQualityIndex();
                     }
                 }
+                if(availableStreamingQualities.size()==0){
+                    currentStreamingQualitySelector.setVisibility(GONE);
+                }
             }
         } catch (Exception e) {
         }

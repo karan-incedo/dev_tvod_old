@@ -445,10 +445,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                                 R.drawable.ic_deleteicon));
                                                         finalDeleteDownloadButton.getBackground().setTint(appCMSPresenter.getBrandPrimaryCtaColor());
                                                         finalDeleteDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                                                        finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
-                                                                R.drawable.ic_deleteicon));
                                                         finalDeleteDownloadButton.invalidate();
-
+                                                        finalDeleteDownloadButton.bringToFront();
                                                         if (contentDatum.getGist().getMediaType() != null && contentDatum.getGist().getMediaType().equalsIgnoreCase(mContext.getResources().getString(R.string.media_type_audio))) {
                                                             contentDatum.getGist().setPosterImageUrl(userVideoDownloadStatus.getPosterUri());
                                                             loadImage(mContext, userVideoDownloadStatus.getPosterUri(), finalThumbnailImage);
@@ -464,7 +462,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                             finalVideoSize.setVisibility(View.GONE);
                                                         }
                                                         contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
-
                                                         try {
                                                             if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
                                                                     contentDatum.getContentDetails() != null &&
@@ -474,6 +471,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         } catch (Exception e) {
                                                             //Log.e(TAG, e.getMessage());
                                                         }
+                                                        contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
+                                                        notifyItemChanged(position);
                                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
                                                         finalDeleteDownloadButton.setImageBitmap(null);
                                                         finalDeleteDownloadButton.setBackground(ContextCompat.getDrawable(mContext,
@@ -488,7 +487,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                         finalVideoSize.setText("Cancel".toUpperCase());
 
                                                     }
-                                                    finalDeleteDownloadButton.postInvalidate();
+                                                    finalDeleteDownloadButton.bringToFront();
                                                     contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                                     notifyItemChanged(position);
                                                 }
@@ -544,7 +543,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             deleteDownloadButton.setBackground(ContextCompat.getDrawable(componentView.getContext(),
                                     R.drawable.ic_download_queued));
                             videoSizeText.setText("Cancel".toUpperCase());
-
+                            deleteDownloadButton.bringToFront();
                             break;
                         default:
                             Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());

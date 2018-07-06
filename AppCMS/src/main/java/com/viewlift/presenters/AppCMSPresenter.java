@@ -1049,7 +1049,7 @@ public class AppCMSPresenter {
         this.purchaseFromRestore = false;
 
         this.pageIdToMetaPageMap = new HashMap<>();
-
+        BaseView.setPreseneter(this);
         clearMaps();
         try {
             this.realmController = RealmController.with(currentActivity);
@@ -4626,7 +4626,7 @@ public class AppCMSPresenter {
                         }
                     });
                 }
-            }, null,false);
+            }, null, false);
 
 
         } catch (Exception e) {
@@ -6859,7 +6859,7 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url,
                                              AppCMSVideoPageBinder binder, Action1<Object> action1,
                                              AppCMSPageUI appCMSPageUI) {
-        GetAppCMSVideoEntitlementAsyncTask.Params params =
+        /*GetAppCMSVideoEntitlementAsyncTask.Params params =
                 new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
                         .apiKey(apikey)
@@ -6933,9 +6933,9 @@ public class AppCMSPresenter {
                     action1.call(null);
                 }
             }
-        }).execute(params);
+        }).execute(params);*/
 
-        /*GetAppCMSContentDetailTask.Params params =
+        GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
                         .apiKey(apikey).build();
@@ -6989,7 +6989,7 @@ public class AppCMSPresenter {
                             action1.call(null);
                         }
                     }
-                }).execute(params);*/
+                }).execute(params);
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -9665,6 +9665,7 @@ public class AppCMSPresenter {
                 closeSoftKeyboard();
                 sendCloseOthersAction(null, true, true);
                 navigateToHomePage();
+                cancelAlertDialog();
             } else if (!networkConnected && !downloadsAvailableForApp()) {
                 // Because we do not have Download functionality in App. So we navigate to Error Page Screen.
                 showDialog(DialogType.NETWORK, null, true,
@@ -15621,13 +15622,13 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
                 // TODO: uncomment for entitlement API
-                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                /*url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        filmId);
-                /*url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                        filmId);*/
+                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
-                        appCMSSite.getGist().getSiteInternalName());*/
+                        appCMSSite.getGist().getSiteInternalName());
             }
         } else {
             realmController = RealmController.with(currentActivity);
@@ -16234,7 +16235,7 @@ public class AppCMSPresenter {
                         currentlyPlayingIndex,
                         relatedVideoIds,
                         action0);
-            }, null,false);
+            }, null, false);
         }
 
     }
@@ -16989,7 +16990,7 @@ public class AppCMSPresenter {
 
                 }
             }
-        }, null,false);
+        }, null, false);
     }
 
     public void setMoreIconAvailable() {
