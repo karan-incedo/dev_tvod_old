@@ -362,7 +362,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
                     FrameLayout.LayoutParams.MATCH_PARENT);
             new Handler().postDelayed(() -> {
                 appcmsPresenter.restrictLandscapeOnly();
-            }, 500);
+            }, 200);
             mContentView = (RelativeLayout) context.findViewById(R.id.app_cms_parent_view);
             if (mWebFbPlayerView == null) {
                 mWebFbPlayerView = new FrameLayout(context);

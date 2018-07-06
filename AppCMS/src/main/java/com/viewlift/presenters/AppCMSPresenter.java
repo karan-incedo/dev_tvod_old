@@ -666,6 +666,8 @@ public class AppCMSPresenter {
     private MetaPage downloadPage;
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
+    private MetaPage rosterPage;
+
     private MetaPage watchlistPage;
     private MetaPage signupPage;
     private MetaPage privacyPolicyPage;
@@ -6874,54 +6876,7 @@ public class AppCMSPresenter {
 
         }
 
-//        if (currentActivity != null) {
-//            AppCMSPageUI appCMSPageUI = navigationPages.get(schedulePage.getPageId());
-//
-//            MetaPage metaPage = pageIdToMetaPageMap.get(schedulePage.getPageId());
-//
-//                getEventsArchieve(appCMSMain.getApiBaseUrl(),
-//                        dataId,
-//                        eventPage.getPageId(), new AppCMSEventArchieveAPIAction(true,
-//                                false,
-//                                true,
-//                                appCMSPageUI,
-//                                "",
-//                                eventPage.getPageId(),
-//                                eventPage.getPageName(),
-//                                "",
-//                                false, null) {
-//
-//                            @Override
-//                            public void call(AppCMSEventArchieveResult appCMSEventResult) {
-//                                if (appCMSEventResult != null) {
-//
-////                                                        appCMSTeamRoasterResult = new GsonBuilder().create().fromJson(
-////                                                                loadJsonFromAssets(currentActivity, "player_detail_data.json"),
-////                                                                AppCMSEventArchieveResult.class);
-//                                    Module module = null;
-//                                    if (appCMSEventResult != null) {
-//                                        pageApi = appCMSEventResult.convertToAppCMSPageModule(appCMSPageAPI);
-//                                    }
-//
-//                                } else {
-//                                    pageApi = appCMSPageAPI;
-//
-//                                }
-//
-//                                if (pageApi != null) {
-//                                    Observable.just(pageApi)
-//                                            .onErrorResumeNext(throwable -> Observable.empty())
-//                                            .subscribe(appCmsPageApiAction);
-//                                } else {
-//                                    Observable.just((AppCMSPageAPI) null)
-//                                            .onErrorResumeNext(throwable -> Observable.empty())
-//                                            .subscribe((Observer<? super AppCMSPageAPI>) pageApi);
-//                                }
-//                            }
-//                        });
-//
-//
-//        }
+
     }
 
     public void getScheduleRefreshData(final Action1<List<AppCMSScheduleResult>> appCMSScheduleResultAction, String playlistId) {
@@ -6955,6 +6910,43 @@ public class AppCMSPresenter {
                             }
                         }
                     });
+        }
+    }
+
+    public void getRosterRefreshData(final Action1<List<AppCMSRosterResult>> appCMSRosterResultAction) {
+        if (currentActivity != null) {
+            AppCMSPageUI appCMSPageUI = navigationPages.get(rosterPage.getPageId());
+
+            MetaPage metaPage = pageIdToMetaPageMap.get(rosterPage.getPageId());
+
+            {
+                getRosterPage(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        metaPage.getPageId(), new AppCMSAPIAction<AppCMSRosterResult>(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                metaPage.getPageId(),
+                                metaPage.getPageId(),
+                                metaPage.getPageName(),
+                                metaPage.getPageId(),
+                                false, null) {
+                            @Override
+                            public void call(List<AppCMSRosterResult> appCMSRosterResult) {
+                                if (appCMSRosterResult != null) {
+                                    Observable.just(appCMSRosterResult)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe(appCMSRosterResultAction);
+                                } else {
+                                    Observable.just((AppCMSScheduleResult) null)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe((Observer<? super AppCMSScheduleResult>) appCMSRosterResultAction);
+                                }
+                            }
+                        });
+            }
+
+
         }
     }
 
@@ -15371,6 +15363,12 @@ public class AppCMSPresenter {
                     new SoftReference<Object>(eventPage, referenceQueue);
                 }
 
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_FIGHTER_ROSTER_SCREEN_KEY) {
+                    rosterPage = metaPage;
+                    new SoftReference<Object>(rosterPage, referenceQueue);
+                }
+
                 int articlePageIndex = getArticlePage(metaPageList);
                 if (articlePageIndex >= 0) {
                     articlePage = metaPageList.get(articlePageIndex);
@@ -15599,7 +15597,9 @@ public class AppCMSPresenter {
     public boolean isEventPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && eventPage != null && pageId.equals(eventPage.getPageId());
     }
-
+    public boolean isRosterPage(String pageId) {
+        return !TextUtils.isEmpty(pageId) && rosterPage != null && pageId.equals(rosterPage.getPageId());
+    }
     private int getWatchlistPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())

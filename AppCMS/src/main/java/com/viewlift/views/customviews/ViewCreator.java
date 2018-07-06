@@ -1909,12 +1909,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
+                }/* else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "roster.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                }*/ else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -1930,13 +1930,13 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(12);
-                } else if (moduleInfo.getBlockName().contains("webFrame03")) {
+                } /*else if (moduleInfo.getBlockName().contains("webFrame03")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "live_fb.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if ((moduleInfo.getBlockName().contains("videoPlayerInfo01__TEMP__NO_DOWNLOADS") ||
+                } */else if ((moduleInfo.getBlockName().contains("videoPlayerInfo01__TEMP__NO_DOWNLOADS") ||
                         moduleInfo.getBlockName().contains("videoPlayerInfo01")) &&
                         (appCMSPresenter.getAppCMSMain().getInternalName().equalsIgnoreCase("failarmy") ||
                                 appCMSPresenter.getAppCMSMain().getInternalName().equalsIgnoreCase("pet-collective") ||
@@ -1972,17 +1972,17 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("eventCalendar01")) {
+                } /*else if (moduleInfo.getBlockName().contains("eventCalendar01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("personDetail02")) {
+                }*/ /*else if (moduleInfo.getBlockName().contains("personDetail02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "person_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getSettings() != null &&
+                }*/ else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
                         continue;

@@ -497,6 +497,7 @@
     <string name="app_cms_pagename_person_screen_key">Person Detail</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_eventscreen_key">Event Page</string>
+    <string name="app_cms_pagename_rosterscreen_key">Fighter Roster</string>
 
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
