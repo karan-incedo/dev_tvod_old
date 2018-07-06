@@ -19,6 +19,7 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
@@ -92,6 +93,7 @@ import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
+import org.xml.sax.XMLReader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -255,33 +257,15 @@ public class TVViewCreator {
         boolean isGrid = false;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getType())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
-                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
-                isCaurosel = true;
+                 isCaurosel = true;
+                //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
+
             } else {
                 isCaurosel = false;
             }
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
                 isGrid = true;
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray01")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component_sports_poc.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("carousel01")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_carousel.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray04")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray02")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("continueWatching01")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
-            }
-            if (module.getBlockName().equalsIgnoreCase("tray03")) {
-//                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray03.json"), ModuleList.class);
-            }
+             }
 
             if (null != module.getComponents() && module.getComponents().size() > 0) {
                 for (Component component : module.getComponents()) {
@@ -291,8 +275,7 @@ public class TVViewCreator {
             }
             return null;
         } else if (context.getResources().getString(R.string.app_cms_page_show_detail_module_key).equalsIgnoreCase(module.getView())){
-//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
-            moduleView = new ShowDetailModuleView(
+             moduleView = new ShowDetailModuleView(
                     context,
                     module,
                     moduleAPI,
@@ -490,8 +473,7 @@ public class TVViewCreator {
                             rowData.itemPosition = i;
                             listRowAdapter.add(rowData);
                         }
-                        //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
-                    }
+                     }
                     if(listRowAdapter.size() > 0)
                     mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
                 }
@@ -564,7 +546,7 @@ public class TVViewCreator {
                                 List<String> relatedVids = Utils.getRelatedVideosInShow(
                                         moduleData.getContentData().get(0).getSeason(),
                                         seasonIndex,
-                                        i);
+                                        i - 1);
                                 ContentDatum contentDatum = episodes.get(i);
                                 contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
                                 BrowseFragmentRowData rowData = new BrowseFragmentRowData();
@@ -705,6 +687,30 @@ public class TVViewCreator {
         customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
     }
 
+    class ListTagHandler implements Html.TagHandler {
+        boolean first = true;
+
+        @Override
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            try {
+                if (tag.equals("li")) {
+                    char lastChar = 0;
+                    if (output.length() > 0)
+                        lastChar = output.charAt(output.length() - 1);
+                    if (first) {
+                        if (lastChar == '\n')
+                            output.append("•  ");
+                        else
+                            output.append("\n•  ");
+                        first = false;
+                    } else {
+                        first = true;
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
 
     public void createComponentView(final Context context,
                                     final Component component,
@@ -884,13 +890,6 @@ public class TVViewCreator {
                                             null,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
-//                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                " action: " +
-//                                                component.getAction() +
-//                                                " hls URL: " +
-//                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -1576,7 +1575,7 @@ public class TVViewCreator {
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
                                 TextView textView = new TextView(context);
                                 String htmlStyleRegex = "<style([\\s\\S]+?)</style>";
-                                textView.setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex, "")), TextView.BufferType.SPANNABLE);
+                                textView.setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex, ""),null,new ListTagHandler()), TextView.BufferType.SPANNABLE);
 
                                 textView.setFocusable(true);
                                 //  componentViewResult.componentView.setTag("API_DSECRIPTION");
@@ -1833,7 +1832,7 @@ public class TVViewCreator {
                         case PAGE_SIGNUP_FOOTER_LABEL_KEY:
                             String text = context.getString(R.string.sign_up_tos_and_pp_text);
                             SpannableString spannableString = new SpannableString(text);
-                            String tosText = "terms of use";
+                            String tosText = context.getString(R.string.terms_of_use);
                             if (text.contains(tosText)) {
                                 int tosStartIndex = text.indexOf(tosText);
                                 int tosEndIndex = tosText.length() + tosStartIndex;
@@ -1859,7 +1858,7 @@ public class TVViewCreator {
                                             NavigationFooter tosNavigation = null;
                                             List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
                                             for (NavigationFooter navigationFooter1 : navigationFooter) {
-                                                if (navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")) {
+                                                if (navigationFooter1.getTitle().equalsIgnoreCase(context.getString(R.string.terms_of_service))) {
                                                     tosNavigation = navigationFooter1;
                                                     break;
                                                 }
@@ -1890,7 +1889,7 @@ public class TVViewCreator {
                                         tosEndIndex,
                                         Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                             }
-                            String ppText = "privacy policy";
+                            String ppText = context.getString(R.string.privacy_policy);
                             if (text.contains(ppText)) {
                                 int ppStartIndex = text.indexOf(ppText);
                                 int ppEndIndex = ppText.length() + ppStartIndex;
@@ -1914,7 +1913,7 @@ public class TVViewCreator {
                                             NavigationFooter tosNavigation = null;
                                             List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
                                             for (NavigationFooter navigationFooter1 : navigationFooter) {
-                                                if (navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")) {
+                                                if (navigationFooter1.getTitle().equalsIgnoreCase(context.getString(R.string.privacy_policy))) {
                                                     tosNavigation = navigationFooter1;
                                                     break;
                                                 }
@@ -2666,10 +2665,6 @@ public class TVViewCreator {
                     return moduleAPI;
                 }
             }
-
-            /*if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
-                return appCMSPageAPI.getModules().get(1);
-            }*/
         }
         return null;
     }
@@ -2702,20 +2697,16 @@ public class TVViewCreator {
                 switch (fontWeight) {
                     case PAGE_TEXT_BOLD_KEY:
                         face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                        //Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
-                        break;
+                         break;
                     case PAGE_TEXT_SEMIBOLD_KEY:
                         face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                        //Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
-                        break;
+                         break;
                     case PAGE_TEXT_EXTRABOLD_KEY:
                         face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                        //Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
-                        break;
+                         break;
                     default:
                         face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-                        //Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
-                }
+                 }
                 textView.setTypeface(face);
             }
 
@@ -2819,53 +2810,7 @@ public class TVViewCreator {
                             0,
                             null);
 
-                    /*
-                    VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
-                    String videoUrl = videoAssets.getHls();
-                    if (TextUtils.isEmpty(videoUrl)) {
-                        for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                            videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                        }
-                    }
-                    if (moduleAPI.getContentData() != null &&
-                            moduleAPI.getContentData().size() > 0 &&
-                            moduleAPI.getContentData().get(0) != null &&
-                            moduleAPI.getContentData().get(0).getGist() != null &&
-                            moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                            moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                        String[] extraData = new String[4];
-                        extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                        extraData[1] = videoUrl;
-                        extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null) {
-                            for (ClosedCaptions closedCaption :
-                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
-                                if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
-                                    extraData[3] = closedCaption.getUrl();
-                                    break;
-                                }
-                            }
-                        }
-                        if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                component.getAction(),
-                                moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                extraData,
-                                moduleAPI.getContentData().get(0),
-                                false,
-                                -1,
-                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                            appCMSPresenter.showLoadingDialog(false);
-                            //Log.e(TAG, "Could not launch action: " +
-//                                                        " permalink: " +
-//                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                        " action: " +
-//                                                        component.getAction() +
-//                                                        " video URL: " +
-//                                                        videoUrl);
-                        }
-                    }
-                */} else {
+                   } else {
                     appCMSPresenter.openTVErrorDialog(context.getString(R.string.api_error_message,
                             context.getString(R.string.app_name)),
                             context.getString(R.string.app_connectivity_dialog_title), false);

@@ -1450,7 +1450,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         startActivity(new Intent(this, launchActivity));
                         finish();
                     } else {
-                        if (checkPlayServices()) {
+                        if (checkPlayServices() && Utils.isNetworkAvailable(this)) {
                             Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
                                     .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
                                             Intent.FLAG_ACTIVITY_CLEAR_TOP);

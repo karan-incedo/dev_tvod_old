@@ -134,14 +134,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private ScheduledFuture<?> mScheduleFuture;
     private PlaybackStateCompat mLastPlaybackState;
     boolean isDialogVisible = false;
-    int connectionTry = 0;
 
-    private final Runnable mUpdateProgressTask = new Runnable() {
-        @Override
-        public void run() {
-            updateProgress();
-        }
-    };
+    private final Runnable mUpdateProgressTask = () -> updateProgress();
+
     private AppCMSPresenter appCMSPresenter;
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -463,20 +458,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 getActivity(), token);
-//        if (mediaController.getMetadata() == null) {
-//            if (connectionTry == 0 && mMediaBrowser != null ) {
-//                try {
-//                    mMediaBrowser.disconnect();
-//                    mMediaBrowser.connect();
-//                }catch(Exception e){
-//
-//                }
-//            } else {
-//                getActivity().finish();
-//            }
-//            connectionTry++;
-//            return;
-//        }
+
         MediaControllerCompat.setMediaController(getActivity(), mediaController);
         mediaController.registerCallback(mCallback);
         PlaybackStateCompat state = null;
@@ -517,7 +499,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                 updateDuration(description);
                 onUpdateMetaChange.updateMetaData(description);
                 System.out.println("Decription not null");
-                Utils.startService(getActivity(),new Intent(getContext(), MusicService.class));
             }
         }
     }
@@ -526,12 +507,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         stopSeekbarUpdate();
         if (!mExecutorService.isShutdown()) {
             mScheduleFuture = mExecutorService.scheduleAtFixedRate(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mHandler.post(mUpdateProgressTask);
-                        }
-                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    () -> mHandler.post(mUpdateProgressTask), PROGRESS_UPDATE_INITIAL_INTERVAL,
                     PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
         }
     }
@@ -581,7 +557,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             mCurrentArtUrl = "";
         } else {
             mCurrentArtUrl = description.getIconUri().toString();
-
         }
 
 
@@ -644,15 +619,12 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                         appCMSPresenter.isDialogShown = false;
                     }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
-                            new Action0() {
-                                @Override
-                                public void call() {
-                                    isDialogVisible = false;
-                                    if (getActivity() != null) {
-                                        getActivity().finish();
-                                        appCMSPresenter.stopAudioServices();
-                                        stopSeekbarUpdate();
-                                    }
+                            () -> {
+                                isDialogVisible = false;
+                                if (getActivity() != null) {
+                                    getActivity().finish();
+                                    appCMSPresenter.stopAudioServices();
+                                    stopSeekbarUpdate();
                                 }
                             });
                 } else {
@@ -666,16 +638,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
                     }
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO_PREVIEW,
-                            new Action0() {
-                                @Override
-                                public void call() {
-                                    isDialogVisible = false;
-                                    if (getActivity() != null) {
-                                        getActivity().finish();
-                                        appCMSPresenter.stopAudioServices();
-                                        stopSeekbarUpdate();
+                            () -> {
+                                isDialogVisible = false;
+                                if (getActivity() != null) {
+                                    getActivity().finish();
+                                    appCMSPresenter.stopAudioServices();
+                                    stopSeekbarUpdate();
 
-                                    }
                                 }
                             });
                 }
@@ -711,9 +680,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         } else {
             extra_info.setVisibility(View.GONE);
         }
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-        MediaMetadataCompat metadata = controller.getMetadata();
-//        checkSubscription(metadata);
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 playPauseTrack.setVisibility(VISIBLE);
