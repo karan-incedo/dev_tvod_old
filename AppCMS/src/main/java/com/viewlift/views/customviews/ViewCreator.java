@@ -1919,7 +1919,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } else if (moduleInfo.getBlockName().contains("tray02")) {
+                } else if (moduleInfo.getBlockName().contains("tray02") && !(appCMSPresenter.getAppCMSMain() != null &&
+                        appCMSPresenter.getAppCMSMain().getDomainName().equalsIgnoreCase("www.hoichoi.tv"))) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "photo_galery.json"),
                             AppCMSPageUI.class);
@@ -3643,6 +3644,9 @@ public class ViewCreator {
                             (componentViewResult.componentView).setVisibility(View.GONE);
 
                         }
+//                        (componentViewResult.componentView).setVisibility(View.VISIBLE);
+//                        (componentViewResult.componentView).setBackgroundResource(R.drawable.watch_live_button);
+
                         (componentViewResult.componentView).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -5437,7 +5441,25 @@ public class ViewCreator {
 
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                                 }
+                                //Now check if device is phone and watchlive button is visible than hide gaem datae and game time view
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent() != null && !BaseView.isTablet(context)) {
 
+                                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                                    if (remainingTime > 0) {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.VISIBLE);
+                                    } else if ((moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent().equalsIgnoreCase("1")) || (remainingTime <= 0 && moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent().equalsIgnoreCase("1"))) {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.GONE);
+
+                                    } else {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.VISIBLE);
+                                    }
+//
+                                }
                                 break;
 
                             case PAGE_VENUE_LABEL_KEY:
@@ -5451,6 +5473,25 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0)
                                             .getGist().getEventSchedule().get(0).getVenue().toString());
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                }
+                                //Now check if device is phone and watchlive button is visible than hide gaem datae and game time view
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getEventSchedule() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent() != null && !BaseView.isTablet(context)) {
+
+                                    long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
+                                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                                    if (remainingTime > 0) {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.VISIBLE);
+                                    } else if ((moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent().equalsIgnoreCase("1")) || (remainingTime <= 0 && moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getIsLiveEvent().equalsIgnoreCase("1"))) {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.GONE);
+
+                                    } else {
+                                        ((TextView)componentViewResult.componentView).setVisibility(View.VISIBLE);
+                                    }
+//
                                 }
 
                                 break;
@@ -7820,6 +7861,7 @@ public class ViewCreator {
                     countDownTimer.cancel();
                     countDownTimer = null;
                 }
+                //By refreshing the page ,It will check all conditions again and set the data
                 appCMSPresenter.sendRefreshPageAction();
 
             }
