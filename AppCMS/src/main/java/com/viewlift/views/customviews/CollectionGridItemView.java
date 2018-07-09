@@ -1382,7 +1382,7 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         ((TextView) view).setText(thumbInfo);
-                    } else {
+                    } else if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                         String thumbInfo = null;
                         if (data.getGist().getPublishDate() != null) {
                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
