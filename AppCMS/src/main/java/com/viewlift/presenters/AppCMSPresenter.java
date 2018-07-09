@@ -15335,13 +15335,32 @@ public class AppCMSPresenter {
     public void tryLaunchingPlayerFromDeeplink(Action0 onVideoPlayerLaunchedAction) {
         if (getIsTVAppLaunchTypeDeepLink()) {
             showLoadingDialog(true);
-            ContentDatum contentDatum = new ContentDatum();
-            Gist gist = new Gist();
-            gist.setId(getDeepLinkContentID());
-            contentDatum.setGist(gist);
-            launchTVVideoPlayer(contentDatum, 0, null, 0, onVideoPlayerLaunchedAction);
-            setIsTVAppLaunchTypeDeepLink(false);
-            setDeepLinkContentID(null);
+            String deepLinkContentID = getDeepLinkContentID();
+
+            String showId;
+            //00000148-f688-d53c-a7ff-ffdddfaa0000
+
+            // TODO: 09/07/18 Harcoded show id, to be removed after catalog ingestion
+            deepLinkContentID = deepLinkContentID+"#d498be13-311f-40e3-b761-ae3e3948d59d";
+            if (deepLinkContentID.contains("#")) {
+                String[] split = deepLinkContentID.split("#");
+                String contentId = split[0];
+                showId = split[1];
+                getShowDetails(showId, appCMSShowDetail -> {
+                    ContentDatum contentDatum = appCMSShowDetail.convertToContentDatum();
+                    playEpisode(contentDatum, contentId);
+                });
+                setIsTVAppLaunchTypeDeepLink(false);
+                setDeepLinkContentID(null);
+            } else {
+                ContentDatum contentDatum = new ContentDatum();
+                Gist gist = new Gist();
+                gist.setId(deepLinkContentID);
+                contentDatum.setGist(gist);
+                launchTVVideoPlayer(contentDatum, 0, null, 0, onVideoPlayerLaunchedAction);
+                setIsTVAppLaunchTypeDeepLink(false);
+                setDeepLinkContentID(null);
+            }
         }
     }
 
@@ -18857,4 +18876,37 @@ public class AppCMSPresenter {
         new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
                 action1).execute(params);
     }
+
+
+
+    public void playEpisode(ContentDatum contentDatum, String contentId) {
+
+        showLoadingDialog(true);
+        if (contentDatum != null &&
+                contentDatum.getSeason() != null &&
+                contentDatum.getSeason().get(0) != null &&
+                contentDatum.getSeason().get(0).getEpisodes() != null &&
+                contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
+
+            List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
+                    contentDatum.getSeason(),
+                    0,
+                    -1,
+                    contentId);
+
+            ContentDatum updatedData = new ContentDatum();
+            Gist gist = new Gist();
+            updatedData.setGist(gist);
+            gist.setId(contentId);
+
+            launchTVVideoPlayer(
+                    updatedData,
+                    0,
+                    relatedVideosIds,
+                    0,
+                    null);
+
+        }
+    }
+
 }
