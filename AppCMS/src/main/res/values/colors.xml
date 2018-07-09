@@ -1,10 +1,10 @@
 <resources>
     <color name="blackTransparentColor">#8F000000</color>
-    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#f4181c</color>
-    <color name="backgroundColor">#000000</color>
-    <color name="splashbackgroundColor">#F81004</color>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="splashbackgroundColor">#ffffff</color>
     <color name="colorNavBarText">#8c8c8c</color>
     <color name="facebookBlue">#3b5998</color>
     <color name="googleRed">#c04b4c</color>
