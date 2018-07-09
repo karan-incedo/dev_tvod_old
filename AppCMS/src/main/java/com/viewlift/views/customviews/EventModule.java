@@ -96,11 +96,13 @@ public class EventModule extends ModuleView {
             scrollView.setLayoutParams(topLayoutContainerLayoutParams);
             scrollView.setFillViewport(true);
             scrollView.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
-
+//
             AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                     loadJsonFromAssets(context, "event_detail.json"),
                     AppCMSPageUI.class);
             ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
+//            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {

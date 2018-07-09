@@ -100,10 +100,11 @@ public class MultiTableWithSameItemsModule extends ModuleView {
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
-            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "roster.json"),
-                    AppCMSPageUI.class);
-            ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
+//            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(context, "roster.json"),
+//                    AppCMSPageUI.class);
+//            ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
+            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             if (module != null && module.getComponents() != null && moduleAPI.getContentData() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {

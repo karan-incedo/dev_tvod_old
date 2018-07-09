@@ -2855,6 +2855,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             }, appCMSBinder.getPagePath());
+        }else if (appCMSPresenter.isRosterPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getRosterRefreshData(appCMSPlaylistResultAction -> {
+                if (appCMSPlaylistResultAction != null) {
+                    AppCMSPageAPI pageAPI = appCMSPresenter.convertRosterDataToAppCMSPageAPI(appCMSBinder.getPageId(), appCMSPlaylistResultAction);
+
+                    appCMSBinder.updateAppCMSPageAPI(pageAPI);
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            });
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;

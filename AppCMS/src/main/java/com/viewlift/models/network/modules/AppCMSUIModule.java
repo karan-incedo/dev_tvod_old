@@ -239,6 +239,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_PERSON_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_eventscreen_key),
                 AppCMSUIKeyType.ANDROID_EVENT_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_rosterscreen_key),
+                AppCMSUIKeyType.ANDROID_FIGHTER_ROSTER_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
