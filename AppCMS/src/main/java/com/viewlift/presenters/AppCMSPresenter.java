@@ -16207,32 +16207,64 @@ public class AppCMSPresenter {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
 
-            refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
-                List<String> relatedVideoIds;
-                if (relateVideoIds == null || relateVideoIds.size() == 0) {
-                    relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
-                    // Putting the current video id on the
-                    // zeroth position, to make sure when user
-                    // asks Alexa to play previous video, we
-                    // always have a previous video.
-                    if (relatedVideoIds != null) {
-                        relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
-                    }
-                } else {
-                    relatedVideoIds = relateVideoIds;
-                }
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
+                                List<String> relatedVideoIds;
+                                if (relateVideoIds == null || relateVideoIds.size() == 0) {
+                                    relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
+                                    // Putting the current video id on the
+                                    // zeroth position, to make sure when user
+                                    // asks Alexa to play previous video, we
+                                    // always have a previous video.
+                                    if (relatedVideoIds != null) {
+                                        relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
+                                    }
+                                } else {
+                                    relatedVideoIds = relateVideoIds;
+                                }
 
-                updatedContentDatum.setSeason(contentDatum.getSeason());
-                launchTVButtonSelectedAction(contentDatum.getGist().getId(),
-                        action,
-                        updatedContentDatum.getGist().getTitle(),
-                        null,
-                        updatedContentDatum,
-                        false,
-                        currentlyPlayingIndex,
-                        relatedVideoIds,
-                        action0);
-            });
+                                updatedContentDatum.setSeason(contentDatum.getSeason());
+                                launchTVButtonSelectedAction(contentDatum.getGist().getId(),
+                                        action,
+                                        updatedContentDatum.getGist().getTitle(),
+                                        null,
+                                        updatedContentDatum,
+                                        false,
+                                        currentlyPlayingIndex,
+                                        relatedVideoIds,
+                                        action0);
+                            });
+                        });
+            } else {
+                refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
+                    List<String> relatedVideoIds;
+                    if (relateVideoIds == null || relateVideoIds.size() == 0) {
+                        relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
+                        // Putting the current video id on the
+                        // zeroth position, to make sure when user
+                        // asks Alexa to play previous video, we
+                        // always have a previous video.
+                        if (relatedVideoIds != null) {
+                            relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
+                        }
+                    } else {
+                        relatedVideoIds = relateVideoIds;
+                    }
+
+                    updatedContentDatum.setSeason(contentDatum.getSeason());
+                    launchTVButtonSelectedAction(contentDatum.getGist().getId(),
+                            action,
+                            updatedContentDatum.getGist().getTitle(),
+                            null,
+                            updatedContentDatum,
+                            false,
+                            currentlyPlayingIndex,
+                            relatedVideoIds,
+                            action0);
+                });
+            }
         }
 
     }
