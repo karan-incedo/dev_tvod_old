@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -1093,7 +1094,13 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
                     break;
-
+                case PAGE_WATCH_LIVE_BUTTON_KEY:
+                    if (!isTablet(getContext())) {
+                        if (childComponent.getTextAlignment().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_text_alignment_center_horizontal_key))) {
+                            ((Button) view).setGravity(Gravity.CENTER_HORIZONTAL);
+                        }
+                    }
+                    break;
                 case PAGE_VIDEO_PLAY_BUTTON_KEY:
                     if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         lm -= 8;
