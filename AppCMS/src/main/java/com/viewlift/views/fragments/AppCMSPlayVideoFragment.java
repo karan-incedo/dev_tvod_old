@@ -355,101 +355,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             refreshTokenTimer.schedule(refreshTokenTimerTask, 0, 600000);
         }
 
-        if (appCMSPresenter.isAppSVOD() &&
-                !isTrailer &&
-                !freeContent &&
-                !appCMSPresenter.isUserSubscribed()) {
-            int entitlementCheckMultiplier = 5;
-            entitlementCheckCancelled = false;
-
-            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-            if (appCMSMain != null &&
-                    appCMSMain.getFeatures() != null &&
-                    appCMSMain.getFeatures().getFreePreview() != null &&
-                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
-                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
-                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
-                try {
-                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
-                } catch (Exception e) {
-                    //Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
-                }
-            }
-
-            maxPreviewSecs = entitlementCheckMultiplier * 60;
-
-            entitlementCheckTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    if (isAdded()) {
-                        appCMSPresenter.getUserData(userIdentity -> {
-                            userIdentityObj = userIdentity;
-                            //Log.d(TAG, "Video player entitlement check triggered");
-                            if (!entitlementCheckCancelled) {
-                                int secsViewed = 0;
-                                if (appCMSMain.getFeatures().getFreePreview().isPerVideo()) {
-                                    secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                                } else {
-                                    playedVideoSecs = appCMSPresenter.getPreviewTimerValue();
-                                }
-                                if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
-
-                                    if (onUpdateContentDatumEvent != null) {
-                                        AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
-                                                = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                                .action(appCMSPresenter.getStringDataById(getActivity(),R.string.app_cms_page_play_key))
-                                                .closerLauncher(false)
-                                                .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
-                                                .currentlyPlayingIndex(playIndex)
-                                                .pagePath(permaLink)
-                                                .filmTitle(title)
-                                                .extraData(null)
-                                                .relatedVideoIds(onUpdateContentDatumEvent.getCurrentRelatedVideoIds())
-                                                .currentWatchedTime(videoPlayerView.getCurrentPosition() / 1000)
-                                                .build();
-                                        appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
-                                    }
-
-                                    //Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
-                                    pauseVideo();
-
-                                    if (videoPlayerView != null) {
-                                        videoPlayerView.disableController();
-                                    }
-                                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                                    showEntitlementDialog = true;
-                                    if (appCMSPresenter.isUserLoggedIn()) {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
-                                                () -> {
-                                                    if (onClosePlayerEvent != null) {
-                                                        onClosePlayerEvent.closePlayer();
-                                                        showEntitlementDialog = false;
-                                                    }
-                                                });
-                                    } else {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
-                                                () -> {
-                                                    if (onClosePlayerEvent != null) {
-                                                        onClosePlayerEvent.closePlayer();
-                                                        showEntitlementDialog = false;
-                                                    }
-                                                });
-                                    }
-                                    cancel();
-                                    entitlementCheckCancelled = true;
-                                } else {
-                                    Log.d(TAG, "User is subscribed - resuming video");
-                                }
-                                playedVideoSecs++;
-                                appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
-                            }
-                        });
-                    }
-                }
-            };
-
-            entitlementCheckTimer = new Timer();
-            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+        if(!shouldRequestAds) {
+            startEntitlementCheckTimer();
         }
 
         AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
@@ -551,7 +458,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
 
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-               long updatedRunTime = 0;
+                long updatedRunTime = 0;
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
                 } catch (Exception e) {
@@ -739,6 +646,105 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     }
 
+    private void startEntitlementCheckTimer() {
+        if (appCMSPresenter.isAppSVOD() &&
+                !isTrailer &&
+                !freeContent &&
+                !appCMSPresenter.isUserSubscribed()) {
+            int entitlementCheckMultiplier = 5;
+            entitlementCheckCancelled = false;
+
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
+                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    //Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
+            }
+
+            maxPreviewSecs = entitlementCheckMultiplier * 60;
+
+            entitlementCheckTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (isAdded()) {
+                        appCMSPresenter.getUserData(userIdentity -> {
+                            userIdentityObj = userIdentity;
+                            //Log.d(TAG, "Video player entitlement check triggered");
+                            if (!entitlementCheckCancelled) {
+                                int secsViewed = 0;
+                                if (appCMSMain.getFeatures().getFreePreview().isPerVideo()) {
+                                    secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                                } else {
+                                    playedVideoSecs = appCMSPresenter.getPreviewTimerValue();
+                                }
+                                if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
+
+                                    if (onUpdateContentDatumEvent != null) {
+                                        AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
+                                                = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
+                                                .action(appCMSPresenter.getStringDataById(getActivity(),R.string.app_cms_page_play_key))
+                                                .closerLauncher(false)
+                                                .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
+                                                .currentlyPlayingIndex(playIndex)
+                                                .pagePath(permaLink)
+                                                .filmTitle(title)
+                                                .extraData(null)
+                                                .relatedVideoIds(onUpdateContentDatumEvent.getCurrentRelatedVideoIds())
+                                                .currentWatchedTime(videoPlayerView.getCurrentPosition() / 1000)
+                                                .build();
+                                        appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
+                                    }
+
+                                    //Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                                    pauseVideo();
+
+                                    if (videoPlayerView != null) {
+                                        videoPlayerView.disableController();
+                                    }
+                                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                                    showEntitlementDialog = true;
+                                    if (appCMSPresenter.isUserLoggedIn()) {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
+                                                () -> {
+                                                    if (onClosePlayerEvent != null) {
+                                                        onClosePlayerEvent.closePlayer();
+                                                        showEntitlementDialog = false;
+                                                    }
+                                                });
+                                    } else {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER_PREVIEW,
+                                                () -> {
+                                                    if (onClosePlayerEvent != null) {
+                                                        onClosePlayerEvent.closePlayer();
+                                                        showEntitlementDialog = false;
+                                                    }
+                                                });
+                                    }
+                                    cancel();
+                                    entitlementCheckCancelled = true;
+                                } else {
+                                    Log.d(TAG, "User is subscribed - resuming video");
+                                }
+                                playedVideoSecs++;
+                                appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
+                            }
+                        });
+                    }
+                }
+            };
+
+            entitlementCheckTimer = new Timer();
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+        }
+    }
+
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
 
         if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
@@ -875,6 +881,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
+        startEntitlementCheckTimer();
         if (!crwCreated) {
             try {
                 createContentRatingView();
@@ -935,6 +942,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 try {
                     isADPlay = true;
                     videoPlayerInfoContainer.bringToFront();
+                    startEntitlementCheckTimer();
                     createContentRatingView();
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
