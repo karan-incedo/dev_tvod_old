@@ -244,6 +244,15 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             {
                 if(contentDatum != null ) {
 
+                    if (contentDatum.getAppCMSSignedURLResult() != null) {
+                        updateSignatureCookies(contentDatum.getAppCMSSignedURLResult().getPolicy(),
+                                contentDatum.getAppCMSSignedURLResult().getSignature(),
+                                contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+                        setPolicyCookie(contentDatum.getAppCMSSignedURLResult().getPolicy());
+                        setSignatureCookie(contentDatum.getAppCMSSignedURLResult().getSignature());
+                        setKeyPairIdCookie(contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+                    }
+
                     onUpdatedContentDatum = contentDatum;
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.setContentDatum(onUpdatedContentDatum);
@@ -1419,7 +1428,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         String errorString = null;
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
-            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+            updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
         }
         if (e.type == ExoPlaybackException.TYPE_RENDERER) {
             Exception cause = e.getRendererException();
@@ -1461,7 +1470,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     } else {
                         if (isBehindLiveWindow(e)) {
                             init(mContext);
-                            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+                            updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
                         }
                     }
                 }
@@ -1473,7 +1482,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
             if (isBehindLiveWindow(e)) {
                 init(mContext);
-                setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(closedCaptionUri));
+                updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
             }
         }
         Log.e("Playback exception", errorString);
@@ -1534,6 +1543,22 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     apod,
                     isVideoDownloaded);
         }
+    }
+
+    private void updateToken(Uri videoUri, Uri closedCaptionUri) {
+
+        appCMSPresenter.refreshVideoData(videoDataId, contentDatum -> {
+            {
+                updateSignatureCookies(contentDatum.getAppCMSSignedURLResult().getPolicy(),
+                        contentDatum.getAppCMSSignedURLResult().getSignature(),
+                        contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+                setPolicyCookie(contentDatum.getAppCMSSignedURLResult().getPolicy());
+                setSignatureCookie(contentDatum.getAppCMSSignedURLResult().getSignature());
+                setKeyPairIdCookie(contentDatum.getAppCMSSignedURLResult().getKeyPairId());
+
+                setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
+
+            }});
     }
 
     public void initiateStreamingId(){

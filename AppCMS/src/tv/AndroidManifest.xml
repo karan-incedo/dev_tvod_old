@@ -13,10 +13,10 @@
 
     <!-- This permission ensures that no other application can intercept your
     ADM messages. -->
-    <permission
+    <!--<permission
         android:name="air.com.snagfilms.permission.RECEIVE_ADM_MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="air.com.snagfilms.permission.RECEIVE_ADM_MESSAGE" />
+    <uses-permission android:name="air.com.snagfilms.permission.RECEIVE_ADM_MESSAGE" />-->
 
     <!-- This permission allows your app access to receive push notifications
     from ADM. -->
@@ -40,7 +40,7 @@
     <application
         android:banner="@drawable/androidtv_banner_image"
         android:label="@string/default_app_name"
-        android:icon="@drawable/tv_logo"
+        android:icon="@drawable/app_logo"
          tools:replace="android:label">
 
         <amazon:enable-feature

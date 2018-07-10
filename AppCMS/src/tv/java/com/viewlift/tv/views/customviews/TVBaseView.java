@@ -301,7 +301,7 @@ public abstract class TVBaseView extends FrameLayout {
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
                    // if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+//                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
                    //   }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
@@ -349,7 +349,7 @@ public abstract class TVBaseView extends FrameLayout {
                 }
             }
         } else if (componentType.equals(AppCMSUIKeyType.PAGE_IMAGE_KEY)) {
-            if (componentKey.equals(AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY)) {
+            if (AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY.equals(componentKey)) {
                 viewWidth = LayoutParams.WRAP_CONTENT;
                 ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_START);
             }

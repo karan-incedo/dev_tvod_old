@@ -121,7 +121,6 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
@@ -2316,7 +2315,7 @@ public class AppCMSPresenter {
                             requestAds = false;
                         }
 
-                        if (!TextUtils.isEmpty(adsUrl)) {
+                        if (TextUtils.isEmpty(adsUrl)) {
                             requestAds = false;
                         }
 
@@ -6858,6 +6857,8 @@ public class AppCMSPresenter {
 
         new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
             try {
+                Log.d(TAG, "launchMobileAutoplayActivity Entitlement API response. Sucess: " + appCMSEntitlementResponse.isSuccess() +", Playbale: " + appCMSEntitlementResponse.isPlayable());
+
                 if (appCMSEntitlementResponse != null) {
                     binder.setContentData(appCMSEntitlementResponse.convertToContentDatum());
                     AppCMSPageAPI pageAPI = null;
@@ -6894,15 +6895,15 @@ public class AppCMSPresenter {
                                 action1);
                     }
                 } else {
-                    //Log.e(TAG, "API issue in VideoDetail call");
+                    Log.e(TAG, "launchMobileAutoplayActivity API issue in VideoDetail call");
                     if (platformType == PlatformType.TV) {
-                        action1.call(null);
+//                        action1.call(null);
                     }
                 }
             } catch (Exception e) {
-                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                Log.e(TAG, "launchMobileAutoplayActivity Error retrieving video details: " + e.getMessage());
                 if (platformType == PlatformType.TV) {
-                    action1.call(null);
+//                    action1.call(null);
                 }
             }
         }).execute(params);
@@ -6971,107 +6972,107 @@ public class AppCMSPresenter {
     public void launchTVAutoplayActivity(String pageTitle, String url,
                                          AppCMSVideoPageBinder binder, Action1<Object> action1) {
 
-        GetAppCMSVideoEntitlementAsyncTask.Params params =
-                new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
+        GetAppCMSContentDetailTask.Params params =
+                new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
-                        .apiKey(apikey)
-                        .build();
-        new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSContentDetail -> {
-            try {
-                if (appCMSContentDetail != null) {
-                    ContentDatum contentData = appCMSContentDetail.convertToContentDatum();
-                    contentData.setSeason(binder.getContentData().getSeason());
-                    binder.setContentData(contentData);
-                    final AppCMSPageAPI[] pageAPI = {null};
+                        .apiKey(apikey).build();
+        new GetAppCMSContentDetailTask(appCMSContentDetailCall,
+                appCMSContentDetail -> {
+                    try {
+                        if (appCMSContentDetail != null) {
+                            ContentDatum contentData = appCMSContentDetail.convertToContentDatum();
+                            contentData.setSeason(binder.getContentData().getSeason());
+                            binder.setContentData(contentData);
+                            final AppCMSPageAPI[] pageAPI = {null};
 
-                    String autoplayPageId = getAutoplayPageId(binder.getContentData().getGist().getMediaType());
-                    final AppCMSPageUI[] appCMSPageUI = {navigationPages.get(autoplayPageId)};
+                            String autoplayPageId = getAutoplayPageId(binder.getContentData().getGist().getMediaType());
+                            final AppCMSPageUI[] appCMSPageUI = {navigationPages.get(autoplayPageId)};
 
-                    if (null == appCMSPageUI[0]) {
-                        MetaPage metaPage = pageIdToMetaPageMap.get(autoplayPageId);
-                        if (metaPage != null) {
-                            getAppCMSPage(metaPage.getPageUI(),
-                                    appCMSPageUIResult -> {
-                                        stopLoader();
-                                        if (appCMSPageUIResult != null) {
-                                            appCMSPageUI[0] = appCMSPageUIResult;
-                                            navigationPages.put(autoplayPageId, appCMSPageUIResult);
-                                            String action = pageNameToActionMap.get(metaPage.getPageName());
-                                            if (action != null && actionToPageMap.containsKey(action)) {
-                                                actionToPageMap.put(action, appCMSPageUIResult);
-                                            }
-                                            for (ModuleList moduleList : appCMSPageUI[0].getModuleList()) {
-                                                if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
-                                                        jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
-                                                        jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
-                                                        jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
-                                                        jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
-                                                    pageAPI[0] = appCMSContentDetail.convertToAppCMSPageAPI(autoplayPageId,
-                                                            moduleList.getType());
-                                                    break;
+                            if (null == appCMSPageUI[0]) {
+                                MetaPage metaPage = pageIdToMetaPageMap.get(autoplayPageId);
+                                if (metaPage != null) {
+                                    getAppCMSPage(metaPage.getPageUI(),
+                                            appCMSPageUIResult -> {
+                                                stopLoader();
+                                                if (appCMSPageUIResult != null) {
+                                                    appCMSPageUI[0] = appCMSPageUIResult;
+                                                    navigationPages.put(autoplayPageId, appCMSPageUIResult);
+                                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                                    }
+                                                    for (ModuleList moduleList : appCMSPageUI[0].getModuleList()) {
+                                                        if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
+                                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
+                                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
+                                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
+                                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
+                                                            pageAPI[0] = appCMSContentDetail.convertToAppCMSPageAPI(autoplayPageId,
+                                                                    moduleList.getType());
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (pageAPI[0] != null) {
+                                                        launchAutoplayActivity(currentActivity,
+                                                                appCMSPageUI[0],
+                                                                pageAPI[0],
+                                                                autoplayPageId,
+                                                                pageTitle,
+                                                                pageIdToPageNameMap.get(autoplayPageId),
+                                                                loadFromFile,
+                                                                false,
+                                                                true,
+                                                                false,
+                                                                false,
+                                                                binder,
+                                                                action1);
+                                                    }
                                                 }
-                                            }
-                                            if (pageAPI[0] != null) {
-                                                launchAutoplayActivity(currentActivity,
-                                                        appCMSPageUI[0],
-                                                        pageAPI[0],
-                                                        autoplayPageId,
-                                                        pageTitle,
-                                                        pageIdToPageNameMap.get(autoplayPageId),
-                                                        loadFromFile,
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        false,
-                                                        binder,
-                                                        action1);
-                                            }
-                                        }
-                                    },
-                                    loadFromFile,
-                                    false);
-                        }
-                    } else {
-                        for (ModuleList moduleList : appCMSPageUI[0].getModuleList()) {
-                            if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
-                                    jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
-                                    jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
-                                    jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
-                                    jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
-                                pageAPI[0] = appCMSContentDetail.convertToAppCMSPageAPI(autoplayPageId,
-                                        moduleList.getType());
-                                break;
+                                            },
+                                            loadFromFile,
+                                            false);
+                                }
+                            } else {
+                                for (ModuleList moduleList : appCMSPageUI[0].getModuleList()) {
+                                    if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
+                                            jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
+                                            jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
+                                            jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
+                                            jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
+                                        pageAPI[0] = appCMSContentDetail.convertToAppCMSPageAPI(autoplayPageId,
+                                                moduleList.getType());
+                                        break;
+                                    }
+                                }
+                                if (pageAPI[0] != null) {
+                                    launchAutoplayActivity(currentActivity,
+                                            appCMSPageUI[0],
+                                            pageAPI[0],
+                                            autoplayPageId,
+                                            pageTitle,
+                                            pageIdToPageNameMap.get(autoplayPageId),
+                                            loadFromFile,
+                                            false,
+                                            true,
+                                            false,
+                                            false,
+                                            binder,
+                                            action1);
+                                }
+                            }
+                        }else {
+                            //Log.e(TAG, "API issue in VideoDetail call");
+                            if (platformType == PlatformType.TV) {
+                                action1.call(null);
                             }
                         }
-                        if (pageAPI[0] != null) {
-                            launchAutoplayActivity(currentActivity,
-                                    appCMSPageUI[0],
-                                    pageAPI[0],
-                                    autoplayPageId,
-                                    pageTitle,
-                                    pageIdToPageNameMap.get(autoplayPageId),
-                                    loadFromFile,
-                                    false,
-                                    true,
-                                    false,
-                                    false,
-                                    binder,
-                                    action1);
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                        if (platformType == PlatformType.TV) {
+                            action1.call(null);
                         }
                     }
-                } else {
-                    //Log.e(TAG, "API issue in VideoDetail call");
-                    if (platformType == PlatformType.TV) {
-                        action1.call(null);
-                    }
-                }
-            } catch (Exception e) {
-                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
-                if (platformType == PlatformType.TV) {
-                    action1.call(null);
-                }
-            }
-        }).execute(params);
+                }).execute(params);
     }
 
     private void getAudioContent(final String apiBaseUrl,
@@ -13462,7 +13463,9 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = (AppCompatActivity) activity;
+        if(activity instanceof  AppCompatActivity) {
+            this.currentActivity = (AppCompatActivity) activity;
+        }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
         String clientId = activity.getString(R.string.default_web_client_id);
@@ -15609,16 +15612,16 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                     !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-                // TODO: uncomment for entitlement API
-                url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        filmId);
-/*
-                url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        filmId,
-                        appCMSSite.getGist().getSiteInternalName());
-*/
+                if (platformType.equals(PlatformType.ANDROID)) {
+                    url = currentActivity.getString(R.string.app_cms_entitlement_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            filmId);
+                } else {
+                    url = currentActivity.getString(R.string.app_cms_content_detail_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            filmId,
+                            appCMSSite.getGist().getSiteInternalName());
+                }
             }
         } else {
             realmController = RealmController.with(currentActivity);
