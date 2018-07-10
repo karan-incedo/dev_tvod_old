@@ -1410,7 +1410,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
-                    -1);
+                    -1,
+                    contentDatum.getSeason().get(0).getEpisodes().get(1).getId());
 
             ContentDatum updatedData = new ContentDatum();
             Gist gist = new Gist();
