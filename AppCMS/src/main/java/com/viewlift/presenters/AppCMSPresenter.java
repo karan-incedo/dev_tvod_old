@@ -8086,16 +8086,31 @@ public class AppCMSPresenter {
 
     public void navigateToHomePage() {
         if (homePage != null) {
-            restartInternalEvents();
-            navigateToPage(homePage.getPageId(),
-                    homePage.getPageName(),
-                    homePage.getPageUI(),
-                    false,
-                    true,
-                    false,
-                    true,
-                    true,
-                    deeplinkSearchQuery);
+            if (platformType == PlatformType.ANDROID) {
+                restartInternalEvents();
+                navigateToPage(homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
+                        false,
+                        true,
+                        false,
+                        true,
+                        true,
+                        deeplinkSearchQuery);
+            } else if(platformType == PlatformType.TV) {
+                getPlayerLruCache().evictAll();
+                navigateToTVPage(
+                        homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
+                        true,
+                        deeplinkSearchQuery,
+                        true,
+                        false,
+                        false
+                );
+
+            }
         }
     }
 
@@ -15040,7 +15055,6 @@ public class AppCMSPresenter {
 
                 queueMetaPages(appCMSAndroidUI.getMetaPages());
                 final MetaPage firstPage = pagesToProcess.peek();
-                //Log.d(TAG, "Processing meta pages queue");
 
                 getAppCMSModules(appCMSAndroidUI,
                         false,
@@ -15500,6 +15514,7 @@ public class AppCMSPresenter {
                 Intent appCMSIntent = new Intent(activity, Class.forName(tvHomeScreenPackage));
                 appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                getCurrentActivity().finish();
                 activity.startActivity(appCMSIntent);
             }
         } catch (Exception e) {

@@ -61,6 +61,7 @@ import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -104,7 +105,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getIntent() != null && getIntent().getAction() != null && getIntent().getData() != null) {
             if (getIntent().getAction().equalsIgnoreCase(getString(R.string.LAUNCHER_DEEPLINK_ACTION))) {
                 ContentDatum contentDatum = new ContentDatum();
@@ -173,6 +173,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 bgColor);
 
         //  appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(this, this);
+       // Locale locale = appCMSPresenter.getCurrentContext().getResources().getConfiguration().locale;
+        Locale locale = getResources().getConfiguration().locale;
+        System.out.println("Language Locale in HomeActivity is = "+locale.getLanguage());
 
         setContentView(R.layout.activity_app_cms_tv_home);
 

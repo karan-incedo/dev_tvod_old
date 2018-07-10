@@ -1,8 +1,11 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -18,7 +21,9 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.utils.LocaleUtils;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -86,10 +91,13 @@ public class ToggleSwitchView extends TVBaseView {
                 if (isEnabled) {
                     isEnabled = false;
                     componentView.setImageResource(R.drawable.focused_off);
+                    setDefaultlanguage();
                 } else {
                     isEnabled = true;
                     componentView.setImageResource(R.drawable.focused_on);
+                    setFrancelanguage();
                 }
+                appCMSPresenter.navigateToHomePage();
                 ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent()
                         .appCMSPresenter().setAutoplayEnabledUserPref(mContext, isEnabled);
             });
@@ -184,4 +192,38 @@ public class ToggleSwitchView extends TVBaseView {
     protected Layout getLayout() {
         return null;
     }
+
+    private void setFrancelanguage(){
+        //updateResources(appCMSPresenter.getCurrentContext(),Locale.FRANCE.getLanguage());
+        LocaleUtils.setLocale(appCMSPresenter.getCurrentContext(),Locale.FRANCE.getLanguage());
+    }
+
+    private void setDefaultlanguage(){
+       // updateResources(appCMSPresenter.getCurrentContext(),Locale.ENGLISH.getLanguage());
+        LocaleUtils.setLocale(appCMSPresenter.getCurrentContext(),Locale.ENGLISH.getLanguage());
+    }
+
+    /*private static Context updateResources(Context context, String language) {
+        System.out.println("Language is = "+language);
+      *//*  Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+
+        Resources res = context.getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        if (Build.VERSION.SDK_INT >= 17) {
+            config.setLocale(locale);
+            context = context.createConfigurationContext(config);
+        } else {
+            config.locale = locale;
+            res.updateConfiguration(config, res.getDisplayMetrics());
+        }
+*//*
+       *//* Locale locale = new Locale(language);
+        Configuration config = context.getResources().getConfiguration();
+        config.locale = locale;
+        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+        Locale locale1 = context.getResources().getConfiguration().locale;
+        System.out.println("Language After Update is = "+locale1.getLanguage());
+        return context;*//*
+    }*/
 }

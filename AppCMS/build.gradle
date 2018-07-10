@@ -273,6 +273,8 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Google_internal.gwt.xml'
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
     }
 
 
@@ -446,6 +448,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
 }
 
 fileTree(dir: 'libs', include: '**/*.aar')
