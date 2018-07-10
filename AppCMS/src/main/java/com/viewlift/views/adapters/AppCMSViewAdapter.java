@@ -584,6 +584,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), false);
                                     return;
                                 }
+                                if (data.getGist() != null && data.getGist().getContentType() != null
+                                        && data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_team_label).toLowerCase())) {
+                                    appCMSPresenter.navigateToTeamDetailPage("acd7eac5-8bba-46bb-b337-b475df5ef680", data.getGist().getTitle(), false);
+                                    return;
+                                }
 
                                 if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,

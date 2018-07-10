@@ -16,6 +16,7 @@ import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRSAKeyCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
+import com.viewlift.models.network.rest.AppCMSEventArchieveCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
@@ -26,7 +27,9 @@ import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
+import com.viewlift.models.network.rest.AppCMSRosterCall;
 import com.viewlift.models.network.rest.AppCMSSSLCommerzInitiateCall;
+import com.viewlift.models.network.rest.AppCMSScheduleCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
@@ -34,6 +37,8 @@ import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
+import com.viewlift.models.network.rest.AppCMSTeamRoasterCall;
+import com.viewlift.models.network.rest.AppCMSTeamStandingCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -69,7 +74,14 @@ public class AppCMSPresenterModule {
     public AppCMSPresenter providesAppCMSPresenter(Gson gson,
                                                    AppCMSArticleCall appCMSArticleCall,
                                                    AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
+                                                   AppCMSScheduleCall appCMSScheduleCall,
+                                                   AppCMSRosterCall appCMSRosterCall,
+
                                                    AppCMSPlaylistCall appCMSPlaylistCall,
+                                                   AppCMSTeamStandingCall appCMSTeamStandingCall,
+                                                   AppCMSTeamRoasterCall appCMSTeamRoasterCall,
+                                                   AppCMSEventArchieveCall appCMSEventArchieveCall,
+
                                                    AppCMSSSLCommerzInitiateCall appCMSSSLCommerzInitiateCall,
                                                    AppCMSCCAvenueRSAKeyCall appCMSCCAvenueRSAKeyCall,
                                                    AppCMSAudioDetailCall appCMSAudioDetailCall,
@@ -125,7 +137,8 @@ public class AppCMSPresenterModule {
         return new AppCMSPresenter(gson,
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
-                appCMSPlaylistCall,
+                appCMSScheduleCall,appCMSRosterCall,
+                appCMSPlaylistCall,appCMSTeamStandingCall,appCMSTeamRoasterCall,appCMSEventArchieveCall,
                 appCMSSSLCommerzInitiateCall,
                 appCMSCCAvenueRSAKeyCall,
                 appCMSAudioDetailCall,

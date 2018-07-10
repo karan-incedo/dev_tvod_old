@@ -1,0 +1,146 @@
+{
+  "moduleList": [
+    {
+      "id": "ec22c941-0746-41b3-b8d0-2162a1806f57",
+      "settings": {
+        "searchThumbnailType": "landscape"
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01",
+      "layout": {},
+      "components": []
+    },
+    {
+      "id": "dd67934d-f65e-49d3-9f24-8a91da3f442b",
+      "settings": {},
+      "view": "AC PersonDetail 02",
+      "type": "AC PersonDetail 02",
+      "blockName": "personDetail02",
+      "layout": {
+        "mobile": {
+          "yAxis": 64,
+          "xAxis": 0,
+          "width": 480,
+          "height": 0
+        },
+        "tabletLandscape": {
+          "yAxis": 64,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 0
+        },
+        "tabletPortrait": {
+          "yAxis": 64,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 0,
+              "rightMargin": 0,
+              "height": 0
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 0,
+              "height": 0
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          "type": "webView",
+          "key": "webView"
+        }
+      ]
+    },
+    {
+      "id": "e14cd09a-c172-4538-b119-99f53a537ab5",
+      "settings": {
+        "showTabBar": true
+      },
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01",
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            }
+          },
+          "isSelectable": true,
+          "type": "image",
+          "key": "tabImage"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0,
+              "fontSize": 12,
+              "height": 12
+            },
+            "tabletLandscape": {
+              "leftMargin": 0.98,
+              "topMargin": 0.91,
+              "rightMargin": 4.69,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletPortrait": {
+              "leftMargin": 1.3,
+              "topMargin": 0.68,
+              "rightMargin": 6.25,
+              "fontSize": 18,
+              "height": 24
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "center",
+          "isSelectable": true,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "normal",
+          "key": "tabName"
+        }
+      ],
+      "isTabSeparator": false,
+      "tabSeparator-color": "#cf0a2b",
+      "isBackgroundSelectable": false
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.4"
+}

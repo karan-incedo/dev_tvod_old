@@ -3,6 +3,8 @@ package com.viewlift;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import java.io.InputStream;
@@ -53,12 +55,19 @@ public class Utils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
           context.startForegroundService(intent);
         else
-          context.startService(intent);
+           context.startService(intent);
     }
 
     private static boolean hls;
     public static boolean isHLS(){
         return hls;
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public static void setHls(boolean hls) {
@@ -68,4 +77,6 @@ public class Utils {
     public static boolean isFireTVDevice(Context context){
         return context.getPackageManager().hasSystemFeature(AMAZON_FEATURE_FIRE_TV);
     }
+
+
 }
