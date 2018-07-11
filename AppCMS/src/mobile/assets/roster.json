@@ -191,20 +191,20 @@
                     "mobile": {
                       "yAxis": 5,
                       "xAxis": 6,
-                      "width": 72,
-                      "height": 70
+                      "width": 70,
+                      "height": 80
                     },
                     "tabletLandscape": {
                       "yAxis": 13,
                       "xAxis": 13,
                       "width": 92,
-                      "height": 90
+                      "height": 100
                     },
                     "tabletPortrait": {
                       "yAxis": 13,
                       "xAxis": 13,
                       "width": 92,
-                      "height": 90
+                      "height": 100
                     }
                   },
                   "type": "image",

@@ -39,6 +39,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -688,14 +689,18 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
                         ImageView imageView = (ImageView) view;
-//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        imageView.setAdjustViewBounds(true);
                         RequestOptions requestOptions = new RequestOptions()
+//                                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+
 //                                .override(childViewWidth, childViewHeight)
-                                .placeholder(placeholder).fitCenter();
+                                .placeholder(placeholder);
 
                         Glide.with(context)
                                 .load(imageUrl)
                                 .apply(requestOptions)
+
                                 .into(imageView);
 //                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {

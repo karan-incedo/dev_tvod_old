@@ -229,7 +229,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 appCMSPresenter.showLoadingDialog(false);
-
+                mFbLiveView=view;
                 view.requestLayout();
                 context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }
