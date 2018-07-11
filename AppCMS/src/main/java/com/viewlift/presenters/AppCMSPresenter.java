@@ -11401,7 +11401,16 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
+    public boolean isPageAtPersonDetailPage(String pageName) {
+        if (currentActivity != null && pageName != null) {
+            try {
+                return pageName.contains(personPage.getPageName());
+            } catch (Exception e) {
+                //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
+            }
+        }
+        return false;
+    }
     public boolean isPageAShowPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
@@ -19569,7 +19578,7 @@ public class AppCMSPresenter {
                         screenName.toString(),
                         loadFromFile,
                         true,
-                        true,
+                        false,
                         true,
                         false,
                         null,
