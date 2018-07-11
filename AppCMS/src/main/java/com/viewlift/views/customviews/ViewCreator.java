@@ -112,13 +112,6 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
-import net.nightwhistler.htmlspanner.HtmlSpanner;
-import net.nightwhistler.htmlspanner.TagNodeHandler;
-import net.nightwhistler.htmlspanner.handlers.StyledTextHandler;
-import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandler;
-import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
-import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
-import net.nightwhistler.htmlspanner.style.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,19 +146,13 @@ public class ViewCreator {
     AppCMSPlaylistAdapter appCMSPlaylistAdapter;
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
-    private HtmlSpanner htmlSpanner;
     private boolean isCastConnected;
     PhotoGalleryNextPreviousListener photoGalleryNextPreviousListener;
     private CountDownTimer countDownTimer = null;
     private final int countDownIntervalInMillis = 1000;
 
     public ViewCreator() {
-        htmlSpanner = new HtmlSpanner();
-        htmlSpanner.unregisterHandler("p");
-        Style paragraphStyle = new Style();
-        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler
-                (new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
-        htmlSpanner.registerHandler("p", pHandler);
+
     }
 
     static void setViewWithShowSubtitle(Context context, ContentDatum data, View view,
@@ -5283,6 +5270,7 @@ public class ViewCreator {
                                                     appCMSPresenter,
                                                     true,
                                                     appCMSPresenter.getBrandPrimaryCtaColor(),
+                                                    appCMSPresenter.getGeneralTextColor(),
                                                     false);
                                     viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
                                 }
@@ -5322,6 +5310,7 @@ public class ViewCreator {
                                                     appCMSPresenter,
                                                     false,
                                                     appCMSPresenter.getBrandPrimaryCtaColor(),
+                                                    appCMSPresenter.getGeneralTextColor(),
                                                     false);
                                     textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                 }
@@ -7677,19 +7666,6 @@ public class ViewCreator {
         }
     }
 
-    private static class EmptyPStyledTextHandler extends StyledTextHandler {
-        EmptyPStyledTextHandler(Style style) {
-            super(style);
-        }
-
-       /* @Override
-        public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
-                builder.append('\n');
-            }
-            super.beforeChildren(node, builder, spanStack);
-        }*/
-    }
 
     /**
      * This class encapsulates the data necessary for a tray item to create all the required UI components.
