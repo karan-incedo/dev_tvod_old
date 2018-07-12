@@ -944,6 +944,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     videoPlayerInfoContainer.bringToFront();
                     startEntitlementCheckTimer();
                     createContentRatingView();
+
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
                 }
