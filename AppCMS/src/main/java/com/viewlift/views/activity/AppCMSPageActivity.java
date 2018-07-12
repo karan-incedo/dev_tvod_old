@@ -995,7 +995,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().isEmpty() &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0) != null &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist() != null) {
-                    if ((updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType() != null && (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_article_key_type).toLowerCase()) ||
+                    if (appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName()) || (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType() != null && (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_article_key_type).toLowerCase()) ||
                             updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_photo_gallery_key_type).toLowerCase()))) ||
                             updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType() != null && updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType().toLowerCase().contains("VideoDetailModule".toLowerCase())) {
                         getShareLink(i);
@@ -1017,6 +1017,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink(),
                     getString(R.string.app_cms_action_share_key),
                     updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getTitle(),
+                    extraData,
+                    updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0),
+                    false,
+                    0,
+                    null);
+        } else if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink() != null && appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName())) {
+            StringBuilder filmUrl = new StringBuilder();
+            filmUrl.append(appCMSPresenter.getAppCMSMain().getDomainName());
+            filmUrl.append(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink());
+            String[] extraData = new String[1];
+            extraData[0] = filmUrl.toString();
+            appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink(),
+                    getString(R.string.app_cms_action_share_key),
+                    "Player detail",
                     extraData,
                     updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0),
                     false,
@@ -2257,7 +2271,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
-                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) ||
+                    appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
@@ -2738,6 +2753,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
                 pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_fighter)) ||
+                pagePath.toString().contains(getString(R.string.app_cms_page_path_roster))) {
+            appCMSPresenter.forceLoad();
+
+            appCMSPresenter.navigateToPersonDetailsPage(pagePath.toString());
+            appCMSPresenter.resetDeeplinkQuery();
+            return;
         }
 
         appCMSPresenter.forceLoad();
@@ -2855,7 +2877,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             }, appCMSBinder.getPagePath());
-        }else if (appCMSPresenter.isRosterPage(appCMSBinder.getPageId())) {
+        } else if (appCMSPresenter.isRosterPage(appCMSBinder.getPageId())) {
             appCMSPresenter.getRosterRefreshData(appCMSPlaylistResultAction -> {
                 if (appCMSPlaylistResultAction != null) {
                     AppCMSPageAPI pageAPI = appCMSPresenter.convertRosterDataToAppCMSPageAPI(appCMSBinder.getPageId(), appCMSPlaylistResultAction);

@@ -1351,6 +1351,8 @@ public class AppCMSUIModule {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_password_key),
                 AppCMSActionType.CHANGE_PASSWORD);
 
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_password_key),
+                AppCMSActionType.CHANGE_PASSWORD);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_managesubscription_key),
                 AppCMSActionType.MANAGE_SUBSCRIPTION);
 
