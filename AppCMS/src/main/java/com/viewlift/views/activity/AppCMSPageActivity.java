@@ -2720,40 +2720,46 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void processDeepLink(Uri deeplinkUri) {
-        String title = deeplinkUri.getLastPathSegment();
-        String action = getString(R.string.app_cms_action_detailvideopage_key);
-        StringBuffer pagePath = new StringBuffer();
-
-        for (String pathSegment : deeplinkUri.getPathSegments()) {
-            pagePath.append(File.separatorChar);
-            pagePath.append(pathSegment);
-            if (pathSegment.contains(getString(R.string.app_cms_shows_deeplink_path_name))) {
-                action = getString(R.string.app_cms_action_showvideopage_key);
+        if(deeplinkUri.toString().contains(getString(R.string.view_plans))){
+            if (!appCMSPresenter.isUserSubscribed()) {
+                appCMSPresenter.navigateToSubscriptionPlansPage(false);
             }
-        }
+        } else {
+            String title = deeplinkUri.getLastPathSegment();
+            String action = getString(R.string.app_cms_action_detailvideopage_key);
+            StringBuffer pagePath = new StringBuffer();
 
-        if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
-            appCMSPresenter.setCurrentArticleIndex(-1);
-            action = getString(R.string.app_cms_action_articlepage_key);
-        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
-                pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
-            action = getString(R.string.app_cms_action_photo_gallerypage_key);
-        }
+            for (String pathSegment : deeplinkUri.getPathSegments()) {
+                pagePath.append(File.separatorChar);
+                pagePath.append(pathSegment);
+                if (pathSegment.contains(getString(R.string.app_cms_shows_deeplink_path_name))) {
+                    action = getString(R.string.app_cms_action_showvideopage_key);
+                }
+            }
 
-        appCMSPresenter.forceLoad();
+            if (pagePath.toString().contains(getString(R.string.app_cms_page_path_article))) {
+                appCMSPresenter.setCurrentArticleIndex(-1);
+                action = getString(R.string.app_cms_action_articlepage_key);
+            } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
+                    pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
+                action = getString(R.string.app_cms_action_photo_gallerypage_key);
+            }
 
-        //Log.d(TAG, "Launching deep link " +
+            appCMSPresenter.forceLoad();
+
+            //Log.d(TAG, "Launching deep link " +
 //                deeplinkUri.toString() +
 //                " with path: " +
 //                pagePath.toString());
-        appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
-                action,
-                title,
-                null,
-                null,
-                false,
-                0,
-                null);
+            appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
+                    action,
+                    title,
+                    null,
+                    null,
+                    false,
+                    0,
+                    null);
+        }
         appCMSPresenter.resetDeeplinkQuery();
     }
 
