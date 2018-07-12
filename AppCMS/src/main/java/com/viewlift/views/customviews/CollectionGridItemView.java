@@ -825,8 +825,8 @@ public class CollectionGridItemView extends BaseView {
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
-                    if(data.getGist()!=null &&data.getGist().getEventSchedule()!=null &&
-                            data.getGist().getEventSchedule().get(0)!=null && data.getGist().getEventSchedule().get(0).getEventTime()>0) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null &&
+                            data.getGist().getEventSchedule().get(0) != null && data.getGist().getEventSchedule().get(0).getEventTime() > 0) {
                         long eventDate = data.getGist().getEventSchedule().get(0).getEventTime();
                         long currentTimeMillis = System.currentTimeMillis();
 
@@ -1385,7 +1385,7 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         ((TextView) view).setText(thumbInfo);
-                    } else if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                    } else if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                         String thumbInfo = null;
                         if (data.getGist().getPublishDate() != null) {
                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
@@ -1415,7 +1415,7 @@ public class CollectionGridItemView extends BaseView {
                             }
 
                         }
-                    }else {
+                    } else {
                         ((TextView) view).setVisibility(GONE);
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
@@ -1693,10 +1693,10 @@ public class CollectionGridItemView extends BaseView {
 
 
                         if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
-                            if (TextUtils.isEmpty(score)) {
-                                score = "Undefined ";
+                            if (score != null && !TextUtils.isEmpty(score)) {
+                                textView.setText("(" + score + "pts)");
                             }
-                            textView.setText("(" + score + "pts)");
+//                            textView.setText("(" + score + "pts)");
                         } else if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
                             textView.setText(record);
 

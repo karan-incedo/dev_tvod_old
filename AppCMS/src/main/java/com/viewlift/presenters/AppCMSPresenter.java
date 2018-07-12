@@ -19514,9 +19514,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToPersonDetailsPage(String personPerma,
-                                            String pageTitle,
-                                            boolean launchActivity) {
+    public void navigateToPersonDetailsPage(String personPerma) {
 
         if (currentActivity != null && !TextUtils.isEmpty(personPerma) && personPage != null) {
             showLoader();
@@ -19533,7 +19531,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToPersonDetailsPage(personPerma, pageTitle, launchActivity);
+                                    navigateToPersonDetailsPage(personPerma);
                                 }
                             },
                             loadFromFile,
