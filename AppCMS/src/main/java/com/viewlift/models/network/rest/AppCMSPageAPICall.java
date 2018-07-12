@@ -37,6 +37,8 @@ public class AppCMSPageAPICall {
 
     private final AppCMSPageAPIRest appCMSPageAPIRest;
     private final String apiKey;
+    private String tempApiKey;
+
     private final Gson gson;
     private final File storageDirectory;
     private Map<String, String> headersMap;
@@ -97,14 +99,16 @@ public class AppCMSPageAPICall {
             }
         }
 
+
+            tempApiKey = apiKey;
         if (appCMSPageAPI == null) {
             try {
                 headersMap.clear();
                 if (!TextUtils.isEmpty(apiKey)) {
-                    headersMap.put("x-api-key", apiKey);
+                    headersMap.put("x-api-key", tempApiKey);
                 }
                 if (!TextUtils.isEmpty(authToken)) {
-                    headersMap.put("Authorization", authToken);
+                        headersMap.put("Authorization", authToken);
                 }
                 Log.w(TAG, "API URL: " + urlWithContent);
                 Log.w(TAG, "API Headers: " + headersMap.toString());

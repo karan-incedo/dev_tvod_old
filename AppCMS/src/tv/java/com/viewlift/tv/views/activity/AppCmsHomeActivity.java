@@ -43,6 +43,7 @@ import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
+import com.viewlift.tv.views.fragment.AppCmsChangelanguageFragment;
 import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsLinkYourAccountFragment;
 import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
@@ -317,7 +318,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     openResetPasswordScreen(intent);
                 } else if (intent.getAction().equals(AppCMSPresenter.ACTION_LINK_YOUR_ACCOUNT)) {
                     openLinkYourAccountScreen(intent);
-                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)) {
+                } else if (intent.getAction().equals(AppCMSPresenter.ACTION_CHANGE_LANGUAGE)) {
+                    openChangeLanguageScreen(intent);
+                }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)) {
 
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
@@ -569,6 +572,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_LINK_YOUR_ACCOUNT));
+        registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_CHANGE_LANGUAGE));
         registerReceiver(presenterActionReceiver, new IntentFilter(getString(R.string.intent_msg_action)));
     }
 
@@ -1393,6 +1397,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
+    private void openChangeLanguageScreen(Intent intent){
+       /* Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+        AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));*/
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        AppCmsChangelanguageFragment appCmsChangelanguageFragment = AppCmsChangelanguageFragment.newInstance(
+                );
+        appCmsChangelanguageFragment.show(ft, DIALOG_FRAGMENT_TAG);
+        Utils.pageLoading(false, this);
+
+    }
+
     public void shouldShowLeftNavigation(boolean shouldShowLeftnav) {
         this.shouldShowLeftNav = shouldShowLeftnav;
     }
@@ -1413,7 +1428,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
-                    -1);
+                    -1,
+                    contentDatum.getSeason().get(0).getEpisodes().get(1).getId());
 
             ContentDatum updatedData = new ContentDatum();
             Gist gist = new Gist();

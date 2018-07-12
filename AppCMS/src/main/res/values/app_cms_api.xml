@@ -20,7 +20,7 @@
     <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
     <string name="app_cms_beacon_chromecast_dp2_url">&amp;dp2=Chromecast</string>
     <string name="app_cms_beacon_platform">Android</string>
-    <string name="app_cms_beacon_tvplatform">FireTV</string>
+    <string name="app_cms_beacon_tvplatform" translatable="false">FireTV</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
     <string name="app_cms_beacon_casting_screen_name">CastingView</string>
@@ -77,7 +77,10 @@
 
     <string name="app_cms_article_api_url_with_perma">%1$s/content/article?path=%2$s&amp;site=%3$s</string>
 
+    <string name="app_cms_schedule_api_url">%1$s/content/event/schedule?site=%2$s</string>
+
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
+    <string name="app_cms_roster_data_page_api_url">%1$s/search/v2/list?site=%2$s&amp;type=%3$s</string>
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
@@ -109,7 +112,6 @@
     </string-array>
 
 
-
     <!-- Names of the apps where we need Splash progress-->
     <string-array name="app_cms_splash_progress_needed">
         <item>com.viewlift.failarmy2</item>
@@ -122,6 +124,7 @@
         <item>720p</item>
         <item>360p</item>
     </string-array>
+    <string name="app_cms_page_watch_live_button_key">watchLiveButton</string>
 
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
@@ -130,15 +133,21 @@
     <string name="app_cms_page_check_tc_policy_key">checkbox</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_venue_label_key">venueLabel</string>
+    <string name="app_cms_page_timer_title_label_key">timerTitle</string>
+    <string name="app_cms_page_upcoming_timer_key">timer</string>
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
+    <string name="app_cms_page_multiple_table_view_key">multipletableView</string>
+
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_list_key">list</string>
     <string name="app_cms_page_list_module_key">AC List 01</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
+    <string name="app_cms_page_schedule_key_value">AC SchedulePage 01</string>
 
     <string name="app_cms_page_web_view_key">web_view</string>
     <string name="app_cms_page_article_web_view_key">webView</string>
@@ -148,6 +157,9 @@
 
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
+
+    <string name="app_cms_page_multicolumn_table_key">fightStatsView</string>
+
     <string name="app_cms_page_article_bottom_button_background_key">articleBottomButtonBackground</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
     <string name="app_cms_page_video_detail_player_key">videodetail_player</string>
@@ -160,7 +172,19 @@
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_season_tray_title_key">seasonTrayTitle</string>
     <string name="app_cms_page_tray_title_underline_key">trayTitleUnderline</string>
+    <string name="app_cms_page_schedule_page_title_key">schedulePageTitle</string>
+    <string name="app_cms_page_schedule_key">Schedule</string>
+    <string name="app_cms_page_roster_key">Roster</string>
+    <string name="app_cms_page_fighter_key">Fighters</string>
+
+    <string name="app_cms_page_home_team_title_key">homeTeamTitle</string>
+    <string name="app_cms_page_away_team_title_key">awayTeamTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_home_team_image_key">homTeamImage</string>
+    <string name="app_cms_page_away_team_image_key">awayTeamImage</string>
+    <string name="app_cms_page_schedule_title_key">scheduleTitle</string>
+    <string name="app_cms_page_schedule_game_Date_key">gameDate</string>
+
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
@@ -216,7 +240,15 @@
     <string name="app_cms_page_signup_key">signup button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
+    <string name="app_cms_page_game_detail_module">AC GameDetail 01</string>
+    <string name="app_cms_fightsummary_key_type">fightSummary</string>
+    <string name="app_cms_player_detail_module">eventDetail</string>
+    <string name="app_cms_event_detail_module">AC FightDetail 01</string>
+    <string name="app_cms_page_event_details_key">eventDetails</string>
+
     <string name="app_cms_page_login_component_key">AC Login Component</string>
+    <string name="app_cms_page_create_login_component_key">AC Create Login Component</string>
+
     <string name="app_cms_page_download_video_tab_component_key">AC Video Component</string>
     <string name="app_cms_page_download_audio_tab_component_key">AC Audio Component</string>
     <string name="app_cms_page_download_audio_playlist_key">DownloadedAudioPlayList</string>
@@ -237,14 +269,28 @@
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_tray_02_module_key">AC Tray 02</string>
     <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
+    <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
+    <string name="app_cms_page_tray_06_module_key">AC Tray 06</string>
+
+    <string name="app_cms_page_schedule_module_key">AC EventCalendar 01</string>
+    <string name="app_cms_roster_page_module_key">AC FighterRoster 01</string>
+    <string name="app_cms_page_parent_bg_key">parentview</string>
+
+    <string name="app_cms_page_event_details_module_key">AC EventDetail 01</string>
+    <string name="app_cms_page_fight_table_key">fightListTable</string>
+    <string name="app_cms_page_person_details_module_key">AC PersonDetail 02</string>
 
     <string name="app_cms_photo_tray_module_key">AC PhotoGallery 01</string>
     <string name="app_cms_page_audio_tray_module_key">AC AudioTray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_show_detail_module_key">AC ShowDetail 01</string>
+    <string name="app_cms_page_team_detail_module_key">AC TeamDetail 01</string>
+    <string name="app_cms_page_multitabletray_key">AC MultiTableTray 01</string>
+
     <string name="app_cms_page_article_feed_module_key">AC ArticleFeed 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
+    <string name="app_cms_page_game_tickets_key">tickets</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
     <string name="app_cms_page_planmetadatadevicecount_key">planMetaDataDeviceCount</string>
@@ -282,10 +328,14 @@
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
+    <string name="app_cms_fight_list_module_key">fightListParentView</string>
+    <string name="app_cms_page_ac_web_frame_01">AC WebFrame 03</string>
 
     <!--PHOTO_GALLERY-TAG-->
     <string name="app_cms_page_photogallery_title">photoTitle</string>
     <string name="app_cms_page_photogallery_authName">trayAuthName</string>
+    <string name="app_cms_page_record_type_key">player_record</string>
+
     <string name="app_cms_page_photogallery_subTitle">traySubTitle</string>
     <string name="app_cms_page_photogallery_imgCount">trayImgCount</string>
     <string name="app_cms_page_photogallery_selectedImg">selectedImage</string>
@@ -293,6 +343,31 @@
     <string name="app_cms_page_photogallery_nextButton">nextButtonPG</string>
     <string name="app_cms_page_photogallery_next_gallery">nextGallery</string>
     <string name="app_cms_page_photogallery_prev_gallery">prevGallery</string>
+    <string name="app_cms_page_player_Img">playerImage</string>
+    <string name="app_cms_page_player_team_title_label_key">playerTeamTitleLabel</string>
+    <string name="app_cms_page_player_team_Img">playerTeamImage</string>
+    <string name="app_cms_page_player_record_label_key">playerRecordLabel</string>
+
+    <string name="app_cms_page_player_name_key">playerName</string>
+    <string name="app_cms_page_teamlogo_image">teamLogo</string>
+    <string name="app_cms_page_player_Weight_division_label">playerWeightDivision</string>
+    <string name="app_cms_page_player_score_label_key">playerScoreLabel</string>
+    <string name="app_cms_page_player_weightdivision_value_key">playerWeightDivisionValue</string>
+    <string name="app_cms_page_player_height_label_key">playerHeightLabel</string>
+    <string name="app_cms_page_player_height_value_key">playerHeightValueLabel</string>
+    <string name="app_cms_page_fight_selection_label_key">fightDropDown</string>
+    <string name="app_cms_page_tableHeaderLabel_label_key">tableHeaderLabel</string>
+    <string name="app_cms_page_statsViewHeader_label_key">statsViewHeader</string>
+    <string name="app_cms_page_roster_title_key">rosterTitle</string>
+
+    <string name="app_cms_page_player_weight_label_key">playerWeightLabel</string>
+    <string name="app_cms_page_player_weight_value_label_key">playerWeightValueLabel</string>
+    <string name="app_cms_page_player_birthdate_label_key">playerBirthDate</string>
+    <string name="app_cms_page_player_birthdate_value_label_key">playerBirthDateValue</string>
+    <string name="app_cms_page_player_hometown_label_key">playerHometown</string>
+    <string name="app_cms_page_player_hometown_value_label_key">playerHometownValue</string>
+    <string name="app_cms_page_tweet_btn_key">tweetButton</string>
+    <string name="app_cms_page_fb_btn_key">FBButton</string>
 
     <string name="app_cms_page_history_title">My History</string>
     <string name="app_cms_page_watchlist_title">My Watchlist</string>
@@ -319,6 +394,9 @@
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
+    <string name="app_cms_page_fighter_name_label_key">fightNameLabel</string>
+    <string name="app_cms_page_fighter_selector_view_key">item_selector_view</string>
+    <string name="app_cms_page_fighter_selector_arrow_view_key">item_selector_arrow_view</string>
 
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
@@ -410,10 +488,17 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
+    <string name="app_cms_pagename_achedule_screen_key">My Watchlist</string>
+
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_photogalleryscreen_key">Photo Gallery Page</string>
+    <string name="app_cms_pagename_schedule_screen_key">Schedule Page</string>
+    <string name="app_cms_pagename_person_screen_key">Person Detail</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
+    <string name="app_cms_pagename_eventscreen_key">Event Page</string>
+    <string name="app_cms_pagename_rosterscreen_key">Fighter Roster</string>
+
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
@@ -486,8 +571,7 @@
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Show Detail API -->
-    <string name="app_cms_show_detail_api_url">%1$s/content/series?ids=%2$s&amp;site=%3$s</string>
-
+    <string name="app_cms_show_detail_api_url">%1$s/content/series/?id=%2$s&amp;site=%3$s</string>
 
     <!--  AppCMS entitlement Detail API -->
     <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
@@ -550,6 +634,7 @@
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
+    <string name="app_cms_team_label">Team</string>
 
     <!--AppCMS AnonymousAuthToken API -->
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
@@ -667,6 +752,7 @@
     <string name="app_cms_delete_single_watchlist_action">deleteSingleItemWatchlist</string>
     <string name="app_cms_delete_single_history_action">deleteSingleItemHistory</string>
     <!--video content type-->
+    <string name="content_type_event">EVENT</string>
     <string name="app_cms_content_type_shows">SHOW</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_content_type_episode">EPISODE</string>
@@ -695,6 +781,8 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
+    <string name="app_cms_page_game_date_key">gameDate</string>
+    <string name="app_cms_page_game_time_key">gameTime</string>
     <string name="app_cms_page_path_article">article</string>
     <string name="app_cms_page_path_photo_gallery">photo-gallery</string>
     <string name="app_cms_deep_link_path_photos">photos</string>
@@ -703,6 +791,7 @@
     <!-- AppCMS Content Types -->
     <string name="app_cms_video_content_type">VIDEO</string>
     <string name="app_cms_series_content_type">SERIES</string>
+    <string name="app_cms_action_teamdetail_key">Team Detail</string>
 
     <string name="app_cms_action_playlistpage_key">Playlist Page</string>
     <string name="app_cms_action_musicHub_page_key">Music Hub</string>
@@ -737,6 +826,15 @@
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->
     <string name="app_cms_ccavenue_rsa_key_api_url">%1$s/ccavenue/ccavenue/rsakey?x=%2$s</string>
+
+
+    //Teams Api
+    <string name="app_cms_team_standing_api_url">https://dev-mse.viewlift.com/season/standings/15140</string>
+    <!--<string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/53006/15140</string>-->
+    <string name="app_cms_team_roaster_api_url">http://dev-mse.viewlift.com/team-roster-standing/%1$s/%2$s</string>
+    <string name="app_cms_team_pointstreak_apikey">eed4734a29280843c17f4233f030c6b8</string>
+    <string name="app_cms_event_archieve_api_url">http://app2.compuboxdata.com/compustrike_api/events_archive?api_key=%1$s&amp;event_id=%2$s&amp;format=json</string>
+
 
     <!--Android Keys-->
     <string name="deeplink_close_player_activity_action">deeplink_close_player_activity_action</string>
@@ -1019,6 +1117,8 @@
     <string name="app_cms_default_download_quality">720p</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
+    <string name="manageLanguageBtnKey">manageLanguage</string>
+    <string name="changeLanguage">changeLanguage</string>
     <string-array name="app_cms_tray_modules">
         <item>@string/carousel_nodule</item>
         <item>AC ContinueWatching 01</item>

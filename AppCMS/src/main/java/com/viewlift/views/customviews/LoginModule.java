@@ -151,11 +151,11 @@ public class LoginModule extends ModuleView {
                 AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                         loadJsonFromAssets(context, "home.json"),
                         AppCMSPageUI.class);
-                 module = appCMSPageUI1.getModuleList().get(12);
+                module = appCMSPageUI1.getModuleList().get(12);
 
-            }else
-            {
-                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } else {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//                module = appCMSAndroidModules.getModuleListMap().get("authentication01");
             }
 
             if (module == null) {
@@ -171,7 +171,8 @@ public class LoginModule extends ModuleView {
 
             if (module != null && module.getComponents() != null) {
                 for (Component component : module.getComponents()) {
-                    if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
+                    if (((jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY) ||
+                            jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_CREATE_LOGIN_COMPONENT_KEY) &&
                             (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
                                     launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
                         buttonSelectors[0] = new Button(getContext());
@@ -327,6 +328,7 @@ public class LoginModule extends ModuleView {
 
     /**
      * Creating values for login/Signup Screen UI component
+     *
      * @param moduleView
      * @param subComponent
      * @param childIndex
@@ -394,31 +396,31 @@ public class LoginModule extends ModuleView {
                             }
 
                             if (componentKey == AppCMSUIKeyType.PAGE_CHECKBOX_KEY) {
-                                ((AppCompatCheckBox)componentView).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                ((AppCompatCheckBox) componentView).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        Button btnSignup = (Button)findViewById(R.id.appCMS_sign_up_button);
+                                        Button btnSignup = (Button) findViewById(R.id.appCMS_sign_up_button);
 
-                                        if (isChecked){
+                                        if (isChecked) {
                                             btnSignup.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
                                             btnSignup.setEnabled(true);
-                                        }else {
+                                        } else {
                                             btnSignup.setBackgroundColor(Color.LTGRAY);
                                             btnSignup.setEnabled(false);
                                         }
                                     }
                                 });
 
-                            }else{
+                            } else {
                                 //todo temp info for Hoichoi- need to be removed after stable solution
-                                if ( loginInSignUpAction.equalsIgnoreCase("signup") &&
-                                        component.getText()!= null &&
+                                if (loginInSignUpAction.equalsIgnoreCase("signup") &&
+                                        component.getText() != null &&
                                         !TextUtils.isEmpty(component.getText()) &&
-                                        component.getText().equalsIgnoreCase("SIGN UP")&&
-                                        moduleInfo.getBlockName().equalsIgnoreCase("authentication01_activate_device")){
-                                    ((Button)componentView).setEnabled(false);
-                                    ((Button)componentView).setId(R.id.appCMS_sign_up_button);
-                                    ((Button)componentView).setBackgroundColor(Color.LTGRAY);
+                                        component.getText().equalsIgnoreCase("SIGN UP") &&
+                                        moduleInfo.getBlockName().equalsIgnoreCase("authentication01_activate_device")) {
+                                    ((Button) componentView).setEnabled(false);
+                                    ((Button) componentView).setId(R.id.appCMS_sign_up_button);
+                                    ((Button) componentView).setBackgroundColor(Color.LTGRAY);
                                 }
                                 componentView.setOnClickListener(v -> {
 
@@ -445,18 +447,17 @@ public class LoginModule extends ModuleView {
                             break;
 
                         case PAGE_LABEL_KEY:
-                            if (component.getKey()!= null &&
+                            if (component.getKey() != null &&
                                     !TextUtils.isEmpty(component.getKey()) &&
-                                    component.getKey().equalsIgnoreCase("signupAgrement"))
-                            {
-                                ((TextView)componentView).setText("Terms of Service and Privacy Policy");
+                                    component.getKey().equalsIgnoreCase("signupAgrement")) {
+                                ((TextView) componentView).setText("Terms of Service and Privacy Policy");
                                 SpannableStringBuilder spanTxt = new SpannableStringBuilder(
                                         "Terms of Service");
                                 spanTxt.setSpan(new ClickableSpan() {
                                     @Override
                                     public void onClick(View widget) {
                                         hideKeyboard((Activity) widget.getContext());
-                                        appCMSPresenter.navigatToTOSPage(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
+                                        appCMSPresenter.navigatToTOSPage(visibleEmailInputView.getText().toString(), visiblePasswordInputView.getText().toString());
                                     }
                                 }, spanTxt.length() - "Term of Services".length(), spanTxt.length(), 0);
                                 spanTxt.append(" and");
@@ -466,12 +467,11 @@ public class LoginModule extends ModuleView {
                                     @Override
                                     public void onClick(View widget) {
                                         hideKeyboard((Activity) widget.getContext());
-                                        appCMSPresenter.navigatToPrivacyPolicy(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
+                                        appCMSPresenter.navigatToPrivacyPolicy(visibleEmailInputView.getText().toString(), visiblePasswordInputView.getText().toString());
                                     }
                                 }, spanTxt.length() - "Privacy Policy".length(), spanTxt.length(), 0);
-                                ((TextView)componentView).setMovementMethod(LinkMovementMethod.getInstance());
-                                ((TextView)componentView).setText(spanTxt, TextView.BufferType.SPANNABLE);
-
+                                ((TextView) componentView).setMovementMethod(LinkMovementMethod.getInstance());
+                                ((TextView) componentView).setText(spanTxt, TextView.BufferType.SPANNABLE);
 
 
                             }
@@ -485,10 +485,10 @@ public class LoginModule extends ModuleView {
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visibleEmailInputView = emailInputViews[1];
                                     }
-                                    if (appCMSPresenter!= null &&
-                                            appCMSPresenter.getTempEmail()!= null &&
+                                    if (appCMSPresenter != null &&
+                                            appCMSPresenter.getTempEmail() != null &&
                                             !TextUtils.isEmpty(appCMSPresenter.getTempEmail()) &&
-                                            visibleEmailInputView != null ){
+                                            visibleEmailInputView != null) {
                                         visibleEmailInputView.setText(appCMSPresenter.getTempEmail());
                                     }
                                     break;
@@ -533,10 +533,10 @@ public class LoginModule extends ModuleView {
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
-                                    if (appCMSPresenter!= null &&
-                                            appCMSPresenter.getTempPassword()!= null &&
+                                    if (appCMSPresenter != null &&
+                                            appCMSPresenter.getTempPassword() != null &&
                                             !TextUtils.isEmpty(appCMSPresenter.getTempPassword()) &&
-                                            visiblePasswordInputView != null){
+                                            visiblePasswordInputView != null) {
                                         visiblePasswordInputView.setText(appCMSPresenter.getTempPassword());
                                     }
                                     break;

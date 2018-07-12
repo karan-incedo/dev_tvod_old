@@ -433,6 +433,15 @@
     <string name="ssl_commerz_server_error">Server Error. Please try again.</string>
     <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
     <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
+    <string name="timer_until_face_off">TIME UNTIL FACEOFF</string>
+
+    <!-- AppCMS JSON data input keys -->
+    <string-array name="timer_text">
+        <item>D</item>
+        <item>H</item>
+        <item>M</item>
+        <item>S</item>
+    </string-array>
 
     <!--FireTV Strings-->
     <string name="action_settings">Settings</string>
@@ -465,6 +474,10 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">privacy policy</string>
     <string name="season">Season</string>
+
+
+
+    <string name="no_fight_records">No fight records found</string>
 
 </resources>
 
