@@ -48,8 +48,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
-import net.nightwhistler.htmlspanner.TextUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -1382,7 +1380,7 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         ((TextView) view).setText(thumbInfo);
-                    } else if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+                    } else if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
                         String thumbInfo = null;
                         if (data.getGist().getPublishDate() != null) {
                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
@@ -1412,6 +1410,8 @@ public class CollectionGridItemView extends BaseView {
                             }
 
                         }
+                    }else {
+                        ((TextView) view).setVisibility(GONE);
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
                     StringBuilder thumbInfo = new StringBuilder();
@@ -1436,7 +1436,8 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     }
-
+                    ((TextView) view).setTextColor(
+                            appCMSPresenter.getGeneralTextColor());
                    /* if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
                         if (data.getGist() != null && data.getGist().getHomeTeam() != null &&
                                 data.getGist().getHomeTeam().getGist() != null &&
@@ -1478,6 +1479,7 @@ public class CollectionGridItemView extends BaseView {
                                             appCMSPresenter,
                                             true,
                                             appCMSPresenter.getBrandPrimaryCtaColor(),
+                                            appCMSPresenter.getGeneralTextColor(),
                                             false);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
@@ -1505,6 +1507,7 @@ public class CollectionGridItemView extends BaseView {
                                         appCMSPresenter,
                                         false,
                                         appCMSPresenter.getBrandPrimaryCtaColor(),
+                                        appCMSPresenter.getGeneralTextColor(),
                                         true);
                         titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                     } catch (Exception e) {
