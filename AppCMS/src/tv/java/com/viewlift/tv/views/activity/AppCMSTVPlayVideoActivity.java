@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.activity;
 
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -56,7 +55,7 @@ import rx.functions.Action1;
 
 public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent, AppCmsTvErrorFragment.ErrorFragmentListener,
-        VideoPlayerView.StreamingQualitySelector {
+        VideoPlayerView.StreamingQualitySelector, VideoPlayerView.ClosedCaptionSelector {
     private static final String TAG = "TVPlayVideoActivity";
     int ffAndRewindDelta = 10000;
 
@@ -359,18 +358,20 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
+//        ArrayList<String> ccUrls = new ArrayList<>();
         // TODO: 7/27/2017 Implement CC for multiple languages.
         if (binder.getContentData() != null
                 && binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getClosedCaptions() != null
                 && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
-                if (cc.getUrl() != null &&
+                /*if (cc.getUrl() != null &&
                         !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
                         cc.getFormat() != null &&
                         cc.getFormat().equalsIgnoreCase("SRT")) {
                     closedCaptionUrl = cc.getUrl();
-                }
+                }*/
+//                ccUrls.add(cc.getUrl());
             }
         }
         String permaLink = gist.getPermalink();
@@ -414,7 +415,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                         watchedTime,
                         binder.getContentData().getGist().getRuntime(),
                         null,
-                        closedCaptionUrl,
+                        binder.getContentData().getContentDetails().getClosedCaptions(),
                         binder.getContentData().getParentalRating(),
                         freeContent,
                         appCMSSignedURLResult,
@@ -812,5 +813,20 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     @Override
     public int getMpegResolutionIndexFromUrl(String mpegUrl) {
         return 0;
+    }
+
+    @Override
+    public List<ClosedCaptions> getAvailableClosedCaptions() {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        for (ClosedCaptions captions : closedCaptions) {
+            if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                closedCaptionsList.add(captions);
+            }
+        }
+
+        return closedCaptionsList;
     }
 }
