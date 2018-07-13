@@ -11414,7 +11414,16 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
+    public boolean isPageAtPersonDetailPage(String pageName) {
+        if (currentActivity != null && pageName != null) {
+            try {
+                return pageName.contains(personPage.getPageName());
+            } catch (Exception e) {
+                //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
+            }
+        }
+        return false;
+    }
     public boolean isPageAShowPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
@@ -19521,9 +19530,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToPersonDetailsPage(String personPerma,
-                                            String pageTitle,
-                                            boolean launchActivity) {
+    public void navigateToPersonDetailsPage(String personPerma) {
 
         if (currentActivity != null && !TextUtils.isEmpty(personPerma) && personPage != null) {
             showLoader();
@@ -19540,7 +19547,7 @@ public class AppCMSPresenter {
                                     if (action != null && actionToPageMap.containsKey(action)) {
                                         actionToPageMap.put(action, appCMSPageUIResult);
                                     }
-                                    navigateToPersonDetailsPage(personPerma, pageTitle, launchActivity);
+                                    navigateToPersonDetailsPage(personPerma);
                                 }
                             },
                             loadFromFile,
@@ -19585,7 +19592,7 @@ public class AppCMSPresenter {
                         screenName.toString(),
                         loadFromFile,
                         true,
-                        true,
+                        false,
                         true,
                         false,
                         null,
