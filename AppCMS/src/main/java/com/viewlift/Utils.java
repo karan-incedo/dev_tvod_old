@@ -7,7 +7,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 
+import com.viewlift.models.data.appcms.api.Season_;
+
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -78,5 +82,28 @@ public class Utils {
         return context.getPackageManager().hasSystemFeature(AMAZON_FEATURE_FIRE_TV);
     }
 
-
+    public static List<String> getRelatedVideosInShow2(List<Season_> season, int showNumber, int episodeNumber, String episodeId) {
+        List<String> relatedVids = new ArrayList<>();
+        boolean foundEpisode = false;
+        for (int i = showNumber; i < season.size(); i++) {
+            if (i == showNumber) {
+                for (int j = episodeNumber + 1; j < season.get(i).getEpisodes().size(); j++) {
+                    String episode = season.get(i).getEpisodes().get(j).getId();
+                    if (foundEpisode || episode.equalsIgnoreCase(episodeId)) {
+                        foundEpisode = true;
+                        relatedVids.add(episode);
+                    }
+                }
+            } else {
+                for (int j = 0; j < season.get(i).getEpisodes().size(); j++) {
+                    String episode = season.get(i).getEpisodes().get(j).getId();
+                    if (foundEpisode || episode.equalsIgnoreCase(episodeId)) {
+                        foundEpisode = true;
+                        relatedVids.add(episode);
+                    }
+                }
+            }
+        }
+        return relatedVids;
+    }
 }

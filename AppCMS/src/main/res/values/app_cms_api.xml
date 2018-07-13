@@ -1118,6 +1118,7 @@
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="manageLanguageBtnKey">manageLanguage</string>
+    <string name="changeLanguageLabel">languageValue</string>
     <string name="changeLanguage">changeLanguage</string>
     <string-array name="app_cms_tray_modules">
         <item>@string/carousel_nodule</item>

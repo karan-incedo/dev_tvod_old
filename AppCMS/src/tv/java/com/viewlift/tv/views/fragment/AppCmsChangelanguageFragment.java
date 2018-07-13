@@ -23,6 +23,9 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.utils.LocaleUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -87,6 +90,21 @@ public class AppCmsChangelanguageFragment extends AbsDialogFragment {
     }
 
     class LanuageAdapter extends RecyclerView.Adapter<ViewHolder>{
+        private Language currentlanguage;
+        private int currentIndex = -1;
+        public LanuageAdapter(){
+            currentlanguage = appCMSPresenter.getLanguage();
+            ArrayList<Language> languageArrayList = appCMSPresenter.getLanguageArrayList();
+
+            currentIndex = Collections.binarySearch(languageArrayList, currentlanguage, (o1,o2) -> {
+                if(o1.getLanguageCode().equalsIgnoreCase(o2.getLanguageCode())){
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+            System.out.println("Index of the searched Language is : "+currentIndex);
+        }
 
         @NonNull
         @Override
@@ -101,6 +119,10 @@ public class AppCmsChangelanguageFragment extends AbsDialogFragment {
             System.out.println("");
             Language language = getItem(position);
             holder.mText.setText(language.getLanguageName());
+
+            if(currentIndex == position){
+                holder.languageSelectBtn.requestFocus();
+            }
         }
 
 
@@ -147,6 +169,7 @@ public class AppCmsChangelanguageFragment extends AbsDialogFragment {
                 int position = getAdapterPosition();
                 Language language = appCMSPresenter.getLanguageArrayList().get(position);
                 LocaleUtils.setLocale(appCMSPresenter.getCurrentContext(),language.getLanguageCode());
+                appCMSPresenter.setLanguage(language);
                 appCMSPresenter.navigateToHomePage();
             });
         }

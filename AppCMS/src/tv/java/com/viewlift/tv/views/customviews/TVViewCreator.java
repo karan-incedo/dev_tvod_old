@@ -62,6 +62,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
+import com.viewlift.models.data.appcms.api.Language;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Trailer;
@@ -303,7 +304,7 @@ public class TVViewCreator {
             }
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
             if(module.getBlockName().equalsIgnoreCase("userManagement01")){
-               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+           //     module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -2080,6 +2081,12 @@ public class TVViewCreator {
                             componentViewResult.componentView.setId(R.id.code_sync_text_line_header);
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            break;
+                        case LANGUAGE_LABEL_KEY:
+                            Language language = appCMSPresenter.getLanguage();
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(language.getLanguageName());
                             }
                             break;
                         default:

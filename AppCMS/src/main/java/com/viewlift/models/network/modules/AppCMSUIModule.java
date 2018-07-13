@@ -1173,8 +1173,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.manageLanguageBtnKey),
                 AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
 
-
-
+        jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
+                AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
