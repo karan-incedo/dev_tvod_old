@@ -474,8 +474,9 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">privacy policy</string>
     <string name="season">Season</string>
-    <string name="view_plans">viewplans</string>
-
+    
+    
+    
     <string name="no_fight_records">No fight records found</string>
 
 </resources>
