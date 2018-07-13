@@ -440,11 +440,11 @@ dependencies {
     implementation project(':exoplayer-library')
     implementation project(':exoplayer-library-ui')
     implementation project(':library')
-    implementation project(':htmlspanner')
+//    implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation 'com.android.volley:volley:1.0.0'
+    implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"

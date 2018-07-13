@@ -613,6 +613,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false, null, false);
                                     return;
                                 }
+                                if (data.getGist() != null && data.getGist().getContentType() != null
+                                        && data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_event_key_type).toLowerCase())) {
+                                    appCMSPresenter.navigateToEventDetailPage(data.getGist().getPermalink());
+                                    return;
+                                }
                                 //PHOTOGALLERY
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().contains("PHOTOGALLERY")) {

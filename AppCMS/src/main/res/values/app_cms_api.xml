@@ -1175,9 +1175,9 @@
     <string name="adm_directive_next">Next</string>
     <string name="adm_directive_previous">Previous</string>
 
-
     <string name="view_plans">viewplans</string>
-
-
+    <string name="app_cms_page_path_fighter">fighter</string>
+    <string name="app_cms_page_path_roster">roster</string>
+    <string name="app_cms_event_key_type">EVENT</string>
 
 </resources>
