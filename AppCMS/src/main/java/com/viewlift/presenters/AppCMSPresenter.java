@@ -3723,20 +3723,32 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean setLanguage(String languageName) {
+    public boolean setLanguage(Language languageName) {
         if (currentContext != null) {
+            Gson gson = new Gson();
+            String json = gson.toJson(languageName);
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
-            return sharedPrefs.edit().putString(LANGUAGE_NAME_VALUE, languageName).commit();
+            return sharedPrefs.edit().putString(LANGUAGE_NAME_VALUE, json).commit();
         }
         return false;
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
+        Language language = null;
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(LANGUAGE_NAME_VALUE, Locale.getDefault().getLanguage());
+
+            Gson gson = new Gson();
+            String json =  sharedPrefs.getString(LANGUAGE_NAME_VALUE,null);
+            if(json != null) {
+                language = gson.fromJson(json, Language.class);
+            }else{
+                language = new Language();
+                language.setLanguageName(Locale.getDefault().getLanguage());
+                language.setLanguageCode(Locale.getDefault().getISO3Language());
+            }
         }
-        return null;
+        return language;
     }
 
     private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI, String action) {
@@ -11272,7 +11284,7 @@ public class AppCMSPresenter {
                               final PlatformType platformType,
                               boolean bustCache) {
         Log.w(TAG, "Attempting to retrieve main.json");
-       // createlanguageArray();
+        createlanguageArray();
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
