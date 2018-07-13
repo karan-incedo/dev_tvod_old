@@ -193,7 +193,7 @@ public class AppCMSRosterAdapter extends RecyclerView.Adapter<AppCMSRosterAdapte
 //                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 
 //                        Fights fights = moduleAPI.getContentData().get(clickPosition).getFights();
-                        notifyDataSetChanged();
+//                        notifyDataSetChanged();
 //                        viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
                     }
                 }

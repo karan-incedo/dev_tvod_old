@@ -144,7 +144,7 @@ public class CastingUtils {
                 && playUrl.contains("?")) {
             playUrl = playUrl.substring(0, playUrl.indexOf("?"));
         }*/
-        return playUrl;
+            return playUrl;
     }
 
     public static String getTitle(ContentDatum contentData, boolean isTrailer) {
