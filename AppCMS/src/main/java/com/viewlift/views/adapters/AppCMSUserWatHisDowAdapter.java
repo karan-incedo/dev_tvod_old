@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
@@ -685,7 +684,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
 
-                        if (data.getGist() != null) {
+                        if (data.getGist() != null && data.getGist().getContentType() != null && data.getGist().getContentType().equalsIgnoreCase(mContext.getString(R.string.content_type_event))) {
+                            appCMSPresenter.navigateToEventDetailPage(data.getGist().getPermalink());
+                        } else if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();
                             String action = trayAction;

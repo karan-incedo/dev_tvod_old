@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
+import com.viewlift.views.adapters.AppCMSRosterAdapter;
 
 import java.util.Map;
 
@@ -1088,7 +1090,13 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
                     break;
-
+                case PAGE_WATCH_LIVE_BUTTON_KEY:
+                    if (!isTablet(getContext())) {
+                        if (childComponent.getTextAlignment().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_page_text_alignment_center_horizontal_key))) {
+                            ((Button) view).setGravity(Gravity.CENTER_HORIZONTAL);
+                        }
+                    }
+                    break;
                 case PAGE_VIDEO_PLAY_BUTTON_KEY:
                     if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         lm -= 8;
@@ -1219,6 +1227,17 @@ public abstract class BaseView extends FrameLayout {
                     if (childComponent.getTextAlignment().equalsIgnoreCase("right")) {
                         gravity = Gravity.END;
                         rm += convertDpToPixel(8, getContext());
+                        view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+                    } else {
+                        gravity = Gravity.START;
+                    }
+                    break;
+
+                case PAGE_VENUE_LABEL_KEY:
+                case PAGE_GAME_DATE_KEY:
+                    if (childComponent.getTextAlignment().equalsIgnoreCase(getContext().getResources().getString(R.string.app_cms_text_alignment_right))) {
+                        gravity = Gravity.END;
+                        rm += convertDpToPixel(10, getContext());
                         view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
                     } else {
                         gravity = Gravity.START;
@@ -1373,37 +1392,52 @@ public abstract class BaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             int padding = childComponent.getPadding();
             view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
-            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
-            RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
-                @Override
-                public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-                        getParent().requestDisallowInterceptTouchEvent(false);
-                    } else {
-                        getParent().requestDisallowInterceptTouchEvent(true);
+            if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_TRAY_06_MODULE_KEY) {
+
+                if (jsonValueKeyMap.get(viewType) != AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+                    viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+                }
+
+                RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                        if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                            getParent().requestDisallowInterceptTouchEvent(false);
+                        } else {
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                        return false;
                     }
-                    return false;
-                }
 
-                @Override
-                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                    if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
-                        getParent().requestDisallowInterceptTouchEvent(false);
-                    } else {
-                        getParent().requestDisallowInterceptTouchEvent(true);
+                    @Override
+                    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+                        if (MotionEventCompat.getActionMasked(e) == MotionEvent.ACTION_UP) {
+                            getParent().requestDisallowInterceptTouchEvent(false);
+                        } else {
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
                     }
-                }
 
-                @Override
-                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                }
-            };
-            ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
-
-            if (((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter) {
+                    @Override
+                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+                    }
+                };
+                ((RecyclerView) view).addOnItemTouchListener(mScrollTouchListener);
+            }
+            if ((((RecyclerView) view).getAdapter() instanceof AppCMSPlaylistAdapter)) {
                 padding = 20;
                 view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
             }
+
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                padding = 70;
+                view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            }
+        } else if (componentType == AppCMSUIKeyType.PAGE_EVENT_DETAIL_MODULE_KEY) {
+            int padding = childComponent.getPadding();
+            view.setPadding(0, 0, 0, (int) convertDpToPixel(padding, getContext()));
+            viewHeight = (int) Math.round(getContext().getResources().getDisplayMetrics().heightPixels / 1.125);
+
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||

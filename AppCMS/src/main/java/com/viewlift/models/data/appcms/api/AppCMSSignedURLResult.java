@@ -6,12 +6,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by viewlift on 10/10/17.
  */
 
 @UseStag
-public class AppCMSSignedURLResult {
+public class AppCMSSignedURLResult implements Serializable{
     @SerializedName("signed")
     @Expose
     String signed;

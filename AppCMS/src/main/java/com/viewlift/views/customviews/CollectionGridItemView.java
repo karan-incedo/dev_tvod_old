@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -42,6 +44,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -64,6 +67,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import static com.viewlift.views.customviews.ViewCreator.setTypeFace;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -321,6 +326,8 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE ||
+                        componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ||
                         componentKey == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_IMAGE_KEY) {
                     int placeholder = R.drawable.vid_image_placeholder_land;
@@ -485,7 +492,7 @@ public class CollectionGridItemView extends BaseView {
 
                     } else if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
-                            childViewWidth > 0 && data != null &&
+                            childViewWidth > 0 && data != null && data.getGist() != null && data.getGist().getPosterImageUrl() != null &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -531,7 +538,13 @@ public class CollectionGridItemView extends BaseView {
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
 
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        bringToFront = false;
+
+                        if (moduleType == AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY) {
+                            bringToFront = true;
+                        } else {
+                            bringToFront = false;
+                        }
+
                         String imageUrl = null;
                         if (data.getGist().getVideoImageUrl() != null) {
                             imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -699,7 +712,71 @@ public class CollectionGridItemView extends BaseView {
                                 .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_PLAYER_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+                        String imageUrl = "";
+                        if (data != null && data.getPlayersData() != null && data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages() != null && data.getPlayersData().getData().getImages().get_3x4() != null) {
+                                imageUrl = data.getPlayersData().getData().getImages().get_3x4().getUrl();
+                            }
+                        }
+                        ImageView imageView = (ImageView) view;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        imageView.setAdjustViewBounds(true);
+                        RequestOptions requestOptions = new RequestOptions()
+//                                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+
+//                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .apply(requestOptions)
+
+                                .into(imageView);
+//                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PHOTO_TEAM_IMAGE && moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
+                        String imageUrl = "";
+                        if (data != null && data.getPlayersData() != null && data.getPlayersData().getData() != null) {
+                            if (data.getPlayersData().getData().getImages() != null && data.getPlayersData().getData().getImages().get_1x1() != null) {
+                                imageUrl = data.getPlayersData().getData().getImages().get_1x1().getUrl();
+                            }
+                        }
+                        ImageView imageView = (ImageView) view;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        RequestOptions requestOptions = new RequestOptions()
+                                .override(childViewWidth, childViewHeight)
+                                .placeholder(placeholder);
+
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .apply(requestOptions)
+                                .into(imageView);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+                    } else if (data.getGist().getLandscapeImageUrl() != null) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getLandscapeImageUrl(),
+                                childViewWidth,
+                                childViewHeight);
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(childViewWidth, childViewHeight)
+                                    .placeholder(R.drawable.vid_image_placeholder_16x9)
+                                    .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .apply(requestOptions)
+                                    .into((ImageView) view);
+                        }
                     }
+
                     if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_AUDIO_TRAY_MODULE_KEY) {
                         placeholder = R.drawable.vid_image_placeholder_square;
                         int size = (int) getViewWidth(context, childComponent.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT);
@@ -751,6 +828,26 @@ public class CollectionGridItemView extends BaseView {
                     }
                 }
                 //Bellow is end of thumbnail Image
+            } else if (componentType == AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY) {
+
+                if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_VIEW_KEY) {
+//                    if(data.getFights().getFightId().equals(appCMSPresenter.getFocusedFightId())) {
+                    if (data.isSelected()) {
+                        (view).setBackgroundColor(Color.parseColor(
+                                childComponent.getBackgroundColor()));
+
+                    } else {
+                        (view).setBackgroundColor(Color.parseColor(
+                                "#00000000"));
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_SELECTOR_ARROW_VIEW_KEY) {
+                    if (data.isSelected()) {
+                        (view).setBackgroundResource(R.drawable.fight_select_bg);
+
+                    } else {
+                        (view).setBackgroundResource(0);
+                    }
+                }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
@@ -760,6 +857,40 @@ public class CollectionGridItemView extends BaseView {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TICKETS_KEY) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null &&
+                            data.getGist().getEventSchedule().get(0) != null && data.getGist().getEventSchedule().get(0).getEventTime() > 0) {
+                        long eventDate = data.getGist().getEventSchedule().get(0).getEventTime();
+                        long currentTimeMillis = System.currentTimeMillis();
+
+                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                        System.out.println("ticket event time-" + eventDate);
+
+                        System.out.println("ticket current Time-" + currentTimeMillis);
+                        System.out.println("ticket current differ-" + remainingTime);
+
+                        if (data != null && data.getGist() != null && data.getGist().getTicketUrl() != null &&
+                                !TextUtils.isEmpty(data.getGist().getTicketUrl())) {
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.GONE);
+
+                        }
+                        ((TextView) view).setText(childComponent.getText());
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                        viewsToUpdateOnClickEvent.add(view);
+                        view.setOnClickListener(view1 -> {
+
+                            String url = "";
+                            if (data != null && data.getGist() != null &&
+                                    data.getGist().getTicketUrl() != null) {
+                                url = data.getGist().getTicketUrl();
+                            }
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            appCMSPresenter.getCurrentActivity().startActivity(browserIntent);
+                        });
+                    }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
@@ -855,6 +986,7 @@ public class CollectionGridItemView extends BaseView {
                     if (component != null &&
                             component.getView() != null &&
                             component.getView().equalsIgnoreCase(context.getResources().getString(R.string.app_cms_page_event_carousel_module_key))) {
+
                         if (BaseView.isTablet(view.getContext())) {
                             if (isLandscape(getContext()) == true) {
                                 ((TextView) view).setBackgroundColor(Color.TRANSPARENT);
@@ -873,12 +1005,12 @@ public class CollectionGridItemView extends BaseView {
                                     appCMSPresenter.getAppCMSMain().getBrand() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null
                                     ) {
                                 ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                             } else {
-                                ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                                ((TextView) view).setTextColor(Color.parseColor(
+                                        childComponent.getTextColor()));
                             }
                         } else {
                             ((TextView) view).setTextColor(Color.parseColor(
@@ -913,12 +1045,12 @@ public class CollectionGridItemView extends BaseView {
                                 appCMSPresenter.getAppCMSMain().getBrand() != null &&
                                 appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
                                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
-                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null &&
-                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor().equalsIgnoreCase("#f9f9f9")
+                                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor() != null
                                 ) {
                             ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
                         } else {
-                            ((TextView) view).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
+                            ((TextView) view).setTextColor(Color.parseColor(
+                                    childComponent.getTextColor()));
                         }
                     } else {
                         ((TextView) view).setTextColor(Color.parseColor("#FFFFFF"));
@@ -949,7 +1081,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setTextColor(textColor);
                         }*/
 
-                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TITLE_KEY &&
+                }else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TITLE_KEY &&
                         settings != null && settings.getItems() != null &&
                         !TextUtils.isEmpty(settings.getItems().get(position).getTitle())) {
                     ((TextView) view).setText(settings.getItems().get(position).getTitle());
@@ -958,7 +1090,7 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent.getTextColor()));
                         ((TextView) view).setTextColor(textColor);
                     }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
+                }  else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_DESCRIPTION_KEY) {
                     if (childComponent.getNumberOfLines() != 0) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
@@ -976,6 +1108,194 @@ public class CollectionGridItemView extends BaseView {
                         int textColor = Color.parseColor(getColor(getContext(),
                                 childComponent.getTextColor()));
                         ((TextView) view).setTextColor(textColor);
+                    }
+                } /*else if (componentKey == AppCMSUIKeyType.PAGE_HOME_TEAM_TITLE_KEY) {
+                    if (data.getGist() != null && data.getGist().getHomeTeam() != null && data.getGist().getHomeTeam().getGist() != null && data.getGist().getHomeTeam().getGist().getTitle() != null) {
+
+                        ((TextView) view).setText(data.getGist().getHomeTeam().getGist().getTitle());
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_AWAY_TEAM_TITLE_KEY) {
+                    if (data.getGist() != null && data.getGist().getAwayTeam() != null && data.getGist().getAwayTeam().getGist() != null && data.getGist().getAwayTeam().getGist().getTitle() != null) {
+                        ((TextView) view).setText(data.getGist().getAwayTeam().getGist().getTitle());
+                        ((TextView) view).setTextColor(appCMSPresenter.getBrandSecondaryCtaTextColor());
+                    }
+                }*/ else if (componentKey == AppCMSUIKeyType.PAGE_GAME_DATE_KEY) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null
+                            && data.getGist().getEventSchedule().get(0) != null
+                            && data.getGist().getEventSchedule().get(0).getEventDate() != 0) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        StringBuilder thumbInfo = new StringBuilder();
+                        thumbInfo.append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "EEEE"))
+                                .append(" | ")
+                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "MMM dd"))
+                                .append(", ")
+                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate() * 1000L), "yyyy"));
+
+//                        thumbInfo.append(" | Doors open at ")
+//                                .append(getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa"));
+
+                        ((TextView) view).setText(thumbInfo);
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_SCHEDULE_TITLE_KEY) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        ((TextView) view).setText(data.getGist().getTitle());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_TEAM_TITLE_TXT_KEY) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getFirstName() != null
+                            ) {
+                        StringBuilder strPlayerName = new StringBuilder();
+                        strPlayerName.append(data.getPlayersData().getFirstName());
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        if (data.getPlayersData().getLastName() != null) {
+                            strPlayerName.append("\n" + data.getPlayersData().getLastName());
+                        }
+                        ((TextView) view).setText(strPlayerName);
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(0) != null
+                            && data.getPlayersData().getData().getMetadata().get(0).getValue() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        ((TextView) view).setText(data.getPlayersData().getData().getMetadata().get(0).getValue());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HEIGHT_VALUE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getHeight() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getPlayersData().getHeight());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WEIGHT_VALUE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getWeight() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText(data.getPlayersData().getWeight());
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        }
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null && data.getPlayersData().getData().getMetadata().get(1) != null
+                            && data.getPlayersData().getData().getMetadata().get(1).getValue() != null
+                            ) {
+
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
+                        ((TextView) view).setText("(" + data.getPlayersData().getData().getMetadata().get(1).getValue() + "pts)");
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(textColor);
+                        } else {
+                            ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                        }
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HEIGHT_LABEL_TEXT || componentKey == AppCMSUIKeyType.PAGE_WEIGHT_LABEL_TEXT) {
+
+                    if (!TextUtils.isEmpty(childComponent.getText())) {
+                        ((TextView) view).setText(childComponent.getText());
+                    }
+                    if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                        int textColor = Color.parseColor(getColor(getContext(),
+                                childComponent.getTextColor()));
+                        ((TextView) view).setTextColor(textColor);
+                    } else {
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+                    }
+
+                } else if (componentKey == AppCMSUIKeyType.PAGE_GAME_TIME_KEY) {
+                    if (data.getGist() != null && data.getGist().getEventSchedule() != null && data.getGist().getEventSchedule().get(0) != null
+                            && data.getGist().getEventSchedule().get(0).getEventDate() != 0) {
+
+                        String date = getDateFormat((data.getGist().getEventSchedule().get(0).getEventDate()), "hh:mm aa");
+                        ;
+
+                        ((TextView) view).setText(date + " " + data.getGist().getEventSchedule().get(0).getEventTimeZone());
+                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
+
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                     ((TextView) view).setSingleLine(false);
@@ -1009,7 +1329,6 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setBackgroundColor(Color.parseColor("#7D000000"));
                     ((TextView) view).setTextColor(Color.parseColor("#ffffff"));
                     inVisibleIfSeries(data, view);  //View is invisible if ContentType is Seriese
-
                 } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
                     ((TextView) view).setSingleLine(false);
                     ((TextView) view).setMaxLines(3);
@@ -1109,7 +1428,7 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         ((TextView) view).setText(thumbInfo);
-                    } else {
+                    } else if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
                         String thumbInfo = null;
                         if (data.getGist().getPublishDate() != null) {
                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
@@ -1139,6 +1458,8 @@ public class CollectionGridItemView extends BaseView {
                             }
 
                         }
+                    } else {
+                        ((TextView) view).setVisibility(GONE);
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO) {
                     StringBuilder thumbInfo = new StringBuilder();
@@ -1154,23 +1475,23 @@ public class CollectionGridItemView extends BaseView {
                         thumbInfo.append(context.getResources().getQuantityString(R.plurals.no_of_photos, noOfPhotos, noOfPhotos));
                     }
 
-                    ((TextView) view).setText(thumbInfo);
-                } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
-                        componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
-                    if (data.getGist() != null && data.getGist().getTitle() != null) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setSingleLine(true);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setVisibility(View.VISIBLE);
-                    }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                    if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {
-                        ((TextView) view).setSingleLine(false);
-                        ((TextView) view).setMaxLines(2);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setText(data.getGist().getDescription());
+                        ((TextView) view).setText(thumbInfo);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
+                            componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
+                        if (data.getGist() != null && data.getGist().getTitle() != null) {
+                            ((TextView) view).setText(data.getGist().getTitle());
+                            ((TextView) view).setSingleLine(true);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setVisibility(View.VISIBLE);
+                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
+                        if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(2);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(data.getGist().getDescription());
 
                         try {
                             ViewTreeObserver titleTextVto = view.getViewTreeObserver();
@@ -1181,6 +1502,7 @@ public class CollectionGridItemView extends BaseView {
                                             appCMSPresenter,
                                             true,
                                             appCMSPresenter.getBrandPrimaryCtaColor(),
+                                            appCMSPresenter.getGeneralTextColor(),
                                             false);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
@@ -1208,13 +1530,14 @@ public class CollectionGridItemView extends BaseView {
                                         appCMSPresenter,
                                         false,
                                         appCMSPresenter.getBrandPrimaryCtaColor(),
+                                        appCMSPresenter.getGeneralTextColor(),
                                         true);
                         titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     ((TextView) view).setVisibility(View.VISIBLE);
-                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
+                }else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
                     if (data != null && data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
                             data.getPlanDetails().get(0).getFeatureDetails() != null &&
                             data.getPlanDetails().get(0).getFeatureDetails().size() != 0 &&
@@ -1233,184 +1556,104 @@ public class CollectionGridItemView extends BaseView {
                     } else {
                         ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
                     }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY) {
+                }else if (componentKey == AppCMSUIKeyType.PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-                    if (data != null) {
-                        int planIndex = 0;
-                        for (int i = 0; i < data.getPlanDetails().size(); i++) {
-                            if (data.getPlanDetails().get(i) != null &&
-                                    data.getPlanDetails().get(i).getIsDefault()) {
-                                planIndex = i;
-                            }
+
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
+                    ((TextView) view).setText(childComponent.getText());
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
+                    ((TextView) view).setText(childComponent.getText());
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
+                } else if (componentKey == AppCMSUIKeyType.PAGE_FIGHTER_LABEL_KEY) {
+                    String fighter1Name = data.getFights().getFighter1_LastName();
+                    String fighter2Name = data.getFights().getFighter2_LastName();
+                    if (data.getFights().getWinnerId() != null && !TextUtils.isEmpty(data.getFights().getWinnerId())) {
+                        if (data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter1_Id())) {
+                            fighter1Name = fighter1Name + "(Won)";
+                        } else if (data.getFights().getWinnerId().equalsIgnoreCase(data.getFights().getFighter2Id())) {
+                            fighter2Name = fighter2Name + "(Won)";
                         }
-                        Currency currency = null;
-                        if (data.getPlanDetails() != null &&
-                                !data.getPlanDetails().isEmpty() &&
-                                data.getPlanDetails().get(planIndex) != null &&
-                                data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode() != null) {
-                            try {
-                                currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
-                            } catch (Exception e) {
-                                //Log.e(TAG, "Could not parse locale");
-                            }
-                        }
-
-                        if (data.getPlanDetails() != null &&
-                                !data.getPlanDetails().isEmpty() &&
-                                data.getPlanDetails().get(planIndex) != null &&
-                                data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
-
-                            double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
-                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                    recurringPaymentAmount);
-                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
-                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
-                                        recurringPaymentAmount);
-                            }
-
-                            double strikeThroughPaymentAmount = data.getPlanDetails()
-                                    .get(planIndex).getStrikeThroughPrice();
-                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                    strikeThroughPaymentAmount);
-                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
-                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
-                                        strikeThroughPaymentAmount);
-                            }
-
-                            StringBuilder stringBuilder = new StringBuilder();
-                            if (currency != null) {
-                                stringBuilder.append(currency.getSymbol());
-                            }
-                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
-
-                            if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
-                                int strikeThroughLength = stringBuilder.length();
-                                stringBuilder.append("     ");
-                                if (currency != null) {
-                                    stringBuilder.append(currency.getSymbol());
-                                }
-                                stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
-
-                                SpannableString spannableString =
-                                        new SpannableString(stringBuilder.toString());
-                                spannableString.setSpan(new StrikethroughSpan(), 0,
-                                        strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                ((TextView) view).setText(spannableString);
-                            } else {
-                                ((TextView) view).setText(stringBuilder.toString());
-                            }
-                            if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {
-                                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
-                                layPar.gravity = Gravity.TOP;
-                                view.setLayoutParams(layPar);
-                            }
-                        } else {
-                            double recurringPaymentAmount = data.getPlanDetails()
-                                    .get(planIndex).getRecurringPaymentAmount();
-                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                    recurringPaymentAmount);
-                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
-                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
-                                        recurringPaymentAmount);
-                            }
-
-                            StringBuilder planAmt = new StringBuilder();
-                            if (currency != null) {
-                                String currencySymbol = currency.getSymbol();
-                                if (currencySymbol.contains("US$"))
-                                    currencySymbol = "$";
-                                planAmt.append(currencySymbol);
-                            }
-                            planAmt.append(formattedRecurringPaymentAmount);
-                            StringBuilder planDuration = new StringBuilder();
-                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY ||
-                                    appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
-                                    planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.forward_slash));
-                                    planDuration.append(" ");
-                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
-                                        planDuration.append(context.getString(R.string.plan_type_month));
-                                    } else {
-                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
-                                        planDuration.append(" ");
-                                        planDuration.append(context.getString(R.string.plan_type_month));
-                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
-                                            planDuration.append("s");
-                                    }
-                                }
-                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
-                                    planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.forward_slash));
-                                    planDuration.append(" ");
-                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
-                                        planDuration.append(context.getString(R.string.plan_type_year));
-                                    } else {
-                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
-                                        planDuration.append(" ");
-                                        planDuration.append(context.getString(R.string.plan_type_year));
-                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
-                                            planDuration.append("s");
-                                    }
-                                }
-                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
-                                    planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.forward_slash));
-                                    planDuration.append(" ");
-                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
-                                        planDuration.append(context.getString(R.string.plan_type_day));
-                                    } else {
-                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
-                                        planDuration.append(" ");
-                                        planDuration.append(context.getString(R.string.plan_type_day));
-                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
-                                            planDuration.append("s");
-                                    }
-                                }
-                            }
-                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
-                                StringBuilder plan = new StringBuilder();
-                                String pay = "PAY";
-                                plan.append(pay);
-                                plan.append(" ");
-                                plan.append(planAmt.toString());
-                                plan.append(planDuration.toString());
-                                Spannable text = new SpannableString(plan.toString());
-                                float payFont = 1.0f;
-                                float durationFont = 1.0f;
-                                float priceFont = 1.5f;
-                                if (BaseView.isTablet(context)) {
-                                    payFont = 1.1f;
-                                    durationFont = 1.1f;
-                                    priceFont = 2.0f;
-                                }
-                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
-                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
-                            } else {
-                                StringBuilder plan = new StringBuilder();
-                                plan.append(planAmt.toString());
-                                if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)
-                                    plan.append(planDuration.toString());
-                                ((TextView) view).setText(plan.toString());
-                            }
-                            ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
-                        }
-                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
-                        ((TextView) view).setText(childComponent.getText());
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
-                    } else {
-                        ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
                     }
-//                }
+                    if (data.getFights().getFighter1_LastName() != null && data.getFights().getFighter2_LastName() != null) {
+                        ((TextView) view).setText(data.getFights().getFightSerialNo() + " " + fighter1Name + "/" + fighter2Name);
+                    }
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
+                    ((TextView) view).setGravity(Gravity.CENTER_VERTICAL);
+                } else if (childComponent.getText() != null && !TextUtils.isEmpty(childComponent.getText())) {
+                    ((TextView) view).setText(childComponent.getText());
+                    ((TextView) view).setTextColor(Color.parseColor(
+                            childComponent.getTextColor()));
                 }
+
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                    setTypeFace(context,
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) view);
+                }
+//                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_RECORD_TYPE_KEY) {
+                    String record = "";
+                    String score = "";
+                    if (data.getPlayersData() != null && data.getPlayersData().getData() != null
+                            && data.getPlayersData().getData().getMetadata() != null) {
+                        for (int j = 0; j < data.getPlayersData().getData().getMetadata().size(); j++) {
+                            if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("record")) {
+                                record = data.getPlayersData().getData().getMetadata().get(j).getValue();
+                            } else if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("score")) {
+                                score = data.getPlayersData().getData().getMetadata().get(j).getValue();
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < childComponent.getComponents().size(); i++) {
+                        TextView textView = new TextView(context);
+
+
+                        if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
+                            if (score != null && !TextUtils.isEmpty(score)) {
+                                textView.setText("(" + score + "pts)");
+                            }
+//                            textView.setText("(" + score + "pts)");
+                        } else if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {
+                            textView.setText(record);
+
+                        }
+
+                        if (childComponent.getComponents().get(i).getNumberOfLines() != 0) {
+                            textView.setSingleLine(false);
+                            textView.setMaxLines(childComponent.getComponents().get(i).getNumberOfLines());
+                            textView.setEllipsize(TextUtils.TruncateAt.END);
+                        }
+
+                        textView.setTextColor(appCMSPresenter.getGeneralTextColor());
+                        if (!TextUtils.isEmpty(childComponent.getComponents().get(i).getTextColor())) {
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getComponents().get(i).getTextColor()));
+                            textView.setTextColor(textColor);
+                        }
+                        if (!TextUtils.isEmpty(component.getFontFamily())) {
+                            setTypeFace(context,
+                                    appCMSPresenter,
+                                    jsonValueKeyMap,
+                                    component,
+                                    textView);
+                        }
+                        if (getFontSize(context, childComponent.getComponents().get(i).getLayout()) > 0) {
+                            textView.setTextSize(getFontSize(context, childComponent.getComponents().get(i).getLayout()));
+                        }
+                        ((LinearLayout) view).addView(textView);
+
+                    }
+                }
+
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);
@@ -1652,7 +1895,7 @@ public class CollectionGridItemView extends BaseView {
                 data.getGist().getContentType() != null &&
                 data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
             view.setVisibility(GONE);
-        }/*else{
+        } /*else {
             view.setVisibility(VISIBLE);
         }*/
     }

@@ -322,7 +322,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                     List<String> relatedVids = Utils.getRelatedVideosInShow(
                             appCMSSwitchSeasonBinder.getSeasonList(),
                             appCMSSwitchSeasonBinder.getSelectedSeasonIndex(),
-                            i);
+                            i - 1);
                     ContentDatum contentDatum = episodes.get(i);
                     contentDatum.setSeason(appCMSSwitchSeasonBinder.getSeasonList());
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
@@ -335,7 +335,7 @@ public class AppCmsTVPageFragment extends BaseFragment {
                     traylistRowAdapter.add(rowData);
                 }
                 CustomHeaderItem customHeaderItem = (CustomHeaderItem) listRow.getHeaderItem();
-                CustomHeaderItem header = new CustomHeaderItem(appCMSPresenter.getCurrentActivity(), 0, "Season " + (appCMSSwitchSeasonBinder.getSelectedSeasonIndex() + 1));
+                CustomHeaderItem header = new CustomHeaderItem(appCMSPresenter.getCurrentActivity(), 0, getString(R.string.season)+" " + (appCMSSwitchSeasonBinder.getSelectedSeasonIndex() + 1));
                 header.setFontFamily(customHeaderItem.getFontFamily());
                 header.setFontSize(customHeaderItem.getFontSize());
                 header.setFontWeight(customHeaderItem.getFontWeight());

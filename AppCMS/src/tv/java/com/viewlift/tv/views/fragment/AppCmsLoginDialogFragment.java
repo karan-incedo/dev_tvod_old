@@ -393,13 +393,25 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
         subscriptionTitle.setText(message);
         subscriptionTitle.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCtaBackgroundColor()));
         subscriptionTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCtaTextColor()));
-        LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
-        if (message.length() == 0) {
-            textLayoutParams.height = 10;
-        } else {
-            textLayoutParams.height = 40;
+        if(appCMSPresenter.isLeftNavigationEnabled()){
+            RelativeLayout.LayoutParams textLayoutParams = (RelativeLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+            if (message.length() == 0) {
+                textLayoutParams.height = 10;
+            } else {
+                textLayoutParams.height = 40;
+            }
+            subscriptionTitle.setLayoutParams(textLayoutParams);
+        }else{
+            LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+            if (message.length() == 0) {
+                textLayoutParams.height = 10;
+            } else {
+                textLayoutParams.height = 40;
+            }
+            subscriptionTitle.setLayoutParams(textLayoutParams);
         }
-        subscriptionTitle.setLayoutParams(textLayoutParams);
+
+
     }
 
 

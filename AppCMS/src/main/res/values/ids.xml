@@ -5,12 +5,19 @@
     <item name="autoplay_cancel_button" type="id">autoplay_cancel_button</item>
 
     <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
+    <item name="fight_stats_id" type="id">fight_stats_id</item>
+    <item name="fight_scroll_id" type="id">fight_scroll_id</item>
+    <item name="fight_summary_module_id" type="id">fight_summary_module_id</item>
+    <item name="web_view_id" type="id">web_view_id</item>
 
     <item name="subscribe_edit_text_id" type="id">subscribe_edit_text_id</item>
     <item name="download_quality_selection_list" type="id">download_quality_selection_list</item>
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
     <item name="video_player_id" type="id">video_player_id</item>
+    <item name="timer_id" type="id">timer_id</item>
+    <item name="watch_live_button" type="id">watch_live_button</item>
+    <item name="timer_until_face_off" type="id">timer_until_face_off</item>
     <item name="recyclerview_tray" type="id"/>
     <item name="video_play_image" type="id"/>
     <item name="play_live_image_id" type="id"/>

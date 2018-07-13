@@ -27,6 +27,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY;
 import static com.viewlift.views.customviews.download.DownloadModule.VIDEO_TAB;
 
 /**
@@ -65,6 +66,16 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     void removePlans(Navigation nav) {
         navigation = new Navigation();
+        for (int i = 0; i < nav.getNavigationUser().size(); i++) {
+            NavigationUser nu = nav.getNavigationUser().get(i);
+            AppCMSUIKeyType titleKey = jsonValueKeyMap.get(nu.getTitle());
+
+            if (!appCMSPresenter.isDownloadable() && titleKey == ANDROID_DOWNLOAD_NAV_KEY) {
+                nav.getNavigationUser().remove(i);
+                break;
+            }
+
+        }
         if (userSubscribed) {
             navigation.setLeft(nav.getLeft());
             navigation.setNavigationFooter(nav.getNavigationFooter());
@@ -78,6 +89,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     npList.add(np);
                 }
             }
+
             navigation.setNavigationPrimary(npList);
             List<NavigationUser> nuList = new ArrayList<>();
             for (int i = 0; i < nav.getNavigationUser().size(); i++) {
@@ -85,9 +97,11 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 if (!appCMSPresenter.isViewPlanPage(nu.getPageId())) {
                     nuList.add(nu);
                 }
+
             }
             navigation.setNavigationUser(nuList);
         } else {
+
             navigation = nav;
         }
     }
@@ -161,6 +175,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             appCMSPresenter.navigateToSubscriptionPlansPage(true);
                         } else if (titleKey == AppCMSUIKeyType.PAGE_TEAMS_KEY) {
                             appCMSPresenter.launchTeamNavPage();
+                        } else if (titleKey == AppCMSUIKeyType.PAGE_SCHEDULE_SCREEN_TITLE_KEY) {
+                            appCMSPresenter.navigateToSchedulePage(navigationPrimary.getPageId(),
+                                    navigationPrimary.getTitle(), false);
+                        } else if (titleKey == AppCMSUIKeyType.PAGE_ROSTER_SCREEN_TITLE_KEY || titleKey == AppCMSUIKeyType.PAGE_FIGHTER_SCREEN_TITLE_KEY) {
+                            appCMSPresenter.navigateToRosterPage(navigationPrimary.getPageId(),
+                                    navigationPrimary.getTitle(), false);
                         } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
@@ -227,6 +247,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
+                                case ANDROID_SCHEDULE_SCREEN_KEY:
+                                case PAGE_SCHEDULE_SCREEN_TITLE_KEY:
+                                    appCMSPresenter.navigateToSchedulePage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), false);
+                                    break;
+
+                                case PAGE_ROSTER_SCREEN_TITLE_KEY:
+                                case PAGE_FIGHTER_SCREEN_TITLE_KEY:
+                                    appCMSPresenter.navigateToRosterPage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), false);
+                                    break;
+
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                 case ANDROID_WATCHLIST_SCREEN_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
@@ -271,7 +303,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                                 default:
 
-                                    if (!appCMSPresenter.isNetworkConnected() && titleKey != AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY) {
+                                    if (!appCMSPresenter.isNetworkConnected() && titleKey != ANDROID_DOWNLOAD_NAV_KEY) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                                     null,

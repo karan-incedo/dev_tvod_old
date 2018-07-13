@@ -118,6 +118,13 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 appCMSPresenter.navigateToPhotoGalleryPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), null, false);
                 return;
 
+            }else if(appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                    && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.content_type_event).toLowerCase())) {
+                appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                        .PRESENTER_PAGE_LOADING_ACTION));
+                appCMSPresenter.navigateToEventDetailPage(appCMSSearchResults.get(adapterPosition).getGist().getPermalink());
+                return;
+
             }
             /*get audio details on tray click item and play song*/
             if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
@@ -184,7 +191,18 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             Glide.with(viewHolder.view.getContext())
                     .load(imageUrl).apply(requestOptions)
                     .into(viewHolder.filmThumbnail);
-        } else if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+        } if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                appCMSSearchResults.get(adapterPosition).getGist().getLandscapeImageUrl() != null &&
+
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getLandscapeImageUrl())) {
+            final String imageUrl=appCMSSearchResults.get(adapterPosition).getGist().getLandscapeImageUrl();
+
+            RequestOptions requestOptions = new RequestOptions().placeholder(placeholder);
+
+            Glide.with(viewHolder.view.getContext())
+                    .load(imageUrl).apply(requestOptions)
+                    .into(viewHolder.filmThumbnail);
+        }else if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage() != null &&
 
                 !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
@@ -270,7 +288,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
                 appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
                 && (appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())
-                || appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase()))) {
+                || appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())
+                || appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.content_type_event).toLowerCase()))) {
             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
                 applySportsStyleDefault(viewHolder, createEmptyBitmap());
             }
