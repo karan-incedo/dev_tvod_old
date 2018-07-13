@@ -32,7 +32,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -41,6 +41,7 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.RendererCapabilities;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
@@ -121,7 +122,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     boolean isLoadedNext;
     DefaultTrackSelector trackSelector;
     private AppCMSPresenter appCMSPresenter;
-    private ToggleButton ccToggleButton;
+    private ImageButton ccToggleButton;
     private LinearLayout chromecastLivePlayerParent;
     private ViewGroup chromecastButtonPreviousParent;
     private FrameLayout chromecastButtonPlaceholder;
@@ -175,6 +176,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private int mTextRendererIndex;
     private boolean streamingQualitySelectorCreated;
     private boolean useHls;
+    private List<ClosedCaptions> closedCaptionsList;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -247,8 +249,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             } else {
                 if (ccToggleButton != null) {
-                    ccToggleButton.setChecked(isClosedCaptionEnabled);
-                    ccToggleButton.setVisibility(VISIBLE);
+//                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+//                    ccToggleButton.setVisibility(VISIBLE);
                 }
             }
 
@@ -293,8 +295,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             } else {
                 if (ccToggleButton != null) {
-                    ccToggleButton.setChecked(isClosedCaptionEnabled);
-                    ccToggleButton.setVisibility(VISIBLE);
+//                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+//                    ccToggleButton.setVisibility(VISIBLE);
                 }
             }
 
@@ -513,12 +515,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
-        ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (onClosedCaptionButtonClicked != null) {
+        /*ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            *//*if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
-            }
+            }*//*
             isClosedCaptionEnabled = isChecked;
-        });
+        });*/
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
 
@@ -651,6 +653,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
+        int selectedTrack = getSelectedCCTrack();
+
+        MappingTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
+
         ClosedCaptions captions = new ClosedCaptions();
         captions.setLanguage("Off");
         List<ClosedCaptions> availableClosedCaptions = closedCaptionSelector.getAvailableClosedCaptions();
@@ -658,6 +664,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         closedCaptionSelectorAdapter = new ClosedCaptionSelectorAdapter(getContext(),
                 appCMSPresenter,
                 availableClosedCaptions);
+        closedCaptionSelectorAdapter.setSelectedIndex(selectedTrack);
         closedCaptionSelectorRecyclerView = new RecyclerView(getContext());
         closedCaptionSelectorRecyclerView.setAdapter(closedCaptionSelectorAdapter);
         closedCaptionSelectorRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
@@ -672,6 +679,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         builder.setView(closedCaptionSelectorRecyclerView);
         final Dialog closedCaptionSelectorDialog = builder.create();
+
+        if (selectedTrack == 0) {
+            ccToggleButton.setSelected(false);
+        } else {
+            ccToggleButton.setSelected(true);
+        }
+
         if (closedCaptionSelectorDialog.getWindow() != null) {
             if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
                 closedCaptionSelectorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
@@ -681,26 +695,48 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
         closedCaptionSelectorAdapter.setItemClickListener(item -> {
-            TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
+            TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
             int position = closedCaptionSelectorAdapter.getDownloadQualityPosition();
             if (position != 0) {
+                ccToggleButton.setSelected(true);
                 MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
                         position - 1, 0 );
-                trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups, override);
+                trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
                 VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
             } else {
+                ccToggleButton.setSelected(false);
                 VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
             }
             closedCaptionSelectorAdapter.setSelectedIndex(position);
             closedCaptionSelectorDialog.dismiss();
+            getSelectedCCTrack();
         });
-        ccToggleButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closedCaptionSelectorDialog.show();
-                closedCaptionSelectorAdapter.notifyDataSetChanged();
+        ccToggleButton.setOnClickListener(v -> {
+            closedCaptionSelectorDialog.show();
+            closedCaptionSelectorAdapter.notifyDataSetChanged();
+            closedCaptionSelectorRecyclerView.scrollToPosition(selectedTrack);
+        });
+    }
+
+    private int getSelectedCCTrack() {
+        int selectedTrack = 0;
+        TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
+        for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+            TrackGroup trackGroup = trackGroups.get(groupIndex);
+            for (int trackIndex = 0; trackIndex < trackGroup.length; trackIndex++) {
+                MappingTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
+                if (selectionOverride != null && selectionOverride.groupIndex == groupIndex && selectionOverride.containsTrack(trackIndex)) {
+                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
+
+                }
+
+                if (trackSelector.getCurrentMappedTrackInfo().getTrackFormatSupport(mTextRendererIndex, groupIndex, trackIndex) == RendererCapabilities.FORMAT_HANDLED) {
+//                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
+                    selectedTrack = trackIndex + 1;
+                }
             }
-        });
+        }
+        return selectedTrack;
     }
 
     private void createStreamingQualitySelector() {
@@ -945,6 +981,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
 
     private MediaSource buildMediaSource(Uri uri, List<ClosedCaptions> ccUrls) {
+        this.closedCaptionsList = ccUrls;
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
             if(null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
@@ -1124,6 +1161,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }*/
             if (playbackState == Player.STATE_READY) {
                 createClosedCaptioningSelector();
+                toggleCCSelectorVisibility(true);
+
+                /*for (int i = 0; i < closedCaptionsList.size(); i++) {
+                    ClosedCaptions captions = closedCaptionsList.get(i);
+                    if (captions.getLanguage().equalsIgnoreCase("bengali")) {*/
+                        TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
+                        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                                2, 0);
+                        trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
+                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                   /* }
+                }*/
+
+                getSelectedCCTrack();
             }
 
         }
@@ -1133,6 +1184,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (null != currentStreamingQualitySelector
                 && null != appCMSPresenter)
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+    }
+
+    private void toggleCCSelectorVisibility(boolean show) {
+        if (null != ccToggleButton)
+            ccToggleButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -1414,19 +1470,19 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.appCMSPresenter = appCMSPresenter;
     }
 
-    protected ToggleButton createCC_ToggleButton() {
-        ToggleButton mToggleButton = new ToggleButton(getContext());
+    protected ImageButton createCC_ToggleButton() {
+        ImageButton mToggleButton = new ImageButton(getContext());
         RelativeLayout.LayoutParams toggleLP = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()), BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()));
         toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
         toggleLP.addRule(RelativeLayout.RIGHT_OF, R.id.exo_media_controller);
         toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
         toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
         mToggleButton.setLayoutParams(toggleLP);
-        mToggleButton.setChecked(false);
+        /*mToggleButton.setChecked(false);
         mToggleButton.setTextOff("");
         mToggleButton.setTextOn("");
-        mToggleButton.setText("");
-        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_toggle_selector, null));
+        mToggleButton.setText("");*/
+        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_button_selector, null));
         mToggleButton.setVisibility(GONE);
         return mToggleButton;
     }
