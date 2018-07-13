@@ -1170,7 +1170,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_code_sync_text_line_header),
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
 
+        jsonValueKeyMap.put(context.getString(R.string.manageLanguageBtnKey),
+                AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
+                AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -1381,6 +1385,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_download_action),
                 AppCMSActionType.DELETE_SINGLE_DOWNLOAD_ITEM);
+
+        actionToActionTypeMap.put(context.getString(R.string.changeLanguage),
+                AppCMSActionType.CHANGE_LANGUAGE);
 
     }
 

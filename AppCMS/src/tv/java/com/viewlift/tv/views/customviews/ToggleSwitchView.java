@@ -1,8 +1,11 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -18,7 +21,9 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.utils.LocaleUtils;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -86,10 +91,10 @@ public class ToggleSwitchView extends TVBaseView {
                 if (isEnabled) {
                     isEnabled = false;
                     componentView.setImageResource(R.drawable.focused_off);
-                } else {
+                 } else {
                     isEnabled = true;
                     componentView.setImageResource(R.drawable.focused_on);
-                }
+                 }
                 ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent()
                         .appCMSPresenter().setAutoplayEnabledUserPref(mContext, isEnabled);
             });

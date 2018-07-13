@@ -20,7 +20,7 @@
     <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
     <string name="app_cms_beacon_chromecast_dp2_url">&amp;dp2=Chromecast</string>
     <string name="app_cms_beacon_platform">Android</string>
-    <string name="app_cms_beacon_tvplatform">FireTV</string>
+    <string name="app_cms_beacon_tvplatform" translatable="false">FireTV</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
     <string name="app_cms_beacon_casting_screen_name">CastingView</string>
@@ -571,7 +571,7 @@
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Show Detail API -->
-    <string name="app_cms_show_detail_api_url">%1$s/content/series?ids=%2$s&amp;site=%3$s</string>
+    <string name="app_cms_show_detail_api_url">%1$s/content/series/?id=%2$s&amp;site=%3$s</string>
 
     <!--  AppCMS entitlement Detail API -->
     <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
@@ -1117,6 +1117,9 @@
     <string name="app_cms_default_download_quality">720p</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
+    <string name="manageLanguageBtnKey">manageLanguage</string>
+    <string name="changeLanguageLabel">languageValue</string>
+    <string name="changeLanguage">changeLanguage</string>
     <string-array name="app_cms_tray_modules">
         <item>@string/carousel_nodule</item>
         <item>AC ContinueWatching 01</item>
@@ -1175,6 +1178,7 @@
     <string name="view_plans">viewplans</string>
 
 
+    <string name="view_plans">viewplans</string>
 
 
 

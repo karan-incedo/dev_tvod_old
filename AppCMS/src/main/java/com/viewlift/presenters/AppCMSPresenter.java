@@ -138,6 +138,7 @@ import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.GameSchedule;
 import com.viewlift.models.data.appcms.api.GetLinkCode;
 import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.Language;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.PhotoGalleryData;
@@ -418,6 +419,9 @@ public class AppCMSPresenter {
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final String ACTION_LINK_YOUR_ACCOUNT = "appcms_link_your_account_action";
+    public static final String ACTION_CHANGE_LANGUAGE = "appcms_change_language_action";
+    private static final String LANGUAGE_SHARED_PREF_NAME = "language_pref";
+    private static final String LANGUAGE_NAME_VALUE = "language_name";
     public static final int PLAYER_REQUEST_CODE = 1111;
     public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
@@ -3687,7 +3691,65 @@ public class AppCMSPresenter {
             }
         }
     }
+    ArrayList<Language> languageArrayList = new ArrayList<>();
+    public void createlanguageArray(){
+        Language enLanguage = new Language();
+        enLanguage.setLanguageName("English");
+        enLanguage.setLanguageCode("en");
 
+        Language frLanguage = new Language();
+        frLanguage.setLanguageName("French");
+        frLanguage.setLanguageCode("fr");
+
+        Language bnLanguage = new Language();
+        bnLanguage.setLanguageName("Bengali");
+        bnLanguage.setLanguageCode("bn");
+
+        languageArrayList.add(enLanguage);
+        languageArrayList.add(frLanguage);
+        languageArrayList.add(bnLanguage);
+    }
+
+    public ArrayList<Language> getLanguageArrayList(){
+        return languageArrayList;
+    }
+
+    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action){
+        if(currentActivity  != null){
+            Intent updatePageIntent =
+                    new Intent(AppCMSPresenter.ACTION_CHANGE_LANGUAGE);
+            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(updatePageIntent);
+        }
+    }
+
+    public boolean setLanguage(Language languageName) {
+        if (currentContext != null) {
+            Gson gson = new Gson();
+            String json = gson.toJson(languageName);
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(LANGUAGE_NAME_VALUE, json).commit();
+        }
+        return false;
+    }
+
+    public Language getLanguage() {
+        Language language = null;
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
+
+            Gson gson = new Gson();
+            String json =  sharedPrefs.getString(LANGUAGE_NAME_VALUE,null);
+            if(json != null) {
+                language = gson.fromJson(json, Language.class);
+            }else{
+                language = new Language();
+                language.setLanguageName(Locale.getDefault().getLanguage());
+                language.setLanguageCode(Locale.getDefault().getISO3Language());
+            }
+        }
+        return language;
+    }
 
     private void launchLinkYourAccountPage(AppCMSPageUI appCMSPageUI, String action) {
         if (currentActivity != null) {
@@ -8887,16 +8949,31 @@ public class AppCMSPresenter {
 
     public void navigateToHomePage() {
         if (homePage != null) {
-            restartInternalEvents();
-            navigateToPage(homePage.getPageId(),
-                    homePage.getPageName(),
-                    homePage.getPageUI(),
-                    false,
-                    true,
-                    false,
-                    true,
-                    true,
-                    deeplinkSearchQuery);
+            if (platformType == PlatformType.ANDROID) {
+                restartInternalEvents();
+                navigateToPage(homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
+                        false,
+                        true,
+                        false,
+                        true,
+                        true,
+                        deeplinkSearchQuery);
+            } else if(platformType == PlatformType.TV) {
+                getPlayerLruCache().evictAll();
+                navigateToTVPage(
+                        homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
+                        true,
+                        deeplinkSearchQuery,
+                        true,
+                        false,
+                        false
+                );
+
+            }
         }
     }
 
@@ -11220,7 +11297,7 @@ public class AppCMSPresenter {
                               final PlatformType platformType,
                               boolean bustCache) {
         Log.w(TAG, "Attempting to retrieve main.json");
-
+        createlanguageArray();
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
@@ -15900,7 +15977,6 @@ public class AppCMSPresenter {
 
                 queueMetaPages(appCMSAndroidUI.getMetaPages());
                 final MetaPage firstPage = pagesToProcess.peek();
-                //Log.d(TAG, "Processing meta pages queue");
 
                 getAppCMSModules(appCMSAndroidUI,
                         false,
@@ -16192,13 +16268,32 @@ public class AppCMSPresenter {
     public void tryLaunchingPlayerFromDeeplink(Action0 onVideoPlayerLaunchedAction) {
         if (getIsTVAppLaunchTypeDeepLink()) {
             showLoadingDialog(true);
-            ContentDatum contentDatum = new ContentDatum();
-            Gist gist = new Gist();
-            gist.setId(getDeepLinkContentID());
-            contentDatum.setGist(gist);
-            launchTVVideoPlayer(contentDatum, 0, null, 0, onVideoPlayerLaunchedAction);
-            setIsTVAppLaunchTypeDeepLink(false);
-            setDeepLinkContentID(null);
+            String deepLinkContentID = getDeepLinkContentID();
+
+            String showId;
+            //00000148-f688-d53c-a7ff-ffdddfaa0000
+
+            // TODO: 09/07/18 Harcoded show id, to be removed after catalog ingestion
+            deepLinkContentID = deepLinkContentID+"#d498be13-311f-40e3-b761-ae3e3948d59d";
+            if (deepLinkContentID.contains("#")) {
+                String[] split = deepLinkContentID.split("#");
+                String contentId = split[0];
+                showId = split[1];
+                getShowDetails(showId, appCMSShowDetail -> {
+                    ContentDatum contentDatum = appCMSShowDetail.convertToContentDatum();
+                    playEpisode(contentDatum, contentId);
+                });
+                setIsTVAppLaunchTypeDeepLink(false);
+                setDeepLinkContentID(null);
+            } else {
+                ContentDatum contentDatum = new ContentDatum();
+                Gist gist = new Gist();
+                gist.setId(deepLinkContentID);
+                contentDatum.setGist(gist);
+                launchTVVideoPlayer(contentDatum, 0, null, 0, onVideoPlayerLaunchedAction);
+                setIsTVAppLaunchTypeDeepLink(false);
+                setDeepLinkContentID(null);
+            }
         }
     }
 
@@ -16360,6 +16455,7 @@ public class AppCMSPresenter {
                 Intent appCMSIntent = new Intent(activity, Class.forName(tvHomeScreenPackage));
                 appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                getCurrentActivity().finish();
                 activity.startActivity(appCMSIntent);
             }
         } catch (Exception e) {
@@ -16615,6 +16711,11 @@ public class AppCMSPresenter {
                 showLoader();
                 signup(extraData[0], extraData[1]);
                 sendSignUpEmailFirebase();
+            }else if (actionType == AppCMSActionType.CHANGE_LANGUAGE) {
+                //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                showLoader();
+                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                showChangeLanguageTVDialog(appCMSPageUI, action);
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
@@ -17048,32 +17149,64 @@ public class AppCMSPresenter {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
 
-            refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
-                List<String> relatedVideoIds;
-                if (relateVideoIds == null || relateVideoIds.size() == 0) {
-                    relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
-                    // Putting the current video id on the
-                    // zeroth position, to make sure when user
-                    // asks Alexa to play previous video, we
-                    // always have a previous video.
-                    if (relatedVideoIds != null) {
-                        relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
-                    }
-                } else {
-                    relatedVideoIds = relateVideoIds;
-                }
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
+                                List<String> relatedVideoIds;
+                                if (relateVideoIds == null || relateVideoIds.size() == 0) {
+                                    relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
+                                    // Putting the current video id on the
+                                    // zeroth position, to make sure when user
+                                    // asks Alexa to play previous video, we
+                                    // always have a previous video.
+                                    if (relatedVideoIds != null) {
+                                        relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
+                                    }
+                                } else {
+                                    relatedVideoIds = relateVideoIds;
+                                }
 
-                updatedContentDatum.setSeason(contentDatum.getSeason());
-                launchTVButtonSelectedAction(contentDatum.getGist().getId(),
-                        action,
-                        updatedContentDatum.getGist().getTitle(),
-                        null,
-                        updatedContentDatum,
-                        false,
-                        currentlyPlayingIndex,
-                        relatedVideoIds,
-                        action0);
-            });
+                                updatedContentDatum.setSeason(contentDatum.getSeason());
+                                launchTVButtonSelectedAction(contentDatum.getGist().getId(),
+                                        action,
+                                        updatedContentDatum.getGist().getTitle(),
+                                        null,
+                                        updatedContentDatum,
+                                        false,
+                                        currentlyPlayingIndex,
+                                        relatedVideoIds,
+                                        action0);
+                            });
+                        });
+            } else {
+                refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
+                    List<String> relatedVideoIds;
+                    if (relateVideoIds == null || relateVideoIds.size() == 0) {
+                        relatedVideoIds = updatedContentDatum.getContentDetails().getRelatedVideoIds();
+                        // Putting the current video id on the
+                        // zeroth position, to make sure when user
+                        // asks Alexa to play previous video, we
+                        // always have a previous video.
+                        if (relatedVideoIds != null) {
+                            relatedVideoIds.add(0, updatedContentDatum.getGist().getId());
+                        }
+                    } else {
+                        relatedVideoIds = relateVideoIds;
+                    }
+
+                    updatedContentDatum.setSeason(contentDatum.getSeason());
+                    launchTVButtonSelectedAction(contentDatum.getGist().getId(),
+                            action,
+                            updatedContentDatum.getGist().getTitle(),
+                            null,
+                            updatedContentDatum,
+                            false,
+                            currentlyPlayingIndex,
+                            relatedVideoIds,
+                            action0);
+                });
+            }
         }
 
     }
@@ -20129,4 +20262,37 @@ public class AppCMSPresenter {
         new GetAppCMSShowDetailAsyncTask(appCMSShowDetailCall,
                 action1).execute(params);
     }
+
+
+
+    public void playEpisode(ContentDatum contentDatum, String contentId) {
+
+        showLoadingDialog(true);
+        if (contentDatum != null &&
+                contentDatum.getSeason() != null &&
+                contentDatum.getSeason().get(0) != null &&
+                contentDatum.getSeason().get(0).getEpisodes() != null &&
+                contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
+
+            List<String> relatedVideosIds = Utils.getRelatedVideosInShow2(
+                    contentDatum.getSeason(),
+                    0,
+                    -1,
+                    contentId);
+
+            ContentDatum updatedData = new ContentDatum();
+            Gist gist = new Gist();
+            updatedData.setGist(gist);
+            gist.setId(contentId);
+
+            launchTVVideoPlayer(
+                    updatedData,
+                    0,
+                    relatedVideosIds,
+                    0,
+                    null);
+
+        }
+    }
+
 }
