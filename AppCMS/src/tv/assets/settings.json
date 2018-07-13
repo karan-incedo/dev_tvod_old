@@ -48,7 +48,7 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 650,
+          "yAxis": 800,
           "xAxis": 775,
           "width": 371,
           "fontSize": 9,
@@ -163,11 +163,87 @@
       "fontWeight": "Semibold",
       "key": "subscriptionEndDateLabel"
     },
+
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 490,
+          "xAxis": 655,
+          "width": 600,
+          "fontSize": 20,
+          "height": 55
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "letterSpacing": 4.5,
+      "text": "Language",
+      "type": "label",
+      "textColor": "#000000",
+      "fontWeight": "Semibold"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 545,
+          "xAxis": 650,
+          "width": 620,
+          "height": 2
+        }
+      },
+      "backgroundColor": "808080",
+      "type": "separatorView"
+    },
+
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 560,
+          "xAxis": 655,
+          "width": 600,
+          "fontSize": 12,
+          "height": 55
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "letterSpacing": 4.5,
+      "text": "ENGLISH",
+      "type": "label",
+      "textColor": "#000000",
+      "fontWeight": "Semibold",
+      "key":"languageValue"
+    },
+
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1100,
+          "topMargin": 560,
+          "width": 160,
+          "fontSize": 9,
+          "height": 50
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "changeLanguage",
+      "text": "CHANGE",
+      "opacity": 100,
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "manageLanguage"
+    },
+
     {
       "layout": {
         "ftv": {
           "leftMargin": 830,
-          "topMargin": 506,
+          "topMargin": 656,
           "width": 260,
           "fontSize": 9,
           "height": 60
@@ -188,7 +264,7 @@
     {
       "layout": {
         "ftv": {
-          "topMargin": 596,
+          "topMargin": 746,
           "fontSize": 12,
           "height": 45
         }
