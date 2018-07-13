@@ -168,6 +168,7 @@ public class CreditBlocksView extends RelativeLayout {
                     null,
                     true,
                     moreBackgroundColor,
+                    textColor,
                     true));
         }
 
@@ -196,6 +197,7 @@ public class CreditBlocksView extends RelativeLayout {
                         null,
                         true,
                         moreBackgroundColor,
+                        textColor,
                         true));
             }
         }

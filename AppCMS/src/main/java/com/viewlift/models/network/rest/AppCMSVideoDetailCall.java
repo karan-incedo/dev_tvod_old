@@ -58,7 +58,7 @@ public class AppCMSVideoDetailCall {
             //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
-        //    authHeaders.put("x-api-key", xApi);
+            //    authHeaders.put("x-api-key", xApi);
             Response<AppCMSEntitlementResponse> response= appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
             Headers headers = response.headers();
 
@@ -99,9 +99,10 @@ public class AppCMSVideoDetailCall {
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;
     }
+
 }

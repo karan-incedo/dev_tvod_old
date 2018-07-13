@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -56,7 +57,7 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
-import net.nightwhistler.htmlspanner.HtmlSpanner;
+//import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -481,8 +482,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
             if (contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
-                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
-                holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
+               /* Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
+                holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);*/
+                holder.appCMSContinueWatchingDescription.setText(Html.fromHtml(contentDatum.getGist().getDescription()));
             }
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));
