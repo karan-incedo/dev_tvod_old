@@ -343,11 +343,15 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-        }/*else{
-
-           Log.i(TAG, "This device is not supported.");
-           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-        }*/
+        }else{
+            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(appCMSPresenter.getCurrentActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            }
+//           Log.i(TAG, "This device is not supported.");
+//           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public boolean shouldCastMiniControllerVisible() {

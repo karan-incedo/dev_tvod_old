@@ -213,7 +213,10 @@ public class CollectionGridItemView extends BaseView {
             childrenContainer.setLayoutParams(childContainerLayoutParams);
 
             if (createRoundedCorners) {
-                ((CardView) childrenContainer).setRadius(14);
+                int cornerRadius = 34;
+                if (BaseView.isTablet(getContext()))
+                    cornerRadius = 24;
+                ((CardView) childrenContainer).setRadius(cornerRadius);
                 setBackgroundResource(android.R.color.transparent);
                 if (component.getAction() != null && !component.getAction().equalsIgnoreCase("purchasePlan")) {
                     childrenContainer.setBackgroundResource(android.R.color.transparent);
@@ -468,15 +471,10 @@ public class CollectionGridItemView extends BaseView {
 //                        String imageUrl = settings.getItems().get(position).getImageUrl();
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
-                                RequestOptions requestOptions = new RequestOptions()
-//                                        .override(childViewWidth, childViewHeight)
-//                                         .placeholder(placeholder)
-                                        .centerInside();
                                 ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_CENTER);
                                 ((ImageView) view).setAdjustViewBounds(true);
                                 Glide.with(context)
                                         .load(imageUrl)
-//                                        .apply(requestOptions)
                                         .into((ImageView) view);
                             } else {
                                 ((ImageView) view).setBackgroundResource(placeholder);
@@ -1332,19 +1330,43 @@ public class CollectionGridItemView extends BaseView {
                                     planDuration.append(" ");
                                     planDuration.append(context.getString(R.string.forward_slash));
                                     planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.plan_type_month));
+                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                                        planDuration.append(context.getString(R.string.plan_type_month));
+                                    } else {
+                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                                        planDuration.append(" ");
+                                        planDuration.append(context.getString(R.string.plan_type_month));
+                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                            planDuration.append("s");
+                                    }
                                 }
                                 if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
                                     planDuration.append(" ");
                                     planDuration.append(context.getString(R.string.forward_slash));
                                     planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.plan_type_year));
+                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                                        planDuration.append(context.getString(R.string.plan_type_year));
+                                    } else {
+                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                                        planDuration.append(" ");
+                                        planDuration.append(context.getString(R.string.plan_type_year));
+                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                            planDuration.append("s");
+                                    }
                                 }
                                 if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
                                     planDuration.append(" ");
                                     planDuration.append(context.getString(R.string.forward_slash));
                                     planDuration.append(" ");
-                                    planDuration.append(context.getString(R.string.plan_type_day));
+                                    if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                                        planDuration.append(context.getString(R.string.plan_type_day));
+                                    } else {
+                                        planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                                        planDuration.append(" ");
+                                        planDuration.append(context.getString(R.string.plan_type_day));
+                                        if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                            planDuration.append("s");
+                                    }
                                 }
                             }
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {

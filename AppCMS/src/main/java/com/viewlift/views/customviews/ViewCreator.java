@@ -1895,7 +1895,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                }  else*/ if (moduleInfo.getBlockName().contains("showDetail01")) {
+                }  else*/
+                if (moduleInfo.getBlockName().contains("showDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
@@ -6362,7 +6363,7 @@ public class ViewCreator {
                                             AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(UpdateDownloadImageIconAction.this.contentDatum.getGist().getId());
                                             if (audioApiDetail.getModules().get(0).getContentData().get(0) != null) {
 
-                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true,null);
+                                                appCMSPresenter.editDownload(audioApiDetail.getModules().get(0).getContentData().get(0), UpdateDownloadImageIconAction.this, true, null);
                                             }
                                         }
                                     });
@@ -6370,7 +6371,7 @@ public class ViewCreator {
                             appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true, new Action1<Boolean>() {
                                 @Override
                                 public void call(Boolean aBoolean) {
-                                    if(!aBoolean)
+                                    if (!aBoolean)
                                         imageButton.setOnClickListener(addClickListener);
                                 }
                             });
@@ -6380,7 +6381,7 @@ public class ViewCreator {
                             appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true, new Action1<Boolean>() {
                                 @Override
                                 public void call(Boolean aBoolean) {
-                                    if(!aBoolean)
+                                    if (!aBoolean)
                                         imageButton.setOnClickListener(addClickListener);
                                 }
                             });
