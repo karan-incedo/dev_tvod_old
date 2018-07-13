@@ -849,7 +849,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         switch (adEvent.getType()) {
             case LOADED:
-                playBackStateLayout.setVisibility(GONE);
                 videoPlayerInfoContainer.setVisibility(GONE); //to hide the player controls.
                 adsManager.start();
                 isAdsDisplaying = true;
@@ -920,6 +919,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     startEntitlementCheckTimer();
                 }
                 videoPlayerInfoContainer.setVisibility(VISIBLE); //show player controlls.
+                playBackStateLayout.setVisibility(GONE);
+                break;
+            case STARTED:
+                playBackStateLayout.setVisibility(GONE);
                 break;
             default:
                 break;

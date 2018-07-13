@@ -187,7 +187,9 @@ public class PlaybackManager implements Playback.Callback {
         if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null && AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist() != null) {
             AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().setAudioPlaying(false);
         }
-        AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
+        if(AudioPlaylistHelper.getInstance().getAppCmsPresenter() !=  null) {
+            AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
+        }
         currentProgess = 0;
         stopSeekbarUpdate();
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
