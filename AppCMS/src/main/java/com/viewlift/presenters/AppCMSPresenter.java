@@ -5911,7 +5911,7 @@ public class AppCMSPresenter {
         });
     }
 
-    private void downloadURLParsing(ContentDatum updateContentDatum, Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
+    private void downloadURLParsing(final ContentDatum updateContentDatum, Action1<UserVideoDownloadStatus> resultAction1, boolean isFromPlaylistDownload) {
         try {
 
             long enqueueId;
@@ -5920,33 +5920,26 @@ public class AppCMSPresenter {
 
                 String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
 
-                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).xApiKey(apikey).build();
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder()
+                        .url(url)
+                        .authToken(getAuthToken())
+                        .xApiKey(apikey)
+                        .build();
 
                 new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
                     if (appCMSStreamingInfo != null) {
                         updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                        enqueueDownloadContent(updateContentDatum,isFromPlaylistDownload);
+                    } else {
+                        showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
+                        return;
                     }
                 }).execute(param);
 
-                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null, null);
-                return;
+
+            }else {
+                enqueueDownloadContent(updateContentDatum,isFromPlaylistDownload);
             }
-
-            long ccEnqueueId = 0L;
-            if (updateContentDatum.getContentDetails() != null &&
-                    updateContentDatum.getContentDetails().getClosedCaptions() != null &&
-                    !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                    updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
-                        .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
-            }
-
-            String downloadURL;
-
-            int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
-            downloadURL = getDownloadURL(updateContentDatum);
-            downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -5955,6 +5948,26 @@ public class AppCMSPresenter {
             appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
                     resultAction1, getLoggedInUser());
         }
+    }
+    private void enqueueDownloadContent(ContentDatum updateContentDatum, boolean isFromPlaylistDownload){
+
+
+        long ccEnqueueId = 0L;
+        if (updateContentDatum.getContentDetails() != null &&
+                updateContentDatum.getContentDetails().getClosedCaptions() != null &&
+                !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+            ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
+                    .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
+        }
+
+        String downloadURL;
+
+        int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+        downloadURL = getDownloadURL(updateContentDatum);
+        downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
+
     }
 
     private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId, boolean isFromPlaylistDownload) {
@@ -17169,13 +17182,14 @@ public class AppCMSPresenter {
             downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
         }
 
+        /*
         if (downloadURL != null && downloadURL.contains("Policy=")
                 && downloadURL.contains("Key-Pair-Id=")
                 && downloadURL.contains("Signature=")
                 && downloadURL.contains("?")) {
             downloadURL = downloadURL.substring(0, downloadURL.indexOf("?"));
         }
-
+*/
         return downloadURL;
     }
 
@@ -18484,9 +18498,11 @@ public class AppCMSPresenter {
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadStatus = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    int reason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                    String url = c.getString(c.getColumnIndex(DownloadManager.COLUMN_URI));
                     String filmId =
                             c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                    Log.e(TAG, "Updating download status for: " + filmId);
+                    Log.e(TAG, reason+" :Updating download status for: " +url+" : "+ filmId);
 
                     c.close();
 
@@ -18547,7 +18563,7 @@ public class AppCMSPresenter {
                                     //downloadStatus == DownloadManager.STATUS_PAUSED ||
                                     downloadStatus == 403 ||
                                     downloadStatus == 195) {
-                                Log.e(TAG, "Failed to download film: " + filmId);
+                                Log.e(TAG, downloadStatus + " Failed to download film: " + filmId);
                                 updateDownloadStatusException();
                             } else if (downloadStatus == DownloadManager.STATUS_PAUSED) {
                                 appCMSPresenter.appCMSUserDownloadVideoStatusCall
