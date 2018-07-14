@@ -52,7 +52,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
     def packageName
@@ -307,7 +307,8 @@ afterEvaluate {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    //    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
@@ -393,17 +394,12 @@ dependencies {
     implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
-
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-
-
     implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
-
-
     implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
@@ -421,12 +417,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-
-
     implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-
     tvImplementation project(path: ':firetvcustomkeyboard')
     implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
@@ -445,6 +438,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
 }

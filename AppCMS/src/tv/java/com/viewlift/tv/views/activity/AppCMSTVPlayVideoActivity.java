@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.activity;
 
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -56,7 +55,7 @@ import rx.functions.Action1;
 
 public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent, AppCmsTvErrorFragment.ErrorFragmentListener,
-        VideoPlayerView.StreamingQualitySelector {
+        VideoPlayerView.StreamingQualitySelector, VideoPlayerView.ClosedCaptionSelector {
     private static final String TAG = "TVPlayVideoActivity";
     int ffAndRewindDelta = 10000;
 
@@ -239,14 +238,14 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                     } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_fast_forward))) {
                         if (appCMSPlayVideoFragment != null) {
                             long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
-                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition + ffAndRewindDelta));
+                            Log.d(TAG, "ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition + ffAndRewindDelta));
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(currentPosition + ffAndRewindDelta);
                         }
                     } else if (intent.getStringExtra(getString(R.string.json_data_msg_key)).equalsIgnoreCase(getString(R.string.adm_directive_rewind))) {
                         if (appCMSPlayVideoFragment != null) {
                             long currentPosition = appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition();
-                            Log.d(TAG, "Piyush ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition - ffAndRewindDelta));
+                            Log.d(TAG, "ADM Message. Current Time: " + currentPosition + ", seekTo: " + (currentPosition - ffAndRewindDelta));
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView().getController().show();
                             appCMSPlayVideoFragment.getVideoPlayerView().getPlayer().seekTo(appCMSPlayVideoFragment.getVideoPlayerView().getCurrentPosition() - ffAndRewindDelta);
                         }
@@ -359,18 +358,20 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
+//        ArrayList<String> ccUrls = new ArrayList<>();
         // TODO: 7/27/2017 Implement CC for multiple languages.
         if (binder.getContentData() != null
                 && binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getClosedCaptions() != null
                 && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
-                if (cc.getUrl() != null &&
+                /*if (cc.getUrl() != null &&
                         !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
                         cc.getFormat() != null &&
                         cc.getFormat().equalsIgnoreCase("SRT")) {
                     closedCaptionUrl = cc.getUrl();
-                }
+                }*/
+//                ccUrls.add(cc.getUrl());
             }
         }
         String permaLink = gist.getPermalink();
@@ -399,7 +400,6 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        hlsUrl = "https://vhoichoi.viewlift.com/encodes/trailers/byomkesh_s2_trailer_high.mp4?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmhvaWNob2kudmlld2xpZnQuY29tL2VuY29kZXMvdHJhaWxlcnMvYnlvbWtlc2hfczJfdHJhaWxlcl9oaWdoLm1wNCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTUxNTU4NTYwOX0sIklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIwLjAuMC4wLzAifX19XX0_&Signature=e-Vle9RV0LOcr7JkuK1fqlhAld0Ef5W3kRH798f8YOaKT~JUCXtLdx9UcO2McXuqi4jyNWiis9OEcJqNFMPUIIZYBxa78lRH9rvzstPOPPSpk6wErymPiwey2ZWUq1E1vog6a7MwjzeWTEuyCLw6ZEXt~hyd2DGO3z3PM5E0U8HuhrcW9VcO2lgya9A5BFZidwmVnAu4VKLyUQKY1~LQImS7vqo8Va0zGl7LkglpZCEIbWZCgcVsOtI4SJBaWY8oNaA34XebfOnhhons8-LWM1hOY0dCmcr1NgIFaJveiFCqctA3qY~5IjAmXV7s6Ddahp69yHcNDwg2SuTmDE~reA__&Key-Pair-Id=APKAISSG7ZCPKHJZAD4Q";
         appCMSPlayVideoFragment =
                 AppCMSPlayVideoFragment.newInstance(this,
                         null,
@@ -415,7 +415,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                         watchedTime,
                         binder.getContentData().getGist().getRuntime(),
                         null,
-                        closedCaptionUrl,
+                        binder.getContentData().getContentDetails().getClosedCaptions(),
                         binder.getContentData().getParentalRating(),
                         freeContent,
                         appCMSSignedURLResult,
@@ -813,5 +813,20 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     @Override
     public int getMpegResolutionIndexFromUrl(String mpegUrl) {
         return 0;
+    }
+
+    @Override
+    public List<ClosedCaptions> getAvailableClosedCaptions() {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        for (ClosedCaptions captions : closedCaptions) {
+            if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                closedCaptionsList.add(captions);
+            }
+        }
+
+        return closedCaptionsList;
     }
 }

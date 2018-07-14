@@ -157,13 +157,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
-        int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
-        int bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());//Color.parseColor("#660066");
+        int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());
+        int bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
 
         String[] color = appCMSPresenter.getAppBackgroundColor().split("#");
-        String firstColor = "#ff" + color[1];
-        String secondColor = "#00" + color[1];
-
 
         navigationFragment = AppCmsNavigationFragment.newInstance(
                 this,
@@ -283,7 +280,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             }
                         }
                     } catch (ClassCastException e) {
-                        //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
                     Utils.pageLoading(true, AppCmsHomeActivity.this);
@@ -821,20 +817,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         String tag = getTag(appCMSBinder);
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
-
-        //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-//        if (0 < distanceFromStackTop) {
-//            for (int i = 0; i < distanceFromStackTop; i++) {
-//                //Log.d(TAG, "Popping stack to get to page item");
-//                try {
-//                    appCMSBinderStack.pop();
-//                    //getFragmentManager().popBackStack();
-//                } catch (IllegalStateException e) {
-//                    //Log.e(TAG, "Error popping back stack: " + e.getMessage());
-//                }
-//            }
-//        }
-
         appCMSBinderStack.push(tag);
         appCMSBinderMap.put(tag, appCMSBinder);
 
@@ -1196,18 +1178,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 getString(R.string.profile_label));
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
-
-        //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        /*if (0 < distanceFromStackTop) {
-            for (int i = 0; i < distanceFromStackTop; i++) {
-                //Log.d(TAG, "Popping stack to get to page item");
-                try {
-                    appCMSBinderStack.pop();
-                } catch (IllegalStateException e) {
-                    //Log.e(TAG, "Error popping back stack: " + e.getMessage());
-                }
-            }
-        }*/
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
         selectNavItem(tag);
@@ -1440,7 +1410,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
-                    -1);
+                    -1,
+                    contentDatum.getSeason().get(0).getEpisodes().get(1).getId());
 
             ContentDatum updatedData = new ContentDatum();
             Gist gist = new Gist();

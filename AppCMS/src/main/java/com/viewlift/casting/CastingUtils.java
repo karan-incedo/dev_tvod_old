@@ -138,6 +138,12 @@ public class CastingUtils {
             }
         }
 
+        if (playUrl != null && playUrl.contains("Policy=")
+                && playUrl.contains("Key-Pair-Id=")
+                && playUrl.contains("Signature=")
+                && playUrl.contains("?")) {
+            playUrl = playUrl.substring(0, playUrl.indexOf("?"));
+        }
         return playUrl;
     }
 

@@ -130,7 +130,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                     yearSong = searchResultList.get(i).getGist().getYear();
                                 }
 
-                                String searchHintResult = searchResultList.get(i).getGist().getTitle() +
+                                String searchHintResult = searchResultList.get(i).getGist().getTitle().replaceAll(","," ") +
                                         "," +
                                         runtime +
                                         "," +

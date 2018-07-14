@@ -31,7 +31,7 @@ public class GetAppCMSShowDetailAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(/*params.url*/"https://prod-api.viewlift.com/content/series/?id=dc3ef8ff-d2a8-4037-bd11-f711218845f5&site=snagfilms", params.authToken, params.apiKey);
+                            return call.call(params.url, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }

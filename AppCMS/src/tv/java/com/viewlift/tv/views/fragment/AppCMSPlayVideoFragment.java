@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.fragment;
 
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +44,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
@@ -57,6 +57,7 @@ import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -101,7 +102,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean isAdDisplayed, isADPlay;
     AppCmsTvErrorFragment errorActivityFragment;
     boolean networkConnect, networkDisconnect = true;
-    private String closedCaptionUrl;
+    private ArrayList<ClosedCaptions> closedCaptionUrl;
     private Context mContext;
     private boolean isTrailer;
     private int playIndex;
@@ -127,6 +128,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private long mTotalVideoDuration;
     int maxPreviewSecs = 0;
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
+    private VideoPlayerView.ClosedCaptionSelector closedCaptionSelector;
     private PercentRelativeLayout contentRatingMainContainer;
     private LinearLayout contentRatingInfoContainer;
     private TextView contentRatingHeaderView;
@@ -170,7 +172,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       long watchedTime,
                                                       long runtime,
                                                       String imageUrl,
-                                                      String closedCaptionUrl,
+                                                      ArrayList<ClosedCaptions> closedCaptionUrl,
                                                       String parentalRating,
                                                       boolean freeContent, AppCMSSignedURLResult appCMSSignedURLResult, ContentDatum contentDatum) {
 
@@ -188,7 +190,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putLong(context.getString(R.string.run_time_key), runtime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
-        args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
+        args.putParcelableArrayList(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
         args.putBoolean(context.getString(R.string.free_content_key), freeContent);
@@ -229,6 +231,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (context instanceof VideoPlayerView.StreamingQualitySelector) {
             streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
+        if (context instanceof VideoPlayerView.ClosedCaptionSelector) {
+            closedCaptionSelector = (VideoPlayerView.ClosedCaptionSelector) context;
+        }
     }
 
     @Override
@@ -248,7 +253,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             watchedTime = args.getLong(getString(R.string.watched_time_key));
             runtime = args.getLong(getString(R.string.run_time_key));
             imageUrl = args.getString(getString(R.string.played_movie_image_url));
-            closedCaptionUrl = args.getString(getString(R.string.video_player_closed_caption_key));
+            closedCaptionUrl = args.getParcelableArrayList(getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
@@ -288,8 +293,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference()
                             ? VISIBLE
                             : GONE);
-            videoPlayerView.setUri(Uri.parse(hlsUrl),
-                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+            videoPlayerView.setUri(Uri.parse(hlsUrl), closedCaptionUrl);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
 
@@ -470,6 +474,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         if (streamingQualitySelector != null) {
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
+        if (closedCaptionSelector != null) {
+            videoPlayerView.setStreamingQualitySelector(closedCaptionSelector);
         }
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
@@ -849,7 +856,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         switch (adEvent.getType()) {
             case LOADED:
-                playBackStateLayout.setVisibility(GONE);
                 videoPlayerInfoContainer.setVisibility(GONE); //to hide the player controls.
                 adsManager.start();
                 isAdsDisplaying = true;
@@ -920,6 +926,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     startEntitlementCheckTimer();
                 }
                 videoPlayerInfoContainer.setVisibility(VISIBLE); //show player controlls.
+                playBackStateLayout.setVisibility(GONE);
+                break;
+            case STARTED:
+                playBackStateLayout.setVisibility(GONE);
                 break;
             default:
                 break;

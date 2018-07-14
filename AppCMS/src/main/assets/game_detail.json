@@ -1,0 +1,204 @@
+{
+  "moduleList": [
+    {
+      "id": "4c297e04-f246-42ea-ad2a-ee5174962ec9",
+      "settings": {
+        "searchThumbnailType": "landscape"
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01",
+      "layout": {},
+      "components": []
+    },
+    {
+      "id": "08abd999-cca2-49be-9a3d-4a5991dd3567",
+      "settings": {},
+      "view": "AC GameDetail 01",
+      "type": "AC GameDetail 01",
+      "blockName": "gameDetail01",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletLandscape": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 2.67,
+              "topMargin": 1.05,
+              "rightMargin": 12,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletLandscape": {
+              "leftMargin": 0.98,
+              "topMargin": 0.91,
+              "rightMargin": 4.69,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletPortrait": {
+              "leftMargin": 1.3,
+              "topMargin": 0.68,
+              "rightMargin": 6.25,
+              "fontSize": 18,
+              "height": 24
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Bold",
+          "text": "title",
+          "key": "title"
+        }
+      ]
+    },
+    {
+      "id": "08abd999-cca2-49be-9a3d-4a5991dd3587",
+      "settings": {},
+      "view": "AC playerState 01",
+      "type": "AC playerState 01",
+      "blockName": "playerState01",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletLandscape": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "topMargin": 1.5,
+              "leftMargin": 1.73,
+              "rightMargin": 1.73
+            },
+            "tabletLandscape": {
+              "yAxis": 32,
+              "leftMargin": 0.68,
+              "rightMargin": 0.68
+            },
+            "tabletPortrait": {
+              "yAxis": 2,
+              "leftMargin": 0.91,
+              "rightMargin": 0.91
+            }
+          },
+          "backgroundColor": "#ffffff",
+          "type": "multicolumnTableView",
+          "key": "multicolumnTableView"
+        }
+      ]
+    },
+    {
+      "id": "98940104-ce40-4095-88e7-9cacaaea7d15",
+      "settings": {
+        "showTabBar": true
+      },
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01",
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            }
+          },
+          "isSelectable": true,
+          "type": "image",
+          "key": "tabImage"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0,
+              "fontSize": 12,
+              "height": 12
+            },
+            "tabletLandscape": {
+              "leftMargin": 0.98,
+              "topMargin": 0.91,
+              "rightMargin": 4.69,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletPortrait": {
+              "leftMargin": 1.3,
+              "topMargin": 0.68,
+              "rightMargin": 6.25,
+              "fontSize": 18,
+              "height": 24
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "center",
+          "isSelectable": true,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "normal",
+          "key": "tabName"
+        }
+      ],
+      "isTabSeparator": false,
+      "tabSeparator-color": "#cf0a2b",
+      "isBackgroundSelectable": false
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.16"
+}

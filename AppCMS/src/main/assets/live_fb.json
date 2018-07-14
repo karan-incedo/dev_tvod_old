@@ -1,0 +1,184 @@
+{
+  "moduleList": [
+    {
+      "id": "94b688d8-675e-4b40-8895-586925c09fb9",
+      "settings": {
+        "searchThumbnailType": "landscape"
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01",
+      "layout": {},
+      "components": []
+    },
+    {
+      "id": "b2558d85-b415-4128-ac81-f68688d529d3",
+      "settings": {},
+      "view": "AC WebFrame 03",
+      "type": "AC WebFrame 03",
+      "blockName": "webFrame03",
+      "layout": {
+        "mobile": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "rightMargin": 0,
+          "height": 280
+        },
+        "tabletLandscape": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 0
+        },
+        "tabletPortrait": {
+          "yAxis": 0,
+          "leftMargin": 0,
+          "xAxis": 0,
+          "rightMargin": 0,
+          "height": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 4.27,
+              "rightMargin": 4.27,
+              "fontSize": 18,
+              "height": 25
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 2.93,
+              "rightMargin": 2.93,
+              "fontSize": 18,
+              "height": 25
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "leftMargin": 3.91,
+              "rightMargin": 3.91,
+              "fontSize": 18,
+              "height": 25
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#008EE0",
+          "fontWeight": "Bold",
+          "key": "trayTitle"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "leftMargin": 4.27,
+              "topMargin": 1,
+              "rightMargin": 4.27,
+              "height": 500,
+              "bottomMargin": 0
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "leftMargin": 2.93,
+              "topMargin": 1,
+              "height": 700,
+              "rightMargin": 2.93,
+              "bottomMargin": 0
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "height": 500,
+              "leftMargin": 3.91,
+              "topMargin": 1,
+              "rightMargin": 3.91,
+              "bottomMargin": 0
+            }
+          },
+          "type": "web_view",
+          "key": "web_view"
+        }
+      ]
+    },
+    {
+      "id": "eab1f93f-030b-45a2-bf8b-5683a3741b4f",
+      "settings": {
+        "showTabBar": true
+      },
+      "view": "AC Footer 01",
+      "type": "AC Footer 01",
+      "blockName": "footer01",
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletLandscape": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            },
+            "tabletPortrait": {
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 16,
+              "height": 16
+            }
+          },
+          "isSelectable": true,
+          "type": "image",
+          "key": "tabImage"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "leftMargin": 0,
+              "topMargin": 0,
+              "rightMargin": 0,
+              "fontSize": 12,
+              "height": 12
+            },
+            "tabletLandscape": {
+              "leftMargin": 0.98,
+              "topMargin": 0.91,
+              "rightMargin": 4.69,
+              "fontSize": 18,
+              "height": 24
+            },
+            "tabletPortrait": {
+              "leftMargin": 1.3,
+              "topMargin": 0.68,
+              "rightMargin": 6.25,
+              "fontSize": 18,
+              "height": 24
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 1,
+          "textAlignment": "center",
+          "isSelectable": true,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "normal",
+          "key": "tabName"
+        }
+      ],
+      "isTabSeparator": false,
+      "tabSeparator-color": "#cf0a2b",
+      "isBackgroundSelectable": false
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.6"
+}
