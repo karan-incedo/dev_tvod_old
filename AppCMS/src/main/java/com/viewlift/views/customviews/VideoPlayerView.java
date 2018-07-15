@@ -33,7 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.android.exoplayer2.video.VideoListener;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -55,6 +55,7 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MediaSourceEventListener;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
@@ -111,7 +112,9 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener, DefaultDrmSessionManager.EventListener {
+        MediaSourceEventListener, com.google.android.exoplayer2.video.VideoListener,
+        VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener,
+        DefaultDrmSessionManager.EventListener {
     private static final String TAG = "VideoPlayerView";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -177,6 +180,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private boolean streamingQualitySelectorCreated;
     private boolean useHls;
     private List<ClosedCaptions> closedCaptionsList;
+    private int defaultMpegResolutionIndex;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -311,9 +315,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     currentStreamingQualitySelector != null &&
                     streamingQualitySelector != null) {
                 List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-                if (0 < availableStreamingQualities.size()) {
+                if (availableStreamingQualities.size() > 0) {
                     int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
-                    if (0 <= streamingQualityIndex) {
+                    if (streamingQualityIndex >= 0) {
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
                         setSelectedStreamingQualityIndex();
                     }
@@ -575,6 +579,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         }
+
+        new DebugLogsHelper(player, new TextView(getContext())).start();
         player.addListener(this);
         player.setVideoDebugListener(this);
         playerView.setPlayer(player);
@@ -719,6 +725,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private int getSelectedCCTrack() {
+//        getSelectedVideoTrack();
         int selectedTrack = 0;
         TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
         for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
@@ -726,7 +733,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             for (int trackIndex = 0; trackIndex < trackGroup.length; trackIndex++) {
                 MappingTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
                 if (selectionOverride != null && selectionOverride.groupIndex == groupIndex && selectionOverride.containsTrack(trackIndex)) {
-                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -736,6 +743,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
         }
+        return selectedTrack;
+    }
+
+    private int setVideoTrack(int groupIndex) {
+        int selectedTrack = 0;
+        TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
+        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                groupIndex, 0);
+        trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
         return selectedTrack;
     }
 
@@ -783,17 +799,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 listViewAdapter.setItemClickListener(v -> {
                     try {
-                        long currentPosition = getCurrentPosition();
-                        if (listViewAdapter.selectedIndex != listViewAdapter.getDownloadQualityPosition()) {
-                            setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
-                                    closedCaptionUri);
-                        }
-                        setCurrentPosition(currentPosition);
+                        TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
+                        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                                listViewAdapter.getDownloadQualityPosition(), 0);
+                        trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
                         listViewAdapter.setSelectedIndex(listViewAdapter.getDownloadQualityPosition());
-                        streamingQualitySelectorDialog.hide();
+                        streamingQualitySelectorDialog.dismiss();
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                 });
             } else {
@@ -991,17 +1005,35 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
 
 
-        MediaSource videoSource = buildMediaSource(uri, "");
-        if (ccUrls == null || ccUrls.isEmpty()) {
-            return videoSource;
-        }
+        List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
 
 
         List<MediaSource> mediaSourceList = new ArrayList<>();
 
-        mediaSourceList.add(videoSource);
+        String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
 
-        for (int i = 0; i < ccUrls.size(); i++) {
+        for (int i = 0; i < availableStreamingQualities.size(); i++) {
+            String streamingQuality = availableStreamingQualities.get(i);
+            String streamingQualityUrl = streamingQualitySelector.getStreamingQualityUrl(streamingQuality);
+
+            mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualityUrl), ""));
+
+            if (!useHls) {
+                if (streamingQuality.equals(defaultVideoResolution)) {
+                    defaultMpegResolutionIndex = Integer.parseInt(streamingQuality.replace("p", ""));
+                }
+            }
+        }
+
+        /*MediaSource videoSource = buildMediaSource(uri, "");
+        if (ccUrls == null || ccUrls.isEmpty()) {
+            return videoSource;
+        }*/
+
+
+//        mediaSourceList.add(videoSource);
+
+        /*for (int i = 0; i < ccUrls.size(); i++) {
             ClosedCaptions closedCaptions = ccUrls.get(i);
 
             if (closedCaptions.getFormat().equalsIgnoreCase("SRT")) {
@@ -1017,7 +1049,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         textFormat,
                         C.TIME_UNSET));
             }
-        }
+        }*/
         MediaSource mediaSources [] = new MediaSource[mediaSourceList.size()];
         mediaSourceList.toArray(mediaSources);
         // Plays the video with the side-loaded subtitle.
@@ -1060,38 +1092,31 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return mergingMediaSource;
     }*/
 
-    private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
-        int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri) :
-                Util.inferContentType("." + overrideExtension);
+    private MediaSource buildMediaSource(
+            Uri uri,
+            String overrideExtension) {
+        @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri)
+                : Util.inferContentType("." + overrideExtension);
         switch (type) {
-            case C.TYPE_SS:
-                return new SsMediaSource(uri,
-                        buildDataSourceFactory(false),
-                        new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                        null,
-                        null);
             case C.TYPE_DASH:
-                return new DashMediaSource(uri,
-                        buildDataSourceFactory(false),
+                return new DashMediaSource.Factory(
                         new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                        null,
-                        null);
-
+                        buildDataSourceFactory(false))
+                        .createMediaSource(uri);
+            case C.TYPE_SS:
+                return new SsMediaSource.Factory(
+                        new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                        buildDataSourceFactory(false))
+                        .createMediaSource(uri);
             case C.TYPE_HLS:
-                return new HlsMediaSource(uri,
-                        mediaDataSourceFactory,
-                        new Handler(),
-                        this);
-
+                return new HlsMediaSource.Factory(mediaDataSourceFactory)
+                        .createMediaSource(uri);
             case C.TYPE_OTHER:
-                return new ExtractorMediaSource(uri,
-                        mediaDataSourceFactory,
-                        new DefaultExtractorsFactory(),
-                        null,
-                        null);
-
-            default:
+                return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
+                        .createMediaSource(uri);
+            default: {
                 throw new IllegalStateException("Unsupported type: " + type);
+            }
         }
     }
 
@@ -1114,17 +1139,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object o, int reason) {
+        Log.d(TAG, "EXOPLAYER EVENTS onTimelineChanged");
 
 
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
+        Log.d(TAG, "EXOPLAYER EVENTS onTracksChanged");
 
     }
 
     @Override
     public void onLoadingChanged(boolean b) {
+        Log.d(TAG, "EXOPLAYER EVENTS onLoadingChanged");
 
     }
 
@@ -1156,6 +1184,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     && !streamingQualitySelectorCreated) {
                 createStreamingQualitySelector();
                 showStreamingQualitySelector();
+                String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
+                int res = Integer.parseInt(defaultVideoResolution.replace("p", ""));
+                trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }/* else {
                 currentStreamingQualitySelector.setVisibility(View.GONE);
             }*/
@@ -1169,8 +1200,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
                         MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
                                 2, 0);
-                        trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
-                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+//                        trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
+//                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
                    /* }
                 }*/
 
@@ -1212,12 +1243,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPositionDiscontinuity(int reason) {
+        Log.d(TAG, "EXOPLAYER EVENTS onPositionDiscontinuity");
 
     }
 
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+        Log.d(TAG, "EXOPLAYER EVENTS onPlaybackParametersChanged");
 
     }
 
@@ -1237,6 +1270,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
         //Log.d(TAG, "Load started");
         bitrate = (trackFormat.bitrate / 1000);
+        Log.d(TAG, "EXOPLAYER EVENTS onLoadStarted");
+
     }
 
     @Override
@@ -1245,6 +1280,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                 long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                 long bytesLoaded) {
         failedMediaSourceLoads.clear();
+        Log.d(TAG, "EXOPLAYER EVENTS onLoadCompleted");
+
     }
 
     @Override
@@ -1286,12 +1323,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
+        Log.d(TAG, "EXOPLAYER EVENTS onUpstreamDiscarded");
 
     }
 
     @Override
     public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason,
                                           Object trackSelectionData, long mediaTimeMs) {
+        Log.d(TAG, "EXOPLAYER EVENTS onDownstreamFormatChanged");
 
     }
 
@@ -1301,6 +1340,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoEnabled(DecoderCounters counters) {
+        Log.d(TAG, "EXOPLAYER EVENTS onVideoEnabled");
 
     }
 
@@ -1308,22 +1348,31 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
                                           long initializationDurationMs) {
         //
+        Log.d(TAG, "EXOPLAYER EVENTS onVideoDecoderInitialized");
+
     }
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
+        Log.d(TAG, "EXOPLAYER EVENTS onVideoInputFormatChanged");
+
         setBitrate(format.bitrate / 1000);
         setVideoHeight(format.height);
         setVideoWidth(format.width);
+
+        Log.d("DebugLogsHelper", "resolution: " + format.width + "x" + format.height);
     }
 
     @Override
     public void onDroppedFrames(int count, long elapsedMs) {
+        Log.d(TAG, "EXOPLAYER EVENTS onDroppedFrames");
 
     }
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        Log.d(TAG, "EXOPLAYER EVENTS onVideoSizeChanged");
+
         //Log.i(TAG, "Video size changed: width = " +
 //                width +
 //                " height = " +
@@ -1350,17 +1399,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onRenderedFirstFrame(Surface surface) {
+        Log.d(TAG, "EXOPLAYER EVENTS onRenderedFirstFrame");
 
     }
 
     @Override
     public void onVideoDisabled(DecoderCounters counters) {
+        Log.d(TAG, "EXOPLAYER EVENTS onVideoDisabled");
 
     }
 
     @Override
     public void onRenderedFirstFrame() {
         //Log.d(TAG, "Rendered first frame");
+        Log.d(TAG, "EXOPLAYER EVENTS onRenderedFirstFrame");
     }
 
     @Override
@@ -1482,7 +1534,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mToggleButton.setTextOff("");
         mToggleButton.setTextOn("");
         mToggleButton.setText("");*/
-        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_button_selector, null));
+        mToggleButton.setBackground(getResources().getDrawable(R.drawable.cc_button_selector, null));
         mToggleButton.setVisibility(GONE);
         return mToggleButton;
     }
