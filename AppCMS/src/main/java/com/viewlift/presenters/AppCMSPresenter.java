@@ -17207,7 +17207,7 @@ public class AppCMSPresenter {
                                         currentlyPlayingIndex,
                                         relatedVideoIds,
                                         action0);
-                            });
+                            },null,false);
                         });
             } else {
                 refreshVideoData(contentDatum.getGist().getId(), updatedContentDatum -> {
