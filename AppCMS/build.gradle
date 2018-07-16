@@ -243,7 +243,7 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled false
+            minifyEnabled true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
@@ -261,6 +261,7 @@ android {
         unitTests.returnDefaultValues = true
     }
     lintOptions {
+
         checkReleaseBuilds false
         abortOnError false
     }
@@ -290,7 +291,6 @@ android {
     configurations.all {
         resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
-
 }
 afterEvaluate {
     if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
@@ -392,19 +392,20 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
-    implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
-    implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxandroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
+    implementation "com.github.akarnokd:rxjava2-interop:$rootProject.ext.rxjavainterop"
     implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
 
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-
-
     implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
-
+//    implementation 'com.google.android.gms:play-services-analytics:16.0.0'
+//    implementation 'com.google.android.gms:play-services-tagmanager:16.0.0'
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
 
     implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
@@ -442,7 +443,7 @@ dependencies {
     implementation project(':library')
 //    implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
-    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+    kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
