@@ -2742,7 +2742,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         String action = getString(R.string.app_cms_action_detailvideopage_key);
         StringBuffer pagePath = new StringBuffer();
         if(deeplinkUri.toString().contains(getString(R.string.view_plans))){
-            action = getString(R.string.app_cms_action_startfreetrial_key);
+            if(appCMSPresenter.isUserSubscribed()){
+                appCMSPresenter.resetDeeplinkQuery();
+                return;
+            }else {
+                action = getString(R.string.app_cms_action_startfreetrial_key);
+            }
         }
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
