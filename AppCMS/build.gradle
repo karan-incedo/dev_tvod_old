@@ -308,7 +308,6 @@ afterEvaluate {
 
 
 dependencies {
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 //    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
@@ -404,6 +403,7 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
 
 
     implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
@@ -447,7 +447,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
-    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
+
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
 }
 
