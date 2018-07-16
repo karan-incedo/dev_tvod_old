@@ -125,7 +125,9 @@
 -dontwarn java.nio.file.**
 -dontwarn android.app.**
 -dontwarn android.content.pm.PackageManager.**
+-dontwarn com.google.android.gms.**
 -keep public class com.google.android.gms.* { public *; }
+-keep class com.google.firebase.** { *; }
 -dontwarn com.google.android.gms.**
 
 -dontskipnonpubliclibraryclasses

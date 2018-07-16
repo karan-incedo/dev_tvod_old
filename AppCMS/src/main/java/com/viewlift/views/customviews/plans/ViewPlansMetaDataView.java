@@ -1,4 +1,4 @@
-package com.viewlift.views.customviews;
+package com.viewlift.views.customviews.plans;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,6 +18,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.List;
 import java.util.Map;

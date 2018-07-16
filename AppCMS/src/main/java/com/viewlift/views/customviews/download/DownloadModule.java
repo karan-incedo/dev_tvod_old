@@ -1,4 +1,4 @@
-package com.viewlift.views.customviews;
+package com.viewlift.views.customviews.download;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,6 +25,9 @@ import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.ModuleView;
+import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.Map;
