@@ -971,12 +971,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (null != currentStreamingQualitySelector
                 && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///")) {
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
-        } else {
+        }else{
             if(uri.toString().startsWith("file:///") && appCMSPresenter.isUserLoggedIn()){
-                                currentStreamingQualitySelector.setVisibility(View.GONE);
-                            }else{
-                                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
-                            }
+                currentStreamingQualitySelector.setVisibility(View.GONE);
+            }else{
+                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+            }
         }
     }
 
