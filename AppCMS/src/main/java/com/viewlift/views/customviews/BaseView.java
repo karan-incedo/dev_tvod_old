@@ -23,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
 import com.viewlift.views.adapters.AppCMSRosterAdapter;
 
@@ -1074,11 +1075,6 @@ public abstract class BaseView extends FrameLayout {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
-                    view instanceof Spinner) {
-                viewHeight = LayoutParams.WRAP_CONTENT;
-                viewWidth = LayoutParams.WRAP_CONTENT;
-            }
 
             AppCMSUIKeyType componentViewType = jsonValueKeyMap.get(viewType);
             if (componentViewType == null) {
@@ -1250,6 +1246,23 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_PLAN_PRICEINFO_KEY:
                     lm += convertDpToPixel(8, getContext());
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        gravity = Gravity.CENTER_VERTICAL;
+                    }
+                    break;
+                case PAGE_PLAN_FEATURE_TEXT_KEY:
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+                    }
+                    break;
+
+                case PAGE_SINGLE_PLAN_SUBSCRIBE_TEXT_KEY:
+                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        gravity = Gravity.CENTER;
+                    }
+                    break;
+                case PAGE_PLAN_FEATURE_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
                     break;
 
                 case PAGE_SETTINGS_PLAN_VALUE_KEY:
@@ -1459,7 +1472,9 @@ public abstract class BaseView extends FrameLayout {
 
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
-            if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+            if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_IMAGE_KEY) {
+                gravity = Gravity.CENTER_HORIZONTAL;
+            } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                 viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
             } /*else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
@@ -1504,13 +1519,39 @@ public abstract class BaseView extends FrameLayout {
             layoutParams.gravity = gravity;
         }
 
+
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY ||
                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
-            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
+            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                if (isTablet(getContext())) {
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    layoutParams.setMargins(0, tm, 0, bm);
+                } else {
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    Mobile mobile = layout.getMobile();
+                    if (mobile.getLeftMargin() != 0f) {
+                        lm = Math.round(DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX));
+                    }
+                    if (mobile.getRightMargin() != 0f) {
+                        rm = Math.round(DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
+                    }
+                    layoutParams.setMargins(lm, tm, rm, bm);
+                    if (appCMSPresenter != null && !appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        layoutParams.setMargins(0, tm, 0, bm);
+                    }
+                }
+            }/*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                layoutParams.height=BaseView.getDeviceHeight();
+
+            }*/ else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
                 tm *= +1.6;
                 layoutParams.setMargins(lm, tm, rm, bm);
             }
@@ -1649,5 +1690,11 @@ public abstract class BaseView extends FrameLayout {
             }
         }
         return -1.0f;
+    }
+
+    static AppCMSPresenter appCMSPresenter;
+
+    public static void setPreseneter(AppCMSPresenter presenter) {
+        appCMSPresenter = presenter;
     }
 }

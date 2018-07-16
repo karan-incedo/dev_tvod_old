@@ -224,6 +224,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void setAdsUrl(String adsUrl){
         this.adsUrl = adsUrl;
     }
+
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
         String strUri = videoUri.toString().split("\\?")[0];
@@ -264,6 +265,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
                         setSelectedStreamingQualityIndex();
                     }
+                }
+                if(availableStreamingQualities.size()==0){
+                    currentStreamingQualitySelector.setVisibility(GONE);
                 }
             }
         } catch (Exception e) {
@@ -576,6 +580,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void createStreamingQualitySelector() {
+
+        if(!uri.toString().startsWith("file:///")){
         if (streamingQualitySelector != null && appCMSPresenter != null) {
             showStreamingQualitySelector();
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
@@ -592,10 +598,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         false));
 
                 setSelectedStreamingQualityIndex();
-                AlertDialog.Builder builder ;
-                if( (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV)&& Utils.isFireTVDevice(getContext()) ){
-                    builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
-                }else{
+                AlertDialog.Builder builder;
+                if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
+                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+                } else {
                     builder = new AlertDialog.Builder(getContext());
                 }
 
@@ -605,10 +611,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 builder.setView(listView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    if((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())){
+                    if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
                         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                    }else {
+                    } else {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
                     }
                 }
@@ -636,6 +642,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 currentStreamingQualitySelector.setVisibility(GONE);
             }
         } else {
+            currentStreamingQualitySelector.setVisibility(GONE);
+        }
+      }else{
+            //video coming from downloaded
             currentStreamingQualitySelector.setVisibility(GONE);
         }
         streamingQualitySelectorCreated = true;
@@ -957,7 +967,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter)
+                && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///"))
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
     }
 
