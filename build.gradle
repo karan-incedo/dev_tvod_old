@@ -43,7 +43,7 @@ allprojects {
         rxjavainterop = "0.12.7"
         rxjavaVersion = "2.1.13"
         jsr250_apiVersion = "1.0"
-        googleAdsInteractiveMediaV3 = "3.6.0"
+        googleAdsInteractiveMediaV3 = "3.8.7"
         googlePlayServicesVersion = "15.0.1"
         fireBasePlayServicesVersion = "16.0.0"
         crashlyticsVersion = "2.9.2@aar"

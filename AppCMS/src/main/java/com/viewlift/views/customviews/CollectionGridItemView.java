@@ -1779,9 +1779,9 @@ public class CollectionGridItemView extends BaseView {
                     if (data.getPlayersData() != null && data.getPlayersData().getData() != null
                             && data.getPlayersData().getData().getMetadata() != null) {
                         for (int j = 0; j < data.getPlayersData().getData().getMetadata().size(); j++) {
-                            if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("record")) {
+                            if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("mma_record")) {
                                 record = data.getPlayersData().getData().getMetadata().get(j).getValue();
-                            } else if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("score")) {
+                            } else if (data.getPlayersData().getData().getMetadata().get(j).getName().equalsIgnoreCase("pfl_record")) {
                                 score = data.getPlayersData().getData().getMetadata().get(j).getValue();
                             }
                         }
@@ -1793,7 +1793,7 @@ public class CollectionGridItemView extends BaseView {
 
                         if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_SCORE_TEXT) {
                             if (score != null && !TextUtils.isEmpty(score)) {
-                                textView.setText("(" + score + "pts)");
+                                textView.setText("(" + score + ")");
                             }
 //                            textView.setText("(" + score + "pts)");
                         } else if (jsonValueKeyMap.get(childComponent.getComponents().get(i).getKey()) == AppCMSUIKeyType.PAGE_PLAYER_RECORD_LABEL_KEY) {

@@ -1893,7 +1893,7 @@ public class ViewCreator {
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else*/
-               /*if (moduleInfo.getBlockName().contains("imageTextRow02")) {
+                /*if (moduleInfo.getBlockName().contains("imageTextRow02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "benefit_plan_page.json"),
                             AppCMSPageUI.class);
@@ -1909,7 +1909,8 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("gameDetail01")) {
+                } else
+                if (moduleInfo.getBlockName().contains("gameDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
@@ -1919,12 +1920,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
+                } /*else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "roster.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                }*/else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
