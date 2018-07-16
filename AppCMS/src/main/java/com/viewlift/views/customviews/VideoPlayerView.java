@@ -643,7 +643,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
       }else{
             //video coming from downloaded
-            currentStreamingQualitySelector.setVisibility(GONE);
+            if(appCMSPresenter.isUserLoggedIn())
+             currentStreamingQualitySelector.setVisibility(GONE);
         }
         streamingQualitySelectorCreated = true;
     }
@@ -964,8 +965,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///"))
+                && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///")) {
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+        }else{
+            if(uri.toString().startsWith("file:///") && appCMSPresenter.isUserLoggedIn()){
+                currentStreamingQualitySelector.setVisibility(View.GONE);
+            }else{
+                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
