@@ -287,15 +287,13 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getActivity());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
-        if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setClosedCaptionEnabled(false);
-            videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                            ? VISIBLE
-                            : GONE);
-            videoPlayerView.setUri(Uri.parse(hlsUrl), closedCaptionUrl);
-            Log.i(TAG, "Playing video: " + hlsUrl);
-        }
+        videoPlayerView.setClosedCaptionEnabled(false);
+        videoPlayerView.getPlayerView().getSubtitleView()
+                .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                        ? VISIBLE
+                        : GONE);
+        videoPlayerView.preparePlayer();
+        Log.i(TAG, "Playing video: " + hlsUrl);
 
 
         long playDifference = runtime - watchedTime;//((watchedTime*100)/runTime);
@@ -476,7 +474,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
         }
         if (closedCaptionSelector != null) {
-            videoPlayerView.setStreamingQualitySelector(closedCaptionSelector);
+            videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
         }
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
@@ -1040,7 +1038,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         networkDisconnect = true;
                         if (!TextUtils.isEmpty(hlsUrl)) {
                             videoPlayerView.sendPlayerPosition(videoPlayerView.getPlayer().getCurrentPosition());
-                            videoPlayerView.setUriOnConnection(Uri.parse(hlsUrl), null);
+                            videoPlayerView.setUriOnConnection();
                         }
                     }
                 } else {

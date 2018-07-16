@@ -123,7 +123,6 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
@@ -476,6 +475,7 @@ public class AppCMSPresenter {
     private static final String LAST_PLAY_SONG_DETAILS = "last_play_song_details";
     private static final String APP_LAUNCHED_FROM_DEEPLINK_PREFS = "app_launched_from_deeplink_prefs_key";
     private static final String DEEPLINK_CONTENT_ID_PREFS = "deeplink_content_id_prefs_key";
+    private static final String SUBTITLE_LANGUAGE_PREFS = "subtitle_language_prefs_key";
 
     private static final String DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME = "download_over_cellular_enabled_pref_name";
     private static final String ACTIVE_NETWORK_TYPE_PREF_NAME = "active_network_type_pref_name";
@@ -10942,6 +10942,22 @@ public class AppCMSPresenter {
         return null;
     }
 
+
+    public void setPreferredSubtitleLanguage(String language) {
+        if (currentContext != null) {
+            SharedPreferences sharedPreferences = currentContext.getSharedPreferences(SUBTITLE_LANGUAGE_PREFS, 0);
+            sharedPreferences.edit().putString(SUBTITLE_LANGUAGE_PREFS, language).apply();
+        }
+    }
+
+    public String getPreferredSubtitleLanguage() {
+        if (currentContext != null) {
+            SharedPreferences sharedPreferences = currentContext.getSharedPreferences(SUBTITLE_LANGUAGE_PREFS, 0);
+            return sharedPreferences.getString(SUBTITLE_LANGUAGE_PREFS, null);
+        }
+        return null;
+    }
+
     public void logout() {
         //ViewCreator.clearPlayerView();
 
@@ -20169,7 +20185,7 @@ public class AppCMSPresenter {
                 contentDatum.getSeason().get(0).getEpisodes() != null &&
                 contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
 
-            List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
+            List<String> relatedVideosIds = Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
                     -1,

@@ -30,7 +30,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
-import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -314,7 +313,7 @@ public class ViewCreator {
                                     ? View.VISIBLE
                                     : View.GONE);
                 }
-                videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
+                videoPlayerView.preparePlayer(Uri.parse(videoPlayerContent.videoUrl),
                         !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
                 //Log.i(TAG, "Playing video: " + title);
             }
@@ -359,7 +358,7 @@ public class ViewCreator {
         }
 
         if (resetWatchTime) {
-            videoPlayerView.setUri(Uri.parse(videoUrl), null);
+            videoPlayerView.preparePlayer(Uri.parse(videoUrl), null);
         }
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {

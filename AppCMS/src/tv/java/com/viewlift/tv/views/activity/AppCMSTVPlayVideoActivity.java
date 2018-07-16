@@ -311,6 +311,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
                     String bitrateVal = buildBitrateString(availableMpeg.getBitrate());
                     if (!TextUtils.isEmpty(bitrateVal)) {
                         availableStreamingFormats.put(bitrateVal, availableMpeg.getUrl());
+                        availableStreamingQualityMap.put(bitrateVal, availableMpeg.getUrl());
                     }
                 }else if (!TextUtils.isEmpty(mpegUrl)) {
                     String resolution = getMpegResolutionFromUrl(mpegUrl);
@@ -797,6 +798,15 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Retuns the hlsUrl variable be it hls or mp4
+     * @return
+     */
+    @Override
+    public String getVideoUrl() {
+        return hlsUrl;
+    }
+
     @Override
     public String getStreamingQualityUrl(String streamingQuality) {
         if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
@@ -860,5 +870,25 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
         }
 
         return closedCaptionsList;
+    }
+
+    @Override
+    public String getSubtitleLanguageFromIndex(int index) {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+        String language = null;
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        if (closedCaptions != null) {
+            for (ClosedCaptions captions : closedCaptions) {
+                if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    closedCaptionsList.add(captions);
+                }
+            }
+        }
+
+        if (!closedCaptionsList.isEmpty()) {
+            language = closedCaptionsList.get(index).getLanguage();
+        }
+        return language;
     }
 }
