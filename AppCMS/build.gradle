@@ -273,6 +273,8 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Google_internal.gwt.xml'
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
     }
 
 

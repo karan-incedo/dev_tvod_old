@@ -418,6 +418,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         try {
             if (getActivity() != null
                     && MediaControllerCompat.getMediaController(getActivity()) != null
+                    && MediaControllerCompat.getMediaController(getActivity()).getMetadata() != null
                     && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
                 MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
                 MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();
