@@ -20,7 +20,7 @@
     <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
     <string name="app_cms_beacon_chromecast_dp2_url">&amp;dp2=Chromecast</string>
     <string name="app_cms_beacon_platform">Android</string>
-    <string name="app_cms_beacon_tvplatform">FireTV</string>
+    <string name="app_cms_beacon_tvplatform" translatable="false">FireTV</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
     <string name="app_cms_beacon_casting_screen_name">CastingView</string>
@@ -98,6 +98,7 @@
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
+        <item>AC Footer 02</item>
         <item>AC RawHtml 01</item>
     </string-array>
 
@@ -185,6 +186,8 @@
     <string name="app_cms_page_schedule_title_key">scheduleTitle</string>
     <string name="app_cms_page_schedule_game_Date_key">gameDate</string>
 
+    <string name="app_cms_page_plan_feature_image_key">planFeatureImage</string>
+    <string name="app_cms_page_plan_feature_title_key">planFeatureTitle</string>
     <string name="app_cms_page_photogallery_image_key">photogalleryImage</string>
     <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
@@ -448,10 +451,12 @@
 
 
     <!-- Subscription Keys -->
+    <string name="app_cms_page_subscription_selectionplan_03_key">AC SelectPlan 03</string>
     <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
+    <string name="app_cms_page_subscription_imagetextrow_02_key">AC ImageTextRow 02</string>
     <string name="app_cms_page_article_tray_key">AC ArticleTray 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
@@ -484,7 +489,6 @@
     <string name="app_cms_pagename_musicHub_screen_key">Music Hub</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_showsscreen_key">Shows Page</string>
-    <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
@@ -571,7 +575,7 @@
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Show Detail API -->
-    <string name="app_cms_show_detail_api_url">%1$s/content/series?ids=%2$s&amp;site=%3$s</string>
+    <string name="app_cms_show_detail_api_url">%1$s/content/series/?id=%2$s&amp;site=%3$s</string>
 
     <!--  AppCMS entitlement Detail API -->
     <string name="app_cms_entitlement_api_url">%1$s/entitlement/video/status?id=%2$s</string>
@@ -765,11 +769,14 @@
 
     <string name="forward_slash">/</string>
     <string name="app_cms_plan_renewal_cycle_type_monthly">MONTH</string>
-    <string name="plan_type_month">Month</string>
+    <string name="plan_type_month">month</string>
+    <string name="plan_type_monthly">monthly</string>
     <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
-    <string name="plan_type_year">Year</string>
+    <string name="plan_type_year">year</string>
+    <string name="plan_type_yearly">annually</string>
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
-    <string name="plan_type_day">Month</string>
+    <string name="plan_type_day">day</string>
+    <string name="plan_type_daily">daily</string>
 
     <string name="app_cms_page_download_size_key">videoSize</string>
     <string name="app_cms_page_download_duration_key">duration</string>
@@ -826,6 +833,13 @@
     <string name="app_cms_sslcommerz_initiate_api_url">%1$s/sslcommerz/initiate?site=%2$s&amp;device=android_phone</string>
     <!--APPCMS CCAve RSA KEY-->
     <string name="app_cms_ccavenue_rsa_key_api_url">%1$s/ccavenue/ccavenue/rsakey?x=%2$s</string>
+    <!--season tabs-->
+    <string name="app_cms_page_tabs_season_key">seasonTabs</string>
+    <string name="app_cms_page_tabs_type">tabLayout</string>
+<!--Benefit plan page-->
+    <string name="app_cms_plan_feature_text_key">featureText</string>
+    <string name="app_cms_plan_single_plan_subscribe_text_key">singlePlanSubscribe</string>
+    <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
 
 
     //Teams Api
@@ -1117,6 +1131,9 @@
     <string name="app_cms_default_download_quality">720p</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
+    <string name="manageLanguageBtnKey">manageLanguage</string>
+    <string name="changeLanguageLabel">languageValue</string>
+    <string name="changeLanguage">changeLanguage</string>
     <string-array name="app_cms_tray_modules">
         <item>@string/carousel_nodule</item>
         <item>AC ContinueWatching 01</item>
@@ -1172,8 +1189,9 @@
     <string name="adm_directive_next">Next</string>
     <string name="adm_directive_previous">Previous</string>
 
-
-
-
+    <string name="view_plans">viewplans</string>
+    <string name="app_cms_page_path_fighter">fighter</string>
+    <string name="app_cms_page_path_roster">roster</string>
+    <string name="app_cms_event_key_type">EVENT</string>
 
 </resources>

@@ -3,7 +3,7 @@
 buildscript {
     ext {
         realmVersion = "5.1.0"
-        gradleBuildVersion = "3.0.1"
+        gradleBuildVersion = "3.1.3"
         playServicesVersion = "4.0.1"
     }
     repositories {
@@ -11,7 +11,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath "com.google.gms:google-services:${playServicesVersion}"
 
@@ -39,10 +39,11 @@ allprojects {
         gsonVersion = "2.8.2"
         retrofit2Version = "2.3.0"
         okHttp3Version = "3.8.1"
-        rxandroidVersion = "1.2.0"
-        rxjavaVersion = "1.1.4"
+        rxandroidVersion = "2.0.2"
+        rxjavainterop = "0.12.7"
+        rxjavaVersion = "2.1.13"
         jsr250_apiVersion = "1.0"
-        googleAdsInteractiveMediaV3 = "3.6.0"
+        googleAdsInteractiveMediaV3 = "3.8.7"
         googlePlayServicesVersion = "15.0.1"
         fireBasePlayServicesVersion = "16.0.0"
         crashlyticsVersion = "2.9.2@aar"

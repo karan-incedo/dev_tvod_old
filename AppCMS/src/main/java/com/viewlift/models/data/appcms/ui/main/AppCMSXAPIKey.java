@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class AppCMSXAPIKey implements Serializable{
+public class AppCMSXAPIKey implements Serializable {
 
     @SerializedName("name")
     @Expose

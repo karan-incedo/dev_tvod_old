@@ -1,0 +1,301 @@
+{
+  "moduleList": [
+    {
+      "id": "b7d62e96-4016-4cce-b07a-013dd6a2da22",
+      "settings": {
+        "searchThumbnailType": "landscape"
+      },
+      "view": "AC Masthead 01",
+      "type": "AC Masthead 01",
+      "blockName": "masthead01",
+      "layout": {},
+      "components": []
+    },
+    {
+      "id": "dba0c701-ad79-4b1c-a067-a71b51c181ca",
+      "settings": {
+        "items": [
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/originals.png",
+            "title": "EXCLUSIVE ORIGINAL SHOWS"
+          },
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/catalogue.png",
+            "title": "LARGEST CATALOGUE OF BENGALI MOVIES"
+          },
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/music.png",
+            "title": "MUSIC STREAMING WITH 1000+ SONGS"
+          },
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/download.png",
+            "title": "DOWNLOAD OFFLINE AND WATCH ANYTIME, ANYWHERE"
+          },
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/noads.png",
+            "title": "AD-FREE CONTENT"
+          },
+          {
+            "imageUrl": "https://snagfilms-a.akamaihd.net/4b/06/059b8c333f7c8c6fedc6cfb0bf3f/devices.png",
+            "title": "MULTIPLE DEVICES: WATCH ON A DEVICE OF YOUR CHOICE"
+          }
+        ]
+      },
+      "view": "AC ImageTextRow 02",
+      "type": "AC ImageTextRow 02",
+      "blockName": "imageTextRow02",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletLandscape": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "trayPadding": 10,
+              "leftMargin": 3.2,
+              "topMargin": 0,
+              "rightMargin": 3.2,
+              "bottomMargin": 0
+            },
+            "tabletLandscape": {
+              "trayPadding": 30,
+              "leftMargin": 3.2,
+              "topMargin": 0,
+              "rightMargin": 3.2,
+              "bottomMargin": 0
+            },
+            "tabletPortrait": {
+              "trayPadding": 30,
+              "leftMargin": 3.2,
+              "topMargin": 0,
+              "rightMargin": 3.2,
+              "bottomMargin": 0
+            }
+          },
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 66,
+                  "xAxis": 5,
+                  "fontSize": 12,
+                  "width": 135
+                },
+                "tabletLandscape": {
+                  "yAxis": 120,
+                  "xAxis": 5,
+                  "fontSize": 15,
+                  "width": 160
+                },
+                "tabletPortrait": {
+                  "yAxis": 130,
+                  "xAxis": 5,
+                  "fontSize": 16,
+                  "width": 180
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#ffffff",
+              "key": "planFeatureTitle"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "yAxis": 15,
+                  "xAxis": 0,
+                  "width": 60,
+                  "height": 45
+                },
+                "tabletLandscape": {
+                  "yAxis": 40,
+                  "xAxis": 0,
+                  "width": 80,
+                  "height": 65
+                },
+                "tabletPortrait": {
+                  "yAxis": 40,
+                  "xAxis": 0,
+                  "width": 90,
+                  "height": 75
+                }
+              },
+              "type": "image",
+              "key": "planFeatureImage"
+            }
+          ],
+          "type": "collectionGrid",
+          "backgroundColor": "121212",
+          "key": "collectionGrid"
+        }
+      ]
+    },
+    {
+      "id": "7865ec7d-a90a-4457-9598-b8437ee3f9ef",
+      "settings": {
+        "images": {},
+        "providers": [
+          "stripe",
+          "ccavenue"
+        ]
+      },
+      "view": "AC SelectPlan 02",
+      "type": "AC SelectPlan 02",
+      "blockName": "selectPlan02",
+      "layout": {
+        "mobile": {
+          "leftMargin": 0,
+          "topMargin": 10,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletLandscape": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        },
+        "tabletPortrait": {
+          "leftMargin": 0,
+          "topMargin": 0,
+          "rightMargin": 0,
+          "bottomMargin": 0
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "mobile": {
+              "gridHeight": 70,
+              "trayPadding": 20,
+              "leftMargin": 15,
+              "rightMargin": 15,
+              "bottomMargin": 0
+            },
+            "tabletLandscape": {
+              "gridHeight": 75,
+              "gridWidth": 425,
+              "trayPadding": 20,
+              "bottomMargin": 0,
+              "topMargin": 1.7
+            },
+            "tabletPortrait": {
+              "gridHeight": 75,
+              "gridWidth": 425,
+              "trayPadding": 20,
+              "bottomMargin": 0
+            }
+          },
+          "components": [
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 15,
+                  "fontSize": 13,
+                  "width": 90
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 15,
+                  "fontSize": 15,
+                  "width": 90
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 15,
+                  "fontSize": 15,
+                  "width": 90
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 2,
+              "fontWeight": "Bold",
+              "textAlignment": "center",
+              "type": "label",
+              "textColor": "#FFFFFF",
+              "key": "featureText"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 20
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 17
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 17
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Italic",
+              "key": "planPriceInfo"
+            },
+            {
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 22
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 30
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 30
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "center",
+              "type": "label",
+              "text": "SUBSCRIBE NOW",
+              "textColor": "#ffffff",
+              "key": "singlePlanSubscribe"
+            }
+          ],
+          "action": "purchasePlan",
+          "type": "collectionGrid",
+          "key": "collectionGrid"
+        }
+      ]
+    }
+  ],
+  "caching": {
+    "isEnabled": false
+  },
+  "version": "0.0.53"
+}

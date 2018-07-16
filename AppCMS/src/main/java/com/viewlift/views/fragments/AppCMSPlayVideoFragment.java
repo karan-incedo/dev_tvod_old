@@ -348,7 +348,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                             appCMSSignedURLResult.getKeyPairId());
                                 }
                             });
-                        });
+                        },null,false);
                     }
                 }
             };
@@ -1272,7 +1272,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 }
                             }
                         });
-                    });
+                    },null,false);
         }
     }
 
