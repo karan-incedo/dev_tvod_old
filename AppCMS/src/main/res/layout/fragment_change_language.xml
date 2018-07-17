@@ -7,6 +7,7 @@
     android:paddingRight="300dp"
     android:paddingBottom="20dp"
     android:paddingTop="20dp"
+    android:gravity="center"
     tools:context="com.viewlift.views.fragments.AppCMSChangePasswordFragment">
 
     <TextView
@@ -34,7 +35,7 @@
         android:layout_centerInParent="true"
         tools:listitem="@layout/change_language_view_item"
         android:layout_below="@id/seprator_view"
-        tools:itemCount="10"
+        tools:itemCount="2"
         android:paddingTop="20dp"
         >
 
