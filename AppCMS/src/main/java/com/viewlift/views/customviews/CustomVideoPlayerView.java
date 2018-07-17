@@ -1227,7 +1227,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 adsUrl = appCMSPresenter.getAdsUrl(contentDatum.getGist().getPermalink());
             }
         }
+
         shouldRequestAds = adsUrl != null && !TextUtils.isEmpty(adsUrl);
+        isAdDisplayed = false;
+        isAdError = false;
     }
 
     private void requestAds(String adTagUrl) {
