@@ -647,6 +647,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         return availableStreamingQualities.size() - 1;
     }
 
+    @Override
+    public String getFilmId() {
+        return filmId;
+    }
+
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingQualityMap == null) {
             availableStreamingQualityMap = new HashMap<>();
