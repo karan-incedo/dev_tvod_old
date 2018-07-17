@@ -1713,7 +1713,9 @@ public class TVViewCreator {
                                             videoDescription,
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
 
                             final String fullText = videoDescription;
@@ -1756,7 +1758,7 @@ public class TVViewCreator {
                                             autoplayVideoDescription,
                                             appCMSPresenter,
                                             true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), false);
                             Vto.addOnGlobalLayoutListener(layoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
@@ -2467,7 +2469,8 @@ public class TVViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new TVCreditBlocksView(context,
+                componentViewResult.componentView = new TVCreditBlocksView(
+                        context,
                         jsonValueKeyMap,
                         fontFamilyKey,
                         fontFamilyKeyTypeParsed,
@@ -2479,6 +2482,7 @@ public class TVViewCreator {
                         starringListSb.toString(),
                         textColor,
                         Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);

@@ -757,7 +757,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void createStreamingQualitySelector() {
 
-        if(!uri.toString().startsWith("file:///")){
+        if(!appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())){
         if (streamingQualitySelector != null && appCMSPresenter != null) {
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
@@ -1230,10 +1230,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///")) {
+                && null != appCMSPresenter && uri != null && !appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())) {
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
         }else{
-            if(uri.toString().startsWith("file:///") && appCMSPresenter.isUserLoggedIn()){
+            if(appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId()) && appCMSPresenter.isUserLoggedIn()){
                 currentStreamingQualitySelector.setVisibility(View.GONE);
             }else{
                 currentStreamingQualitySelector.setVisibility(View.VISIBLE);
@@ -1657,6 +1657,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         String getMpegResolutionFromUrl(String mpegUrl);
 
         int getMpegResolutionIndexFromUrl(String mpegUrl);
+
+        String getFilmId();
     }
 
     /**

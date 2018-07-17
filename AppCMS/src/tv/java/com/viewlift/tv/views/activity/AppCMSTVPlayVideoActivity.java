@@ -856,6 +856,11 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public String getFilmId() {
+        return filmId;
+    }
+
+    @Override
     public List<ClosedCaptions> getAvailableClosedCaptions() {
         ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
 
