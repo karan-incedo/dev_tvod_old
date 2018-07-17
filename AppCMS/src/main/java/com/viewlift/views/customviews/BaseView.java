@@ -25,7 +25,6 @@ import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSPlaylistAdapter;
-import com.viewlift.views.adapters.AppCMSRosterAdapter;
 
 import java.util.Map;
 

@@ -113,9 +113,9 @@ public class SubscriptionMetaDataView extends LinearLayout {
              * Whenever it cheld views wer more then 0 it created duplicate details view at
              * plan screen. #removeAllViews() help for clearing duplicate views.
              */
-            if (getChildAt(0)!=null &&
-                    getChildAt(0)instanceof  GridLayout) {
-               removeAllViews();
+            if (getChildAt(0) != null &&
+                    getChildAt(0) instanceof GridLayout) {
+                removeAllViews();
             }
             for (int i = 0; i < featureDetails.size(); i++) {
                 if (!TextUtils.isEmpty(featureDetails.get(i).getValueType()) &&
@@ -271,10 +271,13 @@ public class SubscriptionMetaDataView extends LinearLayout {
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.tickicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
-                        } else {
+                        } else if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+                                featureDetail.getValue().equalsIgnoreCase("false")) {
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.crossicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
+                        } else {
+                            ((TextView) componentView).setCompoundDrawables(null, null, null, null);
                         }
 
 //                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
