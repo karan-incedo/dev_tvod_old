@@ -118,7 +118,6 @@ import com.viewlift.views.customviews.season.SeasonModule;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

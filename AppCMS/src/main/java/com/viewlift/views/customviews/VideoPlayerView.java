@@ -556,7 +556,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         }
 
-        new DebugLogsHelper(player, new TextView(getContext())).start();
         player.addListener(this);
         player.setVideoDebugListener(this);
         playerView.setPlayer(player);

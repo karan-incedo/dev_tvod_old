@@ -1,7 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 

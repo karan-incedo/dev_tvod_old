@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
+
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
