@@ -281,6 +281,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         setSelectedStreamingQualityIndex();
                     }
                 }
+                if(availableStreamingQualities.size()==0){
+                    currentStreamingQualitySelector.setVisibility(GONE);
+                }
             }
         } catch (Exception e) {
         }
@@ -754,6 +757,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void createStreamingQualitySelector() {
+
+        if(!uri.toString().startsWith("file:///")){
         if (streamingQualitySelector != null && appCMSPresenter != null) {
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
@@ -812,6 +817,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         } else {
             currentStreamingQualitySelector.setVisibility(GONE);
+        }
+      }else{
+            //video coming from downloaded
+            if (appCMSPresenter.isUserLoggedIn()) {
+                currentStreamingQualitySelector.setVisibility(GONE);
+            }
         }
         streamingQualitySelectorCreated = true;
     }
@@ -1220,8 +1231,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void showStreamingQualitySelector() {
         if (null != currentStreamingQualitySelector
-                && null != appCMSPresenter)
+                && null != appCMSPresenter && uri != null && !uri.toString().startsWith("file:///")) {
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+        }else{
+            if(uri.toString().startsWith("file:///") && appCMSPresenter.isUserLoggedIn()){
+                currentStreamingQualitySelector.setVisibility(View.GONE);
+            }else{
+                currentStreamingQualitySelector.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void toggleCCSelectorVisibility(boolean show) {

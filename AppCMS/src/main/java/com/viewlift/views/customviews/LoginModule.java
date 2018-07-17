@@ -467,7 +467,7 @@ public class LoginModule extends ModuleView {
                                     @Override
                                     public void onClick(View widget) {
                                         hideKeyboard((Activity) widget.getContext());
-                                        appCMSPresenter.navigatToPrivacyPolicy(visibleEmailInputView.getText().toString(), visiblePasswordInputView.getText().toString());
+                                        appCMSPresenter.navigateToPrivacyPolicy(visibleEmailInputView.getText().toString(),visiblePasswordInputView.getText().toString());
                                     }
                                 }, spanTxt.length() - "Privacy Policy".length(), spanTxt.length(), 0);
                                 ((TextView) componentView).setMovementMethod(LinkMovementMethod.getInstance());

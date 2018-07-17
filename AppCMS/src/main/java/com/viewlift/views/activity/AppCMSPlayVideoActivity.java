@@ -87,6 +87,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
@@ -190,7 +192,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                 this::finish,
                                                 null);
                                     }
-                                });
+                                },null,false);
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_error_message),

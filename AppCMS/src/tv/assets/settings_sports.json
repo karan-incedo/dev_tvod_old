@@ -1,0 +1,139 @@
+{
+  "id": "7232af9c-760e-4aa6-a34f-50df3e5e2a8a",
+  "settings": {},
+  "view": "AC UserManagement 02",
+  "type": "AC UserManagement 02",
+  "blockName": "userManagement02",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "xAxis": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 37,
+          "fontSize": 24
+        }
+      },
+      "fontFamily": "Lato",
+      "textAlignment": "center_horizontal",
+      "numberOfLines": 1,
+      "letterSpacing": 4.5,
+      "text": "Account",
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "Regular"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 190,
+          "fontSize": 16
+        }
+      },
+      "fontFamily": "Lato",
+      "numberOfLines": 1,
+      "textAlignment": "center_horizontal",
+      "letterSpacing": 4.5,
+      "text": "You are signed in as",
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "Regular"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 278,
+          "fontSize": 24
+        }
+      },
+      "textAlignment": "center_horizontal",
+      "fontFamily": "Lato",
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "Regular",
+      "text": "email@domain.com",
+      "key": "userEmailKey"
+    },
+
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 468,
+          "xAxis": 655,
+          "width": 600,
+          "fontSize": 20,
+          "height": 55
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "letterSpacing": 4.5,
+      "text": "Language",
+      "type": "label",
+      "textColor": "#000000",
+      "fontWeight": "Semibold"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 523,
+          "xAxis": 650,
+          "width": 620,
+          "height": 2
+        }
+      },
+      "backgroundColor": "808080",
+      "type": "separatorView"
+    },
+
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 543,
+          "xAxis": 655,
+          "width": 600,
+          "fontSize": 12,
+          "height": 55
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "letterSpacing": 4.5,
+      "text": "ENGLISH",
+      "type": "label",
+      "textColor": "#000000",
+      "fontWeight": "Semibold",
+      "key":"languageValue"
+    },
+
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1100,
+          "topMargin": 543,
+          "width": 160,
+          "fontSize": 9,
+          "height": 50
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "changeLanguage",
+      "text": "CHANGE",
+      "opacity": 100,
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "manageLanguage"
+    }
+  ]
+}

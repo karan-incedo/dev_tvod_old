@@ -26,11 +26,12 @@ public class AppCMSStreamingInfoCall {
     }
 
     @WorkerThread
-    public AppCMSStreamingInfo call(String url, String xApiKey) throws IOException {
+    public AppCMSStreamingInfo call(String url, String xApiKey, String authToken) throws IOException {
         try {
 
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("x-api-key", xApiKey);
+            authTokenMap.put("Authorization", authToken);
 
             //Log.d(TAG, "Attempting to read Streaming Info JSON: " + url);
             return appCMSStreamingInfoRest.get(url, authTokenMap).execute().body();

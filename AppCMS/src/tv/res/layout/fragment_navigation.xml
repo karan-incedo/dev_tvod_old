@@ -48,7 +48,8 @@
         android:paddingEnd="30dp"
         android:paddingStart="30dp"
         app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/st_navigation_item" />
+        tools:listitem="@layout/st_navigation_item"
+        />
 
     <ImageView
         android:id="@+id/left_menu_app_logo"
