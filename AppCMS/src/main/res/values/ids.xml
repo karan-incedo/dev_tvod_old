@@ -63,6 +63,7 @@
     <item name="videoSubTitleOnHover" type="id">videoSubTitleOnHover</item>
     <item name="videoDescriptionOnHover" type="id">videoDescriptionOnHover</item>
     <item name="videoBackgroundOnHover" type="id">videoBackgroundOnHover</item>
+    <item name="sesaontab" type="id">sesaontab</item>
 
 
 

@@ -9,8 +9,9 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import java.io.IOException;
 import java.util.List;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -48,7 +49,7 @@ public class GetAppCMSAPIAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
                     Observable.just(result).subscribe(readyAction);
@@ -85,7 +86,7 @@ public class GetAppCMSAPIAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
                     if (params.appCMSPageAPILruCache != null ) {
@@ -106,7 +107,7 @@ public class GetAppCMSAPIAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .subscribe((t) -> {
                     if (onDelete != null) {
                         onDelete.call();

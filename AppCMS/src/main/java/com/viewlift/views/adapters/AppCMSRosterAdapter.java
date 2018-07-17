@@ -3,7 +3,6 @@ package com.viewlift.views.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Fights;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
@@ -193,7 +191,7 @@ public class AppCMSRosterAdapter extends RecyclerView.Adapter<AppCMSRosterAdapte
 //                        itemView.setBackgroundColor(Color.parseColor("#4B0502"));
 
 //                        Fights fights = moduleAPI.getContentData().get(clickPosition).getFights();
-                        notifyDataSetChanged();
+//                        notifyDataSetChanged();
 //                        viewCreator.createFightStateRecorsView(mContext, appCMSPresenter, moduleAPI, component, jsonValueKeyMap, fights);
                     }
                 }
@@ -212,7 +210,7 @@ public class AppCMSRosterAdapter extends RecyclerView.Adapter<AppCMSRosterAdapte
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position,settings);
         }
 
     }

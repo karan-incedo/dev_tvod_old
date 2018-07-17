@@ -9,8 +9,9 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 
 import java.io.IOException;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -113,7 +114,7 @@ public class GetAppCMSPageUIAsyncTask {
                         return null;
                     })
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                     .onErrorResumeNext(throwable -> Observable.empty());
         }
         return null;
@@ -131,7 +132,7 @@ public class GetAppCMSPageUIAsyncTask {
                         return null;
                     })
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                     .onErrorResumeNext(throwable -> Observable.empty())
                     .subscribe((result) -> Observable.just(result).subscribe(readyAction));
         }
@@ -142,7 +143,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> call.writeToFile(appCMSPageUI, url))
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                     .onErrorResumeNext(throwable -> Observable.empty())
                     .subscribe(result -> {});
         }
