@@ -348,7 +348,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                             appCMSSignedURLResult.getKeyPairId());
                                 }
                             });
-                        });
+                        },null,false);
                     }
                 }
             };
@@ -880,7 +880,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
+        Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
         startEntitlementCheckTimer();
         if (!crwCreated) {
             try {
@@ -898,7 +898,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdEvent(AdEvent adEvent) {
-        //Log.i(TAG, "Event: " + adEvent.getType());
+        Log.i(TAG, "Event: " + adEvent.getType());
 
         switch (adEvent.getType()) {
             case LOADED:
@@ -943,7 +943,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                     isADPlay = true;
                     videoPlayerInfoContainer.bringToFront();
                     startEntitlementCheckTimer();
+
+                    if (onUpdateContentDatumEvent.getCurrentContentDatum().getGist() != null) {
+                        videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                !TextUtils.isEmpty(closedCaptionUrl) ?
+                                        Uri.parse(closedCaptionUrl) : null);
+                        videoPlayerView.setCurrentPosition(onUpdateContentDatumEvent.getCurrentContentDatum().getGist()
+                                .getWatchedTime() * 1000L);
+                    }
                     createContentRatingView();
+
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
                 }
@@ -1252,16 +1261,18 @@ public class AppCMSPlayVideoFragment extends Fragment
                                         appCMSSignedURLResult.getSignature(),
                                         appCMSSignedURLResult.getKeyPairId());
 
-                                if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                                    videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                            !TextUtils.isEmpty(closedCaptionUrl) ?
-                                                    Uri.parse(closedCaptionUrl) : null);
-                                    videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
-                                            .getWatchedTime() * 1000L);
+                                if(shouldRequestAds == false) {
+                                    if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
+                                        videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                                !TextUtils.isEmpty(closedCaptionUrl) ?
+                                                        Uri.parse(closedCaptionUrl) : null);
+                                        videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
+                                                .getWatchedTime() * 1000L);
+                                    }
                                 }
                             }
                         });
-                    });
+                    },null,false);
         }
     }
 

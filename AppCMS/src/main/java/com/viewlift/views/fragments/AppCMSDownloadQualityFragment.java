@@ -121,7 +121,7 @@ public class AppCMSDownloadQualityFragment extends Fragment
                 if (binder != null &&
                         binder.getContentDatum() != null &&
                         binder.getResultAction1() != null) {
-                    appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
+                    appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true,null);
 
                 }
                 getActivity().finish();

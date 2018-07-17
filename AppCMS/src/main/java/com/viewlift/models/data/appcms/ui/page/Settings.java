@@ -56,6 +56,10 @@ public class Settings implements Serializable {
     @Expose
     ArrayList<SocialLinks> socialLinks;
 
+    @SerializedName("items")
+    @Expose
+    ArrayList<Items> items;
+
     @SerializedName("links")
     @Expose
     ArrayList<Links> links;
@@ -174,5 +178,9 @@ public class Settings implements Serializable {
 
     public void setInfoHover(boolean infoHover) {
         this.infoHover = infoHover;
+    }
+
+    public ArrayList<Items> getItems() {
+        return items;
     }
 }

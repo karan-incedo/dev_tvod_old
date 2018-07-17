@@ -67,7 +67,7 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
     }
 
     @Override
-    protected Layout getLayout() {
+    public Layout getLayout() {
         return module.getLayout();
     }
 
