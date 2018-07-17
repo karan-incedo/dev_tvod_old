@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
