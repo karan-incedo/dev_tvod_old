@@ -128,7 +128,6 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
@@ -144,6 +143,7 @@ import com.viewlift.models.data.appcms.api.GameSchedule;
 import com.viewlift.models.data.appcms.api.GetLinkCode;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Language;
+import com.viewlift.models.data.appcms.api.Languages;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.PhotoGalleryData;
@@ -275,6 +275,7 @@ import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
+import com.viewlift.utils.LocaleUtils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -924,6 +925,8 @@ public class AppCMSPresenter {
     private BitmapCachePresenter bitmapCachePresenter;
 
     private int numPagesProcessed;
+    private Language defaultLanguage;
+
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -3720,6 +3723,11 @@ public class AppCMSPresenter {
         return languageArrayList;
     }
 
+    /**
+     * Launch language Selector dialog.
+     * @param appCMSPageUI
+     * @param action
+     */
     private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action){
         if(currentActivity  != null){
             Intent updatePageIntent =
@@ -3729,16 +3737,25 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean setLanguage(Language languageName) {
+    /**
+     * save the language value in SharedPref.
+     * @param language
+     * @return
+     */
+    public boolean setLanguage(Language language) {
         if (currentContext != null) {
             Gson gson = new Gson();
-            String json = gson.toJson(languageName);
+            String json = gson.toJson(language);
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(LANGUAGE_NAME_VALUE, json).commit();
         }
         return false;
     }
 
+    /**
+     * Reterieve the Language from SharedPref.
+     * @return
+     */
     public Language getLanguage() {
         Language language = null;
         if (currentContext != null) {
@@ -11326,7 +11343,11 @@ public class AppCMSPresenter {
                               final PlatformType platformType,
                               boolean bustCache) {
         Log.w(TAG, "Attempting to retrieve main.json");
-        createlanguageArray();
+        //createlanguageArray();
+        defaultLanguage = new Language();
+        defaultLanguage.setLanguageCode(Locale.getDefault().getLanguage());
+        defaultLanguage.setLanguageName(Locale.getDefault().getDisplayLanguage());
+
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
@@ -11377,6 +11398,30 @@ public class AppCMSPresenter {
                         if (main != null) {
                             appCMSMain = main;
                         }
+
+                        //temproray code.Will delete when language will comes in Main.json.
+                       /* Languages languages = new Languages();
+                        languages.setLanguageList(languageArrayList);
+                        Language defaultLang = new Language();
+                        defaultLang.setLanguageName("Urdu");
+                        defaultLang.setLanguageCode("ur");
+                        languages.setDefaultlanguage(defaultLang);
+                        appCMSMain.setLanguages(languages);*/
+
+
+                        //check default language
+                        if(null != defaultLanguage && null != appCMSMain.getLanguages()){
+                            ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
+                            System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
+                            boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
+                            if(!isLanguageExistinMain){
+                                defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
+                            }
+                            System.out.println("TESTS Default language after update = "+defaultLanguage.getLanguageCode());
+                        }
+                        LocaleUtils.setLocale(currentContext,defaultLanguage.getLanguageCode());
+                        setLanguage(defaultLanguage);
+
                         new SoftReference<Object>(appCMSMain, referenceQueue);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
