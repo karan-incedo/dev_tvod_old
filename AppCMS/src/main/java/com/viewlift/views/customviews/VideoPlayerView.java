@@ -2009,6 +2009,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             viewHolder.getmText().setText(availableStreamingQualities.get(i));
             if (selectedIndex == i) {
                 viewHolder.getmRadio().setChecked(true);
+                viewHolder.getmRadio().requestFocus();
             } else {
                 viewHolder.getmRadio().setChecked(false);
             }
@@ -2085,6 +2086,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             viewHolder.getmText().setText(closedCaptions.getLanguage());
             if (selectedIndex == i) {
                 viewHolder.getmRadio().setChecked(true);
+                viewHolder.getmRadio().requestFocus();
             } else {
                 viewHolder.getmRadio().setChecked(false);
             }
@@ -2160,6 +2162,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             viewHolder.getmText().setText(availableStreamingQualities.get(i).getValue());
             if (selectedIndex == i) {
                 viewHolder.getmRadio().setChecked(true);
+                viewHolder.getmRadio().requestFocus();
             } else {
                 viewHolder.getmRadio().setChecked(false);
             }
