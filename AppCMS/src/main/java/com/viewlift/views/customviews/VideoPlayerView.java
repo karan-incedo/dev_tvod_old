@@ -253,9 +253,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
         if (appCMSPresenter != null/* && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID*/) {
             if (closedCaptionUri == null) {
-                if (ccToggleButton != null) {
-                    ccToggleButton.setVisibility(GONE);
-                }
+                toggleCCSelectorVisibility(false);
             } else {
                 if (ccToggleButton != null) {
 //                    ccToggleButton.setChecked(isClosedCaptionEnabled);
@@ -264,9 +262,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
         } else {
-            if (ccToggleButton != null) {
-                ccToggleButton.setVisibility(GONE);
-            }
+            toggleCCSelectorVisibility(false);
         }
 
         try {
@@ -1063,51 +1059,59 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualitySelector.getVideoUrl()), ""));
         }
 
-        /*getAvailableClosedCaptions() returns all the SRTs which we got in the ContentDatum*/
-        List<ClosedCaptions> closedCaptionsList = closedCaptionSelector.getAvailableClosedCaptions();
+        /*Check if user has enabled CC in the app setting, it is off by default*/
+        if (appCMSPresenter.getClosedCaptionPreference()) {
+            /*getAvailableClosedCaptions() returns all the SRTs which we got in the ContentDatum*/
+            List<ClosedCaptions> closedCaptionsList = closedCaptionSelector.getAvailableClosedCaptions();
 
-        /*check if user has a preferred subtitle language, which he/she might have chosen in the
-        past, method returns null if there is no preference*/
-        String preferredSubtitleLanguage = appCMSPresenter.getPreferredSubtitleLanguage();
+            /*check if user has a preferred subtitle language, which he/she might have chosen in the
+            past, method returns null if there is no preference*/
+            String preferredSubtitleLanguage = appCMSPresenter.getPreferredSubtitleLanguage();
 
-        /* Iterate over the CC list and create a SingleSampleMediaSource for each Subtitles and add
-        * each one of them to the list*/
-        if (closedCaptionsList != null && closedCaptionsList.size() > 0) {
-            for (int i = 0; i < closedCaptionsList.size(); i++) {
-                ClosedCaptions closedCaptions = closedCaptionsList.get(i);
+            /* Iterate over the CC list and create a SingleSampleMediaSource for each Subtitles and add
+             * each one of them to the list*/
+            if (closedCaptionsList != null && closedCaptionsList.size() > 0) {
+                for (int i = 0; i < closedCaptionsList.size(); i++) {
+                    ClosedCaptions closedCaptions = closedCaptionsList.get(i);
 
-                if (closedCaptions.getFormat().equalsIgnoreCase("SRT")) {
-                    Format textFormat = Format.createTextSampleFormat(null,
-                            MimeTypes.APPLICATION_SUBRIP,
-                            C.SELECTION_FLAG_DEFAULT,
-                            closedCaptions.getLanguage());
+                    if (closedCaptions.getFormat().equalsIgnoreCase("SRT")) {
+                        Format textFormat = Format.createTextSampleFormat(null,
+                                MimeTypes.APPLICATION_SUBRIP,
+                                C.SELECTION_FLAG_DEFAULT,
+                                closedCaptions.getLanguage());
 
-                    String ccFileUrl = closedCaptions.getUrl();
-                    mediaSourceList.add(new SingleSampleMediaSource(
-                            Uri.parse(ccFileUrl),
-                            mediaDataSourceFactory,
-                            textFormat,
-                            C.TIME_UNSET));
+                        String ccFileUrl = closedCaptions.getUrl();
+                        mediaSourceList.add(new SingleSampleMediaSource(
+                                Uri.parse(ccFileUrl),
+                                mediaDataSourceFactory,
+                                textFormat,
+                                C.TIME_UNSET));
 
-                    /* CC button visibility & state is manipulated here*/
-                    if (preferredSubtitleLanguage != null) {
-                        if (preferredSubtitleLanguage.equalsIgnoreCase(closedCaptions.getLanguage())) {
-                            selectedSubtitleIndex = i;
-                        ccToggleButton.setSelected(true);
-                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                        /* CC button visibility & state is manipulated here*/
+                        if (preferredSubtitleLanguage != null) {
+                            if (preferredSubtitleLanguage.equalsIgnoreCase(closedCaptions.getLanguage())) {
+                                selectedSubtitleIndex = i;
+                                ccToggleButton.setSelected(true);
+                                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
 
-                        /*this is used in the onPlayerStateChanged*/
-                        shouldShowSubtitle = true;
+                                /*this is used in the onPlayerStateChanged*/
+                                shouldShowSubtitle = true;
+                            }
+                        } else {
+                            ccToggleButton.setSelected(false);
+                            VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
                         }
-                    } else {
-                        ccToggleButton.setSelected(false);
-                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
                     }
                 }
+                toggleCCSelectorVisibility(true);
+            } else {
+                /*Disable CC if the list is empty meaning no cc available for the particular movie*/
+                toggleCCSelectorVisibility(false);
+                ccToggleButton.setSelected(false);
+                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
             }
-            toggleCCSelectorVisibility(true);
         } else {
-            /*Disable CC if the list is empty meaning no cc available for the particular movie*/
+            /*Disable CC if the user has turned CC off from settings*/
             toggleCCSelectorVisibility(false);
             ccToggleButton.setSelected(false);
             VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
