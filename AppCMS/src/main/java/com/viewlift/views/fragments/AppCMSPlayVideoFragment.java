@@ -163,6 +163,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     };
 
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
+    private VideoPlayerView.ClosedCaptionSelector closedCaptionSelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -276,6 +277,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (context instanceof VideoPlayerView.StreamingQualitySelector) {
             streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
+        if (context instanceof VideoPlayerView.ClosedCaptionSelector) {
+            closedCaptionSelector = (VideoPlayerView.ClosedCaptionSelector) context;
+        }
         if (context instanceof RegisterOnResumeVideo) {
             ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
         }
@@ -348,7 +352,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                             appCMSSignedURLResult.getKeyPairId());
                                 }
                             });
-                        });
+                        },null,false);
                     }
                 }
             };
@@ -408,8 +412,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
         }
 
-        if (streamingQualitySelector != null) {
-            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        if (closedCaptionSelector != null) {
+            videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
         }
 
         if (!TextUtils.isEmpty(policyCookie) &&
@@ -809,16 +813,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
-        if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
-            videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                            ? View.VISIBLE
-                            : View.GONE);
-            videoPlayerView.setUri(Uri.parse(hlsUrl),
-                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-            //Log.i(TAG, "Playing video: " + title);
-        }
+
+        videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+        videoPlayerView.getPlayerView().getSubtitleView()
+                .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                        ? View.VISIBLE
+                        : View.GONE);
+        videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
         appCMSPresenter.setShowNetworkConnectivity(false);
@@ -880,7 +881,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
+        Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
         startEntitlementCheckTimer();
         if (!crwCreated) {
             try {
@@ -898,7 +899,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdEvent(AdEvent adEvent) {
-        //Log.i(TAG, "Event: " + adEvent.getType());
+        Log.i(TAG, "Event: " + adEvent.getType());
 
         switch (adEvent.getType()) {
             case LOADED:
@@ -943,7 +944,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                     isADPlay = true;
                     videoPlayerInfoContainer.bringToFront();
                     startEntitlementCheckTimer();
+
+                    if (onUpdateContentDatumEvent.getCurrentContentDatum().getGist() != null) {
+                        videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                !TextUtils.isEmpty(closedCaptionUrl) ?
+                                        Uri.parse(closedCaptionUrl) : null);
+                        videoPlayerView.setCurrentPosition(onUpdateContentDatumEvent.getCurrentContentDatum().getGist()
+                                .getWatchedTime() * 1000L);
+                    }
                     createContentRatingView();
+
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
                 }
@@ -1252,16 +1262,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                                         appCMSSignedURLResult.getSignature(),
                                         appCMSSignedURLResult.getKeyPairId());
 
-                                if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                                    videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                            !TextUtils.isEmpty(closedCaptionUrl) ?
-                                                    Uri.parse(closedCaptionUrl) : null);
+                                if(shouldRequestAds == false) {if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
+                                    videoPlayerView.preparePlayer();
                                     videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
-                                            .getWatchedTime() * 1000L);
+                                            .getWatchedTime() * 1000L);}
                                 }
                             }
                         });
-                    });
+                    },null,false);
         }
     }
 

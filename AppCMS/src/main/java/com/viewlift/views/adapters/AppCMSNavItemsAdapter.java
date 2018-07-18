@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY;
-import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
+import static com.viewlift.views.customviews.download.DownloadModule.VIDEO_TAB;
 
 /**
  * Created by viewlift on 5/30/17.

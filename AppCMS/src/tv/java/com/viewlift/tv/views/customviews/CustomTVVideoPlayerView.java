@@ -193,7 +193,7 @@ public class CustomTVVideoPlayerView
                 setSignatureCookie(appCMSSignedURLResult.getSignature());
                 setKeyPairIdCookie(appCMSSignedURLResult.getKeyPairId());
             }
-            setUri(Uri.parse(url), null);
+            setUri(Uri.parse(url), Uri.parse(""));
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive
@@ -335,7 +335,7 @@ public class CustomTVVideoPlayerView
                     playVideos(contentDatum);
                 }
             }
-        });
+        },null,false);
     }
 
 
@@ -1039,6 +1039,6 @@ public class CustomTVVideoPlayerView
 
                 setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
 
-            }});
+            }},null,false);
     }
 }

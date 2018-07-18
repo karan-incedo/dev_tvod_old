@@ -3,20 +3,18 @@ package com.viewlift.views.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -24,10 +22,16 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.rxbus.SeasonTabSelectorBus;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTraySeasonItemAdapter.ViewHolder>
         implements OnInternalEvent, AppCMSBaseAdapter {
@@ -49,7 +53,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     private MotionEvent lastTouchDownEvent;
 
-    String componentViewType,seriesName;
+    String componentViewType, seriesName;
+    List<Season_> seasonList;
+    RecyclerView mRecyclerView;
+    private Map<String, Boolean> filmDownloadIconUpdatedMap;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -58,9 +65,13 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        List<String> allEpisodeIds,
                                        AppCMSPresenter appCMSPresenter,
                                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                       String viewType) {
+                                       String viewType,
+                                       RecyclerView mRecyclerView) {
         this.collectionGridItemViewCreator = collectionGridItemViewCreator;
-        this.adapterData = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes();;
+        seasonList = new ArrayList<>();
+        seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
+        Collections.reverse(seasonList);
+        this.adapterData = seasonList.get(0).getEpisodes();
         this.sortData();
         this.seriesName = moduleAPI.getContentData().get(0).getGist().getTitle();
         this.components = components;
@@ -72,12 +83,38 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.receivers = new ArrayList<>();
 
         this.isClickable = true;
+        this.mRecyclerView = mRecyclerView;
 
         this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
         this.componentViewType = viewType;
+        this.filmDownloadIconUpdatedMap = new HashMap<>();
+        SeasonTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<List<ContentDatum>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(List<ContentDatum> adapterDataSeason) {
+                adapterData = adapterDataSeason;
+                updateData(mRecyclerView, adapterData);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
     }
+
 
     private void sortData() {
         if (adapterData != null) {
@@ -87,15 +124,18 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (adapterData.size() == 0) {
+            return new ViewHolder(new View(parent.getContext()));
+        }
         View view = collectionGridItemViewCreator.createView(parent.getContext());
         AppCMSTraySeasonItemAdapter.ViewHolder viewHolder = new AppCMSTraySeasonItemAdapter.ViewHolder(view);
         return viewHolder;
     }
 
+
     @Override
     @SuppressLint("SetTextI18n")
     public void onBindViewHolder(ViewHolder holder, int position) {
-
         if (adapterData != null && !adapterData.isEmpty()) {
             adapterData.get(position).setSeriesName(seriesName);
             if (0 <= position && position < adapterData.size()) {
@@ -109,6 +149,15 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
     @Override
     public int getItemCount() {
@@ -137,11 +186,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.moduleId = moduleId;
     }
 
-    private void loadImage(Context context, String url, ImageView imageView) {
-        Glide.with(context)
-                .load(Uri.decode(url))
-                .into(imageView);
-    }
 
     @Override
     public void receiveEvent(InternalEvent<?> event) {
@@ -352,7 +396,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppTextColor()),
                     appCMSPresenter,
-                    position);
+                    position, null);
         }
     }
 
@@ -361,9 +405,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         //
     }
 
+
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        //
+        listView.setAdapter(null);
+        adapterData = null;
+        adapterData = contentData;
+        listView.setAdapter(this);
+        listView.invalidate();
+        notifyDataSetChanged();
+
     }
 
     @Override
@@ -380,7 +431,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
+            if (itemView instanceof CollectionGridItemView)
+                this.componentView = (CollectionGridItemView) itemView;
         }
     }
 }

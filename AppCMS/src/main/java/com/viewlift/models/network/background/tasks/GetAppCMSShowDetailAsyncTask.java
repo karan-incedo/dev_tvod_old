@@ -5,8 +5,9 @@ import android.util.Log;
 import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.network.rest.AppCMSShowDetailCall;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -21,7 +22,7 @@ public class GetAppCMSShowDetailAsyncTask {
     private final Action1<AppCMSShowDetail> readyAction;
 
     public GetAppCMSShowDetailAsyncTask(AppCMSShowDetailCall call,
-                                              Action1<AppCMSShowDetail> readyAction) {
+                                        Action1<AppCMSShowDetail> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
@@ -31,7 +32,7 @@ public class GetAppCMSShowDetailAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.authToken, params.apiKey);
+                            return call.call(params.url/*"https://prod-api.viewlift.com/content/series/?id=dc3ef8ff-d2a8-4037-bd11-f711218845f5&site=snagfilms"*/, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -39,7 +40,7 @@ public class GetAppCMSShowDetailAsyncTask {
                     return null;
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
                     if (result != null && readyAction != null) {

@@ -3,18 +3,15 @@ package com.viewlift.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.support.annotation.StringDef;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 public class LocaleUtils {
 
-    @Retention(RetentionPolicy.SOURCE)
+    /*@Retention(RetentionPolicy.SOURCE)
     @StringDef({ENGLISH, FRENCH, SPANISH})
     public @interface LocaleDef {
-        String[] SUPPORTED_LOCALES = {ENGLISH, FRENCH, SPANISH};
+        public String[] SUPPORTED_LOCALES = {ENGLISH, FRENCH, SPANISH};
     }
 
     public static final String ENGLISH = "en";
@@ -25,11 +22,11 @@ public class LocaleUtils {
         setLocale(context, ENGLISH);
     }
 
-    public static void initialize(Context context, @LocaleDef String defaultLanguage) {
+    public static void initialize(Context context,  String defaultLanguage) {
         setLocale(context, defaultLanguage);
-    }
+    }*/
 
-    public static boolean setLocale(Context context, @LocaleDef String language) {
+    public static boolean setLocale(Context context,  String language) {
         return updateResources(context, language);
     }
 

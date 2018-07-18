@@ -49,14 +49,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -1720,7 +1718,9 @@ public class TVViewCreator {
                                             videoDescription,
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
 
                             final String fullText = videoDescription;
@@ -1763,7 +1763,7 @@ public class TVViewCreator {
                                             autoplayVideoDescription,
                                             appCMSPresenter,
                                             true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), false);
                             Vto.addOnGlobalLayoutListener(layoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
@@ -2474,7 +2474,8 @@ public class TVViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new TVCreditBlocksView(context,
+                componentViewResult.componentView = new TVCreditBlocksView(
+                        context,
                         jsonValueKeyMap,
                         fontFamilyKey,
                         fontFamilyKeyTypeParsed,
@@ -2486,6 +2487,7 @@ public class TVViewCreator {
                         starringListSb.toString(),
                         textColor,
                         Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);

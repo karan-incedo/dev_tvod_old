@@ -12,9 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -42,7 +40,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -58,7 +55,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -119,8 +115,6 @@ import com.viewlift.views.fragments.AppCMSTeamListFragment;
 import org.json.JSONException;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
@@ -572,7 +566,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
 
                     // if user is on video or audio player and content is already downloaded then dont move to download page so return fromm here
-                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) || ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) && appCMSPresenter.getCurrentPlayingVideo() != null && appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
+                    if ((((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayVideoActivity)) ||
+                            ((appCMSPresenter.getCurrentActivity() instanceof AppCMSPlayAudioActivity))) &&
+                            appCMSPresenter.getCurrentPlayingVideo() != null &&
+                            appCMSPresenter.isVideoDownloaded(appCMSPresenter.getCurrentPlayingVideo())) {
                         return;
                     }
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
@@ -995,7 +992,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         !updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().isEmpty() &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0) != null &&
                         updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist() != null) {
-                    if ((updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType() != null && (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_article_key_type).toLowerCase()) ||
+                    if (appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName()) || (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType() != null && (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_article_key_type).toLowerCase()) ||
                             updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getContentData().get(0).getGist().getMediaType().toLowerCase().contains(getString(R.string.app_cms_photo_gallery_key_type).toLowerCase()))) ||
                             updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType() != null && updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(i).getModuleType().toLowerCase().contains("VideoDetailModule".toLowerCase())) {
                         getShareLink(i);
@@ -1017,6 +1014,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink(),
                     getString(R.string.app_cms_action_share_key),
                     updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getTitle(),
+                    extraData,
+                    updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0),
+                    false,
+                    0,
+                    null);
+        } else if (updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink() != null && appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName())) {
+            StringBuilder filmUrl = new StringBuilder();
+            filmUrl.append(appCMSPresenter.getAppCMSMain().getDomainName());
+            filmUrl.append(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink());
+            String[] extraData = new String[1];
+            extraData[0] = filmUrl.toString();
+            appCMSPresenter.launchButtonSelectedAction(updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0).getGist().getPermalink(),
+                    getString(R.string.app_cms_action_share_key),
+                    "Player detail",
                     extraData,
                     updatedAppCMSBinder.getAppCMSPageAPI().getModules().get(position).getContentData().get(0),
                     false,
@@ -2257,7 +2268,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             if (appCMSPresenter.isArticlePage(updatedAppCMSBinder.getPageId()) ||
                     appCMSPresenter.isPhotoGalleryPage(updatedAppCMSBinder.getPageId()) ||
-                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) ||
+                    appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
                 setCastingVisibility(false);
@@ -2723,7 +2735,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         String title = deeplinkUri.getLastPathSegment();
         String action = getString(R.string.app_cms_action_detailvideopage_key);
         StringBuffer pagePath = new StringBuffer();
-
+        if(deeplinkUri.toString().contains(getString(R.string.view_plans))){
+            if(appCMSPresenter.isUserSubscribed()){
+                appCMSPresenter.resetDeeplinkQuery();
+                return;
+            }else {
+                action = getString(R.string.app_cms_action_startfreetrial_key);
+            }
+        }
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
             pagePath.append(pathSegment);
@@ -2738,6 +2757,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_photo_gallery)) ||
                 pagePath.toString().contains(getString(R.string.app_cms_deep_link_path_photos))) {
             action = getString(R.string.app_cms_action_photo_gallerypage_key);
+        } else if (pagePath.toString().contains(getString(R.string.app_cms_page_path_fighter)) ||
+                pagePath.toString().contains(getString(R.string.app_cms_page_path_roster))) {
+            appCMSPresenter.forceLoad();
+
+            appCMSPresenter.navigateToPersonDetailsPage(pagePath.toString());
+            appCMSPresenter.resetDeeplinkQuery();
+            return;
         }
 
         appCMSPresenter.forceLoad();
@@ -2855,7 +2881,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             }, appCMSBinder.getPagePath());
-        }else if (appCMSPresenter.isRosterPage(appCMSBinder.getPageId())) {
+        } else if (appCMSPresenter.isRosterPage(appCMSBinder.getPageId())) {
             appCMSPresenter.getRosterRefreshData(appCMSPlaylistResultAction -> {
                 if (appCMSPlaylistResultAction != null) {
                     AppCMSPageAPI pageAPI = appCMSPresenter.convertRosterDataToAppCMSPageAPI(appCMSBinder.getPageId(), appCMSPlaylistResultAction);
