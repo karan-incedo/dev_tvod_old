@@ -304,7 +304,7 @@ public class TVViewCreator {
                         });
             }
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
-            if(module.getBlockName().equalsIgnoreCase("userManagement01")){
+           /* if(module.getBlockName().equalsIgnoreCase("userManagement01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
             if(module.getBlockName().equalsIgnoreCase("userManagement02")){
@@ -313,7 +313,7 @@ public class TVViewCreator {
 
             if(module.getBlockName().equalsIgnoreCase("languageSettings01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
-            }
+            }*/
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
