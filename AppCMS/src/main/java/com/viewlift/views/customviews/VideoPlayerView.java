@@ -564,6 +564,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 onPlayerControlsStateChanged.call(visibility);
             }
+            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)){
+                if (visibility == View.VISIBLE) {
+                    offsetSubtitleView();
+                } else {
+                    resetSubtitleView();
+                }
+            }
         });
         player.addVideoListener(this);
 
@@ -580,6 +587,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
 //        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
+    }
+
+    private void offsetSubtitleView() {
+        if (playerView.getSubtitleView() != null) {
+            playerView.getSubtitleView().animate().translationY(-100).setDuration(100);
+        }
+    }
+
+    private void resetSubtitleView() {
+        if (playerView.getSubtitleView() != null) {
+            playerView.getSubtitleView().animate().translationY(0).setDuration(100);
+        }
     }
 
     public void applyTimeBarColor(int timeBarColor) {
@@ -722,7 +741,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * Returns the selected CC group index
-     * @return
+     * @return selected Closed Caption track
      */
     private int getSelectedCCTrack() {
 //        getSelectedVideoTrack();
@@ -746,7 +765,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * overrides the CC track selection with the group id passed as a paramater
-     * @param groupIndex
+     * @param groupIndex index of the group you wanna select
      */
     private void setSelectedCCTrack(int groupIndex) {
         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
