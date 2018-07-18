@@ -295,6 +295,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }else if(!TextUtils.isEmpty(data.getGist().getVideoImageUrl())){
                         view.setPadding(0, 0, 0, 0);
                         ((ImageView) view).setImageResource(Utils.getIcon(data.getGist().getVideoImageUrl(),context));
+                    } else {
+                        ((ImageView) view).setImageResource(android.R.color.transparent);
                     }
                     try {
                         ((ImageView) view).getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
