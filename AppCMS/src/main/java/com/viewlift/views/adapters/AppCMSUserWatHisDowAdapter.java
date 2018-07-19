@@ -709,13 +709,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
-                            appCMSPresenter.setPlaySource("");
-                            if (isHistoryPage)
-                                appCMSPresenter.setPlaySource("History");
-                            if (isWatchlistPage)
-                                appCMSPresenter.setPlaySource("Watchlist");
-                            if (isDonwloadPage)
-                                appCMSPresenter.setPlaySource("Download");
 
                             /*navigate to article detail page*/
                             if (data.getGist() != null && data.getGist().getMediaType() != null
@@ -730,8 +723,20 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 deleteDownloadVideo(data, position);
                                 return;
                             }
-                            if(action.contains(videoAction)){
-                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource()+"_Video Detail");
+                            if (action.contains(videoAction)) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(moduleAPI.getTitle());
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+                            }
+
+
+                            if (action.contains("watchVideo") || (data.getGist() != null &&
+                                    data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                    data.getGist().getContentType() != null &&
+                                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase()))) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_" + moduleAPI.getTitle());
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/

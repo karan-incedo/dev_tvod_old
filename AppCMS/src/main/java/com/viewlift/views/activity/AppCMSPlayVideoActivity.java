@@ -192,7 +192,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                 this::finish,
                                                 null);
                                     }
-                                },null,false);
+                                }, null, false);
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_error_message),
@@ -735,7 +735,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if (captions != null && captions.getFormat() != null && captions.getFormat().equalsIgnoreCase("SRT")) {
                         closedCaptionsList.add(captions);
                     }
                 }

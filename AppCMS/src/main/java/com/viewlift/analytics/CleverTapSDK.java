@@ -220,6 +220,10 @@ public class CleverTapSDK {
                 contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
             commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, appCMSPresenter.getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks()));
             commonEvent.put(KEY_SINGER_NAME, appCMSPresenter.getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks()));
+            if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
+                commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, contentDatum.getGist().getArtistName());
+                commonEvent.put(KEY_SINGER_NAME, contentDatum.getGist().getDirectorName());
+            }
         } else {
             commonEvent.put(KEY_DIRECTOR_NAME, appCMSPresenter.getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks()));
             commonEvent.put(KEY_ACTOR_NAME, appCMSPresenter.getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks()));

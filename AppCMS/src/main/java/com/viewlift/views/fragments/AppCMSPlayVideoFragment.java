@@ -842,13 +842,17 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
+        if (!TextUtils.isEmpty(hlsUrl)) {
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                            ? View.VISIBLE
+                            : View.GONE);
+            videoPlayerView.preparePlayer();
+            videoPlayerView.setUri(Uri.parse(hlsUrl),
+                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+        }
 
-        videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
-        videoPlayerView.getPlayerView().getSubtitleView()
-                .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                        ? View.VISIBLE
-                        : View.GONE);
-        videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
         appCMSPresenter.setShowNetworkConnectivity(false);
@@ -1290,10 +1294,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                                         appCMSSignedURLResult.getSignature(),
                                         appCMSSignedURLResult.getKeyPairId());
 
-                                if(shouldRequestAds == false) {if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                                    videoPlayerView.preparePlayer();
-                                    videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
-                                            .getWatchedTime() * 1000L);}
+                                if (shouldRequestAds == false) {
+                                    if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
+                                        videoPlayerView.preparePlayer();
+                                        videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
+                                                .getWatchedTime() * 1000L);
+                                    }
                                 }
                             }
                         });

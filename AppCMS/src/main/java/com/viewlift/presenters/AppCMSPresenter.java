@@ -3736,11 +3736,12 @@ public class AppCMSPresenter {
 
     /**
      * Launch language Selector dialog.
+     *
      * @param appCMSPageUI
      * @param action
      */
-    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action){
-        if(currentActivity  != null){
+    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action) {
+        if (currentActivity != null) {
             Intent updatePageIntent =
                     new Intent(AppCMSPresenter.ACTION_CHANGE_LANGUAGE);
             updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
@@ -3750,6 +3751,7 @@ public class AppCMSPresenter {
 
     /**
      * save the language value in SharedPref.
+     *
      * @param language
      * @return
      */
@@ -3765,6 +3767,7 @@ public class AppCMSPresenter {
 
     /**
      * Reterieve the Language from SharedPref.
+     *
      * @return
      */
     public Language getLanguage() {
@@ -3773,10 +3776,10 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LANGUAGE_SHARED_PREF_NAME, 0);
 
             Gson gson = new Gson();
-            String json =  sharedPrefs.getString(LANGUAGE_NAME_VALUE,null);
-            if(json != null) {
+            String json = sharedPrefs.getString(LANGUAGE_NAME_VALUE, null);
+            if (json != null) {
                 language = gson.fromJson(json, Language.class);
-            }else{
+            } else {
                 language = new Language();
                 language.setLanguageName(Locale.getDefault().getLanguage());
                 language.setLanguageCode(Locale.getDefault().getISO3Language());
@@ -5635,7 +5638,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
             downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
             downloadVideoRealm.setUserId(getLoggedInUser());
-            if (contentDatum.getGist().getMediaType().contains(getCurrentContext().getResources().getString(R.string.media_type_episode))) {
+            if (contentDatum.getGist().getMediaType() != null &&
+                    contentDatum.getGist().getMediaType().contains(getCurrentContext().getResources().getString(R.string.media_type_episode))) {
                 downloadVideoRealm.setEpisodeNum(getShowDatum().getGist().getEpisodeNum());
                 downloadVideoRealm.setShowName(getShowDatum().getGist().getShowName());
                 downloadVideoRealm.setSeasonNum(getShowDatum().getGist().getSeasonNum());
@@ -6012,7 +6016,11 @@ public class AppCMSPresenter {
             if (updateContentDatum != null &&
                     updateContentDatum.getGist() != null &&
                     updateContentDatum.getGist().getId() != null) {
-                updateContentDatum.setSeriesName(contentDatum.getSeriesName());
+                if (contentDatum.getSeriesName() != null)
+                    updateContentDatum.setSeriesName(contentDatum.getSeriesName());
+                if (updateContentDatum.getCreditBlocks() == null)
+                    if (contentDatum.getCreditBlocks() != null)
+                        updateContentDatum.setCreditBlocks(contentDatum.getCreditBlocks());
                 downloadURLParsing(updateContentDatum, resultAction1, isFromPlaylistDownload);
 
                /* TODO bellow code to be remove once Entitlement API will work fine for every case
@@ -7440,82 +7448,7 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url,
                                              AppCMSVideoPageBinder binder, Action1<Object> action1,
                                              AppCMSPageUI appCMSPageUI) {
-        /*GetAppCMSVideoEntitlementAsyncTask.Params params =
-                new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken())
-                        .apiKey(apikey)
-                        .build();
 
-        new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
-            try {
-                if (appCMSEntitlementResponse != null && appCMSEntitlementResponse.isSuccess() &&
-                        appCMSEntitlementResponse.isPlayable()) {
-                    binder.setContentData(appCMSEntitlementResponse.convertToContentDatum());
-                    AppCMSPageAPI pageAPI = null;
-                    for (ModuleList moduleList :
-                            appCMSPageUI.getModuleList()) {
-                        if (moduleList.getType().equals(currentActivity
-                                .getString(R.string.app_cms_page_autoplay_module_key_01)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_02)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_03)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
-                            pageAPI = appCMSEntitlementResponse.convertToAppCMSPageAPI(pageId,
-                                    moduleList.getType());
-                            break;
-                        }
-                    }
-                    if (pageAPI != null) {
-                        launchAutoplayActivity(currentActivity,
-                                appCMSPageUI,
-                                pageAPI,
-                                pageId,
-                                pageTitle,
-                                pageIdToPageNameMap.get(pageId),
-                                loadFromFile,
-                                false,
-                                true,
-                                false,
-                                false,
-                                binder,
-                                action1);
-                    }
-                } else if (appCMSEntitlementResponse != null &&
-                        appCMSEntitlementResponse.getCode() != 200) {
-                    String message = currentActivity.getString(R.string.entitlement_api_server_error,
-                            (appCMSEntitlementResponse.getCode()));
-                    if (platformType.equals(PlatformType.ANDROID)) {
-
-                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,
-                                appCMSEntitlementResponse.getErrorMessage() != null
-                                        ? appCMSEntitlementResponse.getErrorMessage()
-                                        : message,
-                                false,
-                                () -> {
-                                    if (getCurrentActivity() instanceof AppCMSPlayVideoActivity)
-                                        getCurrentActivity().finish();
-                                },
-                                null);
-
-                    }
-                } else {
-                    //Log.e(TAG, "API issue in VideoDetail call");
-                    if (platformType == PlatformType.TV) {
-                        action1.call(null);
-                    }
-                }
-            } catch (Exception e) {
-                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
-                if (platformType == PlatformType.TV) {
-                    action1.call(null);
-                }
-            }
-        }).execute(params);
-        /*
 
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
@@ -7573,7 +7506,7 @@ public class AppCMSPresenter {
                     }
                 }).execute(params);
 
-        */
+
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
@@ -11466,16 +11399,16 @@ public class AppCMSPresenter {
 
 
                         //check default language
-                        if(null != defaultLanguage && null != appCMSMain.getLanguages()){
-                            ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
-                            System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
+                        if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
+                            ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
+                            System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
                             boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
-                            if(!isLanguageExistinMain){
+                            if (!isLanguageExistinMain) {
                                 defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
                             }
-                            System.out.println("TESTS Default language after update = "+defaultLanguage.getLanguageCode());
+                            System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());
                         }
-                        LocaleUtils.setLocale(currentContext,defaultLanguage.getLanguageCode());
+                        LocaleUtils.setLocale(currentContext, defaultLanguage.getLanguageCode());
                         setLanguage(defaultLanguage);
 
                         new SoftReference<Object>(appCMSMain, referenceQueue);
