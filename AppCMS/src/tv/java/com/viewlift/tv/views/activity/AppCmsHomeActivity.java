@@ -1425,7 +1425,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 contentDatum.getSeason().get(0).getEpisodes() != null &&
                 contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
 
-            List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
+            List<String> relatedVideosIds = com.viewlift.Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
                     -1,

@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.Languages;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -146,6 +147,18 @@ public class AppCMSMain implements Serializable {
     @SerializedName("taxProviders")
     @Expose
     TaxProviders taxProviders;
+
+    public Languages getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(Languages languages) {
+        this.languages = languages;
+    }
+
+    @SerializedName("languages")
+    @Expose
+    Languages languages;
 
     public CustomerService getCustomerService() {
         return customerService;

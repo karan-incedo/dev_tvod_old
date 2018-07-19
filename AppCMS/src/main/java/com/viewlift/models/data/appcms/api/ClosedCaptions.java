@@ -1,5 +1,8 @@
 package com.viewlift.models.data.appcms.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
@@ -12,7 +15,7 @@ import java.io.Serializable;
  */
 
 @UseStag
-public class ClosedCaptions implements Serializable {
+public class ClosedCaptions implements Serializable, Parcelable {
 
     @SerializedName("id")
     @Expose
@@ -57,6 +60,36 @@ public class ClosedCaptions implements Serializable {
     @SerializedName("size")
     @Expose
     private float size;
+
+    public ClosedCaptions(Parcel in) {
+        id = in.readString();
+        publishDate = in.readString();
+        updateDate = in.readString();
+        addedDate = in.readString();
+        permalink = in.readString();
+        siteOwner = in.readString();
+        registeredDate = in.readString();
+        url = in.readString();
+        format = in.readString();
+        language = in.readString();
+        size = in.readFloat();
+    }
+
+    public static final Creator<ClosedCaptions> CREATOR = new Creator<ClosedCaptions>() {
+        @Override
+        public ClosedCaptions createFromParcel(Parcel in) {
+            return new ClosedCaptions(in);
+        }
+
+        @Override
+        public ClosedCaptions[] newArray(int size) {
+            return new ClosedCaptions[size];
+        }
+    };
+
+    public ClosedCaptions() {
+
+    }
 
     public String getId() {
         return id;
@@ -144,5 +177,25 @@ public class ClosedCaptions implements Serializable {
 
     public void setSize(float size) {
         this.size = size;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(publishDate);
+        dest.writeString(updateDate);
+        dest.writeString(addedDate);
+        dest.writeString(permalink);
+        dest.writeString(siteOwner);
+        dest.writeString(registeredDate);
+        dest.writeString(url);
+        dest.writeString(format);
+        dest.writeString(language);
+        dest.writeFloat(size);
     }
 }

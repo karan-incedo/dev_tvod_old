@@ -45,7 +45,7 @@ allprojects {
         jsr250_apiVersion = "1.0"
         googleAdsInteractiveMediaV3 = "3.8.7"
         googlePlayServicesVersion = "15.0.1"
-        fireBasePlayServicesVersion = "16.0.0"
+        fireBasePlayServicesVersion = "16.0.1"
         crashlyticsVersion = "2.9.2@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "4.1.2"

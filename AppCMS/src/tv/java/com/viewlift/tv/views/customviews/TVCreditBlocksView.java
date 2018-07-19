@@ -30,6 +30,7 @@ public class TVCreditBlocksView extends RelativeLayout {
     private final String starringList;
     private final int textColor;
     private final int moreBackgroundColor;
+    private final int moreForegroundColor;
     private final float fontsizeKey;
     private final float fontsizeValue;
 
@@ -50,6 +51,7 @@ public class TVCreditBlocksView extends RelativeLayout {
                             String starringList,
                             int textColor,
                             int moreBackgroundColor,
+                            int moreForegroundColor,
                             float fontsizeKey,
                             float fontsizeValue) {
         super(context);
@@ -63,6 +65,7 @@ public class TVCreditBlocksView extends RelativeLayout {
         this.starringListTitle = starringListTitle;
         this.textColor = textColor;
         this.moreBackgroundColor = moreBackgroundColor;
+        this.moreForegroundColor = moreForegroundColor;
         this.fontsizeKey = fontsizeKey;
         this.fontsizeValue = fontsizeValue;
         init(context, jsonValueKeyMap);
@@ -164,7 +167,9 @@ public class TVCreditBlocksView extends RelativeLayout {
                     directorList,
                     null,
                     true,
-                    moreBackgroundColor, false));
+                    moreBackgroundColor,
+                    moreForegroundColor,
+                    false));
         }
 
         if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList) &&
@@ -179,7 +184,9 @@ public class TVCreditBlocksView extends RelativeLayout {
                     starringList,
                     null,
                     true,
-                    moreBackgroundColor, false));
+                    moreBackgroundColor,
+                    moreForegroundColor,
+                    false));
         }
     }
 
