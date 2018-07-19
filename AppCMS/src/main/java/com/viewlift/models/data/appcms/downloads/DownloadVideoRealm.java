@@ -8,7 +8,6 @@ import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.Gist;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -392,7 +391,7 @@ public class DownloadVideoRealm extends RealmObject {
         if (!TextUtils.isEmpty(getSubtitlesFileURL())) {
             ClosedCaptions closedCaption = new ClosedCaptions();
             closedCaption.setUrl(getSubtitlesFileURL());
-            List<ClosedCaptions> closedCaptions = new ArrayList<>();
+            ArrayList<ClosedCaptions> closedCaptions = new ArrayList<>();
             closedCaptions.add(closedCaption);
             ContentDetails contentDetails = new ContentDetails();
             contentDetails.setClosedCaptions(closedCaptions);

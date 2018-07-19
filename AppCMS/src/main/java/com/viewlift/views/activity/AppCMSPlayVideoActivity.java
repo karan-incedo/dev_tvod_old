@@ -57,6 +57,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
+        VideoPlayerView.ClosedCaptionSelector,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -595,6 +596,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public String getVideoUrl() {
+        return hlsUrl;
+    }
+
+    @Override
     public String getStreamingQualityUrl(String streamingQuality) {
         if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
             return availableStreamingQualityMap.get(streamingQuality);
@@ -640,6 +646,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         return availableStreamingQualities.size() - 1;
+    }
+
+    @Override
+    public String getFilmId() {
+        return filmId;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
@@ -711,5 +722,52 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onConfigurationChanged(newConfig);
         // Making sure video is always played in Landscape
         appCMSPresenter.restrictLandscapeOnly();
+    }
+
+    @Override
+    public List<ClosedCaptions> getAvailableClosedCaptions() {
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        if (binder != null
+                && binder.getContentData() != null
+                && binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+            if (closedCaptions != null) {
+                for (ClosedCaptions captions : closedCaptions) {
+                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                        closedCaptionsList.add(captions);
+                    }
+                }
+            }
+        }
+
+        return closedCaptionsList;
+    }
+
+    @Override
+    public String getSubtitleLanguageFromIndex(int index) {
+        String language = null;
+
+        if (binder != null
+                && binder.getContentData() != null
+                && binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+            List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+            if (closedCaptions != null) {
+                for (ClosedCaptions captions : closedCaptions) {
+                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                        closedCaptionsList.add(captions);
+                    }
+                }
+            }
+
+            if (!closedCaptionsList.isEmpty()) {
+                language = closedCaptionsList.get(index).getLanguage();
+            }
+        }
+        return language;
     }
 }
