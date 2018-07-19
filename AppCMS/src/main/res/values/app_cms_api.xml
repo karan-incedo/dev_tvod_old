@@ -828,6 +828,7 @@
     <string name="app_cms_code_sync_text_line_3">link_account_dialog_text_line_3</string>
     <string name="app_cms_code_sync_text_line_header">link_account_dialog_header</string>
     <string name="app_cms_pagename_link_your_account_key">Link Your Account Screen</string>
+    <string name="app_cms_pagename_change_language_key">Language Settings</string>
     <string name="sub_nav_page_key">Sub Navigation Screen</string>
 
     <!--AppCMS SSLCommerz Initiate API-->
@@ -862,6 +863,7 @@
     <string name="ga_video_download_category">Video Download</string>
     <string name="play_audio_category">player-audio</string>
     <string name="app_cms_link_your_account_action">linkAccount</string>
+    <string name="app_cms_link_change_language_action">changeLanguage</string>
     <string name="app_cms_sign_up_page_action">signUpPageAction</string>
     <string name="play_video_category">player-video</string>
     <string name="adm_directive_adjust_seek_position">AdjustSeekPosition</string>
@@ -1092,6 +1094,7 @@
     <string name="appcms_detail_module">AC VideoPlayerWithInfo 01</string>
     <string name="appcms_watchlist_module">AC Watchlist 01</string>
     <string name="standaloneplayer">AC StandaloneVideoPlayer 01</string>
+    <string name="languageSetting_module">AC LanguageSettings 01</string>
     <string name="font_open_sans">OpenSans</string>
     <string name="font_open_sans_semibold">OpenSans-Semibold</string>
     <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
@@ -1165,6 +1168,7 @@
         <item>AC UserManagement 02</item>
         <item>@string/app_cms_page_show_detail_module_key</item>
         <item>AC SubNav 01</item>
+        <item>AC LanguageSettings 01</item>
         <item></item>
     </string-array>
     <string-array name="app_cms_detail_module">

@@ -1188,8 +1188,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
                 AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_expire_time_key),
-                AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                AppCMSUIKeyType.LANGUAGE_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_link_change_language_action),
+                AppCMSUIKeyType.CHANGE_LANGUAGE_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -1224,6 +1228,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 context.getString(R.string.app_cms_link_your_account_action));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                context.getString(R.string.app_cms_link_change_language_action));
     }
 
     private void createActionToPageMap(Context context) {
@@ -1241,6 +1247,7 @@ public class AppCMSUIModule {
         //this.actionToPageMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_link_your_account_action), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_link_change_language_action), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
