@@ -10255,7 +10255,7 @@ public class AppCMSPresenter {
     public boolean getClosedCaptionPreference() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_CLOSED_CAPTION_PREF_KEY, 0);
-            return sharedPrefs.getBoolean(getLoggedInUser(), false);
+            return sharedPrefs.getBoolean(getLoggedInUser(), true);
         }
         return false;
     }
@@ -15465,12 +15465,7 @@ public class AppCMSPresenter {
 
                 if (platformType == PlatformType.TV) {
                     if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY ||
-                            (navigation != null &&
-                                    navigation.getNavigationPrimary() != null &&
-                                    navigation.getNavigationPrimary().get(0) != null &&
-                                    navigation.getNavigationPrimary().get(0).getPageId() != null &&
-                                    metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))) {
+                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
                         homePage = metaPage;
                         new SoftReference<Object>(homePage, referenceQueue);
                     }
