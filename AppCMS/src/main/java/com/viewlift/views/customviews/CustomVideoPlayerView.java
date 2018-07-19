@@ -422,7 +422,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (cc.getUrl() != null &&
                             !cc.getUrl().equalsIgnoreCase(getContext().getString(R.string.download_file_prefix)) &&
                             cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("SRT")) {
+                            "SRT".equalsIgnoreCase(cc.getFormat())) {
                         closedCaptionUrl = cc.getUrl();
                     }
                 }

@@ -1074,7 +1074,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 for (int i = 0; i < closedCaptionsList.size(); i++) {
                     ClosedCaptions closedCaptions = closedCaptionsList.get(i);
 
-                    if (closedCaptions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(closedCaptions.getFormat())) {
                         Format textFormat = Format.createTextSampleFormat(null,
                                 MimeTypes.APPLICATION_SUBRIP,
                                 C.SELECTION_FLAG_DEFAULT,
