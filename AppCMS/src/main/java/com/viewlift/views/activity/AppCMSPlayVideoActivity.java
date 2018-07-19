@@ -722,7 +722,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         // Making sure video is always played in Landscape
         appCMSPresenter.restrictLandscapeOnly();
     }
-
     @Override
     public List<ClosedCaptions> getAvailableClosedCaptions() {
         List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
