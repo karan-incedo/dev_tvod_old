@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -512,7 +513,17 @@ public class TVCollectionGridItemView extends TVBaseView {
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setVisibility(View.VISIBLE);
+                        ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+                        ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setGravity(Gravity.CENTER);
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
                     if (childComponent.getNumberOfLines() != 0) {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                     }
