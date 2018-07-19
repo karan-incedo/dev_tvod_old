@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -265,16 +266,22 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     if (componentView instanceof TextView) {
                         componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
-
+                        ((TextView) componentView).setVerticalScrollBarEnabled(true);
+                        ((TextView) componentView).setMaxLines(8);
+                        ((TextView) componentView).setMovementMethod(new ScrollingMovementMethod());
+                        
                         if (!TextUtils.isEmpty(featureDetail.getValue()) &&
                                 featureDetail.getValue().equalsIgnoreCase("true")) {
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.tickicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
-                        } else {
+                        } else if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+                                featureDetail.getValue().equalsIgnoreCase("false")) {
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.crossicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
+                        }else{
+                            ((TextView) componentView).setCompoundDrawables(null, null, null, null);
                         }
 
 //                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
