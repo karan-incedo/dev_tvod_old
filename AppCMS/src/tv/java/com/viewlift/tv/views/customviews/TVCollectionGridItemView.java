@@ -33,6 +33,7 @@ import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ public class TVCollectionGridItemView extends TVBaseView {
     private boolean selectable;
     private CardView childrenContainer;
     private static int mPosition = 0;
+    private int selectedLanguageIndex = 0;
 
     @Inject
     public TVCollectionGridItemView(Context context,
@@ -167,7 +169,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler,
                           final AppCMSUIKeyType viewTypeKey,
-                          int position) {
+                          int position, int currentSelectedLanguageIndex) {
         AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) context.getApplicationContext())
                         .getAppCMSPresenterComponent().appCMSPresenter();
@@ -507,6 +509,13 @@ public class TVCollectionGridItemView extends TVBaseView {
                         }
                     });
 
+                }else if (componentKey == AppCMSUIKeyType.CHANGE_LANGUAGE_KEY) {
+                    //view.setNextFocusUpId(R.id.appcms_removeall);
+                    view.setOnClickListener(v -> onClickHandler.changeLanguage(childComponent, data));
+                    view.setFocusable(true);
+                    if(position == currentSelectedLanguageIndex){
+                        view.requestFocus();
+                    }
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -641,6 +650,8 @@ public class TVCollectionGridItemView extends TVBaseView {
         void play(Component childComponent, ContentDatum data);
 
         void delete(Component childComponent, ContentDatum data);
+
+        void changeLanguage(Component childComponent, ContentDatum data);
 
         void notifyData();
     }
