@@ -7478,83 +7478,6 @@ public class AppCMSPresenter {
     public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url,
                                              AppCMSVideoPageBinder binder, Action1<Object> action1,
                                              AppCMSPageUI appCMSPageUI) {
-        /*GetAppCMSVideoEntitlementAsyncTask.Params params =
-                new GetAppCMSVideoEntitlementAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken())
-                        .apiKey(apikey)
-                        .build();
-
-        new GetAppCMSVideoEntitlementAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
-            try {
-                if (appCMSEntitlementResponse != null && appCMSEntitlementResponse.isSuccess() &&
-                        appCMSEntitlementResponse.isPlayable()) {
-                    binder.setContentData(appCMSEntitlementResponse.convertToContentDatum());
-                    AppCMSPageAPI pageAPI = null;
-                    for (ModuleList moduleList :
-                            appCMSPageUI.getModuleList()) {
-                        if (moduleList.getType().equals(currentActivity
-                                .getString(R.string.app_cms_page_autoplay_module_key_01)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_02)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key_03)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_landscape_module_key_01)) ||
-                                moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_portrait_module_key_01))) {
-                            pageAPI = appCMSEntitlementResponse.convertToAppCMSPageAPI(pageId,
-                                    moduleList.getType());
-                            break;
-                        }
-                    }
-                    if (pageAPI != null) {
-                        launchAutoplayActivity(currentActivity,
-                                appCMSPageUI,
-                                pageAPI,
-                                pageId,
-                                pageTitle,
-                                pageIdToPageNameMap.get(pageId),
-                                loadFromFile,
-                                false,
-                                true,
-                                false,
-                                false,
-                                binder,
-                                action1);
-                    }
-                } else if (appCMSEntitlementResponse != null &&
-                        appCMSEntitlementResponse.getCode() != 200) {
-                    String message = currentActivity.getString(R.string.entitlement_api_server_error,
-                            (appCMSEntitlementResponse.getCode()));
-                    if (platformType.equals(PlatformType.ANDROID)) {
-
-                        showDialog(DialogType.UNABLE_TO_PLAY_VIDEO,
-                                appCMSEntitlementResponse.getErrorMessage() != null
-                                        ? appCMSEntitlementResponse.getErrorMessage()
-                                        : message,
-                                false,
-                                () -> {
-                                    if (getCurrentActivity() instanceof AppCMSPlayVideoActivity)
-                                        getCurrentActivity().finish();
-                                },
-                                null);
-
-                    }
-                } else {
-                    //Log.e(TAG, "API issue in VideoDetail call");
-                    if (platformType == PlatformType.TV) {
-                        action1.call(null);
-                    }
-                }
-            } catch (Exception e) {
-                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
-                if (platformType == PlatformType.TV) {
-                    action1.call(null);
-                }
-            }
-        }).execute(params);
-        /*
-
         GetAppCMSContentDetailTask.Params params =
                 new GetAppCMSContentDetailTask.Params.Builder().url(url)
                         .authToken(getAuthToken())
@@ -7610,8 +7533,6 @@ public class AppCMSPresenter {
                         }
                     }
                 }).execute(params);
-
-        */
     }
 
     public void launchTVAutoplayActivity(String pageTitle, String url,
