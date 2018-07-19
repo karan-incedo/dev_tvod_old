@@ -20597,7 +20597,9 @@ public class AppCMSPresenter {
 
     private void checkCleverTapAvailability() {
         if (getCurrentActivity().getString(R.string.app_cms_clevertap_acc_id) != null &&
-                getCurrentActivity().getString(R.string.app_cms_clevertap_acc_key) != null)
+                !getCurrentActivity().getString(R.string.app_cms_clevertap_acc_id).contains("null") &&
+                getCurrentActivity().getString(R.string.app_cms_clevertap_acc_key) != null &&
+                !getCurrentActivity().getString(R.string.app_cms_clevertap_acc_key).contains("null"))
             isCleverTapAvailable = true;
     }
 
