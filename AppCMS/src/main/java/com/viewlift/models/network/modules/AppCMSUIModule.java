@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.Utils;
+import com.viewlift.analytics.CleverTapSDK;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -117,9 +118,10 @@ public class AppCMSUIModule {
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
     private final AssetManager assetManager;
+    private final Context context;
 
     public AppCMSUIModule(Context context) {
-
+        this.context = context;
         this.baseUrl = Utils.getProperty("BaseUrl", context);
 
         // NOTE: Replaced with Utils.getProperty()
@@ -157,6 +159,12 @@ public class AppCMSUIModule {
         cache = new Cache(context.getCacheDir(), cacheSize);
 
         this.assetManager = context.getAssets();
+    }
+
+    @Provides
+    @Singleton
+    public CleverTapSDK providesCleverTapSDK() {
+        return new CleverTapSDK(context);
     }
 
     private void createJsonValueKeyMap(Context context) {

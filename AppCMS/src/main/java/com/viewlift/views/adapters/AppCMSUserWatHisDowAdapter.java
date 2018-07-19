@@ -711,6 +711,14 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
+                            appCMSPresenter.setPlaySource("");
+                            if (isHistoryPage)
+                                appCMSPresenter.setPlaySource("History");
+                            if (isWatchlistPage)
+                                appCMSPresenter.setPlaySource("Watchlist");
+                            if (isDonwloadPage)
+                                appCMSPresenter.setPlaySource("Download");
+
                             /*navigate to article detail page*/
                             if (data.getGist() != null && data.getGist().getMediaType() != null
                                     && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
@@ -724,6 +732,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 deleteDownloadVideo(data, position);
                                 return;
                             }
+                            if(action.contains(videoAction)){
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource()+"_Video Detail");
+                            }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
                                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
@@ -731,6 +742,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         true, () ->
                                                 appCMSPresenter.editWatchlist(data,
                                                         addToWatchlistResult -> {
+                                                            appCMSPresenter.sendRemoveWatchlistEvent(data);
                                                             adapterData.remove(data);
 
                                                             if (adapterData.size() == 0) {

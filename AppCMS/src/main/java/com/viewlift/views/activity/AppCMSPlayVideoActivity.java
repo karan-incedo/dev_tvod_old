@@ -49,7 +49,7 @@ import java.util.Map;
 import rx.functions.Action1;
 
 /**
- * Created by viewlift on 6/14/17.
+ * Created by viewlift on 6/14/17.st
  * Owned by ViewLift, NYC
  */
 
@@ -121,7 +121,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
         String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
 
-        boolean useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
+        boolean useHls = !Utils.isHLS() ? getResources().getBoolean(R.bool.use_hls) : Utils.isHLS();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
 
         try {
@@ -532,6 +532,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 //                .beginTransaction().
 //                remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commit();
 
+        appCMSPresenter.sendCastEvent(binder.getContentData());
         if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && !binder.isTrailer()) {
             CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter,
                     relateVideoIds,

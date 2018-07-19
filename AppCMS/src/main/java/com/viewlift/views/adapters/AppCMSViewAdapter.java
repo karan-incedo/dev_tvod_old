@@ -456,7 +456,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
-            }else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
@@ -545,6 +545,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(moduleAPI.getTitle());
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
                                 String action = videoAction;
@@ -620,7 +622,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 } else if (contentType.equals(fullLengthFeatureType)) {
                                     action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                 }
-
+                                if(action.contains(videoAction)){
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource()+"_Video Detail");
+                                }
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);

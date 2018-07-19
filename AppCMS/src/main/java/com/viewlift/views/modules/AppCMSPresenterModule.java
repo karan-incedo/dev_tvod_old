@@ -1,6 +1,9 @@
 package com.viewlift.views.modules;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
+import com.viewlift.analytics.CleverTapSDK;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -35,6 +38,7 @@ import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsCall;
+import com.viewlift.models.network.rest.AppCMSSubscribeForLatestNewsRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSTeamRoasterCall;
@@ -133,7 +137,8 @@ public class AppCMSPresenterModule {
                                                    Map<String, AppCMSActionType> actionToActionTypeMap,
 
                                                    ReferenceQueue<Object> referenceQueue,
-                                                   AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall) {
+                                                   AppCMSSubscribeForLatestNewsCall appCMSSubscribeForLatestNewsCall,
+                                                   CleverTapSDK cleverTapSDK) {
         return new AppCMSPresenter(gson,
                 appCMSArticleCall,
                 appCMSPhotoGalleryCall,
@@ -190,6 +195,9 @@ public class AppCMSPresenterModule {
                 actionToActionTypeMap,
 
                 referenceQueue,
-                appCMSSubscribeForLatestNewsCall);
+                appCMSSubscribeForLatestNewsCall,
+                cleverTapSDK);
     }
+
+
 }

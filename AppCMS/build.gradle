@@ -445,12 +445,13 @@ dependencies {
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000025'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
-}
+    implementation "com.clevertap.android:clevertap-android-sdk:$rootProject.ext.clevertapVersion"
+    implementation "com.android.volley:volley:$rootProject.ext.volleyVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
+    implementation "com.fasterxml.uuid:java-uuid-generator:$rootProject.ext.uuidGeneratorVersion"
+    }
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->
