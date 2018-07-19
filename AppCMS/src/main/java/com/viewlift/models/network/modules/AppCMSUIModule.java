@@ -1184,10 +1184,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tabs_type),
                 AppCMSUIKeyType.PAGE_TABLAYOUT_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.manageLanguageBtnKey),
                 AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
                 AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
 
@@ -1196,7 +1194,6 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_link_change_language_action),
                 AppCMSUIKeyType.CHANGE_LANGUAGE_KEY);
-
     }
 
     private void createPageNameToActionMap(Context context) {

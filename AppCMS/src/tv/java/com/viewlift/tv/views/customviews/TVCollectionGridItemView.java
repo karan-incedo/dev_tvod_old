@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,6 @@ import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -297,6 +297,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }else if(!TextUtils.isEmpty(data.getGist().getVideoImageUrl())){
                         view.setPadding(0, 0, 0, 0);
                         ((ImageView) view).setImageResource(Utils.getIcon(data.getGist().getVideoImageUrl(),context));
+                    } else {
+                        ((ImageView) view).setImageResource(android.R.color.transparent);
                     }
                     try {
                         ((ImageView) view).getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
@@ -519,7 +521,17 @@ public class TVCollectionGridItemView extends TVBaseView {
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setVisibility(View.VISIBLE);
+                        ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+                        ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setGravity(Gravity.CENTER);
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
                     if (childComponent.getNumberOfLines() != 0) {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                     }

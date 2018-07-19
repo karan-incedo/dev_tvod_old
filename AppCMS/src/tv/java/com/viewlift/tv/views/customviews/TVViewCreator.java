@@ -104,7 +104,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
 
@@ -1654,7 +1653,9 @@ public class TVViewCreator {
                             break;
 
                         case CONTACT_US_EMAIL_LABEL:
-                            if (!TextUtils.isEmpty(component.getText())) {
+                            if (!TextUtils.isEmpty(component.getText())
+                                    && appCMSPresenter.getAppCMSMain() != null
+                                    && appCMSPresenter.getAppCMSMain().getCustomerService() != null) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText() + " "
                                         + appCMSPresenter.getAppCMSMain().getCustomerService().getEmail());
                             }
@@ -1662,13 +1663,22 @@ public class TVViewCreator {
 
                         case CONTACT_US_PHONE_LABEL:
                             if (!TextUtils.isEmpty(component.getText())) {
-                                String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
-                                if(TextUtils.isEmpty(phone)){
+                                String phone = "";
+                                String phoneNumber = "";
+                                String text = "";
+                                if (null != appCMSPresenter.getAppCMSMain()
+                                        && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
+                                    phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
                                     phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                                 }
-                                if (!TextUtils.isEmpty(phone)) {
+                                if(TextUtils.isEmpty(phoneNumber)){
+                                    text = phone;
+                                } else {
+                                    text = phoneNumber;
+                                }
+                                if (!TextUtils.isEmpty(text)) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText() + " "
-                                            + phone);
+                                            + text);
                                 } else {
                                     componentViewResult.componentView.setVisibility(View.GONE);
                                 }
@@ -2351,11 +2361,20 @@ public class TVViewCreator {
                         break;
 
                     case CONTACT_US_PHONE_IMAGE:
-                        String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
-                        if(TextUtils.isEmpty(phone)){
+                        String phone = "";
+                        String phoneNumber = "";
+                        String text = "";
+                        if (null != appCMSPresenter.getAppCMSMain()
+                                && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
+                            phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
                             phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                         }
-                        if (!TextUtils.isEmpty(phone)) {
+                        if(TextUtils.isEmpty(phoneNumber)){
+                            text = phone;
+                        } else {
+                            text = phoneNumber;
+                        }
+                        if (!TextUtils.isEmpty(text)) {
                             componentViewResult.componentView.setBackgroundResource(R.drawable.call_icon);
                         } else {
                             componentViewResult.componentView.setVisibility(View.GONE);
