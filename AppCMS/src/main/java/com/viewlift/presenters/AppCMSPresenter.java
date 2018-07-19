@@ -20404,126 +20404,152 @@ public class AppCMSPresenter {
     Boolean singlePlanFeatureAvailable = false;
 
     public void initializeCleverTap() {
-        cleverTapSDK.initializeSDK(this);
+        checkCleverTapAvailability();
+        if (isCleverTapAvailable)
+            cleverTapSDK.initializeSDK(this);
     }
 
     public void senduserProfileEvent() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getUserData((userIdentity) -> {
-                    try {
-                        String userStatus = "Subscribed";
-                        if (!isUserSubscribed())
-                            userStatus = "Not Subscribed";
-                        String subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
-                        String subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
-                        String transId = getUserSubscriptionInfo().getVlTransactionId();
-                        String country = getUserSubscriptionInfo().getCountryCode();
-                        double discountPrice = getUserSubscriptionInfo().getTotalAmount();
-                        double planPrice = planToPurchasePrice;
-                        String currency = currencyCode;
-                        String planName = getUserSubscriptionInfo().getIdentifier();
-                        String paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
-                        boolean freeTrial = getUserSubscriptionInfo().getFreeTrial();
-                        String mobile = userIdentity.getPhone().getNumber();
+        if (isCleverTapAvailable) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getUserData((userIdentity) -> {
+                        try {
+                            String userStatus = "Subscribed";
+                            if (!isUserSubscribed())
+                                userStatus = "Not Subscribed";
+                            String subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
+                            String subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
+                            String transId = getUserSubscriptionInfo().getVlTransactionId();
+                            String country = getUserSubscriptionInfo().getCountryCode();
+                            double discountPrice = getUserSubscriptionInfo().getTotalAmount();
+                            double planPrice = planToPurchasePrice;
+                            String currency = currencyCode;
+                            String planName = getUserSubscriptionInfo().getIdentifier();
+                            String paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
+                            boolean freeTrial = getUserSubscriptionInfo().getFreeTrial();
+                            String mobile = userIdentity.getPhone().getNumber();
 
-                        cleverTapSDK.sendUserProfile(getLoggedInUser(), getLoggedInUserName(), getLoggedInUserEmail(),
-                                userStatus, subscriptionStartDate, subscriptionEndDate, transId, country, discountPrice,
-                                planPrice, currency, planName, paymentHandler, freeTrial, mobile);
-                    } catch (Exception e) {
-                        //
-                    }
-                });
+                            cleverTapSDK.sendUserProfile(getLoggedInUser(), getLoggedInUserName(), getLoggedInUserEmail(),
+                                    userStatus, subscriptionStartDate, subscriptionEndDate, transId, country, discountPrice,
+                                    planPrice, currency, planName, paymentHandler, freeTrial, mobile);
+                        } catch (Exception e) {
+                            //
+                        }
+                    });
 
 
-            }
-        }, 2000);
+                }
+            }, 2000);
+        }
     }
 
     public void sendPlayStartedEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventPlayStarted(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventPlayStarted(contentDatum);
     }
 
     public void sendCastEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventCast(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventCast(contentDatum);
     }
 
     public void sendWatchedEvent(ContentDatum contentDatum, long watchTime, String stream, int bufferCount, int bufferTime) {
-        cleverTapSDK.sendEventWatched(contentDatum, watchTime, stream, bufferCount, bufferTime);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventWatched(contentDatum, watchTime, stream, bufferCount, bufferTime);
     }
 
     public void sendDownloadStartEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventDownloadStarted(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventDownloadStarted(contentDatum);
     }
 
     public void sendAddWatchlistEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventAddWatchlist(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventAddWatchlist(contentDatum);
     }
 
     public void sendEventMediaError(ContentDatum contentDatum, String error, long watchTime) {
-        cleverTapSDK.sendEventMediaError(contentDatum, error, watchTime);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventMediaError(contentDatum, error, watchTime);
     }
 
     public void sendRemoveWatchlistEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventRemoveWatchlist(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventRemoveWatchlist(contentDatum);
     }
 
     public void sendShareEvent(ContentDatum contentDatum) {
-        cleverTapSDK.sendEventShare(contentDatum);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventShare(contentDatum);
     }
 
     public void sendSignUpEvent(String regType) {
-        cleverTapSDK.sendEventSignUp(regType);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventSignUp(regType);
     }
 
     public void sendSubscriptionEvent() {
-        String paymentHandler = "Google play";
-        if (useCCAvenue())
-            paymentHandler = "CCAvenue";
-        String country = countryCode;
-        double discountPrice = planToPurchaseDiscountedPrice;
-        double planPrice = planToPurchasePrice;
-        String currency = currencyCode;
-        String planName = planToPurchaseName;
-        cleverTapSDK.sendEventSubscriptionInitiated(paymentHandler, country, discountPrice, planPrice, currency, planName);
+        if (isCleverTapAvailable) {
+            String paymentHandler = "Google play";
+            if (useCCAvenue())
+                paymentHandler = "CCAvenue";
+            String country = countryCode;
+            double discountPrice = planToPurchaseDiscountedPrice;
+            double planPrice = planToPurchasePrice;
+            String currency = currencyCode;
+            String planName = planToPurchaseName;
+            cleverTapSDK.sendEventSubscriptionInitiated(paymentHandler, country, discountPrice, planPrice, currency, planName);
+        }
     }
 
     public void sendPlayerBitrateEvent(String quality) {
-        cleverTapSDK.sendEventPlayerBitrateChange(quality);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventPlayerBitrateChange(quality);
     }
 
     public void sendDownloadBitrateEvent(String quality) {
-        cleverTapSDK.sendEventDownloadBitrateChange(quality);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventDownloadBitrateChange(quality);
     }
 
     public void sendLoginEvent(String regType) {
-        SemVer installAppSemVer = getInstalledAppSemVer();
-        cleverTapSDK.sendEventLogin(regType, installAppSemVer.original);
+        if (isCleverTapAvailable) {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            cleverTapSDK.sendEventLogin(regType, installAppSemVer.original);
+        }
     }
 
     public void sendPageViewEvent(String lastPage, String pageName) {
-        SemVer installAppSemVer = getInstalledAppSemVer();
-        cleverTapSDK.sendEventPageViewed(lastPage, pageName, installAppSemVer.original);
+        if (isCleverTapAvailable) {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            cleverTapSDK.sendEventPageViewed(lastPage, pageName, installAppSemVer.original);
+        }
     }
 
     public void sendLogoutEvent() {
-        cleverTapSDK.sendEventLogout();
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventLogout();
     }
 
     public void sendPlanEvent() {
-        cleverTapSDK.sendEventViewPlans();
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventViewPlans();
     }
 
     public void sendSearchEvent(String keyword) {
-        cleverTapSDK.sendEventSearch(keyword);
+        if (isCleverTapAvailable)
+            cleverTapSDK.sendEventSearch(keyword);
     }
 
     public void sendDownloadCompleteEvent(long downloadId) {
-        DownloadVideoRealm videoDownloaded = getVideoDownloadedByDMID(downloadId);
-        if (videoDownloaded != null) {
-            ContentDatum contentDatum = videoDownloaded.convertToContentDatum(getLoggedInUser());
-            cleverTapSDK.sendEventDownloadComplete(contentDatum);
+        if (isCleverTapAvailable) {
+            DownloadVideoRealm videoDownloaded = getVideoDownloadedByDMID(downloadId);
+            if (videoDownloaded != null) {
+                ContentDatum contentDatum = videoDownloaded.convertToContentDatum(getLoggedInUser());
+                cleverTapSDK.sendEventDownloadComplete(contentDatum);
+            }
         }
     }
 
@@ -20566,6 +20592,14 @@ public class AppCMSPresenter {
     }
 
     String playSource = "";
+
+    boolean isCleverTapAvailable = false;
+
+    private void checkCleverTapAvailability() {
+        if (getCurrentActivity().getString(R.string.app_cms_clevertap_acc_id) != null &&
+                getCurrentActivity().getString(R.string.app_cms_clevertap_acc_key) != null)
+            isCleverTapAvailable = true;
+    }
 
 
 }

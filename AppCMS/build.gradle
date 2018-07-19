@@ -63,6 +63,8 @@ android {
     def final useHLS
     def appVersionCode
     def appVersionName
+    def clevertapAccId
+    def clevertapAccKey
     //def minsdkversion
     //def targetsdkversion
     signingConfigs {
@@ -88,6 +90,8 @@ android {
         useHLS = versionProps['UseHLS'].toBoolean()
         appVersionCode = versionProps['AppVersionCode'].toInteger()
         appVersionName = versionProps['AppVersionName'].toString()
+        clevertapAccId = versionProps['ClevertapAccId'].toString()
+        clevertapAccKey = versionProps['ClevertapAccToken'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
         //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
 
@@ -238,6 +242,8 @@ android {
             resValue "string", "facebook_app_id", "${facebookAppId}"
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
+            resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
+            resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
             signingConfig signingConfigs.debug
         }
@@ -254,6 +260,8 @@ android {
             resValue "string", "facebook_app_id", "${facebookAppId}"
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
+            resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
+            resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }

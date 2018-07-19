@@ -64,10 +64,10 @@
          <!--always comment for other apps clevertap-->
         <meta-data
             android:name="CLEVERTAP_ACCOUNT_ID"
-            android:value="TEST-9W6-4W8-8R5Z" />
+            android:value="@string/app_cms_clevertap_acc_id" />
         <meta-data
             android:name="CLEVERTAP_TOKEN"
-            android:value="TEST-b04-60c" />
+            android:value="@string/app_cms_clevertap_acc_key" />
 
 
         <!--
