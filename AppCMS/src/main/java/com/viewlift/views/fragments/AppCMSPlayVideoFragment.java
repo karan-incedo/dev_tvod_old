@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -1193,6 +1194,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
     }
+
+
 
     private void initViewForCRW(View rootView) {
 
