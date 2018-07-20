@@ -44,6 +44,7 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
     }
 
     @OnClick(R.id.id_btn_checkout)

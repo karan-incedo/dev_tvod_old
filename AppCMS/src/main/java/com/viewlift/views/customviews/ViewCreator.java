@@ -1907,8 +1907,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else
-                if (moduleInfo.getBlockName().contains("gameDetail01")) {
+                } else if (moduleInfo.getBlockName().contains("gameDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
@@ -1923,7 +1922,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "roster.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                }*/ else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -4925,8 +4924,7 @@ public class ViewCreator {
 
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY &&
                             /*!appCMSPresenter.isAppSVOD() &&*/
-                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() ||
-                            (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY)) {
+                            !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                         componentViewResult.shouldHideComponent = true;
                     } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
@@ -5216,14 +5214,6 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                         ((TextView) componentViewResult.componentView).setText("Title");
                     }
-                    if ((moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY)) {
-                        int textFontColor = 0;
-                        if (!TextUtils.isEmpty(component.getTextColor())) {
-                            textFontColor = Color.parseColor(getColor(context, "#000000"));
-                        }
-                        ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
-                        ((TextView) componentViewResult.componentView).setText("tray Title");
-                    }
                     if (!gridElement) {
                         switch (componentKey) {
                             case PAGE_API_TITLE:
@@ -5296,23 +5286,6 @@ public class ViewCreator {
                                 } */ else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
                                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                                } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-
-                                    if (moduleAPI != null &&
-                                            moduleAPI.getContentData() != null &&
-                                            moduleAPI.getContentData().get(0) != null &&
-                                            moduleAPI.getContentData().get(0).getSeason() != null &&
-                                            !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
-                                            moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
-                                            !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle())) {
-                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
-                                    } else {
-                                        StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                                        seasonTitleSb.append(context.getString(R.string.blank_separator));
-                                        seasonTitleSb.append(1);
-                                        ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
-                                    }
-
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_AC_ROSTER_MODULE_KEY) {
 
                                     if (moduleAPI != null &&
@@ -7429,6 +7402,7 @@ public class ViewCreator {
                         contentDatum.getGist().setId(filmId);
                         appCMSPresenter.editWatchlist(contentDatum,
                                 addToWatchlistResult -> {
+                                    appCMSPresenter.sendAddWatchlistEvent(contentDatum);
                                     UpdateImageIconAction.this.imageButton.setImageResource(
                                             R.drawable.remove_from_watchlist);
                                     UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
@@ -7450,6 +7424,7 @@ public class ViewCreator {
                     this.contentDatum.getGist().setId(filmId);
                     appCMSPresenter.editWatchlist(this.contentDatum,
                             addToWatchlistResult -> {
+                                appCMSPresenter.sendRemoveWatchlistEvent(contentDatum);
                                 UpdateImageIconAction.this.imageButton.setImageResource(
                                         R.drawable.add_to_watchlist);
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);

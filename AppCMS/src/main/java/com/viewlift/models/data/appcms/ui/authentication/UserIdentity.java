@@ -10,6 +10,9 @@ public class UserIdentity {
     @SerializedName("_raw")
     @Expose
     Raw raw;
+    @SerializedName("phone")
+    @Expose
+    Phone phone;
 
     @SerializedName("registerdVia")
     @Expose
@@ -209,5 +212,9 @@ public class UserIdentity {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public Phone getPhone() {
+        return phone;
     }
 }

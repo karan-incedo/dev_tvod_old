@@ -58,6 +58,34 @@ public class DownloadVideoRealm extends RealmObject {
     public String songYear;
     private String playListName;
 
+    String episodeNum;
+    String showName;
+    String seasonNum;
+
+    public String getEpisodeNum() {
+        return episodeNum;
+    }
+
+    public void setEpisodeNum(String episodeNum) {
+        this.episodeNum = episodeNum;
+    }
+
+    public String getShowName() {
+        return showName;
+    }
+
+    public void setShowName(String showName) {
+        this.showName = showName;
+    }
+
+    public String getSeasonNum() {
+        return seasonNum;
+    }
+
+    public void setSeasonNum(String seasonNum) {
+        this.seasonNum = seasonNum;
+    }
+
     public String getPlayListName() {
         return playListName;
     }
@@ -381,10 +409,16 @@ public class DownloadVideoRealm extends RealmObject {
         data.setAddedDate(getDownloadDate());
         gist.setContentType(getContentType());
         gist.setMediaType(getMediaType());
+        gist.setEpisodeNum(getEpisodeNum());
+        gist.setShowName(getShowName());
+        gist.setSeasonNum(getSeasonNum());
         return data;
     }
     public DownloadVideoRealm createCopy(){
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
+        downloadVideoRealm.setEpisodeNum(getEpisodeNum());
+        downloadVideoRealm.setShowName(getShowName());
+        downloadVideoRealm.setSeasonNum(getSeasonNum());
         downloadVideoRealm.setVideoId(getVideoId());
         downloadVideoRealm.setDownloadStatus(getDownloadStatus());
         downloadVideoRealm.setSyncedWithServer(isSyncedWithServer);

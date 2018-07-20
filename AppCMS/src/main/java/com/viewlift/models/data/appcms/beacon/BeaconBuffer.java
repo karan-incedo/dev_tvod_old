@@ -83,6 +83,7 @@ public class BeaconBuffer extends Thread {
                                     appCMSPresenter.isVideoDownloaded(filmId));
                             bufferCount = 0;
                         }
+
                     }
 
                     if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&

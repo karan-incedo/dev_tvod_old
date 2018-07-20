@@ -812,6 +812,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
                         listViewAdapter.setSelectedIndex(listViewAdapter.getDownloadQualityPosition());
                         streamingQualitySelectorDialog.dismiss();
+                        appCMSPresenter.sendPlayerBitrateEvent(currentStreamingQualitySelector.getText().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1337,6 +1338,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mCurrentPlayerPosition = player.getCurrentPosition();
         if (mErrorEventListener != null) {
             mErrorEventListener.onRefreshTokenCallback();
+            mErrorEventListener.playerError(e);
         }
     }
 
@@ -1738,6 +1740,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         void onRefreshTokenCallback();
 
         void onFinishCallback(String message);
+
+        void playerError(ExoPlaybackException ex);
     }
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();

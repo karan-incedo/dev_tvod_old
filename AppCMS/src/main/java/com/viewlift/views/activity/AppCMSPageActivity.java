@@ -375,11 +375,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
+                        String previousPage=updatedAppCMSBinder.getPageName();
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         if (updatedAppCMSBinder != null) {
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
+                        appCMSPresenter.sendPageViewEvent(previousPage,updatedAppCMSBinder.getPageName());
                         if (isActive) {
                             try {
                                 handleLaunchPageAction(updatedAppCMSBinder,
@@ -971,6 +973,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
+        appCMSPresenter.initializeCleverTap();
     }
 
     private boolean shouldReadNavItemsFromAppCMS() {

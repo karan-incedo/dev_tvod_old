@@ -58,6 +58,8 @@ import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -81,7 +83,6 @@ public final class LocalPlayback implements Playback {
     private static final int AUDIO_NO_FOCUS_CAN_DUCK = 1;
     // we have full audio focus
     private static final int AUDIO_FOCUSED = 2;
-
     private final Context mContext;
     private final WifiManager.WifiLock mWifiLock;
     private boolean mPlayOnFocusGain;
@@ -118,7 +119,9 @@ public final class LocalPlayback implements Playback {
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Audio";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-
+    int bufferCount;
+    int bufferTime;
+    private String lastPlayType = "";
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
@@ -131,7 +134,7 @@ public final class LocalPlayback implements Playback {
                             Intent i = new Intent(context, MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                           // Utils.startService(mContext, i);
+                            // Utils.startService(mContext, i);
                         }
                     }
                 }
@@ -218,7 +221,7 @@ public final class LocalPlayback implements Playback {
 
         mCurrentMediaId = null;
         giveUpAudioFocus();
-       // unregisterAudioNoisyReceiver();
+        // unregisterAudioNoisyReceiver();
         releaseResources(true);
         if (beaconPing != null) {
             beaconPing.sendBeaconPing = false;
@@ -338,7 +341,7 @@ public final class LocalPlayback implements Playback {
         appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
-       // registerAudioNoisyReceiver();
+        // registerAudioNoisyReceiver();
         if (audioData != null) {
             audioData.getGist().setAudioPlaying(false);
         }
@@ -439,6 +442,7 @@ public final class LocalPlayback implements Playback {
                     0d,
                     0,
                     appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
+            appCMSPresenter.sendPlayStartedEvent(audioData);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
         }
@@ -489,7 +493,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void seekTo(long position) {
         if (mExoPlayer != null) {
-           // registerAudioNoisyReceiver();
+            // registerAudioNoisyReceiver();
             mExoPlayer.seekTo(position);
         }
     }
@@ -532,7 +536,7 @@ public final class LocalPlayback implements Playback {
                 // We don't have audio focus and can't duck, so we have to pause
                 pause();
             } else {
-              //  registerAudioNoisyReceiver();
+                //  registerAudioNoisyReceiver();
 
                 if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_CAN_DUCK) {
                     // We're permitted to play, but only if we 'duck', ie: play softly
@@ -660,6 +664,14 @@ public final class LocalPlayback implements Playback {
                 case ExoPlayer.STATE_BUFFERING:
                     if (mCallback != null) {
                         mCallback.onPlaybackStatusChanged(getState());
+                        lastPlayType = "BUFFERING";
+                        bufferTime++;
+                        if ((int) (mExoPlayer.getCurrentPosition() / 1000) == (int) ((mExoPlayer.getDuration() / 1000) * 0.25) ||
+                                (int) (mExoPlayer.getCurrentPosition() / 1000) == (int) ((mExoPlayer.getDuration() / 1000) * 0.5) ||
+                                (int) (mExoPlayer.getCurrentPosition() / 1000) == (int) ((mExoPlayer.getDuration() / 1000) * 0.75)) {
+                            bufferCount = 0;
+                            bufferTime = 0;
+                        }
 
                         if (beaconBuffer != null) {
                             beaconBuffer.sendBeaconBuffering = true;
@@ -681,6 +693,12 @@ public final class LocalPlayback implements Playback {
 
                             if (!beaconPing.isAlive()) {
                                 try {
+                                    if (lastPlayType.contains("BUFFERING")) {
+                                        bufferCount++;
+                                        lastPlayType = "PLAYING";
+                                    }
+                                    beaconPing.setBufferTime(bufferTime);
+                                    beaconPing.setBufferCount(bufferCount);
                                     beaconPing.start();
                                 } catch (Exception e) {
 
@@ -731,6 +749,7 @@ public final class LocalPlayback implements Playback {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
+            appCMSPresenter.sendEventMediaError(audioData, error.getMessage(), mExoPlayer.getCurrentPosition() / 1000);
             final String what;
             switch (error.type) {
                 case ExoPlaybackException.TYPE_SOURCE:
