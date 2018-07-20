@@ -242,7 +242,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     String adsUrl;
-    public void setAdsUrl(String adsUrl){
+
+    public void setAdsUrl(String adsUrl) {
         this.adsUrl = adsUrl;
     }
 
@@ -252,8 +253,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.uri = Uri.parse(strUri);
         this.closedCaptionUri = closedCaptionUri;
         try {
-            imaAdsLoader=null;
-            player.prepare(buildMediaSource(buildMediaSource(videoUri, closedCaptionUri),this.adsUrl));
+            imaAdsLoader = null;
+            player.prepare(buildMediaSource(buildMediaSource(videoUri, closedCaptionUri), this.adsUrl));
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
@@ -283,7 +284,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         setSelectedStreamingQualityIndex();
                     }
                 }
-                if(availableStreamingQualities.size()==0){
+                if (availableStreamingQualities.size() == 0) {
                     currentStreamingQualitySelector.setVisibility(GONE);
                 }
             }
@@ -498,7 +499,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         /*ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            *//*if (onClosedCaptionButtonClicked != null) {
+         *//*if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
             }*//*
             isClosedCaptionEnabled = isChecked;
@@ -507,12 +508,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
 
         try {
-            if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+            if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
                 StateListDrawable drawable = (StateListDrawable) currentStreamingQualitySelector.getBackground();
                 DrawableContainer.DrawableContainerState dcs = (DrawableContainer.DrawableContainerState) drawable.getConstantState();
                 Drawable[] drawableItems = dcs.getChildren();
                 GradientDrawable gradientDrawableChecked = (GradientDrawable) drawableItems[0]; // item 1
-                gradientDrawableChecked.setStroke(1,appCMSPresenter.getBrandPrimaryCtaColor());
+                gradientDrawableChecked.setStroke(1, appCMSPresenter.getBrandPrimaryCtaColor());
             }
         } catch (Exception e) {
         }
@@ -566,13 +567,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 onPlayerControlsStateChanged.call(visibility);
             }
-            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)){
-                if (visibility == View.VISIBLE) {
-                    offsetSubtitleView();
-                } else {
-                    resetSubtitleView();
-                }
+            if (visibility == View.VISIBLE) {
+                offsetSubtitleView();
+            } else {
+                resetSubtitleView();
             }
+
         });
         player.addVideoListener(this);
 
@@ -593,7 +593,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void offsetSubtitleView() {
         if (playerView.getSubtitleView() != null) {
-            playerView.getSubtitleView().animate().translationY(-100).setDuration(100);
+            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
+                playerView.getSubtitleView().animate().translationY(-100).setDuration(100);
+            } else if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.ANDROID)) {
+                playerView.getSubtitleView().animate().translationY(-150).setDuration(100);
+            }
         }
     }
 
@@ -719,7 +723,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
 
                 /*set preferred language in the preferences in order to honor the user selection
-                * for future*/
+                 * for future*/
                 appCMSPresenter.setPreferredSubtitleLanguage(closedCaptionSelector.getSubtitleLanguageFromIndex(position - 1));
                 VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
             } else { /*if position is the mock entry, just hide the subtitle view and do other stuff*/
@@ -742,6 +746,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * Returns the selected CC group index
+     *
      * @return selected Closed Caption track
      */
     private int getSelectedCCTrack() {
@@ -766,6 +771,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * overrides the CC track selection with the group id passed as a paramater
+     *
      * @param groupIndex index of the group you wanna select
      */
     private void setSelectedCCTrack(int groupIndex) {
@@ -777,68 +783,68 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void createStreamingQualitySelector() {
 
-        if(!appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())){
-        if (streamingQualitySelector != null && appCMSPresenter != null) {
-            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-            if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                qualitySelectorRecyclerView = new RecyclerView(getContext());
-                listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
-                        appCMSPresenter,
-                        availableStreamingQualities);
+        if (!appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())) {
+            if (streamingQualitySelector != null && appCMSPresenter != null) {
+                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+                if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
+                    qualitySelectorRecyclerView = new RecyclerView(getContext());
+                    listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
+                            appCMSPresenter,
+                            availableStreamingQualities);
 
-                qualitySelectorRecyclerView.setAdapter(listViewAdapter);
-                qualitySelectorRecyclerView.setBackgroundColor(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/);
-                qualitySelectorRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.VERTICAL,
-                        false));
+                    qualitySelectorRecyclerView.setAdapter(listViewAdapter);
+                    qualitySelectorRecyclerView.setBackgroundColor(Color.TRANSPARENT/*appCMSPresenter.getGeneralBackgroundColor()*/);
+                    qualitySelectorRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                            LinearLayoutManager.VERTICAL,
+                            false));
 
-                setSelectedStreamingQualityIndex();
-                AlertDialog.Builder builder;
-                if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
-                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen);
-                } else {
-                    builder = new AlertDialog.Builder(getContext());
-                }
-
-                if (qualitySelectorRecyclerView.getParent() != null && qualitySelectorRecyclerView.getParent() instanceof ViewGroup) {
-                    ((ViewGroup) qualitySelectorRecyclerView.getParent()).removeView(qualitySelectorRecyclerView);
-                }
-                builder.setView(qualitySelectorRecyclerView);
-                final Dialog streamingQualitySelectorDialog = builder.create();
-                if (streamingQualitySelectorDialog.getWindow() != null) {
+                    setSelectedStreamingQualityIndex();
+                    AlertDialog.Builder builder;
                     if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
-                        streamingQualitySelectorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
-                        streamingQualitySelectorDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                        builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen);
                     } else {
-                        streamingQualitySelectorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                        builder = new AlertDialog.Builder(getContext());
                     }
-                }
-                currentStreamingQualitySelector.setOnClickListener(v -> {
-                    streamingQualitySelectorDialog.show();
-                    listViewAdapter.notifyDataSetChanged();
-                });
 
-                listViewAdapter.setItemClickListener(v -> {
-                    try {
-                        TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
-                        DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
-                                listViewAdapter.getDownloadQualityPosition(), 0);
-                        trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
-                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
-                        listViewAdapter.setSelectedIndex(listViewAdapter.getDownloadQualityPosition());
-                        streamingQualitySelectorDialog.dismiss();
-                        appCMSPresenter.sendPlayerBitrateEvent(currentStreamingQualitySelector.getText().toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (qualitySelectorRecyclerView.getParent() != null && qualitySelectorRecyclerView.getParent() instanceof ViewGroup) {
+                        ((ViewGroup) qualitySelectorRecyclerView.getParent()).removeView(qualitySelectorRecyclerView);
                     }
-                });
+                    builder.setView(qualitySelectorRecyclerView);
+                    final Dialog streamingQualitySelectorDialog = builder.create();
+                    if (streamingQualitySelectorDialog.getWindow() != null) {
+                        if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
+                            streamingQualitySelectorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
+                            streamingQualitySelectorDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                        } else {
+                            streamingQualitySelectorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
+                        }
+                    }
+                    currentStreamingQualitySelector.setOnClickListener(v -> {
+                        streamingQualitySelectorDialog.show();
+                        listViewAdapter.notifyDataSetChanged();
+                    });
+
+                    listViewAdapter.setItemClickListener(v -> {
+                        try {
+                            TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
+                            DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
+                                    listViewAdapter.getDownloadQualityPosition(), 0);
+                            trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
+                            currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
+                            listViewAdapter.setSelectedIndex(listViewAdapter.getDownloadQualityPosition());
+                            streamingQualitySelectorDialog.dismiss();
+                            appCMSPresenter.sendPlayerBitrateEvent(currentStreamingQualitySelector.getText().toString());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } else {
+                    currentStreamingQualitySelector.setVisibility(GONE);
+                }
             } else {
                 currentStreamingQualitySelector.setVisibility(GONE);
             }
         } else {
-            currentStreamingQualitySelector.setVisibility(GONE);
-        }
-      }else{
             //video coming from downloaded
             if (appCMSPresenter.isUserLoggedIn()) {
                 currentStreamingQualitySelector.setVisibility(GONE);
@@ -885,12 +891,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 TrackGroup group = trackGroups.get(groupIndex);
                 for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
                     Format format = group.getFormat(trackIndex);
-                    if(format.height != Format.NO_VALUE) {
+                    if (format.height != Format.NO_VALUE) {
                         availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
                                 format.height == Format.NO_VALUE ? "" : format.height + "p"));
-                    }else{
-                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex ,
-                                buildBitrateString(format)) );
+                    } else {
+                        availableStreamingQualities.add(new HLSStreamingQuality(trackIndex,
+                                buildBitrateString(format)));
                     }
                 }
             }
@@ -915,9 +921,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 qualitySelectorRecyclerView.setAdapter(hlsListViewAdapter);
-                if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
                     qualitySelectorRecyclerView.setBackgroundColor(Color.TRANSPARENT);
-                }else {
+                } else {
                     qualitySelectorRecyclerView.setBackgroundColor(appCMSPresenter.getGeneralBackgroundColor());
                 }
                 qualitySelectorRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
@@ -927,9 +933,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 setSelectedStreamingQualityIndex();
                 AlertDialog.Builder builder = null;
 
-                if( (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV)&& Utils.isFireTVDevice(getContext()) ){
-                         builder = new AlertDialog.Builder(getContext(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
-                }else{
+                if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
+                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+                } else {
                     builder = new AlertDialog.Builder(getContext());
                 }
 
@@ -939,10 +945,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 builder.setView(qualitySelectorRecyclerView);
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
-                    if((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())){
+                    if ((appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) && Utils.isFireTVDevice(getContext())) {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#03000000")));
                         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                    }else {
+                    } else {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(appCMSPresenter.getGeneralBackgroundColor()));
                     }
                 }
@@ -996,12 +1002,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public Uri getAdTagUri(final String adURL) {
         return Uri.parse(adURL);
     }
+
     ImaAdsLoader imaAdsLoader;
+
     void initAds() {
 
-          imaAdsLoader = new ImaAdsLoader.Builder(getContext()).setAdEventListener(new PlayerAdEvent()).buildForAdTag(getAdTagUri(this.adsUrl));
+        imaAdsLoader = new ImaAdsLoader.Builder(getContext()).setAdEventListener(new PlayerAdEvent()).buildForAdTag(getAdTagUri(this.adsUrl));
 
     }
+
     private MediaSource buildMediaSource(MediaSource contentMediaSource, String adsUrl) {
 
 
@@ -1010,7 +1019,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 !appCMSPresenter.isUserSubscribed()) {
             if (imaAdsLoader == null) {
                 initAds();
-            }else {
+            } else {
                 imaAdsLoader.loadAd(adsUrl);
             }
             AdsMediaSource.MediaSourceFactory adMediaFactory = new AdsMediaSource.MediaSourceFactory() {
@@ -1034,13 +1043,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     playerView.getOverlayFrameLayout());
             return mediaSourceWithAds;
 
-        } else{
+        } else {
             return contentMediaSource;
         }
     }
+
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
-            if(null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
+            if (null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
@@ -1069,7 +1079,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     /**
      * Queries video urls and subtitle urls from the hosting Activities which have implemented the
      * {@link VideoPlayerView.StreamingQualitySelector} or {@link VideoPlayerView.ClosedCaptionSelector}
-     *
+     * <p>
      * This method iterated over multiple Mp4 & srt urls to create a {@link MergingMediaSource}
      * which have every possible rendition of Mp4 and every available SRT merged. In case of HLS, a
      * single .m3u8 file is merged with all available SRTs
@@ -1079,7 +1089,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private MediaSource buildMediaSource() {
 
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
-            if(null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
+            if (null != policyCookie && null != signatureCookie && null != keyPairIdCookie) {
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
                 ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
@@ -1090,7 +1100,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<MediaSource> mediaSourceList = new ArrayList<>();
 
         /*Iterated over the available Mp4s, create an ExtractorMediaSource by calling the overloaded
-        * buildMediaSource method */
+         * buildMediaSource method */
         if (!useHls) {
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             for (int i = 0; i < availableStreamingQualities.size(); i++) {
@@ -1100,7 +1110,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 /*use this method to get the Mp4 url from the streaming quslitu*/
                 String streamingQualityUrl = streamingQualitySelector.getStreamingQualityUrl(streamingQuality);
 
-                if (streamingQualityUrl != null && !TextUtils.isEmpty(streamingQualityUrl)){
+                if (streamingQualityUrl != null && !TextUtils.isEmpty(streamingQualityUrl)) {
                     // add the media source to the list
                     mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualityUrl), ""));
                 }
@@ -1168,12 +1178,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
 
         // Convert list into array and pass onto the MergingMediaSource constructor
-        MediaSource mediaSources [] = new MediaSource[mediaSourceList.size()];
+        MediaSource mediaSources[] = new MediaSource[mediaSourceList.size()];
         mediaSourceList.toArray(mediaSources);
 
         // Plays the video with the side-loaded subtitle.
         imaAdsLoader = null;
-        return buildMediaSource(new MergingMediaSource(mediaSources),this.adsUrl);
+        return buildMediaSource(new MergingMediaSource(mediaSources), this.adsUrl);
     }
 
 
@@ -1237,7 +1247,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    public void manageStreamingQuality(int playbackState){
+    public void manageStreamingQuality(int playbackState) {
 
         if (playbackState == Player.STATE_READY /*checking if the playback state is ready*/
                 && getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) /*check if stream quality selector is enabled*/
@@ -1261,6 +1271,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
         }
     }
+
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playerState != null) {
@@ -1275,7 +1286,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
             manageStreamingQuality(playbackState);
-           /* if (playbackState == Player.STATE_READY *//*checking if the playback state is ready*//*
+            /* if (playbackState == Player.STATE_READY *//*checking if the playback state is ready*//*
                     && getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) *//*check if stream quality selector is enabled*//*
                     && useHls *//*createStreamingQualitySelectorForHLS is only called for HLS stream*//*
                     && !streamingQualitySelectorCreated *//*making sure the selector isn't already created*//*
@@ -1293,7 +1304,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 int res = Integer.parseInt(defaultVideoResolution.replace("p", ""));
 
                 *//*For MP4s, by default, the highest resolution is rendered, to honor the setting we
-                * are telling the player that the max height can only be "res"*//*
+             * are telling the player that the max height can only be "res"*//*
                 trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }*/
             if (playbackState == Player.STATE_READY
@@ -1317,9 +1328,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 int res = Integer.parseInt(defaultVideoResolution.replace("p", ""));
 
                 /*sometime the same call which is done in the other block doesn't function, so calling
-                * it when player is ready warrants that this will work, but if the other call didn't
-                * work, we see the highest resolution selected for a fraction of second before this
-                * call changes it to the desired setting*/
+                 * it when player is ready warrants that this will work, but if the other call didn't
+                 * work, we see the highest resolution selected for a fraction of second before this
+                 * call changes it to the desired setting*/
                 trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }
 
@@ -1331,10 +1342,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (null != currentStreamingQualitySelector
                 && null != appCMSPresenter && uri != null && !appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())) {
             currentStreamingQualitySelector.setVisibility(View.VISIBLE);
-        }else{
-            if(appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId()) && appCMSPresenter.isUserLoggedIn()){
+        } else {
+            if (appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId()) && appCMSPresenter.isUserLoggedIn()) {
                 currentStreamingQualitySelector.setVisibility(View.GONE);
-            }else{
+            } else {
                 currentStreamingQualitySelector.setVisibility(View.VISIBLE);
             }
         }
@@ -1412,7 +1423,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         Log.d(TAG, "resolution: " + format.width + "x" + format.height);
 
         /*Only after the successful video track change, this method is called, setting the
-        * currentStreamingQualitySelector warrants that it is the actual value which is now playing*/
+         * currentStreamingQualitySelector warrants that it is the actual value which is now playing*/
         String text = format.height + "p";
         currentStreamingQualitySelector.setText(text);
         try {
@@ -1766,12 +1777,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         void playerError(ExoPlaybackException ex);
     }
+
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();
 
         /**
          * Returns the HLS url which will be used for playback
-         * */
+         */
         String getVideoUrl();
 
         String getStreamingQualityUrl(String streamingQuality);
@@ -1786,9 +1798,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     /**
      * Contain methods used to fetch the closed captions' list and the language from the selected
      * index
-     * */
+     */
     public interface ClosedCaptionSelector {
         List<ClosedCaptions> getAvailableClosedCaptions();
+
         String getSubtitleLanguageFromIndex(int index);
     }
 
@@ -2071,7 +2084,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public StreamingQualitySelectorAdapter(Context context,
                                                AppCMSPresenter appCMSPresenter,
                                                List<String> items) {
-            super(context, items,appCMSPresenter);
+            super(context, items, appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
@@ -2228,7 +2241,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         HLSStreamingQualitySelectorAdapter(Context context,
                                            AppCMSPresenter appCMSPresenter,
                                            List<HLSStreamingQuality> items) {
-            super(context, items,appCMSPresenter);
+            super(context, items, appCMSPresenter);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
         }
@@ -2334,13 +2347,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return licenseUrlDRM;
     }
 
-    public  class PlayerAdEvent implements AdEvent.AdEventListener,AdsLoader.EventListener {
+    public class PlayerAdEvent implements AdEvent.AdEventListener, AdsLoader.EventListener {
 
         @Override
         public void onAdEvent(AdEvent adEvent) {
             switch (adEvent.getType()) {
                 case LOADED:
-                    if (onBeaconAdsEvent!= null){
+                    if (onBeaconAdsEvent != null) {
                         onBeaconAdsEvent.sendBeaconAdRequest();
                     }
                     System.out.println("Ads:-   LOADED called sendBeaconAdRequest ");
@@ -2352,13 +2365,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     System.out.println("Ads:-   ALL_ADS_COMPLETED  ");
                     break;
                 case CONTENT_PAUSE_REQUESTED:
-                    if (onBeaconAdsEvent!= null){
+                    if (onBeaconAdsEvent != null) {
                         onBeaconAdsEvent.sendBeaconAdImprassion();
                     }
                     System.out.println("Ads:-   CONTENT_PAUSE_REQUESTED  sendBeaconAdImprassion ");
                     break;
-                    default:
-                        System.out.println("Ads:-   default  ");
+                default:
+                    System.out.println("Ads:-   default  ");
 
             }
 
@@ -2374,8 +2387,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public void onAdLoadError(AdsMediaSource.AdLoadException error, DataSpec dataSpec) {
             System.out.println("Ads:-   onAdLoadError  ");
         }
-
-
 
 
         @Override
@@ -2395,8 +2406,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.onBeaconAdsEvent = onBeaconAdsEvent;
     }
 
-    public  interface OnBeaconAdsEvent{
+    public interface OnBeaconAdsEvent {
         public void sendBeaconAdImprassion();
+
         public void sendBeaconAdRequest();
     }
 }
