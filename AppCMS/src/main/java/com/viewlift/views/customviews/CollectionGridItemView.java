@@ -1483,8 +1483,19 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             ((TextView) view).setVisibility(View.VISIBLE);
+//                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+//                            ((TextView) view).setTextColor(R.color.color_white);
                         }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
+                    }  else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setVisibility(View.VISIBLE);
+                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+                        ((TextView) view).setText(data.getGist().getTitle());
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
                         if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {
