@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
@@ -70,7 +71,7 @@ public class ContentDetails implements Serializable {
 
     @SerializedName("closedCaptions")
     @Expose
-    List<ClosedCaptions> closedCaptions;
+    ArrayList<ClosedCaptions> closedCaptions;
 
     @SerializedName("deviceControls")
     @Expose
@@ -195,11 +196,11 @@ public class ContentDetails implements Serializable {
         this.endDate = endDate;
     }
 
-    public List<ClosedCaptions> getClosedCaptions() {
+    public ArrayList<ClosedCaptions> getClosedCaptions() {
         return closedCaptions;
     }
 
-    public void setClosedCaptions(List<ClosedCaptions> closedCaptions) {
+    public void setClosedCaptions(ArrayList<ClosedCaptions> closedCaptions) {
         this.closedCaptions = closedCaptions;
     }
 
