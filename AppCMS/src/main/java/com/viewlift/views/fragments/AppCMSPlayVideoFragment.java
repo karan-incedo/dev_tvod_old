@@ -84,6 +84,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private static double ttfirstframe = 0d;
     private static int apod = 0;
     private static boolean isVideoDownloaded;
+    private static boolean isLiveStreaming;
     private final String FIREBASE_STREAM_START = "stream_start";
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
@@ -609,6 +610,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
+            
+       if (onUpdateContentDatumEvent.getCurrentContentDatum().getStreamingInfo() != null) {
+            isLiveStreaming = onUpdateContentDatumEvent.getCurrentContentDatum().getStreamingInfo().getIsLiveStream();
+        }
+        videoPlayerView.getPlayerView().getController().setPlayingLive(isLiveStreaming);
+
 
         initViewForCRW(rootView);
         if (!shouldRequestAds) {
