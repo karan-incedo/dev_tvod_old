@@ -138,6 +138,7 @@ import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
+import com.viewlift.models.data.appcms.api.DfpAds;
 import com.viewlift.models.data.appcms.api.GameSchedule;
 import com.viewlift.models.data.appcms.api.GetLinkCode;
 import com.viewlift.models.data.appcms.api.Gist;
@@ -1632,6 +1633,15 @@ public class AppCMSPresenter {
                             ContentDatum currentContentDatum = appCMSEntitlementResponse.getVideoContentDatum();
                             if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null) {
                                 currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
+                            }
+                            if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
+                                for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
+                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID){
+                                        appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
+                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV){
+                                        appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
+                                    }
+                                }
                             }
                             ContentDatum userHistoryContentDatum = getUserHistoryContentDatum(currentContentDatum.getGist().getId());
                             if (userHistoryContentDatum != null) {
@@ -18303,7 +18313,7 @@ public class AppCMSPresenter {
                 && appCMSAndroid.getAdvertising().getVideoTag() != null) {
             videoTag = appCMSAndroid.getAdvertising().getVideoTag();
         }
-        if (videoTag == null) {
+       if (videoTag == null) {
             return null;
         }
         Date now = new Date();

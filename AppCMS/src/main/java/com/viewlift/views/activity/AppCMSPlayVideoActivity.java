@@ -734,7 +734,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if (captions.getFormat()!=null && captions.getFormat().equalsIgnoreCase("SRT")) {
                         closedCaptionsList.add(captions);
                     }
                 }
