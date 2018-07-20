@@ -73,10 +73,12 @@ public class AppCMSSubscriptionPlanCall {
                                     //Log.d(TAG, "Request: " + request);
                                     //Log.d(TAG, "Response code: " + response.code());
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    //Log.d(TAG, "Response: " + responseValue);
+
                                     Observable.just(response.body())
                                             .onErrorResumeNext(throwable -> Observable.empty())
                                             .subscribe(planResultAction1);
+                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
+                                    Log.e(TAG, "Response: " + responseValue);
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Exception occurred when sending update subscription: " +
 //                                            e.getMessage());

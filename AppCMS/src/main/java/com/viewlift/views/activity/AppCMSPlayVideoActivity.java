@@ -308,7 +308,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
          * available*/
         else if (gist.getId() != null
                 && appCMSPresenter.getRealmController() != null
-                && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
+                && appCMSPresenter.getRealmController().getDownloadByIdBelongstoUser(gist.getId(),appCMSPresenter.getLoggedInUser()) != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                 && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
             videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
@@ -734,7 +734,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }
@@ -757,7 +757,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }

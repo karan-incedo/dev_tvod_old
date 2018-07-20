@@ -174,6 +174,7 @@ import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.sslcommerz.SSLInitiateResponse;
 import com.viewlift.models.data.appcms.subscribeForLatestNewsPojo.ResponsePojo;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
@@ -20097,8 +20098,9 @@ public class AppCMSPresenter {
             Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
             fCursorDrawable.setAccessible(true);
             Drawable[] drawables = new Drawable[2];
-            drawables[0] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
-            drawables[1] = editText.getContext().getResources().getDrawable(mCursorDrawableRes);
+
+            drawables[0] = ContextCompat.getDrawable(editText.getContext(),mCursorDrawableRes);//editText.getContext().getResources().getDrawable(mCursorDrawableRes);
+            drawables[1] = ContextCompat.getDrawable(editText.getContext(),mCursorDrawableRes);//editText.getContext().getResources().getDrawable(mCursorDrawableRes);
             drawables[0].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
             drawables[1].setColorFilter(getBrandPrimaryCtaColor(), PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);

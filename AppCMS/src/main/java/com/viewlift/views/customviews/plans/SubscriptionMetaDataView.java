@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -266,8 +267,9 @@ public class SubscriptionMetaDataView extends LinearLayout {
                         componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
                         ((TextView) componentView).setVerticalScrollBarEnabled(true);
-                        ((TextView) componentView).setMaxLines(8);
+                        ((TextView) componentView).setMaxLines(4);
                         ((TextView) componentView).setMovementMethod(new ScrollingMovementMethod());
+                        ((TextView) componentView).setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
 
                         if (!TextUtils.isEmpty(featureDetail.getValue()) &&
                                 featureDetail.getValue().equalsIgnoreCase("true")) {
