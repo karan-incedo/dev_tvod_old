@@ -233,6 +233,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                         if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                             return;
                         }
+                        appCMSPresenter.setShowDatum(data);
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();

@@ -456,7 +456,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         // NO-OP - Play is not implemented here
                     }
                 };
-            }else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
@@ -545,6 +545,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
+                                appCMSPresenter.setPlaySource("");
+                                if (moduleAPI.getContentData().get(0).getGist().getContentType().contains("SERIES"))
+                                    appCMSPresenter.setPlaySource(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                else
+                                    appCMSPresenter.setPlaySource(moduleAPI.getTitle());
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
                                 String action = videoAction;
@@ -574,6 +579,26 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
+                                }
+                                if (action.contains(videoAction) && data.getGist() != null &&
+                                        data.getGist().getMediaType() != null &&
+                                        !data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                        data.getGist().getContentType() != null &&
+                                        !data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase()) &&
+                                        !data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+                                } else if (data.getGist() != null &&
+                                        data.getGist().getMediaType() != null &&
+                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                        data.getGist().getContentType() != null &&
+                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Music");
+                                } else if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Playlist Screen - " + data.getGist().getTitle());
+                                }
+                                if (action.contains("watchVideo") && moduleAPI.getTitle().contains("Continue Watching")) {
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Home Page");
                                 }
                                 /*get audio details on tray click item and play song*/
                                 if (data.getGist() != null &&
