@@ -240,7 +240,10 @@ public class CleverTapSDK {
     public void sendEventDownloadComplete(ContentDatum contentDatum) {
         HashMap<String, Object> downloadEvent = playKeys(contentDatum);
         downloadEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
-        if (contentDatum.getGist().getMediaType().contains(appCMSPresenter.getCurrentContext().getResources().getString(R.string.media_type_episode))) {
+        if (contentDatum != null &&
+                contentDatum.getGist() != null &&
+                contentDatum.getGist().getMediaType() != null &&
+                contentDatum.getGist().getMediaType().contains(appCMSPresenter.getCurrentContext().getResources().getString(R.string.media_type_episode))) {
             downloadEvent.put(KEY_EPISODE_NUMBER, contentDatum.getGist().getEpisodeNum());
             downloadEvent.put(KEY_SEASON_NUMBER, contentDatum.getGist().getSeasonNum());
             downloadEvent.put(KEY_SHOW_NAME, contentDatum.getGist().getShowName());

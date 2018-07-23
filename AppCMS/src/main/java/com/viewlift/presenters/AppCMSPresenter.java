@@ -2262,6 +2262,9 @@ public class AppCMSPresenter {
                                               List<String> relateVideoIds) {
         boolean result = false;
         boolean isVideoOffline = false;
+        if (videoPlayerView != null ){
+                videoPlayerView.pausePlayer();
+        }
 
         try {
             isVideoOffline = Boolean.parseBoolean(extraData != null && extraData.length > 2 ? extraData[3] : "false");

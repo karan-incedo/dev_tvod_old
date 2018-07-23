@@ -87,8 +87,7 @@ import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
 
 
-public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlayerView.OnBeaconAdsEvent,
-        VideoPlayerView.StreamingQualitySelector {
+public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlayerView.OnBeaconAdsEvent{
 
     private static final String TAG = CustomVideoPlayerView.class.getSimpleName();
     private Context mContext;
@@ -182,10 +181,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     public boolean hideMiniPlayer = false;
     private int entitlementCheckMultiplier = 0;
 
-    private Map<String, String> availableStreamingQualityMap;
-    private List<String> availableStreamingQualities;
-
-
     public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context, appCMSPresenter);
         mContext = context;
@@ -212,7 +207,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
-        setStreamingQualitySelector(this);
+       // setStreamingQualitySelector(this);
 
         setOnBeaconAdsEvent(this);
         beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
@@ -242,18 +237,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         return videoDataId;
     }
 
-    /*  public void setupAds() {
-          sdkFactory = ImaSdkFactory.getInstance();
-          adsLoader = sdkFactory.createAdsLoader(getContext());
-          adsLoader.addAdErrorListener(this);
-          adsLoader.addAdsLoadedListener(adsManagerLoadedEvent -> {
-              adsManager = adsManagerLoadedEvent.getAdsManager();
-              adsManager.addAdErrorListener(this);
-              adsManager.addAdEventListener(this);
-              adsManager.init();
-          });
-      }
-  */
+
     public void setVideoUri(String videoId, int resIdMessage) {
         showOverlayWhenCastingConnected();
         hideRestrictedMessage();
@@ -288,8 +272,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                             if (beaconMessageThread != null) {
                                 beaconMessageThread.setContentDatum(onUpdatedContentDatum);
                             }
-                            initializeStreamingQualityValues(onUpdatedContentDatum.getStreamingInfo().getVideoAssets());
-
                             getPermalink(contentDatum);
                             setWatchedTime(contentDatum);
                             if (contentDatum != null &&
@@ -623,7 +605,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        manageStreamingQuality(playbackState);
+        //manageStreamingQuality(playbackState);
         if (beaconMessageThread != null) {
             beaconMessageThread.playbackState = playbackState;
         }
@@ -667,9 +649,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                 } else {
                     showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
-                /*if (shouldRequestAds && adsLoader != null) {
-                    adsLoader.contentComplete();
-                }*/
 
                 if (!isTrailer && 30 <= (getCurrentPosition() / 1000) && !isLiveStream) {
                     appCMSPresenter.updateWatchedTime(videoDataId,
@@ -871,122 +850,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onDownstreamFormatChanged(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, MediaLoadData mediaLoadData) {
 
-    }
-
-
-    @Override
-    public List<String> getAvailableStreamingQualities() {
-        if (availableStreamingQualities != null) {
-            return availableStreamingQualities;
-        }
-        return new ArrayList<>();
-    }
-
-    @Override
-    public String getVideoUrl() {
-        return null;
-    }
-
-    @Override
-    public String getStreamingQualityUrl(String streamingQuality) {
-        if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
-            return availableStreamingQualityMap.get(streamingQuality);
-        }
-        return null;
-    }
-
-    @Override
-    public String getMpegResolutionFromUrl(String mpegUrl) {
-        if (mpegUrl != null) {
-            int mpegIndex = mpegUrl.indexOf(".mp4");
-            if (0 < mpegIndex) {
-                int startIndex = mpegUrl.substring(0, mpegIndex).lastIndexOf("/");
-                if (0 <= startIndex && startIndex < mpegIndex) {
-                    return mpegUrl.substring(startIndex + 1, mpegIndex);
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public int getMpegResolutionIndexFromUrl(String mpegUrl) {
-        if (!TextUtils.isEmpty(mpegUrl)) {
-            String mpegUrlWithoutCdn = mpegUrl;
-            int mp4Index = mpegUrl.indexOf(".mp4");
-            if (0 <= mp4Index) {
-                mpegUrlWithoutCdn = mpegUrl.substring(0, mp4Index);
-            }
-            List<String> availableStreamingQualities = getAvailableStreamingQualities();
-            if (availableStreamingQualities != null) {
-                for (int i = 0; i < availableStreamingQualities.size(); i++) {
-                    String availableStreamingQuality = availableStreamingQualities.get(i);
-                    if (!TextUtils.isEmpty(availableStreamingQuality)) {
-
-                        if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
-                                availableStreamingQualityMap.get(availableStreamingQuality).contains(mpegUrlWithoutCdn)) {
-                            return i;
-                        }
-                    }
-                }
-            }
-        }
-
-        return availableStreamingQualities.size() - 1;
-    }
-
-    @Override
-    public String getFilmId() {
-        return videoDataId;
-    }
-
-    private void initializeStreamingQualityValues(VideoAssets videoAssets) {
-        if (availableStreamingQualityMap == null) {
-            availableStreamingQualityMap = new HashMap<>();
-        } else {
-            availableStreamingQualityMap.clear();
-        }
-        if (availableStreamingQualities == null) {
-            availableStreamingQualities = new ArrayList<>();
-        } else {
-            availableStreamingQualities.clear();
-        }
-        if (videoAssets != null && videoAssets.getMpeg() != null) {
-            List<Mpeg> availableMpegs = videoAssets.getMpeg();
-            int numAvailableMpegs = availableMpegs.size();
-            for (int i = 0; i < numAvailableMpegs; i++) {
-                Mpeg availableMpeg = availableMpegs.get(i);
-                String resolution = null;
-                if (!TextUtils.isEmpty(availableMpeg.getRenditionValue())) {
-                    resolution = availableMpeg.getRenditionValue().replace("_", "");
-                } else {
-                    String mpegUrl = availableMpeg.getUrl();
-                    if (!TextUtils.isEmpty(mpegUrl)) {
-                        resolution = getMpegResolutionFromUrl(mpegUrl);
-                    }
-                }
-                if (!TextUtils.isEmpty(resolution)) {
-                    availableStreamingQualities.add(resolution);
-                    availableStreamingQualityMap.put(resolution, availableMpeg.getUrl());
-                }
-            }
-        }
-
-        Collections.sort(availableStreamingQualities, (q1, q2) -> {
-            int i1 = Integer.valueOf(q1.replace("p", ""));
-            int i2 = Integer.valueOf(q2.replace("p", ""));
-            if (i2 < i1) {
-                return -1;
-            } else if (i1 == i2) {
-                return 0;
-            } else {
-                return 1;
-            }
-        });
-        int numStreamingQualities = availableStreamingQualities.size();
-        for (int i = 0; i < numStreamingQualities; i++) {
-            availableStreamingQualities.set(i, availableStreamingQualities.get(i));
-        }
     }
 
     class ForegroundObserver extends AsyncTask<Context, Void, Boolean> {
@@ -1420,108 +1283,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
     }
 
-    /* private void requestAds(String adTagUrl) {
-         pausePlayer();
-         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
-             Log.d(TAG, "Requesting ads: " + adTagUrl);
-             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
-             adDisplayContainer.setAdContainer(this);
-
-             AdsRequest request = sdkFactory.createAdsRequest();
-             request.setAdTagUrl(adTagUrl);
-             request.setAdDisplayContainer(adDisplayContainer);
-
-             adsLoader.requestAds(request);
-             apod += 1;
-             isAdsDisplaying = true;
-
-             if (appCMSPresenter != null) {
-                 appCMSPresenter.sendBeaconMessage(videoDataId,
-                         permaLink,
-                         parentScreenName,
-                         getCurrentPosition(),
-                         false,
-                         AppCMSPresenter.BeaconEvent.AD_REQUEST,
-                         "Video",
-                         getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                         String.valueOf(getVideoHeight()),
-                         String.valueOf(getVideoWidth()),
-                         mStreamId,
-                         0d,
-                         apod,
-                         isVideoDownloaded);
-             }
-         }
-     }
-
-     @Override
-     public void onAdError(AdErrorEvent adErrorEvent) {
-         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
-         isAdError = true;
-         isTimerRun = true;
-         if (appCMSPresenter != null && appCMSPresenter.getCurrentPageName() != null &&
-                 appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
-             playVideos(0, onUpdatedContentDatum);
-         }
-
-
-     }
-
-     @Override
-     public void onAdEvent(AdEvent adEvent) {
-         Log.i(TAG, "onAdEvent: " + adEvent.getType());
-         switch (adEvent.getType()) {
-             case LOADED:
-                 if (adsManager != null) {
-                     adsManager.start();
-                     isAdsDisplaying = true;
-                 }
-                 break;
-
-             case CONTENT_PAUSE_REQUESTED:
-                 isTimerRun = false;
-                 isAdDisplayed = true;
-                 if (beaconMessageThread != null) {
-                     beaconMessageThread.sendBeaconPing = false;
-                 }
-                 if (appCMSPresenter != null) {
-                     sendAdRequest();
-                     appCMSPresenter.sendBeaconMessage(videoDataId,
-                             permaLink,
-                             parentScreenName,
-                             getCurrentPosition(),
-                             false,
-                             AppCMSPresenter.BeaconEvent.AD_IMPRESSION,
-                             "Video",
-                             getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                             String.valueOf(getVideoHeight()),
-                             String.valueOf(getVideoWidth()),
-                             mStreamId,
-                             0d,
-                             apod,
-                             isVideoDownloaded);
-                 }
-                 pausePlayer();
-                 break;
-
-             case CONTENT_RESUME_REQUESTED:
-                 //isAdDisplayed = false;
-                 break;
-
-             case ALL_ADS_COMPLETED:
-                 isTimerRun = true;
-                 if (adsManager != null) {
-                     adsManager.destroy();
-                     adsManager = null;
-                 }
-                 isAdsDisplaying = false;
-                 playVideos(0, onUpdatedContentDatum);
-                 break;
-             default:
-                 break;
-         }
-     }
- */
     public void setFirebaseProgressHandling() {
         mProgressHandler = new Handler();
         mProgressRunnable = new Runnable() {
@@ -1638,6 +1399,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         String errorString = null;
+        e.printStackTrace();
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
             updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
