@@ -9,11 +9,11 @@ import java.io.Serializable;
 @UseStag
 public class Language implements Serializable,BaseInterface {
 
-    @SerializedName("languageCode")
+    @SerializedName("code")
     @Expose
     String languageCode;
 
-    @SerializedName("languageName")
+    @SerializedName("name")
     @Expose
     String languageName;
 
@@ -35,4 +35,21 @@ public class Language implements Serializable,BaseInterface {
     }
 
 
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if(obj != null && obj instanceof Language){
+            isEqual = ((Language) obj).languageCode.equalsIgnoreCase(this.getLanguageCode());
+        }
+        return isEqual;
+    }
+
+    public ContentDatum convertToContentDatum(){
+        ContentDatum contentDatum = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setTitle(languageName);
+        gist.setDataId(languageCode);
+        contentDatum.setGist(gist);
+        return contentDatum;
+    }
 }

@@ -354,7 +354,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                 if (cc.getUrl() != null) {
                     if ((cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("srt")) ||
+                            "srt".equalsIgnoreCase(cc.getFormat())) ||
                             cc.getUrl().toLowerCase().contains("srt")) {
                         closedCaptionUrl = cc.getUrl();
                     }
@@ -722,14 +722,50 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         // Making sure video is always played in Landscape
         appCMSPresenter.restrictLandscapeOnly();
     }
-
     @Override
     public List<ClosedCaptions> getAvailableClosedCaptions() {
-        return null;
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        if (binder != null
+                && binder.getContentData() != null
+                && binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+            if (closedCaptions != null) {
+                for (ClosedCaptions captions : closedCaptions) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
+                        closedCaptionsList.add(captions);
+                    }
+                }
+            }
+        }
+
+        return closedCaptionsList;
     }
 
     @Override
     public String getSubtitleLanguageFromIndex(int index) {
-        return null;
+        String language = null;
+
+        if (binder != null
+                && binder.getContentData() != null
+                && binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+            List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+            if (closedCaptions != null) {
+                for (ClosedCaptions captions : closedCaptions) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
+                        closedCaptionsList.add(captions);
+                    }
+                }
+            }
+
+            if (!closedCaptionsList.isEmpty()) {
+                language = closedCaptionsList.get(index).getLanguage();
+            }
+        }
+        return language;
     }
 }

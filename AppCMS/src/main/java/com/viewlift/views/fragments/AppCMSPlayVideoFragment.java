@@ -146,6 +146,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private boolean sentBeaconFirstFrame;
 
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
+    private VideoPlayerView.ClosedCaptionSelector closedCaptionSelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -258,6 +259,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         if (context instanceof VideoPlayerView.StreamingQualitySelector) {
             streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
+        }
+        if (context instanceof VideoPlayerView.ClosedCaptionSelector) {
+            closedCaptionSelector = (VideoPlayerView.ClosedCaptionSelector) context;
         }
         if (context instanceof RegisterOnResumeVideo) {
             ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
@@ -393,8 +397,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
         }
 
-        if (streamingQualitySelector != null) {
-            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        if (closedCaptionSelector != null) {
+            videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
         }
 
         if (!TextUtils.isEmpty(policyCookie) &&
@@ -786,16 +790,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
-        if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
-            videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                            ? View.VISIBLE
-                            : View.GONE);
-            videoPlayerView.setUri(Uri.parse(hlsUrl),
-                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-            //Log.i(TAG, "Playing video: " + title);
-        }
+
+        videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+        videoPlayerView.getPlayerView().getSubtitleView()
+                .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                        ? View.VISIBLE
+                        : View.GONE);
+        videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
         appCMSPresenter.setShowNetworkConnectivity(false);

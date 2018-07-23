@@ -2,7 +2,6 @@ package com.viewlift.presenters;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -181,7 +180,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                     if (cc.getUrl() != null &&
                             !cc.getUrl().equalsIgnoreCase(downloadFilePrefix) &&
                             cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("SRT")) {
+                            "SRT".equalsIgnoreCase(cc.getFormat())) {
                         closedCaptionUrl = cc.getUrl();
                     }
                 }
@@ -829,9 +828,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                                         appCMSSignedURLResult.getKeyPairId());
 
                                 if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                                    videoPlayerView.setUri(Uri.parse(videoUrl),
-                                            !TextUtils.isEmpty(closedCaptionUrl) ?
-                                                    Uri.parse(closedCaptionUrl) : null);
+                                    videoPlayerView.preparePlayer();
                                     videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
                                             .getWatchedTime() * 1000L);
                                 }

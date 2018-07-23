@@ -46,7 +46,6 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 */
-
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
@@ -206,8 +205,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
         beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-       // setStreamingQualitySelector(this);
 
         setOnBeaconAdsEvent(this);
         beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
@@ -605,7 +602,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        //manageStreamingQuality(playbackState);
         if (beaconMessageThread != null) {
             beaconMessageThread.playbackState = playbackState;
         }
