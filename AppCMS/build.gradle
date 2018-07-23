@@ -394,7 +394,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
     implementation "com.github.akarnokd:rxjava2-interop:$rootProject.ext.rxjavainterop"
-    implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+  //  implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
 
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
@@ -439,6 +439,7 @@ dependencies {
     mobileImplementation "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation project(':exoplayer-library')
     implementation project(':exoplayer-library-ui')
+    implementation project(':exoplayer-extension-ima')
     implementation project(':library')
 //    implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
