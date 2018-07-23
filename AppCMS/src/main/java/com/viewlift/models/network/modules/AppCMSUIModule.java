@@ -41,6 +41,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorCall;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorRest;
+import com.viewlift.models.network.rest.AppCMSLibraryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -225,6 +226,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_library_screen_key),
+                AppCMSUIKeyType.ANDROID_LIBRARY_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_library_navigation_title),
+                AppCMSUIKeyType.ANDROID_LIBRARY_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
 
@@ -1552,6 +1558,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSRosterRest providesAppCMSRostRest(Retrofit retrofit) {
         return retrofit.create(AppCMSRosterRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSLibraryRest providesAppCMSLibraryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSLibraryRest.class);
     }
     @Provides
     @Singleton

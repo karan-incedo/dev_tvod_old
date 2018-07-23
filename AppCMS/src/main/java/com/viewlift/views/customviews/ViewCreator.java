@@ -1920,12 +1920,12 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
-                } /*else if (moduleInfo.getBlockName().contains("watchlist02")) {
+                } else if (moduleInfo.getBlockName().contains("library01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "library_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } *//*else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
+                } /*else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "roster.json"),
                             AppCMSPageUI.class);

@@ -81,6 +81,7 @@
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
     <string name="app_cms_roster_data_page_api_url">%1$s/search/v2/list?site=%2$s&amp;type=%3$s</string>
+    <string name="app_cms_library_data_page_api_url">%1$s/transaction/getData?site=%2$s&amp;userId=%3$s</string>
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
@@ -497,6 +498,7 @@
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_achedule_screen_key">My Watchlist</string>
+    <string name="app_cms_pagename_my_library_screen_key">My Library</string>
 
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>

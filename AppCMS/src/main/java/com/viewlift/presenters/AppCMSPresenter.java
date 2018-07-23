@@ -129,6 +129,7 @@ import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
 import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
+import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
@@ -243,6 +244,7 @@ import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
+import com.viewlift.models.network.rest.AppCMSLibraryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -558,6 +560,7 @@ public class AppCMSPresenter {
     private final AppCMSPhotoGalleryCall appCMSPhotoGalleryCall;
     private final AppCMSScheduleCall appCMSScheduleCall;
     private final AppCMSRosterCall appCMSRosterCall;
+    private final AppCMSLibraryCall appCMSLibraryCall;
 
     //private final AppCMSCCAvenueCall appCMSCCAvenueCall;
     //private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
@@ -931,6 +934,7 @@ public class AppCMSPresenter {
                            AppCMSPhotoGalleryCall appCMSPhotoGalleryCall,
                            AppCMSScheduleCall appCMSScheduleCall,
                            AppCMSRosterCall appCMSRosterCall,
+                           AppCMSLibraryCall appCMSLibraryCall,
 
                            AppCMSPlaylistCall appCMSPlaylistCall,
                            AppCMSTeamStandingCall appCMSTeamStadingtCall,
@@ -996,6 +1000,7 @@ public class AppCMSPresenter {
         this.appCMSTeamRoasterCall = appCMSTeamRoasterCall;
         this.appCMSEventArchieveCall = appCMSEventArchieveCall;
         this.appCMSRosterCall = appCMSRosterCall;
+        this.appCMSLibraryCall = appCMSLibraryCall;
 
         this.appCMSSSLCommerzInitiateCall = appCMSSSLCommerzInitiateCall;
         this.appCMSCCAvenueRSAKeyCall = appCMSCCAvenueRSAKeyCall;
@@ -8072,6 +8077,105 @@ public class AppCMSPresenter {
             }
         }
     }
+
+    public void navigateToLibraryPage(String pageId, String pageTitle,
+                                     boolean launchActivity) {
+        if (!isNetworkConnected()) {
+            openDownloadScreenForNetworkError(launchActivity,
+                    () -> navigateToLibraryPage(pageId, pageTitle, launchActivity));
+            return;
+        }
+
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            showLoader();
+
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
+            if (appCMSPageUI == null) {
+                MetaPage metaPage = pageIdToMetaPageMap.get(pageId);
+                if (metaPage != null) {
+                    getAppCMSPage(metaPage.getPageUI(),
+                            appCMSPageUIResult -> {
+                                if (appCMSPageUIResult != null && metaPage.getPageId() != null) {
+                                    navigationPages.put(metaPage.getPageId(), appCMSPageUIResult);
+                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                        actionToPageMap.put(action, appCMSPageUIResult);
+                                    }
+                                    navigateToLibraryPage(pageId, pageTitle, launchActivity);
+                                }
+                            },
+                            loadFromFile,
+                            false);
+                }
+            } else {
+                getLibraryPage(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        pageId, new AppCMSLibraryAPIAction<AppCMSLibraryResult>(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                pageId,
+                                pageId,
+                                pageTitle,
+                                pageId,
+                                launchActivity, null) {
+                            @Override
+                            public void call(AppCMSLibraryResult appCMSRosterResult) {
+                                if (appCMSRosterResult != null) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(this.pageId
+                                            + BaseView.isLandscape(currentActivity));
+
+//
+//                                    AppCMSPageAPI pageAPI = null;
+//                                    if (appCMSRosterResult != null) {
+//                                        pageAPI = convertRosterDataToAppCMSPageAPI(pageId, appCMSRosterResult);
+//
+//                                        //pageAPI = appCMSScheduleResult.get(0).convertToAppCMSPageAPI(schedulePage.getPageId());
+//                                    }
+//                                    navigationPageData.put(this.pageId, pageAPI);
+//
+//                                    final StringBuffer screenName = new StringBuffer();
+//                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
+//                                        screenName.append(this.pageTitle);
+//                                    }
+//
+//                                    Bundle args = getPageActivityBundle(currentActivity,
+//                                            this.appCMSPageUI,
+//                                            pageAPI,
+//                                            this.pageId,
+//                                            this.pageTitle,
+//                                            this.pagePath,
+//                                            screenName.toString(),
+//                                            loadFromFile,
+//                                            this.appbarPresent,
+//                                            this.fullscreenEnabled,
+//                                            this.navbarPresent,
+//                                            false,
+//                                            null,
+//                                            ExtraScreenType.NONE);
+//                                    if (args != null) {
+//                                        Intent pageIntent =
+//                                                new Intent(AppCMSPresenter
+//                                                        .PRESENTER_NAVIGATE_ACTION);
+//
+//                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+//                                                args);
+//                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+//                                        currentActivity.sendBroadcast(pageIntent);
+//                                    }
+                                    stopLoader();
+                                } else {
+                                    stopLoader();
+                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
+                                }
+                            }
+                        });
+            }
+        }
+    }
+
 
     public AppCMSPageAPI convertRosterDataToAppCMSPageAPI(String Id, List<AppCMSRosterResult> appCMSRosterResult) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -20104,6 +20208,35 @@ public class AppCMSPresenter {
             }
         }
     }
+    private void getLibraryPage(final String apiBaseUrl,
+                               final String siteId,
+                               String pageId,
+                               final AppCMSLibraryAPIAction rosterAPIAction) {
+        if (currentActivity != null) {
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        apiBaseUrl,
+                        getRefreshToken());
+
+
+                appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
+                    try {
+                        appCMSLibraryCall.call(
+                                currentActivity.getString(R.string.app_cms_library_data_page_api_url,
+                                        apiBaseUrl,
+                                        "hoichoi-tv",
+                                        "myUserTest"
+                                ),getAuthToken(), apikey,
+                                rosterAPIAction);
+
+                    } catch (IOException e) {
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
 
     private abstract static class AppCMSAPIAction<T> implements Action1<List<T>> {
         final boolean appbarPresent;
@@ -20127,6 +20260,41 @@ public class AppCMSPresenter {
                                 String pagePath,
                                 boolean launchActivity,
                                 Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
+
+    private abstract static class AppCMSLibraryAPIAction<T> implements Action1<T> {
+        final boolean appbarPresent;
+        final boolean fullscreenEnabled;
+        final boolean navbarPresent;
+        final AppCMSPageUI appCMSPageUI;
+        final String action;
+        final String pageId;
+        final String pageTitle;
+        final String pagePath;
+        final boolean launchActivity;
+        final Uri searchQuery;
+
+        AppCMSLibraryAPIAction(boolean appbarPresent,
+                        boolean fullscreenEnabled,
+                        boolean navbarPresent,
+                        AppCMSPageUI appCMSPageUI,
+                        String action,
+                        String pageId,
+                        String pageTitle,
+                        String pagePath,
+                        boolean launchActivity,
+                        Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;
