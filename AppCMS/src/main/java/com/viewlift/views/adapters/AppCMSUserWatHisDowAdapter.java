@@ -130,6 +130,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+//        for(int i=0;i<moduleAPI.getContentData().size();i++){
+//            if(moduleAPI.getContentData().get(i).getGist().getSubscriptionType()!=null && moduleAPI.getContentData().get(i).getGist().getSubscriptionType().equalsIgnoreCase("test")){
+//                moduleAPI.getContentData().remove(i);
+//            }
+//        }
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
             this.adapterData = moduleAPI.getContentData();
         } else {

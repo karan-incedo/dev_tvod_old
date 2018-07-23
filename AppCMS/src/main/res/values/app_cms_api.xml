@@ -322,6 +322,8 @@
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_history_module_key2">AC History 02</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_mylibrary_module_key">AC Library 01</string>
+
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
     <string name="app_cms_page_playlist_module_key">AC PlaylistDetail 01</string>
@@ -423,6 +425,8 @@
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
+    <string name="app_cms_page_expire_time_key">expiretime</string>
+
     <string name="app_cms_page_title_key">pageTitle</string>
     <string name="app_cms_page_api_show_title_key">showTitle</string>
     <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
