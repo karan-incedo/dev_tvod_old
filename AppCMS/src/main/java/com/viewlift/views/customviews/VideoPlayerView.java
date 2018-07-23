@@ -717,9 +717,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 ccToggleButton.setSelected(true);
 
                 /* -1 to offset the mock object*/
-                MappingTrackSelector.SelectionOverride override =
-                        new MappingTrackSelector.SelectionOverride(
-                                videoTrackSelectionFactory,
+                DefaultTrackSelector.SelectionOverride override =
+                        new DefaultTrackSelector.SelectionOverride(
                                 position - 1, 0);
                 trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
 
@@ -756,7 +755,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
             TrackGroup trackGroup = trackGroups.get(groupIndex);
             for (int trackIndex = 0; trackIndex < trackGroup.length; trackIndex++) {
-                MappingTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
+                DefaultTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
                 if (selectionOverride != null && selectionOverride.groupIndex == groupIndex && selectionOverride.containsTrack(trackIndex)) {
 //                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
 
@@ -775,7 +774,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
      */
     private void setSelectedCCTrack(int groupIndex) {
         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
-        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+        DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                 groupIndex, 0);
         trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
     }
@@ -826,7 +825,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 listViewAdapter.setItemClickListener(v -> {
                     try {
                         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
-                        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                        DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                                 listViewAdapter.getDownloadQualityPosition(), 0);
                         trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
