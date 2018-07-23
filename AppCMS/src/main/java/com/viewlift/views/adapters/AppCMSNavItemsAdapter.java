@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY;
-import static com.viewlift.views.customviews.DownloadModule.VIDEO_TAB;
+import static com.viewlift.views.customviews.download.DownloadModule.VIDEO_TAB;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -280,6 +280,30 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+
+                                case ANDROID_LIBRARY_NAV_KEY:
+                                case ANDROID_LIBRARY_SCREEN_KEY:
+                                    if (!appCMSPresenter.isNetworkConnected()) {
+                                        if (!appCMSPresenter.isUserLoggedIn()) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                                    appCMSPresenter::launchBlankPage,
+                                                    null);
+                                            return;
+                                        }
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                                true,
+                                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                        null, null, false),
+                                                null);
+                                        return;
+                                    }
+                                    appCMSPresenter.showLoadingDialog(true);
+                                    appCMSPresenter.navigateToLibraryPage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), false);
+                                    break;
+
+
 
                                 case ANDROID_HISTORY_NAV_KEY:
                                 case ANDROID_HISTORY_SCREEN_KEY:

@@ -59,24 +59,24 @@ public class DownloadVideoRealm extends RealmObject {
     public String songYear;
     private String playListName;
 
-    public long getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getSubscriptionType() {
-        return subscriptionType;
-    }
-
-    public void setSubscriptionType(String subscriptionType) {
-        this.subscriptionType = subscriptionType;
-    }
-
-    private long endDate;
-    private String subscriptionType;
+//    public long getEndDate() {
+//        return endDate;
+//    }
+//
+//    public void setEndDate(long endDate) {
+//        this.endDate = endDate;
+//    }
+//
+//    public String getSubscriptionType() {
+//        return subscriptionType;
+//    }
+//
+//    public void setSubscriptionType(String subscriptionType) {
+//        this.subscriptionType = subscriptionType;
+//    }
+//
+//    private long endDate;
+//    private String subscriptionType;
 
 
     public String getPlayListName() {
@@ -393,8 +393,8 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setPermalink(getPermalink());
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
-        gist.setEndDate(getEndDate());
-        gist.setSubscriptionType(getSubscriptionType());
+//        gist.setEndDate(getEndDate());
+//        gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 
         data.setGist(gist);
@@ -412,8 +412,8 @@ public class DownloadVideoRealm extends RealmObject {
         downloadVideoRealm.setSyncedWithServer(isSyncedWithServer);
         downloadVideoRealm.setVideoId_DM(getVideoId_DM());
         downloadVideoRealm.setVideoDuration(getVideoDuration());
-        downloadVideoRealm.setEndDate(1532772780000L);
-        downloadVideoRealm.setSubscriptionType("TEST");
+//        downloadVideoRealm.setEndDate(1532772780000L);
+//        downloadVideoRealm.setSubscriptionType("TEST");
         downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
         downloadVideoRealm.setVideoFileURL(getVideoFileURL());
         downloadVideoRealm.setVideoSize(getVideoSize());
