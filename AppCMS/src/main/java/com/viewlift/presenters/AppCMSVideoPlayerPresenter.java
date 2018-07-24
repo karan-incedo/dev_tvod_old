@@ -180,7 +180,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                     if (cc.getUrl() != null &&
                             !cc.getUrl().equalsIgnoreCase(downloadFilePrefix) &&
                             cc.getFormat() != null &&
-                            "SRT".equalsIgnoreCase(cc.getFormat())) {
+                            cc.getFormat().equalsIgnoreCase("SRT")) {
                         closedCaptionUrl = cc.getUrl();
                     }
                 }

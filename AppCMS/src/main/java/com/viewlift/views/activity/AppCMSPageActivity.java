@@ -3375,9 +3375,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() +" "+
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
                             appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length()+2,
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
                             content.length(), 0);
                     appCMSNavFreeTrialTool.setText(content);
                 }

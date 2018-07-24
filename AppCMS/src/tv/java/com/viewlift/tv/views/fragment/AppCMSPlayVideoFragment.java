@@ -143,7 +143,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String keyPairIdCookie;
     private ContentDatum contentDatum;
     private boolean playWhenReady = true;
-    int playedVideoSecs = 0;
+
     public VideoPlayerView getVideoPlayerView() {
         return videoPlayerView;
     }
@@ -592,7 +592,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
 
             final int maxPreviewSecs = entitlementCheckMultiplier * 60;
-
             final boolean[] isSubscribe = {false};
 
             boolean finalIsPerVideo = isPerVideo;
@@ -612,7 +611,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                             secsViewed = (int) (appCMSPresenter.getUserFreePlayTimePreference() / 1000);
                                         }
                                         Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
-                                        if ((maxPreviewSecs < secsViewed || maxPreviewSecs < playedVideoSecs) && !isSubscribe[0]) {
+                                        if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
 
                                             if (getActivity() != null) {
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -722,9 +721,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                             }
                                             entitlementCheckCancelled = true;
                                         }
-
                                     }
-                                    playedVideoSecs++;
                                     if (!finalIsPerVideo && null != videoPlayerView && null != videoPlayerView.getPlayer() &&
                                             videoPlayerView.getPlayer().getPlayWhenReady()) {
                                         /*if perVideo is false and the player is not playing*/

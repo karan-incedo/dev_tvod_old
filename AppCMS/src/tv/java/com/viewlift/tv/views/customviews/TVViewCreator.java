@@ -301,16 +301,12 @@ public class TVViewCreator {
                         });
             }
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
-           /* if(module.getBlockName().equalsIgnoreCase("userManagement01")){
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+            if(module.getBlockName().equalsIgnoreCase("userManagement01")){
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
             if(module.getBlockName().equalsIgnoreCase("userManagement02")){
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings_sports.json"), ModuleList.class);
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings_sports.json"), ModuleList.class);
             }
-
-            if(module.getBlockName().equalsIgnoreCase("languageSettings01")){
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
-            }*/
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -792,7 +788,7 @@ public class TVViewCreator {
                         moduleAPI);
                 ((RecyclerView) componentViewResult.componentView)
                         .setAdapter(appCMSTVTrayItemAdapter);
-                 componentViewResult.onInternalEvent = appCMSTVTrayItemAdapter;
+                componentViewResult.onInternalEvent = appCMSTVTrayItemAdapter;
                 break;
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
@@ -1653,9 +1649,7 @@ public class TVViewCreator {
                             break;
 
                         case CONTACT_US_EMAIL_LABEL:
-                            if (!TextUtils.isEmpty(component.getText())
-                                    && appCMSPresenter.getAppCMSMain() != null
-                                    && appCMSPresenter.getAppCMSMain().getCustomerService() != null) {
+                            if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText() + " "
                                         + appCMSPresenter.getAppCMSMain().getCustomerService().getEmail());
                             }
@@ -1663,22 +1657,13 @@ public class TVViewCreator {
 
                         case CONTACT_US_PHONE_LABEL:
                             if (!TextUtils.isEmpty(component.getText())) {
-                                String phone = "";
-                                String phoneNumber = "";
-                                String text = "";
-                                if (null != appCMSPresenter.getAppCMSMain()
-                                        && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
-                                    phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                                String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                                if(TextUtils.isEmpty(phone)){
                                     phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                                 }
-                                if(TextUtils.isEmpty(phoneNumber)){
-                                    text = phone;
-                                } else {
-                                    text = phoneNumber;
-                                }
-                                if (!TextUtils.isEmpty(text)) {
+                                if (!TextUtils.isEmpty(phone)) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText() + " "
-                                            + text);
+                                            + phone);
                                 } else {
                                     componentViewResult.componentView.setVisibility(View.GONE);
                                 }
@@ -2361,20 +2346,11 @@ public class TVViewCreator {
                         break;
 
                     case CONTACT_US_PHONE_IMAGE:
-                        String phone = "";
-                        String phoneNumber = "";
-                        String text = "";
-                        if (null != appCMSPresenter.getAppCMSMain()
-                                && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
-                            phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                        String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                        if(TextUtils.isEmpty(phone)){
                             phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                         }
-                        if(TextUtils.isEmpty(phoneNumber)){
-                            text = phone;
-                        } else {
-                            text = phoneNumber;
-                        }
-                        if (!TextUtils.isEmpty(text)) {
+                        if (!TextUtils.isEmpty(phone)) {
                             componentViewResult.componentView.setBackgroundResource(R.drawable.call_icon);
                         } else {
                             componentViewResult.componentView.setVisibility(View.GONE);

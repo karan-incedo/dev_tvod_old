@@ -28,7 +28,6 @@
     <item name="edittext_password" type="id"/>
     <item name="submit_login_btn" type="id"/>
     <item name="custom_exo_controller" type="id"/>
-    <item name="exo_subtitles" type="id"/>
     <item name="tv_recycler_view" type="id">tv_recycler_view</item>
     <item name="subscription_text" type="id">subscription_text</item>
     <item name="exo_media_controller" type="id"/>
