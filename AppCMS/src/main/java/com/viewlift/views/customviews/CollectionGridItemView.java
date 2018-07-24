@@ -639,6 +639,38 @@ public class CollectionGridItemView extends BaseView {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     } else if (data != null && data.getGist() != null &&
+                                data.getGist().getImageGist() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
+                        if (childViewWidth < childViewHeight &&
+                                data.getGist().getImageGist().get_3x4() != null &&
+                                data.getGist().getBadgeImages().get_3x4() != null &&
+                                componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                                0 < childViewWidth &&
+                                0 < childViewHeight) {
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_3x4(),
+                                    childViewWidth,
+                                    childViewHeight);
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight)
+                                        .fitCenter()
+                                        .placeholder(placeholder);
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            }
+                        }
+                        view.setVisibility(VISIBLE);
+                        bringToFront = true;
+                    }else if (data != null && data.getGist() != null &&
                             data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
@@ -752,7 +784,7 @@ public class CollectionGridItemView extends BaseView {
                                 .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                    } else if (data.getGist().getLandscapeImageUrl() != null) {
+                    } else if (data!=null && data.getGist()!=null && data.getGist().getLandscapeImageUrl() != null) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getLandscapeImageUrl(),
                                 childViewWidth,

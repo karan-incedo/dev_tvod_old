@@ -6617,6 +6617,8 @@ public class ViewCreator {
                     case PAGE_GAME_DETAIL_MODULE_KEY:
                     case PAGE_PERSON_DETAIL_MODULE_KEY:
                     case PAGE_AC_ROSTER_MODULE_KEY:
+                    case PAGE_MYLIBRARY_01_MODULE_KEY:
+
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {

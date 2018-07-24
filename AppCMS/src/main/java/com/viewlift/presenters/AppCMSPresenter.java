@@ -8121,54 +8121,52 @@ public class AppCMSPresenter {
                                 pageId,
                                 launchActivity, null) {
                             @Override
-                            public void call(AppCMSLibraryResult appCMSRosterResult) {
-                                if (appCMSRosterResult != null) {
+                            public void call(AppCMSLibraryResult appCMSLibraryResult) {
+                                if (appCMSLibraryResult != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
 
 //
-//                                    AppCMSPageAPI pageAPI = null;
-//                                    if (appCMSRosterResult != null) {
-//                                        pageAPI = convertRosterDataToAppCMSPageAPI(pageId, appCMSRosterResult);
-//
-//                                        //pageAPI = appCMSScheduleResult.get(0).convertToAppCMSPageAPI(schedulePage.getPageId());
-//                                    }
-//                                    navigationPageData.put(this.pageId, pageAPI);
-//
-//                                    final StringBuffer screenName = new StringBuffer();
-//                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
-//                                        screenName.append(this.pageTitle);
-//                                    }
-//
-//                                    Bundle args = getPageActivityBundle(currentActivity,
-//                                            this.appCMSPageUI,
-//                                            pageAPI,
-//                                            this.pageId,
-//                                            this.pageTitle,
-//                                            this.pagePath,
-//                                            screenName.toString(),
-//                                            loadFromFile,
-//                                            this.appbarPresent,
-//                                            this.fullscreenEnabled,
-//                                            this.navbarPresent,
-//                                            false,
-//                                            null,
-//                                            ExtraScreenType.NONE);
-//                                    if (args != null) {
-//                                        Intent pageIntent =
-//                                                new Intent(AppCMSPresenter
-//                                                        .PRESENTER_NAVIGATE_ACTION);
-//
-//                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-//                                                args);
-//                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-//                                        currentActivity.sendBroadcast(pageIntent);
-//                                    }
+                                    AppCMSPageAPI pageAPI = null;
+                                    if (appCMSLibraryResult != null) {
+                                        pageAPI = appCMSLibraryResult.convertToAppCMSPageAPI();
+
+                                    }
+                                    navigationPageData.put(this.pageId, pageAPI);
+
+                                    final StringBuffer screenName = new StringBuffer();
+                                    if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
+                                        screenName.append(this.pageTitle);
+                                    }
+
+                                    Bundle args = getPageActivityBundle(currentActivity,
+                                            this.appCMSPageUI,
+                                            pageAPI,
+                                            this.pageId,
+                                            this.pageTitle,
+                                            this.pagePath,
+                                            screenName.toString(),
+                                            loadFromFile,
+                                            this.appbarPresent,
+                                            this.fullscreenEnabled,
+                                            this.navbarPresent,
+                                            false,
+                                            null,
+                                            ExtraScreenType.NONE);
+                                    if (args != null) {
+                                        Intent pageIntent =
+                                                new Intent(AppCMSPresenter
+                                                        .PRESENTER_NAVIGATE_ACTION);
+
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        pageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                        currentActivity.sendBroadcast(pageIntent);
+                                    }
                                     stopLoader();
                                 } else {
                                     stopLoader();
-                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 }
                             }
                         });
