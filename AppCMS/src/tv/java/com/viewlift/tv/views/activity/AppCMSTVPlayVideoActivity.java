@@ -862,18 +862,14 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public List<ClosedCaptions> getAvailableClosedCaptions() {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+
         List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
 
-        if (binder != null
-                && binder.getContentData() != null
-                && binder.getContentData().getContentDetails() != null
-                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
-            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
-            if (closedCaptions != null) {
-                for (ClosedCaptions captions : closedCaptions) {
-                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
-                        closedCaptionsList.add(captions);
-                    }
+        if (closedCaptions != null) {
+            for (ClosedCaptions captions : closedCaptions) {
+                if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    closedCaptionsList.add(captions);
                 }
             }
         }
@@ -883,26 +879,20 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public String getSubtitleLanguageFromIndex(int index) {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
         String language = null;
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
 
-        if (binder != null
-                && binder.getContentData() != null
-                && binder.getContentData().getContentDetails() != null
-                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
-            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
-            List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
-
-            if (closedCaptions != null) {
-                for (ClosedCaptions captions : closedCaptions) {
-                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
-                        closedCaptionsList.add(captions);
-                    }
+        if (closedCaptions != null) {
+            for (ClosedCaptions captions : closedCaptions) {
+                if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    closedCaptionsList.add(captions);
                 }
             }
+        }
 
-            if (!closedCaptionsList.isEmpty()) {
-                language = closedCaptionsList.get(index).getLanguage();
-            }
+        if (!closedCaptionsList.isEmpty()) {
+            language = closedCaptionsList.get(index).getLanguage();
         }
         return language;
     }

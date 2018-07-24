@@ -80,8 +80,8 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         String backGroundColor = appCMSPresenter.getAppBackgroundColor();
         String focusColor = Utils.getFocusColor(getActivity(),appCMSPresenter);
 
-        errorTextView.setTextColor(Color.parseColor(textColor != null ? textColor : "#FFFFFF"));
-        headerView.setTextColor(Color.parseColor(textColor != null ? textColor : "#FFFFFF"));
+        errorTextView.setTextColor(Color.parseColor(textColor));
+        headerView.setTextColor(Color.parseColor(textColor));
 
         Button btnClose = (Button) view.findViewById(R.id.btn_close);
         Component btnComponent1 = new Component();
@@ -89,10 +89,10 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         btnComponent1.setFontWeight(getString(R.string.app_cms_page_font_semibold_key));
         btnComponent1.setBorderColor("#ffffff");
         btnComponent1.setBorderWidth(4);
-        btnClose.setTextColor(Color.parseColor(textColor != null ? textColor : "#000000"));
+        btnClose.setTextColor(Color.parseColor(textColor));
 
         btnClose.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
-                Color.parseColor(focusColor != null ? focusColor : "#000000"),
+                Color.parseColor(focusColor),
                 btnComponent1 , appCMSPresenter));
 
         btnClose.setTypeface(Utils.getTypeFace(getActivity() ,appCMSPresenter.getJsonValueKeyMap(), btnComponent1));
@@ -114,10 +114,10 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
         btnRetryComp.setFontWeight(getString(R.string.app_cms_page_font_semibold_key));
         btnRetryComp.setBorderColor("#ffffff");
         btnRetryComp.setBorderWidth(4);
-        btnRetry.setTextColor(Color.parseColor(textColor != null ? textColor : "#FFFFFF"));
+        btnRetry.setTextColor(Color.parseColor(textColor));
 
         btnRetry.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
-                Color.parseColor(focusColor != null ? focusColor : "#000000"),
+                Color.parseColor(focusColor),
                 btnRetryComp,
                 appCMSPresenter));
 

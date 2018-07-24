@@ -2,7 +2,6 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Language;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -21,7 +19,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.utils.LocaleUtils;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
@@ -58,8 +55,6 @@ public class AppCMSTVTrayAdapter
     private TVCollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
     private List<OnInternalEvent> receivers;
-    int currentSelectedLanguageIndex = 0;
-
 
     public AppCMSTVTrayAdapter(Context context,
                                List<ContentDatum> adapterData,
@@ -106,23 +101,9 @@ public class AppCMSTVTrayAdapter
                     break;
             }
         }
-
-        if(viewType != null && viewType.equalsIgnoreCase(context.getResources().getString(R.string.languageSetting_module))){
-            ArrayList<Language> languageArrayList = appCMSPresenter.getLanguageArrayList();
-            currentSelectedLanguageIndex = languageArrayList.indexOf(appCMSPresenter.getLanguage());
-        }
         sortData();
     }
 
-    private RecyclerView recyclerView;
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        this.recyclerView = recyclerView;
-        if (viewType != null && viewType.equalsIgnoreCase(context.getResources().getString(R.string.languageSetting_module))) {
-            recyclerView.smoothScrollToPosition(currentSelectedLanguageIndex);
-        }
-    }
 
     public void setContentData(List<ContentDatum> adapterData) {
         this.adapterData = adapterData;
@@ -239,7 +220,7 @@ public class AppCMSTVTrayAdapter
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && adapterData != null && position < adapterData.size()) {
-            bindView(holder.componentView, adapterData.get(position), position , currentSelectedLanguageIndex);
+            bindView(holder.componentView, adapterData.get(position), position);
         }
     }
 
@@ -261,7 +242,7 @@ public class AppCMSTVTrayAdapter
     }
 
     protected void bindView(TVCollectionGridItemView itemView,
-                            final ContentDatum data, int position, int currentSelectedLanguageIndex) throws IllegalArgumentException {
+                            final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
             onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
                 @Override
@@ -363,16 +344,6 @@ public class AppCMSTVTrayAdapter
                 }
 
                 @Override
-                public void changeLanguage(Component childComponent, ContentDatum data) {
-                    Language language = new Language();
-                    language.setLanguageCode(data.getGist().getDataId());
-                    language.setLanguageName(data.getGist().getTitle());
-                    LocaleUtils.setLocale(appCMSPresenter.getCurrentContext(),language.getLanguageCode());
-                    appCMSPresenter.setLanguage(language);
-                    appCMSPresenter.navigateToHomePage();
-                }
-
-                @Override
                 public void notifyData() {
                     notifyDataSetChanged();
                 }
@@ -386,8 +357,7 @@ public class AppCMSTVTrayAdapter
                     jsonValueKeyMap,
                     onClickHandler,
                     viewTypeKey,
-                    position,
-                    currentSelectedLanguageIndex);
+                    position);
         }
     }
 
