@@ -638,7 +638,7 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
-                    } else if (data != null && data.getGist() != null &&
+                    } /*else if (data != null && data.getGist() != null &&
                                 data.getGist().getImageGist() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY &&
                             0 < childViewWidth &&
@@ -670,7 +670,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                         view.setVisibility(VISIBLE);
                         bringToFront = true;
-                    }else if (data != null && data.getGist() != null &&
+                    }*/else if (data != null && data.getGist() != null &&
                             data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&

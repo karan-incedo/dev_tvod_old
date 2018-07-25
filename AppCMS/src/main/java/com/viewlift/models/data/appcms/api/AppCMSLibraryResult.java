@@ -14,17 +14,17 @@ import java.util.List;
 @UseStag
 public class AppCMSLibraryResult {
 
-    public List<Videos> getVideos() {
+    public List<Gist> getVideos() {
         return videos;
     }
 
-    public void setVideos(List<Team> teams) {
+    public void setVideos(List<Gist> teams) {
         this.videos = videos;
     }
 
     @SerializedName("videos")
     @Expose
-    List<Videos> videos = null;
+    List<Gist> videos = null;
 
     @SerializedName("seasons")
     @Expose
@@ -65,26 +65,24 @@ public class AppCMSLibraryResult {
 //        data.add(contentDatum);
 
         if (getVideos() != null) {
-            for (Videos videos : getVideos()) {
+            for (Gist videos : getVideos()) {
                 ContentDatum contentDatum1=new ContentDatum();
-                Gist gistObj=new Gist();
-                gistObj.setId(videos.getId());
-                gistObj.setImageGist(videos.getImageGist());
-                gistObj.setTitle(videos.getTitle());
-                contentDatum1.setGist(gistObj);
-                contentDatum1.setVideoData(videos);
+//                Gist gistObj=new Gist();
+//                gistObj.setId(videos.getId());
+//                gistObj.setImageGist(videos.getImageGist());
+//                gistObj.setTitle(videos.getTitle());
+                contentDatum1.setGist(videos);
+//                contentDatum1.setVideoData(videos);
                 data.add(contentDatum1);
             }
-            for (Videos videos : getVideos()) {
+            for (Gist videos : getVideos()) {
                 ContentDatum contentDatum1=new ContentDatum();
-                Gist gistObj=new Gist();
-                gistObj.setId(videos.getId());
-                gistObj.setImageGist(videos.getImageGist());
-
-
-                gistObj.setTitle(videos.getTitle());
-                contentDatum1.setGist(gistObj);
-                contentDatum1.setVideoData(videos);
+//                Gist gistObj=new Gist();
+//                gistObj.setId(videos.getId());
+//                gistObj.setImageGist(videos.getImageGist());
+//                gistObj.setTitle(videos.getTitle());
+                contentDatum1.setGist(videos);
+//                contentDatum1.setVideoData(videos);
                 data.add(contentDatum1);
             }
         }

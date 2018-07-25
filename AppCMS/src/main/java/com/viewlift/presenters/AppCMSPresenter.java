@@ -8122,11 +8122,13 @@ public class AppCMSPresenter {
                                 launchActivity, null) {
                             @Override
                             public void call(AppCMSLibraryResult appCMSLibraryResult) {
-                                if (appCMSLibraryResult != null) {
+                                if (appCMSLibraryResult != null || appCMSLibraryResult == null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
-
+                                     appCMSLibraryResult = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentContext, "reponse_library.json"),
+                                            AppCMSLibraryResult.class);
 //
                                     AppCMSPageAPI pageAPI = null;
                                     if (appCMSLibraryResult != null) {

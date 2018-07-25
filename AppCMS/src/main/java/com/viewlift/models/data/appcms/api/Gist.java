@@ -11,6 +11,258 @@ import java.util.List;
 @UseStag
 public class Gist implements Serializable {
 
+
+    @SerializedName("purchaseStatus")
+    @Expose
+    private String purchaseStatus;
+
+
+    @SerializedName("contentId")
+    @Expose
+    private String contentId;
+
+
+    @SerializedName("transactionDateEpoch")
+    @Expose
+    private String transactionDateEpoch;
+
+    @SerializedName("userId")
+    @Expose
+    private String userId;
+
+
+    @SerializedName("videoId")
+    @Expose
+    private String videoId;
+
+    @SerializedName("seasonId")
+    @Expose
+    private String seasonId;
+
+    @SerializedName("paymentHandler")
+    @Expose
+    private String paymentHandler;
+
+    @SerializedName("siteOwner")
+    @Expose
+    private String siteOwner;
+
+
+    @SerializedName("gatewayChargeId")
+    @Expose
+    private String gatewayChargeId;
+
+    @SerializedName("site")
+    @Expose
+    private String site;
+
+    public String getPurchaseStatus() {
+        return purchaseStatus;
+    }
+
+    public void setPurchaseStatus(String purchaseStatus) {
+        this.purchaseStatus = purchaseStatus;
+    }
+
+    public String getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
+
+    public String getTransactionDateEpoch() {
+        return transactionDateEpoch;
+    }
+
+    public void setTransactionDateEpoch(String transactionDateEpoch) {
+        this.transactionDateEpoch = transactionDateEpoch;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getVideoId() {
+        return videoId;
+    }
+
+    public void setVideoId(String videoId) {
+        this.videoId = videoId;
+    }
+
+    public String getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(String seasonId) {
+        this.seasonId = seasonId;
+    }
+
+    public String getPaymentHandler() {
+        return paymentHandler;
+    }
+
+    public void setPaymentHandler(String paymentHandler) {
+        this.paymentHandler = paymentHandler;
+    }
+
+    public String getSiteOwner() {
+        return siteOwner;
+    }
+
+    public void setSiteOwner(String siteOwner) {
+        this.siteOwner = siteOwner;
+    }
+
+    public String getGatewayChargeId() {
+        return gatewayChargeId;
+    }
+
+    public void setGatewayChargeId(String gatewayChargeId) {
+        this.gatewayChargeId = gatewayChargeId;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public String getIsLiveStream() {
+        return isLiveStream;
+    }
+
+    public void setIsLiveStream(String isLiveStream) {
+        this.isLiveStream = isLiveStream;
+    }
+
+    public String getPurchaseType() {
+        return purchaseType;
+    }
+
+    public void setPurchaseType(String purchaseType) {
+        this.purchaseType = purchaseType;
+    }
+
+    public String getTransactionStartDate() {
+        return transactionStartDate;
+    }
+
+    public void setTransactionStartDate(String transactionStartDate) {
+        this.transactionStartDate = transactionStartDate;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getIsTrailer() {
+        return isTrailer;
+    }
+
+    public void setIsTrailer(String isTrailer) {
+        this.isTrailer = isTrailer;
+    }
+
+    public String getVideoQuality() {
+        return videoQuality;
+    }
+
+    public void setVideoQuality(String videoQuality) {
+        this.videoQuality = videoQuality;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    @SerializedName("platform")
+    @Expose
+    private String platform;
+
+
+    @SerializedName("currencyCode")
+    @Expose
+    private String currencyCode;
+
+
+    @SerializedName("isLiveStream")
+    @Expose
+    private String isLiveStream;
+
+    @SerializedName("purchaseType")
+    @Expose
+    private String purchaseType;
+
+    @SerializedName("transactionStartDate")
+    @Expose
+    private String transactionStartDate;
+
+    @SerializedName("countryCode")
+    @Expose
+    private String countryCode;
+
+    @SerializedName("isTrailer")
+    @Expose
+    private String isTrailer;
+
+
+    @SerializedName("videoQuality")
+    @Expose
+    private String videoQuality;
+
+
+    @SerializedName("siteId")
+    @Expose
+    private String siteId;
+
+
+    @SerializedName("seriesId")
+    @Expose
+    private String seriesId;
+
+
+
     boolean selectedPosition;
 
     @SerializedName("id")
