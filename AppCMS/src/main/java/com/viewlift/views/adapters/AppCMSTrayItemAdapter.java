@@ -13,7 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -50,13 +49,11 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
-
-import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,9 +64,12 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
+
+//import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 /*
  * Created by viewlift on 7/7/17.
@@ -152,9 +152,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.filmDownloadIconUpdatedMap = new HashMap<>();
 
         if (isDownload) {
-            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
+            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Observer<Object>(){
                 @Override
-                public void call(Object o) {
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(Object o) {
                     if (o instanceof Integer) {
                         if ((int) o == DownloadModule.VIDEO_TAB) {
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video)));
@@ -164,6 +169,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_audio)));
                         }
                     }
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
                 }
             });
         }
@@ -481,8 +496,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
             if (contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
-                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
-                holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
+               /* Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
+                holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);*/
+                holder.appCMSContinueWatchingDescription.setText(Html.fromHtml(contentDatum.getGist().getDescription()));
             }
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));

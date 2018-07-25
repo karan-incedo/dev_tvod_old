@@ -86,10 +86,10 @@ public class ToggleSwitchView extends TVBaseView {
                 if (isEnabled) {
                     isEnabled = false;
                     componentView.setImageResource(R.drawable.focused_off);
-                } else {
+                 } else {
                     isEnabled = true;
                     componentView.setImageResource(R.drawable.focused_on);
-                }
+                 }
                 ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent()
                         .appCMSPresenter().setAutoplayEnabledUserPref(mContext, isEnabled);
             });

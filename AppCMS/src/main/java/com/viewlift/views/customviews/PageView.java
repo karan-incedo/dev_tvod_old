@@ -55,6 +55,7 @@ public class PageView extends BaseView {
 
     private boolean ignoreScroll;
     private FrameLayout headerView;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -208,7 +209,7 @@ public class PageView extends BaseView {
                 LinearLayoutManager.VERTICAL,
                 false));
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
-        ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
+        ((RecyclerView) childrenContainer).addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -228,8 +229,19 @@ public class PageView extends BaseView {
                 }
 
                 ignoreScroll = false;
+
+                /*TabLayout tab = findViewById(R.id.sesaontab);
+                if (tab != null) {
+                    int[] location = new int[2];
+                    tab.getLocationOnScreen(location);
+                    int x = location[0];
+                    int y = location[1];
+                    Log.e("x", "" + x);
+                    Log.e("y", "" + y);
+                }*/
             }
         });
+
         mainView = new SwipeRefreshLayout(getContext());
         mainView.setId(R.id.fight_scroll_id);
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
@@ -316,7 +328,7 @@ public class PageView extends BaseView {
 
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
+            appCMSPageViewAdapter.notifyItemRangeChanged(1, appCMSPageViewAdapter.getItemCount());
         }
     }
 
@@ -337,6 +349,7 @@ public class PageView extends BaseView {
 
     public interface OnScrollChangeListener {
         void onScroll(int dx, int dy);
+
         void setCurrentPosition(int position);
     }
 
@@ -370,9 +383,9 @@ public class PageView extends BaseView {
         int height;
     }
 
-    public void addToHeaderView(View view){
+    public void addToHeaderView(View view) {
         headerView.addView(view);
-        if(headerView.getParent() == null){
+        if (headerView.getParent() == null) {
             addView(headerView);
             headerView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }

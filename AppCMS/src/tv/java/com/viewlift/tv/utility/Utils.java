@@ -859,32 +859,6 @@ public class Utils {
         return relatedVids;
     }
 
-    public static List<String> getRelatedVideosInShow2(List<Season_> season, int showNumber, int episodeNumber, String episodeId) {
-        List<String> relatedVids = new ArrayList<>();
-        boolean foundEpisode = false;
-        for (int i = showNumber; i < season.size(); i++) {
-            if (i == showNumber) {
-                for (int j = episodeNumber + 1; j < season.get(i).getEpisodes().size(); j++) {
-                    String episode = season.get(i).getEpisodes().get(j).getId();
-                    if (foundEpisode || episode.equalsIgnoreCase(episodeId)) {
-                        foundEpisode = true;
-                        relatedVids.add(episode);
-                    }
-                }
-            } else {
-                for (int j = 0; j < season.get(i).getEpisodes().size(); j++) {
-                    String episode = season.get(i).getEpisodes().get(j).getId();
-                    if (foundEpisode || episode.equalsIgnoreCase(episodeId)) {
-                        foundEpisode = true;
-                        relatedVids.add(episode);
-                    }
-                }
-            }
-        }
-        return relatedVids;
-    }
-
-
     public static String convertStringIntoCamelCase(String text) {
         try {
             String[] words = text.toString().split(" ");

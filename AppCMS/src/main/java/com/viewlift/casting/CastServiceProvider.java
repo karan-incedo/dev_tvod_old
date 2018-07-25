@@ -13,12 +13,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -281,7 +279,7 @@ public class CastServiceProvider {
                 mCastHelper.setCallBackListener(callBackCastHelper);
                 mCastHelper.setCastSessionManager();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -329,7 +327,11 @@ public class CastServiceProvider {
             }
 
             createMediaChooserDialog();
-            mCastHelper.setCastDiscovery();
+            try {
+                mCastHelper.setCastDiscovery();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
 
             if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
                 //Log.d(TAG, "This is a default route");
@@ -339,11 +341,15 @@ public class CastServiceProvider {
                 mCastHelper.isCastDeviceAvailable = true;
                 mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
             }
-       }/*else{
-
-           Log.i(TAG, "This device is not supported.");
-           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
-        }*/
+        }else{
+            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(appCMSPresenter.getCurrentActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            }
+//           Log.i(TAG, "This device is not supported.");
+//           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public boolean shouldCastMiniControllerVisible() {
@@ -424,7 +430,7 @@ public class CastServiceProvider {
     private void createMediaChooserDialog() {
         castChooserDialog = new CastChooserDialog(mActivity, callBackRokuMediaSelection);
         mCastHelper.routes.clear();
-        if (mCastHelper.mMediaRouter != null) {
+        if (mCastHelper.mMediaRouter != null&&mCastHelper.mMediaRouter.getRoutes() != null) {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 

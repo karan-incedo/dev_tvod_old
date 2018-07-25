@@ -57,6 +57,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
+        VideoPlayerView.ClosedCaptionSelector,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -86,6 +87,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
@@ -189,7 +192,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                 this::finish,
                                                 null);
                                     }
-                                });
+                                },null,false);
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_error_message),
@@ -592,6 +595,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public String getVideoUrl() {
+        return hlsUrl;
+    }
+
+    @Override
     public String getStreamingQualityUrl(String streamingQuality) {
         if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
             return availableStreamingQualityMap.get(streamingQuality);
@@ -637,6 +645,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
 
         return availableStreamingQualities.size() - 1;
+    }
+
+    @Override
+    public String getFilmId() {
+        return filmId;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
@@ -708,5 +721,42 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onConfigurationChanged(newConfig);
         // Making sure video is always played in Landscape
         appCMSPresenter.restrictLandscapeOnly();
+    }
+
+    @Override
+    public List<ClosedCaptions> getAvailableClosedCaptions() {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        if (closedCaptions != null) {
+            for (ClosedCaptions captions : closedCaptions) {
+                if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    closedCaptionsList.add(captions);
+                }
+            }
+        }
+
+        return closedCaptionsList;
+    }
+
+    @Override
+    public String getSubtitleLanguageFromIndex(int index) {
+        ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+        String language = null;
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+
+        if (closedCaptions != null) {
+            for (ClosedCaptions captions : closedCaptions) {
+                if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    closedCaptionsList.add(captions);
+                }
+            }
+        }
+
+        if (!closedCaptionsList.isEmpty()) {
+            language = closedCaptionsList.get(index).getLanguage();
+        }
+        return language;
     }
 }

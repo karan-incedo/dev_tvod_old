@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -20,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -229,7 +227,7 @@ public class CustomWebView extends AppCMSAdvancedWebView {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 appCMSPresenter.showLoadingDialog(false);
-
+                mFbLiveView=view;
                 view.requestLayout();
                 context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }

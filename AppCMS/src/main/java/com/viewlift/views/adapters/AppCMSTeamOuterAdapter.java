@@ -45,19 +45,15 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
-import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import rx.functions.Action1;
 
 import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
@@ -159,22 +155,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
         this.appCMSAndroidModules = appCMSAndroidModules;
         detectViewTypes(jsonValueKeyMap, viewType);
         sortData();
-        if (isDonwloadPage) {
-            DownloadTabSelectorBus.instanceOf().getSelectedTab().subscribe(new Action1<Object>() {
-                @Override
-                public void call(Object o) {
-                    if (o instanceof Integer) {
-                        if ((int) o == DownloadModule.VIDEO_TAB) {
-                            updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_video)));
-                        }
-                        if ((int) o == DownloadModule.AUDIO_TAB) {
 
-                            updateData(mRecyclerView, appCMSPresenter.getDownloadedMedia(context.getString(R.string.content_type_audio)));
-                        }
-                    }
-                }
-            });
-        }
     }
 
     @Override
@@ -212,7 +193,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
             if (isWatchlistPage || isDonwloadPage) {
                 sortByAddedDate();
             } else if (isHistoryPage) {
-                    sortByUpdateDate();
+                sortByUpdateDate();
             }
         }
     }
@@ -227,7 +208,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
             Collections.sort(adapterData, (o1, o2) -> Long.compare(Long.valueOf(o1.getGist().getUpdateDate()),
                     Long.valueOf(o2.getGist().getUpdateDate())));
             Collections.reverse(adapterData);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -267,16 +248,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
                 emptyView.setText(mContext.getString(R.string.empty_watchlist_message));
                 return new ViewHolder(emptyView);
             }
-            if (isDonwloadPage) {
-                if (appCMSPresenter.getDownloadTabSelected() == DownloadModule.VIDEO_TAB) {
-                    emptyView.setText(mContext.getString(R.string.empty_download_video_message));
-                }
-                if (appCMSPresenter.getDownloadTabSelected() == DownloadModule.AUDIO_TAB) {
-                    emptyView.setText(mContext.getString(R.string.empty_download_audio_message));
-                }
 
-                return new ViewHolder(emptyView);
-            }
         }
         return new ViewHolder(view);
     }
@@ -812,7 +784,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position);
+                    appCMSPresenter.getBrandPrimaryCtaColor(), appCMSPresenter, position, settings);
         }
     }
 
@@ -1031,7 +1003,7 @@ public class AppCMSTeamOuterAdapter extends RecyclerView.Adapter<AppCMSTeamOuter
                         }
                     }
                     mContext.startActivity(intent);
-                }else{
+                } else {
                     int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
                     if (apiAvailability.isUserResolvableError(resultCode)) {
                         apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)

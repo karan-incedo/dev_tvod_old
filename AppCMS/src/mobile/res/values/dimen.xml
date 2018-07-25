@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="constraint_guide_percent">.3</dimen>
+    <dimen name="constraint_guide_percent">.5</dimen>
 </resources>

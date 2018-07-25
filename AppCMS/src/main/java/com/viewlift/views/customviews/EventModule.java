@@ -9,14 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -24,8 +22,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.viewlift.Utils.loadJsonFromAssets;
 
 /**
  * Created by viewlift on 6/28/17.
@@ -97,11 +93,11 @@ public class EventModule extends ModuleView {
             scrollView.setFillViewport(true);
             scrollView.setDescendantFocusability(RecyclerView.FOCUS_BLOCK_DESCENDANTS);
 //
-            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "event_detail.json"),
-                    AppCMSPageUI.class);
-            ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
-//            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+//            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(context, "event_detail.json"),
+//                    AppCMSPageUI.class);
+//            ModuleWithComponents module = appCMSPageUI1.getModuleList().get(1);
+            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
 
             if (module == null) {
                 module = moduleInfo;

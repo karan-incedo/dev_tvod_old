@@ -52,7 +52,6 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
-import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
@@ -67,7 +66,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.glide.transformations.BlurTransformation;
-import rx.functions.Action0;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -418,6 +416,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         try {
             if (getActivity() != null
                     && MediaControllerCompat.getMediaController(getActivity()) != null
+                    && MediaControllerCompat.getMediaController(getActivity()).getMetadata() != null
                     && MediaControllerCompat.getMediaController(getActivity()).getTransportControls() != null) {
                 MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
                 MediaMetadataCompat metadata = MediaControllerCompat.getMediaController(getActivity()).getMetadata();

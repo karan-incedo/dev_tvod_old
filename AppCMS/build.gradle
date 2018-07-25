@@ -243,7 +243,7 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled false
+            minifyEnabled true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
@@ -273,6 +273,8 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Google_internal.gwt.xml'
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
     }
 
 
@@ -288,7 +290,6 @@ android {
     configurations.all {
         resolutionStrategy.force "com.android.support:design:$rootProject.ext.androidsupportVersion"
     }
-
 }
 afterEvaluate {
     if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
@@ -391,8 +392,9 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-guava:$rootProject.ext.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-java8:$rootProject.ext.retrofit2Version"
-    implementation "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
-    implementation "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxandroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
+    implementation "com.github.akarnokd:rxjava2-interop:$rootProject.ext.rxjavainterop"
     implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
@@ -431,14 +433,14 @@ dependencies {
     implementation project(':exoplayer-library')
     implementation project(':exoplayer-library-ui')
     implementation project(':library')
-    implementation project(':htmlspanner')
+//    implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation 'com.android.volley:volley:1.0.0'
+    implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
-    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
+
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
 }

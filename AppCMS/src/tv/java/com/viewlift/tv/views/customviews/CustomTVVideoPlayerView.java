@@ -335,7 +335,7 @@ public class CustomTVVideoPlayerView
                     playVideos(contentDatum);
                 }
             }
-        });
+        },null,false);
     }
 
 
@@ -1039,6 +1039,6 @@ public class CustomTVVideoPlayerView
 
                 setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
 
-            }});
+            }},null,false);
     }
 }

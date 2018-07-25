@@ -33,6 +33,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private String fullText;
     private boolean forceMaxLines;
     private final int moreForegroundColor;
+    private final int generalForegroundColor;
     private final boolean useItalics;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
@@ -41,6 +42,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                                               AppCMSPresenter appCMSPresenter,
                                               boolean forceMaxLines,
                                               int moreForegroundColor,
+                                              int generalForegroundColor,
                                               boolean useItalics) {
         this.textView = textView;
         this.title = title;
@@ -48,6 +50,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
         this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
         this.moreForegroundColor = moreForegroundColor;
+        this.generalForegroundColor = generalForegroundColor;
         this.useItalics = useItalics;
     }
 
@@ -73,6 +76,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     SpannableString spannableTextWithMore =
                             new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
                                     textView.getText().subSequence(0, lineEnd)));
+                    spannableTextWithMore.setSpan(new ForegroundColorSpan(generalForegroundColor), 0, lineEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     ClickableSpan clickableSpan = new ClickableSpan() {
                         @Override
                         public void onClick(View widget) {
