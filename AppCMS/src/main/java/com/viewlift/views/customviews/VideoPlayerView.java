@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.ads.interactivemedia.v3.api.AdEvent;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -49,6 +50,8 @@ import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -56,12 +59,16 @@ import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.ads.AdPlaybackState;
+import com.google.android.exoplayer2.source.ads.AdsLoader;
+import com.google.android.exoplayer2.source.ads.AdsMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
@@ -112,6 +119,7 @@ import rx.functions.Action1;
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
         MediaSourceEventListener, com.google.android.exoplayer2.video.VideoListener,
         VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener,
+        AdsMediaSource.EventListener,
         DefaultDrmSessionManager.EventListener {
     private static final String TAG = "VideoPlayerView";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
@@ -121,6 +129,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected SimpleExoPlayer player;
     protected AppCMSSimpleExoPlayerView playerView;
     boolean isLoadedNext;
+    OnBeaconAdsEvent onBeaconAdsEvent;
     DefaultTrackSelector trackSelector;
     private AppCMSPresenter appCMSPresenter;
     private ImageButton ccToggleButton;
@@ -248,7 +257,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.closedCaptionUri = closedCaptionUri;
        // adsLoader = new ImaAdsLoader(getContext(), Uri.parse(adsUrl));
         try {
-            player.prepare(buildMediaSource(videoUri, closedCaptionUri));
+            imaAdsLoader = null;
+            player.prepare(buildMediaSource(buildMediaSource(videoUri, closedCaptionUri), this.adsUrl));
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
@@ -708,9 +718,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 ccToggleButton.setSelected(true);
 
                 /* -1 to offset the mock object*/
-                MappingTrackSelector.SelectionOverride override =
-                        new MappingTrackSelector.SelectionOverride(
-                                videoTrackSelectionFactory,
+                DefaultTrackSelector.SelectionOverride override =
+                        new DefaultTrackSelector.SelectionOverride(
                                 position - 1, 0);
                 trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
 
@@ -747,7 +756,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
             TrackGroup trackGroup = trackGroups.get(groupIndex);
             for (int trackIndex = 0; trackIndex < trackGroup.length; trackIndex++) {
-                MappingTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
+                DefaultTrackSelector.SelectionOverride selectionOverride = trackSelector.getSelectionOverride(mTextRendererIndex, trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex));
                 if (selectionOverride != null && selectionOverride.groupIndex == groupIndex && selectionOverride.containsTrack(trackIndex)) {
 //                    Toast.makeText(getContext(), "Group Index: " +groupIndex +", Track Index: " + trackIndex, Toast.LENGTH_SHORT).show();
 
@@ -766,7 +775,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
      */
     private void setSelectedCCTrack(int groupIndex) {
         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mTextRendererIndex);
-        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+        DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                 groupIndex, 0);
         trackSelector.setSelectionOverride(mTextRendererIndex, trackGroups1, override);
     }
@@ -817,7 +826,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 listViewAdapter.setItemClickListener(v -> {
                     try {
                         TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
-                        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                        DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                                 listViewAdapter.getDownloadQualityPosition(), 0);
                         trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
@@ -956,7 +965,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             } else {
                                 int[] tracks = new int[1];
                                 tracks[0] = ((HLSStreamingQuality) v).getIndex();
-                                MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(videoTrackSelectionFactory,
+                                DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                                         0, tracks);
                                 trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups, override);
                             }
@@ -988,6 +997,54 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return DefaultDrmSessionManager.newWidevineInstance(drmCallback, null, new Handler(), this);
     }
 
+    public Uri getAdTagUri(final String adURL) {
+        return Uri.parse(adURL);
+    }
+
+    ImaAdsLoader imaAdsLoader;
+
+    void initAds() {
+
+        imaAdsLoader = new ImaAdsLoader.Builder(getContext()).setAdEventListener(new PlayerAdEvent()).buildForAdTag(getAdTagUri(this.adsUrl));
+
+    }
+
+    private MediaSource buildMediaSource(MediaSource contentMediaSource, String adsUrl) {
+
+
+        if (adsUrl != null && !TextUtils.isEmpty(adsUrl) &&
+                !getPlayerView().getController().isPlayingLive() &&
+                !appCMSPresenter.isUserSubscribed()) {
+            if (imaAdsLoader == null) {
+                initAds();
+            } else {
+                imaAdsLoader.loadAd(adsUrl);
+            }
+            AdsMediaSource.MediaSourceFactory adMediaFactory = new AdsMediaSource.MediaSourceFactory() {
+
+                @Override
+                public MediaSource createMediaSource(Uri uri) {
+                    return buildMediaSource(uri, "");
+                }
+
+                @Override
+                public int[] getSupportedTypes() {
+                    return new int[0];
+                }
+            };
+
+
+            MediaSource mediaSourceWithAds = new AdsMediaSource(
+                    contentMediaSource,
+                    adMediaFactory,
+                    imaAdsLoader,
+                    playerView.getOverlayFrameLayout());
+            return mediaSourceWithAds;
+
+        } else {
+            return contentMediaSource;
+        }
+    }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
@@ -1321,72 +1378,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mCurrentPlayerPosition = position;
     }
 
-    @Override
-    public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
-                              int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
-                              long mediaEndTimeMs, long elapsedRealtimeMs) {
-        //Log.d(TAG, "Load started");
-        bitrate = (trackFormat.bitrate / 1000);
-
-    }
-
-    @Override
-    public void onLoadCompleted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
-                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
-                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
-                                long bytesLoaded) {
-        failedMediaSourceLoads.clear();
-
-    }
-
-    @Override
-    public void onLoadCanceled(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
-                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
-                               long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
-                               long bytesLoaded) {
-        Log.d(TAG, "Load cancelled");
-    }
-
-    @Override
-    public void onLoadError(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
-                            int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
-                            long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
-                            long bytesLoaded, IOException error, boolean wasCanceled) {
-        //Log.d(TAG, "onLoadError : " + error.getMessage());
-        /**
-         * We can enhance logic here depending on the error code list that we will use for closing the video page.
-         */
-        if ((error.getMessage().contains("404") ||
-                error.getMessage().contains("400"))
-                && !isLoadedNext) {
-            String failedMediaSourceLoadKey = dataSpec.uri.toString();
-            if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
-                int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
-                if (tryCount == 3) {
-                    isLoadedNext = true;
-                    mErrorEventListener.onFinishCallback(error.getMessage());
-                } else {
-                    failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
-                }
-            } else {
-                failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
-            }
-        } else if (mErrorEventListener != null) {
-            mErrorEventListener.onRefreshTokenCallback();
-        }
-    }
-
-    @Override
-    public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
-
-    }
-
-    @Override
-    public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason,
-                                          Object trackSelectionData, long mediaTimeMs) {
-
-    }
-
     public void setListener(ErrorEventListener errorEventListener) {
         mErrorEventListener = errorEventListener;
     }
@@ -1400,12 +1391,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
                                           long initializationDurationMs) {
         //
-
     }
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
-
         setBitrate(format.bitrate / 1000);
         setVideoHeight(format.height);
         setVideoWidth(format.width);
@@ -1430,7 +1419,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-
         //Log.i(TAG, "Video size changed: width = " +
 //                width +
 //                " height = " +
@@ -1673,14 +1661,104 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+    @Override
+    public void onAdLoadError(IOException error) {
+
+    }
+
+    @Override
+    public void onInternalAdLoadError(RuntimeException error) {
+
+    }
+
+    @Override
+    public void onAdClicked() {
+
+    }
+
+    @Override
+    public void onAdTapped() {
+
+    }
+
+    @Override
+    public void onMediaPeriodCreated(int windowIndex, MediaSource.MediaPeriodId mediaPeriodId) {
+
+    }
+
+    @Override
+    public void onMediaPeriodReleased(int windowIndex, MediaSource.MediaPeriodId mediaPeriodId) {
+
+    }
+
+    @Override
+    public void onLoadStarted(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
+        bitrate = (mediaLoadData.trackFormat.bitrate / 1000);
+    }
+
+    @Override
+    public void onLoadCompleted(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
+
+    }
+
+    @Override
+    public void onLoadCanceled(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData) {
+
+    }
+
+    @Override
+    public void onLoadError(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData, IOException error, boolean wasCanceled) {
+
+        /**
+         * We can enhance logic here depending on the error code list that we will use for closing the video page.
+         */
+        if ((error.getMessage().contains("404") ||
+                error.getMessage().contains("400"))
+                && !isLoadedNext) {
+            String failedMediaSourceLoadKey = loadEventInfo.dataSpec.uri.toString();
+            if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
+                int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
+                if (tryCount == 3) {
+                    isLoadedNext = true;
+                    mErrorEventListener.onFinishCallback(error.getMessage());
+                } else {
+                    failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
+                }
+            } else {
+                failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
+            }
+        } else if (mErrorEventListener != null) {
+            mErrorEventListener.onRefreshTokenCallback();
+        }
+    }
+
+    @Override
+    public void onReadingStarted(int windowIndex, MediaSource.MediaPeriodId mediaPeriodId) {
+
+    }
+
+    @Override
+    public void onUpstreamDiscarded(int windowIndex, MediaSource.MediaPeriodId mediaPeriodId, MediaLoadData mediaLoadData) {
+
+    }
+
+    @Override
+    public void onDownstreamFormatChanged(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, MediaLoadData mediaLoadData) {
+
+    }
+
+
     public interface ErrorEventListener {
         void onRefreshTokenCallback();
 
         void onFinishCallback(String message);
+
+        void playerError(ExoPlaybackException ex);
     }
 
     public interface StreamingQualitySelector {
         List<String> getAvailableStreamingQualities();
+
 
         /**
          * Returns the HLS url which will be used for playback
@@ -1699,9 +1777,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     /**
      * Contain methods used to fetch the closed captions' list and the language from the selected
      * index
-     * */
+     */
     public interface ClosedCaptionSelector {
         List<ClosedCaptions> getAvailableClosedCaptions();
+
         String getSubtitleLanguageFromIndex(int index);
     }
 
@@ -2244,5 +2323,70 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public String getLicenseUrl() {
         return licenseUrlDRM;
+    }
+
+    public class PlayerAdEvent implements AdEvent.AdEventListener, AdsLoader.EventListener {
+
+        @Override
+        public void onAdEvent(AdEvent adEvent) {
+            switch (adEvent.getType()) {
+                case LOADED:
+                    if (onBeaconAdsEvent != null) {
+                        onBeaconAdsEvent.sendBeaconAdRequest();
+                    }
+                    System.out.println("Ads:-   LOADED called sendBeaconAdRequest ");
+                    break;
+                case CONTENT_RESUME_REQUESTED:
+                    System.out.println("Ads:-   CONTENT_RESUME_REQUESTED  ");
+                    break;
+                case ALL_ADS_COMPLETED:
+                    System.out.println("Ads:-   ALL_ADS_COMPLETED  ");
+                    break;
+                case CONTENT_PAUSE_REQUESTED:
+                    if (onBeaconAdsEvent != null) {
+                        onBeaconAdsEvent.sendBeaconAdImprassion();
+                    }
+                    System.out.println("Ads:-   CONTENT_PAUSE_REQUESTED  sendBeaconAdImprassion ");
+                    break;
+                default:
+                    System.out.println("Ads:-   default  ");
+
+            }
+
+        }
+
+
+        @Override
+        public void onAdPlaybackState(AdPlaybackState adPlaybackState) {
+            System.out.println("Ads:-   onAdPlaybackState  ");
+        }
+
+        @Override
+        public void onAdLoadError(AdsMediaSource.AdLoadException error, DataSpec dataSpec) {
+            System.out.println("Ads:-   onAdLoadError  ");
+        }
+
+
+        @Override
+        public void onAdClicked() {
+            System.out.println("Ads:-   onAdClicked  ");
+        }
+
+        @Override
+        public void onAdTapped() {
+            System.out.println("Ads:-   onAdTapped  ");
+        }
+
+
+    }
+
+    public void setOnBeaconAdsEvent(OnBeaconAdsEvent onBeaconAdsEvent) {
+        this.onBeaconAdsEvent = onBeaconAdsEvent;
+    }
+
+    public interface OnBeaconAdsEvent {
+        public void sendBeaconAdImprassion();
+
+        public void sendBeaconAdRequest();
     }
 }

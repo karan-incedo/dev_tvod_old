@@ -18294,6 +18294,8 @@ public class AppCMSPresenter {
                 && appCMSAndroid.getAdvertising().getVideoTag() != null) {
             videoTag = appCMSAndroid.getAdvertising().getVideoTag();
         }
+       // videoTag="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/35495321/MSE_Web_Video&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
+
         if (videoTag == null) {
             return null;
         }
