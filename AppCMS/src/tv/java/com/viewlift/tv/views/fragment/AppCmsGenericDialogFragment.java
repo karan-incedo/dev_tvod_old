@@ -171,6 +171,13 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
     }
 
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (tvPageView != null && subscriptionTitle != null) {
+            tvPageView.removeView(subscriptionTitle);
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
