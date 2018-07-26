@@ -7624,6 +7624,10 @@ public class AppCMSPresenter {
                                             false,
                                             binder,
                                             action1);
+                                } else {
+                                    if (platformType == PlatformType.TV) {
+                                        action1.call(null);
+                                    }
                                 }
                             }
                         }else {
@@ -11415,7 +11419,7 @@ public class AppCMSPresenter {
                         if(null != defaultLanguage && null != appCMSMain.getLanguages()){
                             ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
                             System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
-                            boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
+                            boolean isLanguageExistinMain = languageList != null  && languageList.contains(defaultLanguage);
                             if(!isLanguageExistinMain){
                                 defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
                             }
@@ -15451,7 +15455,12 @@ public class AppCMSPresenter {
 
                 if (platformType == PlatformType.TV) {
                     if (jsonValueKeyMap.get(metaPage.getPageName())
-                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                            == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY/* ||
+                            (navigation != null &&
+                                    navigation.getNavigationPrimary() != null &&
+                                    navigation.getNavigationPrimary().get(0) != null &&
+                                    navigation.getNavigationPrimary().get(0).getPageId() != null &&
+                                    metaPage.getPageId().equalsIgnoreCase(navigation.getNavigationPrimary().get(0).getPageId()))*/) {
                         homePage = metaPage;
                         new SoftReference<Object>(homePage, referenceQueue);
                     }
@@ -16332,6 +16341,7 @@ public class AppCMSPresenter {
         } else {
             //Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
+            stopLoader();
         }
         return result;
     }
