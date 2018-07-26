@@ -166,7 +166,7 @@ public class AppCMSADMServerMsgHandler {
         String fullUrl = URL/* + REGISTER_ROUTE*/ /*+ "?device=" + registrationId*/;
 
         /* Send the registration request asynchronously to prevent blocking the main thread. */
-        sendHttpRequest(context, fullUrl, registrationId);
+//        sendHttpRequest(context, fullUrl, registrationId);
     }
 
     /**
@@ -186,7 +186,7 @@ public class AppCMSADMServerMsgHandler {
         String fullUrl = URL + UNREGISTER_ROUTE + "?device=" + registrationId;
 
         /* Send the unregister request asynchronously to prevent blocking the main thread. */
-        sendHttpRequest(context, fullUrl, registrationId);
+//        sendHttpRequest(context, fullUrl, registrationId);
     }
 
 
