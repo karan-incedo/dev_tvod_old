@@ -116,7 +116,7 @@ android {
         renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
-        project.ext.set("archivesBaseName", customApplicationId+"-" + appVersionName)
+        project.ext.set("archivesBaseName", customApplicationId+"-" + appVersionName+"-"+appVersionCode)
     }
     flavorDimensions "green", "blue"
     productFlavors {
