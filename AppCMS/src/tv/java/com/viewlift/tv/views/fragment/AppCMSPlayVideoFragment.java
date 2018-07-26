@@ -40,6 +40,7 @@ import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -392,9 +393,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
                            if(shouldAutoPlay()){
                                onClosePlayerEvent.onMovieFinished();
-                           } /*else {
+                           } else {
                                onClosePlayerEvent.closePlayer();
-                           }*/
+                           }
                         }
                         break;
                     default:
@@ -1108,6 +1109,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
         }
         onClosePlayerEvent.closePlayer();
+    }
+
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
     }
 
     private void initViewForCRW(View rootView) {
