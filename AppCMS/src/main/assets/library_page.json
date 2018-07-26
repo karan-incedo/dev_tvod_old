@@ -334,14 +334,14 @@
                   "height": 30
                 },
                 "tabletLandscape": {
-                  "leftMargin": 52,
-                  "topMargin": 4.5,
+                  "xAxis": 60,
+                  "yAxis": 20,
                   "width": 30,
                   "height": 30
                 },
                 "tabletPortrait": {
-                  "leftMargin": 52,
-                  "topMargin": 3.5,
+                  "xAxis": 10,
+                  "yAxis": 20,
                   "width": 30,
                   "height": 30
                 }
