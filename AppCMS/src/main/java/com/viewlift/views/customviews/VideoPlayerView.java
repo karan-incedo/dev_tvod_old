@@ -180,6 +180,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private boolean closedCaptionSelectorCreated;
     private int selectedSubtitleIndex;
     private boolean shouldShowSubtitle;
+    private boolean selectedSubtitleLanguageAvailable;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -1091,8 +1092,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         if (preferredSubtitleLanguage != null) {
                             if (preferredSubtitleLanguage.equalsIgnoreCase(closedCaptions.getLanguage())) {
                                 selectedSubtitleIndex = i;
-                                ccToggleButton.setSelected(true);
-                                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                                selectedSubtitleLanguageAvailable = true;
 
                                 /*this is used in the onPlayerStateChanged*/
                                 shouldShowSubtitle = true;
@@ -1103,7 +1103,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         }
                     }
                 }
-                toggleCCSelectorVisibility(true);
+
+                if (selectedSubtitleLanguageAvailable) {
+                    ccToggleButton.setSelected(true);
+                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                } else {
+                    ccToggleButton.setSelected(false);
+                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
+                }
             } else {
                 /*Disable CC if the list is empty meaning no cc available for the particular movie*/
                 toggleCCSelectorVisibility(false);
@@ -1220,15 +1227,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 * are telling the player that the max height can only be "res"*/
                 trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }
-            if (playbackState == Player.STATE_READY
-                    && !closedCaptionSelectorCreated) {
+            if (closedCaptionSelector != null
+                    && closedCaptionSelector.getAvailableClosedCaptions() != null
+                    && !closedCaptionSelector.getAvailableClosedCaptions().isEmpty()) {
+                if (playbackState == Player.STATE_READY
+                        && !closedCaptionSelectorCreated) {
 
-                // create the dialog which contains the CC switcher list
-                createClosedCaptioningSelector();
-                if (shouldShowSubtitle) {
-                    setSelectedCCTrack(selectedSubtitleIndex);
-                    /* +1 to offset the "off" selection added to the dialog list*/
-                    closedCaptionSelectorAdapter.setSelectedIndex(selectedSubtitleIndex + 1);
+                    // create the dialog which contains the CC switcher list
+                    createClosedCaptioningSelector();
+                    if (shouldShowSubtitle) {
+                        setSelectedCCTrack(selectedSubtitleIndex);
+                        /* +1 to offset the "off" selection added to the dialog list*/
+                        closedCaptionSelectorAdapter.setSelectedIndex(selectedSubtitleIndex + 1);
+                    }
+                    toggleCCSelectorVisibility( true);
                 }
             }
             if (playbackState == Player.STATE_READY
