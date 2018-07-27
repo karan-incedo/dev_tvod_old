@@ -49,14 +49,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -303,9 +301,17 @@ public class TVViewCreator {
                         });
             }
         } else if(Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules)).contains(module.getType())){
-            if(module.getBlockName().equalsIgnoreCase("userManagement01")){
-           //     module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+           /* if(module.getBlockName().equalsIgnoreCase("userManagement01")){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
+            if(module.getBlockName().equalsIgnoreCase("userManagement02")){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings_sports.json"), ModuleList.class);
+            }
+
+            if(module.getBlockName().equalsIgnoreCase("languageSettings01")){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
+            }*/
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
@@ -786,7 +792,7 @@ public class TVViewCreator {
                         moduleAPI);
                 ((RecyclerView) componentViewResult.componentView)
                         .setAdapter(appCMSTVTrayItemAdapter);
-                componentViewResult.onInternalEvent = appCMSTVTrayItemAdapter;
+                 componentViewResult.onInternalEvent = appCMSTVTrayItemAdapter;
                 break;
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
@@ -1647,7 +1653,9 @@ public class TVViewCreator {
                             break;
 
                         case CONTACT_US_EMAIL_LABEL:
-                            if (!TextUtils.isEmpty(component.getText())) {
+                            if (!TextUtils.isEmpty(component.getText())
+                                    && appCMSPresenter.getAppCMSMain() != null
+                                    && appCMSPresenter.getAppCMSMain().getCustomerService() != null) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText() + " "
                                         + appCMSPresenter.getAppCMSMain().getCustomerService().getEmail());
                             }
@@ -1655,13 +1663,22 @@ public class TVViewCreator {
 
                         case CONTACT_US_PHONE_LABEL:
                             if (!TextUtils.isEmpty(component.getText())) {
-                                String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
-                                if(TextUtils.isEmpty(phone)){
+                                String phone = "";
+                                String phoneNumber = "";
+                                String text = "";
+                                if (null != appCMSPresenter.getAppCMSMain()
+                                        && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
+                                    phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
                                     phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                                 }
-                                if (!TextUtils.isEmpty(phone)) {
+                                if(TextUtils.isEmpty(phoneNumber)){
+                                    text = phone;
+                                } else {
+                                    text = phoneNumber;
+                                }
+                                if (!TextUtils.isEmpty(text)) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText() + " "
-                                            + phone);
+                                            + text);
                                 } else {
                                     componentViewResult.componentView.setVisibility(View.GONE);
                                 }
@@ -1711,7 +1728,9 @@ public class TVViewCreator {
                                             videoDescription,
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
 
                             final String fullText = videoDescription;
@@ -1754,7 +1773,7 @@ public class TVViewCreator {
                                             autoplayVideoDescription,
                                             appCMSPresenter,
                                             true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()), false);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), false);
                             Vto.addOnGlobalLayoutListener(layoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
@@ -2342,11 +2361,20 @@ public class TVViewCreator {
                         break;
 
                     case CONTACT_US_PHONE_IMAGE:
-                        String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
-                        if(TextUtils.isEmpty(phone)){
+                        String phone = "";
+                        String phoneNumber = "";
+                        String text = "";
+                        if (null != appCMSPresenter.getAppCMSMain()
+                                && null != appCMSPresenter.getAppCMSMain().getCustomerService()) {
+                            phoneNumber = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
                             phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
                         }
-                        if (!TextUtils.isEmpty(phone)) {
+                        if(TextUtils.isEmpty(phoneNumber)){
+                            text = phone;
+                        } else {
+                            text = phoneNumber;
+                        }
+                        if (!TextUtils.isEmpty(text)) {
                             componentViewResult.componentView.setBackgroundResource(R.drawable.call_icon);
                         } else {
                             componentViewResult.componentView.setVisibility(View.GONE);
@@ -2465,7 +2493,8 @@ public class TVViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new TVCreditBlocksView(context,
+                componentViewResult.componentView = new TVCreditBlocksView(
+                        context,
                         jsonValueKeyMap,
                         fontFamilyKey,
                         fontFamilyKeyTypeParsed,
@@ -2477,6 +2506,7 @@ public class TVViewCreator {
                         starringListSb.toString(),
                         textColor,
                         Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);

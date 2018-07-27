@@ -63,6 +63,8 @@ android {
     def final useHLS
     def appVersionCode
     def appVersionName
+    def clevertapAccId
+    def clevertapAccKey
     //def minsdkversion
     //def targetsdkversion
     signingConfigs {
@@ -88,6 +90,8 @@ android {
         useHLS = versionProps['UseHLS'].toBoolean()
         appVersionCode = versionProps['AppVersionCode'].toInteger()
         appVersionName = versionProps['AppVersionName'].toString()
+        clevertapAccId = versionProps['ClevertapAccId'].toString()
+        clevertapAccKey = versionProps['ClevertapAccToken'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
         //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
 
@@ -238,6 +242,8 @@ android {
             resValue "string", "facebook_app_id", "${facebookAppId}"
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
+            resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
+            resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
             signingConfig signingConfigs.debug
         }
@@ -254,6 +260,8 @@ android {
             resValue "string", "facebook_app_id", "${facebookAppId}"
             resValue "bool", "use_hls", "${useHLS}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
+            resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
+            resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }
@@ -394,14 +402,11 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
     implementation "com.github.akarnokd:rxjava2-interop:$rootProject.ext.rxjavainterop"
-    implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
-
+   // implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-
-
     implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
@@ -423,12 +428,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-
-
     implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-
     tvImplementation project(path: ':firetvcustomkeyboard')
     implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
@@ -439,17 +441,18 @@ dependencies {
     mobileImplementation "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     implementation project(':exoplayer-library')
     implementation project(':exoplayer-library-ui')
+    implementation project(':exoplayer-extension-ima')
     implementation project(':library')
-//    implementation project(':htmlspanner')
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.fasterxml.uuid:java-uuid-generator:3.1.5'
-
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
-}
+    implementation "com.clevertap.android:clevertap-android-sdk:$rootProject.ext.clevertapVersion"
+    implementation "com.android.volley:volley:$rootProject.ext.volleyVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
+    implementation "com.fasterxml.uuid:java-uuid-generator:$rootProject.ext.uuidGeneratorVersion"
+    }
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->

@@ -2,7 +2,6 @@ package com.viewlift.presenters;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -16,6 +15,7 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
@@ -50,6 +50,11 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
         AudioManager.OnAudioFocusChangeListener {
 
     private static final long SECS_TO_MSECS = 1000L;
+
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
+    }
 
     private final String FIREBASE_VIDEO_ID_KEY = "video_id";
     private final String FIREBASE_VIDEO_NAME_KEY = "video_name";
@@ -175,7 +180,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                     if (cc.getUrl() != null &&
                             !cc.getUrl().equalsIgnoreCase(downloadFilePrefix) &&
                             cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("SRT")) {
+                            "SRT".equalsIgnoreCase(cc.getFormat())) {
                         closedCaptionUrl = cc.getUrl();
                     }
                 }
@@ -823,9 +828,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                                         appCMSSignedURLResult.getKeyPairId());
 
                                 if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                                    videoPlayerView.setUri(Uri.parse(videoUrl),
-                                            !TextUtils.isEmpty(closedCaptionUrl) ?
-                                                    Uri.parse(closedCaptionUrl) : null);
+                                    videoPlayerView.preparePlayer();
                                     videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
                                             .getWatchedTime() * 1000L);
                                 }

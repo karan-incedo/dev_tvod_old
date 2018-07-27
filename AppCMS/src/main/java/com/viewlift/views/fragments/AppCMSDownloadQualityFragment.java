@@ -118,6 +118,7 @@ public class AppCMSDownloadQualityFragment extends Fragment
 
             continueButton.setOnClickListener(v -> {
                 appCMSPresenter.setUserDownloadQualityPref(downloadQuality);
+                appCMSPresenter.sendDownloadBitrateEvent(downloadQuality);
                 if (binder != null &&
                         binder.getContentDatum() != null &&
                         binder.getResultAction1() != null) {

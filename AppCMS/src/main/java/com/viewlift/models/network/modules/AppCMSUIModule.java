@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.Utils;
+import com.viewlift.analytics.CleverTapSDK;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -118,9 +119,10 @@ public class AppCMSUIModule {
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
     private final AssetManager assetManager;
+    private final Context context;
 
     public AppCMSUIModule(Context context) {
-
+        this.context = context;
         this.baseUrl = Utils.getProperty("BaseUrl", context);
 
         // NOTE: Replaced with Utils.getProperty()
@@ -158,6 +160,12 @@ public class AppCMSUIModule {
         cache = new Cache(context.getCacheDir(), cacheSize);
 
         this.assetManager = context.getAssets();
+    }
+
+    @Provides
+    @Singleton
+    public CleverTapSDK providesCleverTapSDK() {
+        return new CleverTapSDK(context);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -1194,12 +1202,16 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tabs_type),
                 AppCMSUIKeyType.PAGE_TABLAYOUT_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.manageLanguageBtnKey),
                 AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
                 AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                AppCMSUIKeyType.LANGUAGE_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_link_change_language_action),
+                AppCMSUIKeyType.CHANGE_LANGUAGE_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -1234,6 +1246,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 context.getString(R.string.app_cms_link_your_account_action));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                context.getString(R.string.app_cms_link_change_language_action));
     }
 
     private void createActionToPageMap(Context context) {
@@ -1251,6 +1265,7 @@ public class AppCMSUIModule {
         //this.actionToPageMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_link_your_account_action), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_link_change_language_action), null);
     }
 
     private void createActionToPageAPIMap(Context context) {

@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.viewlift.AppCMSApplication;
+import com.viewlift.presenters.AppCMSPresenter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -25,11 +28,15 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
 
     DownloadManager downloadManager;
     Context mContext;
+    AppCMSPresenter appCMSPresenter;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         mContext = context;
+        AppCMSApplication mApplication = ((AppCMSApplication)mContext.getApplicationContext());
+        appCMSPresenter = ((AppCMSApplication) mApplication).
+                getAppCMSPresenterComponent().appCMSPresenter();
         downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
         //Reference Id of the Download Completed
         long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
@@ -166,6 +173,7 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
                 if (extension.equals("mp4")) {
                     encryptTheFile(filename);
                 }
+                appCMSPresenter.sendDownloadCompleteEvent(DownloadId);
                 break;
 
             default:

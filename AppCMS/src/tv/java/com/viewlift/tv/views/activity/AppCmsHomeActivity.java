@@ -1398,14 +1398,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void openChangeLanguageScreen(Intent intent){
-       /* Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));*/
+        Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+        AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        AppCmsChangelanguageFragment appCmsChangelanguageFragment = AppCmsChangelanguageFragment.newInstance(
-                );
+        AppCmsChangelanguageFragment appCmsChangelanguageFragment = AppCmsChangelanguageFragment.newInstance(appCMSBinder
+        );
         appCmsChangelanguageFragment.show(ft, DIALOG_FRAGMENT_TAG);
         Utils.pageLoading(false, this);
-
     }
 
     public void shouldShowLeftNavigation(boolean shouldShowLeftnav) {
@@ -1425,7 +1424,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 contentDatum.getSeason().get(0).getEpisodes() != null &&
                 contentDatum.getSeason().get(0).getEpisodes().get(0) != null) {
 
-            List<String> relatedVideosIds = com.viewlift.tv.utility.Utils.getRelatedVideosInShow2(
+            List<String> relatedVideosIds = com.viewlift.Utils.getRelatedVideosInShow2(
                     contentDatum.getSeason(),
                     0,
                     -1,

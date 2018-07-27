@@ -177,6 +177,15 @@ public class RealmController {
         return null;
     }
 
+    public DownloadVideoRealm getDownloadByDMId(long dm_id) {
+        try {
+            return realm.where(DownloadVideoRealm.class).equalTo("videoId_DM", dm_id).findFirst();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+        }
+        return null;
+    }
+
     public RealmResults<DownloadVideoRealm> getDownloadsById(String videoId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findAll();

@@ -12,9 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -42,7 +40,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -58,7 +55,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -119,8 +115,6 @@ import com.viewlift.views.fragments.AppCMSTeamListFragment;
 import org.json.JSONException;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
@@ -381,11 +375,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
+                        String previousPage=updatedAppCMSBinder.getPageName();
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         if (updatedAppCMSBinder != null) {
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
+                        appCMSPresenter.sendPageViewEvent(previousPage,updatedAppCMSBinder.getPageName());
                         if (isActive) {
                             try {
                                 handleLaunchPageAction(updatedAppCMSBinder,
@@ -977,6 +973,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
+        appCMSPresenter.initializeCleverTap();
     }
 
     private boolean shouldReadNavItemsFromAppCMS() {
@@ -2742,7 +2739,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         String action = getString(R.string.app_cms_action_detailvideopage_key);
         StringBuffer pagePath = new StringBuffer();
         if(deeplinkUri.toString().contains(getString(R.string.view_plans))){
-            action = getString(R.string.app_cms_action_startfreetrial_key);
+            if(appCMSPresenter.isUserSubscribed()){
+                appCMSPresenter.resetDeeplinkQuery();
+                return;
+            }else {
+                action = getString(R.string.app_cms_action_startfreetrial_key);
+            }
         }
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
@@ -3373,9 +3375,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() +" "+
                             appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length()+2,
                             content.length(), 0);
                     appCMSNavFreeTrialTool.setText(content);
                 }

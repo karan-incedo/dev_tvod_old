@@ -266,7 +266,7 @@ public class AudioCastPlayback implements Playback {
 
         } catch (JSONException e) {
             Log.e(TAG, "Exception loading media ");
-
+            appCMSPresenter.sendEventMediaError(audioData, e.getMessage(), getCurrentStreamPosition() / 1000);
             if (mCallback != null) {
                 mCallback.onError(e.getMessage());
             }
@@ -286,6 +286,7 @@ public class AudioCastPlayback implements Playback {
                     0d,
                     0,
                     appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
+            appCMSPresenter.sendCastEvent(audioData);
             sentBeaconPlay = true;
             mStartBufferMilliSec = new Date().getTime();
         }

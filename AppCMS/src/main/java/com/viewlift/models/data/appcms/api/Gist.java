@@ -1009,5 +1009,33 @@ public class Gist implements Serializable {
     public void setMetadata(List<MetaData> metadata) {
         this.metadata = metadata;
     }
+
+    String episodeNum;
+    String showName;
+    String seasonNum;
+
+    public String getEpisodeNum() {
+        return episodeNum;
+    }
+
+    public void setEpisodeNum(String episodeNum) {
+        this.episodeNum = episodeNum;
+    }
+
+    public String getShowName() {
+        return showName;
+    }
+
+    public void setShowName(String showName) {
+        this.showName = showName;
+    }
+
+    public String getSeasonNum() {
+        return seasonNum;
+    }
+
+    public void setSeasonNum(String seasonNum) {
+        this.seasonNum = seasonNum;
+    }
 }
 

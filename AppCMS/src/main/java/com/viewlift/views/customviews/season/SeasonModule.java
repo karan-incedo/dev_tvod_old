@@ -7,16 +7,11 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -81,9 +76,25 @@ public class SeasonModule extends ModuleView {
         this.pageView = pageView;
         seasonList = new ArrayList<>();
         seasonList.addAll(moduleAPI.getContentData().get(0).getSeason());
+        addShowDetailsToEpisode(seasonList);
         Collections.reverse(seasonList);
         init();
     }
+
+
+    void addShowDetailsToEpisode(List<Season_> seasonList) {
+        if (seasonList != null && seasonList.size() != 0) {
+            for (int i = 0; i < seasonList.size(); i++) {
+                for (int j = 0; j < seasonList.get(i).getEpisodes().size(); j++) {
+                    ContentDatum episode = seasonList.get(i).getEpisodes().get(j);
+                    episode.getGist().setEpisodeNum(j + 1+"");
+                    episode.getGist().setSeasonNum(i + 1+"");
+                    episode.getGist().setShowName(moduleAPI.getContentData().get(0).getGist().getTitle());
+                }
+            }
+        }
+    }
+
 
     public void init() {
         if (moduleInfo != null &&

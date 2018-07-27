@@ -44,10 +44,10 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.customviews.download.DownloadModule;
 import com.viewlift.views.rxbus.DownloadTabSelectorBus;
 
 import java.util.ArrayList;
@@ -55,8 +55,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import rx.functions.Action1;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -716,6 +714,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
+
                             /*navigate to article detail page*/
                             if (data.getGist() != null && data.getGist().getMediaType() != null
                                     && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
@@ -729,6 +728,21 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 deleteDownloadVideo(data, position);
                                 return;
                             }
+                            if (action.contains(videoAction)) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(moduleAPI.getTitle());
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+                            }
+
+
+                            if (action.contains("watchVideo") || (data.getGist() != null &&
+                                    data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                    data.getGist().getContentType() != null &&
+                                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase()))) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_" + moduleAPI.getTitle());
+                            }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
                                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
@@ -736,6 +750,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         true, () ->
                                                 appCMSPresenter.editWatchlist(data,
                                                         addToWatchlistResult -> {
+                                                            appCMSPresenter.sendRemoveWatchlistEvent(data);
                                                             adapterData.remove(data);
 
                                                             if (adapterData.size() == 0) {
