@@ -107,13 +107,15 @@ public abstract class TVBaseView extends FrameLayout {
             infoText.append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         }
 
-        /*if (seconds == 1) {
-            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
-        } else if (seconds > 1 && seconds < 10) {
-            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
-        } else if (seconds >= 10) {
-            infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
-        }*/
+        if (minutes < 1) {
+            if (seconds == 1) {
+                infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+            } else if (seconds > 1 && seconds < 10) {
+                infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
+            } else if (seconds >= 10) {
+                infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
+            }
+        }
 
         if (!TextUtils.isEmpty(year)) {
             infoText.append(context.getString(R.string.text_separator));
