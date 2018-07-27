@@ -255,15 +255,15 @@
                 },
                 "tabletLandscape": {
                   "yAxis": 22,
-                  "xAxis": 780,
-                  "width": 130,
+                  "xAxis": 760,
+                  "width": 150,
                   "fontSize": 14,
                   "height": 23
                 },
                 "tabletPortrait": {
                   "yAxis": 22,
                   "rightMargin": 50,
-                  "width": 120,
+                  "width": 140,
                   "fontSize": 14,
                   "height": 23
                 }
@@ -372,7 +372,7 @@
                   "leftMargin": 135,
                   "yAxis": 28,
                   "rightMargin": 0,
-                  "width": 450,
+                  "width": 430,
                   "fontSize": 13,
                   "height": 50
                 }
