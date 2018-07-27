@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.history.Record;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -14,79 +15,57 @@ import java.util.List;
 @UseStag
 public class AppCMSLibraryResult {
 
-    public List<Gist> getVideos() {
-        return videos;
-    }
-
-    public void setVideos(List<Gist> teams) {
-        this.videos = videos;
-    }
-
-    @SerializedName("videos")
+    @SerializedName("records")
     @Expose
-    List<Gist> videos = null;
+    List<Record> records = null;
 
-    @SerializedName("seasons")
+    @SerializedName("nextOffset")
     @Expose
-    List<Season_library> seasons = null;
+    int nextOffset;
 
-
-    public List<Season_library> getSeasons() {
-        return seasons;
-    }
-
-    public void setSeasons(List<Season_library> seasons) {
-        this.seasons = seasons;
-    }
-
-    public List<Bundles_library> getBundles() {
-        return bundles;
-    }
-
-    public void setBundles(List<Bundles_library> bundles) {
-        this.bundles = bundles;
-    }
-
-    @SerializedName("bundles")
+    @SerializedName("limit")
     @Expose
-    List<Bundles_library> bundles = null;
+    int limit;
 
+    public List<Record> getRecords() {
+        return records;
+    }
 
+    public void setRecords(List<Record> records) {
+        this.records = records;
+    }
 
-    public AppCMSPageAPI convertToAppCMSPageAPI() {
+    public int etNextOffset() {
+        return nextOffset;
+    }
+
+    public void setNextOffset(int nextOffset) {
+        this.nextOffset = nextOffset;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
-
-//        ContentDatum contentDatum = new ContentDatum();
-//        contentDatum.setTeamList(this.getSeasonData().getStandings().getTeam());
-
-//        data.add(contentDatum);
-
-        if (getVideos() != null) {
-            for (Gist videos : getVideos()) {
-                ContentDatum contentDatum1=new ContentDatum();
-//                Gist gistObj=new Gist();
-//                gistObj.setId(videos.getId());
-//                gistObj.setImageGist(videos.getImageGist());
-//                gistObj.setTitle(videos.getTitle());
-                contentDatum1.setGist(videos);
-//                contentDatum1.setVideoData(videos);
-                data.add(contentDatum1);
-            }
-            for (Gist videos : getVideos()) {
-                ContentDatum contentDatum1=new ContentDatum();
-//                Gist gistObj=new Gist();
-//                gistObj.setId(videos.getId());
-//                gistObj.setImageGist(videos.getImageGist());
-//                gistObj.setTitle(videos.getTitle());
-                contentDatum1.setGist(videos);
-//                contentDatum1.setVideoData(videos);
-                data.add(contentDatum1);
+        if (getRecords() != null) {
+            for (Record records : getRecords()) {
+                if (records.getContentResponse() !=null) {
+                    data.add(records.convertToContentDatum());
+                }
             }
         }
+
         module.setContentData(data);
+        appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
         moduleList.add(module);
         appCMSPageAPI.setModules(moduleList);

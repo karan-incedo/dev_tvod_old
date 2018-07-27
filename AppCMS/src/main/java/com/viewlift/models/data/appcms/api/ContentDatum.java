@@ -564,15 +564,7 @@ public class ContentDatum implements Serializable {
         return contentData;
     }
 
-    public Videos getVideosData() {
-        return videosData;
-    }
 
-    public void setVideoData(Videos obVideos ) {
-        this.videosData = obVideos;
-    }
-
-    Videos videosData = null;
 
 
 }

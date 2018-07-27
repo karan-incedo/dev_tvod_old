@@ -1227,6 +1227,52 @@ public class AppCMSPresenter {
         return timeDifference;
     }
 
+    public String getRentExpirationFormat(long timeDifference) {
+        long difference = timeDifference;
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = difference / daysInMilli;
+        difference = difference % daysInMilli;
+
+        long elapsedHours = difference / hoursInMilli;
+        difference = difference % hoursInMilli;
+
+        long elapsedMinutes = difference / minutesInMilli;
+        difference = difference % minutesInMilli;
+
+        long elapsedSeconds = difference / secondsInMilli;
+        String differenceFormat="";
+        if(elapsedDays>1){
+            differenceFormat=String.format("%02d", elapsedDays)+"Days";
+        }else if(elapsedDays>0){
+            differenceFormat=String.format("%02d", elapsedDays)+"Day";
+        }
+
+        else if(elapsedHours>1){
+            differenceFormat=String.format("%02d", elapsedHours)+"Hours";
+        }else if(elapsedHours>0){
+            differenceFormat=String.format("%02d", elapsedHours)+"Hour";
+        }
+
+        else if(elapsedMinutes>1){
+            differenceFormat=String.format("%02d", elapsedMinutes)+"Mins";
+        }else if(elapsedMinutes>0){
+            differenceFormat=String.format("%02d", elapsedMinutes)+"Minu";
+        }
+
+        else if(elapsedSeconds>1){
+            differenceFormat=String.format("%02d", elapsedSeconds)+"Secs";
+        }else if(elapsedSeconds>0){
+            differenceFormat=String.format("%02d", elapsedSeconds)+"Sec";
+        }
+
+        differenceFormat =differenceFormat+" Remaining";
+        return differenceFormat;
+    }
+
     private static long getMillisecondFromDaeString(String dateFormat, String date) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         try {
@@ -1978,6 +2024,9 @@ public class AppCMSPresenter {
      * for retrieving the current user's watchlist again.
      */
     private void populateFilmsInUserWatchlist() {
+        if(watchlistPage==null){
+            return;
+        }
         AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistPage.getPageId());
 
         if (appCMSPageUI == null) {
@@ -8176,25 +8225,47 @@ public class AppCMSPresenter {
                                 launchActivity, null) {
                             @Override
                             public void call(AppCMSLibraryResult appCMSLibraryResult) {
-                                if (appCMSLibraryResult != null || appCMSLibraryResult == null) {
+
+                                if (appCMSLibraryResult != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
-                                     appCMSLibraryResult = new GsonBuilder().create().fromJson(
-                                            loadJsonFromAssets(currentContext, "reponse_library.json"),
-                                            AppCMSLibraryResult.class);
+//                                    Type type = new TypeToken<AppCMSLibraryResult>() {
+//                                    }.getType();
 //
-                                    AppCMSPageAPI pageAPI = null;
-                                    if (appCMSLibraryResult != null) {
-                                        pageAPI = appCMSLibraryResult.convertToAppCMSPageAPI();
-
-                                    }
-                                    navigationPageData.put(this.pageId, pageAPI);
+//
+//                                    HashMap<String, Gist> appCMSPageUI1 = new GsonBuilder().create().fromJson(loadJsonFromAssets(currentContext, "reponse_library.json"),type );
+////
+//                                    AppCMSPageAPI pageAPI = null;
+//                                    if (appCMSPageUI1 != null) {
+//                                        pageAPI = convertLibraryResultToAppCMSPageAPI(appCMSPageUI1);
+//                                    }
 
                                     final StringBuffer screenName = new StringBuffer();
                                     if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
                                         screenName.append(this.pageTitle);
                                     }
+
+                                    AppCMSPageAPI pageAPI;
+                                    if (appCMSLibraryResult != null) {
+                                        pageAPI = appCMSLibraryResult.convertToAppCMSPageAPI(this.pageId);
+                                    } else {
+                                        pageAPI = new AppCMSPageAPI();
+                                        pageAPI.setId(this.pageId);
+                                        List<String> moduleIds = new ArrayList<>();
+                                        List<Module> apiModules = new ArrayList<>();
+                                        for (ModuleList module : appCMSPageUI.getModuleList()) {
+                                            Module module1 = new Module();
+                                            module1.setId(module.getId());
+                                            apiModules.add(module1);
+                                            moduleIds.add(module.getId());
+                                        }
+                                        pageAPI.setModuleIds(moduleIds);
+                                        pageAPI.setModules(apiModules);
+                                    }
+
+                                    navigationPageData.put(this.pageId, pageAPI);
+
 
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
@@ -8204,7 +8275,7 @@ public class AppCMSPresenter {
                                             this.pagePath,
                                             screenName.toString(),
                                             loadFromFile,
-                                            this.appbarPresent,
+                                            false,
                                             this.fullscreenEnabled,
                                             this.navbarPresent,
                                             false,
@@ -8223,6 +8294,7 @@ public class AppCMSPresenter {
                                     stopLoader();
                                 } else {
                                     stopLoader();
+                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 }
                             }
                         });
@@ -11580,11 +11652,13 @@ public class AppCMSPresenter {
                         if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
                             ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
                             System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
-                            boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
-                            if (!isLanguageExistinMain) {
-                                defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
+                            if(languageList!=null) {
+                                boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
+                                if (!isLanguageExistinMain) {
+                                    defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
+                                }
+                                System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());
                             }
-                            System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());
                         }
                         LocaleUtils.setLocale(currentContext, defaultLanguage.getLanguageCode());
                         setLanguage(defaultLanguage);

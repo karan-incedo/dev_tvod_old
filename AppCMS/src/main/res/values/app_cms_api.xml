@@ -698,7 +698,6 @@
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
 
     <string name="app_cms_settings_user_email_label_key">userEmailKey</string>
-    <string name="app_cms_page_expire_time_key">expiretime</string>
 
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>

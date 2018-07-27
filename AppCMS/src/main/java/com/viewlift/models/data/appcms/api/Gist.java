@@ -22,9 +22,17 @@ public class Gist implements Serializable {
     private String contentId;
 
 
+    public long getTransactionDateEpoch() {
+        return transactionDateEpoch;
+    }
+
+    public void setTransactionDateEpoch(long transactionDateEpoch) {
+        this.transactionDateEpoch = transactionDateEpoch;
+    }
+
     @SerializedName("transactionDateEpoch")
     @Expose
-    private String transactionDateEpoch;
+    private long transactionDateEpoch;
 
     @SerializedName("userId")
     @Expose
@@ -72,13 +80,7 @@ public class Gist implements Serializable {
         this.contentId = contentId;
     }
 
-    public String getTransactionDateEpoch() {
-        return transactionDateEpoch;
-    }
 
-    public void setTransactionDateEpoch(String transactionDateEpoch) {
-        this.transactionDateEpoch = transactionDateEpoch;
-    }
 
     public String getUserId() {
         return userId;

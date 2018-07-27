@@ -1517,21 +1517,17 @@ public class CollectionGridItemView extends BaseView {
 //                            ((TextView) view).setTextColor(R.color.color_white);
                         }
                     }  else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
-                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                    if (data.getGist() != null && data.getGist().getTransactionDateEpoch() > 0) {
                         ((TextView) view).setSingleLine(true);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         ((TextView) view).setVisibility(View.VISIBLE);
-                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
-                        ((TextView) view).setText(data.getGist().getTitle());
+                        long eventDate = data.getGist().getTransactionDateEpoch();
 
-                    }
-                }else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
-                    if (data.getGist() != null && data.getGist().getTitle() != null) {
-                        ((TextView) view).setSingleLine(true);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setVisibility(View.VISIBLE);
+                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                        String expirationTime=appCMSPresenter.getRentExpirationFormat(remainingTime);
                         ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
-                        ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setText(expirationTime);
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
