@@ -5767,8 +5767,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
             downloadVideoRealm.setContentType(contentDatum.getGist().getContentType());
             downloadVideoRealm.setMediaType(contentDatum.getGist().getMediaType());
-//            downloadVideoRealm.setEndDate(1532772780000L);
-//            downloadVideoRealm.setSubscriptionType("TEST");
+            downloadVideoRealm.setEndDate(contentDatum.getGist().getTransactionDateEpoch());
+            downloadVideoRealm.setSubscriptionType(contentDatum.getGist().getPurchaseType());
 
             downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
             downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
@@ -8294,7 +8294,6 @@ public class AppCMSPresenter {
                                     stopLoader();
                                 } else {
                                     stopLoader();
-                                    //showEntitlementDialog(DialogType.ARTICLE_API_RESPONSE_ERROR, null);
                                 }
                             }
                         });
