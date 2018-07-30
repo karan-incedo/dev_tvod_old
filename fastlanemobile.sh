@@ -7,6 +7,8 @@ cd $DIR
 POST_URL="${18}/${16}/android/appcms/build/status"
 UPLOAD_URL="${18}/${16}/appcms/android/build/apk/link"
 
+git stash
+git pull origin master
 
 echo "111111111"
 echo ${19}
