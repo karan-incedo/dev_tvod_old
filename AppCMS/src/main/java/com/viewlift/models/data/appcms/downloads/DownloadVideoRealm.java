@@ -8,6 +8,7 @@ import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.Gist;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -85,6 +86,26 @@ public class DownloadVideoRealm extends RealmObject {
     public void setSeasonNum(String seasonNum) {
         this.seasonNum = seasonNum;
     }
+
+    public long getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(String subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+    private long endDate;
+    private String subscriptionType;
+
 
     public String getPlayListName() {
         return playListName;
@@ -400,7 +421,8 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setPermalink(getPermalink());
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
-
+        gist.setEndDate(getEndDate());
+        gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 
         data.setGist(gist);
@@ -424,6 +446,11 @@ public class DownloadVideoRealm extends RealmObject {
         downloadVideoRealm.setSyncedWithServer(isSyncedWithServer);
         downloadVideoRealm.setVideoId_DM(getVideoId_DM());
         downloadVideoRealm.setVideoDuration(getVideoDuration());
+        /**
+         * added to check rent expire time
+         */
+        downloadVideoRealm.setEndDate(getEndDate());
+        downloadVideoRealm.setSubscriptionType(getSubscriptionType());
         downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
         downloadVideoRealm.setVideoFileURL(getVideoFileURL());
         downloadVideoRealm.setVideoSize(getVideoSize());
