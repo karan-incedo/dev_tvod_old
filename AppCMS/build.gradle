@@ -451,7 +451,7 @@ dependencies {
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-    implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
+
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
     implementation "com.clevertap.android:clevertap-android-sdk:$rootProject.ext.clevertapVersion"
     implementation "com.android.volley:volley:$rootProject.ext.volleyVersion"

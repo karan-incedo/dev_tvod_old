@@ -147,6 +147,8 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private VideoPlayerView.ClosedCaptionSelector closedCaptionSelector;
+    private VideoPlayerView.VideoPlayerSettingsEvent videoPlayerSettingsEvent;
+
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -265,6 +267,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         if (context instanceof VideoPlayerView.ClosedCaptionSelector) {
             closedCaptionSelector = (VideoPlayerView.ClosedCaptionSelector) context;
+        }
+        if (context instanceof VideoPlayerView.VideoPlayerSettingsEvent) {
+            videoPlayerSettingsEvent = (VideoPlayerView.VideoPlayerSettingsEvent) context;
         }
         if (context instanceof RegisterOnResumeVideo) {
             ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
@@ -403,6 +408,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         if (closedCaptionSelector != null) {
             videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
+        }
+        if (videoPlayerSettingsEvent != null) {
+            videoPlayerView.setVideoPlayerSettingsEvent(videoPlayerSettingsEvent);
         }
 
         if (!TextUtils.isEmpty(policyCookie) &&
@@ -1448,10 +1456,31 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
+    public void onResumeVideo1() {
+        resumeVideo();
+        if (videoPlayerView != null) {
+            videoPlayerView.resumePlayer();
+        }
+    }
+    @Override
     public void onResumeVideo() {
         resumeVideo();
         if (videoPlayerView != null) {
             videoPlayerView.startPlayer(true);
+        }
+    }
+
+    @Override
+    public void setCloseCaption(int position) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setClosedCaption(position);
+        }
+    }
+
+    @Override
+    public void setStreamingQuality(int position) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setStreamingQuality(0,"");
         }
     }
 

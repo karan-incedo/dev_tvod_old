@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.BuildConfig;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
@@ -33,10 +35,12 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.VideoPlayerView.VideoPlayerSettingsEvent;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
 
@@ -58,6 +62,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
         VideoPlayerView.ClosedCaptionSelector,
+        VideoPlayerSettingsEvent,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -87,8 +92,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        if (!BuildConfig.DEBUG) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE);
+        }
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
@@ -769,5 +776,45 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         }
         return language;
+    }
+
+
+    @Override
+    public void launchSetting(List<ClosedCaptions> closeCaptions, List<HLSStreamingQuality> availableStreamingHLS, List<String> availableStreaming) {
+        Intent intent = new Intent(this, AppCMSPlayerSettings.class);
+        Bundle bundle =new Bundle();
+
+        binder.setAvailableClosedCaptions(closeCaptions);
+        binder.setAvailableStreamingQualitiesHLS(availableStreamingHLS);
+        binder.setAvailableStreamingQualities(availableStreaming);
+
+        bundle.putBinder(getString(R.string.app_cms_video_player_binder_key),binder);
+
+        intent.putExtra("ADAPTER_BUNDLE", bundle);
+
+            /*
+            intent.putExtra("streamingQualityAdapter",listViewAdapter);
+            intent.putExtra("ccAdapter",closedCaptionSelectorAdapter);
+            */
+        startActivityForResult(intent,PLAYER_SETTING_RESULT);
+    }
+    int PLAYER_SETTING_RESULT = 1003;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PLAYER_SETTING_RESULT){
+            if (resultCode == Activity.RESULT_OK){
+                if (onResumeVideo != null) {
+                    onResumeVideo.onResumeVideo1();
+                    if (data.getExtras().getInt("SelectedClosedCaptionIndex") >= 0){
+                        onResumeVideo.setCloseCaption(data.getExtras().getInt("SelectedClosedCaptionIndex"));
+                }
+                    if (data.getExtras().getInt("SelectedStreamingQualityIndex") >= 0) {
+                        onResumeVideo.setStreamingQuality(data.getExtras().getInt("SelectedStreamingQualityIndex"));
+                    }
+                }
+            }
+        }
     }
 }
