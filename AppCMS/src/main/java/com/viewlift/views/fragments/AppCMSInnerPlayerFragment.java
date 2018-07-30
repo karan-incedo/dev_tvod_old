@@ -1180,6 +1180,11 @@ public class AppCMSInnerPlayerFragment extends Fragment
         }
     }
 
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
+    }
+
     private void initViewForCRW(View rootView) {
 
         contentRatingMainContainer =

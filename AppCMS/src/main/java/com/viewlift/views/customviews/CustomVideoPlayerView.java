@@ -46,7 +46,6 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 */
-
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
@@ -73,13 +72,12 @@ import com.viewlift.views.activity.AppCMSPageActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rx.functions.Action1;
 
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
@@ -87,7 +85,8 @@ import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
 
 
-public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlayerView.OnBeaconAdsEvent{
+public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlayerView.OnBeaconAdsEvent,
+        VideoPlayerView.StreamingQualitySelector {
 
     private static final String TAG = CustomVideoPlayerView.class.getSimpleName();
     private Context mContext;
@@ -206,8 +205,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
         beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-       // setStreamingQualitySelector(this);
 
         setOnBeaconAdsEvent(this);
         beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
@@ -605,7 +602,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        //manageStreamingQuality(playbackState);
         if (beaconMessageThread != null) {
             beaconMessageThread.playbackState = playbackState;
         }
@@ -852,6 +848,124 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
     }
 
+
+    @Override
+    public List<String> getAvailableStreamingQualities() {
+       /* if (availableStreamingQualities != null) {
+            return availableStreamingQualities;
+        }*/
+        return new ArrayList<>();
+    }
+
+    @Override
+    public String getVideoUrl() {
+        return null;
+    }
+
+    @Override
+    public String getStreamingQualityUrl(String streamingQuality) {
+       /* if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
+            return availableStreamingQualityMap.get(streamingQuality);
+        }*/
+        return null;
+    }
+
+    @Override
+    public String getMpegResolutionFromUrl(String mpegUrl) {
+        if (mpegUrl != null) {
+            int mpegIndex = mpegUrl.indexOf(".mp4");
+            if (0 < mpegIndex) {
+                int startIndex = mpegUrl.substring(0, mpegIndex).lastIndexOf("/");
+                if (0 <= startIndex && startIndex < mpegIndex) {
+                    return mpegUrl.substring(startIndex + 1, mpegIndex);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int getMpegResolutionIndexFromUrl(String mpegUrl) {
+        if (!TextUtils.isEmpty(mpegUrl)) {
+            String mpegUrlWithoutCdn = mpegUrl;
+            int mp4Index = mpegUrl.indexOf(".mp4");
+            if (0 <= mp4Index) {
+                mpegUrlWithoutCdn = mpegUrl.substring(0, mp4Index);
+            }
+            List<String> availableStreamingQualities = getAvailableStreamingQualities();
+            if (availableStreamingQualities != null) {
+                for (int i = 0; i < availableStreamingQualities.size(); i++) {
+                    String availableStreamingQuality = availableStreamingQualities.get(i);
+                    if (!TextUtils.isEmpty(availableStreamingQuality)) {
+
+                        /*if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
+                                availableStreamingQualityMap.get(availableStreamingQuality).contains(mpegUrlWithoutCdn)) {
+                            return i;
+                        }*/
+                    }
+                }
+            }
+        }
+
+        //return availableStreamingQualities.size() - 1;
+        return 1;
+    }
+
+    @Override
+    public String getFilmId() {
+        return videoDataId;
+    }
+
+    /*
+    private void initializeStreamingQualityValues(VideoAssets videoAssets) {
+        if (availableStreamingQualityMap == null) {
+            availableStreamingQualityMap = new HashMap<>();
+        } else {
+            availableStreamingQualityMap.clear();
+        }
+        if (availableStreamingQualities == null) {
+            availableStreamingQualities = new ArrayList<>();
+        } else {
+            availableStreamingQualities.clear();
+        }
+        if (videoAssets != null && videoAssets.getMpeg() != null) {
+            List<Mpeg> availableMpegs = videoAssets.getMpeg();
+            int numAvailableMpegs = availableMpegs.size();
+            for (int i = 0; i < numAvailableMpegs; i++) {
+                Mpeg availableMpeg = availableMpegs.get(i);
+                String resolution = null;
+                if (!TextUtils.isEmpty(availableMpeg.getRenditionValue())) {
+                    resolution = availableMpeg.getRenditionValue().replace("_", "");
+                } else {
+                    String mpegUrl = availableMpeg.getUrl();
+                    if (!TextUtils.isEmpty(mpegUrl)) {
+                        resolution = getMpegResolutionFromUrl(mpegUrl);
+                    }
+                }
+                if (!TextUtils.isEmpty(resolution)) {
+                    availableStreamingQualities.add(resolution);
+                    availableStreamingQualityMap.put(resolution, availableMpeg.getUrl());
+                }
+            }
+        }
+
+        Collections.sort(availableStreamingQualities, (q1, q2) -> {
+            int i1 = Integer.valueOf(q1.replace("p", ""));
+            int i2 = Integer.valueOf(q2.replace("p", ""));
+            if (i2 < i1) {
+                return -1;
+            } else if (i1 == i2) {
+                return 0;
+            } else {
+                return 1;
+            }
+        });
+        int numStreamingQualities = availableStreamingQualities.size();
+        for (int i = 0; i < numStreamingQualities; i++) {
+            availableStreamingQualities.set(i, availableStreamingQualities.get(i));
+        }
+    }
+*/
     class ForegroundObserver extends AsyncTask<Context, Void, Boolean> {
 
         @Override
@@ -1403,7 +1517,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
             updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
-//            preparePlayer(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
+//            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
         }
         if (e.type == ExoPlaybackException.TYPE_RENDERER) {
             Exception cause = e.getRendererException();
@@ -1446,7 +1560,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                     } else {
                         if (isBehindLiveWindow(e)) {
                             init(mContext);
-                            updateToken(Uri.parse(lastUrl), Uri.parse(closedCaptionUri));
+                            updateToken(Uri.parse(lastUrl),Uri.parse(closedCaptionUri));
                         }
                     }
                 }
@@ -1562,7 +1676,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     }
 
 
-    public void initiateStreamingId() {
+
+    public void initiateStreamingId(){
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoDataId);
         } catch (Exception e) {
