@@ -38,6 +38,7 @@
         android:label="@string/default_app_name"
         android:roundIcon="@mipmap/app_logo"
         android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true"
         tools:replace="android:theme,android:label">
 
 

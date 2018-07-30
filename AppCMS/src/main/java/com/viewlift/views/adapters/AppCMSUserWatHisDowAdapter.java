@@ -131,6 +131,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+//        for(int i=0;i<moduleAPI.getContentData().size();i++){
+//            if(moduleAPI.getContentData().get(i).getGist().getSubscriptionType()!=null && moduleAPI.getContentData().get(i).getGist().getSubscriptionType().equalsIgnoreCase("test")){
+//                moduleAPI.getContentData().remove(i);
+//            }
+//        }
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
             this.adapterData = moduleAPI.getContentData();
         } else {
@@ -781,7 +786,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action != null && !TextUtils.isEmpty(action) &&
                                     data.getGist() != null &&
                                     data.getGist().getContentType() != null &&
-                                    data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                                    (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_episodic_season_prefix)))) {
                                 action = mContext.getString(R.string.app_cms_action_showvideopage_key);
                             }
 

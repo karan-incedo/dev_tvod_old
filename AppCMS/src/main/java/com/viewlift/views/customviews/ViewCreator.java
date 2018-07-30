@@ -1917,6 +1917,11 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(2);
+                } else if (moduleInfo.getBlockName().contains("library01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "library_page.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } /*else if (moduleInfo.getBlockName().contains("fighterRoster01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "roster.json"),
@@ -5229,6 +5234,8 @@ public class ViewCreator {
                                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
                                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY ) {
+                                    ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_mylibrary_title);
                                 } /*else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                                 }*/ else if (moduleAPI != null &&
@@ -6583,6 +6590,8 @@ public class ViewCreator {
                     case PAGE_GAME_DETAIL_MODULE_KEY:
                     case PAGE_PERSON_DETAIL_MODULE_KEY:
                     case PAGE_AC_ROSTER_MODULE_KEY:
+                    case PAGE_MYLIBRARY_01_MODULE_KEY:
+
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
