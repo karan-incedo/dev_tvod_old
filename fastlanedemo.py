@@ -90,6 +90,10 @@ keyval = ""
 googleCredentialsFile = "googleCredentialsFile"
 x = XMLBuilder('resources') 
 
+
+myHostNameSuffix='*.site-aco.viewlift.com'
+myHostName='site-aco.viewlift.com'
+
 print "**************platform**********build*****************siteName*************"
 print platform
 print buildId
@@ -218,7 +222,8 @@ for k in data.keys():
     elif k == "hostName":
         keyval = "HostName" + ":" + data[k]
         hostName = data[k]
-
+        if hostName is None:
+            hostName="hostName"
 
     elif k == "resourcePath":
         # keyval = "AppResourcesPath" + ":" + data[k]
@@ -361,9 +366,9 @@ for k in data.keys():
         facebookAppId = data[k]
 
     elif k == "splashBackgroud":
-        x.color(data[k], name='splashbackgroundColor') 
+        x.color(data[k], name='splashbackgroundColor')
         etree_node = ~x
-        print str(x) 
+        print str(x)
         print "---------------------------- Theme ----------------------------"
         with open(fileDirPath + "/AppCMS/src/main/res/values/colors.xml", "w") as myfile:
             myfile.write(str(x).encode("utf-8") + "\n")
@@ -425,6 +430,7 @@ for k in data.keys():
         else:
             x.color(data[k]["general"]["backgroundColor"], name='backgroundColor') 
 
+        x.color('#000000', name='splash_progress_color') 
         x.color('#8F000000', name='blackTransparentColor') 
         x.color('#8c8c8c', name='colorNavBarText') 
         x.color('#3b5998', name='facebookBlue') 
@@ -434,7 +440,10 @@ for k in data.keys():
         x.color('#00000000', name='transparentColor') 
         x.color('#414344', name='audioSeekBg') 
         x.color('#B5B5B5', name='volumeProgress') 
-      
+
+        x.color('#7a7a7a', name='color_grey') 
+        x.color('#ffffff', name='color_white') 
+
 
     with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
@@ -476,6 +485,7 @@ def getApptentiveApiKey():
 
  
 def getFaceBookAppId():
+    print "Gettnng Facebook App id"
     url = uploadHostName + '/appcms/build/data'
     payload = {
         'platform': platform,
@@ -532,7 +542,7 @@ def getDevAppSecret():
     return credentailsData
 
 
-versionCodeValue = 1
+versionCodeValue = 2
 keyval = "AppVersionCode" + ":" + str(versionCodeValue)
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
@@ -547,20 +557,21 @@ with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as my
          myfile.write(keyval.encode("utf-8") + "\n")
 
 
-myHostNameSuffix='*.http\://'+appName.lower()+'.viewlift.com/'
-myHostName='http\://'+appName.lower()+'.viewlift.com/'
+# myHostNameSuffix='*.http\://'+appName.lower()+'.viewlift.com/'
+# myHostName='http\://'+appName.lower()+'.viewlift.com/'
 
 
-keyval = "HostNameSuffix" + ":" + myHostNameSuffix
+
+
+keyval = "HostNameSuffix" + ":" + "*." + hostName
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
 
-keyval = "BaseUrl" + ":" + baseUrl
+keyval = "BaseUrl" + ":" + baseUrl[:-1]
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
 
-
-keyval = "HostName" + ":" + myHostName
+keyval = "HostName" + ":" + hostName
 with open(fileDirPath + "/AppCMS/src/main/assets/version.properties", "a") as myfile:
          myfile.write(keyval.encode("utf-8") + "\n")
 

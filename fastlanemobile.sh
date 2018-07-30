@@ -28,29 +28,29 @@ echo ${22}
 
 
 postBuildStatus(){ #buildid, posturl, status, errormsg
-    BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\"}"
-    BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\",\"message\":\"$5\",\"percentComplete\":$6,\"isAppOnStore\":\"$7\",\"buildVersion\":$8}"
-    echo "\n**********BUILD_STATUS_UPDATE**********\nPOST_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
-    curl -H 'Content-Type: application/json' -X POST -d "$BODY_DATA" $2
+BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\"}"
+BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\",\"message\":\"$5\",\"percentComplete\":$6,\"isAppOnStore\":\"$7\",\"buildVersion\":$8}"
+echo "\n**********BUILD_STATUS_UPDATE**********\nPOST_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
+curl -H 'Content-Type: application/json' -X POST -d "$BODY_DATA" $2
 }
 
 postUpdateLink(){ #buildid, posturl, status, errormsg
-    BODY_DATA="{\"buildId\":$1,\"apkLink\":\"$3\",\"platform\":\"android\"}"
-    echo "\n**********BUILD_STATUS_UPDATE**********\UPLOAD_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
-    curl -H 'Content-Type: application/json' -X PUT -d "$BODY_DATA" $2
+BODY_DATA="{\"buildId\":$1,\"apkLink\":\"$3\",\"platform\":\"android\"}"
+echo "\n**********BUILD_STATUS_UPDATE**********\UPLOAD_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
+curl -H 'Content-Type: application/json' -X PUT -d "$BODY_DATA" $2
 }
 
 downloadFile(){ #url, output, buildid, posturl
-    status=$(curl -s -w %{http_code} $1 -o $2)
-    if [ "$status" -eq 200 ]
-        then
-        echo "File downloaded:[$1]"
-    else
-        echo "Missing required file:[$1]"
-        postBuildStatus $3 $4 'FAILED' "Missing required file:$1"
-        trap "echo exitting because my child killed me due to asset file not found" 0
-        exit 1
-    fi
+status=$(curl -s -w %{http_code} $1 -o $2)
+if [ "$status" -eq 200 ]
+then
+echo "File downloaded:[$1]"
+else
+echo "Missing required file:[$1]"
+postBuildStatus $3 $4 'FAILED' "Missing required file:$1"
+trap "echo exitting because my child killed me due to asset file not found" 0
+exit 1
+fi
 }
 
 
@@ -135,6 +135,8 @@ rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_land.jpg
 rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_port.jpg
 rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_land.png
 rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_port.png
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_square.jpg
+rm -rf ./AppCMS/src/main/res/drawable/vid_image_placeholder_square.png
 
 
 
@@ -175,53 +177,66 @@ postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading 
 
 rm -rf ./fastlane/metadata
 
-rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-nonkiswe-debug.apk 
-rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-nonkiswe-debug-androidTest.apk  
+rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-nonkiswe-debug.apk
+rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-nonkiswe-debug-androidTest.apk
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release-unsigned.apk
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-nonkiswe-release.apk
 
-rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-kiswe-debug.apk 
-rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-kiswe-debug-androidTest.apk  
+rm -rf ./AppCMS/build/outputs/apk/mobile/debug/AppCMS-mobile-kiswe-debug.apk
+rm -rf ./AppCMS/build/outputs/apk/androidTest/mobile/debug/AppCMS-mobile-kiswe-debug-androidTest.apk
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-kiswe-release-unsigned.apk
 rm -rf ./AppCMS/build/outputs/apk/mobile/release/AppCMS-mobile-kiswe-release.apk
 
 fastlane supply init --package_name $6 --json_key ./googleplay_android.json
 
-IS_APP_ONPLAYSTORE="$?"
+
+IS_APP_ONPLAYSTORE="1"
 
 echo "$IS_APP_ONPLAYSTORE"
 
+
 if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
-        then
-        echo "App is Present on Play Store"
+then
+echo "App is Present on Play Store"
 
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading FeatureGraphic" 15 "true" -1
-        downloadFile ${12} ./fastlane/metadata/android/en-US/images/featureGraphic.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading PromoGraphic" 16 "true" -1
-        downloadFile ${13} ./fastlane/metadata/android/en-US/images/promoGraphic.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the TV Banner" 17 "true" -1
-        downloadFile ${14} ./fastlane/metadata/android/en-US/images/tvBanner.png ${17} $POST_URL
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the icon images" 18 "true" -1
-        downloadFile ${15} ./fastlane/metadata/android/en-US/images/icon.png ${17} $POST_URL
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading FeatureGraphic" 15 "true" -1
+# downloadFile ${12} ./fastlane/metadata/android/en-US/images/featureGraphic.png ${17} $POST_URL
+# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading PromoGraphic" 16 "true" -1
+# downloadFile ${13} ./fastlane/metadata/android/en-US/images/promoGraphic.png ${17} $POST_URL
+# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the TV Banner" 17 "true" -1
+# downloadFile ${14} ./fastlane/metadata/android/en-US/images/tvBanner.png ${17} $POST_URL
+# postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the icon images" 18 "true" -1
+# downloadFile ${15} ./fastlane/metadata/android/en-US/images/icon.png ${17} $POST_URL
 
-        postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the MetaData of the Application" 19 "true" -1
+postBuildStatus ${17} $POST_URL "DOWNLOADING_RESOURCES" "No ERROR" "Downloading the MetaData of the Application" 19 "true" -1
 
-        echo ${21} > ./fastlane/metadata/android/en-US/full_description.txt
-        echo ${22} > ./fastlane/metadata/android/en-US/short_description.txt
-        echo ${4} > ./fastlane/metadata/android/en-US/title.txt
+rm -rf ./fastlane/metadata/android/en-US/images/featureGraphic.png
+rm -rf ./fastlane/metadata/android/en-US/images/featureGraphic.jpg
+rm -rf ./fastlane/metadata/android/en-US/images/icon.jpg
+rm -rf ./fastlane/metadata/android/en-US/images/icon.png
+rm -rf ./fastlane/metadata/android/en-US/images/promoGraphic.png
+rm -rf ./fastlane/metadata/android/en-US/images/promoGraphic.jpg
+rm -rf ./fastlane/metadata/android/en-US/images/tvBanner.png
+rm -rf ./fastlane/metadata/android/en-US/images/tvBanner.jpg
 
-        slackMessageThree = "${4}" + " - ANDROID BUILD SUCCESSFULLY STARTED. BUILD-ID:" + "${17}" + ". VERSION-NUMBER:" + "${3}"
+aws s3 cp s3://${19}/$1/build/android/resource/playstore/images ./fastlane/metadata/android/en-US/images/ --recursive
 
-        #3: Slack Second Message. Downloading Resources
-        fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID UPDATING VERSION PROPERTIES OF THE APPLICATION. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
+echo ${21} > ./fastlane/metadata/android/en-US/full_description.txt
+echo ${22} > ./fastlane/metadata/android/en-US/short_description.txt
+echo ${4} > ./fastlane/metadata/android/en-US/title.txt
 
-        #Now we need to check the Version of App on the Play Store.
-        postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Fetching latest version from playstore and incrementing the same" 19 " " 0
-        fastlane android updateTheVersion app_package_name:$6 buildid:${17} json_key_file:./googleplay_android.json posturl:$POST_URL
-        postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Version Name is Incremented" 20 " " 0
+slackMessageThree = "${4}" + " - ANDROID BUILD SUCCESSFULLY STARTED. BUILD-ID:" + "${17}" + ". VERSION-NUMBER:" + "${3}"
+
+#3: Slack Second Message. Downloading Resources
+fastlane android slackSendMessage my_slack_msg:"${4} -> ANDROID UPDATING VERSION PROPERTIES OF THE APPLICATION. BUILD-ID -> ${17}. VERSION-NUMBER -> ${3}. Build Triggered By --> ${23}" my_user_name:"Viewlift fastlane" mySlackUrl:"{24}"
+
+#Now we need to check the Version of App on the Play Store.
+postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Fetching latest version from playstore and incrementing the same" 19 " " 0
+fastlane android updateTheVersion app_package_name:$6 buildid:${17} json_key_file:./googleplay_android.json posturl:$POST_URL
+postBuildStatus ${17} $POST_URL "UPDATING_VERSION_PROPERTIES" "No ERROR" "Version Name is Incremented" 20 " " 0
 
 else
-        echo "App is not Present on Play Store"
+echo "App is not Present on Play Store"
 fi
 
 postBuildStatus ${17} $POST_URL "CONFIGURING_BUILD" "No ERROR" "Checking if app already exists on the App Store" 25 " " 0
@@ -234,41 +249,43 @@ IS_APP_SUCCESS="$?"
 echo "$IS_APP_SUCCESS"
 
 if [ "$IS_APP_SUCCESS" -eq "0" ]
-        then
-        
-        echo "Uploading Apk File On Partner Portal"
+then
 
-        postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Generated and Preparing the Build for upload to S3 Bucket" 70 " " 0
-       
-        myApkName="${4}-android-${3}.apk"
+echo "Uploading Apk File On Partner Portal"
 
-        mv ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}"
+postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Generated and Preparing the Build for upload to S3 Bucket" 70 " " 0
 
-        aws s3 cp "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}" s3://${19}/$1/build/android/
-       
-        postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 75 " " 0
+myApkName="${4}-android-${3}.apk"
 
-        postUpdateLink ${17} $UPLOAD_URL "http://${19}.s3.amazonaws.com/$1/build/android/${myApkName}" 
+cp ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/androidbuild.apk"
 
-        if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
-                then
-                echo "App is Present on Play Store"
-                postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Uploaded to the S3 Bucket" 80 "true" 0
-                sleep 5
-                postBuildStatus ${17} $POST_URL "UPLOADING_PLAY_STORE" "No ERROR" "Uploading the App MetaData and Build to Play Store" 85 "true" 0
-                fastlane android supply_onplaystore package_name:$6 track:${10} json_key_file:./googleplay_android.json apk_path:./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName} buildid:${17} posturl:$POST_URL mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
+mv ./AppCMS/build/outputs/apk/mobileNonKiswe/release/AppCMS-mobile-nonkiswe-release.apk "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}"
 
-        else
-                echo "App is not Present on Play Store"
-                postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://play.google.com/apps/publish/' target='_blank'> Playstore </a> for first time manual Uploading" 100 false 0
-                trap "echo exiting because first apk is not Present on playstore" 0
-                exit 1
-        fi
+aws s3 cp "./AppCMS/build/outputs/apk/mobileNonKiswe/release/${myApkName}" s3://${19}/$1/build/android/
+
+postBuildStatus ${17} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 75 " " 0
+
+postUpdateLink ${17} $UPLOAD_URL "http://${19}.s3.amazonaws.com/$1/build/android/${myApkName}"
+
+if [ "$IS_APP_ONPLAYSTORE" -eq "0" ]
+then
+echo "App is Present on Play Store"
+postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Uploaded to the S3 Bucket" 80 "true" 0
+sleep 5
+postBuildStatus ${17} $POST_URL "UPLOADING_PLAY_STORE" "No ERROR" "Uploading the App MetaData and Build to Play Store" 85 "true" 0
+fastlane android supply_onplaystore package_name:$6 track:${10} json_key_file:./googleplay_android.json apk_path:'./AppCMS/build/outputs/apk/mobileNonKiswe/release/androidbuild.apk' buildid:${17} posturl:$POST_URL mySlackUrl:${24} myAppName:${4} myAppVersion:${3} myEmailId:${23} myBuildId:${17}
+
 else
-        echo "Error Building"
-        # postBuildStatus ${17} $POST_URL "FAILED_BUILD_ERROR" "ERROR" "Build Generaton Failed" 65 " " 0
-        trap "echo exitting because my child killed me due to asset file not found" 0
-        exit 1
+echo "App is not Present on Play Store"
+postBuildStatus ${17} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://play.google.com/apps/publish/' target='_blank'> Playstore </a> for first time manual Uploading" 100 false 0
+trap "echo exiting because first apk is not Present on playstore" 0
+exit 1
+fi
+else
+echo "Error Building"
+# postBuildStatus ${17} $POST_URL "FAILED_BUILD_ERROR" "ERROR" "Build Generaton Failed" 65 " " 0
+trap "echo exitting because my child killed me due to asset file not found" 0
+exit 1
 fi
 
 
