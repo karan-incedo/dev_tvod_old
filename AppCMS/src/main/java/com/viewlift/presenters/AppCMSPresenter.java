@@ -1696,7 +1696,8 @@ public class AppCMSPresenter {
                             }
                             if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
                                 for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
-                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID){
+                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID &&
+                                            appCMSAndroid.getAdvertising() != null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
                                     } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
