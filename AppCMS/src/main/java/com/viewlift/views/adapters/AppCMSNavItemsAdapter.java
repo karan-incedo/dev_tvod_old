@@ -217,7 +217,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     && (i - indexOffset) < navigation.getNavigationUser().size()) {
                 final NavigationUser navigationUser = navigation.getNavigationUser().get(i - indexOffset);
 
-                if (navigationUser.getAccessLevels() != null) {
+    if (navigationUser!=null && navigationUser.getAccessLevels() != null && navigationUser.getTitle()!=null) {
                     if (userLoggedIn && navigationUser.getAccessLevels().getLoggedIn() ||
                             !userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) {
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
