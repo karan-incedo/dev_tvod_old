@@ -7,9 +7,6 @@ cd $DIR
 POST_URL="${14}/${12}/fireTv/appcms/build/status"
 UPLOAD_URL="${14}/${12}/appcms/fireTv/build/apk/link"
 
-git stash
-git pull origin master
-
 echo 'piyush ****'
 
 echo $POST_URL
