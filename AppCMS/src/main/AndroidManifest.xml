@@ -4,6 +4,8 @@
     package="com.viewlift">
 
 
+
+
     <application
         android:name=".AppCMSApplication"
         android:allowBackup="true"
@@ -137,6 +139,14 @@
                 <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".views.activity.AppCMSPlayerSettings"
+            android:label=""
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
     </application>
 

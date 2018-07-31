@@ -46,7 +46,6 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 */
-
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
@@ -73,13 +72,12 @@ import com.viewlift.views.activity.AppCMSPageActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rx.functions.Action1;
 
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
@@ -182,10 +180,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     public boolean hideMiniPlayer = false;
     private int entitlementCheckMultiplier = 0;
 
-    private Map<String, String> availableStreamingQualityMap;
-    private List<String> availableStreamingQualities;
-
-
     public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context, appCMSPresenter);
         mContext = context;
@@ -211,8 +205,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
         beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-        setStreamingQualitySelector(this);
 
         setOnBeaconAdsEvent(this);
         beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
@@ -242,18 +234,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         return videoDataId;
     }
 
-    /*  public void setupAds() {
-          sdkFactory = ImaSdkFactory.getInstance();
-          adsLoader = sdkFactory.createAdsLoader(getContext());
-          adsLoader.addAdErrorListener(this);
-          adsLoader.addAdsLoadedListener(adsManagerLoadedEvent -> {
-              adsManager = adsManagerLoadedEvent.getAdsManager();
-              adsManager.addAdErrorListener(this);
-              adsManager.addAdEventListener(this);
-              adsManager.init();
-          });
-      }
-  */
+
     public void setVideoUri(String videoId, int resIdMessage) {
         showOverlayWhenCastingConnected();
         hideRestrictedMessage();
@@ -288,8 +269,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                             if (beaconMessageThread != null) {
                                 beaconMessageThread.setContentDatum(onUpdatedContentDatum);
                             }
-                            initializeStreamingQualityValues(onUpdatedContentDatum.getStreamingInfo().getVideoAssets());
-
                             getPermalink(contentDatum);
                             setWatchedTime(contentDatum);
                             if (contentDatum != null &&
@@ -623,7 +602,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        manageStreamingQuality(playbackState);
         if (beaconMessageThread != null) {
             beaconMessageThread.playbackState = playbackState;
         }
@@ -667,9 +645,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                 } else {
                     showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
-                /*if (shouldRequestAds && adsLoader != null) {
-                    adsLoader.contentComplete();
-                }*/
 
                 if (!isTrailer && 30 <= (getCurrentPosition() / 1000) && !isLiveStream) {
                     appCMSPresenter.updateWatchedTime(videoDataId,
@@ -876,9 +851,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
     @Override
     public List<String> getAvailableStreamingQualities() {
-        if (availableStreamingQualities != null) {
+       /* if (availableStreamingQualities != null) {
             return availableStreamingQualities;
-        }
+        }*/
         return new ArrayList<>();
     }
 
@@ -889,9 +864,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
     @Override
     public String getStreamingQualityUrl(String streamingQuality) {
-        if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
+       /* if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
             return availableStreamingQualityMap.get(streamingQuality);
-        }
+        }*/
         return null;
     }
 
@@ -923,16 +898,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                     String availableStreamingQuality = availableStreamingQualities.get(i);
                     if (!TextUtils.isEmpty(availableStreamingQuality)) {
 
-                        if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
+                        /*if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
                                 availableStreamingQualityMap.get(availableStreamingQuality).contains(mpegUrlWithoutCdn)) {
                             return i;
-                        }
+                        }*/
                     }
                 }
             }
         }
 
-        return availableStreamingQualities.size() - 1;
+        //return availableStreamingQualities.size() - 1;
+        return 1;
     }
 
     @Override
@@ -940,6 +916,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         return videoDataId;
     }
 
+    /*
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingQualityMap == null) {
             availableStreamingQualityMap = new HashMap<>();
@@ -988,7 +965,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
             availableStreamingQualities.set(i, availableStreamingQualities.get(i));
         }
     }
-
+*/
     class ForegroundObserver extends AsyncTask<Context, Void, Boolean> {
 
         @Override
@@ -1420,108 +1397,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
 
     }
 
-    /* private void requestAds(String adTagUrl) {
-         pausePlayer();
-         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
-             Log.d(TAG, "Requesting ads: " + adTagUrl);
-             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
-             adDisplayContainer.setAdContainer(this);
-
-             AdsRequest request = sdkFactory.createAdsRequest();
-             request.setAdTagUrl(adTagUrl);
-             request.setAdDisplayContainer(adDisplayContainer);
-
-             adsLoader.requestAds(request);
-             apod += 1;
-             isAdsDisplaying = true;
-
-             if (appCMSPresenter != null) {
-                 appCMSPresenter.sendBeaconMessage(videoDataId,
-                         permaLink,
-                         parentScreenName,
-                         getCurrentPosition(),
-                         false,
-                         AppCMSPresenter.BeaconEvent.AD_REQUEST,
-                         "Video",
-                         getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                         String.valueOf(getVideoHeight()),
-                         String.valueOf(getVideoWidth()),
-                         mStreamId,
-                         0d,
-                         apod,
-                         isVideoDownloaded);
-             }
-         }
-     }
-
-     @Override
-     public void onAdError(AdErrorEvent adErrorEvent) {
-         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
-         isAdError = true;
-         isTimerRun = true;
-         if (appCMSPresenter != null && appCMSPresenter.getCurrentPageName() != null &&
-                 appCMSPresenter.getCurrentPageName().equalsIgnoreCase("Video Page")) {
-             playVideos(0, onUpdatedContentDatum);
-         }
-
-
-     }
-
-     @Override
-     public void onAdEvent(AdEvent adEvent) {
-         Log.i(TAG, "onAdEvent: " + adEvent.getType());
-         switch (adEvent.getType()) {
-             case LOADED:
-                 if (adsManager != null) {
-                     adsManager.start();
-                     isAdsDisplaying = true;
-                 }
-                 break;
-
-             case CONTENT_PAUSE_REQUESTED:
-                 isTimerRun = false;
-                 isAdDisplayed = true;
-                 if (beaconMessageThread != null) {
-                     beaconMessageThread.sendBeaconPing = false;
-                 }
-                 if (appCMSPresenter != null) {
-                     sendAdRequest();
-                     appCMSPresenter.sendBeaconMessage(videoDataId,
-                             permaLink,
-                             parentScreenName,
-                             getCurrentPosition(),
-                             false,
-                             AppCMSPresenter.BeaconEvent.AD_IMPRESSION,
-                             "Video",
-                             getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                             String.valueOf(getVideoHeight()),
-                             String.valueOf(getVideoWidth()),
-                             mStreamId,
-                             0d,
-                             apod,
-                             isVideoDownloaded);
-                 }
-                 pausePlayer();
-                 break;
-
-             case CONTENT_RESUME_REQUESTED:
-                 //isAdDisplayed = false;
-                 break;
-
-             case ALL_ADS_COMPLETED:
-                 isTimerRun = true;
-                 if (adsManager != null) {
-                     adsManager.destroy();
-                     adsManager = null;
-                 }
-                 isAdsDisplaying = false;
-                 playVideos(0, onUpdatedContentDatum);
-                 break;
-             default:
-                 break;
-         }
-     }
- */
     public void setFirebaseProgressHandling() {
         mProgressHandler = new Handler();
         mProgressRunnable = new Runnable() {
@@ -1638,10 +1513,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         String errorString = null;
+        e.printStackTrace();
         if (e instanceof ExoPlaybackException) {
             errorString = e.getCause().toString();
             updateToken(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
-//            preparePlayer(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
+//            setUri(Uri.parse(lastUrl), closedCaptionUri == null ? null : Uri.parse(String.valueOf(closedCaptionUri)));
         }
         if (e.type == ExoPlaybackException.TYPE_RENDERER) {
             Exception cause = e.getRendererException();
@@ -1684,7 +1560,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
                     } else {
                         if (isBehindLiveWindow(e)) {
                             init(mContext);
-                            updateToken(Uri.parse(lastUrl), Uri.parse(closedCaptionUri));
+                            updateToken(Uri.parse(lastUrl),Uri.parse(closedCaptionUri));
                         }
                     }
                 }
@@ -1800,7 +1676,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
     }
 
 
-    public void initiateStreamingId() {
+
+    public void initiateStreamingId(){
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoDataId);
         } catch (Exception e) {

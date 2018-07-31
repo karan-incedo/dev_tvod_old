@@ -1700,6 +1700,8 @@ public class AppCMSPresenter {
                             if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
                                 for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
                                     if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID && appCMSAndroid.getAdvertising()!=null){
+                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID &&
+                                            appCMSAndroid.getAdvertising() != null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
                                     } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV && appCMSAndroid.getAdvertising()!=null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
@@ -7769,6 +7771,10 @@ public class AppCMSPresenter {
                                             false,
                                             binder,
                                             action1);
+                                } else {
+                                    if (platformType == PlatformType.TV) {
+                                        action1.call(null);
+                                    }
                                 }
                             }
                         } else {
@@ -11688,15 +11694,14 @@ public class AppCMSPresenter {
 
 
                         //check default language
-                        if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
-                            ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
-                            System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
-                            if(languageList!=null) {
-                                boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
-                                if (!isLanguageExistinMain) {
-                                    defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
-                                }
-                                System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());
+
+                        if(null != defaultLanguage && null != appCMSMain.getLanguages()){
+                            ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
+                            System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
+                            boolean isLanguageExistinMain = languageList != null  && languageList.contains(defaultLanguage);
+                            if(!isLanguageExistinMain){
+                                defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
+
                             }
                         }
                         LocaleUtils.setLocale(currentContext, defaultLanguage.getLanguageCode());
@@ -16629,6 +16634,7 @@ public class AppCMSPresenter {
         } else {
             //Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
+            stopLoader();
         }
         return result;
     }
