@@ -1,6 +1,6 @@
 package com.viewlift.models.data.appcms.beacon;
 
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -63,7 +63,7 @@ public class BeaconPing extends Thread {
 
                     }
                     if (appCMSPresenter != null && videoPlayerView != null
-                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY &&
+                            && videoPlayerView.getPlayer().getPlaybackState() == Player.STATE_READY &&
                             30 <= currentTime &&
                             currentTime % 30 == 0) {
                         if (contentDatum != null && contentDatum.getMediaType() == null) {
@@ -88,9 +88,9 @@ public class BeaconPing extends Thread {
                                 appCMSPresenter.isVideoDownloaded(filmId));
                     }
                     if (appCMSPresenter != null && videoPlayerView != null
-                            && videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_READY &&
+                            && videoPlayerView.getPlayer().getPlaybackState() == Player.STATE_READY &&
                             currentTime % 30 == 0) {
-                        if (!isTrailer && videoPlayerView != null) {
+                        if (!isTrailer && !contentDatum.getStreamingInfo().getIsLiveStream() && videoPlayerView != null) {
                             appCMSPresenter.updateWatchedTime(filmId,
                                     videoPlayerView.getCurrentPosition() / 1000);
                         }

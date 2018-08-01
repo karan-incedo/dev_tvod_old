@@ -1825,13 +1825,20 @@ public class TVViewCreator {
                                     && moduleAPI.getContentData().get(0) != null) {
 
                                 if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
-                                    String text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
+                                    String text = "";
+                                    if (moduleAPI.getContentData().get(0).getGist().getRuntime() > 0) {
+                                        text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
+                                    }
                                     if(null != moduleAPI.getContentData().get(0).getGist().getPublishDate()) {
                                         String publishDate = appCMSPresenter.getDateFormat(
                                                 Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate()),
                                                 "MMMM dd, yyyy");
-                                        if (null != publishDate) {
-                                            text = text + " | " + publishDate;
+
+                                        if(!TextUtils.isEmpty(text) && !TextUtils.isEmpty(publishDate)){
+                                            text = text + " | " ;
+                                        }
+                                        if (!TextUtils.isEmpty(publishDate)) {
+                                            text = text + publishDate;
                                         }
                                     }
                                     ((TextView) componentViewResult.componentView).setText(text.toString());

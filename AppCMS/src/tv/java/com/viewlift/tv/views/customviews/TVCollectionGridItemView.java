@@ -310,6 +310,14 @@ public class TVCollectionGridItemView extends TVBaseView {
                     view.setBackground(Utils.getMenuSelector(context, appCMSPresenter.getAppCtaBackgroundColor(),
                             appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
                     // view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                    if(!appCMSPresenter.getAppCMSMain().getFeatures().isAutoPlay()
+                            && data.getGist().getTitle().contains("AUTOPLAY")){
+                        view.setFocusable(false);
+                        view.setEnabled(false);
+                        view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                        mPosition = 1; // change this value to set the focus on next item.
+                    }
+
                     view.setOnClickListener(v ->
                     {
                         String title = data.getGist().getTitle();
