@@ -15,29 +15,29 @@ echo ${14}
 echo 'piyush *****'
 
 postBuildStatus(){ #buildid, posturl, status, errormsg
-    BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\"}"
-    BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\",\"message\":\"$5\",\"percentComplete\":$6,\"isAppOnStore\":\"$7\",\"buildVersion\":$8}"
-    echo "\n**********BUILD_STATUS_UPDATE**********\nPOST_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
-    curl -H 'Content-Type: application/json' -X POST -d "$BODY_DATA" $2
+BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\"}"
+BODY_DATA="{\"buildId\":$1,\"status\":\"$3\",\"errorMessage\":\"$4\",\"message\":\"$5\",\"percentComplete\":$6,\"isAppOnStore\":\"$7\",\"buildVersion\":$8}"
+echo "\n**********BUILD_STATUS_UPDATE**********\nPOST_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
+curl -H 'Content-Type: application/json' -X POST -d "$BODY_DATA" $2
 }
 
 postUpdateLink(){ #buildid, posturl, status, errormsg
-    BODY_DATA="{\"buildId\":$1,\"apkLink\":\"$3\",\"platform\":\"android\"}"
-    echo "\n**********BUILD_STATUS_UPDATE**********\UPLOAD_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
-    curl -H 'Content-Type: application/json' -X PUT -d "$BODY_DATA" $2
+BODY_DATA="{\"buildId\":$1,\"apkLink\":\"$3\",\"platform\":\"android\"}"
+echo "\n**********BUILD_STATUS_UPDATE**********\UPLOAD_URL=$2\nBODY_DATA=["$BODY_DATA"]\n---------------------------------------"
+curl -H 'Content-Type: application/json' -X PUT -d "$BODY_DATA" $2
 }
 
 downloadFile(){ #url, output, buildid, posturl
-    status=$(curl -s -w %{http_code} $1 -o $2)
-    if [ "$status" -eq 200 ]
-        then
-        echo "File downloaded:[$1]"
-    else
-        echo "Missing required file:[$1]"
-        postBuildStatus $3 $4 'FAILED' "Missing required file:$1"
-        trap "echo exitting because my child killed me due to asset file not found" 0
-        exit 1
-    fi
+status=$(curl -s -w %{http_code} $1 -o $2)
+if [ "$status" -eq 200 ]
+then
+echo "File downloaded:[$1]"
+else
+echo "Missing required file:[$1]"
+postBuildStatus $3 $4 'FAILED' "Missing required file:$1"
+trap "echo exitting because my child killed me due to asset file not found" 0
+exit 1
+fi
 }
 
 
@@ -101,28 +101,28 @@ echo "Piyush"
 echo "$IS_APP_SUCCESS"
 
 if [ "$IS_APP_SUCCESS" -eq "0" ]
-        then
+then
 
-        postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Preparing Build to Upload on S3 Bucket" 75 " " 0
-       
-        myApkName="${4}-fireTV-${3}.apk"
+postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Preparing Build to Upload on S3 Bucket" 75 " " 0
 
-        mv ./AppCMS/build/outputs/apk/tvNonKiswe/release/AppCMS-tv-nonkiswe-release.apk "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}"
+myApkName="${4}-fireTV-${3}.apk"
 
-        aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://${15}/$1/build/fireTv/
+mv ./AppCMS/build/outputs/apk/tvNonKiswe/release/AppCMS-tv-nonkiswe-release.apk "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}"
 
-        postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 80 " " 0
-        
-        postUpdateLink ${13} $UPLOAD_URL "http://${15}.s3.amazonaws.com/$1/build/fireTv/${myApkName}" 
+aws s3 cp "./AppCMS/build/outputs/apk/tvNonKiswe/release/${myApkName}" s3://${15}/$1/build/fireTv/
 
-        postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://developer.amazon.com/app-submission' target='_blank'> Amazon Appstore </a> for manual Uploading" 100 " " 0
+postBuildStatus ${13} $POST_URL "BUILD_PROGRESS" "No ERROR" "Build Created Successfully and Fetching the link from S3 Bucket" 80 " " 0
 
-        # postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Build Created Successfully and Available for Download" 100 " " 0
+postUpdateLink ${13} $UPLOAD_URL "http://${15}.s3.amazonaws.com/$1/build/fireTv/${myApkName}"
+
+postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Download Apk and go to <a href='https://developer.amazon.com/app-submission' target='_blank'> Amazon Appstore </a> for manual Uploading" 100 " " 0
+
+# postBuildStatus ${13} $POST_URL "SUCCESS_S3_BUCKET" "No ERROR" "Build Created Successfully and Available for Download" 100 " " 0
 
 else
-        echo "Error Building"
-        trap "echo exitting because my child killed me due to asset file not found" 0
-        exit 1
+echo "Error Building"
+trap "echo exitting because my child killed me due to asset file not found" 0
+exit 1
 fi
 
 
