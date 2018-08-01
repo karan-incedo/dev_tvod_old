@@ -596,35 +596,31 @@ public class TVCollectionGridItemView extends TVBaseView {
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
-                        StringBuilder stringBuilder = new StringBuilder();
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                        if (data.getGist() != null) {
-                            stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
-                        }
+                    if (data.getGist() != null && data.getGist().getRuntime() > 0) {
+                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                    }
 
-                        if (data.getContentDetails() != null
-                                && data.getContentDetails().getAuthor() != null) {
+                    if (data.getContentDetails() != null
+                            && data.getContentDetails().getAuthor() != null) {
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        stringBuilder.append(data.getContentDetails().getAuthor());
+                    }
+
+                    if (data.getGist() != null && data.getGist().getPublishDate() != null) {
+                        try {
+
+                            String date = appCMSPresenter.getDateFormat(
+                                    Long.parseLong(data.getGist().getPublishDate()),
+                                    "MMMM dd, yyyy");
                             if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                            stringBuilder.append(data.getContentDetails().getAuthor());
+                            stringBuilder.append("Published on ");
+                            stringBuilder.append(date);
+                        } catch (Exception e) {
                         }
-
-                        if (data.getGist() != null && data.getGist().getPublishDate() != null) {
-                            try {
-
-                                    String date = appCMSPresenter.getDateFormat(
-                                            Long.parseLong(data.getGist().getPublishDate()),
-                                            "MMMM dd, yyyy");
-
-                                /*Date publishedDate = new Date(data.getGist().getPublishDate());
-                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                String date = spf.format(publishedDate);*/
-                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                                stringBuilder.append("Published on ");
-                                stringBuilder.append(date);
-                            } catch (Exception e) {
-                            }
-                        }
-                        ((TextView) view).setText(stringBuilder);
+                    }
+                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(
