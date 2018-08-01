@@ -72,6 +72,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String hlsUrl;
     private String videoImageUrl;
     private String filmId;
+    private boolean isLiveStream;
     private String primaryCategory;
     private String contentRating;
     private long videoRunTime;
@@ -345,7 +346,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             }
         }
-
+        if (binder.getContentData() != null &&
+                binder.getContentData().getStreamingInfo() != null) {
+            isLiveStream = binder.getContentData().getStreamingInfo().getIsLiveStream();
+        }
         // TODO: 7/27/2017 Implement CC for multiple languages.
         if (binder.getContentData() != null
                 && binder.getContentData().getContentDetails() != null
@@ -650,6 +654,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public String getFilmId() {
         return filmId;
+    }
+
+    @Override
+    public boolean isLiveStream() {
+        return isLiveStream;
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {

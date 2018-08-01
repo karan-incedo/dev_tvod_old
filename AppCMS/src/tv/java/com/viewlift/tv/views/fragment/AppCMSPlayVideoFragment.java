@@ -42,6 +42,7 @@ import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
@@ -386,7 +387,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
                             //sedn the history when complete play.
-                            if (!isTrailer && videoPlayerView != null) {
+                            if (!isTrailer && !contentDatum.getStreamingInfo().getIsLiveStream() && videoPlayerView != null) {
                                 appCMSPresenter.updateWatchedTime(filmId,
                                         videoPlayerView.getCurrentPosition() / 1000);
                             }
@@ -612,7 +613,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                         } else {
                                             secsViewed = (int) (appCMSPresenter.getUserFreePlayTimePreference() / 1000);
                                         }
-                                        Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
+                                        Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs + " playedVideoSecs = " + playedVideoSecs);
                                         if ((maxPreviewSecs < secsViewed || maxPreviewSecs < playedVideoSecs) && !isSubscribe[0]) {
 
                                             if (getActivity() != null) {
@@ -725,7 +726,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                         }
 
                                     }
-                                    if (videoPlayerView.getPlayer().getPlayWhenReady()) playedVideoSecs++;
+                                    if (videoPlayerView.getPlayer().getPlayWhenReady()
+                                            && videoPlayerView.getPlayer().getPlaybackState() == Player.STATE_READY){
+                                        playedVideoSecs++;
+                                    }
                                     if (!finalIsPerVideo && null != videoPlayerView && null != videoPlayerView.getPlayer() &&
                                             videoPlayerView.getPlayer().getPlayWhenReady()) {
                                         /*if perVideo is false and the player is not playing*/

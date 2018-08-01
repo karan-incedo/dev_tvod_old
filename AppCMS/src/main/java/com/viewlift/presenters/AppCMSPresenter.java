@@ -1885,12 +1885,15 @@ public class AppCMSPresenter {
     public void updateWatchedTime(String filmId, long watchedTime) {
         if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
 
-            realmController = RealmController.with(currentActivity);
-            UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
-            updateHistoryRequest.setUserId(getLoggedInUser());
-            updateHistoryRequest.setWatchedTime(watchedTime);
-            updateHistoryRequest.setVideoId(filmId);
-            updateHistoryRequest.setSiteOwner(appCMSSite.getGist().getSiteInternalName());
+            UpdateHistoryRequest updateHistoryRequest = null;
+            if (platformType.equals(PlatformType.ANDROID)) {
+                realmController = RealmController.with(currentActivity);
+                updateHistoryRequest = new UpdateHistoryRequest();
+                updateHistoryRequest.setUserId(getLoggedInUser());
+                updateHistoryRequest.setWatchedTime(watchedTime);
+                updateHistoryRequest.setVideoId(filmId);
+                updateHistoryRequest.setSiteOwner(appCMSSite.getGist().getSiteInternalName());
+            }
             if (currentActivity == null)
                 return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
@@ -1907,26 +1910,28 @@ public class AppCMSPresenter {
                         }
                     });
 
-            populateUserHistoryData();
+            if (platformType.equals(PlatformType.ANDROID)) {
+                populateUserHistoryData();
 
-            currentActivity.runOnUiThread(() -> {
-                try {
-                    // copyFromRealm is used to get an unmanaged in-memory copy of an already
-                    // persisted RealmObject
-                    DownloadVideoRealm downloadedVideo = realmController.getRealm()
-                            .copyFromRealm(realmController.getDownloadById(filmId));
-                    downloadedVideo.setWatchedTime(watchedTime);
-                    downloadedVideo.setLastWatchDate(System.currentTimeMillis());
-                    if (!isNetworkConnected()) {
-                        downloadedVideo.setSyncedWithServer(false);
-                    } else {
-                        downloadedVideo.setSyncedWithServer(true);
+                currentActivity.runOnUiThread(() -> {
+                    try {
+                        // copyFromRealm is used to get an unmanaged in-memory copy of an already
+                        // persisted RealmObject
+                        DownloadVideoRealm downloadedVideo = realmController.getRealm()
+                                .copyFromRealm(realmController.getDownloadById(filmId));
+                        downloadedVideo.setWatchedTime(watchedTime);
+                        downloadedVideo.setLastWatchDate(System.currentTimeMillis());
+                        if (!isNetworkConnected()) {
+                            downloadedVideo.setSyncedWithServer(false);
+                        } else {
+                            downloadedVideo.setSyncedWithServer(true);
+                        }
+                        realmController.updateDownload(downloadedVideo);
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Film " + filmId + " has not been downloaded");
                     }
-                    realmController.updateDownload(downloadedVideo);
-                } catch (Exception e) {
-                    //Log.e(TAG, "Film " + filmId + " has not been downloaded");
-                }
-            });
+                });
+            }
         }
     }
 

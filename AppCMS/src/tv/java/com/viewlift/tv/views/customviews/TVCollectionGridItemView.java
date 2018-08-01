@@ -310,6 +310,14 @@ public class TVCollectionGridItemView extends TVBaseView {
                     view.setBackground(Utils.getMenuSelector(context, appCMSPresenter.getAppCtaBackgroundColor(),
                             appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondary().getBorder().getColor()));
                     // view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                    if(!appCMSPresenter.getAppCMSMain().getFeatures().isAutoPlay()
+                            && data.getGist().getTitle().contains("AUTOPLAY")){
+                        view.setFocusable(false);
+                        view.setEnabled(false);
+                        view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                        mPosition = 1; // change this value to set the focus on next item.
+                    }
+
                     view.setOnClickListener(v ->
                     {
                         String title = data.getGist().getTitle();
@@ -588,35 +596,31 @@ public class TVCollectionGridItemView extends TVBaseView {
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
-                        StringBuilder stringBuilder = new StringBuilder();
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                        if (data.getGist() != null) {
-                            stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
-                        }
+                    if (data.getGist() != null && data.getGist().getRuntime() > 0) {
+                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                    }
 
-                        if (data.getContentDetails() != null
-                                && data.getContentDetails().getAuthor() != null) {
+                    if (data.getContentDetails() != null
+                            && data.getContentDetails().getAuthor() != null) {
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        stringBuilder.append(data.getContentDetails().getAuthor());
+                    }
+
+                    if (data.getGist() != null && data.getGist().getPublishDate() != null) {
+                        try {
+
+                            String date = appCMSPresenter.getDateFormat(
+                                    Long.parseLong(data.getGist().getPublishDate()),
+                                    "MMMM dd, yyyy");
                             if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                            stringBuilder.append(data.getContentDetails().getAuthor());
+                            stringBuilder.append("Published on ");
+                            stringBuilder.append(date);
+                        } catch (Exception e) {
                         }
-
-                        if (data.getGist() != null && data.getGist().getPublishDate() != null) {
-                            try {
-
-                                    String date = appCMSPresenter.getDateFormat(
-                                            Long.parseLong(data.getGist().getPublishDate()),
-                                            "MMMM dd, yyyy");
-
-                                /*Date publishedDate = new Date(data.getGist().getPublishDate());
-                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                String date = spf.format(publishedDate);*/
-                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                                stringBuilder.append("Published on ");
-                                stringBuilder.append(date);
-                            } catch (Exception e) {
-                            }
-                        }
-                        ((TextView) view).setText(stringBuilder);
+                    }
+                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(

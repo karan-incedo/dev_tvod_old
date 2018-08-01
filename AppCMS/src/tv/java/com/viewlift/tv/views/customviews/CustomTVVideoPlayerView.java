@@ -934,7 +934,7 @@ public class CustomTVVideoPlayerView
 
     @Override
     public void playerError(ExoPlaybackException ex) {
-        
+
     }
 
     /**

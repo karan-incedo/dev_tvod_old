@@ -51,7 +51,6 @@ import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -68,7 +67,6 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
@@ -1267,6 +1265,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     && getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) /*check if stream quality selector is enabled*/
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
                     && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
+                    && !streamingQualitySelector.isLiveStream() /*Create the Quality Selector only if it a non-live content*/
                     ) {
                 createStreamingQualitySelectorForHLS();
                 // Default "Auto" is selected
@@ -1772,6 +1771,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         int getMpegResolutionIndexFromUrl(String mpegUrl);
 
         String getFilmId();
+
+        boolean isLiveStream();
     }
 
     /**

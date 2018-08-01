@@ -1051,7 +1051,8 @@ public class AppCmsNavigationFragment extends Fragment {
         navigationSubItemList.clear();
         NavigationPrimary navigationSubItem1 = new NavigationPrimary();
         navigationSubItem1.setIcon(getString(R.string.st_autoplay_icon_key));
-        if (appCMSPresenter.getAutoplayEnabledUserPref(getActivity())) {
+        if (appCMSPresenter.getAutoplayEnabledUserPref(getActivity())
+                && appCMSPresenter.getAppCMSMain().getFeatures().isAutoPlay()) {
             navigationSubItem1.setTitle("AUTOPLAY ON");
         } else {
             navigationSubItem1.setTitle("AUTOPLAY OFF");
