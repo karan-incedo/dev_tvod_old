@@ -687,6 +687,7 @@ public class AppCMSPresenter {
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
     private MetaPage rosterPage;
+    private MetaPage libraryPage;
 
     private MetaPage watchlistPage;
     private MetaPage signupPage;
@@ -1223,6 +1224,8 @@ public class AppCMSPresenter {
         String currentTime = formatterCurrentTime.format(calendarCurrent.getTime());
         long eventTimeInMs = getMillisecondFromDaeString(dateFormat, eventTime);
         long currentTimeInMs = getMillisecondFromDaeString(dateFormat, currentTime);
+        ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
+        nowTime.toEpochSecond();
         timeDifference = eventTimeInMs - currentTimeInMs;
         return timeDifference;
     }
@@ -1246,27 +1249,27 @@ public class AppCMSPresenter {
         long elapsedSeconds = difference / secondsInMilli;
         String differenceFormat="";
         if(elapsedDays>1){
-            differenceFormat=String.format("%02d", elapsedDays)+"Days";
+            differenceFormat=String.format("%02d", elapsedDays)+" Days";
         }else if(elapsedDays>0){
-            differenceFormat=String.format("%02d", elapsedDays)+"Day";
+            differenceFormat=String.format("%02d", elapsedDays)+" Day";
         }
 
         else if(elapsedHours>1){
-            differenceFormat=String.format("%02d", elapsedHours)+"Hours";
+            differenceFormat=String.format("%02d", elapsedHours)+" Hours";
         }else if(elapsedHours>0){
-            differenceFormat=String.format("%02d", elapsedHours)+"Hour";
+            differenceFormat=String.format("%02d", elapsedHours)+" Hour";
         }
 
         else if(elapsedMinutes>1){
-            differenceFormat=String.format("%02d", elapsedMinutes)+"Mins";
+            differenceFormat=String.format("%02d", elapsedMinutes)+" Mins";
         }else if(elapsedMinutes>0){
-            differenceFormat=String.format("%02d", elapsedMinutes)+"Minu";
+            differenceFormat=String.format("%02d", elapsedMinutes)+" Min";
         }
 
         else if(elapsedSeconds>1){
-            differenceFormat=String.format("%02d", elapsedSeconds)+"Secs";
+            differenceFormat=String.format("%02d", elapsedSeconds)+" Secs";
         }else if(elapsedSeconds>0){
-            differenceFormat=String.format("%02d", elapsedSeconds)+"Sec";
+            differenceFormat=String.format("%02d", elapsedSeconds)+" Sec";
         }
 
         differenceFormat =differenceFormat+" Remaining";
@@ -1696,10 +1699,11 @@ public class AppCMSPresenter {
                             }
                             if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
                                 for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
+                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID && appCMSAndroid.getAdvertising()!=null){
                                     if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID &&
                                             appCMSAndroid.getAdvertising() != null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
-                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV){
+                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV && appCMSAndroid.getAdvertising()!=null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
                                     }
                                 }
@@ -7209,6 +7213,43 @@ public class AppCMSPresenter {
                             public void call(List<AppCMSRosterResult> appCMSRosterResult) {
                                 if (appCMSRosterResult != null) {
                                     Observable.just(appCMSRosterResult)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe(appCMSRosterResultAction);
+                                } else {
+                                    Observable.just((AppCMSScheduleResult) null)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe((Observer<? super AppCMSScheduleResult>) appCMSRosterResultAction);
+                                }
+                            }
+                        });
+            }
+
+
+        }
+    }
+
+    public void getLibraryRefreshData(final Action1<AppCMSLibraryResult> appCMSRosterResultAction) {
+        if (currentActivity != null) {
+            AppCMSPageUI appCMSPageUI = navigationPages.get(libraryPage.getPageId());
+
+            MetaPage metaPage = pageIdToMetaPageMap.get(libraryPage.getPageId());
+
+            {
+                getLibraryPage(appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        metaPage.getPageId(), new AppCMSLibraryAPIAction<AppCMSLibraryResult>(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                metaPage.getPageId(),
+                                metaPage.getPageId(),
+                                metaPage.getPageName(),
+                                metaPage.getPageId(),
+                                false, null) {
+                            @Override
+                            public void call(AppCMSLibraryResult appCMSLibraryResultResult) {
+                                if (appCMSLibraryResultResult != null) {
+                                    Observable.just(appCMSLibraryResultResult)
                                             .onErrorResumeNext(throwable -> Observable.empty())
                                             .subscribe(appCMSRosterResultAction);
                                 } else {
@@ -15784,6 +15825,12 @@ public class AppCMSPresenter {
                     new SoftReference<Object>(rosterPage, referenceQueue);
                 }
 
+                if (jsonValueKeyMap.get(metaPage.getPageName())
+                        == AppCMSUIKeyType.ANDROID_LIBRARY_SCREEN_KEY) {
+                    libraryPage = metaPage;
+                    new SoftReference<Object>(libraryPage, referenceQueue);
+                }
+
                 int articlePageIndex = getArticlePage(metaPageList);
                 if (articlePageIndex >= 0) {
                     articlePage = metaPageList.get(articlePageIndex);
@@ -16015,6 +16062,10 @@ public class AppCMSPresenter {
 
     public boolean isRosterPage(String pageId) {
         return !TextUtils.isEmpty(pageId) && rosterPage != null && pageId.equals(rosterPage.getPageId());
+    }
+
+    public boolean isLibraryPage(String pageId) {
+        return !TextUtils.isEmpty(pageId) && libraryPage != null && pageId.equals(libraryPage.getPageId());
     }
 
     private int getWatchlistPage(List<MetaPage> metaPageList) {
@@ -20411,8 +20462,7 @@ public class AppCMSPresenter {
                         appCMSLibraryCall.call(
                                 currentActivity.getString(R.string.app_cms_library_data_page_api_url,
                                         apiBaseUrl,siteId,getLoggedInUser()
-//                                        "hoichoi-tv",
-//                                        "myUserTest"
+//
                                 ),getAuthToken(), apikey,
                                 rosterAPIAction);
 
