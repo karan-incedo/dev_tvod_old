@@ -3398,7 +3398,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
 
-            if (appCMSPresenter.isViewPlanPage(pageId) || appCMSPresenter.isPageLoginPage(pageId)) {
+            if (appCMSPresenter.isViewPlanPage(pageId) || appCMSPresenter.isPageLoginPage(pageId) || appCMSPresenter.isPageNavigationPage(pageId)) {
                 appCMSNavFreeTrialTool.setVisibility(View.GONE);
                 return;
             }
